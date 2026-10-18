@@ -255,7 +255,7 @@
       try { if ((typeof SR !== 'undefined' && SR) && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) throw 0; // en celular el micrófono no se puede compartir: se prioriza el reconocimiento de voz
       stream = await navigator.mediaDevices.getUserMedia({ audio: true }); mr = new MediaRecorder(stream); mr.ondataavailable = e => e.data.size && chunks.push(e.data); mr.start(); }
       catch (e) { if (!SR) { M.toast('Permite el micrófono 🎤'); return; } }
-      if (SR) { try { sr = new SR(); sr.lang = 'en-US'; sr.continuous = true; sr.interimResults = false; sr.onresult = e => { for (let i = e.resultIndex; i < e.results.length; i++) if (e.results[i].isFinal) transcript += ' ' + e.results[i][0].transcript; }; sr.onerror = e => { if (/not-allowed|audio-capture|service-not-allowed|network/.test(e.error)) srOk = false; }; sr.start(); } catch (e) { srOk = false; } }
+      if (SR) { try { sr = (window.M1 && M1.srSession) ? M1.srSession(t => { transcript = ' ' + t; }, () => { srOk = false; }) : null; if (!sr) srOk = false; /* motor de voz robusto */ } catch (e) { srOk = false; } }
       mc.classList.add('rec'); st.textContent = '🔴 Grabando… habla ahora. Toca 🎤 para detener.'; M.stop();
       const auto = setTimeout(() => rec && rec.stop(), 40000);
       rec = {

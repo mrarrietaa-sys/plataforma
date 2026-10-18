@@ -270,7 +270,7 @@
       try { if (!navigator.mediaDevices || !window.MediaRecorder) throw new Error('nomr'); stream = await navigator.mediaDevices.getUserMedia({ audio: true }); mr = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream); mr.ondataavailable = e => e.data && e.data.size && chunks.push(e.data); mr.start(1000); }
       catch (e) { stream && stream.getTracks().forEach(t => t.stop()); return micFail(!window.MediaRecorder ? 'Tu navegador no permite grabar audio. Usa Chrome, Edge o Safari actualizados.' : 'No pudimos acceder a tu micrófono.'); }
       if (!mc.isConnected) { stream.getTracks().forEach(t => t.stop()); return; }
-      if (SR) { try { sr = new SR(); sr.lang = 'en-US'; sr.continuous = true; sr.interimResults = false; sr.onresult = e => { for (let k = e.resultIndex; k < e.results.length; k++) if (e.results[k].isFinal) transcript += ' ' + e.results[k][0].transcript; }; sr.onerror = e => { if (/not-allowed|audio-capture|service-not-allowed|network|language-not-supported/.test(e.error)) srOk = false; }; sr.start(); } catch (e) { srOk = false; } }
+      if (SR) { try { sr = (window.M1 && M1.srSession) ? M1.srSession(t => { transcript = ' ' + t; }, () => { srOk = false; }) : null; if (!sr) srOk = false; /* motor de voz robusto */ } catch (e) { srOk = false; } }
       M.stop(); mc.classList.add('rec'); vr.innerHTML = '';
       const t0 = Date.now(); const upd = () => { st.textContent = `🔴 Grabando… ${fmt(Date.now() - t0)} · toca 🎤 para detener`; }; upd(); const iv = setInterval(upd, 500);
       const auto = setTimeout(() => rec && rec.stop(), 120000);

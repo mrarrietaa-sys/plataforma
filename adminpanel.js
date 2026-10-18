@@ -392,7 +392,7 @@
         <small>${st.length} estudiante(s)${c.status === 'done' ? ' · asistieron ' + Object.values(att).filter(Boolean).length : ''}${c.topic ? ' · ' + esc(c.topic) : ''}</small></div></div>`; },
       open: (id, c) => classMark(c), empty: 'No hay clases con este filtro.' });
   }
-  // 🎁 regalar clases VIP adicionales (por un inconveniente o como regalo); valen solo para el ciclo actual del plan
+  // 🎁 regalar clases individuales adicionales (por un inconveniente o como regalo); valen solo para el ciclo actual del plan
   async function bonusModal() {
     const m = modal(`<h2>🎁 Agregar clase individual de regalo</h2><p class="muted">El estudiante podrá reservarla desde su perfil. Vale solo para su ciclo actual (no es acumulable) y le llega un aviso y un correo.</p>
       <div class="ad-form"><label class="full">Estudiante Premium<input class="inp" id="bo-s" list="bo-list" placeholder="⏳ Cargando estudiantes…" autocomplete="off"><datalist id="bo-list"></datalist></label>

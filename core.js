@@ -187,30 +187,57 @@
   /* ---------- speech recognition ---------- */
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   const canSR = !!SR;
-  // 🎙️ escucha con más paciencia: no se corta en el primer silencio, junta lo que va oyendo y reintenta si no oyó nada
-  // (así no hay que hablar duro: basta con hablar normal y claro)
-  function listen(timeoutMs = 7000) {
+  // 🎙️ MOTOR DE VOZ (v179): junta TODO lo que el estudiante dice (no solo la primera parte), no se corta en las pausas,
+  // corrige los resultados repetidos de Android y espera un silencio real antes de terminar. Se habla normal, sin gritar.
+  const lc = (x) => String(x || '').toLowerCase().replace(/\s+/g, ' ').trim();
+  function segMerge(segs, alts) { // segs = [[alt0, alt1…], …]
+    const t = lc(alts[0]); if (!t) return; const last = segs.length ? lc(segs[segs.length - 1][0]) : '';
+    if (last && t.indexOf(last) === 0) segs[segs.length - 1] = alts;          // Android: el nuevo resultado repite y amplía el anterior
+    else if (last && last.indexOf(t) === 0) return;                            // repetido
+    else segs.push(alts);
+  }
+  function segAlts(segs, interim) {
+    if (!segs.length) return interim && interim.length ? interim.slice() : [];
+    const out = []; for (let k = 0; k < 5; k++) { const txt = segs.map(a => a[k] || a[0]).join(' ').replace(/\s+/g, ' ').trim(); if (txt && out.indexOf(txt) < 0) out.push(txt); }
+    if (interim && interim[0]) { const t = (out[0] + ' ' + interim[0]).trim(); if (lc(interim[0]) && lc(out[0]).indexOf(lc(interim[0])) < 0) out.unshift(t); }
+    return out;
+  }
+  function listen(timeoutMs = 8000) {
     return new Promise((res) => {
       if (!SR) return res({ error: 'nosupport', alts: [] });
-      const t0 = Date.now(); let done = false, r = null, finals = [], interim = [], lastErr = '', idle = null;
-      const collect = () => { const a = []; finals.forEach(x => x.forEach(t => a.push(t))); if (!a.length) interim.forEach(t => a.push(t)); return a; };
-      const fin = (err) => { if (done) return; done = true; clearTimeout(idle); try { r && r.abort(); } catch (e) { } const alts = collect(); res(alts.length ? { alts } : { alts: [], error: err || lastErr || 'no-speech' }); };
+      const t0 = Date.now(); let done = false, r = null, segs = [], interim = [], lastErr = '', idle = null, heardAny = false;
+      timeoutMs = Math.max(timeoutMs, 9000); // nunca menos de 9 s: da tiempo a pensar y hablar con calma
+      const fin = (err) => { if (done) return; done = true; clearTimeout(idle); try { r && r.abort(); } catch (e) { } const alts = segAlts(segs, interim); res(alts.length ? { alts } : { alts: [], error: err || lastErr || 'no-speech' }); };
+      const arm = () => { clearTimeout(idle); idle = setTimeout(() => fin(), segs.length ? 1800 : 2600); }; // espera 1,8 s de silencio real antes de terminar
       const start = () => {
         if (done) return;
         r = new SR(); r.lang = 'en-US'; r.interimResults = true; r.maxAlternatives = 5; r.continuous = true;
-        r.onresult = (e) => {
+        r.onresult = (e) => { heardAny = true;
           for (let k = e.resultIndex; k < e.results.length; k++) { const rr = e.results[k], list = []; for (let i = 0; i < rr.length; i++) list.push(rr[i].transcript);
-            if (rr.isFinal) finals.push(list); else interim = list; }
-          // cuando ya dijo algo, espera un momento por si sigue hablando y termina
-          clearTimeout(idle); idle = setTimeout(() => fin(), finals.length ? 900 : 1600);
-        };
+            if (rr.isFinal) { segMerge(segs, list); interim = []; } else interim = list; }
+          arm(); };
+        r.onspeechstart = () => { heardAny = true; arm(); };
         r.onerror = (e) => { lastErr = e.error; if (e.error === 'not-allowed' || e.error === 'service-not-allowed' || e.error === 'audio-capture') fin(e.error); };
-        r.onend = () => { if (done) return; if (collect().length) return fin(); if (Date.now() - t0 < timeoutMs - 600) { try { start(); } catch (e) { fin('start'); } } else fin(); }; // no oyó nada: vuelve a escuchar
+        r.onend = () => { if (done) return; if (Date.now() - t0 < timeoutMs - 500) { setTimeout(() => { try { start(); } catch (e) { fin('start'); } }, 60); } else fin(); }; // el navegador cortó en una pausa: sigue escuchando
         try { r.start(); } catch (e) { fin('start'); }
       };
       start();
       setTimeout(() => fin('timeout'), timeoutMs);
     });
+  }
+  // sesión larga "toca para grabar / toca para detener" (prueba de clasificación, exámenes): no pierde nada en las pausas
+  function srSession(onText, onFatal) {
+    const S = { onend: null }; if (!SR) return null;
+    let active = true, segs = [], interim = [], r = null, ended = false;
+    const text = () => segAlts(segs, interim)[0] || '';
+    const start = () => { if (!active) return; r = new SR(); r.lang = 'en-US'; r.continuous = true; r.interimResults = true; r.maxAlternatives = 3;
+      r.onresult = (e) => { for (let k = e.resultIndex; k < e.results.length; k++) { const rr = e.results[k], list = []; for (let i = 0; i < rr.length; i++) list.push(rr[i].transcript); if (rr.isFinal) { segMerge(segs, list); interim = []; } else interim = list; } onText && onText(text()); };
+      r.onerror = (e) => { if (/not-allowed|audio-capture|service-not-allowed|language-not-supported/.test(e.error)) { active = false; onFatal && onFatal(e.error); } };
+      r.onend = () => { if (active) setTimeout(start, 60); else if (!ended) { ended = true; onText && onText(text()); S.onend && S.onend(); } };
+      try { r.start(); } catch (e) { active = false; onFatal && onFatal('start'); } };
+    S.stop = () => { active = false; try { r && r.stop(); } catch (e) { if (!ended) { ended = true; S.onend && S.onend(); } } };
+    S.abort = () => { active = false; ended = true; try { r && r.abort(); } catch (e) { } };
+    S.text = text; start(); return S;
   }
   /* ---------- voice recording (MediaRecorder) ---------- */
   async function recordVoice(ms = 4000, onTick) {
@@ -415,6 +442,6 @@
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
   })();
   window.M1 = { face, D, C, MOD, S, $, $$, h, esc, shuffle, sample, sleep, save, touchStreak, addSkill, addWeak, okWeak, skillPct, isUnlocked, finalUnlocked, paceDate, weakParts, reviewMode, revCount, PTS_TIP, hasAccess, progressOpen, lockReason, review, hasProfile, doneCount, totalParts, redeem, codeHash,
-    allParts, partById, trackAudio, audioUI, floatStop, recordScore, letterScorer, voiceResult, floatBubble, setBubbleHidden, prevPart, nextPart, partStars, overallPct, imgURL, photo, play, playSeq, loadAudio, stop, sfx, praise, encourage, canSR, listen, recordVoice,
+    allParts, partById, trackAudio, audioUI, floatStop, recordScore, letterScorer, voiceResult, floatBubble, setBubbleHidden, prevPart, nextPart, partStars, overallPct, imgURL, photo, play, playSeq, loadAudio, stop, sfx, praise, encourage, canSR, listen, srSession, recordVoice,
     norm, words, lev, speechScore, sheet, good, bad, toast, modal, xpFly, confetti, mascot, audioSrc };
 })();

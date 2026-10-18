@@ -5,14 +5,14 @@
   <h2 class="pol-t">Política de reservas y cancelaciones</h2>
   <p class="pol-only">Aplica para estudiantes <b>Premium</b> (4 u 8 clases al mes): las clases individuales son exclusivas de estos planes.</p>
   <section><h3>1. Reservas</h3><ul>
-    <li><b>Reserva:</b> desde el <b>día siguiente</b> y hasta <b>5 días</b> antes, eligiendo profe, fecha y hora desde tu perfil.</li>
+    <li><b>¿Cuándo reservar?</b> Desde <b>mañana</b> y hasta <b>5 días adelante</b>. Para hoy no se puede reservar. Eliges profe, fecha y hora desde tu perfil.</li>
     <li>Las clases de tu plan <b>no son acumulables</b>: úsalas dentro de tu periodo mensual; las que no uses se vencen y no se recuperan.</li>
     <li>Las <b>clases adicionales</b> que compres valen solo dentro de tu plan vigente.</li></ul></section>
   <section><h3>2. Cancelaciones</h3><ul>
-    <li><b>Cancelación sin penalización:</b> mínimo <b>12 horas</b> antes de la clase. La clase vuelve a tu saldo.</li>
-    <li><b>Cancelación tardía o inasistencia:</b> la clase se descuenta de tu plan y no será repuesta.</li></ul></section>
+    <li><b>Cancelar gratis:</b> hasta <b>12 horas antes</b> de la clase. La clase vuelve a tu saldo.</li>
+    <li><b>Si cancelas con menos de 12 horas o no te conectas,</b> la clase se descuenta de tu plan y no se repone.</li></ul></section>
   <section><h3>3. Si tu profe no se conecta</h3><ul>
-    <li>Puedes reportarlo desde tu perfil apenas empiece la clase y hasta 24 horas después.</li>
+    <li>Repórtalo desde tu perfil con el botón <b>"Mi profe no se conectó"</b> (hasta 24 horas después de la clase).</li>
     <li>Administración lo revisa en máximo 24 horas y, si se confirma, <b>la clase vuelve a tu saldo</b>.</li></ul></section>
   <section><h3>4. Horario de la escuela</h3><p><b>Lunes a viernes:</b> 7:00 a. m. a 9:00 p. m. (jornada continua) · <b>Sábados:</b> 7:00 a. m. a 5:00 p. m. · <b>Domingos y festivos de Colombia:</b> no hay clases ni atención por chat. (Hora Colombia)</p></section>
   <section><h3>5. Duración de las clases</h3><p>Todas las clases individuales duran <b>50 minutos</b>.</p></section>

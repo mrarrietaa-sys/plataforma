@@ -1,7 +1,7 @@
 /* =====================================================================
    PORTAL DE PROFESORES · mrarrieta.com
    · Entrada con código de profe + PIN (MRAC.call('tLogin')).
-   · Resumen, disponibilidad para clases VIP, mis clases (asistencia),
+   · Resumen, disponibilidad para clases individuales, mis clases (asistencia),
      mis grupos. Todo en hora Colombia (UTC−5, sin horario de verano).
    · Sesión: sessionStorage 'mra_tp_session' = {tcode, pin} (idle.js la cierra).
    ===================================================================== */
@@ -115,7 +115,7 @@
     const sl = first.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z]/g, '');
     const hasWeek = Object.keys(t.weekly || {}).length > 0;
     const m = modal(`<div style="text-align:center"><div style="font-size:52px">👋</div><h2>¡Welcome, ${esc(first)}!</h2>
-      <p>${hasWeek ? 'Antes de empezar, revisa que tu <b>disponibilidad semanal</b> esté al día. Los estudiantes Premium solo pueden reservar clases individuales en los horarios que publiques.' : '<b>Aún no has escrito tu disponibilidad semanal.</b> Márcala ahora para que los estudiantes Premium puedan reservar tus clases VIP.'}</p>
+      <p>${hasWeek ? 'Antes de empezar, revisa que tu <b>disponibilidad semanal</b> esté al día. Los estudiantes Premium solo pueden reservar clases individuales en los horarios que publiques.' : '<b>Aún no has escrito tu disponibilidad semanal.</b> Márcala ahora para que los estudiantes Premium puedan reservar tus clases individuales.'}</p>
       <p class="muted">Lunes a sábado · domingos y festivos no hay clases.</p>
       <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px"><button class="btn k" id="wl-av">📅 ${hasWeek ? 'Revisar' : 'Escribir'} mi disponibilidad</button><button class="btn w" data-x>Más tarde</button></div></div>`);
     $('#wl-av', m).onclick = () => { m.remove(); tab = 'avail'; ss.set(TABKEY, tab); shell(); };
@@ -178,7 +178,7 @@
       </div>
       ${pend.length ? `<div class="tp-alert warn"><b>📌 Tienes ${pend.length} clase${pend.length > 1 ? 's' : ''} por marcar.</b> Registra la asistencia para que el estudiante vea su progreso. <button class="btn k sm" data-go="classes">Ir a Mis clases</button></div>` : ''}
       <div class="card tp-card"><div class="tp-card-h"><h2>Próximas clases</h2><small class="muted">hora Colombia</small></div>
-        ${up.length ? `<ul class="tp-list">${up.slice(0, 8).map((c) => classRow(c)).join('')}</ul>` : `<div class="tp-empty"><img src="mra-think.webp" alt="" width="110" height="110"><p>No tienes clases programadas.${free ? '' : ' Agrega espacios en <b>Mi disponibilidad</b> para que tus estudiantes Premium reserven clases VIP.'}</p></div>`}
+        ${up.length ? `<ul class="tp-list">${up.slice(0, 8).map((c) => classRow(c)).join('')}</ul>` : `<div class="tp-empty"><img src="mra-think.webp" alt="" width="110" height="110"><p>No tienes clases programadas.${free ? '' : ' Agrega espacios en <b>Mi disponibilidad</b> para que tus estudiantes Premium reserven clases individuales.'}</p></div>`}
       </div>
       ${!free ? `<div class="tp-alert"><b>🗓️ No tienes espacios libres.</b> Los estudiantes Premium solo pueden reservar en los horarios que publiques. <button class="btn w sm" data-go="avail">Agregar disponibilidad</button></div>` : ''}`;
     $$('[data-go]', el).forEach((b) => b.onclick = () => { tab = b.dataset.go; ss.set(TABKEY, tab); shell(); });
@@ -201,12 +201,12 @@
     const slots = D.slots.filter((s) => s.status !== 'deleted' && s.date >= t0 && !(s.date === t0 && s.status === 'free' && s.time <= nowHM()));
     const byDate = {}; slots.forEach((s) => (byDate[s.date] = byDate[s.date] || []).push(s));
     el.innerHTML = `<div class="card tp-card tp-week"><div class="tp-card-h"><h2>📅 Mi disponibilidad semanal</h2></div>
-        <p class="muted tp-small">Marca las horas en que puedes dictar cada semana. La plataforma crea automáticamente tus espacios de <b>50 minutos</b> para las próximas <b>4 semanas</b> (y los renueva cada día). Los estudiantes Premium los verán para reservar sus clases VIP.</p>
+        <p class="muted tp-small">Marca las horas en que puedes dictar cada semana. La plataforma crea automáticamente tus espacios de <b>50 minutos</b> para las próximas <b>4 semanas</b> (y los renueva cada día). Los estudiantes Premium los verán para reservar sus clases individuales.</p>
         <div id="tp-wg"></div><button class="btn k lg block" id="tp-wsave" style="margin-top:12px">Guardar mi disponibilidad semanal</button></div>
       <div class="tp-cols">
       <div class="card tp-card tp-addcard">
         <div class="tp-card-h"><h2>Agregar un espacio extra (fecha específica)</h2></div>
-        <p class="muted tp-small">Publica los horarios reales en los que puedes dictar. Los estudiantes Premium los verán y reservarán (desde el día siguiente y hasta 5 días antes). Pueden cancelar sin penalidad hasta 12 horas antes; te llega un correo y un aviso aquí cuando reservan o cancelan. <a href="politica.html" target="_blank" rel="noopener">📌 Política de reservas y cancelaciones</a> Todo en <b>hora Colombia</b>.</p>
+        <p class="muted tp-small">Publica los horarios reales en los que puedes dictar. Los estudiantes Premium los verán y reservarán (desde mañana y hasta 5 días adelante, nunca para el mismo día). Pueden cancelar sin penalidad hasta 12 horas antes; te llega un correo y un aviso aquí cuando reservan o cancelan. <a href="politica.html" target="_blank" rel="noopener">📌 Política de reservas y cancelaciones</a> Todo en <b>hora Colombia</b>.</p>
         <label class="tp-l" for="tp-date">1. Fecha</label>
         <input class="inp tp-inp" type="date" id="tp-date" min="${t0}" value="${form.date}">
         <div class="tp-l">2. Hora(s) de inicio <small class="muted">(elige una o varias)</small></div>

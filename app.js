@@ -255,7 +255,7 @@
       <div style="margin-top:10px"><button class="btn sm w" id="rem-b">🔔 Recordarme todos los días</button></div></div></div>`;
   }
   function hwFbBlock() {
-    const box = $('#hwfb', app); if (!box || !hwPremium()) return;
+    const box = $('#hwfb', app); if (box) box.innerHTML = ''; return; // ✍️ sin feedback de profes: la plataforma revisa cada tarea al instante
     const draw = () => { if (!box.isConnected) return;
       const rows = M.allParts().filter(p => p.hw && S.hw[p.id] && S.hw[p.id].sent).map(p => ({ p, fb: hwFeedback(p.id) }));
       if (!rows.length) { box.innerHTML = ''; return; }
@@ -264,6 +264,7 @@
     draw(); MRAC.me().then(draw).catch(() => { });
   }
   function dailyReminder() {
+    try { const n = pendingHW().length; if (n > 3 && window.MRAC && MRAC.code && MRAC.code()) MRAC.call('hwRemind', { code: MRAC.code(), n }).catch(() => { }); } catch (e) { } // 🔔 más de 3 tareas pendientes
     const pend = pendingHW(); const t = new Date().toISOString().slice(0, 10);
     if (!pend.length || S.remindDay === t) return;
     S.remindDay = t; save();
@@ -877,8 +878,7 @@
     const out = h(`<ul class="checks"></ul>`); body.appendChild(out);
     const sent = h(`<div class="ce-hwsent hidden"></div>`); body.appendChild(sent);
     const fbBox = h(`<div class="ce-hwfb hidden"></div>`); body.appendChild(fbBox);
-    const prem = hwPremium();
-    if (prem) { renderHwFeedback(fbBox, p.id); MRAC.me(true).then(() => renderHwFeedback(fbBox, p.id)).catch(() => { }); if (S.hw[p.id] && S.hw[p.id].sent) showSent(sent); }
+    const prem = false; // ✍️ las tareas las revisa la plataforma (sin profe)
     const bar = h(`<div class="actionbar"></div>`); body.appendChild(bar);
     return await new Promise(res => {
       const idle = () => {
@@ -894,7 +894,10 @@
         S.hw[p.id] = { text: txt, at: Date.now(), score: fb.score }; if (prevSent && prevSent.text === txt) S.hw[p.id].sent = prevSent; save();
         bar.innerHTML = '';
         const again = h(`<button class="btn w">✏️ Corregir</button>`);
-        const nx = h(`<button class="btn k lg">${prem ? 'Entregar tarea' : 'Terminar clase'} →</button>`);
+        const pct = fb.total ? Math.round(fb.ok / fb.total * 100) : 0;
+        out.insertAdjacentHTML('afterbegin', `<li class="${pct >= 70 ? 'ok' : 'tip'} hw-auto"><span>${pct >= 70 ? '🏆' : '💪'}</span><span><b>Revisión de la plataforma: ${pct}%</b> · ${pct >= 90 ? '¡Excelente trabajo!' : pct >= 70 ? '¡Muy bien! Revisa los detalles para mejorar aún más.' : 'Vas por buen camino: corrige los puntos marcados y vuelve a revisar.'}</span></li>`);
+        try { if (window.MRAC && MRAC.code && MRAC.code()) MRAC.homework({ module: M.MOD.id, part: p.id, title: `${M.MOD.es} · ${p._t.title} · ${PL(p)}: ${p.title}`, text: txt, score: fb.score }).catch(() => { }); } catch (e) { } // queda guardada (sin avisar a profes)
+        const nx = h(`<button class="btn k lg">Terminar clase →</button>`);
         bar.append(again, nx); fb.ok >= fb.total * .7 ? sfx('ok') : sfx('bad');
         out.scrollIntoView({ behavior: 'smooth', block: 'start' });
         again.onclick = () => { out.innerHTML = ''; idle(); ta.focus(); };
@@ -914,7 +917,7 @@
   }
   // tareas con revisión del profe: solo estudiantes Premium con sesión en la nube
   function hwPremium() { try { return !!(window.MRAC && MRAC.code() && MRAC.isPremium()); } catch (e) { return false; } }
-  function showSent(box) { box.innerHTML = '✅ <b>Tu profe recibió tu tarea</b> y te dará feedback.'; box.classList.remove('hidden'); }
+  function showSent(box) { box.innerHTML = '✅ <b>Tarea guardada.</b> La plataforma ya la revisó.'; box.classList.remove('hidden'); }
   function hwFeedback(id) { try { return (window.MRAC && MRAC.code() && MRAC.feedbackFor(id)) || []; } catch (e) { return []; } }
   function renderHwFeedback(box, id) {
     const fb = hwFeedback(id); if (!fb.length) { box.classList.add('hidden'); return; }
