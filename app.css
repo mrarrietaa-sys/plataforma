@@ -4221,3 +4221,6 @@ textarea.inp{font-size:15px;line-height:1.4}
 @media(max-width:600px){.pt-or span{display:block;text-align:center;line-height:1.5}.pt-or span a{display:block;white-space:nowrap}
 .in-direct #in-chg{flex-basis:auto!important;width:auto!important;margin:2px auto 0!important;padding:7px 22px!important}}
 @media(max-width:600px){.in-direct #in-chg{flex:0 0 100%!important;max-width:200px;margin:4px auto 0!important;display:block}.in-direct .grow{flex:1 1 calc(100% - 50px)!important}}
+/* v202: PC — resumen del plan elegido igual de compacto que en celular */
+@media(min-width:601px){.in-direct{padding:14px 20px!important;gap:14px}.in-direct .in-plan-ic{font-size:34px!important;line-height:1}.in-direct .lbl{font-size:10px!important;padding:3px 10px!important}
+.in-direct h1{font-size:20px!important;margin:3px 0 1px!important}.in-direct p{font-size:14px!important}.in-direct #in-chg{padding:7px 18px!important;font-size:14px!important}}
