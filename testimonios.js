@@ -11,9 +11,19 @@ window.MRTES = {
   v: (u) => (u && !/^(https?:|data:|drive:)/.test(u) ? String(u).replace(/^tes[23]?-(\w+)\.(jpg|mp4).*$/, 'tes3-$1.$2') : u), // evita que el navegador muestre la versión vieja
   drive: (v) => { const m = /^drive:(.+)$/.exec(String(v || '')); return m ? m[1] : ''; },
   poster: (t) => MRTES.v(t.poster) || (MRTES.drive(t.video) ? 'https://drive.google.com/thumbnail?id=' + MRTES.drive(t.video) + '&sz=w600' : ''),
-  player: (t) => { const d = MRTES.drive(t.video), ps = String(MRTES.poster(t) || '').replace(/"/g, ''), fb = d ? ` onerror="this.outerHTML='<iframe src=&quot;https://drive.google.com/file/d/${d}/preview&quot; allow=&quot;autoplay; fullscreen&quot; allowfullscreen></iframe>'"` : '';
-    const src = d ? 'https://drive.google.com/uc?export=download&id=' + d : MRTES.v(String(t.video)).replace(/"/g, '');
-    return `<video src="${src}" poster="${ps}" controls autoplay playsinline preload="auto"${fb}></video>`; }, // el video se ve igual que su portada (sin el reproductor de Drive)
+  player: (t) => { const d = MRTES.drive(t.video), ps = String(MRTES.poster(t) || '').replace(/"/g, '');
+    if (!d) return `<video src="${MRTES.v(String(t.video)).replace(/"/g, '')}" poster="${ps}" controls autoplay playsinline preload="auto"></video>`;
+    return `<video data-d="${d}" src="https://drive.google.com/uc?export=download&id=${d}" poster="${ps}" controls autoplay playsinline preload="auto" onerror="MRTES.fb(this)"></video><span class="ld-ld">Cargando video…</span>`; },
+  /* si Google no entrega el video directo, la plataforma lo trae ella misma y lo reproduce aquí mismo */
+  fb: async (el) => {
+    if (!el || el.dataset.fb) return; el.dataset.fb = '1'; const box = el.parentNode; box && box.classList.add('loading');
+    try { const r = await MRAC.call('tesVideo', { id: el.dataset.d }, { timeout: 180000 }); if (!r || !r.ok) throw 0;
+      const bin = atob(r.b64), u8 = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+      el.removeAttribute('onerror'); el.src = URL.createObjectURL(new Blob([u8], { type: r.mime || 'video/mp4' })); el.play().catch(() => { });
+    } catch (e) { if (box) box.insertAdjacentHTML('beforeend', '<span class="ld-ld err">No se pudo cargar el video. Intenta de nuevo.</span>'); }
+    box && box.classList.remove('loading');
+  },
+  // el video se ve igual que su portada (sin el reproductor de Drive)
 };
 (function () {
   const apply = (list) => { if (Array.isArray(list)) window.MRTESTIMONIOS = list; };

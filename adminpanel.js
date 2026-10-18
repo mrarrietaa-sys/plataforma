@@ -348,7 +348,7 @@
     const r = await api('aTesList'); if (TAB !== 'tes') return; if (!r.ok) return view().innerHTML = '<p class="ad-err">No se pudieron cargar los testimonios.</p>';
     const L = r.tes || []; const pv = (t) => MRTES.v(t.poster) || (MRTES.drive(t.video) ? 'https://drive.google.com/thumbnail?id=' + MRTES.drive(t.video) + '&sz=w400' : '');
     view().innerHTML = `<div class="ad-head"><h2>🎬 Testimonios <small class="muted">(${L.length})</small></h2><button class="btn k" id="ts-new">＋ Nuevo testimonio</button></div>
-      <p class="muted" style="margin:-4px 0 14px">Aparecen en la página de inicio, en el orden que indiques. Video vertical (de celular), máximo 30 MB.</p>
+      <p class="muted" style="margin:-4px 0 14px">Aparecen en la página de inicio, en el orden que indiques. Video vertical (de celular), máximo 25 MB.</p>
       <div class="ad-tes">${L.map((t, i) => `<div class="ad-tc${String(t.active).charAt(0) === 'n' ? ' off' : ''}"><div class="ad-tp">${pv(t) ? `<img src="${esc(pv(t))}" alt="">` : ''}<span>${esc(t.ord)}</span></div><b>${esc(t.name)}</b><small>${esc(t.info || '')}</small>${String(t.active).charAt(0) === 'n' ? '<em>Oculto</em>' : ''}<div class="row"><button class="btn w sm" data-te="${i}">✏️ Editar</button><button class="btn w sm ad-del" data-td="${i}">🗑️</button></div></div>`).join('') || '<p class="muted">Aún no hay testimonios.</p>'}</div>`;
     $('#ts-new').onclick = () => tesEdit(null, L.length + 1);
     $$('[data-te]').forEach(b => b.onclick = () => tesEdit(L[+b.dataset.te]));
@@ -362,10 +362,10 @@
       <label>Detalle <small>(opcional)</small><input class="inp" name="info" maxlength="80" value="${esc(t.info)}" placeholder="Ej: 4 meses en la plataforma"></label>
       <label>Orden<input class="inp" name="ord" inputmode="numeric" value="${esc(t.ord || ord || 1)}"></label>
       <label>Visible<select class="inp" name="active"><option value="sí" ${String(t.active || 'sí').charAt(0) !== 'n' ? 'selected' : ''}>Sí, mostrar</option><option value="no" ${String(t.active).charAt(0) === 'n' ? 'selected' : ''}>No, ocultar</option></select></label>
-      <div class="full ad-photo"><span class="ad-tp sm" id="ts-pv">${t.poster ? `<img src="${esc(MRTES.v(t.poster))}" alt="">` : ''}</span><div><b>Video ${t.id ? '' : '<small class="muted">(obligatorio)</small>'}</b><br><small class="muted">Vertical, de celular · máximo 30 MB · la portada se crea sola</small><br><label class="btn w sm" style="margin-top:6px;cursor:pointer">🎥 ${t.id ? 'Cambiar video' : 'Elegir video'}<input type="file" id="ts-v" accept="video/*" hidden></label> <span class="muted" id="ts-vn" style="font-size:13px"></span></div></div></div>
+      <div class="full ad-photo"><span class="ad-tp sm" id="ts-pv">${t.poster ? `<img src="${esc(MRTES.v(t.poster))}" alt="">` : ''}</span><div><b>Video ${t.id ? '' : '<small class="muted">(obligatorio)</small>'}</b><br><small class="muted">Vertical, de celular · máximo 25 MB · la portada se crea sola</small><br><label class="btn w sm" style="margin-top:6px;cursor:pointer">🎥 ${t.id ? 'Cambiar video' : 'Elegir video'}<input type="file" id="ts-v" accept="video/*" hidden></label> <span class="muted" id="ts-vn" style="font-size:13px"></span></div></div></div>
       <button class="btn k block lg" id="ts-ok">💾 Guardar</button><p class="muted center hidden" id="ts-st" style="margin-top:8px"></p>`);
     let VF = null, POS = null;
-    $('#ts-v', m).onchange = (e) => { const f = e.target.files[0]; if (!f) return; if (f.size > 30 * 1024 * 1024) { e.target.value = ''; return toast('⚠️ El video pesa más de 30 MB. Envíatelo por WhatsApp para comprimirlo y vuelve a intentarlo.'); }
+    $('#ts-v', m).onchange = (e) => { const f = e.target.files[0]; if (!f) return; if (f.size > 25 * 1024 * 1024) { e.target.value = ''; return toast('⚠️ El video pesa más de 25 MB. Envíatelo por WhatsApp para comprimirlo y vuelve a intentarlo.'); }
       VF = f; $('#ts-vn', m).textContent = f.name + ' · ' + (f.size / 1048576).toFixed(1) + ' MB';
       const v = document.createElement('video'); v.muted = true; v.playsInline = true; v.preload = 'auto'; v.src = URL.createObjectURL(f);
       v.onloadeddata = () => { try { v.currentTime = Math.min(1.2, (v.duration || 2) / 3); } catch (er) { } };

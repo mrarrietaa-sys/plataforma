@@ -4355,3 +4355,6 @@ textarea.inp{font-size:15px;line-height:1.4}
 .ld-t .ld-tv>img,.ld-t .ld-tv>video,.ld-t .ld-tv>iframe{inset:0!important;width:100%!important;height:100%!important;border:0!important;border-radius:0!important;object-fit:cover!important;background:#fff!important}
 .ld-t figcaption{transition:opacity .25s}.ld-t.on figcaption{margin-top:-30px!important;opacity:0;pointer-events:none}
 .ld-t.on .ld-tv video{object-fit:cover!important}
+.ld-ld{display:none;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(11,42,91,.85);color:#fff;font-size:12.5px;font-weight:600;padding:7px 12px;border-radius:20px;white-space:nowrap;z-index:3}
+.ld-tv.loading .ld-ld{display:block}
+.ld-ld.err{display:block;white-space:normal;text-align:center;width:80%}
