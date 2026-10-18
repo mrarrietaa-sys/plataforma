@@ -19,7 +19,7 @@ if (!window.M1) window.M1 = {
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const $ = (s, r) => (r || document).querySelector(s), $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
 
-  const pp = (k, n, pr) => ({ name: ((P[k] && P[k].name) || n).replace(/^[^A-Za-zÁÉÍÓÚÑ]+/, ''), price: (P[k] && P[k].price) || pr, per: (P[k] && P[k].per) || 'COP/mes' });
+  const pp = (k, n, pr) => ({ name: ((P[k] && P[k].name) || n).replace(/^[^A-Za-zÁÉÍÓÚÑ]+/, ''), price: (P[k] && P[k].price) || pr, per: 'COP/mes' });
   const PLANS = [
     { id: 'free', name: 'ACCESO GRATUITO', price: '$0', per: 'COP · sin costo', tag: 'Pruébalo gratis · 3 días', icon: '🎁',
       perks: ['Descubre tu nivel en 10 minutos', 'Tu ruta personalizada', 'Habla y la plataforma te corrige'], note: 'No incluye clases individuales.' },
@@ -55,10 +55,10 @@ if (!window.M1) window.M1 = {
     ${DIRECT ? `<section class="card in-direct"><span class="in-plan-ic" aria-hidden="true">${SP.icon}</span><div class="grow"><span class="lbl">Tu plan</span><h1>${esc(SP.name)}</h1><p><b>${esc(SP.price)}</b> ${esc(SP.per || '')} · ${esc(SP.tag || '')}</p></div><button type="button" class="btn w sm" id="in-chg">Cambiar plan</button></section>` : ''}
     <section class="in-hero"${DIRECT ? ' hidden' : ''}>
       <div class="in-hero-txt">
-        <span class="lbl">Inscripciones abiertas</span>
+        
         <h1>Aprende inglés <span class="in-hl">HABLANDO</span>, a tu ritmo y con tu propia ruta.</h1>
         <p>Tu nivel en 10 minutos, tu ruta del A1 al B2+ y una plataforma que <b>te escucha y te corrige</b>. Súmale clases 1 a 1 con profes reales. <b>100% virtual.</b></p>
-        <p class="ld-count-st"><b data-stc>+300</b> estudiantes ya hablan inglés con nosotros</p><ul class="in-hero-pts"><li>✅ Metodología RealTalk®</li><li>✅ Tu progreso siempre guardado</li></ul>
+        
       </div>
       <img class="in-hero-img" src="mra-welcome.webp" alt="Mr. Arrieta te da la bienvenida" width="300" height="300">
     </section>
