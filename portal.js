@@ -725,15 +725,32 @@
       const res = await MRAC.call('stuMsg', { code: MRAC.code(), text }); if (res.ok) { m.remove(); M.toast('✅ Mensaje enviado a tu profe'); } else { $('#tm-ok', m).disabled = false; M.toast(res.err === 'noteacher' ? 'Aún no tienes un profe asignado.' : 'No se pudo enviar. Intenta de nuevo.'); } };
   }
   function addDay(iso, n) { const d = new Date(String(iso) + 'T12:00:00'); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); }
+  // 🔔 lista de espera: le avisamos cuando se abra un espacio (él mismo reserva desde la plataforma)
+  function waitAsk(parent) {
+    const mm = M.modal(`<h3>🔔 Te avisamos cuando haya espacio</h3><p>¿En qué momento del día te sirve? Te llegará un correo y un aviso en tu perfil apenas se abra un espacio.</p>
+      <div class="vb-bands">${[['', '🕑 Cualquier horario'], ['manana', '🌅 Mañana (7 a. m. – 12 m.)'], ['tarde', '☀️ Tarde (12 m. – 6 p. m.)'], ['noche', '🌙 Noche (6 p. m. – 9 p. m.)']].map(([k, l], i) => `<button class="vb-band${i ? '' : ' on'}" data-band="${k}">${l}</button>`).join('')}</div>
+      <button class="btn k block lg" id="wt-go" style="margin-top:12px">Avísame</button>`, { x: true });
+    let band = ''; $$('[data-band]', mm).forEach(x => x.onclick = () => { band = x.dataset.band; $$('[data-band]', mm).forEach(y => y.classList.toggle('on', y === x)); });
+    $('#wt-go', mm).onclick = async () => { const bt = $('#wt-go', mm); bt.disabled = true; bt.textContent = 'Guardando…';
+      const r = await MRAC.call('waitJoin', { code: MRAC.code(), band }).catch(() => null);
+      if (r && r.ok) { mm.querySelector('.card').innerHTML = `<div class="center"><div class="to-ic">${MRI('bell')}</div><h3>¡Listo!</h3><p>Apenas se abra un espacio te avisamos por correo y en tu perfil. Entra y resérvalo antes de que lo tome otra persona.</p><button class="btn k block lg" id="wt-ok">Entendido</button></div>`; $('#wt-ok', mm).onclick = () => { mm.remove(); if (parent) parent.remove(); }; }
+      else { bt.disabled = false; bt.textContent = 'Avísame'; M.toast('No se pudo guardar. Inténtalo de nuevo.'); } };
+  }
   async function vipBooking() {
     const m = M.modal(`<div class="vb"><h3>📅 Reserva tu clase individual</h3><div id="vb-b" class="center">⏳ Buscando espacios disponibles…</div></div>`, { x: true });
     const r = await MRAC.call('vipOptions', { code: MRAC.code() }); const b = $('#vb-b', m); if (!b) return;
     if (!r.ok) { b.innerHTML = `<p>${r.err === 'not_premium' ? 'Las clases individuales son parte de los planes Premium.' : 'No pudimos cargar los espacios. Revisa tu conexión.'}</p>`; return; }
-    if (!r.teachers.length) { b.innerHTML = `<p class="muted">Por ahora no hay espacios disponibles en los próximos días. Los profes publican nuevos horarios cada semana: vuelve pronto o escríbenos.</p><a class="btn w block" target="_blank" rel="noopener" href="${WA('¡Hola! Soy ' + P.get().name + ' (Premium) y no encuentro espacios para mi clase individual 🙏')}">💬 Escribir a la escuela</a>`; return; }
-    let T = null, D = null, S = null, TP = null, OT = '';
+    if (!r.teachers.length) { b.innerHTML = `<p class="muted">Por ahora no hay espacios libres en los próximos días. Los profes publican nuevos horarios cada semana.</p><button class="btn k block" id="vb-wait0">🔔 Avísame cuando haya espacio</button>`; $('#vb-wait0', b).onclick = () => waitAsk(m); return; }
+    let T = null, D = null, S = null, TP = null, OT = '', ALL = false;
     const MN = (P.assigned() || {}).n || +(P.get() || {}).module || 1; const tops = TOPICS[MN] || TOPICS[1];
     const step = () => {
-      if (!T) { b.innerHTML = `<p class="vb-st">1️⃣ Elige tu profesor</p><div class="vb-teachers">${r.teachers.map(t => `<button class="vb-t" data-t="${esc(t.id)}">${(t.photo || (window.MRPROFPIC && MRPROFPIC(t.name))) ? `<span class="vb-av has"><img src="${esc(t.photo || MRPROFPIC(t.name))}" alt=""></span>` : `<span class="vb-av">${esc((t.name || '?').split(' ').map(x => x[0]).slice(0, 2).join(''))}</span>`}<div><b>${esc(t.name)}</b><small>${esc(t.bio || '')}</small><em>${t.slots.length} espacio${t.slots.length === 1 ? '' : 's'} disponible${t.slots.length === 1 ? '' : 's'}</em></div></button>`).join('')}</div><p class="muted vb-cr">Te quedan <b>${r.credits.vipLeft}</b> ${+r.credits.vipLeft === 1 ? 'clase individual' : 'clases individuales'} en tu plan. Puedes cancelar gratis hasta <b>12 horas antes</b> de la clase.</p>`;
+      if (!T && ALL) { // 📅 todos los horarios de todos los profes, por día
+        const sl = []; r.teachers.forEach(t => t.slots.forEach(x => sl.push(Object.assign({ t }, x)))); sl.sort((a, c) => (a.date + a.time).localeCompare(c.date + c.time));
+        const days = [...new Set(sl.map(x => x.date))];
+        b.innerHTML = `<button class="btn w sm" id="vb-allb">← Ver por profe</button><p class="vb-st">📅 Todos los horarios disponibles <small>(hora Colombia)</small></p><div class="vb-all">${days.map(d => `<div class="vb-day"><b>${fmtD(d, { weekday: 'long', day: 'numeric', month: 'short' })}</b><div class="vb-times">${sl.filter(x => x.date === d).map(x => `<button class="vb-h vb-ht" data-sid="${esc(x.id)}">${fmtT(x.time)}<small>${esc(String(x.t.name).split(' ')[0])}</small></button>`).join('')}</div></div>`).join('')}</div><button class="btn w block vb-none" id="vb-wait">😕 Ningún horario me sirve</button>`;
+        $('#vb-allb', b).onclick = () => { ALL = false; step(); }; $('#vb-wait', b).onclick = () => waitAsk(m);
+        $$('[data-sid]', b).forEach(x => x.onclick = () => { const it = sl.find(y => y.id === x.dataset.sid); T = it.t; D = it.date; S = T.slots.find(y => y.id === it.id); ALL = false; sfx('tap'); step(); }); return; }
+      if (!T) { b.innerHTML = `<button class="btn k block vb-allbtn" id="vb-all">📅 Ver todos los horarios juntos</button><p class="vb-st">1️⃣ Elige tu profesor</p><div class="vb-teachers">${r.teachers.map(t => `<button class="vb-t" data-t="${esc(t.id)}">${(t.photo || (window.MRPROFPIC && MRPROFPIC(t.name))) ? `<span class="vb-av has"><img src="${esc(t.photo || MRPROFPIC(t.name))}" alt=""></span>` : `<span class="vb-av">${esc((t.name || '?').split(' ').map(x => x[0]).slice(0, 2).join(''))}</span>`}<div><b>${esc(t.name)}</b><small>${esc(t.bio || '')}</small><em>${t.slots.length} espacio${t.slots.length === 1 ? '' : 's'} disponible${t.slots.length === 1 ? '' : 's'}</em></div></button>`).join('')}</div><p class="muted vb-cr">Te quedan <b>${r.credits.vipLeft}</b> ${+r.credits.vipLeft === 1 ? 'clase individual' : 'clases individuales'} en tu plan. Puedes cancelar gratis hasta <b>12 horas antes</b> de la clase.</p><button class="btn w block vb-none" id="vb-wait">😕 Ningún horario me sirve</button>`; $('#vb-all', b).onclick = () => { ALL = true; step(); }; $('#vb-wait', b).onclick = () => waitAsk(m);
         $$('.vb-t', b).forEach(x => x.onclick = () => { T = r.teachers.find(t => t.id === x.dataset.t); sfx('tap'); step(); }); return; }
       const dates = [...new Set(T.slots.map(s => s.date))];
       if (!D) D = dates[0];
