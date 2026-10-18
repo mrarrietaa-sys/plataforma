@@ -4156,3 +4156,6 @@ textarea.inp{font-size:15px;line-height:1.4}
 /* v179: el recuadro rojo de HABLANDO ya no tapa la "g" de inglés */
 .ld-hero h1 em{margin-top:16px!important;position:relative;z-index:0}
 .in-hl{display:inline-block;margin-top:10px;position:relative;z-index:0}
+/* v182 */
+@media(max-width:980px){.ld-hero h1 em{margin-top:2px!important}.db-hero-mra.db-plane{height:94px!important;top:20px!important}}
+.itl-say{top:-62px!important}

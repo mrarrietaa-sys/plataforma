@@ -22,13 +22,13 @@ if (!window.M1) window.M1 = {
   const pp = (k, n, pr) => ({ name: ((P[k] && P[k].name) || n).replace(/^[^A-Za-zÁÉÍÓÚÑ]+/, ''), price: (P[k] && P[k].price) || pr, per: (P[k] && P[k].per) || 'COP/mes' });
   const PLANS = [
     { id: 'free', name: 'ACCESO GRATUITO', price: '$0', per: 'COP · sin costo', tag: 'Pruébalo gratis · 3 días', icon: '🎁',
-      perks: ['Descubre tu nivel real con la prueba de clasificación', 'Recibe tu ruta personalizada, armada solo para ti', 'Prueba los 2 primeros temas: habla y la plataforma te corrige'], note: 'No incluye clases individuales.' },
+      perks: ['Descubre tu nivel en 10 minutos', 'Tu ruta personalizada', 'Habla y la plataforma te corrige'], note: 'No incluye clases individuales.' },
     Object.assign({ id: 'membership', tag: 'Aprende a tu ritmo', icon: '🖥️',
-      perks: ['Habla desde el primer día: la plataforma escucha tu pronunciación y te corrige al instante', 'Ruta completa del A1 al B2+ a tu ritmo, 24/7, desde el celular o el computador', 'Audios con voces nativas, juegos y música para aprender sin aburrirte', 'Certificado al terminar cada módulo'], note: 'No incluye clases individuales.' }, pp('membership', '🖥️ PLATAFORMA', '$59.900')),
-    Object.assign({ id: 'premium', tag: 'Plataforma + 4 clases con profe', icon: '🎓',
-      perks: ['Todo lo de Plataforma', '4 clases 1 a 1 de 50 minutos con profes bilingües: pierde el miedo a hablar', 'Tú eliges el profe, el día, la hora y el tema que quieres practicar', 'Tu profe conoce tu progreso y se enfoca en lo que necesitas', 'Clases no acumulables: úsalas en tu periodo mensual'] }, pp('premium', '🎓 PREMIUM · 4 CLASES', '$169.900')),
-    Object.assign({ id: 'premium8', tag: 'Plataforma + 8 clases con profe', icon: '🏅', best: true,
-      perks: ['Todo lo de Plataforma', '8 clases 1 a 1 de 50 minutos: 2 por semana, el ritmo ideal para ganar fluidez', 'Habla inglés con un profe cada semana y gana seguridad real', 'Tú eliges el profe, el día, la hora y el tema que quieres practicar', 'Clases no acumulables: úsalas en tu periodo mensual'] }, pp('premium8', '🏅 PREMIUM · 8 CLASES', '$289.900')),
+      perks: ['Habla desde el día 1: te escucha y te corrige', 'Del A1 al B2+, a tu ritmo, 24/7', 'Certificado por cada módulo'], note: 'No incluye clases individuales.' }, pp('membership', '🖥️ PLATAFORMA', '$59.900')),
+    Object.assign({ id: 'premium', tag: '+ 4 clases con profe', icon: '🎓',
+      perks: ['Todo lo de Plataforma', '4 clases 1 a 1 con profe al mes', 'Tú eliges profe, día y hora', 'Clases no acumulables: úsalas en tu periodo mensual'] }, pp('premium', '🎓 PREMIUM · 4 CLASES', '$169.900')),
+    Object.assign({ id: 'premium8', tag: '+ 8 clases con profe', icon: '🏅', best: true,
+      perks: ['Todo lo de Plataforma', '8 clases 1 a 1: 2 por semana', 'Gana fluidez real, más rápido', 'Clases no acumulables: úsalas en tu periodo mensual'] }, pp('premium8', '🏅 PREMIUM · 8 CLASES', '$289.900')),
   ];
   const DAYS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
   const SCHED = [['Mañana', '🌅', '7:00 a. m. – 12:00 m.'], ['Tarde', '☀️', '12:00 m. – 6:00 p. m.'], ['Noche', '🌙', '6:00 p. m. – 9:00 p. m.']];
