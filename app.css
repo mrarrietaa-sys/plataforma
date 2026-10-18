@@ -4362,3 +4362,5 @@ textarea.inp{font-size:15px;line-height:1.4}
 .tf-who{display:flex;gap:6px;background:#EEF3FB;border-radius:12px;padding:4px;margin-bottom:2px}
 .tf-who button{flex:1;border:0;background:none;border-radius:9px;padding:8px 6px;font:700 13.5px Poppins,sans-serif;color:#0B2A5B;cursor:pointer}
 .tf-who button.on{background:#fff;box-shadow:0 2px 8px rgba(11,42,91,.12);color:#E3242B}
+.pv h2{font-size:22px;margin:0 0 2px}.pv h3{font-size:16px;margin:18px 0 4px;color:#0B2A5B}.pv p,.pv li{font-size:14.5px;line-height:1.6}.pv ul{padding-left:20px;margin:4px 0}
+.tf-ok a{color:#0B2A5B;font-weight:700;text-decoration:underline}

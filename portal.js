@@ -143,7 +143,7 @@
     const links = $('.pt-links'); if (links) links.remove();
     const WAN = (C.WHATSAPP || '573017810841');
     wrap.insertAdjacentHTML('afterend', `<footer class="ld-foot"><div class="ld-foot-in"><div><h4>mrarrieta.com</h4><p>Aprende inglés HABLANDO con la metodología RealTalk®. Clases 100% online.</p></div>
-      <div><h4>Escuela</h4><a href="#ld-planes">Planes</a><a href="recomienda.html">Recomienda y gana</a><a href="politica.html">Política de reservas</a></div>
+      <div><h4>Escuela</h4><a href="#ld-planes">Planes</a><a href="recomienda.html">Recomienda y gana</a><a href="politica.html">Política de reservas</a><a href="privacidad.html">Política de privacidad</a></div>
       <div><h4>Equipo</h4><a href="reclutamiento.html">Trabaja con nosotros</a><a href="profesores.html">Soy profesor</a><a href="administracion.html">Administración</a></div>
       <div><h4>Contacto</h4><a target="_blank" rel="noopener" href="https://wa.me/${WAN}">WhatsApp ${esc(WAN.replace(/^57/, '').replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3'))}</a><span>Lun–vie 7 a. m.–9 p. m. · Sáb 7 a. m.–5 p. m.</span><span>Pagos: tarjeta (Mercado Pago), Nequi y Llave (Breve-B)</span></div></div>
       <p class="ld-copy-r">© ${new Date().getFullYear()} mrarrieta.com · Todos los derechos reservados</p></footer>
@@ -232,12 +232,12 @@
     const m = M.modal(`<div class="center"><div class="to-ic">${MRI('gift')}</div><h3>Prueba gratis 3 días</h3><p class="muted">Crea tu acceso en segundos. Sin tarjeta, sin compromiso.</p></div>
       <div class="tf"><div class="tf-who" role="tablist"><button type="button" class="on" data-who="me">Para mí</button><button type="button" data-who="kid">Para mi hijo(a)</button></div>
       <input class="inp" id="tf-n" placeholder="Nombre y apellido" autocomplete="name"><input class="inp tf-k hidden" id="tf-g" placeholder="Nombre del papá o la mamá" autocomplete="name"><input class="inp" id="tf-w" type="tel" placeholder="WhatsApp" autocomplete="tel"><input class="inp" id="tf-e" type="email" placeholder="Correo" autocomplete="email"><input class="inp tf-k hidden" id="tf-e2" type="email" placeholder="Correo del otro padre o madre (opcional)">
-      <label class="tf-ok"><input type="checkbox" id="tf-c"> <span id="tf-ct">Acepto recibir mi código e información de mrarrieta.com por correo y WhatsApp.</span></label>
+      <label class="tf-ok"><input type="checkbox" id="tf-c"> <span id="tf-ct">Autorizo a mrarrieta.com a contactarme por correo y WhatsApp y a tratar mis datos según su <a href="privacidad.html" target="_blank" rel="noopener">política de privacidad</a>.</span></label>
       <button class="btn r block lg" id="tf-go">Crear mi acceso gratis →</button><p class="muted center" id="tf-msg" style="font-size:13.5px;margin:0"></p></div>`, { x: true });
     const msg = (t) => { $('#tf-msg', m).textContent = t; }; let kid = false;
     m.querySelectorAll('[data-who]').forEach(b => b.onclick = () => { kid = b.dataset.who === 'kid'; m.querySelectorAll('[data-who]').forEach(x => x.classList.toggle('on', x === b)); m.querySelectorAll('.tf-k').forEach(x => x.classList.toggle('hidden', !kid)); msg('');
       $('#tf-n', m).placeholder = kid ? 'Nombre y apellido del niño(a)' : 'Nombre y apellido'; $('#tf-w', m).placeholder = kid ? 'WhatsApp del papá o la mamá' : 'WhatsApp'; $('#tf-e', m).placeholder = kid ? 'Correo del papá o la mamá' : 'Correo';
-      $('#tf-ct', m).textContent = kid ? 'Soy el papá, la mamá o el acudiente y acepto recibir el código e información de mrarrieta.com por correo y WhatsApp.' : 'Acepto recibir mi código e información de mrarrieta.com por correo y WhatsApp.'; });
+      const POL = '<a href="privacidad.html" target="_blank" rel="noopener">política de privacidad</a>'; $('#tf-ct', m).innerHTML = (kid ? 'Soy el papá, la mamá o el acudiente del niño(a). Autorizo a mrarrieta.com a contactarme por correo y WhatsApp y a tratar sus datos y los míos según su ' : 'Autorizo a mrarrieta.com a contactarme por correo y WhatsApp y a tratar mis datos según su ') + POL + '.'; });
     $('#tf-go', m).onclick = async () => {
       const name = $('#tf-n', m).value.trim(), whatsapp = $('#tf-w', m).value.trim(), email = $('#tf-e', m).value.trim(), guardian = $('#tf-g', m).value.trim(), email2 = $('#tf-e2', m).value.trim();
       if (name.split(/\s+/).length < 2) return msg(kid ? 'Escribe el nombre y apellido del niño(a).' : 'Escribe tu nombre y apellido.');
