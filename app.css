@@ -4350,3 +4350,8 @@ textarea.inp{font-size:15px;line-height:1.4}
 .ld-tes{display:flex!important;justify-content:safe center;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 4px 14px!important;scrollbar-width:thin}
 .ld-tes>.ld-t{flex:0 0 200px;scroll-snap-align:start}
 @media (max-width:560px){.ld-tes>.ld-t{flex:0 0 64%!important}}
+/* v217 — sin marco extra: los videos ya traen el suyo */
+.ld-t.fr .ld-tv{background:#fff!important}
+.ld-t .ld-tv>img,.ld-t .ld-tv>video,.ld-t .ld-tv>iframe{inset:0!important;width:100%!important;height:100%!important;border:0!important;border-radius:0!important;object-fit:cover!important;background:#fff!important}
+.ld-t figcaption{transition:opacity .25s}.ld-t.on figcaption{margin-top:-30px!important;opacity:0;pointer-events:none}
+.ld-t.on .ld-tv video{object-fit:cover!important}

@@ -206,7 +206,7 @@
   const nrm = (t) => String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/^(mr|mrs|ms|teacher)\.?\s+/, '').trim();
   const starsHTML = (n) => '<span class="st5">' + [1, 2, 3, 4, 5].map(k => `<i class="${k <= Math.round(n) ? 'on' : ''}">★</i>`).join('') + '</span>';
   function tesGrid() { const PL = '<button class="ld-play" aria-label="Ver testimonio"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg></button>';
-    return (window.MRTESTIMONIOS || []).map((t, i) => `<figure class="ld-t${MRTES.drive(t.video) ? ' fr' : ''}" data-tes="${i}"><div class="ld-tv">${MRTES.poster(t) ? `<img src="${esc(MRTES.poster(t))}" alt="${esc(t.name)}" loading="lazy">` : ''}${PL}</div><figcaption><span class="ld-st">★★★★★</span><b>${esc(t.name)}</b>${t.info ? `<small>${esc(t.info)}</small>` : ''}</figcaption></figure>`).join(''); }
+    return (window.MRTESTIMONIOS || []).map((t, i) => `<figure class="ld-t" data-tes="${i}"><div class="ld-tv">${MRTES.poster(t) ? `<img src="${esc(MRTES.poster(t))}" alt="${esc(t.name)}" loading="lazy">` : ''}${PL}</div><figcaption><span class="ld-st">★★★★★</span><b>${esc(t.name)}</b>${t.info ? `<small>${esc(t.info)}</small>` : ''}</figcaption></figure>`).join(''); }
   function tesWire() {
     const box = $('#ld-testimonios'); if (!box) return; const T = window.MRTESTIMONIOS || [];
     box.hidden = !T.length; const g = $('.ld-tes', box); if (g) g.innerHTML = tesGrid();

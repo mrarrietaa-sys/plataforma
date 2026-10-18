@@ -11,7 +11,9 @@ window.MRTES = {
   v: (u) => (u && !/^(https?:|data:|drive:)/.test(u) ? String(u).replace(/^tes[23]?-(\w+)\.(jpg|mp4).*$/, 'tes3-$1.$2') : u), // evita que el navegador muestre la versión vieja
   drive: (v) => { const m = /^drive:(.+)$/.exec(String(v || '')); return m ? m[1] : ''; },
   poster: (t) => MRTES.v(t.poster) || (MRTES.drive(t.video) ? 'https://drive.google.com/thumbnail?id=' + MRTES.drive(t.video) + '&sz=w600' : ''),
-  player: (t) => { const d = MRTES.drive(t.video); return d ? `<iframe src="https://drive.google.com/file/d/${d}/preview" allow="autoplay; fullscreen" allowfullscreen></iframe>` : `<video src="${MRTES.v(String(t.video)).replace(/"/g, '')}" poster="${String(MRTES.poster(t) || '').replace(/"/g, '')}" controls autoplay playsinline></video>`; },
+  player: (t) => { const d = MRTES.drive(t.video), ps = String(MRTES.poster(t) || '').replace(/"/g, ''), fb = d ? ` onerror="this.outerHTML='<iframe src=&quot;https://drive.google.com/file/d/${d}/preview&quot; allow=&quot;autoplay; fullscreen&quot; allowfullscreen></iframe>'"` : '';
+    const src = d ? 'https://drive.google.com/uc?export=download&id=' + d : MRTES.v(String(t.video)).replace(/"/g, '');
+    return `<video src="${src}" poster="${ps}" controls autoplay playsinline preload="auto"${fb}></video>`; }, // el video se ve igual que su portada (sin el reproductor de Drive)
 };
 (function () {
   const apply = (list) => { if (Array.isArray(list)) window.MRTESTIMONIOS = list; };
