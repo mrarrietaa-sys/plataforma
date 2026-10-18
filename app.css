@@ -4217,3 +4217,7 @@ textarea.inp{font-size:15px;line-height:1.4}
 .in-direct h1{font-size:19px!important;white-space:nowrap}.in-direct p{font-size:13.5px!important}.in-direct .grow{min-width:0;flex:1}
 .in-direct #in-chg{flex-basis:100%;padding:8px 14px!important;font-size:14px!important}}
 @media(max-width:600px){.stage .actionbar .btn:only-child{flex:0 0 auto!important;width:auto!important;max-width:80%;margin:0 auto!important;padding:12px 30px!important}}
+/* v201: celular — "Prueba gratis 3 días" debajo de la pregunta; "Cambiar plan" más angosto */
+@media(max-width:600px){.pt-or span{display:block;text-align:center;line-height:1.5}.pt-or span a{display:block;white-space:nowrap}
+.in-direct #in-chg{flex-basis:auto!important;width:auto!important;margin:2px auto 0!important;padding:7px 22px!important}}
+@media(max-width:600px){.in-direct #in-chg{flex:0 0 100%!important;max-width:200px;margin:4px auto 0!important;display:block}.in-direct .grow{flex:1 1 calc(100% - 50px)!important}}
