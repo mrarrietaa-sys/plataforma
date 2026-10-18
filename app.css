@@ -4322,3 +4322,12 @@ textarea.inp{font-size:15px;line-height:1.4}
 .ad-tp img{width:100%;height:100%;object-fit:cover;display:block}
 .ad-tp span{position:absolute;top:6px;left:6px;background:#fff;color:#0B2A5B;font:800 12px/1 Poppins,sans-serif;border-radius:20px;padding:4px 8px}
 .ad-tp.sm{width:64px;flex:0 0 64px}
+/* testimonio en grande */
+.tes-lb{position:fixed;inset:0;z-index:9999;background:rgba(6,18,40,.82);display:grid;place-items:center;padding:16px;animation:tesIn .2s ease}
+@keyframes tesIn{from{opacity:0}to{opacity:1}}
+.tes-lbin{position:relative;width:min(92vw,calc(78vh * 9 / 16));text-align:center}
+.tes-lbv{position:relative;aspect-ratio:9/16;border-radius:18px;overflow:hidden;background:#000;box-shadow:0 20px 50px rgba(0,0,0,.45)}
+.tes-lbv video,.tes-lbv iframe{position:absolute;inset:0;width:100%;height:100%;border:0;object-fit:contain;background:#000}
+.tes-lbin p{color:#fff;margin:10px 0 0;font-size:14px}.tes-lbin p b{font-family:var(--fh,Poppins),sans-serif}
+.tes-x{position:absolute;top:-14px;right:-14px;z-index:2;width:38px;height:38px;border-radius:50%;border:0;background:#fff;color:#0B2A5B;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.3)}
+@media(max-width:560px){.tes-x{top:-10px;right:-6px}}

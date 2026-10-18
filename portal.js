@@ -209,9 +209,10 @@
   function tesWire() {
     const box = $('#ld-testimonios'); if (!box) return; const T = window.MRTESTIMONIOS || [];
     box.hidden = !T.length; const g = $('.ld-tes', box); if (g) g.innerHTML = tesGrid();
-    box.onclick = (e) => { const f = e.target.closest('.ld-t'); if (!f || f.classList.contains('on')) return; const t = T[+f.dataset.tes]; if (!t) return;
-      box.querySelectorAll('.ld-t.on').forEach(o => { o.classList.remove('on'); o.querySelector('.ld-tv').innerHTML = (MRTES.poster(T[+o.dataset.tes]) ? `<img src="${esc(MRTES.poster(T[+o.dataset.tes]))}" alt="">` : '') + '<button class="ld-play"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg></button>'; });
-      f.classList.add('on'); f.querySelector('.ld-tv').innerHTML = MRTES.player(t); };
+    box.onclick = (e) => { const f = e.target.closest('.ld-t'); if (!f) return; const t = T[+f.dataset.tes]; if (!t) return; // ▶️ se abre en grande (cómodo en PC y celular)
+      const o = document.createElement('div'); o.className = 'tes-lb'; o.innerHTML = `<div class="tes-lbin"><button class="tes-x" aria-label="Cerrar">✕</button><div class="tes-lbv">${MRTES.player(t)}</div><p><b>${esc(t.name)}</b>${t.info ? ' · ' + esc(t.info) : ''}</p></div>`;
+      const close = () => { o.remove(); document.removeEventListener('keydown', esc_); }; const esc_ = (k) => { if (k.key === 'Escape') close(); };
+      o.onclick = (k) => { if (k.target === o || k.target.closest('.tes-x')) close(); }; document.addEventListener('keydown', esc_); document.body.appendChild(o); };
   }
   function pfGrid() { return MRPROFES.map((p, i) => `<div class="card ld-pc"><img src="${esc(p.img)}" alt="${esc(p.name)}" loading="lazy"><b>${p.title === 'Director' ? 'Director' : esc(p.title)} ${esc(p.name)}</b><div class="ld-stars" data-pf="${i}"></div><ul>${p.info.map(x => `<li>${MRI('check')}<span>${esc(x)}</span></li>`).join('')}</ul><button class="btn w sm" data-pfr="${i}">Ver opiniones</button></div>`).join(''); }
   async function profReviews() {
