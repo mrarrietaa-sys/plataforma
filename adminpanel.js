@@ -183,10 +183,15 @@
     };
   }
   // sin emojis: WhatsApp Web los muestra como signos negros (�) cuando llegan por enlace
-  const accessMsg = (s) => `¡Hola ${s.first}! Bienvenido(a) a la plataforma de mrarrieta.com.\n\n*Tu código de acceso:* ${s.code}\n*Entra aquí:* ${BASE}\n\nEscribe tu código en la plataforma y empieza a aprender.${/^premium/.test(s.plan) ? '\n\n*Importante:* tus clases individuales no son acumulables. Resérvalas durante tu periodo mensual; las que no uses antes del vencimiento se vencen y no se recuperan.\n\n*POLÍTICA DE RESERVAS Y CANCELACIONES*\nReserva mínimo 4 horas antes. Cancelación sin penalización mínimo 2 horas antes. Cancelación tardía o inasistencia: la clase se descuenta de tu plan y no será repuesta.' : ''}`;
+  const gFirst = (s) => String(s.guardian || '').trim().split(/\s+/)[0]; // 👨‍👩‍👧 estudiante menor: el WhatsApp es del papá o la mamá
+  const POLICY = '\n\n*Importante:* las clases individuales no son acumulables. Resérvalas durante el periodo mensual; las que no se usen antes del vencimiento se vencen y no se recuperan.\n\n*POLÍTICA DE RESERVAS Y CANCELACIONES*\nLas clases se reservan desde el día siguiente y hasta 5 días antes, solo en la plataforma. Cancelación sin penalización mínimo 12 horas antes. Cancelación tardía o inasistencia: la clase se descuenta del plan y no será repuesta.';
+  const accessMsg = (s) => (s.guardian
+    ? `¡Hola ${gFirst(s)}! ${s.first} ya tiene su acceso a la plataforma de mrarrieta.com.\n\n*Código de acceso de ${s.first}:* ${s.code}\n*Entra aquí:* ${BASE}\n\n${s.first} escribe su código en la plataforma y empieza a aprender. Ustedes pueden revisar su avance desde ahí mismo.`
+    : `¡Hola ${s.first}! Bienvenido(a) a la plataforma de mrarrieta.com.\n\n*Tu código de acceso:* ${s.code}\n*Entra aquí:* ${BASE}\n\nEscribe tu código en la plataforma y empieza a aprender.`) + (/^premium/.test(s.plan) ? POLICY : '');
+  const hiMsg = (s) => s.guardian ? `Hola ${gFirst(s)}, te escribimos de mrarrieta.com sobre ${s.first}.` : 'Hola ' + s.first + '.';
   function shareCode(s) {
     const msg = accessMsg(s);
-    const m = modal(`<div class="center"><div style="font-size:44px">🔑</div><h2>Código de ${esc(s.first)}</h2><div class="ad-code">${esc(s.code)}</div><p class="muted">Envíaselo por WhatsApp o cópialo.</p>
+    const m = modal(`<div class="center"><div style="font-size:44px">🔑</div><h2>Código de ${esc(s.first)}</h2><div class="ad-code">${esc(s.code)}</div><p class="muted">${s.guardian ? 'Se envía al WhatsApp de ' + esc(s.guardian) + ' (papá/mamá).' : 'Envíaselo por WhatsApp o cópialo.'}</p>
       <textarea class="inp" rows="6" readonly>${esc(msg)}</textarea><div class="row" style="justify-content:center;margin-top:10px"><button class="btn w" id="sc-c">📋 Copiar mensaje</button>${s.whatsapp ? `<a class="btn ad-wa" target="_blank" rel="noopener" href="${waLink(s.whatsapp, msg)}">💬 Enviar por WhatsApp</a>` : ''}</div></div>`);
     $('#sc-c', m).onclick = () => copy(msg);
   }
@@ -198,7 +203,7 @@
       <div class="card ad-dhead"><div class="ad-av lg">${esc(((s.first || '?')[0] + (s.last || '')[0]).toUpperCase())}</div><div class="grow"><h1>${esc(s.first)} ${esc(s.last)}</h1>
         <p>${chip(PLAN[k].join(' '), 'p-' + k)} <button class="ad-codebtn" id="d-code" title="Copiar">${esc(s.code)} 📋</button></p>
         <p class="muted">${s.email ? '📧 ' + esc(s.email) : ''} ${s.whatsapp ? ' · 📱 ' + esc(s.whatsapp) : ''} ${s.birth ? ' · 🎂 ' + fD(s.birth, { day: 'numeric', month: 'long', year: 'numeric' }) : ''}</p></div>
-        <div class="ad-dact">${s.whatsapp ? `<a class="btn ad-wa sm" target="_blank" rel="noopener" href="${waLink(s.whatsapp, 'Hola ' + s.first + '.')}">💬 WhatsApp</a>` : ''}<button class="btn w sm" id="d-share">🔑 Enviar código</button><button class="btn w sm" id="d-rst">♻️ Reiniciar progreso</button><button class="btn w sm ad-del" id="d-del">🗑️ Borrar</button></div></div>
+        <div class="ad-dact">${s.whatsapp ? `<a class="btn ad-wa sm" target="_blank" rel="noopener" href="${waLink(s.whatsapp, hiMsg(s))}">💬 WhatsApp${s.guardian ? ' (papá/mamá)' : ''}</a>` : ''}<button class="btn w sm" id="d-share">🔑 Enviar código</button><button class="btn w sm" id="d-rst">♻️ Reiniciar progreso</button><button class="btn w sm ad-del" id="d-del">🗑️ Borrar</button></div></div>
       <div class="card ad-plan"><h3>💎 Plan</h3>
         <p>${st.eff === 'free' && !st.expired ? 'Acceso gratuito: prueba de clasificación + los 2 primeros temas.' : `${PLAN[s.plan] ? PLAN[s.plan].join(' ') : ''} · desde ${fD(s.planStart)} hasta <b>${fD(s.planEnd)}</b> ${st.expired ? chip('VENCIDO', 'p-expired') : st.daysLeft !== null ? chip(st.daysLeft + ' días restantes', st.daysLeft <= 5 ? 'p-expired' : 'gray') : ''}`}</p>
         <div class="ad-planbtns"><button class="btn w" data-plan="membership">🖥️ Plataforma</button><button class="btn k" data-plan="premium">🎓 Premium · 4</button><button class="btn k" data-plan="premium8">🏅 Premium · 8</button>${s.plan !== 'free' ? `<button class="btn w" data-plan="${esc(s.plan)}" data-renew="1">🔁 Renovar ${esc(PLAN[s.plan][1])}</button><button class="btn w" data-plan="free">🟢 Pasar a gratuito</button>` : ''}</div>
