@@ -184,10 +184,11 @@
   }
   // sin emojis: WhatsApp Web los muestra como signos negros (�) cuando llegan por enlace
   const gFirst = (s) => String(s.guardian || '').trim().split(/\s+/)[0]; // 👨‍👩‍👧 estudiante menor: el WhatsApp es del papá o la mamá
-  const POLICY = '\n\n*Importante:* las clases individuales no son acumulables. Resérvalas durante el periodo mensual; las que no se usen antes del vencimiento se vencen y no se recuperan.\n\n*POLÍTICA DE RESERVAS Y CANCELACIONES*\nLas clases se reservan desde el día siguiente y hasta 5 días antes, solo en la plataforma. Cancelación sin penalización mínimo 12 horas antes. Cancelación tardía o inasistencia: la clase se descuenta del plan y no será repuesta.';
+  const POLICY = '\n\n*Importante:* las clases individuales no son acumulables. Resérvalas durante el periodo mensual; las que no se usen antes del vencimiento se vencen y no se recuperan.\n\n*POLÍTICA DE RESERVAS Y CANCELACIONES*\nLas clases se reservan solo en la plataforma, desde el día siguiente y hasta con 5 días de anticipación. Cancelación sin penalización mínimo 12 horas antes. Cancelación tardía o inasistencia: la clase se descuenta del plan y no será repuesta.';
+  const isFree = (s) => !s.plan || s.plan === 'free';
   const accessMsg = (s) => (s.guardian
-    ? `¡Hola ${gFirst(s)}! ${s.first} ya tiene su acceso a la plataforma de mrarrieta.com.\n\n*Código de acceso de ${s.first}:* ${s.code}\n*Entra aquí:* ${BASE}\n\n${s.first} escribe su código en la plataforma y empieza a aprender. Ustedes pueden revisar su avance desde ahí mismo.`
-    : `¡Hola ${s.first}! Bienvenido(a) a la plataforma de mrarrieta.com.\n\n*Tu código de acceso:* ${s.code}\n*Entra aquí:* ${BASE}\n\nEscribe tu código en la plataforma y empieza a aprender.`) + (/^premium/.test(s.plan) ? POLICY : '');
+    ? `¡Hola ${gFirst(s)}! ${s.first} ya tiene su acceso a la plataforma de mrarrieta.com.\n\n*Código de acceso de ${s.first}:* ${s.code}\n*Entra aquí:* ${BASE}\n\n${s.first} escribe su código en la plataforma y empieza a aprender. Ustedes pueden revisar su avance desde ahí mismo.${isFree(s) ? `\n\n${s.first} tiene *3 días de prueba gratis* para aprender inglés HABLANDO. Si le gusta, pueden elegir un plan desde la plataforma.` : ''}`
+    : `¡Hola ${s.first}! Bienvenido(a) a la plataforma de mrarrieta.com.\n\n*Tu código de acceso:* ${s.code}\n*Entra aquí:* ${BASE}\n\nEscribe tu código en la plataforma y empieza a aprender.${isFree(s) ? '\n\nTienes *3 días de prueba gratis* para aprender inglés HABLANDO. Si te gusta, puedes elegir tu plan desde la plataforma.' : ''}`) + (/^premium/.test(s.plan) ? POLICY : '');
   const accessMsg2 = (s) => accessMsg(s).replace('¡Hola ' + gFirst(s) + '!', '¡Hola!'); // para el otro padre o madre
   const hiMsg2 = (s) => `Hola, te escribimos de mrarrieta.com sobre ${s.first}.`;
   const hiMsg = (s) => s.guardian ? `Hola ${gFirst(s)}, te escribimos de mrarrieta.com sobre ${s.first}.` : 'Hola ' + s.first + '.';

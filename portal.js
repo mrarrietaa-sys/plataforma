@@ -376,7 +376,7 @@
         <div class="db-me"><button class="pt-avwrap" id="me-av" title="Personaliza tu foto">${P.avHTML('pt-av')}<i class="pt-pen">✏️</i></button>
           <div class="db-me-tx"><span class="db-greet">${greet}!</span><h2>${esc(P.look().nick || p.first)} ${esc(p.last || '')}</h2><span class="db-chip ${plNow.eff}">${MRI(plIc)} ${plName}</span>${plNow.end && plNow.paid && !P.isExpired() ? `<small class="muted">Activo hasta el ${fmtD(plNow.end, { day: 'numeric', month: 'long' })}</small>` : ''}</div></div>
         ${curMod ? `<div class="db-ring" style="--p:${pct}"><div><b>${pct}%</b><small>de tu módulo</small></div></div><small class="muted db-modtx">${esc(a.name)} · ${esc(a.id)} · ${curMod.done} de ${trial ? 4 : a.classes} clases</small>` : ''}
-        <nav class="db-qa">${staff ? '' : `<button class="btn w" id="pt-plans">${MRI('crown')} Mi plan</button>`}${!staff && P.plan().premium ? `<button class="btn w" data-go="#pt-live">${MRI('calendar')} Mis clases</button>` : ''}${!staff && P.plan().paid ? `<button class="btn w" data-go="#pt-ref">${MRI('gift')} Invita a un amigo</button>` : ''}${!staff && P.plan().premium ? `<button class="btn w pt-polb">${MRI('file')} Política de reservas</button>` : ''}<button class="btn w" id="me-go2">${MRI('user')} Personalizar perfil</button>${staff ? '' : `<button class="btn w" id="pt-pass">${MRI('unlock')} Cambiar mi código</button>`}<button class="btn w" id="pt-tour">${MRI('compass')} Ver el tour</button></nav></aside>`;
+        <nav class="db-qa">${staff ? '' : `<button class="btn w" id="pt-plans">${MRI('crown')} Mi plan</button>`}${!staff && P.plan().premium ? `<button class="btn w" data-go="#pt-live">${MRI('calendar')} Mis clases</button>` : ''}${!staff && P.plan().premium ? `<button class="btn w pt-polb">${MRI('file')} Política de reservas</button>` : ''}<button class="btn w" id="me-go2">${MRI('user')} Personalizar perfil</button>${staff ? '' : `<button class="btn w" id="pt-pass">${MRI('unlock')} Cambiar mi código</button>`}<button class="btn w" id="pt-tour">${MRI('compass')} Ver el tour</button></nav></aside>`;
     app.innerHTML = `<div class="wrap db">${side}<div class="db-main">
 
       ${birthdayBanner()}
@@ -396,7 +396,7 @@
       ${certs()}`}
       </div>
       <p class="center fx-foot db-foot" style="margin-top:22px;font-size:13.5px;font-weight:600">mrarrieta.com · ¡Aprende inglés HABLANDO! · WhatsApp ${esc(C.WHATSAPP.replace(/^57/, ''))}</p></div>
-      <nav class="db-tabbar">${[['compass', 'Inicio', 'top'], P.plan().premium ? ['video', 'Clases', '#pt-live'] : ['award', 'Mi ruta', '.pt-routebar'], ['crown', 'Mi plan', 'plans'], P.plan().paid ? ['gift', 'Invita', '#pt-ref'] : ['file', 'Política', 'pol'], ['user', 'Perfil', 'me']].map(([i, t, g], k) => `<button class="${k ? '' : 'on'}" data-tab="${g}">${MRI(i)}<span>${t}</span></button>`).join('')}</nav>`;
+      <nav class="db-tabbar">${[['compass', 'Inicio', 'top'], P.plan().premium ? ['video', 'Clases', '#pt-live'] : ['award', 'Mi ruta', '.pt-routebar'], ['crown', 'Mi plan', 'plans'], ['file', 'Política', 'pol'], ['user', 'Perfil', 'me']].map(([i, t, g], k) => `<button class="${k ? '' : 'on'}" data-tab="${g}">${MRI(i)}<span>${t}</span></button>`).join('')}</nav>`;
     if ($('#pt')) $('#pt').onclick = () => route('placement');
     const plans = (e) => { if (e) e.preventDefault(); M.modal(`<div class="pt-plmodal">${planSection()}</div>`, { x: true }); };
     $$('.tb-up').forEach(x => x.onclick = plans); if ($('#pt-tour')) $('#pt-tour').onclick = () => { window.scrollTo(0, 0); portalTour(true); }; if ($('#pt-plans')) $('#pt-plans').onclick = plans;
@@ -663,11 +663,7 @@
     const link = location.href.replace(/[^/]*$/, '') + 'inscripcion.html?ref=' + encodeURIComponent(r.code);
     const prem = P.plan().premium; const n = r.count || 0;
     const msg = `¡Hola! Estoy aprendiendo inglés HABLANDO en mrarrieta.com y me encanta. Inscríbete con mi código *${r.code}* y obtienes ${r.pct}% de descuento en tu primer mes: ${link}`;
-    el.innerHTML = `<div class="sect-title"><h2>${MRI('gift')} Invita a un amigo</h2></div><div class="card lv-card pt-refc">
-      <p style="margin-top:0">Comparte tu código. Tu amigo(a) recibe <b>${r.pct}% de descuento</b> en su primer mes y tú ganas <b>${prem ? '1 clase individual' : '3 días más de Plataforma'}</b> cuando su pago quede confirmado.</p>
-      <div class="pt-refcode"><b>${esc(r.code)}</b><button class="btn w sm" id="rf-cp">${MRI('copy')} Copiar enlace</button><a class="btn sm wa-btn" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent((window.MRNE || String)(msg))}">💬 Compartir por WhatsApp</a></div>
-      <div class="pt-refgoal"><div class="bar"><i style="width:${Math.min(100, n / 5 * 100)}%"></i></div><small><b>${n}</b> referido${n === 1 ? '' : 's'} confirmado${n === 1 ? '' : 's'} · 🏆 3 → 1 mes gratis de Plataforma · 🏅 5 → certificado de Embajador</small></div>
-      ${n >= 5 ? `<button class="btn k" id="rf-cert">${MRI('award')} Ver mi certificado de Embajador</button>` : ''}</div>`;
+    el.innerHTML = `<div class="pt-refline"><span class="grow">${MRI('gift')} <b>Invita a un amigo:</b> recibe ${r.pct}% en su primer mes y tú ganas ${prem ? '1 clase individual' : '3 días más de Plataforma'}.${n ? ` <small>· ${n} confirmado${n === 1 ? '' : 's'}</small>` : ''}</span><button class="btn w sm" id="rf-cp">${MRI('copy')} Copiar enlace</button>${n >= 5 ? `<button class="btn k sm" id="rf-cert">${MRI('award')} Certificado</button>` : ''}</div>`;
     $('#rf-cp').onclick = () => { try { navigator.clipboard.writeText(link); M.toast('✅ Enlace copiado'); } catch (e) { prompt('Copia tu enlace:', link); } };
     if ($('#rf-cert')) $('#rf-cert').onclick = () => ambassador();
   }

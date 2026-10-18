@@ -4399,3 +4399,8 @@ textarea.inp{font-size:15px;line-height:1.4}
  .tp-page .btn.lg,.ad-page .btn.lg{font-size:14.5px!important;padding:10px 16px!important}
  .tp-page .card,.ad-page .card{padding:14px!important}
 }
+/* referidos en el perfil: una sola línea discreta */
+.pt-refline{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#fff;border:1px solid #e3e9f3;border-radius:14px;padding:10px 14px;margin:14px 0;font-size:13.5px;color:#3c4a63}
+.pt-refline b{color:#0B2A5B}.pt-refline .mri{width:16px;height:16px;vertical-align:-3px;color:#E3242B}
+.pt-refline .btn{flex:0 0 auto}
+@media(max-width:560px){.pt-refline{font-size:13px}.pt-refline .btn{width:100%}}
