@@ -4404,3 +4404,5 @@ textarea.inp{font-size:15px;line-height:1.4}
 .pt-refline b{color:#0B2A5B}.pt-refline .mri{width:16px;height:16px;vertical-align:-3px;color:#E3242B}
 .pt-refline .btn{flex:0 0 auto}
 @media(max-width:560px){.pt-refline{font-size:13px}.pt-refline .btn{width:100%}}
+/* saludo: ícono de línea de la marca en vez de emoji */
+.hg-ic{display:inline-block;width:22px;height:22px;vertical-align:-3px;color:#E3242B;margin-left:4px}
