@@ -27,7 +27,7 @@
   async function copy(t) { try { await navigator.clipboard.writeText(t); } catch (e) { const ta = document.createElement('textarea'); ta.value = t; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); } toast('📋 Copiado'); }
 
   async function api(action, data) {
-    const r = await MRAC.call(action, Object.assign({ key: key() }, data || {}));
+    const r = await MRAC.call(action, Object.assign({ key: key() }, data || {}), action === 'aTesSave' ? { timeout: 300000 } : undefined);
     if (!r.ok && r.err === 'auth') { try { sessionStorage.removeItem(KK); } catch (e) { } toast('Tu sesión expiró. Vuelve a entrar.'); login(); }
     if (!r.ok && r.err === 'network') toast('Sin conexión con la nube 😕');
     return r;
@@ -57,7 +57,7 @@
   }
 
   /* ======================= ESTRUCTURA ======================= */
-  const TABS = [['home', '📊', 'Resumen'], ['students', '🎓', 'Estudiantes'], ['enroll', '📝', 'Inscripciones'], ['buys', '💳', 'Pagos'], ['claims', '🚩', 'Reclamos'], ['reviews', '⭐', 'Opiniones'], ['leads', '📣', 'Interesados'], ['placement', '🧭', 'Placement'], ['recruit', '👩‍🏫', 'Reclutamiento'], ['teachers', '🧑‍🏫', 'Profesores'], ['classes', '📅', 'Clases'], ['requests', '🔁', 'Solicitudes'], ['chats', '💬', 'Chats'], ['settings', '⚙️', 'Ajustes']];
+  const TABS = [['home', '📊', 'Resumen'], ['students', '🎓', 'Estudiantes'], ['enroll', '📝', 'Inscripciones'], ['buys', '💳', 'Pagos'], ['claims', '🚩', 'Reclamos'], ['reviews', '⭐', 'Opiniones'], ['leads', '📣', 'Interesados'], ['placement', '🧭', 'Placement'], ['recruit', '👩‍🏫', 'Reclutamiento'], ['teachers', '🧑‍🏫', 'Profesores'], ['tes', '🎬', 'Testimonios'], ['classes', '📅', 'Clases'], ['requests', '🔁', 'Solicitudes'], ['chats', '💬', 'Chats'], ['settings', '⚙️', 'Ajustes']];
   let TAB = 'home', STATS = null;
   // "Atrás": dentro del panel vuelve al Resumen (nunca saca a otra página por error)
   document.addEventListener('click', (e) => { const b = e.target.closest && e.target.closest('.tb-back'); if (!b || !key()) return; if (document.querySelector('.modal, .wa-wrap')) return; e.preventDefault(); e.stopImmediatePropagation(); if (TAB !== 'home') go('home'); else window.scrollTo(0, 0); }, true);
@@ -342,6 +342,42 @@
     $('#py-sv').onclick = async () => { const b = $('#py-sv'); b.disabled = true; const rate = $('#py-rate').value.replace(/\D/g, ''), ns = $('#py-ns').value.replace(/\D/g, ''); if (!rate || !ns) { b.disabled = false; return toast('Escribe los dos valores'); }
       await api('aSave', { table: 'Config', row: { key: 'pay_rate', value: rate } }); await api('aSave', { table: 'Config', row: { key: 'pay_noshow', value: ns } }); b.disabled = false; toast('✅ Valores guardados'); loadPay(); };
   }
+  /* ======================= TESTIMONIOS ======================= */
+  async function tes() {
+    view().innerHTML = '<div class="ad-loading">⏳ Cargando testimonios…</div>';
+    const r = await api('aTesList'); if (TAB !== 'tes') return; if (!r.ok) return view().innerHTML = '<p class="ad-err">No se pudieron cargar los testimonios.</p>';
+    const L = r.tes || []; const pv = (t) => t.poster || (MRTES.drive(t.video) ? 'https://drive.google.com/thumbnail?id=' + MRTES.drive(t.video) + '&sz=w400' : '');
+    view().innerHTML = `<div class="ad-head"><h2>🎬 Testimonios <small class="muted">(${L.length})</small></h2><button class="btn k" id="ts-new">＋ Nuevo testimonio</button></div>
+      <p class="muted" style="margin:-4px 0 14px">Aparecen en la página de inicio, en el orden que indiques. Video vertical (de celular), máximo 30 MB.</p>
+      <div class="ad-tes">${L.map((t, i) => `<div class="ad-tc${String(t.active).charAt(0) === 'n' ? ' off' : ''}"><div class="ad-tp">${pv(t) ? `<img src="${esc(pv(t))}" alt="">` : ''}<span>${esc(t.ord)}</span></div><b>${esc(t.name)}</b><small>${esc(t.info || '')}</small>${String(t.active).charAt(0) === 'n' ? '<em>Oculto</em>' : ''}<div class="row"><button class="btn w sm" data-te="${i}">✏️ Editar</button><button class="btn w sm ad-del" data-td="${i}">🗑️</button></div></div>`).join('') || '<p class="muted">Aún no hay testimonios.</p>'}</div>`;
+    $('#ts-new').onclick = () => tesEdit(null, L.length + 1);
+    $$('[data-te]').forEach(b => b.onclick = () => tesEdit(L[+b.dataset.te]));
+    $$('[data-td]').forEach(b => b.onclick = () => { const t = L[+b.dataset.td]; const m = modal(`<div class="center"><h2>¿Borrar el testimonio de ${esc(t.name)}?</h2><p class="muted">Dejará de aparecer en la página de inicio.</p><div class="row" style="justify-content:center;margin-top:10px"><button class="btn w" id="dl-no">Cancelar</button><button class="btn k ad-del" id="dl-ok">🗑️ Sí, borrar</button></div></div>`);
+      $('#dl-no', m).onclick = () => m.remove(); $('#dl-ok', m).onclick = async () => { $('#dl-ok', m).disabled = true; const x = await api('aTesDel', { id: t.id }); m.remove(); if (x.ok) { try { localStorage.removeItem('mra_tes'); } catch (e) { } toast('🗑️ Borrado'); tes(); } else toast('No se pudo borrar'); }; });
+  }
+  function tesEdit(t, ord) {
+    t = t || {}; const fileTo64 = (f) => new Promise((ok, ko) => { const rd = new FileReader(); rd.onload = () => ok(String(rd.result).split(',')[1]); rd.onerror = ko; rd.readAsDataURL(f); });
+    const m = modal(`<h2>${t.id ? '✏️ Editar testimonio' : '＋ Nuevo testimonio'}</h2><div class="ad-form">
+      <label>Nombre del estudiante<input class="inp" name="name" maxlength="60" value="${esc(t.name)}" placeholder="Ej: Laura Gómez"></label>
+      <label>Detalle <small>(opcional)</small><input class="inp" name="info" maxlength="80" value="${esc(t.info)}" placeholder="Ej: 4 meses en la plataforma"></label>
+      <label>Orden<input class="inp" name="ord" inputmode="numeric" value="${esc(t.ord || ord || 1)}"></label>
+      <label>Visible<select class="inp" name="active"><option value="sí" ${String(t.active || 'sí').charAt(0) !== 'n' ? 'selected' : ''}>Sí, mostrar</option><option value="no" ${String(t.active).charAt(0) === 'n' ? 'selected' : ''}>No, ocultar</option></select></label>
+      <div class="full ad-photo"><span class="ad-tp sm" id="ts-pv">${t.poster ? `<img src="${esc(t.poster)}" alt="">` : ''}</span><div><b>Video ${t.id ? '' : '<small class="muted">(obligatorio)</small>'}</b><br><small class="muted">Vertical, de celular · máximo 30 MB · la portada se crea sola</small><br><label class="btn w sm" style="margin-top:6px;cursor:pointer">🎥 ${t.id ? 'Cambiar video' : 'Elegir video'}<input type="file" id="ts-v" accept="video/*" hidden></label> <span class="muted" id="ts-vn" style="font-size:13px"></span></div></div></div>
+      <button class="btn k block lg" id="ts-ok">💾 Guardar</button><p class="muted center hidden" id="ts-st" style="margin-top:8px"></p>`);
+    let VF = null, POS = null;
+    $('#ts-v', m).onchange = (e) => { const f = e.target.files[0]; if (!f) return; if (f.size > 30 * 1024 * 1024) { e.target.value = ''; return toast('⚠️ El video pesa más de 30 MB. Envíatelo por WhatsApp para comprimirlo y vuelve a intentarlo.'); }
+      VF = f; $('#ts-vn', m).textContent = f.name + ' · ' + (f.size / 1048576).toFixed(1) + ' MB';
+      const v = document.createElement('video'); v.muted = true; v.playsInline = true; v.preload = 'auto'; v.src = URL.createObjectURL(f);
+      v.onloadeddata = () => { try { v.currentTime = Math.min(1.2, (v.duration || 2) / 3); } catch (er) { } };
+      v.onseeked = () => { try { const w = 540, h = Math.round(w * v.videoHeight / v.videoWidth) || 960, c = document.createElement('canvas'); c.width = w; c.height = h; c.getContext('2d').drawImage(v, 0, 0, w, h); POS = c.toDataURL('image/jpeg', .82); $('#ts-pv', m).innerHTML = `<img src="${POS}" alt="">`; } catch (er) { } URL.revokeObjectURL(v.src); }; };
+    $('#ts-ok', m).onclick = async () => { const d = formData(m); if (!d.name) return toast('Escribe el nombre'); if (!t.id && !VF) return toast('Elige el video');
+      const b = $('#ts-ok', m), st = $('#ts-st', m); b.disabled = true; st.classList.remove('hidden'); st.textContent = VF ? '⏳ Subiendo video… no cierres esta ventana' : '⏳ Guardando…';
+      const req = { name: d.name, info: d.info, ord: d.ord, active: d.active }; if (t.id) req.id = t.id;
+      if (VF) { req.video = await fileTo64(VF); req.vmime = VF.type || 'video/mp4'; if (POS) req.poster = POS.split(',')[1]; }
+      const r = await api('aTesSave', req).catch(() => null);
+      if (!r || !r.ok) { b.disabled = false; st.textContent = ''; return toast('No se pudo guardar. Revisa tu conexión e inténtalo de nuevo.'); }
+      try { localStorage.removeItem('mra_tes'); } catch (e) { } m.remove(); toast('✅ Testimonio guardado'); tes(); };
+  }
   function delAsk(table, id, name, note, after) {
     const m = modal(`<div class="center"><div style="font-size:44px">🗑️</div><h2>¿Borrar a ${esc(name)}?</h2><p class="muted">${note}</p><p><b>Esto no se puede deshacer.</b></p><div class="row" style="justify-content:center;margin-top:10px"><button class="btn w" id="dl-no">Cancelar</button><button class="btn k ad-del" id="dl-ok">🗑️ Sí, borrar</button></div></div>`);
     $('#dl-no', m).onclick = () => m.remove();
@@ -541,6 +577,6 @@
     const go = () => window.MRLIVE && MRLIVE.open({ title: 'Chats (solo lectura)', roomsAction: 'aChats', getAction: 'aChatGet', readOnly: true, empty: 'Todavía no hay conversaciones.', call: (a, d) => api(a, d) });
     $('#ch-open').onclick = go; go();
   }
-  const VIEWS = { buys, claims, reviews, home, students, enroll, leads, placement, recruit, teachers, classes, requests, chats, settings };
+  const VIEWS = { tes, buys, claims, reviews, home, students, enroll, leads, placement, recruit, teachers, classes, requests, chats, settings };
   key() && MRAC.on ? boot() : login();
 })();

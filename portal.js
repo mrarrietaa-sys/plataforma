@@ -126,9 +126,9 @@
         <img class="ld-hero-mra" src="mra-x-rocket4.webp?v=2" alt="Mr. Arrieta"></div><div class="ld-login"></div></section>
       <section class="ld-sec" id="ld-planes"><h2>Elige tu plan</h2><p class="ld-sub">Pagos mes a mes · tarjeta o transferencia</p><div class="in-plans ld-inplans">
         ${CARDS.map(c => `<a class="in-plan${c.best ? ' best' : ''}" ${c.id === 'free' ? 'href="#" data-trial' : `href="inscripcion.html?plan=${c.id}"`}>${c.best ? '<span class="in-ribbon">⭐ Más completo</span>' : ''}<span class="in-plan-ic" aria-hidden="true">${c.icon}</span><span class="in-plan-name">${esc(c.name)}</span><span class="in-plan-price"><b>${esc(c.price)}</b><small>${esc(c.per)}</small></span><span class="in-plan-tag">${esc(c.tag)}</span><ul>${c.perks.map(k => `<li>${esc(String(k).replace(/^[^A-Za-zÁÉÍÓÚÑáéíóúñ0-9]+/, ''))}</li>`).join('')}</ul>${c.note ? `<span class="in-plan-note">${esc(c.note)}</span>` : ''}${(PL.xbox ? PL.xbox(c.id) : '')}<span class="in-plan-pick">${c.btn || 'Elegir este plan'}</span></a>`).join('')}</div></section>
-      ${T.length ? `<section class="ld-sec ld-tesbox card" id="ld-testimonios"><h2>Lo que dicen nuestros estudiantes</h2><p class="ld-sub">Testimonios reales en video</p><div class="ld-tes">${T.map(t => `<div class="card ld-t"><video src="${esc(t.video)}" ${t.poster ? `poster="${esc(t.poster)}"` : ''} controls preload="none" playsinline></video><b>${esc(t.name)} 🙏💙</b></div>`).join('')}</div></section>` : ''}
+      <section class="ld-sec ld-tesbox card" id="ld-testimonios"${T.length ? '' : ' hidden'}><h2>Lo que dicen nuestros estudiantes</h2><p class="ld-sub">Testimonios reales en video</p><div class="ld-tes">${tesGrid()}</div></section>
       ${(window.MRPROFES || []).length ? `<section class="ld-ref" id="ld-ref"><div class="grow"><span><b class="ld-ref-k">Recomiéndanos:</b> tu amigo recibe <b>10% de descuento</b> y tú ganas <b>15%</b> en tu primer mes si luego te inscribes.</span></div><a class="btn r" href="recomienda.html">Quiero recomendar →</a></section>
-      <section class="ld-sec" id="ld-profes"><h2>Conoce a tus profes</h2><p class="ld-sub">Profesionales bilingües · opiniones reales de nuestros estudiantes</p><div class="ld-pf">${pfGrid()}}</div></section>` : ''}
+      <section class="ld-sec" id="ld-profes"><h2>Conoce a tus profes</h2><p class="ld-sub">Profesionales bilingües · opiniones reales de nuestros estudiantes</p><div class="ld-pf">${pfGrid()}</div></section>` : ''}
       <section class="ld-sec" id="ld-ganas"><h2>¿Qué ganas con nosotros?</h2><p class="ld-sub">Todo lo que necesitas para hablar inglés con confianza</p><div class="card ld-glist">${GAN.map(([i, c, t, d]) => `<div class="ld-gi"><span class="ld-ic ${c}">${MRI(i)}</span><div><b>${t}</b><small>${d}</small></div></div>`).join('')}</div></section>
       <section class="ld-sec" id="ld-como"><h2>Cómo funciona</h2><div class="ld-steps">${['Pide tu acceso gratuito', 'Haz tu prueba de clasificación', 'Sigue tu ruta', 'Elige tu plan'].map((t, n) => `<div class="card"><b class="ld-n">${n + 1}</b><h3>${t}</h3></div>`).join('')}</div>
         <div class="card ld-note">${MRI('calendar')}<p><b>Tú eliges cuándo tomar tus clases.</b> Con Premium reservas tus clases individuales desde tu perfil, eligiendo profe, día y hora según la disponibilidad de los profes. Sin horarios fijos.</p></div></section>
@@ -205,8 +205,17 @@
   // ⭐ opiniones públicas de los profes en la página de entrada
   const nrm = (t) => String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/^(mr|mrs|ms|teacher)\.?\s+/, '').trim();
   const starsHTML = (n) => '<span class="st5">' + [1, 2, 3, 4, 5].map(k => `<i class="${k <= Math.round(n) ? 'on' : ''}">★</i>`).join('') + '</span>';
+  function tesGrid() { return (window.MRTESTIMONIOS || []).map((t, i) => `<figure class="ld-t" data-tes="${i}"><div class="ld-tv">${MRTES.poster(t) ? `<img src="${esc(MRTES.poster(t))}" alt="${esc(t.name)}" loading="lazy">` : ''}<button class="ld-play" aria-label="Ver testimonio de ${esc(t.name)}"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg></button></div><figcaption><b>${esc(t.name)}</b>${t.info ? `<small>${esc(t.info)}</small>` : ''}</figcaption></figure>`).join(''); }
+  function tesWire() {
+    const box = $('#ld-testimonios'); if (!box) return; const T = window.MRTESTIMONIOS || [];
+    box.hidden = !T.length; const g = $('.ld-tes', box); if (g) g.innerHTML = tesGrid();
+    box.onclick = (e) => { const f = e.target.closest('.ld-t'); if (!f || f.classList.contains('on')) return; const t = T[+f.dataset.tes]; if (!t) return;
+      box.querySelectorAll('.ld-t.on').forEach(o => { o.classList.remove('on'); o.querySelector('.ld-tv').innerHTML = (MRTES.poster(T[+o.dataset.tes]) ? `<img src="${esc(MRTES.poster(T[+o.dataset.tes]))}" alt="">` : '') + '<button class="ld-play"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg></button>'; });
+      f.classList.add('on'); f.querySelector('.ld-tv').innerHTML = MRTES.player(t); };
+  }
   function pfGrid() { return MRPROFES.map((p, i) => `<div class="card ld-pc"><img src="${esc(p.img)}" alt="${esc(p.name)}" loading="lazy"><b>${p.title === 'Director' ? 'Director' : esc(p.title)} ${esc(p.name)}</b><div class="ld-stars" data-pf="${i}"></div><ul>${p.info.map(x => `<li>${MRI('check')}<span>${esc(x)}</span></li>`).join('')}</ul><button class="btn w sm" data-pfr="${i}">Ver opiniones</button></div>`).join(''); }
   async function profReviews() {
+    tesWire(); (window.MRTESREADY || Promise.resolve()).then(tesWire).catch(() => { }); // 🎬 testimonios subidos en administración
     if (!window.MRPROFES || !$('#ld-profes')) return;
     try { await (window.MRPROFREADY || Promise.resolve()); const g = $('#ld-profes .ld-pf'); if (g) g.innerHTML = pfGrid(); } catch (e) { } // 👩‍🏫 profes creados en administración
     const r = await MRAC.call('reviews', {}).catch(() => null); const all = (r && r.reviews) || [];
