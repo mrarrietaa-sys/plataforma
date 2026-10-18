@@ -4209,3 +4209,10 @@ textarea.inp{font-size:15px;line-height:1.4}
 /* v198: sin etiquetas azules de sección en las clases; botón de continuar más angosto en celular */
 .stage .hd .lbl{display:none!important}.stage .hd:not(:has(.qcount)){display:none}
 @media(max-width:600px){.stage .actionbar .btn.lg{width:auto!important;min-width:0!important;padding:12px 28px!important;font-size:17px!important;margin-left:auto;margin-right:auto}.stage .actionbar{justify-content:center}}
+/* v199: resumen del plan elegido (inscripción) más compacto */
+.in-direct{display:flex;align-items:center;gap:12px}
+.in-direct h1{font-size:24px!important;line-height:1.15!important;margin:4px 0 2px!important}
+.in-direct p{margin:0;font-size:15px}
+@media(max-width:600px){.in-direct{padding:14px 16px!important;gap:10px;flex-wrap:wrap}.in-direct .in-plan-ic{font-size:30px!important;line-height:1}.in-direct .lbl{font-size:10px!important;padding:3px 10px!important}
+.in-direct h1{font-size:19px!important;white-space:nowrap}.in-direct p{font-size:13.5px!important}.in-direct .grow{min-width:0;flex:1}
+.in-direct #in-chg{flex-basis:100%;padding:8px 14px!important;font-size:14px!important}}
