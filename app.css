@@ -4206,3 +4206,6 @@ textarea.inp{font-size:15px;line-height:1.4}
 /* v196: planes de la inscripción más compactos (igual que la página de entrada) */
 @media(min-width:981px){.in-plans .in-plan{padding:18px 18px 16px!important}.in-plans .in-plan ul{margin:8px 0!important;gap:4px!important}.in-plans .in-plan li{font-size:14.5px!important;line-height:1.3!important}.in-plans .in-plan-price b{font-size:32px!important}.in-plans .in-plan-name{font-size:18px!important}}
 @media(min-width:1100px){.in-plans{width:min(1240px,calc(100vw - 48px));position:relative;left:50%;transform:translateX(-50%)}}
+/* v198: sin etiquetas azules de sección en las clases; botón de continuar más angosto en celular */
+.stage .hd .lbl{display:none!important}.stage .hd:not(:has(.qcount)){display:none}
+@media(max-width:600px){.stage .actionbar .btn.lg{width:auto!important;min-width:0!important;padding:12px 28px!important;font-size:17px!important;margin-left:auto;margin-right:auto}.stage .actionbar{justify-content:center}}
