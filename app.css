@@ -4216,3 +4216,4 @@ textarea.inp{font-size:15px;line-height:1.4}
 @media(max-width:600px){.in-direct{padding:14px 16px!important;gap:10px;flex-wrap:wrap}.in-direct .in-plan-ic{font-size:30px!important;line-height:1}.in-direct .lbl{font-size:10px!important;padding:3px 10px!important}
 .in-direct h1{font-size:19px!important;white-space:nowrap}.in-direct p{font-size:13.5px!important}.in-direct .grow{min-width:0;flex:1}
 .in-direct #in-chg{flex-basis:100%;padding:8px 14px!important;font-size:14px!important}}
+@media(max-width:600px){.stage .actionbar .btn:only-child{flex:0 0 auto!important;width:auto!important;max-width:80%;margin:0 auto!important;padding:12px 30px!important}}
