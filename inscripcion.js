@@ -34,6 +34,7 @@ if (!window.M1) window.M1 = {
   function stCount() { const el = document.querySelector('[data-stc]'); if (!el) return; const run = (N) => { const t0 = performance.now(); const fr = (t) => { const k = Math.min(1, (t - t0) / 1400); el.textContent = '+' + Math.round(N * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(fr); }; requestAnimationFrame(fr); };
     if (window.MR && MR.on) MR.call('pubStats', {}).then(r => run(r && r.students ? r.students : 300)).catch(() => run(300)); else run(300); }
   setTimeout(stCount, 400);
+  setTimeout(() => { if (!st.extra || !/^premium/.test(st.plan)) return; const n = st.extra; const box = document.querySelector('.ipx[data-xk="' + st.plan + '"]'); if (box && window.MRPLANS && MRPLANS.xset) MRPLANS.xset(box, n); }, 500); // ➕ trae las clases extra elegidas en la página de entrada
   const DAYS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
   const SCHED = [['Mañana', '🌅', '7:00 a. m. – 12:00 m.'], ['Tarde', '☀️', '12:00 m. – 6:00 p. m.'], ['Noche', '🌙', '6:00 p. m. – 9:00 p. m.']];
   const PAY = ['Nequi', 'Llave (Breve-B)', 'Tarjeta (Mercado Pago)'];
@@ -43,7 +44,8 @@ if (!window.M1) window.M1 = {
   const qs = new URLSearchParams(location.search);
   const REF = String(qs.get('ref') || (() => { try { return localStorage.getItem('mra_ref') || ''; } catch (e) { return ''; } })()).trim().toUpperCase().replace(/[^A-Z0-9-]/g, '').slice(0, 20);
   if (REF) { try { localStorage.setItem('mra_ref', REF); } catch (e) { } }
-  const st = { plan: ['free', 'membership', 'premium', 'premium8'].indexOf(qs.get('plan')) >= 0 ? qs.get('plan') : '', schedule: '', days: [], level: '', source: '', busy: false };
+  const st = { plan: ['free', 'membership', 'premium', 'premium8'].indexOf(qs.get('plan')) >= 0 ? qs.get('plan') : '', schedule: '', days: [], level: '', source: '', busy: false, extra: Math.max(0, Math.min(10, +qs.get('extra') || 0)) };
+  document.addEventListener('mra-extra', (e) => { st.extra = e.detail.n; if (e.detail.plan !== st.plan) { st.extraPlan = e.detail.plan; } else st.extraPlan = st.plan; });
   const planOf = (id) => PLANS.find((p) => p.id === id);
 
   /* ---------------- vista principal ---------------- */
@@ -56,7 +58,7 @@ if (!window.M1) window.M1 = {
         <span class="lbl">Inscripciones abiertas</span>
         <h1>Aprende inglés <span class="in-hl">HABLANDO</span>, a tu ritmo y con tu propia ruta.</h1>
         <p>Tu nivel en 10 minutos, tu ruta del A1 al B2+ y una plataforma que <b>te escucha y te corrige</b>. Súmale clases 1 a 1 con profes reales. <b>100% virtual.</b></p>
-        <p class="ld-count-st">👥 <b data-stc>+300</b> estudiantes ya aprenden inglés con nosotros</p><ul class="in-hero-pts"><li>✅ Metodología RealTalk®</li><li>✅ Tu progreso siempre guardado</li></ul>
+        <p class="ld-count-st"><b data-stc>+300</b> estudiantes ya hablan inglés con nosotros</p><ul class="in-hero-pts"><li>✅ Metodología RealTalk®</li><li>✅ Tu progreso siempre guardado</li></ul>
       </div>
       <img class="in-hero-img" src="mra-welcome.webp" alt="Mr. Arrieta te da la bienvenida" width="300" height="300">
     </section>
@@ -73,7 +75,7 @@ if (!window.M1) window.M1 = {
           <span class="in-plan-price"><b>${esc(p.price)}</b><small>${esc(p.per || (p.id === 'free' ? 'sin costo' : ''))}</small></span>
           <span class="in-plan-tag">${esc(p.tag)}</span>
           <ul>${p.perks.map((k) => `<li>${esc(k)}</li>`).join('')}</ul>
-          ${p.note ? `<span class="in-plan-note">${esc(p.note)}</span>` : ''}${/^premium/.test(p.id) ? `<span class="in-plan-extra">➕ ¿Quieres más? Clase extra: <b>${esc(XP())}</b> COP</span>` : ''}
+          ${p.note ? `<span class="in-plan-note">${esc(p.note)}</span>` : ''}${(window.MRPLANS && MRPLANS.xbox) ? MRPLANS.xbox(p.id) : ''}
           <span class="in-plan-pick">${st.plan === p.id ? '✓ Seleccionado' : 'Elegir este plan'}</span>
         </button>`).join('')}
       </div>
@@ -207,8 +209,9 @@ if (!window.M1) window.M1 = {
     const waQ = `https://wa.me/${WA}?text=${encodeURIComponent((window.MRNE || String)('¡Hola! Soy ' + d.first + ' ' + d.last + ' (' + d.email + '). Tengo una pregunta sobre mi inscripción en mrarrieta.com'))}`;
     if (paid && code) { try { localStorage.setItem('mra_buy_code', code); if (d.ref) localStorage.setItem('mra_ref', d.ref); } catch (e) { }
       window.__buyCode = code; // 💳 el pago se abre aquí mismo, sobre la página de inscripción
-      if (window.MRBUY && window.M1) { MRBUY.plan(d.plan); return; }
-      location.href = 'index.html?pagar=' + encodeURIComponent(code) + '&plan=' + encodeURIComponent(d.plan); return; }
+      const XN = (/^premium/.test(d.plan) && (st.extraPlan || st.plan) === d.plan) ? (st.extra || 0) : 0;
+      if (window.MRBUY && window.M1) { MRBUY.plan(d.plan, { extra: XN }); return; }
+      location.href = 'index.html?pagar=' + encodeURIComponent(code) + '&plan=' + encodeURIComponent(d.plan) + (XN ? '&extra=' + XN : ''); return; }
     app.innerHTML = `<section class="card in-done center">
       <img src="mra-celebrate.webp" alt="Mr. Arrieta celebrando" class="in-done-img" width="240" height="240">
       <span class="lbl">${dup ? 'Ya estás en nuestra base' : 'Inscripción recibida'}</span>

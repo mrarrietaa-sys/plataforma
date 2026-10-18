@@ -4183,3 +4183,14 @@ textarea.inp{font-size:15px;line-height:1.4}
 .ld-xstep{display:flex;align-items:center;gap:10px}.ld-xstep button{width:38px;height:38px;border-radius:50%;border:1.5px solid #0B2A5B;background:#fff;color:#0B2A5B;font:800 20px Poppins,sans-serif;cursor:pointer;line-height:1}.ld-xstep b{min-width:22px;text-align:center;font:900 20px Poppins,sans-serif;color:#0B2A5B}
 .ld-xtot{text-align:right;min-width:150px}.ld-xtot small{display:block;color:#5b6577}.ld-xtot b{color:#E3242B;font:900 22px Poppins,sans-serif}
 @media(max-width:560px){.ld-xcalc{flex-direction:column;align-items:stretch;text-align:center}.ld-xstep{justify-content:center}.ld-xtot{text-align:center}}
+/* v189: contador en una línea + clases extra dentro de Premium */
+@media(max-width:560px){.ld-count-st{font-size:14.5px;white-space:nowrap}.ld-count-st b{font-size:19px}}
+.ipx{display:block;margin:10px 0 4px;background:#fff7ec;border:1.5px solid #f5c98a;border-radius:14px;padding:10px 12px;text-align:left;cursor:default}
+.ipx-t{display:block;font-size:14px;color:#5a3b00}.ipx-t b{color:#0B2A5B}
+.ipx-row{display:flex;align-items:center;gap:10px;margin:8px 0 6px}.ipx-row small{color:#5b6577;font-size:12.5px}
+.ipx-b{width:32px;height:32px;border-radius:50%;border:1.5px solid #0B2A5B;background:#fff;color:#0B2A5B;display:grid;place-items:center;font:800 18px/1 Poppins,sans-serif;cursor:pointer;user-select:none}.ipx-b:hover{background:#0B2A5B;color:#fff}
+.ipx-n{min-width:18px;text-align:center;font:900 18px Poppins,sans-serif;color:#0B2A5B}
+.ipx-tot{display:block;font-size:13.5px;color:#3c4a63}.ipx-tot b{color:#0B2A5B}.ipx.on .ipx-p{color:#E3242B}.ipx.on{border-color:#E3242B;background:#fff1f2}
+.by-xst{display:inline-flex;align-items:center;gap:8px}.by-xst button{width:28px;height:28px;border-radius:50%;border:1.5px solid #0B2A5B;background:#fff;color:#0B2A5B;font-weight:800;cursor:pointer}
+.vb-allbtn,.vb-none{display:flex!important;width:auto!important;margin-left:auto!important;margin-right:auto!important;padding:9px 20px!important;font-size:15px!important}.vb-allbtn{margin-bottom:12px!important}
+@media(max-width:380px){.ld-count-st{font-size:13px}}

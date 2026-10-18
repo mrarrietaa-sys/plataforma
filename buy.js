@@ -43,22 +43,25 @@
       m.querySelector('.card').innerHTML = `<div class="center">${M.mascot('mascot', 'thumbs')}</div><h3 class="center">¡Recibimos tu comprobante!</h3><p class="center" style="font-size:16px">Administración lo revisará pronto. <b>Apenas lo apruebe, se habilita de inmediato</b> en tu perfil y te avisamos en la campanita 🔔 y por correo.</p><button class="btn k block" id="by-x">Entendido</button>`;
       m.querySelector('#by-x').onclick = () => m.remove(); };
   }
-  async function plan(k) {
+  async function plan(k, opt) {
     await cat(); const p = (PLS().PL || {})[k]; if (!p) return; const nm = (PLS().noEmo || String)(p.name);
+    const EXU = PLS().extra ? PLS().extra() : 39900; let X = /^premium/.test(k) ? Math.max(0, Math.min(10, +((opt && opt.extra) || 0))) : 0, disc = 0;
     const m = M.modal(`<h3 class="by-h">${MRI('card')} ${esc(nm)}</h3>
       <table class="by-sum"><tr><td>Plan</td><td><b>${esc(nm)}</b></td></tr><tr><td>Precio</td><td><b>${esc(p.price)}</b> COP</td></tr><tr><td>Periodicidad</td><td>Mensual (se renueva solo si vuelves a pagar)</td></tr>
-        <tr><td>Clases incluidas</td><td>${p.classes ? p.classes + ' clases individuales de 50 minutos por mes' : 'No incluye clases individuales'}</td></tr><tr id="by-disc" class="hidden"><td>Descuento referido</td><td id="by-dv"></td></tr><tr><td><b>Total a pagar</b></td><td><b id="by-tot">${esc(p.price)} COP</b></td></tr></table>
+        <tr><td>Clases incluidas</td><td>${p.classes ? p.classes + ' clases individuales de 50 minutos por mes' : 'No incluye clases individuales'}</td></tr>${/^premium/.test(k) ? `<tr><td>Clases extra <small>(${fmt(EXU)} c/u)</small></td><td><span class="by-xst"><button type="button" data-bx="-1">−</button><b id="by-xn">${X}</b><button type="button" data-bx="1">+</button></span></td></tr>` : ''}<tr id="by-disc" class="hidden"><td>Descuento referido</td><td id="by-dv"></td></tr><tr><td><b>Total a pagar</b></td><td><b id="by-tot">${esc(p.price)} COP</b></td></tr></table>
       <div class="${firstBuy() ? '' : 'hidden'}"><label class="ad-lab" style="display:block;margin-top:8px"><b>¿Te recomendó un amigo?</b> Código de referido (opcional)</label><div class="by-ref"><input class="inp" id="by-ref" placeholder="Ej.: LAURA-123" value="${esc(refSaved())}"><button class="btn w" id="by-refok">Aplicar</button></div><p class="muted" id="by-refmsg" style="font-size:13px;margin:0 0 6px"></p></div>
       ${p.classes ? '<p class="muted" style="font-size:13.5px">Las clases incluidas son del periodo mensual y no se acumulan. Reserva desde mañana y hasta 5 días adelante, nunca para el mismo día; cancela gratis hasta 12 horas antes.</p>' : ''}
       ${payBlock('bp')}`, { x: true });
-    const pay = { kind: 'plan', plan: k }; wire(m, 'bp', pay);
+    const pay = { kind: 'plan', plan: k }; if (X) pay.extra = X; wire(m, 'bp', pay);
+    function tot() { m.querySelector('#by-tot').textContent = fmt(p.n - disc + X * EXU) + ' COP'; }
+    m.querySelectorAll('[data-bx]').forEach(b => b.onclick = () => { X = Math.max(0, Math.min(10, X + +b.dataset.bx)); m.querySelector('#by-xn').textContent = X; if (X) pay.extra = X; else delete pay.extra; tot(); }); tot();
     const apply = async () => { const v = m.querySelector('#by-ref').value.trim().toUpperCase(), msg = m.querySelector('#by-refmsg');
-      if (!v) { delete pay.ref; m.querySelector('#by-disc').classList.add('hidden'); m.querySelector('#by-tot').textContent = fmt(p.n) + ' COP'; msg.textContent = ''; return; }
+      if (!v) { delete pay.ref; m.querySelector('#by-disc').classList.add('hidden'); disc = 0; tot(); msg.textContent = ''; return; }
       msg.textContent = '⏳ Revisando…'; const r = await MRAC.call('refCheck', { code: CODE(), ref: v }).catch(() => null);
-      if (r && r.ok) { const d = Math.round(p.n * r.pct / 100 / 100) * 100; pay.ref = v; m.querySelector('#by-disc').classList.remove('hidden'); m.querySelector('#by-dv').textContent = '−' + fmt(d) + ' COP (' + r.pct + '%)'; m.querySelector('#by-tot').textContent = fmt(p.n - d) + ' COP'; msg.innerHTML = '✅ Código de <b>' + esc(r.name) + '</b> aplicado. Paga el total con descuento.'; }
-      else { delete pay.ref; m.querySelector('#by-disc').classList.add('hidden'); m.querySelector('#by-tot').textContent = fmt(p.n) + ' COP'; msg.textContent = '⚠️ Código no válido. El descuento aplica solo en tu primer mes y no con tu propio código.'; } };
+      if (r && r.ok) { const d = Math.round(p.n * r.pct / 100 / 100) * 100; pay.ref = v; m.querySelector('#by-disc').classList.remove('hidden'); m.querySelector('#by-dv').textContent = '−' + fmt(d) + ' COP (' + r.pct + '%)'; disc = d; tot(); msg.innerHTML = '✅ Código de <b>' + esc(r.name) + '</b> aplicado. Paga el total con descuento.'; }
+      else { delete pay.ref; m.querySelector('#by-disc').classList.add('hidden'); disc = 0; tot(); msg.textContent = '⚠️ Código no válido. El descuento aplica solo en tu primer mes y no con tu propio código.'; } };
     m.querySelector('#by-refok').onclick = apply; if (refSaved() && firstBuy()) apply();
-    else MRAC.call('myCoupon', { code: CODE() }).then(r => { if (!r || !r.pct || pay.ref) return; const d = Math.round(p.n * r.pct / 100 / 100) * 100; m.querySelector('#by-disc').classList.remove('hidden'); m.querySelector('#by-disc td').textContent = r.why || 'Descuento'; m.querySelector('#by-dv').textContent = '−' + fmt(d) + ' COP (' + r.pct + '%)'; m.querySelector('#by-tot').textContent = fmt(p.n - d) + ' COP'; const f = m.querySelector('#by-ref'); if (f) f.closest('div.by-ref').parentNode.classList.add('hidden'); }).catch(() => { });
+    else MRAC.call('myCoupon', { code: CODE() }).then(r => { if (!r || !r.pct || pay.ref) return; const d = Math.round(p.n * r.pct / 100 / 100) * 100; m.querySelector('#by-disc').classList.remove('hidden'); m.querySelector('#by-disc td').textContent = r.why || 'Descuento'; m.querySelector('#by-dv').textContent = '−' + fmt(d) + ' COP (' + r.pct + '%)'; disc = d; tot(); const f = m.querySelector('#by-ref'); if (f) f.closest('div.by-ref').parentNode.classList.add('hidden'); }).catch(() => { });
   }
   function firstBuy() { const q = (window.MRAP && MRAP.get()) || {}; return !q.planStart; }
   function refSaved() { try { return localStorage.getItem('mra_ref') || ''; } catch (e) { return ''; } }
