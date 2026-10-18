@@ -4364,3 +4364,38 @@ textarea.inp{font-size:15px;line-height:1.4}
 .tf-who button.on{background:#fff;box-shadow:0 2px 8px rgba(11,42,91,.12);color:#E3242B}
 .pv h2{font-size:22px;margin:0 0 2px}.pv h3{font-size:16px;margin:18px 0 4px;color:#0B2A5B}.pv p,.pv li{font-size:14.5px;line-height:1.6}.pv ul{padding-left:20px;margin:4px 0}
 .tf-ok a{color:#0B2A5B;font-weight:700;text-decoration:underline}
+
+/* v225 — portal de profes y administración: tipografía uniforme y profesional (PC y celular) */
+.tp-page main,.ad-page main{font-size:14px}
+.tp-page h1,.ad-page .ad-head h2,.ad-page #view>h2,.ad-page .ad-view>h2{font-size:24px!important;line-height:1.2}
+.tp-page h2,.ad-page .card h2,.ad-page .ad-view h2:not(.ad-head h2){font-size:18px!important;line-height:1.25}
+.tp-page h3,.ad-page h3{font-size:16px!important}
+.tp-page .card p,.tp-page .card li,.ad-page .card p,.ad-page .card li,.ad-page td,.ad-page .ad-view p{font-size:14px}
+.tp-page .muted,.ad-page .muted,.tp-page small,.ad-page small{font-size:12.5px}
+.tp-head h1{font-size:24px!important}
+.tp-head p{font-size:13.5px!important}
+.tp-stat b,.ad-kpi b{font-size:24px!important}
+.tp-stat span,.tp-stat small{font-size:12.5px!important}
+.ad-kpi span{font-size:13.5px!important}.ad-kpi em{font-size:12px!important}
+.tp-tab,.ad-tabs button{font-size:14px!important}
+.tp-page .btn,.ad-page .btn{font-size:14px}
+.tp-page .btn.sm,.ad-page .btn.sm{font-size:13px!important;padding:7px 12px!important}
+.tp-page .btn.lg,.ad-page .btn.lg{font-size:15px!important;padding:11px 20px!important;min-height:0!important}
+.tp-page .inp,.ad-page .inp{font-size:14.5px!important;padding:9px 12px!important;min-height:40px;border-radius:10px}
+.tp-page textarea.inp,.ad-page textarea.inp{min-height:0}
+.ad-form label,.tp-page label{font-size:13px!important}
+.ad-form label small{font-size:11.5px!important;font-weight:500}
+.ad-page th{font-size:13px!important}
+/* encabezado del profe: el saludo arriba y los botones debajo (no se aprieta en celular) */
+.tp-head-txt{flex:1 1 100%!important}
+@media (max-width:640px){
+ .tp-page h1,.tp-head h1,.ad-page .ad-head h2,.ad-page #view>h2{font-size:20px!important}
+ .tp-page h2,.ad-page .card h2{font-size:16.5px!important}
+ .tp-page h3,.ad-page h3{font-size:15px!important}
+ .tp-stat b,.ad-kpi b{font-size:21px!important}
+ .tp-head{gap:8px!important}
+ .tp-head .btn{flex:1 1 auto}
+ .tp-tab,.ad-tabs button{font-size:13px!important}
+ .tp-page .btn.lg,.ad-page .btn.lg{font-size:14.5px!important;padding:10px 16px!important}
+ .tp-page .card,.ad-page .card{padding:14px!important}
+}
