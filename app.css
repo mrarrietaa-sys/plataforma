@@ -4224,3 +4224,6 @@ textarea.inp{font-size:15px;line-height:1.4}
 /* v202: PC — resumen del plan elegido igual de compacto que en celular */
 @media(min-width:601px){.in-direct{padding:14px 20px!important;gap:14px}.in-direct .in-plan-ic{font-size:34px!important;line-height:1}.in-direct .lbl{font-size:10px!important;padding:3px 10px!important}
 .in-direct h1{font-size:20px!important;margin:3px 0 1px!important}.in-direct p{font-size:14px!important}.in-direct #in-chg{padding:7px 18px!important;font-size:14px!important}}
+/* v203: PC — botón de enviar/continuar al pago más compacto */
+@media(min-width:601px){#in-send{display:block;width:auto!important;min-width:280px;max-width:420px;margin:8px auto 0!important;padding:13px 32px!important;font-size:17px!important}
+.in-summary{font-size:15px}#in-paynote{max-width:620px;margin-left:auto;margin-right:auto}}
