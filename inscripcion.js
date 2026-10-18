@@ -30,6 +30,10 @@ if (!window.M1) window.M1 = {
     Object.assign({ id: 'premium8', tag: '+ 8 clases con profe', icon: '🏅', best: true,
       perks: ['Todo lo de Plataforma', '8 clases 1 a 1: 2 por semana', 'Gana fluidez real, más rápido', 'Clases no acumulables: úsalas en tu periodo mensual'] }, pp('premium8', '🏅 PREMIUM · 8 CLASES', '$289.900')),
   ];
+  const XP = () => { const P = window.MRPLANS; const n = P && P.extra ? P.extra() : 39900; return '$' + String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.'); };
+  function stCount() { const el = document.querySelector('[data-stc]'); if (!el) return; const run = (N) => { const t0 = performance.now(); const fr = (t) => { const k = Math.min(1, (t - t0) / 1400); el.textContent = '+' + Math.round(N * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(fr); }; requestAnimationFrame(fr); };
+    if (window.MR && MR.on) MR.call('pubStats', {}).then(r => run(r && r.students ? r.students : 300)).catch(() => run(300)); else run(300); }
+  setTimeout(stCount, 400);
   const DAYS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
   const SCHED = [['Mañana', '🌅', '7:00 a. m. – 12:00 m.'], ['Tarde', '☀️', '12:00 m. – 6:00 p. m.'], ['Noche', '🌙', '6:00 p. m. – 9:00 p. m.']];
   const PAY = ['Nequi', 'Llave (Breve-B)', 'Tarjeta (Mercado Pago)'];
@@ -52,7 +56,7 @@ if (!window.M1) window.M1 = {
         <span class="lbl">Inscripciones abiertas</span>
         <h1>Aprende inglés <span class="in-hl">HABLANDO</span>, a tu ritmo y con tu propia ruta.</h1>
         <p>Tu nivel en 10 minutos, tu ruta del A1 al B2+ y una plataforma que <b>te escucha y te corrige</b>. Súmale clases 1 a 1 con profes reales. <b>100% virtual.</b></p>
-        <ul class="in-hero-pts"><li>✅ 100% virtual</li><li>✅ Metodología RealTalk®</li><li>✅ Tu progreso siempre guardado</li></ul>
+        <p class="ld-count-st">👥 <b data-stc>+300</b> estudiantes ya aprenden inglés con nosotros</p><ul class="in-hero-pts"><li>✅ Metodología RealTalk®</li><li>✅ Tu progreso siempre guardado</li></ul>
       </div>
       <img class="in-hero-img" src="mra-welcome.webp" alt="Mr. Arrieta te da la bienvenida" width="300" height="300">
     </section>
@@ -69,7 +73,7 @@ if (!window.M1) window.M1 = {
           <span class="in-plan-price"><b>${esc(p.price)}</b><small>${esc(p.per || (p.id === 'free' ? 'sin costo' : ''))}</small></span>
           <span class="in-plan-tag">${esc(p.tag)}</span>
           <ul>${p.perks.map((k) => `<li>${esc(k)}</li>`).join('')}</ul>
-          ${p.note ? `<span class="in-plan-note">${esc(p.note)}</span>` : ''}
+          ${p.note ? `<span class="in-plan-note">${esc(p.note)}</span>` : ''}${/^premium/.test(p.id) ? `<span class="in-plan-extra">➕ ¿Quieres más? Clase extra: <b>${esc(XP())}</b> COP</span>` : ''}
           <span class="in-plan-pick">${st.plan === p.id ? '✓ Seleccionado' : 'Elegir este plan'}</span>
         </button>`).join('')}
       </div>

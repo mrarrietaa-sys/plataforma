@@ -112,6 +112,7 @@
       const y = scrollY + r.top - bar - (r.height < vh ? Math.max(12, (vh - r.height) / 2) : 12);
       scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
       setTimeout(() => { const r2 = sec.getBoundingClientRect(), b2 = (document.getElementById('topbar') || { offsetHeight: 0 }).offsetHeight; if (r2.top < b2 + 4 || (r2.height < innerHeight - b2 && r2.bottom > innerHeight)) scrollTo({ top: Math.max(0, scrollY + r2.top - b2 - 12), behavior: 'smooth' }); }, 900); }); } // ✅ corrige si algo cambió de tamaño mientras bajaba
+    const XP = () => { const n = (window.MRPLANS && MRPLANS.extra) ? MRPLANS.extra() : 39900; return '$' + String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.'); };
     const PL = window.MRPLANS || {}; const T = window.MRTESTIMONIOS || []; const pp = (k) => (PL.PL || {})[k] || {};
     const CARDS = [
       { id: 'free', icon: '🎁', name: 'ACCESO GRATUITO', price: '$0', per: 'COP · sin costo', tag: 'Pruébalo gratis · 3 días', perks: ['Descubre tu nivel en 10 minutos', 'Tu ruta personalizada', 'Habla y la plataforma te corrige'], note: 'No incluye clases individuales.', btn: 'Empezar gratis' },
@@ -121,10 +122,10 @@
     const GAN = [['user', 'r', 'Clases 1 a 1', 'Con profes reales, a tu ritmo'], ['monitor', 'b', '100% online', 'Desde tu celular o computador'], ['award', 'g', 'Certificados', 'Al terminar cada módulo'], ['clock', 'y', 'A tu ritmo', 'Estudia cuando quieras'], ['compass', 'b', 'Ruta A1 → B2+', 'Sabes qué estudiar cada día'], ['check', 'r', 'Te escucha y te corrige', 'La plataforma corrige tu pronunciación al instante']];
     const wrap = document.createElement('div'); wrap.className = 'ld';
     wrap.innerHTML = `<section class="ld-hero"><div class="ld-copy"><h1>Aprende inglés <em>HABLANDO</em></h1><p class="ld-lead">La plataforma que <b>te escucha, te corrige y te pone a hablar</b> desde el primer día. <b>100% virtual</b>, a tu ritmo y con profes reales.</p>
-        <div class="ld-cta"><button class="btn k lg" data-trial>${MRI('gift')} Prueba gratis 3 días</button><a class="btn w lg" href="#ld-planes">${MRI('crown')} Ver planes</a></div>
+        <div class="ld-cta"><button class="btn k lg" data-trial>${MRI('gift')} Prueba gratis 3 días</button><a class="btn w lg" href="#ld-planes">${MRI('crown')} Ver planes</a></div><p class="ld-count-st">👥 <b data-stc>+300</b> estudiantes ya aprenden inglés con nosotros</p>
         <img class="ld-hero-mra" src="mra-x-rocket4.webp?v=2" alt="Mr. Arrieta"></div><div class="ld-login"></div></section>
       <section class="ld-sec" id="ld-planes"><h2>Elige tu plan</h2><p class="ld-sub">Pagos mes a mes · tarjeta o transferencia</p><div class="in-plans ld-inplans">
-        ${CARDS.map(c => `<a class="in-plan${c.best ? ' best' : ''}" ${c.id === 'free' ? 'href="#" data-trial' : `href="inscripcion.html?plan=${c.id}"`}>${c.best ? '<span class="in-ribbon">⭐ Más completo</span>' : ''}<span class="in-plan-ic" aria-hidden="true">${c.icon}</span><span class="in-plan-name">${esc(c.name)}</span><span class="in-plan-price"><b>${esc(c.price)}</b><small>${esc(c.per)}</small></span><span class="in-plan-tag">${esc(c.tag)}</span><ul>${c.perks.map(k => `<li>${esc(String(k).replace(/^[^A-Za-zÁÉÍÓÚÑáéíóúñ0-9]+/, ''))}</li>`).join('')}</ul>${c.note ? `<span class="in-plan-note">${esc(c.note)}</span>` : ''}<span class="in-plan-pick">${c.btn || 'Elegir este plan'}</span></a>`).join('')}</div></section>
+        ${CARDS.map(c => `<a class="in-plan${c.best ? ' best' : ''}" ${c.id === 'free' ? 'href="#" data-trial' : `href="inscripcion.html?plan=${c.id}"`}>${c.best ? '<span class="in-ribbon">⭐ Más completo</span>' : ''}<span class="in-plan-ic" aria-hidden="true">${c.icon}</span><span class="in-plan-name">${esc(c.name)}</span><span class="in-plan-price"><b>${esc(c.price)}</b><small>${esc(c.per)}</small></span><span class="in-plan-tag">${esc(c.tag)}</span><ul>${c.perks.map(k => `<li>${esc(String(k).replace(/^[^A-Za-zÁÉÍÓÚÑáéíóúñ0-9]+/, ''))}</li>`).join('')}</ul>${c.note ? `<span class="in-plan-note">${esc(c.note)}</span>` : ''}${/^premium/.test(c.id) ? `<span class="in-plan-extra">➕ ¿Quieres más? Clase extra: <b>${XP()}</b> COP</span>` : ''}<span class="in-plan-pick">${c.btn || 'Elegir este plan'}</span></a>`).join('')}</div><div class="ld-xcalc" id="ld-xcalc"><div class="grow"><b>➕ ¿Quieres más clases?</b><span>Con Premium agrega clases 1 a 1 cuando quieras.</span></div><div class="ld-xstep"><button type="button" data-x="-1" aria-label="Menos">−</button><b data-xn>1</b><button type="button" data-x="1" aria-label="Más">+</button></div><div class="ld-xtot"><small data-xl>1 clase extra</small><b data-xt></b></div></div></section>
       ${T.length ? `<section class="ld-sec ld-tesbox card" id="ld-testimonios"><h2>Lo que dicen nuestros estudiantes</h2><p class="ld-sub">Testimonios reales en video</p><div class="ld-tes">${T.map(t => `<div class="card ld-t"><video src="${esc(t.video)}" ${t.poster ? `poster="${esc(t.poster)}"` : ''} controls preload="none" playsinline></video><b>${esc(t.name)} 🙏💙</b></div>`).join('')}</div></section>` : ''}
       ${(window.MRPROFES || []).length ? `<section class="ld-sec" id="ld-profes"><h2>Conoce a tus profes</h2><p class="ld-sub">Profesionales bilingües · opiniones reales de nuestros estudiantes</p><div class="ld-pf">${pfGrid()}}</div></section>` : ''}
       <section class="ld-sec" id="ld-ganas"><h2>¿Qué ganas con nosotros?</h2><p class="ld-sub">Todo lo que necesitas para hablar inglés con confianza</p><div class="card ld-glist">${GAN.map(([i, c, t, d]) => `<div class="ld-gi"><span class="ld-ic ${c}">${MRI(i)}</span><div><b>${t}</b><small>${d}</small></div></div>`).join('')}</div></section>
@@ -154,6 +155,12 @@
       if (r && r.ok) { nf.innerHTML = `<p class="ld-newsok">${MRI('check')} ¡Listo, ${esc(n.split(' ')[0])}! Revisa tu correo: te enviamos la bienvenida.</p>`; try { localStorage.setItem('mra_lead', 'ok'); } catch (er) { } }
       else { b.disabled = false; b.textContent = 'Quiero recibirlos'; msg('No se pudo guardar. Inténtalo de nuevo.'); } };
     profReviews();
+    { // 🧮 calculadora de clases extra + 👥 contador de estudiantes
+      const xc = $('#ld-xcalc'); if (xc) { let n = 1; const pr = () => (window.MRPLANS && MRPLANS.extra) ? MRPLANS.extra() : 39900; const f = (v) => '$' + String(v).replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' COP';
+        const draw = () => { $('[data-xn]', xc).textContent = n; $('[data-xl]', xc).textContent = n + (n === 1 ? ' clase extra' : ' clases extra'); $('[data-xt]', xc).textContent = f(pr() * n); };
+        $$('[data-x]', xc).forEach(b => b.onclick = () => { n = Math.max(1, Math.min(10, n + +b.dataset.x)); draw(); }); draw(); }
+      countUp();
+    }
     if (!window.__trialWired) { window.__trialWired = true; document.addEventListener('click', trialClick); }
   }
   // 💬 botón flotante de WhatsApp: se puede arrastrar a cualquier lado y ocultar con la X
@@ -183,6 +190,9 @@
       const r = await MRAC.call('myCodeChange', { code: o, newCode: n }).catch(() => null);
       if (r && r.ok) { MRAC.setCode(r.code); m.querySelector('.card').innerHTML = `<div class="center"><div class="to-ic">${MRI('check')}</div><h3>¡Listo! Tu código cambió</h3><p>Desde ahora entra con tu nuevo código. Te enviamos una confirmación a tu correo.</p><button class="btn k block lg" onclick="location.reload()">Entendido</button></div>`; return; }
       b.disabled = false; b.textContent = 'Guardar nuevo código'; msg.textContent = !r ? 'No hay conexión. Inténtalo de nuevo.' : r.err === 'taken' ? 'Ese código ya está en uso. Elige otro.' : r.err === 'same' ? 'El nuevo código es igual al actual.' : r.err === 'format' ? 'Usa de 4 a 20 letras o números.' : 'No se pudo cambiar. Inténtalo de nuevo.'; }; }); }
+  function countUp() { const els = $$('[data-stc]'); if (!els.length) return; const run = (N) => els.forEach(el => { const t0 = performance.now(); const fr = (t) => { const k = Math.min(1, (t - t0) / 1400); el.textContent = '+' + Math.round(N * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(fr); }; requestAnimationFrame(fr); });
+    if (window.MRAC && MRAC.on) MRAC.call('pubStats', {}).then(r => run(r && r.students ? r.students : 300)).catch(() => run(300)); else run(300); }
+  window.MRCOUNTUP = countUp;
   function plansClick(e) { const b = e.target.closest && e.target.closest('[data-plans]'); if (!b) return; e.preventDefault(); const mo = b.closest('.modal'); if (mo) mo.remove(); if (window.MRPLANS) MRPLANS.modal(M); }
   if (!window.__plansWired) { window.__plansWired = true; document.addEventListener('click', plansClick); }
   // enlaces de los correos: ?pagar=CÓDIGO abre los planes y pagos · ?gratis=1 abre la prueba gratis
