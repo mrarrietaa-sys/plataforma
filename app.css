@@ -4166,3 +4166,4 @@ textarea.inp{font-size:15px;line-height:1.4}
 .ld-load-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#E3242B,#ff6b6b);border-radius:99px;transition:width .1s linear}
 .ld-load-p{display:block;margin-top:8px;color:#0B2A5B;font:800 18px Poppins,sans-serif}
 @media(max-width:560px){.ld-load-mra{height:160px}}
+#cd::placeholder{letter-spacing:normal}#cd[type=password]{letter-spacing:.25em}.pt-login .pw-wrap{margin:0}

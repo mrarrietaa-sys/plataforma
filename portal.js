@@ -220,7 +220,7 @@
       ${(() => { const lu = P.lastUser(); const vn = (lu && lu.first) || vName(); return lu && lu.first ? `<div class="pt-hello"><img class="pt-mra pt-rkt" src="mra-x-rocket2.webp?v=2" alt="Mr. Arrieta" draggable="false" data-noguide><div class="bubble">${hiGreet(vn)}</div></div>`
         : `<div class="pt-hello"><img class="pt-mra pt-rkt" src="mra-x-rocket2.webp?v=2" alt="Mr. Arrieta" draggable="false"><div class="bubble">${hiGreet(vn)}</div></div>`; })()}
       <h1>Ingresa a tu perfil</h1><p class="muted">Escribe el código que te llegó a tu correo o WhatsApp.</p>
-      <input class="inp" id="cd" placeholder="Ej: ABC-123" autocapitalize="characters" autocomplete="off">
+      <input class="inp" id="cd" type="password" placeholder="Ej: ABC-123" autocapitalize="characters" autocomplete="off">
       <button class="btn k block lg" id="ok">Entrar →</button>
       <div class="pt-or"><span>¿Aún no eres estudiante?</span></div>
       <div class="pt-free"><h2>🟢 EMPIEZA GRATIS</h2>
