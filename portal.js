@@ -110,13 +110,14 @@
       const a = e.target.closest('a[href^="#ld-"]'); if (!a) return; const sec = document.querySelector(a.getAttribute('href')); if (!sec) return; e.preventDefault();
       const bar = (document.getElementById('topbar') || { offsetHeight: 0 }).offsetHeight, vh = innerHeight - bar, r = sec.getBoundingClientRect();
       const y = scrollY + r.top - bar - (r.height < vh ? Math.max(12, (vh - r.height) / 2) : 12);
-      scrollTo({ top: Math.max(0, y), behavior: 'smooth' }); }); }
+      scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+      setTimeout(() => { const r2 = sec.getBoundingClientRect(), b2 = (document.getElementById('topbar') || { offsetHeight: 0 }).offsetHeight; if (r2.top < b2 + 4 || (r2.height < innerHeight - b2 && r2.bottom > innerHeight)) scrollTo({ top: Math.max(0, scrollY + r2.top - b2 - 12), behavior: 'smooth' }); }, 900); }); } // ✅ corrige si algo cambió de tamaño mientras bajaba
     const PL = window.MRPLANS || {}; const T = window.MRTESTIMONIOS || []; const pp = (k) => (PL.PL || {})[k] || {};
     const CARDS = [
-      { id: 'free', icon: '🎁', name: 'ACCESO GRATUITO', price: '$0', per: 'sin costo', tag: 'Para empezar · 3 días', perks: ['Acceso temporal a la plataforma', 'Prueba de clasificación y tu ruta de aprendizaje', 'Los 2 primeros temas de tu ruta'], note: 'No incluye clases individuales.', btn: 'Empezar gratis' },
-      { id: 'membership', icon: '🖥️', name: 'PLATAFORMA', price: pp('membership').price || '$59.900', per: '/mes', tag: 'Toda la plataforma', perks: (PL.BEN || {}).membership ? PL.BEN.membership.filter(b => !/^No incluye/.test(b)) : [], note: 'No incluye clases individuales.' },
-      { id: 'premium', icon: '🎓', name: 'PREMIUM · 4 CLASES', price: pp('premium').price || '$169.900', per: '/mes', tag: 'Plataforma + 4 clases', perks: (PL.BEN || {}).premium || [] },
-      { id: 'premium8', icon: '🏅', name: 'PREMIUM · 8 CLASES', price: pp('premium8').price || '$289.900', per: '/mes', tag: 'Plataforma + 8 clases', perks: (PL.BEN || {}).premium8 || [], best: true }];
+      { id: 'free', icon: '🎁', name: 'ACCESO GRATUITO', price: '$0', per: 'COP · sin costo', tag: 'Pruébalo gratis · 3 días', perks: ['Descubre tu nivel real con la prueba de clasificación', 'Recibe tu ruta personalizada, armada solo para ti', 'Prueba los 2 primeros temas: habla y la plataforma te corrige'], note: 'No incluye clases individuales.', btn: 'Empezar gratis' },
+      { id: 'membership', icon: '🖥️', name: 'PLATAFORMA', price: pp('membership').price || '$59.900', per: 'COP/mes', tag: 'Aprende a tu ritmo', perks: (PL.BEN || {}).membership ? PL.BEN.membership.filter(b => !/^No incluye/.test(b)) : [], note: 'No incluye clases individuales.' },
+      { id: 'premium', icon: '🎓', name: 'PREMIUM · 4 CLASES', price: pp('premium').price || '$169.900', per: 'COP/mes', tag: 'Plataforma + 4 clases con profe', perks: (PL.BEN || {}).premium || [] },
+      { id: 'premium8', icon: '🏅', name: 'PREMIUM · 8 CLASES', price: pp('premium8').price || '$289.900', per: 'COP/mes', tag: 'Plataforma + 8 clases con profe', perks: (PL.BEN || {}).premium8 || [], best: true }];
     const GAN = [['user', 'r', 'Clases 1 a 1', 'Con profes reales, a tu ritmo'], ['monitor', 'b', '100% online', 'Desde tu celular o computador'], ['award', 'g', 'Certificados', 'Al terminar cada módulo'], ['clock', 'y', 'A tu ritmo', 'Estudia cuando quieras'], ['compass', 'b', 'Ruta A1 → B2+', 'Sabes qué estudiar cada día'], ['check', 'r', 'Te escucha y te corrige', 'La plataforma corrige tu pronunciación al instante']];
     const wrap = document.createElement('div'); wrap.className = 'ld';
     wrap.innerHTML = `<section class="ld-hero"><div class="ld-copy"><h1>Aprende inglés <em>HABLANDO</em></h1><p class="ld-lead">Plataforma que escucha tu pronunciación, ruta personalizada del A1 al B2+ y clases individuales con profes reales. 100% online.</p>
@@ -316,7 +317,7 @@
         <p class="db-sub">${pr.done} de ${trial ? '4 clases de tu acceso gratuito' : tot + ' clases'} completadas${a.n > (p.module || 1) ? ' · ¡Avanzaste en tu ruta! 🎉' : ''}</p>
         <div class="db-bar"><i style="width:${pr.pct}%"></i></div>
         <div class="db-hero-b"><a class="btn db-wbtn lg" href="${a.url}">${MRI('video')} ${pr.done ? 'Continuar mi ruta' : 'Empezar mi ruta'}</a><button class="btn db-gbtn sm" id="pt3">¿No estás a gusto con tu nivel?</button></div></div>
-        <img class="db-hero-mra" src="mra-x-rocket.webp" alt="Mr. Arrieta"></div>`;
+        <img class="db-hero-mra db-plane" src="mra-x-plane-red.webp" alt="Mr. Arrieta"></div>`;
     } else if (a) {
       const ready = a && a.ready;
       main = `<div class="card pt-mymod">${a ? `<div class="pt-mymod-img" style="background-image:url('${U(a.img)}')"><span>${a.n}</span></div>` : ''}<div><span class="lbl">${staff ? 'Modo profe' : '🧭 Tu ruta de aprendizaje'}</span>

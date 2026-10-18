@@ -7,9 +7,9 @@
   const C = window.M1CONFIG || {};
   const fmt = (n) => '$' + String(Math.round(+n || 0)).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
   const PL = {
-    membership: { name: '🖥️ PLATAFORMA', price: '$59.900', per: 'COP / mes', n: 59900, classes: 0 },
-    premium: { name: '🎓 PREMIUM · 4 CLASES', price: '$169.900', per: 'COP / mes', n: 169900, classes: 4 },
-    premium8: { name: '🏅 PREMIUM · 8 CLASES', price: '$289.900', per: 'COP / mes', n: 289900, classes: 8 },
+    membership: { name: '🖥️ PLATAFORMA', price: '$59.900', per: 'COP/mes', n: 59900, classes: 0 },
+    premium: { name: '🎓 PREMIUM · 4 CLASES', price: '$169.900', per: 'COP/mes', n: 169900, classes: 4 },
+    premium8: { name: '🏅 PREMIUM · 8 CLASES', price: '$289.900', per: 'COP/mes', n: 289900, classes: 8 },
   };
   const FREE = { name: '🎁 ACCESO GRATUITO', price: '$0', per: 'COP · prueba de 3 días' };
   let EXTRA = 39900;
@@ -21,10 +21,10 @@
   const WA = (t) => `https://wa.me/${C.WHATSAPP}?text=${encodeURIComponent((window.MRNE || String)(t))}`;
   const who = () => { const p = prof(); return (p.name || p.first || '') + (p.code ? ` (código ${p.code})` : ''); };
   const BEN = {
-    free: ['Acceso temporal a la plataforma', 'Los 2 primeros temas de tu ruta', 'No incluye clases individuales'],
-    membership: ['Plataforma disponible 24/7', 'Ruta de aprendizaje por niveles y módulos', 'Materiales, videos y ejercicios', 'Seguimiento de tu progreso', 'No incluye clases individuales'],
-    premium: ['Todo lo incluido en Plataforma', '4 clases individuales de 50 minutos al mes', 'Reservas según la disponibilidad de los profes', 'Clases no acumulables: úsalas en tu periodo mensual'],
-    premium8: ['Todo lo incluido en Plataforma', '8 clases individuales de 50 minutos al mes', 'Más práctica de comunicación cada semana', 'Clases no acumulables: úsalas en tu periodo mensual'],
+    free: ['Descubre tu nivel real con la prueba de clasificación', 'Recibe tu ruta personalizada, armada solo para ti', 'Prueba los 2 primeros temas: habla y la plataforma te corrige', 'No incluye clases individuales'],
+    membership: ['Habla desde el primer día: la plataforma escucha tu pronunciación y te corrige al instante', 'Ruta completa del A1 al B2+ a tu ritmo, 24/7, desde el celular o el computador', 'Audios con voces nativas, juegos y música para aprender sin aburrirte', 'Certificado al terminar cada módulo', 'No incluye clases individuales'],
+    premium: ['Todo lo de Plataforma', '4 clases 1 a 1 de 50 minutos con profes bilingües: pierde el miedo a hablar', 'Tú eliges el profe, el día, la hora y el tema que quieres practicar', 'Tu profe conoce tu progreso y se enfoca en lo que necesitas', 'Clases no acumulables: úsalas en tu periodo mensual'],
+    premium8: ['Todo lo de Plataforma', '8 clases 1 a 1 de 50 minutos: 2 por semana, el ritmo ideal para ganar fluidez', 'Habla inglés con un profe cada semana y gana seguridad real', 'Tú eliges el profe, el día, la hora y el tema que quieres practicar', 'Clases no acumulables: úsalas en tu periodo mensual'],
   };
   const waMsg = (k, renew) => `¡Hola! Soy ${who() || 'un estudiante'}. Quiero ${renew ? 'renovar' : 'activar'} el plan ${PL[k].name} (${PL[k].price} ${PL[k].per}) en mrarrieta.com`;
   const IC = { free: 'gift', membership: 'monitor', premium: 'crown', premium8: 'gem' };
