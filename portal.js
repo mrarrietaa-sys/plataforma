@@ -450,7 +450,7 @@
     ] : [
       { mood: 'welcome', t: `¡Muy bien, ${fn}! 🎉`, d: 'Ya tienes tu ruta de aprendizaje. Te muestro tu perfil en 1 minuto.' },
       { sel: '.pt-mymod', mood: 'pointside', t: '📍 Tu ruta', d: 'Aquí ves <b>en qué módulo estás</b>, tu avance y el botón para <b>continuar tu clase</b>.' },
-      { sel: '.lv-wrap', mood: 'present', t: '👩‍🏫 Clases con profes', d: 'Reserva tus <b>clases individuales</b> mínimo 4 horas antes. Cancela sin penalización hasta 2 horas antes.' },
+      { sel: '.lv-wrap', mood: 'present', t: '👩‍🏫 Clases con profes', d: 'Reserva tus <b>clases individuales</b> desde el día siguiente y hasta 5 días antes. Cancela sin penalización hasta 12 horas antes.' },
       { sel: '.pt-routebar', mood: 'present', t: '🧭 Tu camino', d: 'Tu ruta va de A1 a B2+. Cada módulo se abre cuando <b>apruebas el examen final</b> del anterior.' },
       { sel: '#pt-plans', mood: 'idea', t: '💳 Tu plan', d: pl.premium ? 'Tienes <b>Premium</b>: toda la plataforma + clases individuales con profes.' : pl.paid ? 'Tienes <b>Plataforma</b>: toda la plataforma. Si quieres clases con profes, pásate a Premium.' : 'Aquí ves los planes para <b>desbloquear toda tu ruta</b>.' },
       { sel: '#out', mood: 'watch', t: '⏻ Salir', d: 'Con este botón cierras tu sesión. Tu progreso queda guardado en la nube.' },
@@ -684,8 +684,8 @@
       ${(pr.history || []).length ? `<details class="card lv-card lv-hist"><summary>${MRI('file')} Historial de clases (${pr.history.length})</summary><div class="lv-list">${pr.history.map(c => `<div class="lv-cl ${c.type}"><div class="grow"><b>${c.type === 'vip' ? '🎯 Clase individual' : '👥 Clase grupal'} · ${fmtD(c.date)} ${fmtT(c.time)}</b><small>${esc(c.teacher || '')} · ${c.type === 'vip' ? (c.status === 'done' ? (c.attended ? '✅ Dictada · 1 clase descontada de tu paquete' : '❌ No asististe · 1 clase descontada de tu paquete') : c.status === 'noshow' ? '❌ No asististe · 1 clase descontada de tu paquete' : c.status === 'latecancel' ? 'Cancelación tardía · 1 clase descontada de tu paquete' : c.status === 'tnoshow' ? '🚩 Tu profe no se conectó · la clase volvió a tu saldo' : c.status === 'cancelled' ? 'Cancelada a tiempo · sin descuento' : esc(c.status)) : (c.status === 'done' && c.attended ? '✅ Asististe' : c.status === 'cancelled' ? 'Cancelada' : 'No asististe · sin penalización')}</small></div></div>`).join('')}</div></details>` : ''}</div>
     </div>`;
     if ($('#lv-book')) $('#lv-book').onclick = () => { const mm = M.modal(`<h3>🎯 Antes de reservar tu clase individual</h3><ul class="lv-rules">
-        <li><span>📅</span><div><b>Reserva:</b> mínimo <b>4 horas</b> antes de la clase.</div></li>
-        <li><span>✅</span><div><b>Cancelación sin penalización:</b> hasta <b>2 horas</b> antes de la clase.</div></li>
+        <li><span>📅</span><div><b>Reserva:</b> desde el <b>día siguiente</b> y hasta <b>5 días</b> antes.</div></li>
+        <li><span>✅</span><div><b>Cancelación sin penalización:</b> hasta <b>12 horas</b> antes de la clase.</div></li>
         <li><span>⚠️</span><div><b>Cancelación tardía o inasistencia:</b> la clase se descuenta de tu paquete y no será repuesta.</div></li>
         <li><span>⏱️</span><div>Todas las clases duran <b>50 minutos</b>.</div></li></ul><button class="btn k block lg" id="vb-go">Entendido, reservar →</button>`, { x: true }); $('#vb-go', mm).onclick = () => { mm.remove(); vipBooking(); }; };
     $$('[data-claim]', box).forEach(b => b.onclick = () => { const mm = M.modal(`<h3>🚩 ¿Tu profe no se conectó?</h3><p>Cuéntanos qué pasó (opcional). Administración lo revisa y, si se confirma, la clase vuelve a tu saldo.</p><textarea class="inp" id="cl-n" rows="3" placeholder="Ej.: esperé 15 minutos en el enlace y nadie se conectó"></textarea><button class="btn k block lg" id="cl-go" style="margin-top:10px">Enviar reporte</button>`, { x: true });
@@ -716,7 +716,7 @@
     let T = null, D = null, S = null, TP = null, OT = '';
     const MN = (P.assigned() || {}).n || +(P.get() || {}).module || 1; const tops = TOPICS[MN] || TOPICS[1];
     const step = () => {
-      if (!T) { b.innerHTML = `<p class="vb-st">1️⃣ Elige tu profesor</p><div class="vb-teachers">${r.teachers.map(t => `<button class="vb-t" data-t="${esc(t.id)}">${(t.photo || (window.MRPROFPIC && MRPROFPIC(t.name))) ? `<span class="vb-av has"><img src="${esc(t.photo || MRPROFPIC(t.name))}" alt=""></span>` : `<span class="vb-av">${esc((t.name || '?').split(' ').map(x => x[0]).slice(0, 2).join(''))}</span>`}<div><b>${esc(t.name)}</b><small>${esc(t.bio || '')}</small><em>${t.slots.length} espacio${t.slots.length === 1 ? '' : 's'} disponible${t.slots.length === 1 ? '' : 's'}</em></div></button>`).join('')}</div><p class="muted vb-cr">Te quedan <b>${r.credits.vipLeft}</b> clase(s) VIP este mes. Cancelas sin penalidad hasta 2 horas antes.</p>`;
+      if (!T) { b.innerHTML = `<p class="vb-st">1️⃣ Elige tu profesor</p><div class="vb-teachers">${r.teachers.map(t => `<button class="vb-t" data-t="${esc(t.id)}">${(t.photo || (window.MRPROFPIC && MRPROFPIC(t.name))) ? `<span class="vb-av has"><img src="${esc(t.photo || MRPROFPIC(t.name))}" alt=""></span>` : `<span class="vb-av">${esc((t.name || '?').split(' ').map(x => x[0]).slice(0, 2).join(''))}</span>`}<div><b>${esc(t.name)}</b><small>${esc(t.bio || '')}</small><em>${t.slots.length} espacio${t.slots.length === 1 ? '' : 's'} disponible${t.slots.length === 1 ? '' : 's'}</em></div></button>`).join('')}</div><p class="muted vb-cr">Te quedan <b>${r.credits.vipLeft}</b> clase(s) VIP este mes. Cancelas sin penalidad hasta 12 horas antes.</p>`;
         $$('.vb-t', b).forEach(x => x.onclick = () => { T = r.teachers.find(t => t.id === x.dataset.t); sfx('tap'); step(); }); return; }
       const dates = [...new Set(T.slots.map(s => s.date))];
       if (!D) D = dates[0];
@@ -739,7 +739,7 @@
         const other = $('#vb-topic', b).value.trim(); const topic = TP === 'o' ? (other ? 'Otro tema: ' + other : 'Otro tema') : TP != null ? `Módulo ${MN} · Tema ${TP + 1}: ${tops[TP][0]} (${tops[TP][1]})` : '';
         const res = await MRAC.call('vipBook', { code: MRAC.code(), slotId: S.id, topic });
         if (res.ok) { m.remove(); sfx('win'); M.confetti(1800); M.modal(`<div class="center">${M.mascot('mascot bounce', 'celebrate')}<h3>¡Clase reservada! 🎉</h3><p style="font-size:17px">${esc(T.name)} · <b>${fmtD(S.date, { weekday: 'long', day: 'numeric', month: 'long' })}</b> · ${fmtT(S.time)} (hora Colombia)</p><p class="muted">Te enviamos la confirmación a tu correo. El enlace de la clase aparece en “Mis próximas clases”.</p></div>`, { x: true }); await MRAC.me(true); live(); }
-        else { M.toast({ taken: 'Ese espacio acaba de ser reservado. Elige otro 🙏', no_credits: 'Ya reservaste todas tus clases de este periodo.', holiday: 'Ese día es domingo o festivo en Colombia: no hay clases. Elige otro día 🙏', too_late: 'Ese espacio ya no se puede reservar (muy pronto).' }[res.err] || 'No se pudo reservar. Inténtalo de nuevo.');
+        else { M.toast({ taken: 'Ese espacio acaba de ser reservado. Elige otro 🙏', window: 'Las clases se reservan desde el día siguiente y hasta 5 días adelante.', no_credits: 'Ya reservaste todas tus clases de este periodo.', holiday: 'Ese día es domingo o festivo en Colombia: no hay clases. Elige otro día 🙏', too_late: 'Ese espacio ya no se puede reservar (muy pronto).' }[res.err] || 'No se pudo reservar. Inténtalo de nuevo.');
           if (res.err === 'taken') { const rr = await MRAC.call('vipOptions', { code: MRAC.code() }); if (rr.ok) { r.teachers = rr.teachers; T = r.teachers.find(t => t.id === T.id) || null; S = null; D = null; } step(); } else { ok.disabled = false; ok.textContent = 'Reintentar'; } } };
     };
     step();
@@ -757,10 +757,10 @@
   }
   function cancelVip(id, kind, late) {
     const club = kind === 'club', what = club ? 'tu cupo en la clase grupal' : 'tu clase individual'; if (club) late = false;
-    const m = M.modal(`<h3>¿Cancelar ${what}?</h3>${late ? `<p class="lv-noacum">⚠️ Faltan <b>menos de 2 horas</b>. Si cancelas ahora, ${club ? 'esta sesión <b>se vence</b>' : 'esta clase <b>se descuenta de tu paquete y no será repuesta</b>'}.</p>` : `<p>${club ? 'En las clases grupales <b>no hay penalidad</b>: puedes seguir asistiendo a las demás de tu nivel.' : 'Estás a tiempo: cancelas <b>sin penalización</b> y la clase vuelve a tu paquete.'}</p>`}<p class="muted">Tu profe recibe el aviso.</p><div class="row"><button class="btn k" id="y">Sí, cancelar</button><button class="btn w" id="n">No</button></div>`, { x: true });
+    const m = M.modal(`<h3>¿Cancelar ${what}?</h3>${late ? `<p class="lv-noacum">⚠️ Faltan <b>menos de 12 horas</b>. Si cancelas ahora, ${club ? 'esta sesión <b>se vence</b>' : 'esta clase <b>se descuenta de tu paquete y no será repuesta</b>'}.</p>` : `<p>${club ? 'En las clases grupales <b>no hay penalidad</b>: puedes seguir asistiendo a las demás de tu nivel.' : 'Estás a tiempo: cancelas <b>sin penalización</b> y la clase vuelve a tu paquete.'}</p>`}<p class="muted">Tu profe recibe el aviso.</p><div class="row"><button class="btn k" id="y">Sí, cancelar</button><button class="btn w" id="n">No</button></div>`, { x: true });
     $('#n', m).onclick = () => m.remove();
     $('#y', m).onclick = async () => { $('#y', m).disabled = true; const r = await MRAC.call(club ? 'groupCancel' : 'vipCancel', { code: MRAC.code(), classId: id }); m.remove();
-      if (r.ok) { M.toast(r.late ? (club ? 'Cancelaste tu cupo ✅' : 'Clase cancelada. Se descontó de tu paquete (menos de 2 horas).') : (club ? 'Cancelaste tu cupo ✅' : 'Clase cancelada sin penalidad. La clase volvió a tu plan ✅')); await MRAC.me(true); live(); }
+      if (r.ok) { M.toast(r.late ? (club ? 'Cancelaste tu cupo ✅' : 'Clase cancelada. Se descontó de tu paquete (menos de 12 horas).') : (club ? 'Cancelaste tu cupo ✅' : 'Clase cancelada sin penalidad. La clase volvió a tu plan ✅')); await MRAC.me(true); live(); }
       else M.toast(r.err === 'started' ? 'La clase ya empezó: no se puede cancelar.' : 'No se pudo cancelar.'); };
   }
   /* ---------- cumpleaños ---------- */

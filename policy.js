@@ -5,11 +5,11 @@
   <h2 class="pol-t">Política de reservas y cancelaciones</h2>
   <p class="pol-only">Aplica para estudiantes <b>Premium</b> (4 u 8 clases al mes): las clases individuales son exclusivas de estos planes.</p>
   <section><h3>1. Reservas</h3><ul>
-    <li><b>Reserva:</b> mínimo <b>4 horas</b> antes de la clase, eligiendo profe, fecha y hora desde tu perfil.</li>
+    <li><b>Reserva:</b> desde el <b>día siguiente</b> y hasta <b>5 días</b> antes, eligiendo profe, fecha y hora desde tu perfil.</li>
     <li>Las clases de tu plan <b>no son acumulables</b>: úsalas dentro de tu periodo mensual; las que no uses se vencen y no se recuperan.</li>
     <li>Las <b>clases adicionales</b> que compres valen solo dentro de tu plan vigente.</li></ul></section>
   <section><h3>2. Cancelaciones</h3><ul>
-    <li><b>Cancelación sin penalización:</b> mínimo <b>2 horas</b> antes de la clase. La clase vuelve a tu saldo.</li>
+    <li><b>Cancelación sin penalización:</b> mínimo <b>12 horas</b> antes de la clase. La clase vuelve a tu saldo.</li>
     <li><b>Cancelación tardía o inasistencia:</b> la clase se descuenta de tu plan y no será repuesta.</li></ul></section>
   <section><h3>3. Si tu profe no se conecta</h3><ul>
     <li>Puedes reportarlo desde tu perfil apenas empiece la clase y hasta 24 horas después.</li>
