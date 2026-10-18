@@ -230,21 +230,27 @@
   // 🎁 acceso gratuito automático: nombre, WhatsApp y correo → se crea el código y entra de una
   function trialForm() {
     const m = M.modal(`<div class="center"><div class="to-ic">${MRI('gift')}</div><h3>Prueba gratis 3 días</h3><p class="muted">Crea tu acceso en segundos. Sin tarjeta, sin compromiso.</p></div>
-      <div class="tf"><input class="inp" id="tf-n" placeholder="Nombre y apellido" autocomplete="name"><input class="inp" id="tf-w" type="tel" placeholder="WhatsApp" autocomplete="tel"><input class="inp" id="tf-e" type="email" placeholder="Correo" autocomplete="email">
-      <label class="tf-ok"><input type="checkbox" id="tf-c"> Acepto recibir mi código e información de mrarrieta.com por correo y WhatsApp.</label>
+      <div class="tf"><div class="tf-who" role="tablist"><button type="button" class="on" data-who="me">Para mí</button><button type="button" data-who="kid">Para mi hijo(a)</button></div>
+      <input class="inp" id="tf-n" placeholder="Nombre y apellido" autocomplete="name"><input class="inp tf-k hidden" id="tf-g" placeholder="Nombre del papá o la mamá" autocomplete="name"><input class="inp" id="tf-w" type="tel" placeholder="WhatsApp" autocomplete="tel"><input class="inp" id="tf-e" type="email" placeholder="Correo" autocomplete="email"><input class="inp tf-k hidden" id="tf-e2" type="email" placeholder="Correo del otro padre o madre (opcional)">
+      <label class="tf-ok"><input type="checkbox" id="tf-c"> <span id="tf-ct">Acepto recibir mi código e información de mrarrieta.com por correo y WhatsApp.</span></label>
       <button class="btn r block lg" id="tf-go">Crear mi acceso gratis →</button><p class="muted center" id="tf-msg" style="font-size:13.5px;margin:0"></p></div>`, { x: true });
-    const msg = (t) => { $('#tf-msg', m).textContent = t; };
+    const msg = (t) => { $('#tf-msg', m).textContent = t; }; let kid = false;
+    m.querySelectorAll('[data-who]').forEach(b => b.onclick = () => { kid = b.dataset.who === 'kid'; m.querySelectorAll('[data-who]').forEach(x => x.classList.toggle('on', x === b)); m.querySelectorAll('.tf-k').forEach(x => x.classList.toggle('hidden', !kid)); msg('');
+      $('#tf-n', m).placeholder = kid ? 'Nombre y apellido del niño(a)' : 'Nombre y apellido'; $('#tf-w', m).placeholder = kid ? 'WhatsApp del papá o la mamá' : 'WhatsApp'; $('#tf-e', m).placeholder = kid ? 'Correo del papá o la mamá' : 'Correo';
+      $('#tf-ct', m).textContent = kid ? 'Soy el papá, la mamá o el acudiente y acepto recibir el código e información de mrarrieta.com por correo y WhatsApp.' : 'Acepto recibir mi código e información de mrarrieta.com por correo y WhatsApp.'; });
     $('#tf-go', m).onclick = async () => {
-      const name = $('#tf-n', m).value.trim(), whatsapp = $('#tf-w', m).value.trim(), email = $('#tf-e', m).value.trim();
-      if (name.split(/\s+/).length < 2) return msg('Escribe tu nombre y apellido.');
-      if (whatsapp.replace(/\D/g, '').length < 7) return msg('Revisa tu número de WhatsApp.');
-      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return msg('Revisa tu correo.');
+      const name = $('#tf-n', m).value.trim(), whatsapp = $('#tf-w', m).value.trim(), email = $('#tf-e', m).value.trim(), guardian = $('#tf-g', m).value.trim(), email2 = $('#tf-e2', m).value.trim();
+      if (name.split(/\s+/).length < 2) return msg(kid ? 'Escribe el nombre y apellido del niño(a).' : 'Escribe tu nombre y apellido.');
+      if (kid && guardian.split(/\s+/).length < 2) return msg('Escribe el nombre y apellido del papá o la mamá.');
+      if (whatsapp.replace(/\D/g, '').length < 7) return msg('Revisa el número de WhatsApp.');
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return msg('Revisa el correo.');
+      if (kid && email2 && (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email2) || email2.toLowerCase() === email.toLowerCase())) return msg('Revisa el segundo correo (debe ser diferente al primero).');
       if (!$('#tf-c', m).checked) return msg('Marca la casilla para continuar.');
       const b = $('#tf-go', m); b.disabled = true; b.textContent = '⏳ Creando tu acceso…';
-      setVName(name); const r = await MRAC.call('trialSignup', { name, whatsapp, email }).catch(() => null);
+      setVName(name); const r = await MRAC.call('trialSignup', kid ? { name, whatsapp, email, kid: true, guardian, email2 } : { name, whatsapp, email }).catch(() => null);
       if (!r || !r.ok) { b.disabled = false; b.textContent = 'Crear mi acceso gratis →'; return msg(r && r.err === 'busy' ? 'Hay muchas solicitudes en este momento. Inténtalo en unos minutos.' : 'No se pudo crear tu acceso. Revisa tus datos e inténtalo de nuevo.'); }
       if (r.exists) { m.querySelector('.card').innerHTML = `<div class="center"><div class="to-ic">${MRI('clock')}</div><h3>Estos datos ya están registrados</h3><p>El acceso gratuito de 3 días es <b>solo una vez por persona</b>. Si ya eres estudiante, entra con tu código en "Ingresa a tu perfil". Si quieres continuar, elige tu plan.</p><a class="btn k block lg" href="#ld-planes" id="tf-pl">Ver planes →</a></div>`; $('#tf-pl', m).onclick = () => m.remove(); return; }
-      m.querySelector('.card').innerHTML = `<div class="center">${M.mascot('mascot bounce', 'celebrate')}<h3>¡Listo, ${esc(r.first)}! 🎉</h3><p>Tu código de acceso es</p><div class="rc-code" style="font:800 28px Poppins,sans-serif;color:#0B2A5B;letter-spacing:.06em;background:#EEF3FB;border:2px dashed #9fb3d6;border-radius:14px;padding:8px 18px;display:inline-block;margin:6px 0">${esc(r.code)}</div><p class="muted">También te lo enviamos al correo. Guárdalo para entrar después.</p><button class="btn r block lg" id="tf-in">Entrar a mi prueba gratis →</button></div>`;
+      m.querySelector('.card').innerHTML = `<div class="center">${M.mascot('mascot bounce', 'celebrate')}<h3>¡Listo, ${esc(r.first)}! 🎉</h3><p>Tu código de acceso es</p><div class="rc-code" style="font:800 28px Poppins,sans-serif;color:#0B2A5B;letter-spacing:.06em;background:#EEF3FB;border:2px dashed #9fb3d6;border-radius:14px;padding:8px 18px;display:inline-block;margin:6px 0">${esc(r.code)}</div><p class="muted">${kid ? 'También lo enviamos ' + (email2 ? 'a los dos correos' : 'al correo') + ' de los padres.' : 'También te lo enviamos al correo.'} Guárdalo para entrar después.</p><button class="btn r block lg" id="tf-in">Entrar a mi prueba gratis →</button></div>`;
       $('#tf-in', m).onclick = () => { m.remove(); const i = $('#cd'); if (i) { i.value = r.code; $('#ok').click(); } };
     };
   }

@@ -4358,3 +4358,7 @@ textarea.inp{font-size:15px;line-height:1.4}
 .ld-ld{display:none;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(11,42,91,.85);color:#fff;font-size:12.5px;font-weight:600;padding:7px 12px;border-radius:20px;white-space:nowrap;z-index:3}
 .ld-tv.loading .ld-ld{display:block}
 .ld-ld.err{display:block;white-space:normal;text-align:center;width:80%}
+/* prueba gratis: para mí / para mi hijo(a) */
+.tf-who{display:flex;gap:6px;background:#EEF3FB;border-radius:12px;padding:4px;margin-bottom:2px}
+.tf-who button{flex:1;border:0;background:none;border-radius:9px;padding:8px 6px;font:700 13.5px Poppins,sans-serif;color:#0B2A5B;cursor:pointer}
+.tf-who button.on{background:#fff;box-shadow:0 2px 8px rgba(11,42,91,.12);color:#E3242B}
