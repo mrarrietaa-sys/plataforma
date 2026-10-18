@@ -568,7 +568,7 @@
       let hsh = 0; for (const ch of String(M.MOD.id) + p.id) hsh = (hsh * 31 + ch.charCodeAt(0)) >>> 0;
       const g = POOL[hsh % POOL.length] || 'memory';
       const body = A.head(stage, { lbl: 'Warm-up', title: '🔥 Warm-up game', ins: pv ? `Calienta motores: juega con lo que aprendiste en <b>${esc(pv._t.title)} · ${PL(pv)}</b> y descubre <b>${neu.length} palabras nuevas</b> de la clase de hoy.` : 'Calienta motores: descubre jugando algunas palabras de la clase de hoy.' });
-      body.appendChild(h(`<div class="wg-chips">${old.map(v => `<span class="wg-c old">🔁 ${esc(v.en)}</span>`).join('')}${neu.map(v => `<span class="wg-c new">✨ ${esc(v.en)}<small>${esc(v.es || '')}</small></span>`).join('')}</div>`));
+      /* palabras del warm-up ocultas */
       await A.waitNext(stage, '¡A jugar! 🎮');
       const pseudo = Object.assign(Object.create(p), { vocab, sentences: (pv && pv.sentences) || p.sentences, pairs: null });
       try { return await A[g](stage, pseudo); } catch (e) { console.error('warmGame', g, e); return null; }
