@@ -8,9 +8,10 @@ window.MRTESTIMONIOS = [
 ];
 /* video en Drive ("drive:ID") → portada automática y reproductor de Drive */
 window.MRTES = {
+  v: (u) => (u && !/^(https?:|data:|drive:)/.test(u) && u.indexOf('?') < 0 ? u + '?v=3' : u), // evita que el navegador muestre la versión vieja
   drive: (v) => { const m = /^drive:(.+)$/.exec(String(v || '')); return m ? m[1] : ''; },
-  poster: (t) => t.poster || (MRTES.drive(t.video) ? 'https://drive.google.com/thumbnail?id=' + MRTES.drive(t.video) + '&sz=w600' : ''),
-  player: (t) => { const d = MRTES.drive(t.video); return d ? `<iframe src="https://drive.google.com/file/d/${d}/preview" allow="autoplay; fullscreen" allowfullscreen></iframe>` : `<video src="${String(t.video).replace(/"/g, '')}" controls autoplay playsinline></video>`; },
+  poster: (t) => MRTES.v(t.poster) || (MRTES.drive(t.video) ? 'https://drive.google.com/thumbnail?id=' + MRTES.drive(t.video) + '&sz=w600' : ''),
+  player: (t) => { const d = MRTES.drive(t.video); return d ? `<iframe src="https://drive.google.com/file/d/${d}/preview" allow="autoplay; fullscreen" allowfullscreen></iframe>` : `<video src="${MRTES.v(String(t.video)).replace(/"/g, '')}" controls autoplay playsinline></video>`; },
 };
 (function () {
   const apply = (list) => { if (Array.isArray(list)) window.MRTESTIMONIOS = list; };
