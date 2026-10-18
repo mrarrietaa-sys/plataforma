@@ -135,12 +135,25 @@
     const t = D.teacher;
     app.innerHTML = `<div class="tp-head">
         <div class="tp-head-txt"><h1>¡Hola, ${esc(t.hello || String(t.name || '').split(' ')[0])}! 👋</h1><p class="muted">${dLabel(today(), true)} · <b>${h12(nowHM())}</b> hora Colombia · Código <b>${esc(t.code)}</b></p></div>
-        <button class="btn k sm" id="tp-mat">📚 Material de clases</button><button class="btn sm wa-btn tp-chat" id="tp-chat"><span class="wa-dot"><svg viewBox="0 0 32 32" width="18" height="18" aria-hidden="true"><path fill="#fff" d="M16 3C8.8 3 3 8.6 3 15.6c0 2.5.8 4.9 2.1 6.9L3.6 28l5.7-1.5c2 1.1 4.3 1.7 6.7 1.7 7.2 0 13-5.6 13-12.6S23.2 3 16 3zm6.3 17.6c-.3.8-1.6 1.5-2.2 1.6-.6.1-1.3.1-2.1-.1-.5-.2-1.1-.4-1.9-.7-3.3-1.4-5.5-4.7-5.6-4.9-.2-.2-1.3-1.8-1.3-3.4s.8-2.4 1.1-2.7c.3-.3.6-.4.8-.4h.6c.2 0 .5-.1.7.6.3.7.9 2.3 1 2.5.1.2.1.4 0 .6-.1.2-.2.4-.3.6l-.5.6c-.2.2-.3.4-.1.7.2.3.9 1.5 2 2.4 1.4 1.2 2.5 1.6 2.9 1.8.4.2.6.1.8-.1.2-.2.9-1 1.1-1.4.2-.4.5-.3.8-.2.3.1 2 .9 2.3 1.1.3.2.6.3.7.4.1.3.1 1-.2 1.8z"/></svg></span> Chat con estudiantes</button><button class="btn w sm" id="tp-tour" style="margin-top:6px">🧭 Ver el tour</button>
+        <button class="btn k sm" id="tp-mat">📚 Material de clases</button><button class="btn w sm" id="tp-pinch">🔑 Cambiar PIN</button><button class="btn sm wa-btn tp-chat" id="tp-chat"><span class="wa-dot"><svg viewBox="0 0 32 32" width="18" height="18" aria-hidden="true"><path fill="#fff" d="M16 3C8.8 3 3 8.6 3 15.6c0 2.5.8 4.9 2.1 6.9L3.6 28l5.7-1.5c2 1.1 4.3 1.7 6.7 1.7 7.2 0 13-5.6 13-12.6S23.2 3 16 3zm6.3 17.6c-.3.8-1.6 1.5-2.2 1.6-.6.1-1.3.1-2.1-.1-.5-.2-1.1-.4-1.9-.7-3.3-1.4-5.5-4.7-5.6-4.9-.2-.2-1.3-1.8-1.3-3.4s.8-2.4 1.1-2.7c.3-.3.6-.4.8-.4h.6c.2 0 .5-.1.7.6.3.7.9 2.3 1 2.5.1.2.1.4 0 .6-.1.2-.2.4-.3.6l-.5.6c-.2.2-.3.4-.1.7.2.3.9 1.5 2 2.4 1.4 1.2 2.5 1.6 2.9 1.8.4.2.6.1.8-.1.2-.2.9-1 1.1-1.4.2-.4.5-.3.8-.2.3.1 2 .9 2.3 1.1.3.2.6.3.7.4.1.3.1 1-.2 1.8z"/></svg></span> Chat con estudiantes</button><button class="btn w sm" id="tp-tour" style="margin-top:6px">🧭 Ver el tour</button>
       </div>
       <nav class="tp-tabs" role="tablist">${TABS.map(([id, ic, tx]) => `<button class="tp-tab${tab === id ? ' on' : ''}" role="tab" aria-selected="${tab === id}" data-tab="${id}"><span aria-hidden="true">${ic}</span> ${tx}</button>`).join('')}</nav>
       <section id="tp-body"></section>`;
     if ($('#tp-tour')) $('#tp-tour').onclick = () => tour();
     if ($('#tp-mat')) $('#tp-mat').onclick = material;
+    if ($('#tp-pinch')) $('#tp-pinch').onclick = () => { // 🔑 cambiar PIN
+      const m = document.createElement('div'); m.className = 'modal'; m.innerHTML = `<div class="card"><button class="mx" aria-label="Cerrar">✕</button><h3>🔑 Cambiar mi PIN</h3><p class="muted">Usa de 4 a 8 números.</p>
+        <input class="inp" id="pc-old" type="password" inputmode="numeric" placeholder="PIN actual" style="margin-bottom:8px"><input class="inp" id="pc-new" type="password" inputmode="numeric" placeholder="Nuevo PIN" style="margin-bottom:8px"><input class="inp" id="pc-new2" type="password" inputmode="numeric" placeholder="Repite el nuevo PIN">
+        <p id="pc-msg" style="color:#b91c1c;font-weight:700;min-height:20px;margin:8px 0;text-align:center"></p><button class="btn k block lg" id="pc-go">Guardar nuevo PIN</button></div>`; document.body.appendChild(m);
+      m.querySelector('.mx').onclick = () => m.remove(); m.onclick = (e) => { if (e.target === m) m.remove(); };
+      m.querySelector('#pc-go').onclick = async () => { const o = m.querySelector('#pc-old').value.trim(), n = m.querySelector('#pc-new').value.trim(), n2 = m.querySelector('#pc-new2').value.trim(), msg = m.querySelector('#pc-msg');
+        if (o !== String(S.pin)) return msg.textContent = 'El PIN actual no es correcto.';
+        if (!/^[0-9]{4,8}$/.test(n)) return msg.textContent = 'Usa de 4 a 8 números.';
+        if (n !== n2) return msg.textContent = 'Los dos PIN nuevos no coinciden.';
+        const b = m.querySelector('#pc-go'); b.disabled = true; b.textContent = 'Guardando…';
+        const r = await api('tPinChange', { newPin: n }).catch(() => null);
+        if (r && r.ok) { S.pin = n; ss.set(SKEY, S); m.querySelector('.card').innerHTML = '<div style="text-align:center"><h3>✅ ¡Listo! Tu PIN cambió</h3><p>Desde ahora entra con tu nuevo PIN. Te enviamos una confirmación a tu correo.</p><button class="btn k block lg" id="pc-ok">Entendido</button></div>'; m.querySelector('#pc-ok').onclick = () => m.remove(); return; }
+        b.disabled = false; b.textContent = 'Guardar nuevo PIN'; msg.textContent = !r ? 'No hay conexión. Inténtalo de nuevo.' : r.err === 'same' ? 'El nuevo PIN es igual al actual.' : 'No se pudo cambiar. Inténtalo de nuevo.'; }; };
     if ($('#tp-chat')) $('#tp-chat').onclick = () => openChat();
     if (/#chat\b/.test(location.hash)) { history.replaceState(null, '', location.pathname); setTimeout(() => openChat(), 300); }
     $$('.tp-tab').forEach((b) => b.onclick = () => { tab = b.dataset.tab; ss.set(TABKEY, tab); shell(); });

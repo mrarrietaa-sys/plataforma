@@ -51,8 +51,8 @@ if (!window.M1) window.M1 = {
       <div class="in-hero-txt">
         <span class="lbl">Inscripciones abiertas</span>
         <h1>Aprende inglés <span class="in-hl">HABLANDO</span>, a tu ritmo y con tu propia ruta.</h1>
-        <p>Una plataforma completa para niños, jóvenes y adultos hispanohablantes: prueba de clasificación, ruta de aprendizaje del A1 al B2+, actividades interactivas y, si lo quieres, clases en vivo con profes.</p>
-        <ul class="in-hero-pts"><li>✅ 100 % en línea</li><li>✅ Metodología RealTalk®</li><li>✅ Tu progreso siempre guardado</li></ul>
+        <p>Tu nivel en 10 minutos, tu ruta del A1 al B2+ y una plataforma que <b>te escucha y te corrige</b>. Súmale clases 1 a 1 con profes reales. <b>100% virtual.</b></p>
+        <ul class="in-hero-pts"><li>✅ 100% virtual</li><li>✅ Metodología RealTalk®</li><li>✅ Tu progreso siempre guardado</li></ul>
       </div>
       <img class="in-hero-img" src="mra-welcome.webp" alt="Mr. Arrieta te da la bienvenida" width="300" height="300">
     </section>

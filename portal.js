@@ -120,7 +120,7 @@
       { id: 'premium8', icon: '🏅', name: 'PREMIUM · 8 CLASES', price: pp('premium8').price || '$289.900', per: 'COP/mes', tag: '+ 8 clases con profe', perks: (PL.BEN || {}).premium8 || [], best: true }];
     const GAN = [['user', 'r', 'Clases 1 a 1', 'Con profes reales, a tu ritmo'], ['monitor', 'b', '100% online', 'Desde tu celular o computador'], ['award', 'g', 'Certificados', 'Al terminar cada módulo'], ['clock', 'y', 'A tu ritmo', 'Estudia cuando quieras'], ['compass', 'b', 'Ruta A1 → B2+', 'Sabes qué estudiar cada día'], ['check', 'r', 'Te escucha y te corrige', 'La plataforma corrige tu pronunciación al instante']];
     const wrap = document.createElement('div'); wrap.className = 'ld';
-    wrap.innerHTML = `<section class="ld-hero"><div class="ld-copy"><h1>Aprende inglés <em>HABLANDO</em></h1><p class="ld-lead">La plataforma que <b>te escucha, te corrige y te pone a hablar</b> desde el primer día. Con profes reales cuando los necesites.</p>
+    wrap.innerHTML = `<section class="ld-hero"><div class="ld-copy"><h1>Aprende inglés <em>HABLANDO</em></h1><p class="ld-lead">La plataforma que <b>te escucha, te corrige y te pone a hablar</b> desde el primer día. <b>100% virtual</b>, a tu ritmo y con profes reales.</p>
         <div class="ld-cta"><button class="btn k lg" data-trial>${MRI('gift')} Prueba gratis 3 días</button><a class="btn w lg" href="#ld-planes">${MRI('crown')} Ver planes</a></div>
         <img class="ld-hero-mra" src="mra-x-rocket4.webp?v=2" alt="Mr. Arrieta"></div><div class="ld-login"></div></section>
       <section class="ld-sec" id="ld-planes"><h2>Elige tu plan</h2><p class="ld-sub">Pagos mes a mes · tarjeta o transferencia</p><div class="in-plans ld-inplans">
@@ -170,6 +170,19 @@
     w.addEventListener('mousedown', down); w.addEventListener('touchstart', down, { passive: true });
     w.querySelector('.ld-wa').addEventListener('click', (e) => { if (moved) { e.preventDefault(); moved = false; } });
   }
+  // 🔑 cambiar el código de acceso desde el perfil
+  if (!window.__passWired) { window.__passWired = 1; document.addEventListener('click', (e) => { if (!e.target.closest || !e.target.closest('#pt-pass')) return;
+    const m = M.modal(`<h3>🔑 Cambiar mi código de acceso</h3><p class="muted">Tu código es tu contraseña para entrar. Usa de 4 a 20 letras o números (puedes usar guion).</p>
+      <input class="inp" id="cp-old" type="password" placeholder="Tu código actual" autocomplete="off" style="margin-bottom:8px"><input class="inp" id="cp-new" type="password" placeholder="Nuevo código" autocomplete="off" style="margin-bottom:8px"><input class="inp" id="cp-new2" type="password" placeholder="Repite el nuevo código" autocomplete="off">
+      <p id="cp-msg" class="center" style="color:#b91c1c;font-weight:700;min-height:20px;margin:8px 0"></p><button class="btn k block lg" id="cp-go">Guardar nuevo código</button>`, { x: true });
+    $('#cp-go', m).onclick = async () => { const o = $('#cp-old', m).value.trim().toUpperCase(), n = $('#cp-new', m).value.trim().toUpperCase(), n2 = $('#cp-new2', m).value.trim().toUpperCase(), msg = $('#cp-msg', m);
+      if (o !== String(MRAC.code() || '').toUpperCase()) return msg.textContent = 'El código actual no es correcto.';
+      if (!/^[A-Z0-9-]{4,20}$/.test(n)) return msg.textContent = 'Usa de 4 a 20 letras o números (sin espacios).';
+      if (n !== n2) return msg.textContent = 'Los dos códigos nuevos no coinciden.';
+      const b = $('#cp-go', m); b.disabled = true; b.textContent = 'Guardando…';
+      const r = await MRAC.call('myCodeChange', { code: o, newCode: n }).catch(() => null);
+      if (r && r.ok) { MRAC.setCode(r.code); m.querySelector('.card').innerHTML = `<div class="center"><div class="to-ic">${MRI('check')}</div><h3>¡Listo! Tu código cambió</h3><p>Desde ahora entra con tu nuevo código. Te enviamos una confirmación a tu correo.</p><button class="btn k block lg" onclick="location.reload()">Entendido</button></div>`; return; }
+      b.disabled = false; b.textContent = 'Guardar nuevo código'; msg.textContent = !r ? 'No hay conexión. Inténtalo de nuevo.' : r.err === 'taken' ? 'Ese código ya está en uso. Elige otro.' : r.err === 'same' ? 'El nuevo código es igual al actual.' : r.err === 'format' ? 'Usa de 4 a 20 letras o números.' : 'No se pudo cambiar. Inténtalo de nuevo.'; }; }); }
   function plansClick(e) { const b = e.target.closest && e.target.closest('[data-plans]'); if (!b) return; e.preventDefault(); const mo = b.closest('.modal'); if (mo) mo.remove(); if (window.MRPLANS) MRPLANS.modal(M); }
   if (!window.__plansWired) { window.__plansWired = true; document.addEventListener('click', plansClick); }
   // enlaces de los correos: ?pagar=CÓDIGO abre los planes y pagos · ?gratis=1 abre la prueba gratis
@@ -336,7 +349,7 @@
         <div class="db-me"><button class="pt-avwrap" id="me-av" title="Personaliza tu foto">${P.avHTML('pt-av')}<i class="pt-pen">✏️</i></button>
           <div class="db-me-tx"><span class="db-greet">${greet}!</span><h2>${esc(P.look().nick || p.first)} ${esc(p.last || '')}</h2><span class="db-chip ${plNow.eff}">${MRI(plIc)} ${plName}</span>${plNow.end && plNow.paid && !P.isExpired() ? `<small class="muted">Activo hasta el ${fmtD(plNow.end, { day: 'numeric', month: 'long' })}</small>` : ''}</div></div>
         ${curMod ? `<div class="db-ring" style="--p:${pct}"><div><b>${pct}%</b><small>de tu módulo</small></div></div><small class="muted db-modtx">${esc(a.name)} · ${esc(a.id)} · ${curMod.done} de ${trial ? 4 : a.classes} clases</small>` : ''}
-        <nav class="db-qa">${staff ? '' : `<button class="btn w" id="pt-plans">${MRI('crown')} Mi plan</button>`}${!staff && P.plan().premium ? `<button class="btn w" data-go="#pt-live">${MRI('calendar')} Mis clases</button>` : ''}${!staff && P.plan().paid ? `<button class="btn w" data-go="#pt-ref">${MRI('gift')} Invita a un amigo</button>` : ''}${!staff && P.plan().premium ? `<button class="btn w pt-polb">${MRI('file')} Política de reservas</button>` : ''}<button class="btn w" id="me-go2">${MRI('user')} Personalizar perfil</button><button class="btn w" id="pt-tour">${MRI('compass')} Ver el tour</button></nav></aside>`;
+        <nav class="db-qa">${staff ? '' : `<button class="btn w" id="pt-plans">${MRI('crown')} Mi plan</button>`}${!staff && P.plan().premium ? `<button class="btn w" data-go="#pt-live">${MRI('calendar')} Mis clases</button>` : ''}${!staff && P.plan().paid ? `<button class="btn w" data-go="#pt-ref">${MRI('gift')} Invita a un amigo</button>` : ''}${!staff && P.plan().premium ? `<button class="btn w pt-polb">${MRI('file')} Política de reservas</button>` : ''}<button class="btn w" id="me-go2">${MRI('user')} Personalizar perfil</button>${staff ? '' : `<button class="btn w" id="pt-pass">${MRI('unlock')} Cambiar mi código</button>`}<button class="btn w" id="pt-tour">${MRI('compass')} Ver el tour</button></nav></aside>`;
     app.innerHTML = `<div class="wrap db">${side}<div class="db-main">
 
       ${birthdayBanner()}
