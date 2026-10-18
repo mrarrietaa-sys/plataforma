@@ -4243,3 +4243,33 @@ textarea.inp{font-size:15px;line-height:1.4}
 .ld-newsf .btn{padding:11px 20px!important;font-size:15px!important}
 .ld-news h2{font-size:22px!important}.ld-news p{font-size:14.5px}
 @media(max-width:600px){.ld-newsf{grid-template-columns:1fr!important}.ld-news{padding:18px!important}.ld-news h2{font-size:20px!important}}
+
+/* v209 — landing (desde "Elige tu plan") proporciones compactas tipo "Recibe tips" */
+.ld-sec:not(.ld-hero){padding-top:26px!important;padding-bottom:26px!important}
+.ld-sec:not(.ld-hero) h2{font-size:22px!important;line-height:1.2;letter-spacing:-.2px;margin-bottom:6px}
+.ld-sec:not(.ld-hero) .ld-sub{font-size:14.5px!important;line-height:1.5;margin-top:2px;margin-bottom:16px}
+#ld-planes .in-plan-ic{font-size:24px!important}
+#ld-planes .in-plan-name{font-size:16px!important}
+#ld-planes .in-plan b:not([class]):not(.ipx b){font-size:26px!important}
+#ld-planes .in-plan-pick{font-size:13.5px!important}
+#ld-planes .ipx-b,#ld-planes .ipx-n{font-size:14.5px!important}
+#ld-testimonios p,#ld-testimonios blockquote{font-size:14.5px!important}
+#ld-profes b,#ld-ganas b,#ld-como b{font-size:14.5px!important}
+#ld-profes p,#ld-ganas p:not(.ld-sub),#ld-ganas li,#ld-ganas span{font-size:14px!important}
+#ld-como h3{font-size:15px!important}
+#ld-como p{font-size:14px!important;line-height:1.5}
+.ld-final{padding:22px!important}
+.ld-final h2{font-size:22px!important}
+.ld-final p{font-size:14.5px!important}
+.ld-final .btn{font-size:15.5px!important;padding:10px 22px!important;width:auto!important;flex:0 0 auto!important}
+.ld-foot{padding-top:24px!important;padding-bottom:22px!important}
+.ld-foot h4{font-size:13.5px!important}
+.ld-foot a,.ld-foot p,.ld-foot li{font-size:13.5px!important}
+@media(max-width:640px){
+ .ld-sec:not(.ld-hero){padding-top:22px!important;padding-bottom:22px!important}
+ .ld-sec:not(.ld-hero) h2{font-size:20px!important}
+ .ld-sec:not(.ld-hero) .ld-sub{font-size:14px!important;margin-bottom:12px}
+ #ld-planes .in-plan b:not([class]):not(.ipx b){font-size:24px!important}
+ .ld-final h2{font-size:20px!important}
+ .ld-foot{padding-top:20px!important}
+}
