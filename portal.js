@@ -205,14 +205,14 @@
   // ⭐ opiniones públicas de los profes en la página de entrada
   const nrm = (t) => String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/^(mr|mrs|ms|teacher)\.?\s+/, '').trim();
   const starsHTML = (n) => '<span class="st5">' + [1, 2, 3, 4, 5].map(k => `<i class="${k <= Math.round(n) ? 'on' : ''}">★</i>`).join('') + '</span>';
-  function tesGrid() { return (window.MRTESTIMONIOS || []).map((t, i) => `<figure class="ld-t" data-tes="${i}"><div class="ld-tv">${MRTES.poster(t) ? `<img src="${esc(MRTES.poster(t))}" alt="${esc(t.name)}" loading="lazy">` : ''}<button class="ld-play" aria-label="Ver testimonio de ${esc(t.name)}"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg></button></div><figcaption><b>${esc(t.name)}</b>${t.info ? `<small>${esc(t.info)}</small>` : ''}</figcaption></figure>`).join(''); }
+  function tesGrid() { const PL = '<button class="ld-play" aria-label="Ver testimonio"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg></button>';
+    return (window.MRTESTIMONIOS || []).map((t, i) => `<figure class="ld-t${MRTES.drive(t.video) ? ' fr' : ''}" data-tes="${i}"><div class="ld-tv">${MRTES.poster(t) ? `<img src="${esc(MRTES.poster(t))}" alt="${esc(t.name)}" loading="lazy">` : ''}${PL}</div><figcaption><span class="ld-st">★★★★★</span><b>${esc(t.name)}</b>${t.info ? `<small>${esc(t.info)}</small>` : ''}</figcaption></figure>`).join(''); }
   function tesWire() {
     const box = $('#ld-testimonios'); if (!box) return; const T = window.MRTESTIMONIOS || [];
     box.hidden = !T.length; const g = $('.ld-tes', box); if (g) g.innerHTML = tesGrid();
-    box.onclick = (e) => { const f = e.target.closest('.ld-t'); if (!f) return; const t = T[+f.dataset.tes]; if (!t) return; // ▶️ se abre en grande (cómodo en PC y celular)
-      const o = document.createElement('div'); o.className = 'tes-lb'; o.innerHTML = `<div class="tes-lbin"><button class="tes-x" aria-label="Cerrar">✕</button><div class="tes-lbv">${MRTES.player(t)}</div><p><b>${esc(t.name)}</b>${t.info ? ' · ' + esc(t.info) : ''}</p></div>`;
-      const close = () => { o.remove(); document.removeEventListener('keydown', esc_); }; const esc_ = (k) => { if (k.key === 'Escape') close(); };
-      o.onclick = (k) => { if (k.target === o || k.target.closest('.tes-x')) close(); }; document.addEventListener('keydown', esc_); document.body.appendChild(o); };
+    box.onclick = (e) => { const f = e.target.closest('.ld-t'); if (!f || f.classList.contains('on')) return; const t = T[+f.dataset.tes]; if (!t) return; // ▶️ se reproduce en su propio lugar
+      box.querySelectorAll('.ld-t.on').forEach(o => { o.classList.remove('on'); const v = o.querySelector('video'); if (v) v.pause(); const x = T[+o.dataset.tes]; o.querySelector('.ld-tv').innerHTML = (MRTES.poster(x) ? `<img src="${esc(MRTES.poster(x))}" alt="">` : '') + '<button class="ld-play"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg></button>'; });
+      f.classList.add('on'); f.querySelector('.ld-tv').innerHTML = MRTES.player(t); };
   }
   function pfGrid() { return MRPROFES.map((p, i) => `<div class="card ld-pc"><img src="${esc(p.img)}" alt="${esc(p.name)}" loading="lazy"><b>${p.title === 'Director' ? 'Director' : esc(p.title)} ${esc(p.name)}</b><div class="ld-stars" data-pf="${i}"></div><ul>${p.info.map(x => `<li>${MRI('check')}<span>${esc(x)}</span></li>`).join('')}</ul><button class="btn w sm" data-pfr="${i}">Ver opiniones</button></div>`).join(''); }
   async function profReviews() {

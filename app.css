@@ -4331,3 +4331,22 @@ textarea.inp{font-size:15px;line-height:1.4}
 .tes-lbin p{color:#fff;margin:10px 0 0;font-size:14px}.tes-lbin p b{font-family:var(--fh,Poppins),sans-serif}
 .tes-x{position:absolute;top:-14px;right:-14px;z-index:2;width:38px;height:38px;border-radius:50%;border:0;background:#fff;color:#0B2A5B;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.3)}
 @media(max-width:560px){.tes-x{top:-10px;right:-6px}}
+
+/* v216 — testimonios opción 2: el video con su propio marco + etiqueta azul flotante */
+.ld-t{padding:0!important;background:none!important;box-shadow:none!important;border-radius:0!important;overflow:visible!important}
+.ld-t:hover{transform:translateY(-3px);box-shadow:none!important}
+.ld-tv{border:0!important;border-radius:24px!important;background:#fff!important;box-shadow:0 10px 24px rgba(11,42,91,.14)}
+.ld-t.on .ld-tv video{object-fit:cover!important;background:#fff!important}
+.ld-t.fr .ld-tv{background:linear-gradient(180deg,#E3242B 0 50%,#1F3FBF 50% 100%)!important;padding:0}
+.ld-t.fr .ld-tv>img,.ld-t.fr .ld-tv>video,.ld-t.fr .ld-tv>iframe{inset:7px!important;width:calc(100% - 14px)!important;height:calc(100% - 14px)!important;border:6px solid #fff!important;border-radius:18px;box-sizing:border-box;background:#000}
+.ld-t figcaption{position:relative;z-index:2;margin:-30px 12px 0!important;background:linear-gradient(135deg,#0B2A5B,#1F3FBF)!important;border-radius:14px!important;padding:9px 8px 10px!important;box-shadow:0 10px 20px rgba(11,42,91,.25);gap:0!important}
+.ld-t figcaption b{color:#fff!important;font-size:14.5px!important}
+.ld-t figcaption small{color:#cfdaf5!important;font-size:11.5px!important;margin-top:1px}
+.ld-st{color:#FFC93C;font-size:12px;letter-spacing:1px;line-height:1.2}
+.ld-t.on figcaption{margin-top:8px!important}
+@media (max-width:560px){.ld-t{flex:0 0 64%!important}}
+.ld-t.fr .ld-tv>img,.ld-t.fr .ld-tv>video,.ld-t.fr .ld-tv>iframe{inset:8px!important;width:calc(100% - 16px)!important;height:calc(100% - 16px)!important;border-width:10px!important;border-radius:20px!important}
+/* más de 4 testimonios: se deslizan de lado también en PC */
+.ld-tes{display:flex!important;justify-content:safe center;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 4px 14px!important;scrollbar-width:thin}
+.ld-tes>.ld-t{flex:0 0 200px;scroll-snap-align:start}
+@media (max-width:560px){.ld-tes>.ld-t{flex:0 0 64%!important}}
