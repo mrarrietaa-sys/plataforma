@@ -467,7 +467,6 @@
     { // 🏁 conteo: Ready? 3, 2, 1… GO!
       const ld = $('.ld-load', app); if (ld) { const cd = document.createElement('div'); cd.className = 'ld-count'; ld.appendChild(cd);
         for (const [t, ms] of [['Ready?', 750], ['3', 600], ['2', 600], ['1', 600], ['GO!', 650]]) { cd.textContent = t; cd.classList.remove('pop'); void cd.offsetWidth; cd.classList.add('pop'); if (t === 'GO!') { cd.classList.add('go'); try { sfx('win'); } catch (e) { } } else { try { sfx('tap'); } catch (e) { } } await new Promise(r => setTimeout(r, ms)); } } }
-    setTimeout(() => { try { M.confetti && M.confetti(2200); } catch (e) { } }, 350); // 🎉 papelitos al entrar a la clase
     const steps = buildSteps(p); const secs = [...new Set(steps.map(s => s.sec))];
     const rec = S.parts[id] = S.parts[id] || { done: false, stars: 0, best: 0 };
     let startAt = 0;
@@ -482,6 +481,7 @@
       <div class="secbar">${secs.map(s => `<span data-s="${esc(s)}">${esc(s)}</span>`).join('')}</div><div class="stage"></div></div>`;
     $('.x', app).onclick = () => { stop(); route('home'); };
     const player = $('.player', app);
+    setTimeout(() => { try { if (document.body.contains(player)) M.confetti && M.confetti(2500); } catch (e) { } }, 700); // 🎉 papelitos ya dentro de la clase
     let navBack = null, navJump = null;
     $('.back', app).onclick = () => { if (navBack) { sfx('tap'); navBack(); } };
     $('.resume', app).onclick = () => { if (navJump) { sfx('tap'); navJump(); } };
