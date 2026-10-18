@@ -153,9 +153,10 @@
     });
   }
   // audio is packed in a few files (js/audio/*.js) so the folder is easy to upload to GitHub
-  function loadAudio(groups) {
+  function loadAudio(groups, onProg) {
     window.__audLoaded = window.__audLoaded || {};
-    return Promise.all(groups.filter(g => !window.__audLoaded[g]).map(g => new Promise(res => {
+    const todo = groups.filter(g => !window.__audLoaded[g]); let nDone = 0; onProg && onProg(0, todo.length);
+    return Promise.all(todo.map(g => new Promise(res0 => { const res = () => { nDone++; onProg && onProg(nDone, todo.length); res0(); };
       // works both with folders (js/audio/t1.js) and with all files in one folder (t1.js)
       const base = (document.querySelector('script[src*="core.js"]').getAttribute('src') || '').replace(/core\.js(\?.*)?$/, '');
       const tryLoad = (paths) => { if (!paths.length) return res(); const sc = document.createElement('script'); sc.src = paths[0]; sc.onload = res; sc.onerror = () => { sc.remove(); tryLoad(paths.slice(1)); }; document.head.appendChild(sc); };

@@ -4159,3 +4159,10 @@ textarea.inp{font-size:15px;line-height:1.4}
 /* v182 */
 @media(max-width:980px){.ld-hero h1 em{margin-top:2px!important}.db-hero-mra.db-plane{height:94px!important;top:20px!important}}
 .itl-say{top:-62px!important}
+/* v183: pantalla de carga de la clase */
+.ld-load{padding-top:56px;max-width:440px}.ld-load-mra{height:200px;width:auto;animation:mraFloat 3s ease-in-out infinite;filter:drop-shadow(0 12px 14px rgba(11,42,91,.16))}
+.ld-load h2{margin:10px 0 4px}.ld-load-t{color:#5b6577;margin:0 0 12px;min-height:22px}
+.ld-load-bar{height:14px;background:#eef2f8;border-radius:99px;overflow:hidden;box-shadow:inset 0 1px 3px rgba(11,42,91,.12)}
+.ld-load-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#E3242B,#ff6b6b);border-radius:99px;transition:width .1s linear}
+.ld-load-p{display:block;margin-top:8px;color:#0B2A5B;font:800 18px Poppins,sans-serif}
+@media(max-width:560px){.ld-load-mra{height:160px}}
