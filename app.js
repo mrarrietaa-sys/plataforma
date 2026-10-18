@@ -463,7 +463,10 @@
     let tgt = 8, cur = 0; const bar = $('.ld-load-bar i', app), pc = $('.ld-load-p', app), lt = $('.ld-load-t', app);
     const tick = setInterval(() => { cur += Math.max(0.4, (tgt - cur) * 0.12); if (cur > tgt) cur = tgt; if (bar) { bar.style.width = cur + '%'; pc.textContent = Math.round(cur) + '%'; } }, 60);
     const pv = M.prevPart(p); await M.loadAudio(['common', ...[].concat(M.MOD.games || []), M.MOD.audio + p.topic].concat(pv ? [M.MOD.audio + pv.topic] : []), (d, t) => { tgt = t ? 8 + Math.round(d / t * 82) : 90; if (lt) lt.textContent = t && d < t ? `Cargando audios y actividades… (${d + 1} de ${t})` : 'Preparando tus actividades…'; });
-    tgt = 100; if (lt) lt.textContent = '¡Todo listo!'; await new Promise(r => { const w = setInterval(() => { if (cur >= 99.5) { clearInterval(w); r(); } }, 50); setTimeout(() => { clearInterval(w); r(); }, 900); }); clearInterval(tick); if (bar) { bar.style.width = '100%'; pc.textContent = '100%'; } await new Promise(r => setTimeout(r, 200));
+    tgt = 100; if (lt) lt.textContent = '¡Todo listo!'; await new Promise(r => { const w = setInterval(() => { if (cur >= 99.5) { clearInterval(w); r(); } }, 50); setTimeout(() => { clearInterval(w); r(); }, 900); }); clearInterval(tick); if (bar) { bar.style.width = '100%'; pc.textContent = '100%'; } await new Promise(r => setTimeout(r, 250));
+    { // 🏁 conteo: Ready? 3, 2, 1… GO!
+      const ld = $('.ld-load', app); if (ld) { const cd = document.createElement('div'); cd.className = 'ld-count'; ld.appendChild(cd);
+        for (const [t, ms] of [['Ready?', 750], ['3', 600], ['2', 600], ['1', 600], ['GO!', 650]]) { cd.textContent = t; cd.classList.remove('pop'); void cd.offsetWidth; cd.classList.add('pop'); if (t === 'GO!') { cd.classList.add('go'); try { sfx('win'); } catch (e) { } } else { try { sfx('tap'); } catch (e) { } } await new Promise(r => setTimeout(r, ms)); } } }
     const steps = buildSteps(p); const secs = [...new Set(steps.map(s => s.sec))];
     const rec = S.parts[id] = S.parts[id] || { done: false, stars: 0, best: 0 };
     let startAt = 0;

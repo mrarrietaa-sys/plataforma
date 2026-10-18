@@ -4167,3 +4167,5 @@ textarea.inp{font-size:15px;line-height:1.4}
 .ld-load-p{display:block;margin-top:8px;color:#0B2A5B;font:800 18px Poppins,sans-serif}
 @media(max-width:560px){.ld-load-mra{height:160px}}
 #cd::placeholder{letter-spacing:normal}#cd[type=password]{letter-spacing:.25em}.pt-login .pw-wrap{margin:0}
+.ld-count{margin-top:14px;font:900 64px/1 Poppins,sans-serif;color:#0B2A5B;min-height:70px}.ld-count.go{color:#E3242B}
+.ld-count.pop{animation:ldPop .55s cubic-bezier(.2,1.6,.4,1)}@keyframes ldPop{0%{transform:scale(.3);opacity:0}60%{transform:scale(1.15);opacity:1}100%{transform:scale(1)}}
