@@ -4406,3 +4406,30 @@ textarea.inp{font-size:15px;line-height:1.4}
 @media(max-width:560px){.pt-refline{font-size:13px}.pt-refline .btn{width:100%}}
 /* saludo: ícono de línea de la marca en vez de emoji */
 .hg-ic{display:inline-block;width:22px;height:22px;vertical-align:-3px;color:#E3242B;margin-left:4px}
+
+/* v230 — perfil del estudiante: tipografía uniforme y profesional (PC y celular) */
+.wrap.db{font-size:14.5px}
+.wrap.db .sect-title h2{font-size:22px!important}
+.wrap.db .db-hero-tx h2{font-size:28px!important;line-height:1.15}
+.wrap.db .db-me-tx h2{font-size:19px!important}
+.wrap.db .card h3,.wrap.db .lv-card h3{font-size:17px!important;line-height:1.25}
+.wrap.db .card p,.wrap.db .card li{font-size:14px}
+.wrap.db .lv-s2t b{font-size:28px!important}
+.wrap.db .lv-dt{font-size:19px!important}
+.wrap.db .pt-mod-bd h3{font-size:17px!important}
+.wrap.db .pt-mod-n{font-size:18px!important}
+.wrap.db .btn.lg{font-size:15px!important;padding:11px 20px!important;min-height:0!important}
+.wrap.db .btn{font-size:14px}
+.wrap.db .btn.sm{font-size:13px!important}
+.wrap.db summary{font-size:15.5px!important}
+.wrap.db .muted,.wrap.db small{font-size:12.5px}
+@media (max-width:640px){
+ .wrap.db .sect-title h2{font-size:19px!important}
+ .wrap.db .db-hero-tx h2{font-size:22px!important}
+ .wrap.db .db-me-tx h2{font-size:17px!important}
+ .wrap.db .card h3,.wrap.db .lv-card h3{font-size:16px!important}
+ .wrap.db .lv-s2t b{font-size:24px!important}
+ .wrap.db .card p,.wrap.db .card li{font-size:13.5px}
+ .wrap.db .btn.lg{font-size:14.5px!important;padding:10px 16px!important}
+}
+.wrap.db .db-ring small,.wrap.db .db-ring span{white-space:nowrap}
