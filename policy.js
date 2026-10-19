@@ -19,7 +19,6 @@
     <li>Todas las clases individuales duran <b>50 minutos</b>, contados desde la hora reservada.</li>
     <li><b>Si llegas tarde, la clase no se extiende.</b> Ejemplo: si tu clase es a las 9:00 a. m. y te conectas a las 9:10 a. m., la clase termina a las 9:50 a. m. Los profes tienen otras clases asignadas que no pueden verse afectadas.</li>
     <li><b>Si a los 15 minutos no te has conectado,</b> el profe se retira y la clase se descuenta de tu plan.</li>
-    <li><b>Para los profes:</b> espera los 15 minutos completos antes de retirarte y marca la clase como inasistencia del estudiante. Termina siempre a la hora establecida.</li>
     <li>Si es el <b>profe</b> quien no se conecta en 15 minutos, usa el botón <b>"Mi profe no se conectó"</b> y, si se confirma, la clase vuelve a tu saldo.</li></ul></section>
   <section><h3>6. Cancelaciones por parte de MRARRIETA.COM</h3>
     <p>Si MRARRIETA.COM cancela una clase, esta será reprogramada sin costo para el estudiante.</p></section>
@@ -56,11 +55,10 @@
   function show(opts) {
     opts = opts || {};
     const m = document.createElement('div'); m.className = 'modal pol-modal'; m.setAttribute('role', 'dialog'); m.setAttribute('aria-modal', 'true');
-    m.innerHTML = `<div class="modal-card card pol-card">${opts.first ? '<p class="pol-first">👋 Antes de empezar, lee nuestra política. La encuentras siempre en tu perfil.</p>' : ''}${HTML}<button class="btn k block lg" id="pol-ok">${opts.first ? '✅ Entendido, acepto' : 'Cerrar'}</button></div>`;
+    m.innerHTML = `<div class="modal-card card pol-card">${opts.first ? '<p class="pol-first">👋 Antes de empezar, lee nuestra política. La encuentras siempre en tu perfil.</p>' : ''}${HTML}<div style="text-align:center;margin-top:12px"><button class="btn k" id="pol-ok" style="padding:10px 26px;font-size:15px">✅ Leí y acepto</button></div></div>`;
     document.body.appendChild(m);
     const close = () => { m.remove(); opts.onClose && opts.onClose(); };
     m.querySelector('#pol-ok').onclick = close;
-    if (!opts.first) m.addEventListener('click', e => { if (e.target === m) close(); });
     return m;
   }
   window.MRPOLICY = { html: HTML, teacherHtml: THTML, show, showTeacher, url: 'politica.html' };
