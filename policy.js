@@ -15,7 +15,12 @@
     <li>Repórtalo desde tu perfil con el botón <b>"Mi profe no se conectó"</b> (hasta 24 horas después de la clase).</li>
     <li>Administración lo revisa en máximo 24 horas y, si se confirma, <b>la clase vuelve a tu saldo</b>.</li></ul></section>
   <section><h3>4. Horario de la escuela</h3><p><b>Lunes a viernes:</b> 7:00 a. m. a 9:00 p. m. (jornada continua) · <b>Sábados:</b> 7:00 a. m. a 5:00 p. m. · <b>Domingos y festivos de Colombia:</b> no hay clases ni atención por chat. (Hora Colombia)</p></section>
-  <section><h3>5. Duración de las clases</h3><p>Todas las clases individuales duran <b>50 minutos</b>.</p></section>
+  <section><h3>5. Duración y puntualidad</h3><ul>
+    <li>Todas las clases individuales duran <b>50 minutos</b>, contados desde la hora reservada.</li>
+    <li><b>Si llegas tarde, la clase no se extiende.</b> Ejemplo: si tu clase es a las 9:00 a. m. y te conectas a las 9:10 a. m., la clase termina a las 9:50 a. m. Los profes tienen otras clases asignadas que no pueden verse afectadas.</li>
+    <li><b>Si a los 15 minutos no te has conectado,</b> el profe se retira y la clase se descuenta de tu plan.</li>
+    <li><b>Para los profes:</b> espera los 15 minutos completos antes de retirarte y marca la clase como inasistencia del estudiante. Termina siempre a la hora establecida.</li>
+    <li>Si es el <b>profe</b> quien no se conecta en 15 minutos, usa el botón <b>"Mi profe no se conectó"</b> y, si se confirma, la clase vuelve a tu saldo.</li></ul></section>
   <section><h3>6. Cancelaciones por parte de MRARRIETA.COM</h3>
     <p>Si MRARRIETA.COM cancela una clase, esta será reprogramada sin costo para el estudiante.</p></section>
   <p class="pol-imp"><b>Importante:</b> los tiempos mínimos de reserva y cancelación se cuentan hacia atrás desde la hora de inicio de cada clase.</p>

@@ -4436,3 +4436,31 @@ textarea.inp{font-size:15px;line-height:1.4}
 /* saludo de la entrada: las dos líneas juntas */
 .ld-login .pt-hello .bubble{line-height:1.2!important;padding-top:12px!important;padding-bottom:12px!important}
 .ld-login .pt-hello .bubble .hg{line-height:1.2!important;margin:0!important;padding:0!important}
+
+/* v232 — clases: tipografía uniforme y profesional en todas las actividades (PC y celular) */
+.player .stage>h2,.player .stage h2{font-size:20px!important;line-height:1.25}
+.player .stage .ins{font-size:14.5px!important;line-height:1.45}
+.player .stage h3{font-size:17px!important}
+.player .stage .txt .s,.player .stage .txt{font-size:16px!important;line-height:1.6}
+.player .stage .lesson p,.player .stage .lesson li{font-size:15px}
+.player .stage .opt,.player .stage .ml-b{font-size:16px!important}
+.player .stage .sent,.player .stage .qs-q,.player .stage .qs-q b,.player .stage .target,.player .stage .bubble,.player .stage .kt{font-size:20px!important;line-height:1.35}
+.player .stage .kn{font-size:15px!important}
+.player .actionbar .btn{font-size:16px!important}
+.player .actionbar .btn.lg{padding:11px 20px!important;min-height:0!important}
+.player .stage .center>h2{font-size:24px!important}
+.player .stage .center>p.muted,.player .stage p.muted{font-size:14.5px!important}
+.player .ptopic,.player .ptopic b,.player .psec{font-size:13.5px!important}
+@media (max-width:640px){
+ .player .stage>h2,.player .stage h2{font-size:18px!important}
+ .player .stage .center>h2{font-size:21px!important}
+ .player .stage .ins{font-size:14px!important}
+ .player .stage h3{font-size:16px!important}
+ .player .stage .txt .s,.player .stage .txt{font-size:15px!important}
+ .player .stage .opt,.player .stage .ml-b{font-size:15px!important}
+ .player .stage .sent,.player .stage .qs-q,.player .stage .qs-q b,.player .stage .target,.player .stage .bubble,.player .stage .kt{font-size:18px!important}
+ .player .actionbar .btn{font-size:15px!important}
+ .player .ptopic,.player .ptopic b,.player .psec{font-size:12.5px!important}
+}
+@media (max-width:640px){body .player .actionbar .btn,body .player .actionbar .btn.lg,body .player .actionbar .btn:only-child{font-size:15px!important}.player .stage .yn{font-size:15px!important}}
+.player .stage .yn{font-size:15px}
