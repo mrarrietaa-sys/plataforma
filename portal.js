@@ -660,21 +660,43 @@
   // 📝 tablero de cada clase (lo escribe el profe que dio esa clase) → botón "Ver tablero" en el historial
   async function boardsHook() {
     const r = await MRAC.call('myBoards', { code: MRAC.code() }).catch(() => null); if (!r || !r.ok) return;
-    (r.boards || []).filter(b => b.text).forEach(b => { const row = document.querySelector(`.lv-hist [data-cid="${b.classId}"]`); if (!row || row.querySelector('.tb-see')) return;
+    (r.boards || []).filter(b => b.text || (b.imgs || []).length).forEach(b => { const row = document.querySelector(`.lv-hist [data-cid="${b.classId}"]`); if (!row || row.querySelector('.tb-see')) return;
       const bt = document.createElement('button'); bt.className = 'btn w sm tb-see'; bt.innerHTML = '📝 Ver tablero'; row.appendChild(bt);
-      bt.onclick = (e) => { e.preventDefault(); const m = M.modal(`<h3>📝 Tablero de tu profe</h3><p class="muted">${esc(fmtD(b.date, { weekday: 'short', day: 'numeric', month: 'short' }))} · ${esc(b.teacher || '')}</p><div class="tb-board ro">${esc(b.text)}</div><button class="btn k block" id="tb-cl" style="margin-top:12px">Cerrar</button>`, { x: true }); $('#tb-cl', m).onclick = () => m.remove(); }; });
+      bt.onclick = (e) => { e.preventDefault(); const m = M.modal(`<h3>📝 Tablero de tu profe</h3><p class="muted">${esc(fmtD(b.date, { weekday: 'short', day: 'numeric', month: 'short' }))} · ${esc(b.teacher || '')}</p>${b.text ? `<div class="tb-board ro">${esc(b.text)}</div>` : ''}${(b.imgs || []).map((u, i) => `<a href="${esc(u)}" target="_blank" rel="noopener"><img class="tb-pzimg" src="${esc(u)}" alt="Pizarra ${i + 1}" loading="lazy"></a>`).join('')}<button class="btn k block" id="tb-cl" style="margin-top:12px">Cerrar</button>`, { x: true }); $('#tb-cl', m).onclick = () => m.remove(); }; });
   }
-  // ✏️ Mis apuntes (privados del estudiante; se guardan en la nube)
+  // ✏️ Mis apuntes — editor moderno: varias notas, negrita/lista/resaltar, dictado por voz, guardado automático (privados)
   async function notesCard() {
     const el = $('#pt-notes'); if (!el || el.dataset.on) return; el.dataset.on = '1';
-    el.innerHTML = `<div class="card lv-card tb-notes"><div class="lv-h"><span class="lv-ic">✏️</span><div><h3>Mis apuntes</h3><p class="muted" style="margin:0">Escribe lo que quieras recordar. Solo tú los ves.</p></div></div>
-      <textarea class="tb-note" id="nt-tx" rows="6" placeholder="Ej: &quot;Nice to meet you&quot; = mucho gusto" disabled>Cargando…</textarea>
-      <div class="row tb-row"><button class="btn k sm" id="nt-sv" disabled>💾 Guardar apuntes</button><small class="tb-ok" id="nt-ok"></small></div></div>`;
-    const r = await MRAC.call('myNotes', { code: MRAC.code() }).catch(() => null); const tx = $('#nt-tx'), sv = $('#nt-sv'); if (!tx) return;
-    tx.disabled = false; sv.disabled = false; tx.value = (r && r.ok && r.text) || ''; if (r && r.text) $('#nt-ok').textContent = '✓ Guardado';
-    tx.oninput = () => { $('#nt-ok').textContent = ''; };
-    sv.onclick = async () => { sv.disabled = true; sv.textContent = 'Guardando…'; const x = await MRAC.call('myNotesSave', { code: MRAC.code(), text: tx.value }).catch(() => null); sv.disabled = false; sv.innerHTML = '💾 Guardar apuntes';
-      if (x && x.ok) { $('#nt-ok').textContent = '✓ Guardado'; M.toast('✅ Apuntes guardados'); } else M.toast('No se pudo guardar. Revisa tu conexión.'); };
+    const OK = { B: 1, STRONG: 1, I: 1, EM: 1, U: 1, MARK: 1, UL: 1, OL: 1, LI: 1, BR: 1, DIV: 1, P: 1, SPAN: 1 };
+    const clean = (html) => { const d = new DOMParser().parseFromString('<div>' + String(html || '') + '</div>', 'text/html').body.firstChild; const walk = (n) => { [...n.childNodes].forEach(c => { if (c.nodeType === 1) { if (!OK[c.tagName]) { if (/^(SCRIPT|STYLE|IFRAME|OBJECT)$/.test(c.tagName)) c.remove(); else { walk(c); c.replaceWith(...c.childNodes); } return; } const hl = c.tagName === 'SPAN' && /background/.test(c.getAttribute('style') || ''); [...c.attributes].forEach(a => c.removeAttribute(a.name)); if (hl) { const m = document.createElement('mark'); m.append(...c.childNodes); c.replaceWith(m); walk(m); return; } walk(c); } else if (c.nodeType !== 3) c.remove(); }); }; walk(d); return d.innerHTML; };
+    let N = { v: 2, notes: [] }, cur = 0, tmr = null;
+    el.innerHTML = `<div class="card nt"><div class="nt-h"><div class="nt-hi">${MRI('file')}</div><div class="grow"><h3>Mis apuntes</h3><p>Tu cuaderno personal · solo tú lo ves</p></div><span class="nt-st" id="nt-st">Cargando…</span></div>
+      <div class="nt-tabs" id="nt-tabs"></div>
+      <input class="nt-ti" id="nt-ti" maxlength="60" placeholder="Título de la nota (ej: Topic 1 · Greetings)">
+      <div class="nt-bar"><button type="button" data-cmd="bold" title="Negrita"><b>B</b></button><button type="button" data-cmd="insertUnorderedList" title="Lista">• Lista</button><button type="button" data-cmd="hl" title="Resaltar">🖍 Resaltar</button>${(window.SpeechRecognition || window.webkitSpeechRecognition) ? '<button type="button" id="nt-mic" title="Dictar">🎙️ Dictar</button>' : ''}<span class="grow"></span><button type="button" id="nt-dl" title="Descargar">⬇</button><button type="button" id="nt-del" title="Borrar nota">🗑</button></div>
+      <div class="nt-ed" id="nt-ed" contenteditable="true" data-ph="Escribe aquí lo que quieras recordar…"></div>
+      <div class="nt-f"><button class="btn k sm" id="nt-sv">💾 Guardar</button><small class="muted" id="nt-ct"></small></div></div>`;
+    const ed = $('#nt-ed'), ti = $('#nt-ti'), stt = $('#nt-st');
+    const status = (t, ok) => { stt.textContent = t; stt.classList.toggle('ok', !!ok); };
+    const r = await MRAC.call('myNotes', { code: MRAC.code() }).catch(() => null); const raw = (r && r.ok && r.text) || '';
+    try { const j = JSON.parse(raw); if (j && j.notes) N = j; } catch (e) { if (raw) N.notes = [{ id: 'n1', title: 'Mis apuntes', html: esc(raw).replace(/\n/g, '<br>') }]; }
+    if (!N.notes.length) N.notes = [{ id: 'n1', title: '', html: '' }];
+    const sync = () => { const n = N.notes[cur]; n.html = clean(ed.innerHTML); n.title = ti.value.trim(); n.upd = new Date().toISOString().slice(0, 10); };
+    const words = () => { const w = (ed.innerText || '').trim().split(/\s+/).filter(Boolean).length; $('#nt-ct').textContent = w ? w + ' palabra' + (w === 1 ? '' : 's') : ''; };
+    const tabs = () => { $('#nt-tabs').innerHTML = N.notes.map((n, i) => `<button class="nt-tab${i === cur ? ' on' : ''}" data-i="${i}">${esc(n.title || 'Nota ' + (i + 1))}</button>`).join('') + '<button class="nt-tab nt-add" id="nt-add">+ Nueva</button>';
+      $$('#nt-tabs [data-i]').forEach(b => b.onclick = () => { sync(); cur = +b.dataset.i; load(); }); $('#nt-add').onclick = () => { sync(); N.notes.push({ id: 'n' + Date.now(), title: '', html: '' }); cur = N.notes.length - 1; load(); ti.focus(); }; };
+    const load = () => { const n = N.notes[cur]; ed.innerHTML = clean(n.html); ti.value = n.title || ''; tabs(); words(); };
+    const save = async () => { clearTimeout(tmr); sync(); status('Guardando…'); const x = await MRAC.call('myNotesSave', { code: MRAC.code(), text: JSON.stringify(N) }).catch(() => null); if (x && x.ok) status('✓ Guardado', true); else status('⚠️ Sin guardar'); };
+    const later = () => { status('Cambios sin guardar'); clearTimeout(tmr); tmr = setTimeout(save, 1500); words(); };
+    ed.addEventListener('input', later); ti.addEventListener('input', () => { later(); const b = $(`#nt-tabs [data-i="${cur}"]`); if (b) b.textContent = ti.value || 'Nota ' + (cur + 1); });
+    $$('.nt-bar [data-cmd]').forEach(b => b.onmousedown = (e) => { e.preventDefault(); const c = b.dataset.cmd; if (c === 'hl') { try { document.execCommand('styleWithCSS', false, true); } catch (er) { } document.execCommand('hiliteColor', false, '#fff27a'); } else document.execCommand(c); later(); });
+    $('#nt-sv').onclick = save;
+    $('#nt-dl').onclick = () => { sync(); const txt = N.notes.map(n => (n.title || 'Nota') + '\n' + new DOMParser().parseFromString(n.html.replace(/<br>|<\/(div|p|li)>/g, '\n'), 'text/html').body.textContent).join('\n\n———\n\n'); const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([txt], { type: 'text/plain' })); a.download = 'mis-apuntes-mrarrieta.txt'; a.click(); };
+    $('#nt-del').onclick = () => { if (!confirm('¿Borrar esta nota?')) return; N.notes.splice(cur, 1); if (!N.notes.length) N.notes = [{ id: 'n1', title: '', html: '' }]; cur = Math.max(0, cur - 1); load(); save(); };
+    const mic = $('#nt-mic'); if (mic) { let rec = null; mic.onclick = () => { if (rec) { rec.stop(); return; } const SR = window.SpeechRecognition || window.webkitSpeechRecognition; rec = new SR(); rec.lang = 'en-US'; rec.interimResults = false; rec.continuous = true;
+      rec.onresult = (e) => { const t = [...e.results].slice(e.resultIndex).map(x => x[0].transcript).join(' '); ed.focus(); document.execCommand('insertText', false, (ed.innerText.trim() ? ' ' : '') + t); later(); };
+      rec.onend = () => { rec = null; mic.classList.remove('on'); mic.textContent = '🎙️ Dictar'; }; rec.start(); mic.classList.add('on'); mic.textContent = '⏹ Detener'; }; }
+    load(); status(raw ? '✓ Guardado' : 'Nuevo', !!raw);
   }
   async function refCard() {
     const el = $('#pt-ref'); if (!el) return;

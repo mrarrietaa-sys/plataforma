@@ -4492,3 +4492,23 @@ textarea.tb-board:focus{outline:2px solid #ffe36a}
 .tb-note{display:block;width:100%;box-sizing:border-box;border:1.5px solid #dbe3ef;border-radius:10px;padding:10px 12px;font:14px/24px Inter,Arial,sans-serif;background:#fffef6 repeating-linear-gradient(#fffef6 0 23px,#e8eef7 24px);background-attachment:local;resize:vertical;margin-top:10px;color:#0B2A5B}
 .tb-notes{margin:14px 0}
 .lv-hist .lv-cl{flex-wrap:wrap}.tb-see{margin-left:auto}
+/* ✏️ Mis apuntes — editor moderno */
+.nt{margin:14px 0;padding:0!important;overflow:hidden}
+.nt-h{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid #eef2f8}
+.nt-hi{width:40px;height:40px;border-radius:12px;background:#eef3fb;color:#0B2A5B;display:grid;place-items:center}.nt-hi .mri{width:20px;height:20px}
+.nt-h h3{margin:0;font-size:17px}.nt-h p{margin:0;font-size:12.5px;color:#5b6577}
+.nt-st{font-size:12px;font-weight:600;color:#5b6577;background:#f2f5fa;border-radius:20px;padding:5px 10px;white-space:nowrap}.nt-st.ok{color:#16a34a;background:#eafaf0}
+.nt-tabs{display:flex;gap:6px;padding:10px 16px 0;overflow-x:auto;scrollbar-width:none}
+.nt-tab{border:1px solid #e3e9f3;background:#fff;border-radius:20px;padding:6px 12px;font:600 12.5px Inter,sans-serif;color:#5b6577;white-space:nowrap;cursor:pointer}
+.nt-tab.on{background:#0B2A5B;color:#fff;border-color:#0B2A5B}.nt-add{border-style:dashed;color:#0B2A5B}
+.nt-ti{display:block;width:100%;box-sizing:border-box;border:0;outline:0;padding:14px 16px 2px;font:700 18px Poppins,sans-serif;color:#0B2A5B;background:none}
+.nt-ti::placeholder{color:#b3bfd1}
+.nt-bar{display:flex;align-items:center;gap:4px;padding:6px 12px;border-bottom:1px solid #eef2f8;flex-wrap:wrap}
+.nt-bar button{border:0;background:none;border-radius:8px;padding:6px 9px;font:600 12.5px Inter,sans-serif;color:#0B2A5B;cursor:pointer}.nt-bar button:hover{background:#f2f5fa}.nt-bar button.on{background:#fde8ea;color:#E3242B}
+.nt-ed{min-height:170px;max-height:420px;overflow:auto;padding:14px 16px;font:15px/1.7 Inter,Arial,sans-serif;color:#1d2b45;outline:0}
+.nt-ed:empty:before{content:attr(data-ph);color:#b3bfd1}
+.nt-ed mark,.nt-ed span[style*=background]{background:#fff27a;padding:0 2px;border-radius:3px}
+.nt-ed ul{padding-left:22px;margin:4px 0}
+.nt-f{display:flex;align-items:center;gap:10px;padding:10px 16px;border-top:1px solid #eef2f8;background:#fafcff}
+.tb-pzimg{display:block;width:100%;border-radius:10px;border:1px solid #e3e9f3;margin-top:10px}
+.pz-pick{display:grid;gap:8px;margin-top:10px}.pz-pick .btn{text-align:left;font-weight:500}

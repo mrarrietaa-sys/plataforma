@@ -135,12 +135,13 @@
     const t = D.teacher;
     app.innerHTML = `<div class="tp-head">
         <div class="tp-head-txt"><h1>¡Hola, ${esc(t.hello || String(t.name || '').split(' ')[0])}! 👋</h1><p class="muted">${dLabel(today(), true)} · <b>${h12(nowHM())}</b> hora Colombia · Código <b>${esc(t.code)}</b></p></div>
-        <button class="btn k sm" id="tp-mat">📚 Material de clases</button><button class="btn w sm" id="tp-pinch">🔑 Cambiar PIN</button><button class="btn w sm" id="tp-pol">📌 Política de clases</button><button class="btn sm wa-btn tp-chat" id="tp-chat"><span class="wa-dot"><svg viewBox="0 0 32 32" width="18" height="18" aria-hidden="true"><path fill="#fff" d="M16 3C8.8 3 3 8.6 3 15.6c0 2.5.8 4.9 2.1 6.9L3.6 28l5.7-1.5c2 1.1 4.3 1.7 6.7 1.7 7.2 0 13-5.6 13-12.6S23.2 3 16 3zm6.3 17.6c-.3.8-1.6 1.5-2.2 1.6-.6.1-1.3.1-2.1-.1-.5-.2-1.1-.4-1.9-.7-3.3-1.4-5.5-4.7-5.6-4.9-.2-.2-1.3-1.8-1.3-3.4s.8-2.4 1.1-2.7c.3-.3.6-.4.8-.4h.6c.2 0 .5-.1.7.6.3.7.9 2.3 1 2.5.1.2.1.4 0 .6-.1.2-.2.4-.3.6l-.5.6c-.2.2-.3.4-.1.7.2.3.9 1.5 2 2.4 1.4 1.2 2.5 1.6 2.9 1.8.4.2.6.1.8-.1.2-.2.9-1 1.1-1.4.2-.4.5-.3.8-.2.3.1 2 .9 2.3 1.1.3.2.6.3.7.4.1.3.1 1-.2 1.8z"/></svg></span> Chat con estudiantes</button><button class="btn w sm" id="tp-tour" style="margin-top:6px">🧭 Ver el tour</button>
+        <button class="btn r sm" id="tp-pz">🧑‍🏫 Pizarra</button><button class="btn k sm" id="tp-mat">📚 Material de clases</button><button class="btn w sm" id="tp-pinch">🔑 Cambiar PIN</button><button class="btn w sm" id="tp-pol">📌 Política de clases</button><button class="btn sm wa-btn tp-chat" id="tp-chat"><span class="wa-dot"><svg viewBox="0 0 32 32" width="18" height="18" aria-hidden="true"><path fill="#fff" d="M16 3C8.8 3 3 8.6 3 15.6c0 2.5.8 4.9 2.1 6.9L3.6 28l5.7-1.5c2 1.1 4.3 1.7 6.7 1.7 7.2 0 13-5.6 13-12.6S23.2 3 16 3zm6.3 17.6c-.3.8-1.6 1.5-2.2 1.6-.6.1-1.3.1-2.1-.1-.5-.2-1.1-.4-1.9-.7-3.3-1.4-5.5-4.7-5.6-4.9-.2-.2-1.3-1.8-1.3-3.4s.8-2.4 1.1-2.7c.3-.3.6-.4.8-.4h.6c.2 0 .5-.1.7.6.3.7.9 2.3 1 2.5.1.2.1.4 0 .6-.1.2-.2.4-.3.6l-.5.6c-.2.2-.3.4-.1.7.2.3.9 1.5 2 2.4 1.4 1.2 2.5 1.6 2.9 1.8.4.2.6.1.8-.1.2-.2.9-1 1.1-1.4.2-.4.5-.3.8-.2.3.1 2 .9 2.3 1.1.3.2.6.3.7.4.1.3.1 1-.2 1.8z"/></svg></span> Chat con estudiantes</button><button class="btn w sm" id="tp-tour" style="margin-top:6px">🧭 Ver el tour</button>
       </div>
       <nav class="tp-tabs" role="tablist">${TABS.map(([id, ic, tx]) => `<button class="tp-tab${tab === id ? ' on' : ''}" role="tab" aria-selected="${tab === id}" data-tab="${id}"><span aria-hidden="true">${ic}</span> ${tx}</button>`).join('')}</nav>
       <section id="tp-body"></section>`;
     if ($('#tp-tour')) $('#tp-tour').onclick = () => tour();
     if ($('#tp-mat')) $('#tp-mat').onclick = material;
+    if ($('#tp-pz')) $('#tp-pz').onclick = () => pzPick();
     if ($('#tp-pol')) $('#tp-pol').onclick = () => window.MRPOLICY && MRPOLICY.showTeacher(); // 📌 política (puntualidad, 15 minutos)
     if ($('#tp-pinch')) $('#tp-pinch').onclick = () => { // 🔑 cambiar PIN
       const m = document.createElement('div'); m.className = 'modal'; m.innerHTML = `<div class="card"><button class="mx" aria-label="Cerrar">✕</button><h3>🔑 Cambiar mi PIN</h3><p class="muted">Usa de 4 a 8 números.</p>
@@ -181,17 +182,35 @@
     $$('[data-noshow]', root).forEach((b) => b.onclick = () => markDialog(b.dataset.noshow, 'noshow'));
     $$('[data-board]', root).forEach((b) => b.onclick = () => boardDialog(b.dataset.board));
   }
+  // 🧑‍🏫 pizarra digital: elegir la clase (para guardarla en su tablero) o usarla libre
+  function pzPick() {
+    const t0 = today(), y = new Date(Date.now() - 864e5).toISOString().slice(0, 10);
+    const L = D.classes.filter((c) => c.type === 'vip' && c.students.length && c.date >= y && c.date <= t0 && ['cancelled', 'latecancel'].indexOf(c.status) < 0).slice().reverse()
+      .concat(D.classes.filter((c) => c.type === 'vip' && c.students.length && c.date > t0 && c.status === 'scheduled').slice(0, 3));
+    const m = modal(`<button class="tp-x" data-x aria-label="Cerrar">✕</button><h3>🧑‍🏫 Pizarra de clase</h3><p class="muted">Elige la clase para guardar la pizarra en su tablero (el estudiante la verá en su historial).</p>
+      <div class="pz-pick">${L.map((c) => `<button class="btn w block" data-pc="${esc(c.id)}"><b>${esc(studentName(c.students[0]))}</b> · ${rel(c.date) || dLabel(c.date)} · ${h12(c.time)}</button>`).join('') || '<p class="muted">No tienes clases de hoy o ayer.</p>'}</div>
+      <button class="btn k block" id="pz-free" style="margin-top:10px">✏️ Abrir pizarra libre (sin guardar)</button>`);
+    $$('[data-pc]', m).forEach((b) => b.onclick = () => { m.remove(); pzOpen(b.dataset.pc); });
+    $('#pz-free', m).onclick = () => { m.remove(); window.MRPZ && MRPZ.open({ title: 'Pizarra', sub: 'Pizarra libre · no se guarda' }); };
+  }
+  async function pzOpen(id) {
+    const c = D.classes.find((x) => x.id === id); if (!c || !window.MRPZ) return; toast('⏳ Abriendo pizarra…');
+    const r = await api('tPzGet', { classId: id }); let data = null; try { data = r && r.ok && r.json ? JSON.parse(r.json) : null; } catch (e) { }
+    MRPZ.open({ title: 'Pizarra de clase', sub: studentName(c.students[0]) + ' · ' + dLabel(c.date) + ' · ' + h12(c.time), file: String(c.date), data,
+      onSave: async (d, pngs) => { const x = await MR.call('tPzSave', { tcode: S.tcode, pin: S.pin, classId: id, json: JSON.stringify(d), pngs }, { timeout: 120000 }); return !!(x && x.ok); } });
+  }
   // 📝 tablero de clase: el profe escribe lo que hizo en la clase; ve también los tableros anteriores del estudiante (de cualquier profe)
   async function boardDialog(id) {
     const c = D.classes.find((x) => x.id === id); if (!c) return; const code = String(c.students[0] || '').toUpperCase();
     const m = modal(`<button class="tp-x" data-x aria-label="Cerrar">✕</button><h3>📝 Tablero de clase</h3><p class="muted">${esc(studentName(code))} · ${dLabel(c.date, true)} · ${h12(c.time)}</p>
       <textarea class="tb-board" id="tb-tx" rows="9" placeholder="Vocabulary: …&#10;Phrases: …&#10;Corrections: …&#10;Homework: …" disabled>Cargando…</textarea>
       <div class="row tb-row"><button class="btn k" id="tb-sv" disabled>💾 Guardar tablero</button><small class="tb-ok" id="tb-ok"></small></div>
-      <p class="muted" style="font-size:12.5px;margin:6px 0 0">El estudiante lo verá en su historial de clases.</p><div id="tb-prev"></div>`);
+      <p class="muted" style="font-size:12.5px;margin:6px 0 0">El estudiante lo verá en su historial de clases.</p><button class="btn r sm" id="tb-pz" style="margin-top:10px">🧑‍🏫 Abrir la pizarra de esta clase</button><div id="tb-prev"></div>`);
     const r = await api('tBoards', { code }); const L = (r && r.ok && r.boards) || []; const mine = L.find((b) => b.classId === id);
     const tx = $('#tb-tx', m), sv = $('#tb-sv', m); tx.disabled = false; sv.disabled = false; tx.value = mine ? mine.text : ''; if (mine) $('#tb-ok', m).textContent = '✓ Guardado';
     const prev = L.filter((b) => b.classId !== id && b.text).reverse();
     if (prev.length) $('#tb-prev', m).innerHTML = `<details class="tb-prev"><summary>📚 Clases anteriores de ${esc(studentName(code).split(' ')[0])} (${prev.length})</summary>${prev.map((b) => `<div class="tb-pi"><b>${dLabel(b.date)} · ${h12(b.time)} · ${esc(b.teacher || '')}</b><div class="tb-board ro">${esc(b.text)}</div></div>`).join('')}</details>`;
+    $('#tb-pz', m).onclick = () => { m.remove(); pzOpen(id); };
     tx.oninput = () => { $('#tb-ok', m).textContent = ''; };
     sv.onclick = async () => { sv.disabled = true; sv.textContent = 'Guardando…'; const x = await api('tBoardSave', { classId: id, text: tx.value }); sv.disabled = false; sv.textContent = '💾 Guardar tablero';
       if (x && x.ok) { $('#tb-ok', m).textContent = '✓ Guardado ' + h12(nowHM()); toast('✅ Tablero guardado'); } else toast(errText((x && x.err) || 'network'), true); };
