@@ -4473,3 +4473,9 @@ textarea.inp{font-size:15px;line-height:1.4}
 .itl-actor.itl-k-laptop{width:min(62vw,330px)}
 .itl-k-laptop .itl-img{max-height:52vh;width:auto;max-width:100%;margin:0 auto}
 @media (max-height:640px){.itl-actor.itl-k-laptop{width:min(48vw,240px)}}
+/* portal del profe en celular: botones del encabezado compactos (no a lo ancho) */
+@media (max-width:640px){
+ .tp-head{display:flex!important;flex-wrap:wrap!important;justify-content:flex-start!important;gap:6px!important}
+ .tp-head .btn{flex:0 0 auto!important;width:auto!important;font-size:12.5px!important;padding:6px 11px!important;min-height:0!important}
+ .tp-head .btn .wa-dot svg{width:14px;height:14px}
+}
