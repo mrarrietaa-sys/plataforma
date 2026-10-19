@@ -4579,3 +4579,9 @@ textarea.tb-board:focus{outline:2px solid #ffe36a}
  .wrap.db .pt-stepn{width:40px;height:40px;font-size:19px}
  .wrap.db .pt-step .btn.lg{font-size:14px!important;width:100%}
 }
+/* secciones guardadas en los menús: solo se ven al abrirlas desde "Mis clases" / "Mi cuenta" / "Mis módulos" */
+.wrap.db .lv-vip:not(.sd-open),.wrap.db .lv-next:not(.sd-open),.wrap.db .lv-claim:not(.sd-open),.wrap.db .lv-duo:not(.sd-open),.wrap.db #pt-notes:not(.sd-open),.wrap.db #pt-ref:not(.sd-open){display:none!important}
+.wrap.db .lv-duo.sd-open>*:not(.sd-open){display:none}
+.wrap.db .lv-duo.sd-open{grid-template-columns:1fr!important}
+.wrap.db .sd-open{animation:sdIn .25s ease}@keyframes sdIn{from{opacity:0;transform:translateY(6px)}}
+.wrap.db .lv-noacum.sd-moved{margin:12px 0 0}
