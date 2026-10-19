@@ -4532,3 +4532,50 @@ textarea.tb-board:focus{outline:2px solid #ffe36a}
 @media (max-width:640px){.tp-dds{gap:6px}.tp-ddb{font-size:12.5px!important;padding:8px 11px}.tp-dd{flex:0 0 auto}.tp-ddm{min-width:min(300px,calc(100vw - 32px))}.tp-dd:last-child .tp-ddm{left:auto;right:0}}
 @media (max-width:640px){.tp-dds{position:relative}.tp-dd{position:static}.tp-ddm,.tp-dd:last-child .tp-ddm{left:0;right:0;min-width:0}}
 @media (max-width:640px){.tp-ddb{font-size:12px!important;padding:7px 9px!important;gap:4px}}
+
+/* perfil del estudiante: 3 menús desplegables (sin botones sueltos) */
+.wrap.db .db-qa{display:none!important}
+.sd-dds{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}
+.sd-dd{position:relative}
+.sd-ddb{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1.5px solid #dbe3ef;border-radius:12px;padding:9px 14px;font:700 13.5px Poppins,sans-serif;color:#0B2A5B;cursor:pointer;box-shadow:0 2px 8px rgba(11,42,91,.05);width:auto}
+.sd-dd[data-k=cls] .sd-ddb{background:#0B2A5B;color:#fff;border-color:#0B2A5B}
+.sd-dd.open .sd-ddb{box-shadow:0 0 0 3px #e3eaf7;border-color:#0B2A5B}
+.sd-ddb .car{font-size:11px;opacity:.7;transition:transform .2s}.sd-dd.open .car{transform:rotate(180deg)}
+.sd-ddm{display:none;position:absolute;left:0;top:calc(100% + 6px);z-index:60;background:#fff;border:1px solid #e3e9f3;border-radius:14px;box-shadow:0 16px 34px rgba(11,42,91,.18);padding:6px;min-width:290px}
+.sd-dd.open .sd-ddm{display:block;animation:ddIn .15s ease}
+.sd-mi{display:flex;gap:10px;align-items:center;width:100%;text-align:left;background:none;border:0;border-radius:10px;padding:8px 10px;cursor:pointer;color:#0B2A5B}
+.sd-mi:hover{background:#f2f5fa}
+.sd-mi i{width:34px;height:34px;flex:0 0 34px;border-radius:10px;display:grid;place-items:center;font-style:normal;font-size:16px}
+.sd-mi b{display:block;font:700 13.5px Poppins,sans-serif}.sd-mi small{display:block;font-size:11.5px;color:#5b6577;font-weight:500}
+.sd-mi .ib{background:#fde8ea}.sd-mi .ib2{background:#e9f0ff}.sd-mi .ib3{background:#fff4d6}.sd-mi .ib4{background:#eafaf0}.sd-mi .ib5{background:#f1edff}.sd-mi .ib6{background:#eef2f7}
+.sd-sheet{position:fixed;inset:0;z-index:9500}.sd-dim{position:absolute;inset:0;background:rgba(11,42,91,.35)}
+.sd-pan{position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:20px 20px 0 0;padding:10px 12px calc(16px + env(safe-area-inset-bottom));box-shadow:0 -10px 30px rgba(11,42,91,.2);animation:shUp .2s ease}
+@keyframes shUp{from{transform:translateY(100%)}}
+.sd-grab{width:40px;height:4px;border-radius:4px;background:#d5dce8;margin:0 auto 8px}.sd-pt{display:block;font:700 15px Poppins,sans-serif;padding:2px 10px 6px}
+.sd-ti{display:block;font-size:19px;line-height:1;margin-bottom:2px}
+@media (max-width:760px){.sd-dds{display:none}}
+/* recién llegado: Mr. Arrieta en la avioneta junto al primer paso */
+.pt-step{position:relative;overflow:hidden}
+.pt-step-plane{position:absolute;right:18px;top:50%;transform:translateY(-50%);height:150px;pointer-events:none;filter:drop-shadow(0 10px 14px rgba(11,42,91,.18));animation:plFloat 3.2s ease-in-out infinite}
+@keyframes plFloat{50%{transform:translateY(-58%)}}
+.pt-step>div:not(.pt-stepn){padding-right:230px}
+@media(max-width:980px){.pt-step-plane{height:72px;top:16px;right:8px;transform:none;animation:none}.pt-step>div:not(.pt-stepn){padding-right:0}.pt-step h2{margin-right:70px}}
+/* v246 — perfil del recién llegado: tipografía uniforme + avioneta sin tocar el texto */
+.wrap.db .pt-step{display:flex;align-items:flex-start;gap:16px;padding:20px 22px!important}
+.wrap.db .pt-step h2{font-size:22px!important;line-height:1.2;margin:6px 0 4px}
+.wrap.db .pt-step p{font-size:14.5px!important;line-height:1.5}.wrap.db .pt-step p.muted{font-size:13px!important}
+.wrap.db .pt-step .lbl{font-size:11px!important}
+.wrap.db .pt-stepn{width:46px;height:46px;font-size:22px}
+.wrap.db .pt-step .btn.lg{font-size:15px!important;padding:11px 20px!important}
+.wrap.db #pt-ann .pt-ann.pt-trial{font-size:14px!important;padding:7px 10px 7px 14px}
+.wrap.db #pt-ann .pt-ann.pt-trial .btn{font-size:13px!important;padding:6px 12px}
+.pt-step>div:not(.pt-stepn){padding-right:0!important;flex:1;min-width:0}
+.pt-step-plane{position:static!important;transform:none;flex:0 0 auto;height:140px;align-self:center;margin-left:auto;animation:plFloat2 3.2s ease-in-out infinite}
+@keyframes plFloat2{50%{transform:translateY(-6px)}}
+@media(max-width:980px){
+ .wrap.db .pt-step{flex-wrap:wrap;gap:10px;padding:16px!important}
+ .pt-step-plane{order:-1;flex:0 0 100%;height:76px!important;object-fit:contain;object-position:right center;margin:0;animation:none}
+ .wrap.db .pt-step h2{font-size:19px!important;margin-right:0!important}
+ .wrap.db .pt-stepn{width:40px;height:40px;font-size:19px}
+ .wrap.db .pt-step .btn.lg{font-size:14px!important;width:100%}
+}

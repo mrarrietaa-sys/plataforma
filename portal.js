@@ -344,7 +344,7 @@
       main = `<div class="card pt-step"><div class="pt-stepn">1</div><div><span class="lbl">Primer paso</span><h2>Toma tu prueba de clasificación</h2>
         <p>Solo <b>10 minutos</b>. Se adapta a tu nivel y al terminar empiezas de una vez tu ruta de aprendizaje.</p>
         <p class="muted">⏱ Unos 10 minutos · ${pst.rounds || 1} oportunidades de 2 intentos${pst.attempts ? ` · Ya usaste ${pst.attempts}` : ''}${pst.inProgress ? ' · <b>Tienes una prueba en progreso</b>' : ''}</p>
-        <button class="btn k lg" id="pt">📝 ${pst.inProgress ? 'Continuar' : 'Tomar'} mi prueba de clasificación</button></div></div>`;
+        <button class="btn k lg" id="pt">📝 ${pst.inProgress ? 'Continuar' : 'Tomar'} mi prueba de clasificación</button></div><img class="pt-step-plane" src="mra-x-plane-red.webp" alt="Mr. Arrieta"></div>`;
     } else if (a && P.isExpired()) {
       main = `<div class="card pt-mymod"><div class="pt-mymod-img" style="background-image:url('${U(a.img)}')"><span>🔒</span></div><div><span class="lbl">⏰ Plan vencido</span>
         <h2>Tu contenido está bloqueado</h2><p>Tu plan venció el <b>${esc(new Date(P.plan().end + 'T00:00:00').toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' }))}</b>. Tus módulos, juegos y clases quedan bloqueados hasta que renueves.</p>
@@ -375,9 +375,19 @@
     const side = `<aside class="db-side card">
         <div class="db-me"><button class="pt-avwrap" id="me-av" title="Personaliza tu foto">${P.avHTML('pt-av')}<i class="pt-pen">✏️</i></button>
           <div class="db-me-tx"><span class="db-greet">${greet}!</span><h2>${esc(P.look().nick || p.first)} ${esc(p.last || '')}</h2><span class="db-chip ${plNow.eff}">${MRI(plIc)} ${plName}</span>${plNow.end && plNow.paid && !P.isExpired() ? `<small class="muted">Activo hasta el ${fmtD(plNow.end, { day: 'numeric', month: 'long' })}</small>` : ''}</div></div>
-        ${curMod ? `<div class="db-ring" style="--p:${pct}"><div><b>${pct}%</b><small>de tu módulo</small></div></div><small class="muted db-modtx">${esc(a.name)} · ${esc(a.id)} · ${curMod.done} de ${trial ? 4 : a.classes} clases</small>` : ''}
+        ${curMod ? `<div class="db-ring" style="--p:${pct}"><div><b>${pct}%</b><small>de tu módulo</small></div></div><small class="muted db-modtx">${esc(a.name)} · ${esc(a.id)} · ${curMod.done} de ${trial ? 4 : a.classes} clases</small>` : staff ? '' : `<div class="db-ring" style="--p:0"><div><b>0%</b><small>tu progreso</small></div></div><small class="muted db-modtx">Empieza con tu prueba de clasificación</small>`}
         <nav class="db-qa">${staff ? '' : `<button class="btn w" id="pt-plans">${MRI('crown')} Mi plan</button>`}${!staff && P.plan().premium ? `<button class="btn w" data-go="#pt-live">${MRI('calendar')} Mis clases</button>` : ''}${!staff && P.plan().premium ? `<button class="btn w pt-polb">${MRI('file')} Política de reservas</button>` : ''}<button class="btn w" id="me-go2">${MRI('user')} Personalizar perfil</button>${staff ? '' : `<button class="btn w" id="pt-pass">${MRI('unlock')} Cambiar mi código</button>`}<button class="btn w" id="pt-tour">${MRI('compass')} Ver el tour</button></nav></aside>`;
+    const prem = !staff && P.plan().premium;
+    const MENU = { // 📂 todo el perfil organizado en 3 grupos
+      learn: ['📘', 'Aprender', [['route', 'ib', '🧭', 'Mi ruta de aprendizaje', 'Módulos, clases y progreso'], ['games', 'ib5', '🎮', 'Zona de juegos', 'Practica jugando'], ['notes', 'ib3', '✏️', 'Mis apuntes', 'Tu cuaderno personal'], ['place', 'ib2', '📝', 'Prueba de clasificación', 'Ubica tu nivel']]],
+      cls: ['🎓', 'Mis clases', [['book', 'ib', '📅', 'Reservar clase', 'Elige profe, día y hora'], ['next', 'ib2', '🗓️', 'Mis próximas clases', 'Enlace y cancelación'], ['hist', 'ib6', '📚', 'Historial y tableros', 'Lo que vio cada profe'], ['claim', 'ib3', '🚩', '¿Mi profe no se conectó?', 'Repórtalo aquí'], ['chat', 'ib4', '💬', 'Chat con mi profe', 'Escríbele en vivo']]],
+      me: ['👤', 'Mi cuenta', [].concat(staff ? [] : [['plan', 'ib', '👑', 'Mi plan', 'Planes y renovación']], [['perso', 'ib5', '🎨', 'Personalizar perfil', 'Tu foto o tu Mr. Arrieta']], staff ? [] : [['pass', 'ib3', '🔑', 'Cambiar mi código', 'Tu clave de acceso'], ['ref', 'ib4', '🎁', 'Invitar a un amigo', 'Gana clases o días']], [['pol', 'ib6', '📌', 'Política', 'Reservas y cancelaciones'], ['tour', 'ib2', '🧭', 'Ver el tour', 'Cómo funciona tu perfil']])],
+    };
+    if (!prem) delete MENU.cls;
+    if (newbie) MENU.learn[2] = MENU.learn[2].filter(x => x[0] === 'place' || x[0] === 'games').reverse(); // recién llegado: primero la prueba de clasificación
+    const ddHTML = (k) => { const [ic, t, items] = MENU[k]; return `<div class="sd-dd" data-k="${k}"><button class="sd-ddb">${ic} ${t} <span class="car">▾</span></button><div class="sd-ddm">${items.map(([id, cl, i2, b, sm]) => `<button class="sd-mi" data-act="${id}"><i class="${cl}">${i2}</i><span><b>${b}</b><small>${sm}</small></span></button>`).join('')}</div></div>`; };
     app.innerHTML = `<div class="wrap db">${side}<div class="db-main">
+      <div class="sd-dds">${Object.keys(MENU).map(ddHTML).join('')}</div>
 
       ${birthdayBanner()}
       <div id="pt-ann"></div>
@@ -396,7 +406,7 @@
       ${certs()}`}
       </div>
       <p class="center fx-foot db-foot" style="margin-top:22px;font-size:13.5px;font-weight:600">mrarrieta.com · ¡Aprende inglés HABLANDO! · WhatsApp ${esc(C.WHATSAPP.replace(/^57/, ''))}</p></div>
-      <nav class="db-tabbar">${[['compass', 'Inicio', 'top'], P.plan().premium ? ['video', 'Clases', '#pt-live'] : ['award', 'Mi ruta', '.pt-routebar'], ['crown', 'Mi plan', 'plans'], ['file', 'Política', 'pol'], ['user', 'Perfil', 'me']].map(([i, t, g], k) => `<button class="${k ? '' : 'on'}" data-tab="${g}">${MRI(i)}<span>${t}</span></button>`).join('')}</nav>`;
+      <nav class="db-tabbar sd-tab"><button class="on" data-st="top">${MRI('compass')}<span>Inicio</span></button>${Object.keys(MENU).map((k) => `<button data-st="${k}"><b class="sd-ti">${MENU[k][0]}</b><span>${k === 'cls' ? 'Clases' : k === 'me' ? 'Cuenta' : MENU[k][1]}</span></button>`).join('')}</nav>`;
     if ($('#pt')) $('#pt').onclick = () => route('placement');
     const plans = (e) => { if (e) e.preventDefault(); M.modal(`<div class="pt-plmodal">${planSection()}</div>`, { x: true }); };
     $$('.tb-up').forEach(x => x.onclick = plans); if ($('#pt-tour')) $('#pt-tour').onclick = () => { window.scrollTo(0, 0); portalTour(true); }; if ($('#pt-plans')) $('#pt-plans').onclick = plans;
@@ -404,8 +414,21 @@
     const goTo = (sel) => { const el = $(sel); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
     $$('[data-go]').forEach(b => b.onclick = () => goTo(b.dataset.go));
     if ($('#me-go2')) $('#me-go2').onclick = () => route('me');
-    $$('.db-tabbar button').forEach(b => b.onclick = () => { $$('.db-tabbar button').forEach(x => x.classList.toggle('on', x === b)); const g = b.dataset.tab;
-      if (g === 'top') window.scrollTo({ top: 0, behavior: 'smooth' }); else if (g === 'plans') plans(); else if (g === 'me') route('me'); else if (g === 'pol') { if (window.MRPOLICY) MRPOLICY.show(); } else goTo(g); });
+    // 📂 acciones de los menús (PC: desplegables · celular: panel que sube desde abajo)
+    const act = (id) => { closeAll();
+      const open = (sel, click) => { const el = $(sel); if (!el) return M.toast('Esta sección aún no está disponible.'); if (el.tagName === 'DETAILS') el.open = true; el.scrollIntoView({ behavior: 'smooth', block: 'start' }); if (click) setTimeout(() => { const c = $(click); c && c.click(); }, 450); };
+      ({ route: () => open('.pt-routebar') || open('.pt-route'), games: () => { location.href = 'juegos.html'; }, notes: () => open('#pt-notes'), place: () => route('placement'),
+        book: () => open('#pt-live', '#lv-book'), next: () => open('#pt-live'), hist: () => open('.lv-hist'), claim: () => open('.lv-claim'), chat: () => { const c = $('#lv-msg'); if (c) c.click(); else open('#pt-live'); },
+        plan: () => plans(), perso: () => route('me'), pass: () => { const b = $('#pt-pass'); b ? b.click() : null; }, ref: () => open('#pt-ref'), pol: () => window.MRPOLICY && MRPOLICY.show(), tour: () => { window.scrollTo(0, 0); portalTour(true); } }[id] || (() => { }))(); };
+    const closeAll = () => { $$('.sd-dd').forEach(d => d.classList.remove('open')); const sh = $('.sd-sheet'); if (sh) sh.remove(); };
+    $$('.sd-dd').forEach(d => { d.querySelector('.sd-ddb').onclick = (e) => { e.stopPropagation(); const o = d.classList.contains('open'); closeAll(); if (!o) d.classList.add('open'); }; });
+    $$('.sd-mi').forEach(b => b.onclick = () => act(b.dataset.act));
+    if (!window.__sddd) { window.__sddd = 1; document.addEventListener('click', (e) => { if (!e.target.closest('.sd-dd')) $$('.sd-dd').forEach(d => d.classList.remove('open')); }); }
+    $$('.sd-tab button').forEach(b => b.onclick = () => { $$('.sd-tab button').forEach(x => x.classList.toggle('on', x === b)); const k = b.dataset.st; closeAll();
+      if (k === 'top') return window.scrollTo({ top: 0, behavior: 'smooth' });
+      const [ic, t, items] = MENU[k]; const sh = document.createElement('div'); sh.className = 'sd-sheet';
+      sh.innerHTML = `<div class="sd-dim"></div><div class="sd-pan"><div class="sd-grab"></div><b class="sd-pt">${ic} ${t}</b>${items.map(([id, cl, i2, bb, sm]) => `<button class="sd-mi" data-act="${id}"><i class="${cl}">${i2}</i><span><b>${bb}</b><small>${sm}</small></span></button>`).join('')}</div>`;
+      document.body.appendChild(sh); sh.querySelector('.sd-dim').onclick = closeAll; sh.querySelectorAll('.sd-mi').forEach(x => x.onclick = () => act(x.dataset.act)); });
     $$('.pt-polb').forEach(x => x.onclick = () => window.MRPOLICY && MRPOLICY.show());
     setTimeout(policyFirst, 400);
     // bienvenida de regreso (una vez por sesión)
