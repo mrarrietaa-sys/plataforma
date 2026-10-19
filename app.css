@@ -4630,3 +4630,7 @@ textarea.tb-board:focus{outline:2px solid #ffe36a}
 .ld-pfinfo li{display:flex;gap:8px;align-items:flex-start;font-size:14.5px}.ld-pfinfo .mri{width:18px;height:18px;color:#16a34a;flex:none;margin-top:1px}
 .ld-pfnote{display:flex;gap:8px;align-items:flex-start;background:#eef3fb;border-radius:10px;padding:9px 12px;font-size:13.5px;line-height:1.45;margin:8px 0;text-align:left}.ld-pfnote .mri{width:18px;height:18px;color:#0B2A5B;flex:none;margin-top:1px}
 .ld-pfrh{margin:12px 0 6px;font-size:15px;color:#0B2A5B}
+/* v211: perfil del profe centrado */
+.ld-pfinfo{justify-items:center;text-align:center}.ld-pfinfo li{justify-content:center;text-align:center}
+.ld-pfnote{justify-content:center;text-align:center}
+.ld-pfrh{text-align:center}.ld-revs .ld-rev{text-align:center}
