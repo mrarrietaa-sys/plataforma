@@ -418,12 +418,12 @@
   const FREE = ['rocket', 'plane-red', 'rocket3', 'plane-blue', 'drums', 'plane-yellow', 'surf', 'rocket5', 'plane-green', 'hero'];
   const ITL_ON = true;
   let sceneN = Math.floor(Math.random() * FREE.length);
-  const preloadScenes = () => Object.keys(SCENES).forEach(k => { const i = new Image(); i.src = 'mra-x-' + k + '.webp?v=5'; });
+  const preloadScenes = () => Object.keys(SCENES).forEach(k => { const i = new Image(); i.src = 'mra-x-' + k + '.webp?v=6'; });
   function interlude(next) {
     return new Promise(res => {
       const k = SEC_SC[next] || FREE[sceneN++ % FREE.length], sc = SCENES[k];
       const ov = h(`<div class="itl itl-${sc.a}" role="status">${sc.a === 'stage' ? '<div class="itl-lights"></div><span class="itl-notes">🎵 🎶 🎵</span>' : ''}${sc.a === 'up' || sc.a === 'fly' ? '<span class="itl-stars">✨ ⭐ ✨ ⭐</span>' : ''}
-        <div class="itl-actor"><b class="itl-say">${esc(sc.say)}</b><img class="itl-img" src="mra-x-${k}.webp?v=5" alt="Mr. Arrieta"></div>
+        <div class="itl-actor itl-k-${k}"><b class="itl-say">${esc(sc.say)}</b><img class="itl-img" src="mra-x-${k}.webp?v=6" alt="Mr. Arrieta"></div>
         <div class="itl-next"><small>NEXT</small><b>${SEC_IC[next] || '➡️'} ${esc(next.toUpperCase())}</b><i>Toca para continuar</i></div></div>`);
       document.body.appendChild(ov); try { sfx('win'); } catch (e) { }
       let done = false; const end = () => { if (done) return; done = true; ov.classList.add('out'); setTimeout(() => { ov.remove(); res(); }, 250); };

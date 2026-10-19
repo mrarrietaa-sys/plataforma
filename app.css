@@ -4469,3 +4469,7 @@ textarea.inp{font-size:15px;line-height:1.4}
 .player .stage .qs-q>*{display:inline;margin:0 2px}
 .player .stage .sent{line-height:1.3!important;text-wrap:balance}
 .player .stage .sent small{margin-top:2px!important;line-height:1.3}
+/* personaje de Homework (vertical): tamaño proporcionado para no tapar el "NEXT" */
+.itl-actor.itl-k-laptop{width:min(62vw,330px)}
+.itl-k-laptop .itl-img{max-height:52vh;width:auto;max-width:100%;margin:0 auto}
+@media (max-height:640px){.itl-actor.itl-k-laptop{width:min(48vw,240px)}}
