@@ -4611,3 +4611,15 @@ textarea.tb-board:focus{outline:2px solid #ffe36a}
 .modal .mascot{height:110px}
 .modal .card .inp,.tp-modal-card .inp,.ad-mcard .inp{font-size:14.5px!important;padding:9px 12px!important;min-height:40px}
 @media(max-width:640px){.modal .card,.tp-modal-card,.ad-mcard{padding:18px 16px 16px!important}.modal .card h2,.modal .card h3,.tp-modal-card h2,.tp-modal-card h3,.ad-mcard h2,.ad-mcard h3{font-size:17.5px!important}.modal .card p,.tp-modal-card p,.ad-mcard p{font-size:14px!important}.modal .card .btn,.tp-modal-card .btn,.ad-mcard .btn{font-size:14px!important;padding:9px 16px!important}.modal .mascot{height:90px}}
+/* v209: segundo acceso gratis */
+.ad-t2{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:6px 0 10px;font-size:14px}
+/* v209: Mis apuntes con el mismo estilo de tablero (pizarra verde con marco de madera) que el del profe */
+.nt-ti{padding:12px 16px 4px}
+.nt-bar{border-bottom:0;padding:4px 12px 0}
+.nt-ed{background:#0f3b2e;border:7px solid #b07a43;border-radius:10px;color:#f5f5f0;font:500 15px/1.6 Inter,Arial,sans-serif;margin:8px 14px 12px;min-height:200px;padding:12px 14px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.25)}
+.nt-ed:empty:before{color:#a9c4b8}
+.nt-ed:focus{outline:2px solid #ffe36a;outline-offset:1px}
+.nt-ed b,.nt-ed strong{color:#fff}
+.nt-ed mark,.nt-ed span[style*=background]{background:#ffe36a!important;color:#0f3b2e;padding:0 3px}
+.nt-ed ::selection{background:rgba(255,227,106,.35)}
+@media (max-width:640px){.nt-ed{margin:6px 10px 10px;border-width:6px}}
