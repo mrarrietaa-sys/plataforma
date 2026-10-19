@@ -4512,3 +4512,4 @@ textarea.tb-board:focus{outline:2px solid #ffe36a}
 .nt-f{display:flex;align-items:center;gap:10px;padding:10px 16px;border-top:1px solid #eef2f8;background:#fafcff}
 .tb-pzimg{display:block;width:100%;border-radius:10px;border:1px solid #e3e9f3;margin-top:10px}
 .pz-pick{display:grid;gap:8px;margin-top:10px}.pz-pick .btn{text-align:left;font-weight:500}
+.tb-info{background:#eef3fb;border-radius:10px;padding:8px 12px;font-size:13.5px;margin:6px 0 4px;line-height:1.5}

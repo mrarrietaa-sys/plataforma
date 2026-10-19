@@ -142,7 +142,7 @@
     if ($('#tp-tour')) $('#tp-tour').onclick = () => tour();
     if ($('#tp-mat')) $('#tp-mat').onclick = material;
     if ($('#tp-pz')) $('#tp-pz').onclick = () => pzPick();
-    if ($('#tp-pol')) $('#tp-pol').onclick = () => window.MRPOLICY && MRPOLICY.showTeacher(); // 📌 política (puntualidad, 15 minutos)
+    if ($('#tp-pol')) $('#tp-pol').onclick = async () => { const r = await api('tPay').catch(() => null); window.MRPOLICY && MRPOLICY.showTeacher({ rate: r && r.rate, noshow: r && r.noshowRate, penalty: r && r.penalty, onAccept: () => toast('✅ Gracias por tu compromiso') }); }; // 📌 política (puntualidad, 15 minutos)
     if ($('#tp-pinch')) $('#tp-pinch').onclick = () => { // 🔑 cambiar PIN
       const m = document.createElement('div'); m.className = 'modal'; m.innerHTML = `<div class="card"><button class="mx" aria-label="Cerrar">✕</button><h3>🔑 Cambiar mi PIN</h3><p class="muted">Usa de 4 a 8 números.</p>
         <input class="inp" id="pc-old" type="password" inputmode="numeric" placeholder="PIN actual" style="margin-bottom:8px"><input class="inp" id="pc-new" type="password" inputmode="numeric" placeholder="Nuevo PIN" style="margin-bottom:8px"><input class="inp" id="pc-new2" type="password" inputmode="numeric" placeholder="Repite el nuevo PIN">
@@ -202,7 +202,7 @@
   // 📝 tablero de clase: el profe escribe lo que hizo en la clase; ve también los tableros anteriores del estudiante (de cualquier profe)
   async function boardDialog(id) {
     const c = D.classes.find((x) => x.id === id); if (!c) return; const code = String(c.students[0] || '').toUpperCase();
-    const m = modal(`<button class="tp-x" data-x aria-label="Cerrar">✕</button><h3>📝 Tablero de clase</h3><p class="muted">${esc(studentName(code))} · ${dLabel(c.date, true)} · ${h12(c.time)}</p>
+    const m = modal(`<button class="tp-x" data-x aria-label="Cerrar">✕</button><h3>📝 Tablero de clase</h3><p class="muted">${esc(studentName(code))} · ${dLabel(c.date, true)} · ${h12(c.time)}</p>${(() => { const st = D.students[code] || {}; const MID = { 1: 'A1', 2: 'A2', 3: 'B2', 4: 'B2+' }[st.module]; const pr = MID && (st.progress || {})[MID]; return `<div class="tb-info">🎓 <b>Nivel:</b> ${MID ? 'Módulo ' + st.module + ' · ' + MID + (pr ? ' · ' + pr.pct + '% (' + pr.done + '/' + pr.total + ' clases)' : '') : 'Sin prueba de clasificación'}${c.topic ? `<br>🎯 <b>Quiere reforzar:</b> ${esc(c.topic)}` : ''}</div>`; })()}
       <textarea class="tb-board" id="tb-tx" rows="9" placeholder="Vocabulary: …&#10;Phrases: …&#10;Corrections: …&#10;Homework: …" disabled>Cargando…</textarea>
       <div class="row tb-row"><button class="btn k" id="tb-sv" disabled>💾 Guardar tablero</button><small class="tb-ok" id="tb-ok"></small></div>
       <p class="muted" style="font-size:12.5px;margin:6px 0 0">El estudiante lo verá en su historial de clases.</p><button class="btn r sm" id="tb-pz" style="margin-top:10px">🧑‍🏫 Abrir la pizarra de esta clase</button><div id="tb-prev"></div>`);
