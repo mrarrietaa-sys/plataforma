@@ -4679,3 +4679,5 @@ textarea.tb-board:focus{outline:2px solid #ffe36a}
 .pv-cond,.pv-note{font-size:12px;margin:0 0 10px}
 .pv-bt{padding:10px;font-size:14px;border-radius:10px}
 .pv-tr{margin-top:18px}}
+/* v215: clases extra también en "Tu plan" de la inscripción */
+.in-direct{flex-wrap:wrap}.in-dx{flex:0 0 100%}.in-dx .ipx{margin:4px 0 0;max-width:460px}

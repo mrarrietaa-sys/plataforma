@@ -52,7 +52,7 @@ if (!window.M1) window.M1 = {
   function render() {
     const DIRECT = !!st.plan && st.plan !== 'free' && !st.pickAll; const SP = planOf(st.plan) || {};
     app.innerHTML = `
-    ${DIRECT ? `<section class="card in-direct"><span class="in-plan-ic" aria-hidden="true">${SP.icon}</span><div class="grow"><span class="lbl">Tu plan</span><h1>${esc(SP.name)}</h1><p><b>${esc(SP.price)}</b> ${esc(SP.per || '')} · ${esc(SP.tag || '')}</p></div><button type="button" class="btn w sm" id="in-chg">Cambiar plan</button></section>` : ''}
+    ${DIRECT ? `<section class="card in-direct"><span class="in-plan-ic" aria-hidden="true">${SP.icon}</span><div class="grow"><span class="lbl">Tu plan</span><h1>${esc(SP.name)}</h1><p><b>${esc(SP.price)}</b> ${esc(SP.per || '')} · ${esc(SP.tag || '')}</p></div><button type="button" class="btn w sm" id="in-chg">Cambiar plan</button>${/^premium/.test(st.plan) && window.MRPLANS && MRPLANS.xbox ? `<div class="in-dx">${MRPLANS.xbox(st.plan)}</div>` : ''}</section>` : ''}
     <section class="in-hero"${DIRECT ? ' hidden' : ''}>
       <div class="in-hero-txt">
         
