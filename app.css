@@ -4665,3 +4665,4 @@ textarea.tb-board:focus{outline:2px solid #ffe36a}
 @media (max-width:760px){.modal .pv-grid{grid-template-columns:1fr!important}}
 .pv .pl-go{border-radius:12px;font-family:Poppins,sans-serif}.pv.hot .pl-go{background:#E3242B!important;border-color:#E3242B!important;color:#fff!important}
 .pv:last-child:not(.hot) .pl-go{background:#0B2A5B!important;border-color:#0B2A5B!important;color:#fff!important}
+[data-pfr][hidden]{display:none!important}
