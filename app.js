@@ -199,7 +199,7 @@
       <div class="card final">${M.mascot('mascot', 'point')}<div><h3>Well done! Get ready for the test.</h3><p style="margin:6px 0 0;color:#ddd">40 preguntas de los ${M.MOD.topics} temas (Listening, Reading, Writing y Speaking) · 45 minutos · 2 intentos. Si apruebas con ${(C.PASS_SCORE / 10).toFixed(1)}/10 o más, obtienes tu certificado 🎓</p>${M.finalUnlocked() ? '' : `<p style="margin:8px 0 0;color:#fff;font-weight:800">🔒 Se abre cuando termines las ${M.totalParts()} clases del módulo.</p>`}
         ${S.final ? `<p style="margin:8px 0 0;color:#fff;font-weight:800">Tu mejor resultado: ${(S.final.best / 10).toFixed(1)} / 10 ${S.final.passed ? '✅ Aprobado' : ''}</p>` : ''}${S.final && S.final.passed ? `<button class="btn sm" id="cert-b" style="margin-top:8px">🎓 Ver mi certificado</button>` : ''}
         <button class="btn lg" id="final-b">${M.finalUnlocked() ? 'FINAL TEST →' : `🔒 ${M.doneCount()}/${M.totalParts()} clases`}</button></div>
-      <p class="center fx-foot" style="margin-top:22px;font-size:13.5px;color:#fff;grid-column:1/-1;font-weight:600">¡Aprende inglés HABLANDO! · WhatsApp ${esc(C.WHATSAPP.replace(/^57/, ''))}</p>
+      <p class="center fx-foot" style="margin-top:22px;font-size:13.5px;color:#fff;grid-column:1/-1;font-weight:600">¡Aprende inglés HABLANDO!<br><span style="font-weight:500">WhatsApp ${esc(C.WHATSAPP.replace(/^57/, '').replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3'))}</span></p>
     </div>`;
     const g = $('#tgrid');
     const nuP = nextUp(); const curId = (M.allParts().find(x => M.isUnlocked(x.topic) && S.parts[x.id] && !S.parts[x.id].done && S.parts[x.id].step) || nuP || {}).id;
