@@ -380,7 +380,7 @@
     const prem = !staff && P.plan().premium;
     const MENU = { // 📂 todo el perfil organizado en 3 grupos
       learn: ['💻', 'Mis módulos', [['route', 'ib', '🧭', 'Mi ruta de aprendizaje', 'Módulos, clases y progreso'], ['games', 'ib5', '🎮', 'Zona de juegos', 'Practica jugando'], ['notes', 'ib3', '✏️', 'Mis apuntes', 'Tu cuaderno personal'], ['place', 'ib2', '📝', 'Prueba de clasificación', 'Ubica tu nivel']]],
-      cls: ['🧑‍🏫', 'Mis clases', [['book', 'ib', '📅', 'Reservar clase', 'Elige profe, día y hora'], ['next', 'ib2', '🗓️', 'Mis próximas clases', 'Enlace y cancelación'], ['hist', 'ib6', '📚', 'Historial y tableros', 'Lo que vio cada profe'], ['claim', 'ib3', '🚩', '¿Mi profe no se conectó?', 'Repórtalo aquí'], ['chat', 'ib4', '💬', 'Chat con mi profe', 'Escríbele en vivo']]],
+      cls: ['🧑‍🏫', 'Mis clases', [['book', 'ib', '📅', 'Reservar clase', 'Elige profe, día y hora'], ['next', 'ib2', '🗓️', 'Mis próximas clases', 'Enlace y cancelación'], ['extra', 'ib5', '➕', 'Comprar más clases', 'Se suman a tu saldo'], ['hist', 'ib6', '📚', 'Historial y tableros', 'Lo que vio cada profe'], ['claim', 'ib3', '🚩', '¿Mi profe no se conectó?', 'Repórtalo aquí'], ['chat', 'ib4', '💬', 'Chat con mi profe', 'Escríbele en vivo']]],
       me: ['👤', 'Mi cuenta', [].concat(staff ? [] : [['plan', 'ib', '👑', 'Mi plan', 'Planes y renovación']], [['perso', 'ib5', '🎨', 'Personalizar perfil', 'Tu foto o tu Mr. Arrieta']], staff ? [] : [['pass', 'ib3', '🔑', 'Cambiar mi código', 'Tu clave de acceso'], ['ref', 'ib4', '🎁', 'Invitar a un amigo', 'Gana clases o días']], [['pol', 'ib6', '📌', 'Política', 'Reservas y cancelaciones'], ['tour', 'ib2', '🧭', 'Ver el tour', 'Cómo funciona tu perfil']])],
     };
     if (!prem) delete MENU.cls;
@@ -418,7 +418,7 @@
     const act = (id) => { closeAll();
       const open = (sel, click) => { const el = $(sel); if (!el) return M.toast('Esta sección aún no está disponible.'); sdShow(el); if (el.tagName === 'DETAILS') el.open = true; el.scrollIntoView({ behavior: 'smooth', block: 'start' }); if (click) setTimeout(() => { const c = $(click); c && c.click(); }, 450); };
       ({ route: () => open('.pt-routebar') || open('.pt-route'), games: () => { location.href = 'juegos.html'; }, notes: () => open('#pt-notes'), place: () => route('placement'),
-        book: () => { const c = $('#lv-book'); if (c && !c.disabled) c.click(); else open('.lv-vip'); }, next: () => open('.lv-next'), hist: () => open('.lv-hist'), claim: () => open('.lv-claim'), chat: () => { const c = $('#lv-msg'); if (c) c.click(); else open('#pt-live'); },
+        book: () => { const c = $('#lv-book'); if (c && !c.disabled) c.click(); else open('.lv-vip'); }, next: () => open('.lv-next'), extra: () => { const x = $('#lv-extra'); if (x) x.click(); else open('.lv-vip'); }, hist: () => open('.lv-hist'), claim: () => open('.lv-claim'), chat: () => { const c = $('#lv-msg'); if (c) c.click(); else open('#pt-live'); },
         plan: () => plans(), perso: () => route('me'), pass: () => { const b = $('#pt-pass'); b ? b.click() : null; }, ref: () => open('#pt-ref'), pol: () => window.MRPOLICY && MRPOLICY.show(), tour: () => { window.scrollTo(0, 0); portalTour(true); } }[id] || (() => { }))(); };
     const closeAll = () => { $$('.sd-dd').forEach(d => d.classList.remove('open')); const sh = $('.sd-sheet'); if (sh) sh.remove(); };
     $$('.sd-dd').forEach(d => { d.querySelector('.sd-ddb').onclick = (e) => { e.stopPropagation(); const o = d.classList.contains('open'); closeAll(); if (!o) d.classList.add('open'); }; });
