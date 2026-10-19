@@ -32,19 +32,36 @@
   const noEmo = (t) => String(t).replace(/^[^A-Za-zÁÉÍÓÚÑáéíóúñ0-9]+/, '');
   const canBuy = () => !!(window.MRBUY && ((window.MRAC && MRAC.code && MRAC.code()) || window.__buyCode));
   function card(k, opt) {
-    opt = opt || {}; const p = PL[k]; const cur = opt.current === k; const top = k === 'premium8';
-    return `<div class="pl-card ${k === 'membership' ? 'membership' : 'premium'}${cur ? ' cur' : ''}">${top ? `<span class="pl-rib">${window.MRI ? MRI('award') : ''} Más práctica</span>` : ''}
-      <h3 class="pl-h"><span class="pl-hi">${ico(k)}</span>${esc(noEmo(p.name))}</h3><div class="pl-price"><b>${esc(p.price)}</b><small>${esc(p.per)}</small></div>
-      <ul>${BEN[k].map(b => `<li${/^Clases no acumulables/.test(b) ? ' class="pl-warnli"' : /^No incluye/.test(b) ? ' class="pl-noli"' : ''}>${esc(noEmo(b))}${/^Clases no acumulables/.test(b) && window.MRPOLICY ? ' <span class="pl-cond" data-cond role="link" tabindex="0">Ver condiciones</span>' : ''}</li>`).join('')}</ul>
-      ${cur && !opt.renew ? `<div class="pl-on">${window.MRI ? MRI('check') : ''} Tu plan actual</div>` : canBuy() ? `<button class="btn ${k === 'membership' ? 'w' : 'k'} block pl-go" data-buy="${k}">${opt.renew && cur ? 'Renovar' : 'Elegir este plan'} →</button>`
-        : `<a class="btn ${k === 'membership' ? 'w' : 'k'} block pl-go" target="_blank" rel="noopener" href="${WA(waMsg(k, opt.renew && cur))}">${opt.renew && cur ? '🔁 Renovar' : 'Quiero este plan'} →</a>`}</div>`;
+    opt = opt || {}; const cur = opt.current === k;
+    const act = cur && !opt.renew ? `<div class="pl-on">${window.MRI ? MRI('check') : ''} Tu plan actual</div>` : canBuy() ? `<button class="btn ${hot(k) ? 'k' : 'w'} block pl-go" data-buy="${k}">${opt.renew && cur ? 'Renovar' : V2()[k].bt} →</button>`
+      : `<a class="btn ${hot(k) ? 'k' : 'w'} block pl-go" target="_blank" rel="noopener" href="${WA(waMsg(k, opt.renew && cur))}">${opt.renew && cur ? 'Renovar' : V2()[k].bt} →</a>`;
+    return `<div class="pv${hot(k)}${cur ? ' cur' : ''}">${v2(k, { btn: false })}${act}</div>`;
   }
+  /* 🛍️ tarjetas de planes v2 (página de entrada, inscripción y perfil): resultado, precio por clase, condiciones aparte */
+  const NM = { free: 'Acceso gratuito', membership: 'Plataforma', premium: 'Premium · 4 clases', premium8: 'Premium · 8 clases' };
+  const per = (k) => PL[k] && PL[k].classes ? Math.round(PL[k].n / PL[k].classes) : 0;
+  const best8 = () => per('premium8') && per('premium8') < per('premium');
+  const V2 = () => ({
+    free: { out: 'Descubre tu nivel y prueba la plataforma sin pagar nada.', li: ['Prueba de nivel en 10 minutos', 'Tu ruta personalizada', 'Hablas y la plataforma te corrige'], note: 'No incluye clases con profe.', bt: 'Empezar gratis' },
+    membership: { out: 'Aprende a tu ritmo, cuando quieras, desde el celular.', li: ['Habla desde el día 1: te escucha y te corrige', 'Ruta completa del A1 al B2+', 'Certificado por cada módulo'], note: 'No incluye clases con profe.', bt: 'Empezar con Plataforma' },
+    premium: { out: 'Pierde el miedo a hablar con un profe que te corrige en vivo.', li: ['Todo lo de Plataforma', '4 clases 1 a 1 de 50 min al mes', 'Tú eliges profe, día y hora'], rib: 'Más elegido', hot: 1, bt: 'Empezar con Premium 4' },
+    premium8: { out: 'Gana fluidez real: habla inglés 2 veces por semana.', li: ['Todo lo de Plataforma', '8 clases 1 a 1: 2 por semana', best8() ? 'El mejor precio por clase' : 'Gana fluidez real, más rápido'], rib: best8() ? 'Mejor precio por clase' : 'Más avance', bt: 'Empezar con Premium 8' },
+  });
+  const CK = () => window.MRI ? MRI('check') : '✓';
+  function v2(k, o) { o = o || {}; const d = V2()[k]; const pr = k === 'free' ? { price: '$0', per: '· 3 días' } : PL[k];
+    return `${d.rib ? `<span class="pv-rib${d.hot ? '' : ' b'}">${d.rib}</span>` : ''}<span class="pv-ic">${ico(k)}</span><span class="pv-n">${NM[k]}</span>
+      <span class="pv-pr"><b>${esc(pr.price)}</b> <small>${esc(pr.per)}</small></span>${per(k) ? `<span class="pv-pc">Solo ${fmt(per(k))} por clase</span>` : '<span class="pv-pc0"></span>'}
+      <span class="pv-out">${d.out}</span><span class="pv-ul">${d.li.map(l => `<span class="pv-li">${CK()}<span>${esc(l)}</span></span>`).join('')}</span><span class="pv-sp"></span>
+      ${/^premium/.test(k) ? `<span class="pv-cond">Clases no acumulables: úsalas en tu periodo mensual. ${window.MRPOLICY ? '<span class="pl-cond" data-cond role="link" tabindex="0">Ver condiciones</span>' : '<a href="politica.html" target="_blank" rel="noopener">Ver condiciones</a>'}</span>` : `<span class="pv-note">${d.note}</span>`}
+      ${o.btn === false ? '' : `<span class="pv-bt${o.btnCls ? ' ' + o.btnCls : ''}">${o.btn || d.bt}</span>`}`; }
+  const hot = (k) => V2()[k].hot ? ' hot' : '';
+  function trust() { return `<div class="pv-tr"><span>${CK()} Sin permanencia: pagas mes a mes</span><span>${CK()} Tu progreso siempre se guarda</span><span>${CK()} Profes licenciados en inglés</span></div>`; }
   // tarjetas de planes (muestra los superiores al plan actual; al renovar, también el actual)
   function cards(current, renew) {
     const order = ['membership', 'premium', 'premium8'], i = order.indexOf(current);
     const ks = order.filter((k, j) => j > i || (renew && j === i));
     if (!ks.length) return '';
-    return `<div class="pl-grid n${ks.length}">${ks.map(k => card(k, { current, renew })).join('')}</div><p class="pl-note">${window.MRI ? MRI('card') : ''} Paga con tarjeta (Mercado Pago) o por transferencia (Nequi / Llave Breve-B). Todas las membresías se cobran mes a mes. <a href="politica.html" target="_blank" rel="noopener">Política de reservas y cancelaciones</a></p>`;
+    return `<div class="pv-grid n${ks.length}">${ks.map(k => card(k, { current, renew })).join('')}</div>${trust()}<p class="pl-note">${window.MRI ? MRI('card') : ''} Paga con tarjeta (Mercado Pago) o por transferencia (Nequi / Llave Breve-B). Todas las membresías se cobran mes a mes. <a href="politica.html" target="_blank" rel="noopener">Política de reservas y cancelaciones</a></p>`;
   }
   // los botones "Elegir este plan" abren la compra
   document.addEventListener('click', (e) => { const b = e.target.closest && e.target.closest('[data-buy]'); if (!b || !window.MRBUY) return; e.preventDefault(); const mo = b.closest('.modal'); if (mo) mo.remove(); MRBUY.plan(b.dataset.buy); });
@@ -69,5 +86,5 @@
     box.querySelector('.ipx-n').textContent = n; box.querySelector('.ipx-c').textContent = (PL[k].classes + n) + ' clases'; box.querySelector('.ipx-p').textContent = fmt(PL[k].n + n * EXTRA) + ' COP/mes'; box.classList.toggle('on', n > 0);
     const a = box.closest('a[href*="plan="]'); if (a) { const u = new URL(a.getAttribute('href'), location.href); if (n) u.searchParams.set('extra', n); else u.searchParams.delete('extra'); a.setAttribute('href', u.pathname.split('/').pop() + u.search); }
     document.dispatchEvent(new CustomEvent('mra-extra', { detail: { plan: k, n } })); }
-  window.MRPLANS = { xbox, xset, PL, FREE, BEN, IC, noEmo, card, cards, modal, payInfo, badge, WA, waMsg, applyCat, extra: () => EXTRA, fmt };
+  window.MRPLANS = { v2, trust, hot, xbox, xset, PL, FREE, BEN, IC, noEmo, card, cards, modal, payInfo, badge, WA, waMsg, applyCat, extra: () => EXTRA, fmt };
 })();

@@ -66,20 +66,13 @@ if (!window.M1) window.M1 = {
     <form id="in-form" class="in-form" novalidate>
       ${REF ? `<p class="pt-ann" style="margin:0 0 14px">🎁 Te invitó un amigo (código <b>${esc(REF)}</b>): tienes <b>10% de descuento</b> en tu primer mes de cualquier plan pago.</p>` : ''}
       <div${DIRECT ? ' hidden' : ''}><h2 class="in-step"><span>1</span> Elige tu plan</h2>
-      <div class="in-plans" role="radiogroup" aria-label="Plan">
+      <div class="in-plans pv-grid n4" role="radiogroup" aria-label="Plan">
         ${PLANS.map((p) => `
-        <button type="button" class="in-plan${p.best ? ' best' : ''}${st.plan === p.id ? ' on' : ''}" role="radio" aria-checked="${st.plan === p.id}" data-plan="${p.id}">
-          ${p.best ? '<span class="in-ribbon">⭐ Más completo</span>' : ''}
-          <span class="in-plan-ic" aria-hidden="true">${p.icon}</span>
-          <span class="in-plan-name">${esc(p.name)}</span>
-          <span class="in-plan-price"><b>${esc(p.price)}</b><small>${esc(p.per || (p.id === 'free' ? 'sin costo' : ''))}</small></span>
-          <span class="in-plan-tag">${esc(p.tag)}</span>
-          <ul>${p.perks.map((k) => `<li>${esc(k)}${/^Clases no acumulables/.test(k) && window.MRPOLICY ? ' <span class="pl-cond" data-cond role="link" tabindex="0">Ver condiciones</span>' : ''}</li>`).join('')}</ul>
-          ${p.note ? `<span class="in-plan-note">${esc(p.note)}</span>` : ''}${(window.MRPLANS && MRPLANS.xbox) ? MRPLANS.xbox(p.id) : ''}
-          <span class="in-plan-pick">${st.plan === p.id ? '✓ Seleccionado' : 'Elegir este plan'}</span>
+        <button type="button" class="in-plan pv${window.MRPLANS && MRPLANS.hot ? MRPLANS.hot(p.id) : ''}${st.plan === p.id ? ' on' : ''}" role="radio" aria-checked="${st.plan === p.id}" data-plan="${p.id}">
+          ${MRPLANS.v2(p.id, { btn: st.plan === p.id ? '✓ Seleccionado' : 'Elegir este plan', btnCls: 'in-plan-pick' })}
         </button>`).join('')}
       </div>
-      <p class="in-err" id="err-plan" hidden>Elige un plan para continuar.</p></div>
+      ${MRPLANS.trust ? MRPLANS.trust() : ''}<p class="in-err" id="err-plan" hidden>Elige un plan para continuar.</p></div>
 
       <h2 class="in-step"><span>${DIRECT ? 1 : 2}</span> Tus datos</h2>
       <div class="card in-card">
