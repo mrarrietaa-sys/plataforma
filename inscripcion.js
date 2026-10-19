@@ -72,7 +72,7 @@ if (!window.M1) window.M1 = {
           ${MRPLANS.v2(p.id, { btn: st.plan === p.id ? '✓ Seleccionado' : 'Elegir este plan', btnCls: 'in-plan-pick' })}
         </button>`).join('')}
       </div>
-      ${MRPLANS.trust ? MRPLANS.trust() : ''}<p class="in-err" id="err-plan" hidden>Elige un plan para continuar.</p></div>
+      <div id="in-px"></div>${MRPLANS.trust ? MRPLANS.trust() : ''}<p class="in-err" id="err-plan" hidden>Elige un plan para continuar.</p></div>
 
       <h2 class="in-step"><span>${DIRECT ? 1 : 2}</span> Tus datos</h2>
       <div class="card in-card">
@@ -144,6 +144,9 @@ if (!window.M1) window.M1 = {
     const free = st.plan === 'free' || !st.plan; $$('.in-xtra').forEach(x => x.hidden = st.plan === 'free');
     const sb = $('#in-send'); if (sb) sb.textContent = st.plan === 'free' ? 'Crear mi acceso gratis →' : st.plan ? 'Continuar al pago →' : 'Enviar mi inscripción';
     const pn = $('#in-paynote'); if (pn) pn.hidden = free;
+    const px = $('#in-px'); if (px) { // ➕ eligiendo entre todos los planes: la caja de clases extra aparece debajo para el plan Premium seleccionado
+      if (/^premium/.test(st.plan) && window.MRPLANS && MRPLANS.xbox) { if (px.dataset.k !== st.plan) { px.dataset.k = st.plan; px.innerHTML = MRPLANS.xbox(st.plan); if (st.extra) MRPLANS.xset(px.querySelector('.ipx'), st.extra); } }
+      else { px.dataset.k = ''; px.innerHTML = ''; } }
     summary();
   }
   function syncChips() {
