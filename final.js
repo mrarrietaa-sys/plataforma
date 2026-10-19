@@ -1,7 +1,8 @@
 /* =====================================================================
    EXAMEN FINAL — Módulo 1 (A1)
-   40 preguntas: 10 Listening · 10 Reading · 10 Writing · 10 Speaking
-   · Cronómetro de 45 minutos (al llegar a 0 se envía y se bloquea)
+   24 preguntas: 6 Listening · 6 Reading · 6 Writing · 6 Speaking
+   · Cronómetro de 30 minutos (al llegar a 0 se envía y se bloquea)
+   · Examen final del curso: 32 preguntas (8 por habilidad) en 40 minutos
    · 2 intentos; para un 3.º el profesor entrega un código
    · Respuestas guardadas: si recarga, continúa donde iba
    · Retroalimentación inmediata (correcto / incorrecto) en cada pregunta
@@ -16,9 +17,11 @@
   const CFG = Object.assign({
     EMAILJS_PUBLIC_KEY: "F1fEtbt3ocfrt5V3C", EMAILJS_SERVICE_ID: "service_dxc9gsh", EMAILJS_TEMPLATE_ID: "template_oridazp",
     SHEETS_WEBAPP_URL: "https://script.google.com/macros/s/AKfycbzFUJ_xanGR-L1A14l7VUU-QeZoLBCpT1xIBjXWQXrqtLxEbpIp8ppgBoyMV1YwBX_-VQ/exec",
-    ADMIN_EMAIL: "mrarrietaa@gmail.com", TIME_MIN: 45, ATTEMPTS: 2,
+    ADMIN_EMAIL: "mrarrietaa@gmail.com", TIME_MIN: 30, ATTEMPTS: 2, PER_SKILL: 6,
   }, C.EXAM || {});
-  if (M.MOD.timeMin) CFG.TIME_MIN = M.MOD.timeMin;
+  if (M.MOD.course) { CFG.TIME_MIN = 40; CFG.PER_SKILL = 8; } // examen final del curso: 32 preguntas · 40 min
+  // ⚡ examen más corto: de cada habilidad se toman preguntas repartidas en todos los temas (siempre las mismas, para poder continuar si recarga)
+  EX.sections.forEach(sec => { const L = sec.items, n = CFG.PER_SKILL; if (L.length <= n) return; const pick = []; for (let i = 0; i < n; i++) pick.push(L[Math.round(i * (L.length - 1) / (n - 1))]); sec.items = pick; });
   const LIMIT = CFG.TIME_MIN * 60 * 1000;
   const MOD = M.MOD; const KEY = MOD.examKey;
   const ITEMS = []; EX.sections.forEach(sec => sec.items.forEach((it, idx) => ITEMS.push(Object.assign({}, it, { section: sec.key, label: sec.label, icon: sec.icon, idx }))));
@@ -29,6 +32,7 @@
   const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } };
   const store = (o) => { try { localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) { } };
   let ST = Object.assign({ attempts: 0, extra: 0, used: [], prog: null }, load());
+  if (ST.prog && Array.isArray(ST.prog.answers) && ST.prog.answers.length !== N) { ST.prog = null; store(ST); } // examen anterior (más largo) sin terminar: empieza de nuevo sin gastar intento
   // los intentos extra que aprueba administración los escribe cloud.js en localStorage: nunca se pisan con un estado viejo
   const persist = () => { const c = load(); ['extra', 'cloudExtra'].forEach(k => { if ((+c[k] || 0) > (+ST[k] || 0)) ST[k] = +c[k]; }); store(ST); };
   const maxAttempts = () => CFG.ATTEMPTS + (ST.extra || 0);

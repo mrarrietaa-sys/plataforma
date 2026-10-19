@@ -74,7 +74,7 @@ if (!window.M1) window.M1 = {
           <span class="in-plan-name">${esc(p.name)}</span>
           <span class="in-plan-price"><b>${esc(p.price)}</b><small>${esc(p.per || (p.id === 'free' ? 'sin costo' : ''))}</small></span>
           <span class="in-plan-tag">${esc(p.tag)}</span>
-          <ul>${p.perks.map((k) => `<li>${esc(k)}</li>`).join('')}</ul>
+          <ul>${p.perks.map((k) => `<li>${esc(k)}${/^Clases no acumulables/.test(k) && window.MRPOLICY ? ' <span class="pl-cond" data-cond role="link" tabindex="0">Ver condiciones</span>' : ''}</li>`).join('')}</ul>
           ${p.note ? `<span class="in-plan-note">${esc(p.note)}</span>` : ''}${(window.MRPLANS && MRPLANS.xbox) ? MRPLANS.xbox(p.id) : ''}
           <span class="in-plan-pick">${st.plan === p.id ? '✓ Seleccionado' : 'Elegir este plan'}</span>
         </button>`).join('')}

@@ -55,11 +55,13 @@
   function show(opts) {
     opts = opts || {};
     const m = document.createElement('div'); m.className = 'modal pol-modal'; m.setAttribute('role', 'dialog'); m.setAttribute('aria-modal', 'true');
-    m.innerHTML = `<div class="modal-card card pol-card">${opts.first ? '<p class="pol-first">👋 Antes de empezar, lee nuestra política. La encuentras siempre en tu perfil.</p>' : ''}${HTML}<div style="text-align:center;margin-top:12px"><button class="btn k" id="pol-ok" style="padding:10px 26px;font-size:15px">✅ Leí y acepto</button></div></div>`;
+    m.innerHTML = `<div class="modal-card card pol-card">${opts.first ? '<p class="pol-first">👋 Antes de empezar, lee nuestra política. La encuentras siempre en tu perfil.</p>' : ''}${HTML}<div style="text-align:center;margin-top:12px"><button class="btn k" id="pol-ok" style="padding:10px 26px;font-size:15px">${opts.btn || '✅ Leí y acepto'}</button></div></div>`;
     document.body.appendChild(m);
     const close = () => { m.remove(); opts.onClose && opts.onClose(); };
-    m.querySelector('#pol-ok').onclick = close;
+    m.querySelector('#pol-ok').onclick = close; if (opts.btn) m.onclick = (e) => { if (e.target === m) close(); };
     return m;
   }
+  // 🔗 «Ver condiciones» en los planes: abre la política completa (reservas, cancelaciones y vencimiento)
+  document.addEventListener('click', (e) => { const b = e.target.closest && e.target.closest('[data-cond]'); if (!b) return; e.preventDefault(); e.stopPropagation(); show({ btn: 'Entendido' }); }, true);
   window.MRPOLICY = { html: HTML, teacherHtml: THTML, show, showTeacher, url: 'politica.html' };
 })();

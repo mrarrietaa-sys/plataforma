@@ -51,7 +51,7 @@
     app.innerHTML = `<section class="card tp-login center">
       <img src="mra-present.webp" alt="" class="tp-login-img" width="200" height="200">
       <span class="lbl">Portal de profesores</span>
-      <h1>¡Hola, profe! 👋</h1>
+      <h1>¡Hola, profe!</h1>
       <p class="muted">Entra con tu código de profesor y tu PIN para ver tus clases, tu disponibilidad y tus grupos.</p>
       ${off ? `<div class="tp-alert">⚠️ El portal todavía no está conectado a la nube de la escuela. Escribe a administración para recibir ayuda.<br><a class="btn w sm" style="margin-top:10px" target="_blank" rel="noopener" href="https://wa.me/${WA}?text=${encodeURIComponent((window.MRNE || String)('Hola, soy profe de mrarrieta.com y no puedo entrar al portal de profesores.'))}">💬 Escribir por WhatsApp</a></div>` : ''}
       <form id="tp-lf" class="tp-lform" novalidate>
@@ -79,16 +79,25 @@
   // 🧭 tour de Mr. Arrieta: la primera vez que el profe entra (por código, en este dispositivo y en la nube)
   const TKEY = () => 'mra_ttour_' + String((D && D.teacher && D.teacher.code) || '').toUpperCase();
   function firstTour() { if (D && D.teacher && D.teacher.tour) return false; try { return !localStorage.getItem(TKEY()); } catch (e) { return true; } }
-  function tour() {
+  let TOUR_R = null; // tarifas reales para el tour
+  async function tour() {
+    if (!TOUR_R) { const r = await api('tPay').catch(() => null); TOUR_R = { rate: r && r.rate, noshow: r && r.noshowRate, penalty: r && r.penalty }; }
     const first = esc(String((D.teacher || {}).name || '').split(/\s+/)[0]);
-    const steps = [
-      ['welcome', `¡Welcome, ${first}! 👋`, 'Soy Mr. Arrieta. Te muestro en 1 minuto cómo funciona tu portal de profesor.', null],
-      ['point', '🏠 Resumen', 'Aquí ves tus <b>notificaciones</b> (clases individuales reservadas y mensajes de tus estudiantes), tus próximas clases y tus estadísticas.', 'home'],
-      ['idea', '🗓️ Mi disponibilidad', 'Marca las horas en que puedes dar clases <b>de lunes a sábado</b>. Los estudiantes Premium solo pueden reservar clases individuales en esos horarios. Domingos y festivos no hay clases.', 'avail'],
-      ['present', '🎓 Mis clases', 'Aquí entras a cada clase con tu enlace de Meet y, al terminar, la marcas como <b>dictada</b> o <b>no asistió</b>.', 'classes'],
-      ['pointside', '💬 Chat con estudiantes', 'Con el botón <b>Chat con estudiantes</b> respondes las dudas y tareas de tus estudiantes.', null],
-      ['watch', '🔔 Correos diarios', 'Cada mañana te llega un correo con tu resumen del día.', null],
-      ['thumbs', '¡Listo! 🚀', 'Para empezar, escribe tu <b>disponibilidad semanal</b>.', 'avail'],
+    const R = TOUR_R || {}; const cop = (n) => '$' + Number(n).toLocaleString('es-CO');
+    const steps = [ // 🧭 inducción para profes nuevos: cómo funciona la escuela y sus responsabilidades
+      ['welcome', `¡Welcome, ${first}! 👋`, 'Soy Mr. Arrieta. En 3 minutos te explico cómo funciona la escuela, tu portal y tus responsabilidades como profe de <b>mrarrieta.com</b>.', null],
+      ['idea', 'Cómo funciona la escuela', 'Damos <b>clases 1 a 1 de 50 minutos</b> por Google Meet, con la metodología <b>RealTalk®</b>: el estudiante habla desde el primer minuto. Los estudiantes <b>no tienen profe fijo</b>: cualquier estudiante Premium puede reservar contigo.', 'home'],
+      ['point', 'Horario de la escuela', '<b>Lunes a viernes:</b> 7:00 a. m. a 9:00 p. m.<br><b>Sábados:</b> 7:00 a. m. a 5:00 p. m.<br>Domingos y festivos de Colombia no hay clases. (Hora Colombia)', null],
+      ['point', 'Resumen', 'Aquí ves tus <b>notificaciones</b> (clases reservadas y mensajes), tus próximas clases y tus estadísticas. Cada mañana también te llega un correo con tu resumen del día.', 'home'],
+      ['idea', 'Mi disponibilidad', 'Publica <b>solo</b> los horarios en los que realmente puedes dictar. Los estudiantes reservan desde <b>mañana</b> y hasta <b>5 días adelante</b> (nunca el mismo día). Mantenla siempre al día.', 'avail'],
+      ['present', 'Antes de cada clase', 'En <b>Mis clases</b> toca <b>📝 Tablero</b>: ves el nivel y avance del estudiante, el tema que quiere reforzar y lo que trabajaron otros profes con él. Prepara tu clase con eso.', 'classes'],
+      ['watch', 'Puntualidad', 'Conéctate <b>a la hora exacta</b>. La clase dura 50 minutos desde la hora reservada: si el estudiante llega tarde, no se extiende (9:00 → termina 9:50). Si a los <b>15 minutos</b> no se ha conectado, puedes retirarte y marcas <b>No asistió</b>.', null],
+      ['pointside', 'Durante la clase', 'Usa la <b>pizarra</b> y <b>Escribir en pantalla</b> (menú Herramientas) para explicar. Haz que el estudiante hable la mayor parte del tiempo y corrígelo con respeto.', null],
+      ['present', 'Después de cada clase', 'El mismo día: marca la clase como <b>Dictada</b> o <b>No asistió</b> y escribe en el <b>tablero</b> lo que trabajaste (vocabulario, correcciones, tarea). El estudiante lo ve y el próximo profe sabe qué se vio.', 'classes'],
+      ['pointside', 'Chat con estudiantes', 'En el <b>Chat con estudiantes</b> (menú Mi cuenta) respondes dudas y tareas. Responde con amabilidad y dentro del horario de la escuela.', null],
+      ['watch', 'Si no te conectas', `El estudiante puede reportarlo con "Mi profe no se conectó". Si se confirma, la clase vuelve a su saldo y se descuentan <b>${cop(R.penalty || 10000)}</b> de tu pago. Si tienes un imprevisto, avisa a administración lo antes posible.`, null],
+      ['thumbs', 'Tus pagos', `No hay sueldo fijo: se paga cada mes por clase. Clase dictada: <b>${cop(R.rate || 21800)}</b>. Si te conectas, esperas 15 minutos y el estudiante no llega: <b>${cop(R.noshow || 10000)}</b>. Las canceladas y no dictadas no se pagan. Revisa tu detalle en <b>Mis pagos</b>.`, 'pay'],
+      ['thumbs', '¡Bienvenido(a) al equipo! 🚀', 'Último paso: lee y acepta la <b>política de clases</b>. Luego escribe tu <b>disponibilidad semanal</b> para empezar a recibir reservas.', 'home'],
     ];
     try { localStorage.setItem(TKEY(), '1'); } catch (e) { } if (D && D.teacher && !D.teacher.tour) { D.teacher.tour = 1; api('tTour').catch(() => { }); } // marcado desde que empieza
     let i = 0;
@@ -98,8 +107,8 @@
       const [mood, t, d, tb] = steps[i]; const last = i === steps.length - 1;
       if (tb && tab !== tb && !last) { tab = tb; ss.set(TABKEY, tab); shell(); document.body.appendChild(m); }
       m.innerHTML = `<div class="tp-modal-card card" style="text-align:center"><img src="mra-${mood}.webp" alt="Mr. Arrieta" style="height:150px;margin:0 auto 6px;display:block"><h2>${t}</h2><p>${d}</p>
-        <p class="muted" style="font-size:13px">${i + 1} / ${steps.length}</p><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">${i ? '<button class="btn w" data-b>← Atrás</button>' : '<button class="btn w" data-s>Saltar</button>'}<button class="btn k" data-n>${last ? '📅 Escribir mi disponibilidad' : 'Siguiente →'}</button></div></div>`;
-      m.querySelector('[data-n]').onclick = () => { if (last) return end(true); i++; draw(); };
+        <p class="muted" style="font-size:13px">${i + 1} / ${steps.length}</p><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">${i ? '<button class="btn w" data-b>← Atrás</button>' : '<button class="btn w" data-s>Saltar</button>'}<button class="btn k" data-n>${last ? '📌 Leer y aceptar la política' : 'Siguiente →'}</button></div></div>`;
+      m.querySelector('[data-n]').onclick = () => { if (last) { m.remove(); if (window.MRPOLICY) return MRPOLICY.showTeacher({ rate: R.rate, noshow: R.noshow, penalty: R.penalty, onAccept: () => { toast('✅ Gracias por tu compromiso'); end(true); } }); return end(true); } i++; draw(); };
       const b = m.querySelector('[data-b]'); if (b) b.onclick = () => { i--; draw(); };
       const sk = m.querySelector('[data-s]'); if (sk) sk.onclick = () => { end(false); tab = 'home'; ss.set(TABKEY, tab); shell(); welcome(); };
     };
@@ -134,7 +143,7 @@
     outBtn.classList.remove('hidden'); outBtn.onclick = () => { if (confirm('¿Cerrar sesión?')) logout(); };
     const t = D.teacher;
     app.innerHTML = `<div class="tp-head">
-        <div class="tp-head-txt"><h1>¡Hola, ${esc(t.hello || String(t.name || '').split(' ')[0])}! 👋</h1><p class="muted">${dLabel(today(), true)} · <b>${h12(nowHM())}</b> hora Colombia · Código <b>${esc(t.code)}</b></p></div>
+        <div class="tp-head-txt"><h1>¡Hola, ${esc(t.hello || String(t.name || '').split(' ')[0])}!</h1><p class="muted">${dLabel(today(), true)} · <b>${h12(nowHM())}</b> hora Colombia · Código <b>${esc(t.code)}</b></p></div>
         <div class="tp-dds">
           <div class="tp-dd"><button class="tp-ddb" data-dd="tools">🛠 Herramientas <span class="car">▾</span></button><div class="tp-ddm">
             <button class="tp-mi" id="tp-pz"><i class="ib">🧑‍🏫</i><span><b>Pizarra</b><small>Pizarra digital para tus clases</small></span></button>

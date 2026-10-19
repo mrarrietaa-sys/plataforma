@@ -4623,3 +4623,10 @@ textarea.tb-board:focus{outline:2px solid #ffe36a}
 .nt-ed mark,.nt-ed span[style*=background]{background:#ffe36a!important;color:#0f3b2e;padding:0 3px}
 .nt-ed ::selection{background:rgba(255,227,106,.35)}
 @media (max-width:640px){.nt-ed{margin:6px 10px 10px;border-width:6px}}
+/* v210: condiciones en planes + perfil de profes */
+.pl-cond{display:inline;color:#0B2A5B;font-weight:700;text-decoration:underline;cursor:pointer;white-space:nowrap;margin-left:4px}
+.pl-cond:hover{color:#E3242B}
+.ld-pfinfo{list-style:none;padding:0;margin:12px 0 8px;display:grid;gap:6px;text-align:left}
+.ld-pfinfo li{display:flex;gap:8px;align-items:flex-start;font-size:14.5px}.ld-pfinfo .mri{width:18px;height:18px;color:#16a34a;flex:none;margin-top:1px}
+.ld-pfnote{display:flex;gap:8px;align-items:flex-start;background:#eef3fb;border-radius:10px;padding:9px 12px;font-size:13.5px;line-height:1.45;margin:8px 0;text-align:left}.ld-pfnote .mri{width:18px;height:18px;color:#0B2A5B;flex:none;margin-top:1px}
+.ld-pfrh{margin:12px 0 6px;font-size:15px;color:#0B2A5B}

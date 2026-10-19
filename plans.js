@@ -35,7 +35,7 @@
     opt = opt || {}; const p = PL[k]; const cur = opt.current === k; const top = k === 'premium8';
     return `<div class="pl-card ${k === 'membership' ? 'membership' : 'premium'}${cur ? ' cur' : ''}">${top ? `<span class="pl-rib">${window.MRI ? MRI('award') : ''} Más práctica</span>` : ''}
       <h3 class="pl-h"><span class="pl-hi">${ico(k)}</span>${esc(noEmo(p.name))}</h3><div class="pl-price"><b>${esc(p.price)}</b><small>${esc(p.per)}</small></div>
-      <ul>${BEN[k].map(b => `<li${/^Clases no acumulables/.test(b) ? ' class="pl-warnli"' : /^No incluye/.test(b) ? ' class="pl-noli"' : ''}>${esc(noEmo(b))}</li>`).join('')}</ul>
+      <ul>${BEN[k].map(b => `<li${/^Clases no acumulables/.test(b) ? ' class="pl-warnli"' : /^No incluye/.test(b) ? ' class="pl-noli"' : ''}>${esc(noEmo(b))}${/^Clases no acumulables/.test(b) && window.MRPOLICY ? ' <span class="pl-cond" data-cond role="link" tabindex="0">Ver condiciones</span>' : ''}</li>`).join('')}</ul>
       ${cur && !opt.renew ? `<div class="pl-on">${window.MRI ? MRI('check') : ''} Tu plan actual</div>` : canBuy() ? `<button class="btn ${k === 'membership' ? 'w' : 'k'} block pl-go" data-buy="${k}">${opt.renew && cur ? 'Renovar' : 'Elegir este plan'} →</button>`
         : `<a class="btn ${k === 'membership' ? 'w' : 'k'} block pl-go" target="_blank" rel="noopener" href="${WA(waMsg(k, opt.renew && cur))}">${opt.renew && cur ? '🔁 Renovar' : 'Quiero este plan'} →</a>`}</div>`;
   }
