@@ -135,9 +135,23 @@
     const t = D.teacher;
     app.innerHTML = `<div class="tp-head">
         <div class="tp-head-txt"><h1>¡Hola, ${esc(t.hello || String(t.name || '').split(' ')[0])}! 👋</h1><p class="muted">${dLabel(today(), true)} · <b>${h12(nowHM())}</b> hora Colombia · Código <b>${esc(t.code)}</b></p></div>
-        <button class="btn r sm" id="tp-pz">🧑‍🏫 Pizarra</button><button class="btn w sm" id="tp-ann" title="Escribe, resalta y señala sobre cualquier parte de la pantalla">✏️ Escribir en pantalla</button><button class="btn k sm" id="tp-mat">📚 Material de clases</button><button class="btn w sm" id="tp-pinch">🔑 Cambiar PIN</button><button class="btn w sm" id="tp-pol">📌 Política de clases</button><button class="btn sm wa-btn tp-chat" id="tp-chat"><span class="wa-dot"><svg viewBox="0 0 32 32" width="18" height="18" aria-hidden="true"><path fill="#fff" d="M16 3C8.8 3 3 8.6 3 15.6c0 2.5.8 4.9 2.1 6.9L3.6 28l5.7-1.5c2 1.1 4.3 1.7 6.7 1.7 7.2 0 13-5.6 13-12.6S23.2 3 16 3zm6.3 17.6c-.3.8-1.6 1.5-2.2 1.6-.6.1-1.3.1-2.1-.1-.5-.2-1.1-.4-1.9-.7-3.3-1.4-5.5-4.7-5.6-4.9-.2-.2-1.3-1.8-1.3-3.4s.8-2.4 1.1-2.7c.3-.3.6-.4.8-.4h.6c.2 0 .5-.1.7.6.3.7.9 2.3 1 2.5.1.2.1.4 0 .6-.1.2-.2.4-.3.6l-.5.6c-.2.2-.3.4-.1.7.2.3.9 1.5 2 2.4 1.4 1.2 2.5 1.6 2.9 1.8.4.2.6.1.8-.1.2-.2.9-1 1.1-1.4.2-.4.5-.3.8-.2.3.1 2 .9 2.3 1.1.3.2.6.3.7.4.1.3.1 1-.2 1.8z"/></svg></span> Chat con estudiantes</button><button class="btn w sm" id="tp-tour" style="margin-top:6px">🧭 Ver el tour</button>
+        <div class="tp-dds">
+          <div class="tp-dd"><button class="tp-ddb" data-dd="tools">🛠 Herramientas <span class="car">▾</span></button><div class="tp-ddm">
+            <button class="tp-mi" id="tp-pz"><i class="ib">🧑‍🏫</i><span><b>Pizarra</b><small>Pizarra digital para tus clases</small></span></button>
+            <button class="tp-mi" id="tp-ann"><i class="ib2">✏️</i><span><b>Escribir en pantalla</b><small>Resalta y señala sobre la pantalla</small></span></button>
+            <button class="tp-mi" id="tp-mat"><i class="ib3">📚</i><span><b>Material de clases</b><small>Módulos y actividades</small></span></button></div></div>
+          <div class="tp-dd"><button class="tp-ddb" data-dd="cls">${({ home: '🏠 Resumen', avail: '🗓️ Mi disponibilidad', classes: '🎓 Mis clases', pay: '💰 Mis pagos' })[tab] || '🎓 Mis clases'} <span class="car">▾</span></button><div class="tp-ddm">
+            <button class="tp-mi tp-tab" data-tab="home"><i class="ib6">🏠</i><span><b>Resumen</b><small>Próximas clases y estadísticas</small></span></button>
+            <button class="tp-mi tp-tab" data-tab="classes"><i class="ib">🎓</i><span><b>Mis clases</b><small>Próximas y pasadas · tablero</small></span></button>
+            <button class="tp-mi tp-tab" data-tab="avail"><i class="ib2">🗓️</i><span><b>Mi disponibilidad</b><small>Tus horarios para reservar</small></span></button>
+            <button class="tp-mi tp-tab" data-tab="pay"><i class="ib4">💰</i><span><b>Mis pagos</b><small>Detalle del mes</small></span></button></div></div>
+          <div class="tp-dd"><button class="tp-ddb" data-dd="me">👤 Mi cuenta <span class="car">▾</span><i class="tp-dot" id="tp-chatdot" hidden></i></button><div class="tp-ddm">
+            <button class="tp-mi" id="tp-chat"><i class="ib4">💬</i><span><b>Chat con estudiantes</b><small>Responde dudas y tareas</small></span></button>
+            <button class="tp-mi" id="tp-pol"><i class="ib">📌</i><span><b>Política de clases</b><small>Puntualidad, pagos y compromisos</small></span></button>
+            <button class="tp-mi" id="tp-pinch"><i class="ib3">🔑</i><span><b>Cambiar PIN</b><small>Tu clave de acceso</small></span></button>
+            <button class="tp-mi" id="tp-tour"><i class="ib5">🧭</i><span><b>Ver el tour</b><small>Cómo funciona tu portal</small></span></button></div></div>
+        </div>
       </div>
-      <nav class="tp-tabs" role="tablist">${TABS.map(([id, ic, tx]) => `<button class="tp-tab${tab === id ? ' on' : ''}" role="tab" aria-selected="${tab === id}" data-tab="${id}"><span aria-hidden="true">${ic}</span> ${tx}</button>`).join('')}</nav>
       <section id="tp-body"></section>`;
     if ($('#tp-tour')) $('#tp-tour').onclick = () => tour();
     if ($('#tp-mat')) $('#tp-mat').onclick = material;
@@ -159,7 +173,12 @@
         b.disabled = false; b.textContent = 'Guardar nuevo PIN'; msg.textContent = !r ? 'No hay conexión. Inténtalo de nuevo.' : r.err === 'same' ? 'El nuevo PIN es igual al actual.' : 'No se pudo cambiar. Inténtalo de nuevo.'; }; };
     if ($('#tp-chat')) $('#tp-chat').onclick = () => openChat();
     if (/#chat\b/.test(location.hash)) { history.replaceState(null, '', location.pathname); setTimeout(() => openChat(), 300); }
-    $$('.tp-tab').forEach((b) => b.onclick = () => { tab = b.dataset.tab; ss.set(TABKEY, tab); shell(); });
+    $$('.tp-tab').forEach((b) => { b.classList.toggle('on', b.dataset.tab === tab); b.onclick = () => { tab = b.dataset.tab; ss.set(TABKEY, tab); shell(); }; });
+    { const dot = $('#tp-chatdot'); if (dot) dot.hidden = !(D.notifications || []).some((n) => !n.read && n.type === 'chat'); } // 🔴 mensajes nuevos
+    // menús desplegables (Herramientas · Mis clases · Mi cuenta)
+    const dds = $$('.tp-dd'); const closeDD = () => dds.forEach((d) => d.classList.remove('open'));
+    dds.forEach((d) => { d.querySelector('.tp-ddb').onclick = (e) => { e.stopPropagation(); const o = d.classList.contains('open'); closeDD(); if (!o) d.classList.add('open'); }; d.querySelectorAll('.tp-mi').forEach((x) => x.addEventListener('click', closeDD)); });
+    if (!window.__tpdd) { window.__tpdd = 1; document.addEventListener('click', (e) => { if (!e.target.closest('.tp-dd')) $$('.tp-dd').forEach((d) => d.classList.remove('open')); }); document.addEventListener('keydown', (e) => { if (e.key === 'Escape') $$('.tp-dd').forEach((d) => d.classList.remove('open')); }); }
     ({ home, avail, classes, groups, pay }[tab] || home)($('#tp-body'));
   }
 
