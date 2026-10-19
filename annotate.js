@@ -55,6 +55,16 @@
 #ann-drop{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:9003;width:64px;height:64px;border-radius:50%;background:rgba(227,36,43,.9);color:#fff;display:none;place-items:center;font:900 30px sans-serif;box-shadow:0 6px 18px rgba(0,0,0,.3)}
 #ann-drop.show{display:grid}#ann-drop.hot{transform:translateX(-50%) scale(1.25)}
 body.ann-draw{user-select:none;-webkit-user-select:none}
+/* compacta */
+#ann-fab{width:42px;height:42px;border-width:2px}#ann-fab svg{width:22px;height:22px}
+#ann-bar{width:auto;padding:4px;gap:2px;border-width:2px;border-radius:13px}
+#ann-bar button{width:32px;height:32px;border-radius:8px;border-width:1.5px}#ann-bar button svg{width:17px;height:17px}
+#ann-bar .sep{margin:2px 3px;height:1px}
+#ann-bar .sws{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:2px;flex:none}
+#ann-bar .sw{width:14px;height:14px;border-radius:50%;border:1.5px solid rgba(0,0,0,.18);margin:0}
+#ann-bar .sw.on{outline:2px solid #0B2A5B;outline-offset:1px}
+#ann-bar .tip{left:40px}#ann-bar.right .tip{right:40px}
+@media (max-width:640px){#ann-fab{width:38px;height:38px}#ann-fab svg{width:20px;height:20px}#ann-bar button{width:28px;height:28px}#ann-bar button svg{width:15px;height:15px}#ann-bar .sw{width:12px;height:12px}#ann-bar .sws{gap:3px}}
 @media print{#ann-cv,#ann-bar,#ann-fab{display:none!important}}`;
     document.head.appendChild(s);
   }
@@ -115,7 +125,7 @@ body.ann-draw{user-select:none;-webkit-user-select:none}
     bar = document.createElement('div'); bar.id = 'ann-bar'; bar.setAttribute('role', 'toolbar'); bar.setAttribute('aria-label', 'Barra del profesor');
     bar.innerHTML = BTN.map(([k, t]) => `<button data-t="${k}" aria-label="${t}">${I[k]}<span class="tip">${t}</span></button>`).join('') +
       `<div class="sep"></div><button class="sz" data-a="size" aria-label="Grosor"><i></i><span class="tip">Grosor</span></button>` +
-      COLORS.map(c => `<button class="sw" data-c="${c}" style="background:${c}" aria-label="Color ${c}"></button>`).join('') +
+      '<div class="sws">' + COLORS.map(c => `<button class="sw" data-c="${c}" style="background:${c}" aria-label="Color ${c}"></button>`).join('') + '</div>' +
       `<div class="sep"></div><button data-a="undo" aria-label="Deshacer">${I.undo}<span class="tip">Deshacer</span></button>` +
       `<button data-a="clear" aria-label="Borrar todo">${I.trash}<span class="tip">Borrar todo</span></button>` +
       `<button data-a="eye" aria-label="Mostrar u ocultar trazos">${I.eye}<span class="tip">Ocultar / mostrar trazos</span></button>` +
@@ -145,13 +155,13 @@ body.ann-draw{user-select:none;-webkit-user-select:none}
     fab.classList.toggle('act', tool !== 'cursor');
   }
   function layout() {
-    const fx = st.x == null ? innerWidth - 62 : Math.min(Math.max(4, st.x * innerWidth), innerWidth - 56), fy = st.y == null ? Math.round(innerHeight * .55) : Math.min(Math.max(4, st.y * innerHeight), innerHeight - 56);
+    const fx = st.x == null ? innerWidth - 54 : Math.min(Math.max(4, st.x * innerWidth), innerWidth - 46), fy = st.y == null ? Math.round(innerHeight * .55) : Math.min(Math.max(4, st.y * innerHeight), innerHeight - 56);
     fab.style.left = fx + 'px'; fab.style.top = fy + 'px';
     bar.classList.toggle('hidden', !st.open || st.hidden); fab.classList.toggle('hidden', st.hidden);
     if (st.open && !st.hidden) {
       const right = fx > innerWidth / 2; bar.classList.toggle('right', right);
-      const bw = 60, bh = bar.offsetHeight; const top = Math.min(Math.max(8, fy - 6), Math.max(8, innerHeight - bh - 8));
-      bar.style.left = (right ? Math.max(4, fx - bw - 6) : Math.min(fx + 58, innerWidth - bw - 4)) + 'px'; bar.style.top = top + 'px';
+      const bw = innerWidth < 640 ? 40 : 46, bh = bar.offsetHeight; const top = Math.min(Math.max(8, fy - 6), Math.max(8, innerHeight - bh - 8));
+      bar.style.left = (right ? Math.max(4, fx - bw - 6) : Math.min(fx + 48, innerWidth - bw - 4)) + 'px'; bar.style.top = top + 'px';
     }
   }
   function buildFab() {
