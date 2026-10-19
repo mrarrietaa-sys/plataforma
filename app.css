@@ -4433,3 +4433,6 @@ textarea.inp{font-size:15px;line-height:1.4}
  .wrap.db .btn.lg{font-size:14.5px!important;padding:10px 16px!important}
 }
 .wrap.db .db-ring small,.wrap.db .db-ring span{white-space:nowrap}
+/* saludo de la entrada: las dos líneas juntas */
+.ld-login .pt-hello .bubble{line-height:1.2!important;padding-top:12px!important;padding-bottom:12px!important}
+.ld-login .pt-hello .bubble .hg{line-height:1.2!important;margin:0!important;padding:0!important}
