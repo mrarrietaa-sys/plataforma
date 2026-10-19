@@ -45,7 +45,7 @@ if (!window.M1) window.M1 = {
   const REF = String(qs.get('ref') || (() => { try { return localStorage.getItem('mra_ref') || ''; } catch (e) { return ''; } })()).trim().toUpperCase().replace(/[^A-Z0-9-]/g, '').slice(0, 20);
   if (REF) { try { localStorage.setItem('mra_ref', REF); } catch (e) { } }
   const st = { plan: ['free', 'membership', 'premium', 'premium8'].indexOf(qs.get('plan')) >= 0 ? qs.get('plan') : '', schedule: '', days: [], level: '', source: '', busy: false, extra: Math.max(0, Math.min(10, +qs.get('extra') || 0)) };
-  document.addEventListener('mra-extra', (e) => { st.extra = e.detail.n; if (e.detail.plan !== st.plan) { st.extraPlan = e.detail.plan; } else st.extraPlan = st.plan; });
+  document.addEventListener('mra-extra', (e) => { st.extra = e.detail.n; if (e.detail.plan !== st.plan) { st.extraPlan = e.detail.plan; } else st.extraPlan = st.plan; try { summary(); } catch (er) { } });
   const planOf = (id) => PLANS.find((p) => p.id === id);
 
   /* ---------------- vista principal ---------------- */
@@ -151,7 +151,9 @@ if (!window.M1) window.M1 = {
   }
   function summary() {
     const p = planOf(st.plan), el = $('#in-summary'); if (!el) return;
-    el.innerHTML = p ? `Plan elegido: <b>${esc(p.name)}</b> · ${esc(p.price)}${esc(p.per || '')}` : 'Aún no has elegido un plan.';
+    const PLx = window.MRPLANS || {}, n = /^premium/.test(st.plan) && (st.extraPlan || st.plan) === st.plan ? (+st.extra || 0) : 0;
+    const unit = PLx.extra ? PLx.extra() : 39900, f = PLx.fmt || ((v) => '$' + v), base = (PLx.PL && PLx.PL[st.plan]) ? PLx.PL[st.plan].n : 0;
+    el.innerHTML = !p ? 'Aún no has elegido un plan.' : `Plan elegido: <b>${esc(p.name)}</b> · ${esc(p.price)} ${esc(p.per || '')}` + (n && base ? `<br>+ <b>${n} clase${n === 1 ? '' : 's'} extra</b> (${f(n * unit)}) · <b>Valor total: ${f(base + n * unit)} COP</b>` : '');
   }
 
   /* ---------------- validación y envío ---------------- */
