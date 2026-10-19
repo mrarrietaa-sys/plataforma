@@ -4464,3 +4464,8 @@ textarea.inp{font-size:15px;line-height:1.4}
 }
 @media (max-width:640px){body .player .actionbar .btn,body .player .actionbar .btn.lg,body .player .actionbar .btn:only-child{font-size:15px!important}.player .stage .yn{font-size:15px!important}}
 .player .stage .yn{font-size:15px}
+/* preguntas de las actividades: la frase unida (sin saltos grandes entre líneas) */
+.player .stage .qs-q{display:block!important;line-height:1.3!important;margin:8px 0 14px!important;text-wrap:balance}
+.player .stage .qs-q>*{display:inline;margin:0 2px}
+.player .stage .sent{line-height:1.3!important;text-wrap:balance}
+.player .stage .sent small{margin-top:2px!important;line-height:1.3}

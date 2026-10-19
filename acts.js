@@ -70,8 +70,10 @@
       grid.appendChild(wrap); return c;
     });
     upd();
-    $('#all', tools).onclick = async (e) => { const b = e.currentTarget; if (b._run) { b._run = false; stop(); b.textContent = '▶ Escuchar todo'; return; } b._run = true; b.textContent = '⏹ Detener'; const onStop = () => { b._run = false; }; window.addEventListener('m1-audio-stop', onStop, { once: true }); const hideF = M.floatStop(b);
-      for (const c of cards) { if (!b._run || !b.isConnected) break; c.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); await c.onclick(); await sleep(450); } hideF(); b._run = false; b.textContent = '▶ Escuchar todo'; };
+    $('#all', tools).onclick = async (e) => { const b = e.currentTarget; if (b._run) { b._run = false; stop(); b.textContent = '▶ Continuar'; return; } b._run = true; b.textContent = '⏹ Detener'; const onStop = () => { b._run = false; }; window.addEventListener('m1-audio-stop', onStop, { once: true }); const hideF = M.floatStop(b);
+      let k = b._i || 0; /* ▶️ retoma desde la tarjeta donde se detuvo */
+      for (; k < cards.length; k++) { if (!b._run || !b.isConnected) break; b._i = k; const c = cards[k]; c.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); await c.onclick(); if (!b._run) break; await sleep(450); }
+      hideF(); const done = k >= cards.length; b._i = done ? 0 : b._i; b._run = false; b.textContent = done ? '▶ Escuchar todo' : '▶ Continuar'; };
     // mini lesson + tips
     if (p.tip) body.appendChild(h(`<div class="lesson lesson-mra">${M.mascot('lesson-img', 'idea')}<div><h3>📘 Mini lección de Mr. Arrieta</h3>${p.tip}</div></div>`));
     if (p.tips && p.tips.length) { const tb = h(`<div class="lesson" style="background:#fff"><h3>🗣️ Tips de pronunciación del profe</h3></div>`); p.tips.forEach(t => tb.appendChild(h(`<div class="tipbox"><span>💡</span><span>${t}</span></div>`))); body.appendChild(tb); }
@@ -513,8 +515,9 @@
     const msgs = d.lines.map(l => { const side = who.indexOf(l.who) % 2 ? 'r' : ''; const m = h(`<div class="msg ${side} blur"><div class="av">${esc(l.who[0])}</div><div class="tx"><span class="who">${esc(l.who)}</span><span>${esc(l.t)}</span></div></div>`); m.onclick = () => play(l.au); return m; });
     let shown = 0, plays = 0;
     let halted = false; window.addEventListener('m1-audio-stop', () => { halted = true; });
-    const runAll = async () => { plays++; halted = false; for (let i = 0; i < msgs.length; i++) { if (!body.isConnected) return; if (halted) break; if (!msgs[i].isConnected) chat.appendChild(msgs[i]); msgs.forEach(x => x.classList.remove('speaking')); msgs[i].classList.add('speaking'); msgs[i].scrollIntoView({ block: 'nearest', behavior: 'smooth' }); await play(d.lines[i].au); await sleep(250); } msgs.forEach(x => x.classList.remove('speaking')); shown = msgs.length; next.disabled = false; };
-    const plb = $('#pl', ctr); let running = false; plb.onclick = async () => { if (running) { stop(); return; } running = true; plb.textContent = '⏹ Detener'; const hideF = M.floatStop(plb); await runAll(); hideF(); running = false; msgs.forEach(x => x.classList.remove('speaking')); plb.textContent = '🔁 Escuchar otra vez'; };
+    let at = 0; /* ▶️ la conversación retoma desde la frase donde se detuvo */
+    const runAll = async () => { plays++; halted = false; for (let i = at; i < msgs.length; i++) { at = i; if (!body.isConnected) return; if (halted) break; if (!msgs[i].isConnected) chat.appendChild(msgs[i]); msgs.forEach(x => x.classList.remove('speaking')); msgs[i].classList.add('speaking'); msgs[i].scrollIntoView({ block: 'nearest', behavior: 'smooth' }); await play(d.lines[i].au); await sleep(250); } msgs.forEach(x => x.classList.remove('speaking')); if (halted) return false; at = 0; shown = msgs.length; next.disabled = false; return true; };
+    const plb = $('#pl', ctr); let running = false; plb.onclick = async () => { if (running) { stop(); return; } running = true; plb.textContent = '⏹ Detener'; const hideF = M.floatStop(plb); const fin = await runAll(); hideF(); running = false; msgs.forEach(x => x.classList.remove('speaking')); plb.textContent = fin ? '🔁 Escuchar otra vez' : '▶ Continuar conversación'; };
     $('#rv', ctr).onclick = () => { msgs.forEach(m => { if (!m.isConnected) chat.appendChild(m); m.classList.remove('blur'); }); };
     const bar = h(`<div class="actionbar"><button class="btn k lg" disabled>Responder preguntas →</button></div>`); body.appendChild(bar); const next = $('button', bar);
     await new Promise(r => next.onclick = r); stop(); void shown; void plays;

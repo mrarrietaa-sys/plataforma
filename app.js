@@ -418,12 +418,12 @@
   const FREE = ['rocket', 'plane-red', 'rocket3', 'plane-blue', 'drums', 'plane-yellow', 'surf', 'rocket5', 'plane-green', 'hero'];
   const ITL_ON = true;
   let sceneN = Math.floor(Math.random() * FREE.length);
-  const preloadScenes = () => Object.keys(SCENES).forEach(k => { const i = new Image(); i.src = 'mra-x-' + k + '.webp?v=4'; });
+  const preloadScenes = () => Object.keys(SCENES).forEach(k => { const i = new Image(); i.src = 'mra-x-' + k + '.webp?v=5'; });
   function interlude(next) {
     return new Promise(res => {
       const k = SEC_SC[next] || FREE[sceneN++ % FREE.length], sc = SCENES[k];
       const ov = h(`<div class="itl itl-${sc.a}" role="status">${sc.a === 'stage' ? '<div class="itl-lights"></div><span class="itl-notes">🎵 🎶 🎵</span>' : ''}${sc.a === 'up' || sc.a === 'fly' ? '<span class="itl-stars">✨ ⭐ ✨ ⭐</span>' : ''}
-        <div class="itl-actor"><b class="itl-say">${esc(sc.say)}</b><img class="itl-img" src="mra-x-${k}.webp?v=4" alt="Mr. Arrieta"></div>
+        <div class="itl-actor"><b class="itl-say">${esc(sc.say)}</b><img class="itl-img" src="mra-x-${k}.webp?v=5" alt="Mr. Arrieta"></div>
         <div class="itl-next"><small>NEXT</small><b>${SEC_IC[next] || '➡️'} ${esc(next.toUpperCase())}</b><i>Toca para continuar</i></div></div>`);
       document.body.appendChild(ov); try { sfx('win'); } catch (e) { }
       let done = false; const end = () => { if (done) return; done = true; ov.classList.add('out'); setTimeout(() => { ov.remove(); res(); }, 250); };
@@ -612,7 +612,9 @@
       const rp = $('#rp', box);
       const karaoke = () => { stop(); const a = M.trackAudio(new Audio(M.audioSrc(r.au))); const spans = $$('.s', box); const lens = sents.map(s => s.length); const tot = lens.reduce((x, y) => x + y, 0);
         a.ontimeupdate = () => { if (!a.duration) return; const f = a.currentTime / a.duration * tot; let acc = 0; spans.forEach((sp, i) => { const on = f >= acc && f < acc + lens[i]; sp.classList.toggle('on', on); acc += lens[i]; }); };
-        a.addEventListener('ended', () => { spans.forEach(sp => sp.classList.remove('on')); rp.innerHTML = '▶ Escuchar lectura'; rp.classList.remove('playing'); });
+        a.addEventListener('ended', () => { rp._t = 0; spans.forEach(sp => sp.classList.remove('on')); rp.innerHTML = '▶ Escuchar lectura'; rp.classList.remove('playing'); });
+        a.addEventListener('pause', () => { if (a.ended) return; rp._t = a.currentTime; rp.innerHTML = '▶ Continuar lectura'; rp.classList.remove('playing'); }); /* ▶️ retoma donde quedó */
+        if (rp._t) { const go = () => { try { a.currentTime = rp._t; } catch (e) { } }; if (a.readyState >= 1) go(); else a.addEventListener('loadedmetadata', go, { once: true }); }
         a.play(); window.__ra = a; rp.innerHTML = '⏹ Detener lectura'; rp.classList.add('playing'); const hideF = M.floatStop(rp); a.addEventListener('ended', hideF); };
       rp.onclick = () => { if (rp.classList.contains('playing')) stop(); else karaoke(); };
       body.appendChild(h(`<h3 style="margin-top:18px">Answer YES or NO</h3>`));
@@ -767,22 +769,9 @@
     const lbl = 'Play & Learn';
     let c = 0, t = 0; const missed = [];
     const mark = (ok, it) => { t++; if (ok) c++; else missed.push({ en: it.full || it.en, au: it.au }); };
-    // 1) Presentación + palabras clave + predicción
-    {
-      const body = A.head(stage, { lbl, title: `🎵 ${esc(sg.title)}`, ins: `<b>${esc(sg.artist)}</b> · ${esc(sg.theme)}. Primero descubre de qué trata la canción.` });
-      body.appendChild(h(`<div class="row song-intro">${M.mascot('mascot bounce', 'celebrate')}<div class="bubble">Let's learn English with music! 🎶</div></div>`));
-      const q = sg.pred;
-      body.appendChild(h(`<div class="sent" style="font-size:20px">What do you think this song is about? 🤔<small class="muted" style="display:block;font-size:15px;font-weight:600;margin-top:4px">¿De qué crees que trata esta canción?</small></div>`));
-      const wrap = h(`<div class="opts" style="grid-template-columns:1fr 1fr"></div>`); body.appendChild(wrap);
-      const btns = q.options.map(o => { const b = h(`<button class="opt">${esc(o)}</button>`); wrap.appendChild(b); return b; });
-      const i = await A.choose(btns); const ok = i === q.correctIndex;
-      btns[q.correctIndex].classList.add('right'); if (!ok) btns[i].classList.add('wrong');
-      t++; if (ok) c++;
-      await A.feedback(ok, q.options[q.correctIndex], q.feedbackIncorrect || '');
-    }
     // 2) Escuchar la canción
     {
-      const body = A.head(stage, { lbl, title: '🎧 Listen to the song', ins: 'Escucha la canción completa. ¡Si quieres, canta! Cuando termines, continúa con los retos.' });
+      const body = A.head(stage, { lbl, title: `🎵 ${esc(sg.title)}`, ins: `<b>${esc(sg.artist)}</b> · Escucha la canción completa y juega mientras suena. ¡Si quieres, canta!` }); // 🎵 directo al video y al juego (sin la pregunta de predicción)
       const yh = h('<div></div>'); body.appendChild(yh); ytBox(sg, yh);
       const gm = h('<div></div>'); body.appendChild(gm);
       const g = (['A1', 'A2'].includes(M.MOD.id) ? songBingo : songBubbles)(gm, sg, yh);
