@@ -73,7 +73,7 @@
       b.disabled = false; b.textContent = 'Entrar';
       if (!r.ok) { er.textContent = r.err === 'auth' ? 'Código o PIN incorrecto.' : errText(r.err); er.hidden = false; return; }
       try { localStorage.setItem('mra_last_role', JSON.stringify({ role: 'teacher', first: (r.teacher && (r.teacher.hello || String(r.teacher.name || '').split(' ')[0])) || '' })); } catch (e) { } // 🔑 la entrada le muestra "Entrar"
-      S = { tcode, pin }; ss.set(SKEY, S); D = r; tab = 'home'; ss.set(TABKEY, tab); shell(); firstTour() ? tour() : (welcome(), setTimeout(popNew, 1500));
+      S = { tcode, pin }; ss.set(SKEY, S); D = r; tab = 'home'; ss.set(TABKEY, tab); shell(); try { window.MRANN && MRANN.sync(); } catch (e) { } firstTour() ? tour() : (welcome(), setTimeout(popNew, 1500));
     };
   }
   // 🧭 tour de Mr. Arrieta: la primera vez que el profe entra (por código, en este dispositivo y en la nube)
@@ -124,7 +124,7 @@
     const tryLoad = (paths) => { if (!paths.length) return say(); const sc = document.createElement('script'); sc.src = paths[0]; sc.onload = say; sc.onerror = () => { sc.remove(); tryLoad(paths.slice(1)); }; document.head.appendChild(sc); };
     tryLoad(['js/audio/wb_' + (sl[0] || 'x') + '.js', 'wb_' + (sl[0] || 'x') + '.js']);
   }
-  function logout() { ss.del(SKEY); ss.del(TABKEY); S = null; D = null; loginView(); }
+  function logout() { ss.del(SKEY); ss.del(TABKEY); S = null; D = null; loginView(); try { window.MRANN && MRANN.sync(); } catch (e) { } }
   async function reload() { const r = await api('tLogin'); if (r.ok) { D = r; shell(); } else if (r.err !== 'auth') toast(errText(r.err), true); return r.ok; }
 
   /* ---------- estructura principal ---------- */
@@ -141,7 +141,7 @@
       <section id="tp-body"></section>`;
     if ($('#tp-tour')) $('#tp-tour').onclick = () => tour();
     if ($('#tp-mat')) $('#tp-mat').onclick = material;
-    if ($('#tp-pol')) $('#tp-pol').onclick = () => window.MRPOLICY && MRPOLICY.show(); // 📌 política (puntualidad, 15 minutos)
+    if ($('#tp-pol')) $('#tp-pol').onclick = () => window.MRPOLICY && MRPOLICY.showTeacher(); // 📌 política (puntualidad, 15 minutos)
     if ($('#tp-pinch')) $('#tp-pinch').onclick = () => { // 🔑 cambiar PIN
       const m = document.createElement('div'); m.className = 'modal'; m.innerHTML = `<div class="card"><button class="mx" aria-label="Cerrar">✕</button><h3>🔑 Cambiar mi PIN</h3><p class="muted">Usa de 4 a 8 números.</p>
         <input class="inp" id="pc-old" type="password" inputmode="numeric" placeholder="PIN actual" style="margin-bottom:8px"><input class="inp" id="pc-new" type="password" inputmode="numeric" placeholder="Nuevo PIN" style="margin-bottom:8px"><input class="inp" id="pc-new2" type="password" inputmode="numeric" placeholder="Repite el nuevo PIN">

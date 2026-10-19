@@ -25,6 +25,30 @@
     <p>Si MRARRIETA.COM cancela una clase, esta será reprogramada sin costo para el estudiante.</p></section>
   <p class="pol-imp"><b>Importante:</b> los tiempos mínimos de reserva y cancelación se cuentan hacia atrás desde la hora de inicio de cada clase.</p>
 </div>`;
+  // 🧑‍🏫 política redactada PARA el profe
+  const THTML = `<div class="pol">
+  <p class="pol-k">MRARRIETA.COM – RealTalk®</p>
+  <h2 class="pol-t">Política de clases para profesores</h2>
+  <section><h3>1. Disponibilidad y reservas</h3><ul>
+    <li>Publica en <b>Mi disponibilidad</b> solo los horarios en los que realmente puedes dictar.</li>
+    <li>Los estudiantes reservan desde <b>mañana</b> y hasta <b>5 días adelante</b>. Nunca se reservan clases para el mismo día.</li>
+    <li>Los estudiantes no tienen profe fijo: cualquier estudiante Premium puede reservar contigo. Antes de la clase revisa su nivel y los tableros de sus clases anteriores.</li></ul></section>
+  <section><h3>2. Duración y puntualidad</h3><ul>
+    <li>Cada clase dura <b>50 minutos</b>, contados desde la hora reservada. Conéctate puntual.</li>
+    <li><b>Si el estudiante llega tarde, la clase no se extiende.</b> Ejemplo: clase a las 9:00 a. m., el estudiante entra a las 9:10 a. m., la clase termina a las 9:50 a. m. Así no se afectan tus siguientes clases.</li>
+    <li><b>Si a los 15 minutos el estudiante no se ha conectado,</b> puedes retirarte. Espera los 15 minutos completos y marca la clase como <b>"No asistió"</b>.</li></ul></section>
+  <section><h3>3. Después de cada clase</h3><ul>
+    <li>Marca la clase como <b>"Dictada"</b> o <b>"No asistió"</b> el mismo día.</li>
+    <li>Escribe en el <b>tablero de la clase</b> lo que trabajaste (vocabulario, correcciones, tarea). El estudiante lo verá en su historial y el próximo profe sabrá qué se vio.</li></ul></section>
+  <section><h3>4. Si no te conectas</h3><ul>
+    <li>El estudiante puede reportarlo con el botón <b>"Mi profe no se conectó"</b>. Si se confirma, la clase vuelve a su saldo y se aplica la penalización en tu pago del mes.</li>
+    <li>Si tienes un imprevisto, avisa a administración lo antes posible.</li></ul></section>
+  <section><h3>5. Pagos</h3><ul>
+    <li>Se paga cada clase <b>dictada</b>. Si te conectas y el estudiante no asiste, se paga el valor de inasistencia.</li>
+    <li>Las clases canceladas (a tiempo o tarde) y las no dictadas no se pagan. Consulta tu detalle en <b>Mis pagos</b>.</li></ul></section>
+  <section><h3>6. Horario de la escuela</h3><p><b>Lunes a viernes:</b> 7:00 a. m. a 9:00 p. m. · <b>Sábados:</b> 7:00 a. m. a 5:00 p. m. · <b>Domingos y festivos de Colombia:</b> no hay clases. (Hora Colombia)</p></section>
+</div>`;
+  function showTeacher() { const m = document.createElement('div'); m.className = 'modal pol-modal'; m.setAttribute('role', 'dialog'); m.innerHTML = `<div class="modal-card card pol-card">${THTML}<button class="btn k block lg" id="pol-ok">Cerrar</button></div>`; document.body.appendChild(m); m.querySelector('#pol-ok').onclick = () => m.remove(); m.addEventListener('click', e => { if (e.target === m) m.remove(); }); return m; }
   function show(opts) {
     opts = opts || {};
     const m = document.createElement('div'); m.className = 'modal pol-modal'; m.setAttribute('role', 'dialog'); m.setAttribute('aria-modal', 'true');
@@ -35,5 +59,5 @@
     if (!opts.first) m.addEventListener('click', e => { if (e.target === m) close(); });
     return m;
   }
-  window.MRPOLICY = { html: HTML, show, url: 'politica.html' };
+  window.MRPOLICY = { html: HTML, teacherHtml: THTML, show, showTeacher, url: 'politica.html' };
 })();

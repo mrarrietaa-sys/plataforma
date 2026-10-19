@@ -6,7 +6,7 @@
    ===================================================================== */
 (function () {
   const KEY = 'mra_teacherbar_v1';
-  const isStaff = () => { try { const p = JSON.parse(localStorage.getItem('mra_profile_v1') || 'null'); return !!(p && p.type === 'staff'); } catch (e) { return false; } };
+  const isStaff = () => { try { if (/profesores\.html/.test(location.pathname) && (sessionStorage.getItem('mra_tp_session') || localStorage.getItem('mra_tp_session'))) return true; const p = JSON.parse(localStorage.getItem('mra_profile_v1') || 'null'); return !!(p && p.type === 'staff'); } catch (e) { return false; } }; // 🧑‍🏫 también en el portal de profes
   const st = (() => { try { return Object.assign({ hidden: false, open: false, x: null, y: null, color: '#E3242B', size: 4 }, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) { return { hidden: false, open: false, color: '#E3242B', size: 4 }; } })();
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) { } };
   const COLORS = ['#E3242B', '#0B2A5B', '#FFC21A', '#22C55E', '#111111', '#FFFFFF'];
