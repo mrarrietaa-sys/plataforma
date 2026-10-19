@@ -57,7 +57,7 @@
   }
 
   /* ======================= ESTRUCTURA ======================= */
-  const TABS = [['home', '📊', 'Resumen'], ['students', '🎓', 'Estudiantes'], ['enroll', '📝', 'Inscripciones'], ['buys', '💳', 'Pagos'], ['claims', '🚩', 'Reclamos'], ['reviews', '⭐', 'Opiniones'], ['leads', '📣', 'Interesados'], ['placement', '🧭', 'Placement'], ['recruit', '👩‍🏫', 'Reclutamiento'], ['teachers', '🧑‍🏫', 'Profesores'], ['tes', '🎬', 'Testimonios'], ['classes', '📅', 'Clases'], ['requests', '🔁', 'Solicitudes'], ['chats', '💬', 'Chats'], ['settings', '⚙️', 'Ajustes']];
+  const TABS = [['home', '📊', 'Resumen'], ['students', '🎓', 'Estudiantes'], ['enroll', '📝', 'Inscripciones'], ['buys', '💳', 'Pagos'], ['claims', '🚩', 'Reclamos'], ['reviews', '⭐', 'Opiniones'], ['leads', '📣', 'Interesados'], ['placement', '🧭', 'Placement'], ['recruit', '👩‍🏫', 'Reclutamiento'], ['teachers', '🧑‍🏫', 'Profesores'], ['tes', '🎬', 'Testimonios'], ['boards', '📝', 'Tableros'], ['classes', '📅', 'Clases'], ['requests', '🔁', 'Solicitudes'], ['chats', '💬', 'Chats'], ['settings', '⚙️', 'Ajustes']];
   let TAB = 'home', STATS = null;
   // "Atrás": dentro del panel vuelve al Resumen (nunca saca a otra página por error)
   document.addEventListener('click', (e) => { const b = e.target.closest && e.target.closest('.tb-back'); if (!b || !key()) return; if (document.querySelector('.modal, .wa-wrap')) return; e.preventDefault(); e.stopImmediatePropagation(); if (TAB !== 'home') go('home'); else window.scrollTo(0, 0); }, true);
@@ -351,6 +351,17 @@
     $('#py-sv').onclick = async () => { const b = $('#py-sv'); b.disabled = true; const rate = $('#py-rate').value.replace(/\D/g, ''), ns = $('#py-ns').value.replace(/\D/g, ''); if (!rate || !ns) { b.disabled = false; return toast('Escribe los dos valores'); }
       await api('aSave', { table: 'Config', row: { key: 'pay_rate', value: rate } }); await api('aSave', { table: 'Config', row: { key: 'pay_noshow', value: ns } }); b.disabled = false; toast('✅ Valores guardados'); loadPay(); };
   }
+  /* ======================= TABLEROS DE CLASE ======================= */
+  async function boards() {
+    view().innerHTML = '<div class="ad-loading">⏳ Cargando tableros…</div>';
+    const r = await api('aBoards'); if (TAB !== 'boards') return; if (!r.ok) return view().innerHTML = '<p class="ad-err">No se pudieron cargar los tableros.</p>';
+    const L = (r.boards || []).filter(b => b.text);
+    view().innerHTML = `<div class="ad-head"><h2>📝 Tableros de clase <small class="muted">(${L.length})</small></h2><input class="inp" id="bd-q" placeholder="Buscar estudiante o profe" style="max-width:260px"></div>
+      <p class="muted" style="margin:-4px 0 14px">Lo que cada profe escribió en sus clases individuales.</p><div id="bd-l"></div>`;
+    const draw = (q) => { q = (q || '').toLowerCase(); const F = L.filter(b => !q || (b.student + ' ' + b.teacher + ' ' + b.code).toLowerCase().indexOf(q) >= 0);
+      $('#bd-l').innerHTML = F.map(b => `<div class="card" style="margin-bottom:10px;padding:12px 14px"><b>${esc(b.student || b.code)}</b> <small class="muted">· ${esc(b.date)} ${esc(b.time)} · ${esc(b.teacher)}</small><div class="tb-board ro" style="margin-top:8px">${esc(b.text)}</div></div>`).join('') || '<p class="muted">Aún no hay tableros.</p>'; };
+    draw(''); $('#bd-q').oninput = (e) => draw(e.target.value);
+  }
   /* ======================= TESTIMONIOS ======================= */
   async function tes() {
     view().innerHTML = '<div class="ad-loading">⏳ Cargando testimonios…</div>';
@@ -586,6 +597,6 @@
     const go = () => window.MRLIVE && MRLIVE.open({ title: 'Chats (solo lectura)', roomsAction: 'aChats', getAction: 'aChatGet', readOnly: true, empty: 'Todavía no hay conversaciones.', call: (a, d) => api(a, d) });
     $('#ch-open').onclick = go; go();
   }
-  const VIEWS = { tes, buys, claims, reviews, home, students, enroll, leads, placement, recruit, teachers, classes, requests, chats, settings };
+  const VIEWS = { boards, tes, buys, claims, reviews, home, students, enroll, leads, placement, recruit, teachers, classes, requests, chats, settings };
   key() && MRAC.on ? boot() : login();
 })();

@@ -172,12 +172,29 @@
         ${c.notes && opt && opt.notes ? `<small class="tp-note">📝 ${esc(c.notes)}</small>` : ''}</div>
       <div class="tp-cls-act">
         ${c.status === 'scheduled' && c.date >= today() ? (link ? `<a class="btn k sm" href="${esc(link)}" target="_blank" rel="noopener"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6h11a2 2 0 0 1 2 2v1.6l3.4-2.3A1 1 0 0 1 22 8.1v7.8a1 1 0 0 1-1.6.8L17 14.4V16a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z"/></svg> Entrar a la clase</a>` : '<small class="muted">Sin enlace de clase</small>') : ''}
+        ${c.type === 'vip' && c.students.length && ['cancelled', 'latecancel'].indexOf(c.status) < 0 ? `<button class="btn w sm" data-board="${esc(c.id)}">📝 Tablero</button>` : ''}
         ${canMark ? `<button class="btn ok sm" data-mark="${esc(c.id)}">✓ Marcar como dictada</button><button class="btn w sm" data-noshow="${esc(c.id)}">No asistió</button>` : ''}
       </div></li>`;
   }
   function bindMarks(root) {
     $$('[data-mark]', root).forEach((b) => b.onclick = () => markDialog(b.dataset.mark, 'done'));
     $$('[data-noshow]', root).forEach((b) => b.onclick = () => markDialog(b.dataset.noshow, 'noshow'));
+    $$('[data-board]', root).forEach((b) => b.onclick = () => boardDialog(b.dataset.board));
+  }
+  // 📝 tablero de clase: el profe escribe lo que hizo en la clase; ve también los tableros anteriores del estudiante (de cualquier profe)
+  async function boardDialog(id) {
+    const c = D.classes.find((x) => x.id === id); if (!c) return; const code = String(c.students[0] || '').toUpperCase();
+    const m = modal(`<button class="tp-x" data-x aria-label="Cerrar">✕</button><h3>📝 Tablero de clase</h3><p class="muted">${esc(studentName(code))} · ${dLabel(c.date, true)} · ${h12(c.time)}</p>
+      <textarea class="tb-board" id="tb-tx" rows="9" placeholder="Vocabulary: …&#10;Phrases: …&#10;Corrections: …&#10;Homework: …" disabled>Cargando…</textarea>
+      <div class="row tb-row"><button class="btn k" id="tb-sv" disabled>💾 Guardar tablero</button><small class="tb-ok" id="tb-ok"></small></div>
+      <p class="muted" style="font-size:12.5px;margin:6px 0 0">El estudiante lo verá en su historial de clases.</p><div id="tb-prev"></div>`);
+    const r = await api('tBoards', { code }); const L = (r && r.ok && r.boards) || []; const mine = L.find((b) => b.classId === id);
+    const tx = $('#tb-tx', m), sv = $('#tb-sv', m); tx.disabled = false; sv.disabled = false; tx.value = mine ? mine.text : ''; if (mine) $('#tb-ok', m).textContent = '✓ Guardado';
+    const prev = L.filter((b) => b.classId !== id && b.text).reverse();
+    if (prev.length) $('#tb-prev', m).innerHTML = `<details class="tb-prev"><summary>📚 Clases anteriores de ${esc(studentName(code).split(' ')[0])} (${prev.length})</summary>${prev.map((b) => `<div class="tb-pi"><b>${dLabel(b.date)} · ${h12(b.time)} · ${esc(b.teacher || '')}</b><div class="tb-board ro">${esc(b.text)}</div></div>`).join('')}</details>`;
+    tx.oninput = () => { $('#tb-ok', m).textContent = ''; };
+    sv.onclick = async () => { sv.disabled = true; sv.textContent = 'Guardando…'; const x = await api('tBoardSave', { classId: id, text: tx.value }); sv.disabled = false; sv.textContent = '💾 Guardar tablero';
+      if (x && x.ok) { $('#tb-ok', m).textContent = '✓ Guardado ' + h12(nowHM()); toast('✅ Tablero guardado'); } else toast(errText((x && x.err) || 'network'), true); };
   }
   function home(el) {
     const t0 = today();

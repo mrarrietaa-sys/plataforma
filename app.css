@@ -4479,3 +4479,16 @@ textarea.inp{font-size:15px;line-height:1.4}
  .tp-head .btn{flex:0 0 auto!important;width:auto!important;font-size:12.5px!important;padding:6px 11px!important;min-height:0!important}
  .tp-head .btn .wa-dot svg{width:14px;height:14px}
 }
+
+/* 📝 tablero de clase y mis apuntes */
+.tb-board{display:block;width:100%;box-sizing:border-box;background:#0f3b2e;border:7px solid #b07a43;border-radius:10px;color:#f5f5f0;font:500 14.5px/1.6 Inter,Arial,sans-serif;padding:12px 14px;margin-top:8px;resize:vertical;white-space:pre-wrap}
+.tb-board::placeholder{color:#a9c4b8}
+.tb-board.ro{min-height:0;max-height:320px;overflow:auto}
+textarea.tb-board:focus{outline:2px solid #ffe36a}
+.tb-row{display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap}
+.tb-ok{color:#16a34a;font-weight:600;font-size:12.5px}
+.tb-prev{margin-top:12px;border-top:1px solid #e3e9f3;padding-top:10px}.tb-prev summary{font-weight:700;cursor:pointer;font-size:14px}
+.tb-pi{margin-top:10px}.tb-pi b{font-size:13px}
+.tb-note{display:block;width:100%;box-sizing:border-box;border:1.5px solid #dbe3ef;border-radius:10px;padding:10px 12px;font:14px/24px Inter,Arial,sans-serif;background:#fffef6 repeating-linear-gradient(#fffef6 0 23px,#e8eef7 24px);background-attachment:local;resize:vertical;margin-top:10px;color:#0B2A5B}
+.tb-notes{margin:14px 0}
+.lv-hist .lv-cl{flex-wrap:wrap}.tb-see{margin-left:auto}
