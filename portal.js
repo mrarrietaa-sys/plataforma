@@ -196,6 +196,10 @@
   function plansClick(e) { const b = e.target.closest && e.target.closest('[data-plans]'); if (!b) return; e.preventDefault(); const mo = b.closest('.modal'); if (mo) mo.remove(); if (window.MRPLANS) MRPLANS.modal(M); }
   if (!window.__plansWired) { window.__plansWired = true; document.addEventListener('click', plansClick); }
   // enlaces de los correos: ?pagar=CÓDIGO abre los planes y pagos · ?gratis=1 abre la prueba gratis
+  // ✉️ botón "Confirmar mi correo" de los correos de bienvenida
+  setTimeout(async () => { try { const q = new URLSearchParams(location.search); const vm = q.get('vm'), t = q.get('t'); if (!vm || !t) return; history.replaceState(null, '', location.pathname);
+    const r = await MRAC.call('verifyMail', { code: vm, t }).catch(() => null);
+    M.modal(`<div class="center"><div class="to-ic">${MRI(r && r.ok ? 'check' : 'alert')}</div><h3>${r && r.ok ? '¡Correo confirmado' + (r.first ? ', ' + esc(r.first) : '') + '!' : 'No pudimos confirmar tu correo'}</h3><p>${r && r.ok ? 'Gracias. Aquí te llegarán los avisos de tus clases y de tu plan.' : 'El enlace no es válido o tu correo cambió. Revisa el correo más reciente que te enviamos.'}</p></div>`, { x: true }); } catch (e) { } }, 500);
   setTimeout(() => { try { const q = new URLSearchParams(location.search); const pc = (q.get('pagar') || '').trim().toUpperCase(); const gr = q.get('gratis');
     if (pc || gr) history.replaceState(null, '', location.pathname);
     const pk = q.get('plan');
@@ -381,7 +385,7 @@
     const MENU = { // 📂 todo el perfil organizado en 3 grupos
       learn: ['💻', 'Mis módulos', [['route', 'ib', '🧭', 'Mi ruta de aprendizaje', 'Módulos, clases y progreso'], ['games', 'ib5', '🎮', 'Zona de juegos', 'Practica jugando'], ['notes', 'ib3', '✏️', 'Mis apuntes', 'Tu cuaderno personal'], ['place', 'ib2', '📝', 'Prueba de clasificación', 'Ubica tu nivel']]],
       cls: ['🧑‍🏫', 'Mis clases', [['book', 'ib', '📅', 'Reservar clase', 'Elige profe, día y hora'], ['next', 'ib2', '🗓️', 'Mis próximas clases', 'Enlace y cancelación'], ['extra', 'ib5', '➕', 'Comprar más clases', 'Se suman a tu saldo'], ['hist', 'ib6', '📚', 'Historial y tableros', 'Lo que vio cada profe'], ['claim', 'ib3', '🚩', '¿Mi profe no se conectó?', 'Repórtalo aquí'], ['chat', 'ib4', '💬', 'Chat con mi profe', 'Escríbele en vivo']]],
-      me: ['👤', 'Mi cuenta', [].concat(staff ? [] : [['plan', 'ib', '👑', 'Mi plan', 'Planes y renovación']], [['perso', 'ib5', '🎨', 'Personalizar perfil', 'Tu foto o tu Mr. Arrieta']], staff ? [] : [['pass', 'ib3', '🔑', 'Cambiar mi código', 'Tu clave de acceso'], ['ref', 'ib4', '🎁', 'Invitar a un amigo', 'Gana clases o días']], (!staff && P.plan().paid ? [['agree', 'ib', '📄', 'Mi acuerdo', 'Leído y aceptado · copia PDF']] : []).concat([['pol', 'ib6', '📌', 'Política', 'Reservas y cancelaciones'], ['tour', 'ib2', '🧭', 'Ver el tour', 'Cómo funciona tu perfil']]))],
+      me: ['👤', 'Mi cuenta', [].concat(staff ? [] : [['plan', 'ib', '👑', 'Mi plan', 'Planes y renovación']], [['perso', 'ib5', '🎨', 'Personalizar perfil', 'Tu foto o tu Mr. Arrieta']], staff ? [] : [['mail', 'ib4', '✉️', 'Mi correo', 'Donde te llegan los avisos']], staff ? [] : [['pass', 'ib3', '🔑', 'Cambiar mi código', 'Tu clave de acceso'], ['ref', 'ib4', '🎁', 'Invitar a un amigo', 'Gana clases o días']], (!staff && P.plan().paid ? [['agree', 'ib', '📄', 'Mi acuerdo', 'Leído y aceptado · copia PDF']] : []).concat([['pol', 'ib6', '📌', 'Política', 'Reservas y cancelaciones'], ['tour', 'ib2', '🧭', 'Ver el tour', 'Cómo funciona tu perfil']]))],
     };
     if (!prem) delete MENU.cls;
     if (newbie) MENU.learn[2] = MENU.learn[2].filter(x => x[0] === 'place' || x[0] === 'games').reverse(); // recién llegado: primero la prueba de clasificación
@@ -419,7 +423,7 @@
       const open = (sel, click) => { const el = $(sel); if (!el) return M.toast('Esta sección aún no está disponible.'); sdShow(el); if (el.tagName === 'DETAILS') el.open = true; el.scrollIntoView({ behavior: 'smooth', block: 'start' }); if (click) setTimeout(() => { const c = $(click); c && c.click(); }, 450); };
       ({ route: () => open('.pt-routebar') || open('.pt-route'), games: () => { location.href = 'juegos.html'; }, notes: () => open('#pt-notes'), place: () => route('placement'),
         book: () => { const c = $('#lv-book'); if (c && !c.disabled) c.click(); else open('.lv-vip'); }, next: () => open('.lv-next'), extra: () => { const x = $('#lv-extra'); if (x) x.click(); else open('.lv-vip'); }, hist: () => open('.lv-hist'), claim: () => open('.lv-claim'), chat: () => { const c = $('#lv-msg'); if (c) c.click(); else open('#pt-live'); },
-        plan: () => plans(), perso: () => route('me'), pass: () => { const b = $('#pt-pass'); b ? b.click() : null; }, ref: () => open('#pt-ref'), pol: () => window.MRPOLICY && MRPOLICY.show(), agree: () => window.MRAGREE && MRAGREE.open(), tour: () => { window.scrollTo(0, 0); portalTour(true); } }[id] || (() => { }))(); };
+        plan: () => plans(), perso: () => route('me'), pass: () => { const b = $('#pt-pass'); b ? b.click() : null; }, ref: () => open('#pt-ref'), pol: () => window.MRPOLICY && MRPOLICY.show(), agree: () => window.MRAGREE && MRAGREE.open(), mail: () => mailEdit(), tour: () => { window.scrollTo(0, 0); portalTour(true); } }[id] || (() => { }))(); };
     const closeAll = () => { $$('.sd-dd').forEach(d => d.classList.remove('open')); const sh = $('.sd-sheet'); if (sh) sh.remove(); };
     $$('.sd-dd').forEach(d => { d.querySelector('.sd-ddb').onclick = (e) => { e.stopPropagation(); const o = d.classList.contains('open'); closeAll(); if (!o) d.classList.add('open'); }; });
     $$('.sd-mi').forEach(b => b.onclick = () => act(b.dataset.act));
@@ -495,6 +499,15 @@
   function policyFirst() {
     if (!polPending() || $('.pol-modal')) return; if ($('.modal')) return setTimeout(policyFirst, 800);
     MRPOLICY.show({ first: true, onClose: () => { const p = P.get(); if (p && !p.pol1) { p.pol1 = Date.now(); P.save(p); try { window.MRAC && MRAC.code() && MRAC.sync(true); } catch (e) { } } } });
+  }
+  // ✉️ el estudiante corrige su correo (si rebotó o si se equivocó al escribirlo)
+  async function mailEdit(cur) {
+    if (cur === undefined) { const me = await MRAC.me().catch(() => null); cur = (me && me.mail && me.mail.email) || (P.get() || {}).email || ''; }
+    const m = M.modal(`<h3>✉️ Mi correo</h3><p class="muted">Aquí te enviamos los avisos de tus clases, pagos y tu acuerdo.</p><input class="inp" id="me-mail" type="email" value="${esc(cur || '')}" placeholder="tucorreo@ejemplo.com" style="width:100%;box-sizing:border-box"><button class="btn k block" id="me-ms" style="margin-top:12px">Guardar mi correo</button>`, { x: true });
+    $('#me-ms', m).onclick = async () => { const v = $('#me-mail', m).value.trim(); const sg = window.MRMAILFIX && MRMAILFIX.suggest(v); if (sg) { $('#me-mail', m).dispatchEvent(new Event('blur')); M.toast('Revisa tu correo: ¿quisiste decir ' + sg + '?'); return; }
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)) return M.toast('Escribe un correo válido');
+      const b = $('#me-ms', m); b.disabled = true; const x = await MRAC.call('myEmail', { code: MRAC.code(), email: v }).catch(() => null);
+      if (x && x.ok) { m.remove(); const p = P.get(); if (p) { p.email = x.email; P.save(p); } const bn = $('.pt-mailbad'); if (bn) bn.remove(); M.toast('✅ Correo actualizado. Te enviamos un mensaje de confirmación.'); } else { b.disabled = false; M.toast('No se pudo guardar. Revisa el correo.'); } };
   }
   function portalTour(force) {
     if (document.querySelector(".ag-modal.need")) { setTimeout(() => portalTour(force), 1000); return; } // primero el acuerdo, después el tour
@@ -674,6 +687,7 @@
     const ann = r.conf && r.conf.announcement; if (ann && $('#pt-ann')) $('#pt-ann').innerHTML = `<div class="pt-ann">📣 ${esc(ann)}</div>`;
     if (r.trialLeft != null && r.trialLeft > 0 && $('#pt-ann')) $('#pt-ann').insertAdjacentHTML('afterbegin', `<div class="pt-ann pt-trial"><span>🎁 ${r.trialLeft === 1 ? '<b>Hoy es tu último día</b> de acceso gratuito.' : 'Te quedan <b>' + r.trialLeft + ' días</b> de acceso gratuito.'}</span><a class="btn k sm" href="#" data-plans>Quiero inscribirme</a></div>`);
     refCard(); notesCard();
+    if (r.mail && r.mail.bad && $('#pt-ann')) { $('#pt-ann').insertAdjacentHTML('afterbegin', `<div class="pt-ann pt-mailbad"><span>✉️ No hemos podido enviarte correos a <b>${esc(r.mail.email)}</b>. Corrígelo para recibir los avisos de tus clases.</span><button class="btn w sm" id="pt-mailfix">✏️ Corregir mi correo</button></div>`); $('#pt-mailfix').onclick = () => mailEdit(r.mail.email); }
     if (window.MRAGREE && (P.get() || {}).type !== 'staff' && P.plan().paid) await MRAGREE.check(); // 📄 acuerdo de servicio (una sola vez)
     if (!r.premium) { if (box) box.innerHTML = ''; return; }
     if (box) { renderLive(box, r); boardsHook(); sdTidy(); }

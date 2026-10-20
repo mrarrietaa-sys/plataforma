@@ -4726,3 +4726,9 @@ textarea.tb-board:focus{outline:2px solid #ffe36a}
 .reading #rv.playing{background:#E3242B;color:#fff;border-color:#E3242B}
 .rv-res{margin-top:12px;border-radius:12px;padding:10px 14px;font-size:14.5px;line-height:1.45}.rv-res.g{background:#eafaf0;border:1.5px solid #b7e4c7}.rv-res.m{background:#fff7ec;border:1.5px solid #f5c98a}.rv-res.b{background:#fde8ea;border:1.5px solid #f3c4c6}
 .rv-miss{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;align-items:center}.rv-miss button{border:1px solid #e3e9f3;background:#fff;border-radius:20px;padding:4px 10px;font:600 13px Inter,sans-serif;color:#0B2A5B;cursor:pointer}
+.ad-mailbox{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:#fff7ec;border:1.5px solid #f5c98a;border-radius:10px;padding:8px 12px;font-size:13.5px;margin:6px 0}
+/* v229: correo — sugerencias y avisos */
+.mf-tip{font-size:12.5px;margin:4px 0 0;line-height:1.35}.mf-tip:empty{display:none}
+.mf-tip.warn{color:#9a3412;background:#fff7ec;border:1px solid #f5c98a;border-radius:8px;padding:5px 8px}.mf-tip.ok{color:#166534}
+.mf-fix{border:0;background:#E3242B;color:#fff;font:700 12px Inter,sans-serif;border-radius:6px;padding:3px 8px;margin-left:4px;cursor:pointer}
+.pt-mailbad{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:#fff7ec!important;border-color:#f5c98a!important}
