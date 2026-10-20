@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Simulación · Clase en vivo HABLANDO</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--n:#0B2A5B;--r:#E3242B;--g:#16a34a;--bd:#e3e9f3}
+*{box-sizing:border-box}body{margin:0;background:#eef2f8;font-family:Inter,Arial,sans-serif;color:#1d2b45}
+header{background:#fff;border-bottom:3px solid var(--r);padding:10px 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}header img{height:38px}header h1{font:800 17px Poppins;color:var(--n);margin:0}header small{color:#5b6577}
+.top{max-width:1320px;margin:12px auto 0;padding:0 16px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:13px;color:#5b6577}
+.top a{color:var(--n);font-weight:700}
+.wrap{display:grid;grid-template-columns:1.1fr 1fr;gap:18px;max-width:1320px;margin:12px auto 30px;padding:0 16px}
+body.only-t .wrap{grid-template-columns:1fr}body.only-t #S{display:none}body.only-s .wrap{grid-template-columns:1fr;max-width:640px}body.only-s #T{display:none}
+.lbl{font:800 14px Poppins;color:var(--n);margin:0 0 6px}.scr{background:#fff;border-radius:18px;padding:16px;box-shadow:0 10px 30px rgba(11,42,91,.12);border:3px solid var(--n)}#S .scr{border-color:var(--r)}
+h3{margin:0 0 6px;font:800 17px Poppins;color:var(--n)}.mut{color:#5b6577;font-size:13px;margin:0 0 8px}
+.live{display:inline-flex;align-items:center;gap:6px;background:var(--r);color:#fff;font:700 11.5px Poppins;border-radius:20px;padding:3px 10px;vertical-align:middle}.live i{width:7px;height:7px;border-radius:50%;background:#fff;animation:b 1s infinite}@keyframes b{50%{opacity:.3}}
+.meter{background:#eef3fb;border-radius:12px;padding:9px 12px;margin:6px 0 10px;font-size:13.5px}.mbar{height:11px;background:#dfe5ef;border-radius:8px;position:relative;margin-top:6px;overflow:hidden}.mbar i{position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,#16a34a,#22c55e);border-radius:8px;transition:width .5s}.mbar s{position:absolute;left:70%;top:0;bottom:0;width:2px;background:var(--n)}
+.acts{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:6px 0 10px}.act{border:1px solid var(--bd);border-radius:11px;padding:8px 9px;font-size:12.5px;line-height:1.3;background:#fff;cursor:pointer;text-align:left}.act b{display:block;color:var(--n);font-size:13px}.act:hover{border-color:var(--n)}.act.on{border:2px solid var(--r);background:#fff5f5}
+.now{border:1px solid var(--bd);border-radius:12px;padding:10px 12px}.said{background:#f4f6fa;border-radius:10px;padding:9px 11px;font:700 16px Poppins;letter-spacing:1.5px;margin:6px 0;min-height:42px;word-break:break-word}.said .x{color:#b91c1c;text-decoration:underline}.said .y{color:var(--g)}
+.btns{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}.b{flex:1;min-width:90px;text-align:center;border-radius:10px;padding:9px;font:700 13.5px Poppins;cursor:pointer;border:2px solid transparent}.b1{background:var(--g);color:#fff}.b2{background:#fff;border-color:var(--r);color:var(--r)}.b3{background:#fff;border-color:var(--n);color:var(--n)}.b4{background:var(--n);color:#fff}
+.small{font-size:12.5px;color:#5b6577}.log{font-size:12.5px;max-height:120px;overflow:auto;margin-top:8px;border-top:1px dashed var(--bd);padding-top:6px}
+.card{background:linear-gradient(135deg,#0B2A5B,#1e4a8f);color:#fff;border-radius:16px;padding:18px;text-align:center;margin:8px 0}.card small{opacity:.85;font-size:13px}.word{font:800 34px Poppins;letter-spacing:5px;margin:6px 0;word-break:break-word}.card p{margin:6px 0 0;font-size:15px;line-height:1.45}.card ul{text-align:left;margin:8px auto 0;max-width:420px;font-size:14px;line-height:1.5}
+.mic{width:84px;height:84px;border-radius:50%;background:var(--r);margin:12px auto 4px;display:grid;place-items:center;border:0;cursor:pointer;box-shadow:0 0 0 0 rgba(227,36,43,.3)}.mic.on{animation:p 1.4s infinite}@keyframes p{0%{box-shadow:0 0 0 0 rgba(227,36,43,.35)}100%{box-shadow:0 0 0 22px rgba(227,36,43,0)}}.mic svg{width:38px;height:38px}
+.wave{text-align:center;color:var(--r);font:700 13px Poppins;min-height:18px}.heard{text-align:center;font:700 16px Poppins;color:var(--n);letter-spacing:2px;margin:6px 0;min-height:22px;word-break:break-word}
+.score{display:flex;justify-content:center;gap:10px;margin-top:10px;font:800 14px Poppins}.score span{background:#eef3fb;border-radius:10px;padding:6px 12px}
+.tip{background:#fff7ec;border:1px solid #f5c98a;border-radius:10px;padding:7px 10px;font-size:13.5px;text-align:center;margin-top:8px}.tip.ok{background:#eafaf0;border-color:#b7e4c7;color:#166534}
+.idle{text-align:center;padding:40px 10px;color:#5b6577}.idle b{display:block;font:800 18px Poppins;color:var(--n);margin-bottom:6px}
+.fake{display:flex;gap:6px;margin-top:10px}.fake input{flex:1;border:1px dashed #b3bfd1;border-radius:8px;padding:7px 9px;font-size:13px}.fake button{border:0;background:#eef3fb;color:var(--n);font-weight:700;border-radius:8px;padding:7px 10px;cursor:pointer}
+@media (max-width:820px){.wrap{grid-template-columns:1fr}.acts{grid-template-columns:1fr 1fr}}
+</style></head><body>
+<header><img src="mra-brand.png" alt="mrarrieta.com" onerror="this.style.display='none'"><div><h1>Simulación · Clase en vivo HABLANDO</h1><small>Tema 2: The Alphabet · prueba sin conexión a la nube</small></div></header>
+<div class="top">Puedes probar todo aquí (ambas pantallas), o abrir <a href="?rol=profe" target="_blank">la pantalla del profe</a> y <a href="?rol=estudiante" target="_blank">la del estudiante</a> en dos pestañas del mismo navegador: se comunican en vivo. Usa Google Chrome y permite el micrófono.</div>
+<div class="wrap">
+<section id="T"><p class="lbl">💻 Pantalla del PROFE</p><div class="scr">
+<h3>Clase en vivo · The Alphabet <span class="live"><i></i> EN VIVO con Carlos</span></h3>
+<div class="meter">🗣️ <b>Medidor de habla:</b> Carlos ha hablado el <b id="mp">0%</b> de la clase · meta 70%<div class="mbar"><i id="mb"></i><s></s></div></div>
+<p class="mut" style="margin:0">Actividades HABLANDO · toca una para enviarla a Carlos:</p>
+<div class="acts" id="acts"></div>
+<div class="now" id="tnow"></div>
+<div class="log" id="log"></div></div></section>
+<section id="S"><p class="lbl">📱 Pantalla del ESTUDIANTE (Carlos) — solo HABLANDO</p><div class="scr" id="sbox"></div></section>
+</div>
+<script>
+(function(){
+const ACTS={
+ spell:{ic:'🔤',t:'Deletréalo en voz alta',d:'Deletrea la palabra hablando',items:[['WEDNESDAY','miércoles'],['COLOMBIA','Colombia'],['TEACHER','profesor'],['YELLOW','amarillo'],['QJ7GHE','código de vuelo'],['JENNIFER','nombre']]},
+ role:{ic:'🎭',t:'Juego de roles',d:'Reserva en un hotel',items:[['Llamas a un hotel para reservar. Saluda, da tu nombre completo y deletrea tu apellido.',['Hello, I would like to book a room.','My name is …','My last name is … (spell it)']],['La recepcionista te pide tu correo. Díctalo y deletréalo.',['My email is …','It is spelled …']]]},
+ roul:{ic:'🎡',t:'Ruleta de preguntas',d:'Responde hablando',items:[['How do you spell your name?'],['How do you spell your city?'],['What is your favorite letter? Why?'],['Spell your favorite food.']]},
+ pron:{ic:'🎯',t:'Reto de pronunciación',d:'Frase con % de acierto',items:[['Could you spell that, please?'],['My email is carlos at gmail dot com.'],['Is that B or V?']]},
+ talk:{ic:'⏱️',t:'Habla 60 segundos',d:'Fluidez sin parar',items:[['Talk about yourself: name, city, job, hobbies.']]},
+ img:{ic:'🖼️',t:'Describe la imagen',d:'Habla de lo que ve',items:[['🏨✈️🧳 — Describe: a hotel, a plane and a suitcase. Where are you going?']]}
+};
+const LET={a:'A',ay:'A',eh:'A',b:'B',be:'B',bee:'B',c:'C',see:'C',sea:'C',si:'C',d:'D',dee:'D',de:'D',e:'E',ee:'E',f:'F',ef:'F',eff:'F',g:'G',gee:'G',ji:'G',h:'H',age:'H',aitch:'H',eight:'H',i:'I',eye:'I',aye:'I',j:'J',jay:'J',k:'K',kay:'K',okay:'K',ok:'K',l:'L',el:'L',ell:'L',m:'M',em:'M',n:'N',en:'N',o:'O',oh:'O',owe:'O',p:'P',pee:'P',pea:'P',q:'Q',queue:'Q',cue:'Q',kyu:'Q',r:'R',are:'R',our:'R',ar:'R',s:'S',es:'S',ess:'S',t:'T',tea:'T',tee:'T',u:'U',you:'U',yu:'U',v:'V',vee:'V',vi:'V',w:'W',x:'X',ex:'X',y:'Y',why:'Y',z:'Z',zee:'Z',zed:'Z',zero:'0',one:'1',won:'1',two:'2',to:'2',too:'2',three:'3',four:'4',for:'4',five:'5',six:'6',seven:'7',nine:'9'};
+const spellOf=(txt)=>{let t=String(txt).toLowerCase().replace(/double[\s-]?(u|you)/g,' w ').replace(/[.,!?-]/g,' ');const out=[];t.split(/\s+/).filter(Boolean).forEach(w=>{if(LET[w])out.push(LET[w]);else if(/^[a-z0-9]$/.test(w))out.push(w.toUpperCase());else if(/^[a-z0-9]{2,}$/.test(w)&&w.length<=3&&!LET[w])out.push(...w.toUpperCase().split(''));else if(/^\d+$/.test(w))out.push(...w.split(''));else out.push('['+w+']');});return out;};
+const norm=w=>String(w).toLowerCase().replace(/[^a-z0-9']/g,'');
+const lev=(a,b)=>{const m=a.length,n=b.length;let p=Array.from({length:n+1},(_,j)=>j);for(let i=1;i<=m;i++){const c=[i];for(let j=1;j<=n;j++)c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1));p=c;}return p[n];};
+const pct=(target,said)=>{const T=target.split(/\s+/).map(norm).filter(Boolean),S=said.split(/\s+/).map(norm).filter(Boolean);let p=0,ok=0;S.forEach(w=>{for(let k=p;k<Math.min(T.length,p+5);k++){if(w===T[k]||(w.length>3&&lev(w,T[k])<=1)){ok++;p=k+1;return;}}});return T.length?Math.round(ok/T.length*100):0;};
+const qs=new URLSearchParams(location.search),rol=qs.get('rol');if(rol==='profe')document.body.classList.add('only-t');if(rol==='estudiante')document.body.classList.add('only-s');
+const ch='BroadcastChannel' in window?new BroadcastChannel('mra-live-sim'):null;
+let st={act:null,i:0,said:'',fb:'',pts:0,ok:0,rep:0,talkMs:0,t0:Date.now(),log:[]};
+const send=(patch,from)=>{Object.assign(st,patch);render();if(ch&&!from)ch.postMessage(st);};
+if(ch)ch.onmessage=e=>{st=e.data;render();};
+const $=s=>document.querySelector(s);const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const MIC='<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M12 19v3"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><rect x="9" y="2" width="6" height="13" rx="3"/></svg>';
+function item(){const A=ACTS[st.act];return A?A.items[st.i]:null;}
+function analysis(){const A=ACTS[st.act],it=item();if(!it||!st.said)return '<span class="small">Esperando que Carlos hable…</span>';
+ if(st.act==='spell'){const target=it[0].split('');const got=spellOf(st.said);const parts=[],errs=[];target.forEach((ch,k)=>{const g=got[k];if(g===undefined)parts.push('<span style="color:#b3bfd1">_</span>');else if(g===ch)parts.push(`<span class="y">${esc(g)}</span>`);else{parts.push(`<span class="x">${esc(g)}</span>`);errs.push(`dijo <b>${esc(g)}</b> en lugar de <b>${ch}</b> (letra ${k+1})`);}});let html=parts.join(' · ');if(got.length>target.length)errs.push('dijo letras de más');return html+(errs.length?`<div class="small" style="letter-spacing:0;font-family:Inter">⚠️ ${errs.join(' · ')}</div>`:(got.length>=target.length?'<div class="small" style="color:#15803d;letter-spacing:0;font-family:Inter">✅ ¡Deletreo perfecto!</div>':''));}
+ if(st.act==='pron'){const p=pct(it[0],st.said);return `${esc(st.said)}<div class="small" style="letter-spacing:0;font-family:Inter">Acierto: <b>${p}%</b></div>`;}
+ if(st.act==='talk'){const n=st.said.split(/\s+/).filter(Boolean).length;return `${esc(st.said)}<div class="small" style="letter-spacing:0;font-family:Inter">Palabras dichas: <b>${n}</b></div>`;}
+ return esc(st.said);}
+function render(){
+ // profe
+ $('#acts').innerHTML=Object.keys(ACTS).map(k=>`<button class="act${st.act===k?' on':''}" data-a="${k}"><b>${ACTS[k].ic} ${ACTS[k].t}</b>${ACTS[k].d}</button>`).join('');
+ document.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{send({act:b.dataset.a,i:0,said:'',fb:'',log:st.log.concat(['📤 Enviaste: '+ACTS[b.dataset.a].t])});});
+ const A=ACTS[st.act],it=item();
+ $('#tnow').innerHTML=!A?'<p class="small" style="margin:0">Toca una actividad para enviarla a la pantalla de Carlos.</p>':`<b style="color:#0B2A5B">Ahora: ${A.ic} ${A.t} · ${st.i+1} de ${A.items.length}</b><p class="small" style="margin:4px 0 0">${esc(st.act==='spell'?'«'+it[0]+'»':it[0])}</p><p class="small" style="margin:6px 0 0">Carlos dijo (en vivo):</p><div class="said">${analysis()}</div>
+  <div class="btns"><span class="b b1" id="t-ok">✔ Bien</span><span class="b b2" id="t-rep">🔁 Repite</span><span class="b b3" id="t-tip">💡 Pista</span><span class="b b4" id="t-next">Siguiente →</span></div>`;
+ if(A){$('#t-ok').onclick=()=>send({fb:'ok',pts:st.pts+10,ok:st.ok+1,log:st.log.concat(['✔ '+(st.act==='spell'?it[0]:A.t)])});
+  $('#t-rep').onclick=()=>send({fb:'rep',said:'',rep:st.rep+1,log:st.log.concat(['🔁 Pediste repetir'])});
+  $('#t-tip').onclick=()=>{let tip=st.act==='spell'?'Pista: empieza con '+it[0].slice(0,2)+'… y tiene '+it[0].length+' letras':st.act==='role'?'Pista: '+(it[1]||[])[0]:'Pista: habla despacio y claro';send({fb:'tip:'+tip});};
+  $('#t-next').onclick=()=>{const n=st.i+1;if(n>=A.items.length)send({act:null,i:0,said:'',fb:'',log:st.log.concat(['🏁 Terminaste: '+A.t])});else send({i:n,said:'',fb:''});};}
+ const el=Math.max(1,Date.now()-st.t0),p=Math.min(100,Math.round(st.talkMs/el*100));$('#mp').textContent=p+'%';$('#mb').style.width=p+'%';
+ $('#log').innerHTML=st.log.slice(-8).reverse().map(x=>`<div>${x}</div>`).join('');
+ // estudiante
+ const sb=$('#sbox');if(!A){sb.innerHTML=`<div class="idle"><b>Estás en clase con Mrs. Jennifer</b>Cuando tu profe te envíe una actividad, aparecerá aquí.</div><div class="score"><span>✔ ${st.ok}</span><span>🔁 ${st.rep}</span><span>⭐ ${st.pts} pts</span></div>`;return;}
+ const cardHTML=st.act==='spell'?`<small>Palabra ${st.i+1} de ${A.items.length}</small><div class="word">${esc(it[0])}</div><small>(${esc(it[1])})</small>`:st.act==='role'?`<small>Tu papel</small><p>${esc(it[0])}</p><ul>${it[1].map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:`<small>${A.t}</small><p style="font:700 20px Poppins">${esc(it[0])}</p>`;
+ const fb=st.fb==='ok'?'<div class="tip ok">✔ ¡Muy bien! Tu profe aprobó tu respuesta</div>':st.fb==='rep'?'<div class="tip">🔁 Tu profe te pide repetir</div>':st.fb.indexOf('tip:')===0?`<div class="tip">💡 ${esc(st.fb.slice(4))}</div>`:'';
+ const keep=sb.querySelector('#s-mic');const listening=keep&&keep.classList.contains('on');
+ sb.innerHTML=`<h3>${A.ic} ${A.t} <span class="live"><i></i> Mrs. Jennifer te envió</span></h3><p class="mut">${st.act==='spell'?'Deletrea la palabra en voz alta, letra por letra.':'Responde hablando.'}</p><div class="card">${cardHTML}</div>
+  <button class="mic${listening?' on':''}" id="s-mic" aria-label="Hablar">${MIC}</button><div class="wave" id="s-wave">${listening?'● Te estoy escuchando…':'Toca el micrófono y habla'}</div><div class="heard">${esc(st.act==='spell'?spellOf(st.said).join(' · '):st.said)}</div>${fb}
+  <div class="score"><span>✔ ${st.ok}</span><span>🔁 ${st.rep}</span><span>⭐ ${st.pts} pts</span></div>
+  <div class="fake"><input id="s-fake" placeholder="(Para la prueba sin micrófono: escribe lo que diría)"><button id="s-fb">Simular voz</button></div>`;
+ $('#s-mic').onclick=toggle;$('#s-fb').onclick=()=>{const v=$('#s-fake').value.trim();if(v)send({said:v,fb:'',talkMs:st.talkMs+v.split(/\s+/).length*450});};
+}
+// 🎙️ reconocimiento de voz
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;let rec=null,on=false,segs='',lastT=0;
+function toggle(){if(on){on=false;try{rec.stop()}catch(e){}render();return;}if(!SR){alert('Este navegador no reconoce la voz. Usa Google Chrome (o el botón Simular voz).');return;}
+ on=true;segs='';send({said:'',fb:''});start();setTimeout(()=>{const m=document.querySelector('#s-mic');m&&m.classList.add('on');const w=document.querySelector('#s-wave');w&&(w.textContent='● Te estoy escuchando…');},50);}
+function start(){rec=new SR();rec.lang='en-US';rec.continuous=true;rec.interimResults=true;rec.maxAlternatives=1;
+ rec.onresult=e=>{let fin='',intr='';for(let k=e.resultIndex;k<e.results.length;k++){const t=e.results[k][0].transcript;if(e.results[k].isFinal)fin+=t+' ';else intr+=t;}if(fin)segs+=fin;const now=Date.now();const add=lastT&&now-lastT<2500?now-lastT:600;lastT=now;send({said:(segs+intr).trim(),talkMs:st.talkMs+add});};
+ rec.onerror=e=>{if(/not-allowed|service/.test(e.error)){on=false;alert('Permite el micrófono para hablar.');render();}};
+ rec.onend=()=>{if(on)setTimeout(()=>{try{start()}catch(e){}},80);else render();};try{rec.start()}catch(e){}}
+setInterval(()=>{const el=Math.max(1,Date.now()-st.t0),p=Math.min(100,Math.round(st.talkMs/el*100));const a=document.querySelector('#mp'),b=document.querySelector('#mb');if(a){a.textContent=p+'%';b.style.width=p+'%';}},1000);
+render();
+})();
+</script></body></html>
