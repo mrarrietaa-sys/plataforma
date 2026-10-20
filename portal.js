@@ -751,9 +751,9 @@
     if (!list || !list.length || document.querySelector('.modal')) return; const c = list[list.length - 1];
     try { if (sessionStorage.getItem('mra_rv_' + c.id)) return; sessionStorage.setItem('mra_rv_' + c.id, '1'); } catch (e) { }
     let st = 0;
-    const m = M.modal(`<div class="center">${(window.MRPROFPIC && MRPROFPIC(c.teacher)) ? `<img class="rv-pic" src="${MRPROFPIC(c.teacher)}" alt="${esc(c.teacher || '')}">` : `<div class="to-ic">${MRI('award')}</div>`}<h3>¿Cómo te fue en tu clase?</h3><p>Califica tu clase con <b>${esc(c.teacher || 'tu profe')}</b> del ${fmtD(c.date, { day: 'numeric', month: 'long' })}. Tu opinión es pública y ayuda a otros estudiantes.</p>
+    const m = M.modal(`<div class="center">${(window.MRPROFPIC && MRPROFPIC(c.teacher)) ? `<img class="rv-pic" src="${MRPROFPIC(c.teacher)}" alt="${esc(c.teacher || '')}">` : `<div class="to-ic">${MRI('award')}</div>`}<h3>${c.tc ? '¿Cómo calificas esta experiencia?' : '¿Cómo te fue en tu clase?'}</h3><p>${c.tc ? `<b>${esc(c.teacher || 'Tu profe')}</b> canceló tu clase del ${fmtD(c.date, { day: 'numeric', month: 'long' })} (ya volvió a tu saldo). Si quieres, califica esta experiencia.` : `Califica tu clase con <b>${esc(c.teacher || 'tu profe')}</b> del ${fmtD(c.date, { day: 'numeric', month: 'long' })}.`} Tu opinión es pública y ayuda a otros estudiantes.</p>
       <div class="rv-st">${[1, 2, 3, 4, 5].map(k => `<button type="button" data-s="${k}" aria-label="${k} estrellas">★</button>`).join('')}</div>
-      <textarea class="inp" id="rv-t" rows="3" maxlength="600" placeholder="Cuéntanos qué te gustó de la clase (opcional)"></textarea>
+      <textarea class="inp" id="rv-t" rows="3" maxlength="600" placeholder="${c.tc ? 'Cuéntanos cómo te sentiste (opcional)' : 'Cuéntanos qué te gustó de la clase (opcional)'}"></textarea>
       <button class="btn k block lg" id="rv-go" style="margin-top:10px">Enviar mi opinión</button><button class="btn w block" id="rv-no" style="margin-top:8px">Más tarde</button></div>`, { x: true });
     $$('.rv-st button', m).forEach(b => b.onclick = () => { st = +b.dataset.s; $$('.rv-st button', m).forEach(x => x.classList.toggle('on', +x.dataset.s <= st)); });
     $('#rv-no', m).onclick = () => m.remove();
