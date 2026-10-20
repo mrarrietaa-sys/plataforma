@@ -42,10 +42,16 @@ h3{margin:0 0 6px;font:800 17px Poppins;color:var(--n);display:flex;align-items:
 .cheer{position:fixed;left:50%;top:40%;transform:translate(-50%,-50%) scale(.6);opacity:0;z-index:100;background:#fff;border:3px solid var(--n);border-radius:20px;padding:16px 26px;font:800 22px Poppins;color:var(--n);text-align:center;transition:all .35s;pointer-events:none;box-shadow:0 20px 50px rgba(0,0,0,.25);width:max-content;max-width:90vw}.cheer.show{opacity:1;transform:translate(-50%,-50%) scale(1)}.cheer small{display:block;font:600 14px Inter;color:#5b6577;margin-top:4px}
 @media (max-width:860px){.wrap{grid-template-columns:1fr}.acts{grid-template-columns:1fr 1fr}.btns{grid-template-columns:1fr 1fr}}
 @media (max-width:520px){header{padding:8px 10px}header img{height:30px}header h1{font-size:14px}.scr{padding:12px;border-radius:14px}.card .q{font-size:17px}}
+#vbox{max-width:1340px;margin:10px auto 0;padding:0 16px}#vbox:empty{display:none}#vbox iframe{width:100%;border:0;border-radius:16px;background:#0f1b33;box-shadow:0 10px 30px rgba(11,42,91,.15);display:block}
+body.only-t #vbox iframe{height:58vh}body.only-s #vbox{padding:0 10px;position:sticky;top:0;z-index:20;background:#eef2f8;padding-top:6px}body.only-s #vbox iframe{height:34vh;min-height:220px}
+.vin{display:flex;gap:6px;margin-top:6px;width:100%}.vin input{flex:1;min-width:0;border:0;border-radius:8px;padding:7px 9px;font-size:13px}.vin button{border:0;background:#E3242B;color:#fff;font:700 13px Poppins;border-radius:8px;padding:7px 12px;cursor:pointer}
+.say{display:flex;align-items:center;justify-content:center;gap:8px;background:#eef3fb;color:var(--n);border-radius:12px;padding:12px;font:700 15px Poppins;margin-top:10px}
+@media (min-width:1000px){body.only-t.hv #vbox{position:fixed;left:0;top:64px;bottom:0;width:56vw;max-width:none;margin:0;padding:12px}body.only-t.hv #vbox iframe{height:100%}body.only-t.hv .wrap{margin-left:56vw;max-width:none;padding-right:16px}body.only-t.hv .top{display:none}body.only-t.hv .acts{grid-template-columns:1fr 1fr}}
 </style></head><body>
 <canvas id="cf"></canvas><div class="cheer" id="cheer"></div>
 <header><img src="mra-brand.png" alt="mrarrieta.com" onerror="this.style.display='none'"><div><h1>Simulación · Clase en vivo HABLANDO</h1><small>Módulo 1 · Tema 3: The Nationalities (A1)</small></div></header>
 <div class="top"><b>Dos dispositivos:</b> abre <a href="?rol=profe">la pantalla del profe</a> en el computador (te da un código de sala) y en el celular abre <b>mrarrietaa-sys.github.io/plataforma/simulacion.html?rol=estudiante</b> y escribe el código. · <b>Un dispositivo:</b> prueba las dos pantallas aquí mismo.</div>
+<div id="vbox"></div>
 <div class="wrap">
 <section id="T"><p class="lbl" id="tl"></p><div class="scr">
 <h3>Clase en vivo · The Nationalities <span class="live"><i></i> EN VIVO con Carlos</span></h3><div id="room"></div>
@@ -77,48 +83,48 @@ const lev=(a,b)=>{const m=a.length,n=b.length;let p=Array.from({length:n+1},(_,j
 const near=(a,b)=>a===b||(a.length>3&&lev(a,b)<=1);
 const pct=(target,said)=>{const T=target.split(/\s+/).map(norm).filter(Boolean),S=said.split(/\s+/).map(norm).filter(Boolean);let p=0,ok=0;S.forEach(w=>{for(let k=p;k<Math.min(T.length,p+5);k++){if(near(w,T[k])){ok++;p=k+1;return;}}});return T.length?Math.min(100,Math.round(ok/T.length*100)):0;};
 const has=(said,need)=>{const S=said.split(/\s+/).map(norm);return need.every(n=>n.split(/\s+/).map(norm).every(p=>S.some(w=>near(w,p))));};
-function evalItem(A,it,said){if(!said)return null;if(A.mode==='write'){const ok=norm(said)===norm(it.ans);return{ok,txt:ok?'Correcto':`Lo correcto es: ${it.ans}`};}
- if(it.rep){const p=pct(it.q,said);return{ok:p>=80,txt:`Acierto de pronunciación: ${p}%`};}
- if(it.txt){const p=pct(it.txt,said);const a=has(said,it.need);return{ok:p>=60&&a,txt:`Lectura: ${p}% · respuesta ${a?'correcta':'pendiente'}`};}
- if(it.need){const a=has(said,it.need);return{ok:a,txt:a?'Dijo lo esperado':`Se espera: ${it.need.join(' + ')}`};}return null;}
+function evalItem(A,it,said){if(!said)return null;if(A.mode==='write'){const ok=norm(said)===norm(it.ans);return{ok,txt:ok?'Escritura correcta':`Lo correcto es: ${it.ans}`};}
+ const ref=it.rep?it.q:it.txt?it.txt:(it.ans||'');const p=ref?pct(ref,said):null;
+ return{ok:null,txt:(it.need?`Respuesta esperada: ${it.need.join(' + ')}`:`Frase modelo: ${it.q}`)+(p!==null?` · coincidencia aproximada ${p}%`:'')+' · ¿Lo hizo bien? Tú decides.'};}
 // ---------- estado y conexión ----------
 const qs=new URLSearchParams(location.search),rol=qs.get('rol');if(rol==='profe')document.body.classList.add('only-t');if(rol==='estudiante')document.body.classList.add('only-s');
-const TK=['act','i','fb','fbN','pts','ok','rep','res','fin','cheer','log','t0'],SK=['said','talkMs'];
-let st={act:null,i:0,said:'',fb:'',fbN:0,pts:0,ok:0,rep:0,talkMs:0,t0:Date.now(),log:[],res:[],fin:null,cheer:0};
+const TK=['act','i','fb','fbN','pts','ok','rep','res','fin','cheer','log','t0','vurl'],SK=['said','talkMs'];
+let st={vurl:'',act:null,i:0,said:'',fb:'',fbN:0,pts:0,ok:0,rep:0,talkMs:0,t0:Date.now(),log:[],res:[],fin:null,cheer:0};
 let room=rol==='profe'?(sessionStorage.getItem('mra_room')||String(Math.floor(1000+Math.random()*9000))):(rol==='estudiante'?sessionStorage.getItem('mra_room_s')||'':'');if(rol==='profe')sessionStorage.setItem('mra_room',room);
 const mySide=rol==='estudiante'?'s':rol==='profe'?'t':'';let online='';
 const bc=!rol&&'BroadcastChannel' in window?new BroadcastChannel('mra-live-sim3'):null;
 const call=(action,data)=>fetch(CLOUD,{method:'POST',body:JSON.stringify(Object.assign({action},data)),headers:{'Content-Type':'text/plain;charset=utf-8'},redirect:'follow'}).then(r=>r.json());
 let pushT=null;const pick=ks=>{const o={v:Date.now()};ks.forEach(k=>o[k]=st[k]);return o;};
-function push(){if(bc){bc.postMessage(st);return;}if(!mySide||!room)return;clearTimeout(pushT);pushT=setTimeout(()=>call('liveSet',{room,side:mySide,data:pick(mySide==='t'?TK:SK)}).then(()=>{online='ok';}).catch(()=>{online='err';}),200);}
+function push(){if(bc){bc.postMessage(st);return;}if(!mySide||!room)return;clearTimeout(pushT);pushT=setTimeout(()=>call('liveSet',{room,side:mySide,data:pick(mySide==='t'?TK:SK)}).then(()=>{online='ok';}).catch(()=>{online='err';}),mySide==='t'?0:350);}
 let lastOther=0;
 function merge(o,ks){if(!o||!o.v||o.v<=lastOther)return;lastOther=o.v;const key=st.act+':'+st.i,fbN=st.fbN,ch=st.cheer;ks.forEach(k=>{if(k in o)st[k]=o[k];});if(st.act+':'+st.i!==key){resetMic();if(mySide==='s'){st.said='';push();}}render();if(mySide==='s'&&st.fbN!==fbN&&st.fb)pop(st.fb);if(st.cheer!==ch&&st.fin)celebrate(st.fin);}
-function poll(){if(!mySide||!room)return;call('liveGet',{room}).then(r=>{online='ok';if(r&&r.ok)merge(mySide==='t'?r.s:r.t,mySide==='t'?SK:TK);roomUI();}).catch(()=>{online='err';roomUI();}).finally(()=>setTimeout(poll,1000));}
+function poll(){if(!mySide||!room)return;call('liveGet',{room}).then(r=>{online='ok';if(r&&r.ok)merge(mySide==='t'?r.s:r.t,mySide==='t'?SK:TK);roomUI();}).catch(()=>{online='err';roomUI();}).finally(()=>setTimeout(poll,350));}
 if(bc)bc.onmessage=e=>{const key=st.act+':'+st.i,fbN=st.fbN,ch=st.cheer;st=e.data;if(st.act+':'+st.i!==key)resetMic();render();if(st.fbN!==fbN&&st.fb)pop(st.fb);if(st.cheer!==ch&&st.fin)celebrate(st.fin);};
 const send=(patch)=>{const key=st.act+':'+st.i;Object.assign(st,patch);if(st.act+':'+st.i!==key)resetMic();render();push();};
 const $=s=>document.querySelector(s);const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const item=()=>{const A=ACTS[st.act];return A?A.items[st.i]:null;};
-function roomUI(){const el=$('#room');if(!el)return;if(rol!=='profe'){el.innerHTML='';return;}el.innerHTML=`<div class="room">${I('phone')} Código de sala para el celular del estudiante: <b>${room}</b><span class="st">${online==='ok'?'● Conectado':online==='err'?'⚠ Sin conexión':'Conectando…'}</span></div>`;}
+function roomUI(){const el=$('#room');if(!el)return;if(rol!=='profe'){el.innerHTML='';return;}el.innerHTML=`<div class="room">${I('phone')} Código de sala para el celular del estudiante: <b>${room}</b><span class="st">${online==='ok'?'● Conectado':online==='err'?'⚠ Sin conexión':'Conectando…'}</span><div class="vin"><input id="v-url" placeholder="Pega aquí el enlace de tu sala de Daily.co (https://….daily.co/…)" value="${esc(st.vurl||'')}"><button id="v-go">Activar video</button></div></div>`;const vg=$('#v-go');if(vg)vg.onclick=()=>{const v=$('#v-url').value.trim();if(v&&!/^https:\/\/[a-z0-9-]+\.daily\.co\/[A-Za-z0-9_-]+$/.test(v))return alert('El enlace debe verse así: https://tunombre.daily.co/prueba');send({vurl:v});};}
 // ---------- audio humano (grabaciones de la plataforma) ----------
-let AUDOK=false;(function(){const s=document.createElement('script');s.src='js/audio/t3.js';s.onload=()=>AUDOK=true;s.onerror=()=>{const t=document.createElement('script');t.src='t3.js';t.onload=()=>AUDOK=true;document.head.appendChild(t);};document.head.appendChild(s);})();
+let AUDOK=false;(function(){const s=document.createElement('script');s.src='js/sim-audio.js';s.onload=()=>{AUDOK=true;render();};s.onerror=()=>{const t=document.createElement('script');t.src='sim-audio.js';t.onload=()=>{AUDOK=true;render();};document.head.appendChild(t);};document.head.appendChild(s);})();
 const player=new Audio();let queue=[];
-function playSeq(keys,btn){stopAudio();queue=keys.slice();const nx=()=>{const k=queue.shift();if(!k){btn&&btn.classList.remove('on');return;}if(!window.AUD||!AUD[k]){btn&&btn.classList.remove('on');return;}player.src='data:audio/mpeg;base64,'+AUD[k];player.onended=nx;player.play().catch(()=>{});};btn&&btn.classList.add('on');nx();}
+function playSeq(keys,btn){stopAudio();if(!AUDOK){btn&&(btn.textContent='Cargando audio…');setTimeout(()=>render(),1500);return;}queue=keys.slice();const nx=()=>{const k=queue.shift();if(!k||!window.AUD||!AUD[k]){btn&&btn.classList.remove('on');return;}player.src='data:audio/mpeg;base64,'+AUD[k];player.onended=nx;const pr=player.play();if(pr&&pr.catch)pr.catch(()=>{btn&&btn.classList.remove('on');alert('Toca de nuevo para escuchar (el celular bloqueó el audio).');});};btn&&btn.classList.add('on');nx();}
 function stopAudio(){queue=[];try{player.pause();}catch(e){}document.querySelectorAll('.aud button.on').forEach(b=>b.classList.remove('on'));}
 // ---------- celebraciones ----------
 const cv=$('#cf'),cx=cv.getContext('2d');
 function confetti(){cv.width=innerWidth;cv.height=innerHeight;const Pp=Array.from({length:180},()=>({x:Math.random()*cv.width,y:-20-Math.random()*cv.height*.5,r:4+Math.random()*6,c:['#E3242B','#0B2A5B','#FFC21A','#16a34a','#ffffff','#3b82f6'][Math.floor(Math.random()*6)],vy:2+Math.random()*3,vx:-1.5+Math.random()*3,a:Math.random()*6}));const t0=performance.now();(function f(t){cx.clearRect(0,0,cv.width,cv.height);Pp.forEach(p=>{p.y+=p.vy;p.x+=p.vx;p.a+=.1;cx.save();cx.translate(p.x,p.y);cx.rotate(p.a);cx.fillStyle=p.c;cx.fillRect(-p.r/2,-p.r/2,p.r,p.r*1.6);cx.restore();});if(t-t0<3200)requestAnimationFrame(f);else cx.clearRect(0,0,cv.width,cv.height);})(t0);}
-function celebrate(f){const c=$('#cheer');if(f.p>=80){confetti();c.innerHTML=`${I('trophy')} ¡Excelente, Carlos!<small>${esc(f.t)}: ${f.ok} de ${f.n} bien</small>`;}else{c.innerHTML=`${I('heart')} ¡Buen esfuerzo!<small>${esc(f.t)}: ${f.ok} de ${f.n} · lo repasamos juntos</small>`;}c.classList.add('show');setTimeout(()=>c.classList.remove('show'),2600);}
-function pop(fb){const box=$('#sbox');if(!box)return;const d=document.createElement('div');const k=fb==='ok'?'ok':fb==='rep'?'rep':'tip';d.className='pop '+k;d.innerHTML=`<div>${k==='ok'?I('check')+'¡Muy bien!':k==='rep'?I('repeat')+'Repite, por favor':I('bulb')+esc(fb.slice(4))}</div>`;box.appendChild(d);setTimeout(()=>d.remove(),2300);}
+function celebrate(f){const c=$('#cheer');if(f.p>=80){confetti();c.innerHTML=`${I('trophy')} Congratulations, Carlos!<small>${esc(f.t)}: ${f.ok} de ${f.n} bien</small>`;}else{c.innerHTML=`${I('heart')} Good effort!<small>${esc(f.t)}: ${f.ok} de ${f.n} · lo repasamos juntos</small>`;}c.classList.add('show');setTimeout(()=>c.classList.remove('show'),2600);}
+function pop(fb){const box=$('#sbox');if(!box)return;const d=document.createElement('div');const k=fb==='ok'?'ok':fb==='rep'?'rep':'tip';d.className='pop '+k;d.innerHTML=`<div>${k==='ok'?I('check')+['Well done!','Excellent!','Great job!','Perfect!'][st.fbN%4]:k==='rep'?I('repeat')+'Try again!':I('bulb')+esc(fb.slice(4))}</div>`;box.appendChild(d);setTimeout(()=>d.remove(),2300);}
 // ---------- pantallas ----------
+let curV='';function videoUI(){const vb=$('#vbox');if(!vb||!rol)return;if(st.vurl===curV)return;curV=st.vurl;document.body.classList.toggle('hv',!!st.vurl);vb.innerHTML=st.vurl?`<iframe src="${esc(st.vurl)}" allow="camera; microphone; fullscreen; display-capture; autoplay; speaker-selection" title="Video de la clase"></iframe>`:'';}
 function render(){
- const A=ACTS[st.act],it=item();
+ const A=ACTS[st.act],it=item();videoUI();
  $('#tl').innerHTML=`${I('laptop')} Pantalla del PROFE (Mrs. Jennifer)`;$('#sl').innerHTML=`${I('phone')} Pantalla del ESTUDIANTE (Carlos)`;$('#mic0').innerHTML=I('mic');roomUI();
  const groups=['S','L','R','W'];
  $('#acts').innerHTML=`<div class="grp">Actividades del tema · las 4 habilidades</div><div class="acts">${groups.map(g=>Object.keys(ACTS).filter(k=>ACTS[k].sk===g).map(k=>`<button class="act${st.act===k?' on':''}" data-a="${k}"><span class="ic ${g}">${I(ACTS[k].ic)}</span><span><b>${ACTS[k].t}</b><span class="sk sk-${g}">${SKN[g]}</span><br>${ACTS[k].d}</span></button>`).join('')).join('')}</div>`;
  document.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>send({act:b.dataset.a,i:0,said:'',fb:'',res:[],fin:null,log:st.log.concat(['Enviaste: '+ACTS[b.dataset.a].t])}));
  const ev=A&&it?evalItem(A,it,st.said):null;
  $('#tnow').innerHTML=!A?(st.fin?`<b style="color:#0B2A5B">Última actividad: ${esc(st.fin.t)} · ${st.fin.ok} de ${st.fin.n} bien (${st.fin.p}%)</b><p class="small">Elige otra actividad.</p>`:'<p class="small" style="margin:0">Toca una actividad para enviarla a la pantalla de Carlos.</p>'):
-  `<b style="color:#0B2A5B">Ahora: ${A.t} · ${st.i+1} de ${A.items.length}</b><p class="small" style="margin:4px 0 0">${esc(it.q)}${it.ans&&A.mode!=='write'?` · <i>Ejemplo: ${esc(it.ans)}</i>`:''}</p><p class="small" style="margin:6px 0 0">Carlos ${A.mode==='write'?'escribió':'dijo'} (en vivo):</p><div class="said">${st.said?esc(st.said):'<span class="small">Esperando a Carlos…</span>'}${ev?`<div class="eval ${ev.ok?'ok':'no'}">${I(ev.ok?'check':'bulb')} ${esc(ev.txt)}</div>`:''}</div>
+  `<b style="color:#0B2A5B">Ahora: ${A.t} · ${st.i+1} de ${A.items.length}</b><p class="small" style="margin:4px 0 0">${esc(it.q)}${it.ans&&A.mode!=='write'?` · <i>Ejemplo: ${esc(it.ans)}</i>`:''}</p><p class="small" style="margin:6px 0 0">Carlos ${A.mode==='write'?'escribió':'dijo'} (en vivo):</p><div class="said">${st.said?esc(st.said):'<span class="small">Esperando a Carlos…</span>'}${ev?`<div class="eval ${ev.ok===true?'ok':'no'}">${I(ev.ok===true?'check':'bulb')} ${esc(ev.txt)}</div>`:''}</div>
   <div class="btns"><button class="b b1" id="t-ok">${I('check')} Bien</button><button class="b b2" id="t-rep">${I('repeat')} Repite</button><button class="b b3" id="t-tip">${I('bulb')} Pista</button><button class="b b4" id="t-next">${st.i+1>=A.items.length?I('flag')+' Terminar':'Siguiente '+I('next')}</button></div>`;
  if(A){const mark=(ok)=>{const r=st.res.slice();r[st.i]=ok;return r;};
   $('#t-ok').onclick=()=>{send({fb:'ok',fbN:st.fbN+1,pts:st.pts+10,ok:st.ok+1,res:mark(true),log:st.log.concat(['Bien · '+A.t+' '+(st.i+1)])});if(!mySide)pop('ok');};
@@ -132,7 +138,7 @@ function renderS(A,it){
  const sb=$('#sbox');
  if(rol==='estudiante'&&!room){sb.innerHTML=`<div class="join"><h3 style="justify-content:center">Entrar a la clase en vivo</h3><p class="mut">Escribe el código de sala que ves en la pantalla de tu profe.</p><input id="j-in" inputmode="numeric" maxlength="6" placeholder="0000"><button id="j-go">Entrar</button></div>`;$('#j-go').onclick=()=>{const v=$('#j-in').value.replace(/\D/g,'');if(v.length<4)return;room=v;sessionStorage.setItem('mra_room_s',room);render();poll();};return;}
  const sc=`<div class="score"><span>${I('check')} ${st.ok}</span><span>${I('repeat')} ${st.rep}</span><span>${I('star')} ${st.pts} pts</span></div>`;
- if(!A){sb.innerHTML=st.fin?`<div class="done"><div class="big" style="color:${st.fin.p>=80?'#16a34a':'#E3242B'}">${I(st.fin.p>=80?'trophy':'heart')}</div><b>${st.fin.p>=80?'¡Excelente trabajo!':'¡Buen esfuerzo!'}</b><p class="small">${esc(st.fin.t)}: ${st.fin.ok} de ${st.fin.n} bien. Espera la siguiente actividad de tu profe.</p></div>${sc}`:`<div class="idle"><b>Estás en clase con Mrs. Jennifer</b>Cuando tu profe te envíe una actividad, aparecerá aquí.</div>${sc}`;return;}
+ if(!A){sb.innerHTML=st.fin?`<div class="done"><div class="big" style="color:${st.fin.p>=80?'#16a34a':'#E3242B'}">${I(st.fin.p>=80?'trophy':'heart')}</div><b>${st.fin.p>=80?'Congratulations!':'Good effort!'}</b><p class="small">${esc(st.fin.t)}: ${st.fin.ok} de ${st.fin.n} bien. Espera la siguiente actividad de tu profe.</p></div>${sc}`:`<div class="idle"><b>Estás en clase con Mrs. Jennifer</b>Cuando tu profe te envíe una actividad, aparecerá aquí.</div>${sc}`;return;}
  const k=it.k?C[it.k]:null;let card='';
  if(st.act==='say')card=`<small>${st.i+1} de ${A.items.length}</small><div class="ph"><img class="p" src="${U(k[2])}" alt=""><img class="f" src="${F(it.k)}" alt=""></div><div class="q">${esc(it.q)}</div><div class="es">${esc(it.es)}</div>`;
  else if(st.act==='role')card=`<small>Juego de roles</small><div class="ph" style="aspect-ratio:16/8"><img class="p" src="${U(it.img,900,450)}" alt=""></div><p style="margin:8px 0 0;font-size:15px">${esc(it.q)}</p><ul>${it.lines.map(x=>`<li>${esc(x)}</li>`).join('')}</ul><div class="aud"><button data-au="${it.au.join(',')}">${I('vol')} Escuchar al oficial</button></div>`;
@@ -140,28 +146,33 @@ function renderS(A,it){
  else if(st.act==='lis')card=`<small>Escucha a Carla · pregunta ${st.i+1} de ${A.items.length}</small><div class="aud"><button data-au="${it.au.join(',')}" id="a-play">${I('play')} Escuchar</button><button id="a-stop">${I('pause')} Pausar</button></div><div class="q">${esc(it.q)}</div><div class="es">${esc(it.es)}</div>`;
  else if(st.act==='read')card=`<small>Lee en voz alta y responde</small><div class="ph" style="aspect-ratio:16/7"><img class="p" src="${U(it.img,900,400)}" alt=""></div><div class="txtR">${esc(it.txt)}</div><div class="q" style="font-size:16px">${esc(it.q)}</div><div class="es">${esc(it.es)}</div>`;
  else if(st.act==='wri')card=`<small>${st.i+1} de ${A.items.length}</small><div class="ph" style="aspect-ratio:16/8"><img class="p" src="${U(k[2],900,450)}" alt=""><img class="f" src="${F(it.k)}" alt=""></div><div class="q">${esc(it.q)}</div><div class="es">${esc(it.es)}</div>`;
- const fb=st.fb==='ok'?`<div class="status ok">${I('check')} ¡Muy bien! Tu profe aprobó tu respuesta</div>`:st.fb==='rep'?`<div class="status rep">${I('repeat')} Tu profe te pide repetir</div>`:st.fb.indexOf('tip:')===0?`<div class="status tip">${I('bulb')} ${esc(st.fb.slice(4))}</div>`:'';
- const input=A.mode==='write'?`<div class="wr"><input id="w-in" placeholder="Escribe aquí" autocomplete="off" autocapitalize="words"><button id="w-ok">${I('send')}</button></div>`:`<button class="go${mic.on?' on':''}" id="s-go">${I('mic')} ${mic.on?'Te estoy escuchando…':'Estoy listo, hablar'}</button><div class="wave">${mic.on?'Habla con calma: se detiene solo cuando terminas.':'Toca cuando estés listo y responde en voz alta.'}</div><div class="heard">${esc(st.said)}</div>`;
+ const fb=st.fb==='ok'?`<div class="status ok">${I('check')} Well done! · Tu profe aprobó tu respuesta</div>`:st.fb==='rep'?`<div class="status rep">${I('repeat')} Try again! · Tu profe te pide repetir</div>`:st.fb.indexOf('tip:')===0?`<div class="status tip">${I('bulb')} ${esc(st.fb.slice(4))}</div>`:'';
+ const input=A.mode!=='write'&&st.vurl?`<div class="say">${I('mic')} Responde hablando a tu profe</div><div class="heard"></div>`:A.mode==='write'?`<div class="wr"><input id="w-in" placeholder="Escribe aquí" autocomplete="off" autocapitalize="words"><button id="w-ok">${I('send')}</button></div>`:`<button class="go${mic.on?' on':''}" id="s-go">${I('mic')} ${mic.on?'Te estoy escuchando…':'Estoy listo, hablar'}</button><div class="wave">${mic.on?'Habla con calma: se detiene solo cuando terminas.':'Toca cuando estés listo y responde en voz alta.'}</div><div class="heard">${esc(st.said)}</div>`;
  const pp=sb.querySelector('.pop');
- sb.innerHTML=`<h3><span class="ic ${A.sk}" style="width:30px;height:30px;border-radius:9px;display:inline-grid;place-items:center">${I(A.ic)}</span>${A.t} <span class="live"><i></i> Mrs. Jennifer te envió</span></h3><div class="card">${card}</div>${input}${fb}${sc}${A.mode==='write'?'':`<div class="fake"><input id="s-fake" placeholder="(Prueba sin micrófono: escribe lo que dirías)"><button id="s-fb">Simular voz</button></div>`}`;
+ sb.innerHTML=`<h3><span class="ic ${A.sk}" style="width:30px;height:30px;border-radius:9px;display:inline-grid;place-items:center">${I(A.ic)}</span>${A.t} <span class="live"><i></i> Mrs. Jennifer te envió</span></h3><div class="card">${card}</div>${input}${fb}${sc}${A.mode==='write'||st.vurl?'':`<div class="fake"><input id="s-fake" placeholder="(Prueba sin micrófono: escribe lo que dirías)"><button id="s-fb">Simular voz</button></div>`}`;
  if(pp)sb.appendChild(pp);
- if(A.mode==='write'){const w=$('#w-in');w.value=st.said||'';const go=()=>{const v=w.value.trim();if(v){send({said:v,fb:''});const ev=evalItem(A,it,v);if(ev&&ev.ok)playSeq(it.au);}};$('#w-ok').onclick=go;w.onkeydown=e=>{if(e.key==='Enter')go();};}
- else{$('#s-go').onclick=()=>mic.on?mic.stop():mic.start();$('#s-fb').onclick=()=>{const v=$('#s-fake').value.trim();if(v)send({said:v,fb:'',talkMs:st.talkMs+v.split(/\s+/).length*450});};}
+ if(A.mode==='write'){const w=$('#w-in');w.value=st.said||'';const go=()=>{const v=w.value.trim();if(v){send({said:v,fb:''});const ev=evalItem(A,it,v);if(ev&&ev.ok===true)playSeq(it.au);}};$('#w-ok').onclick=go;w.onkeydown=e=>{if(e.key==='Enter')go();};}
+ else if($('#s-go')){$('#s-go').onclick=()=>mic.on?mic.stop():mic.start();$('#s-fb').onclick=()=>{const v=$('#s-fake').value.trim();if(v)send({said:v,fb:'',talkMs:st.talkMs+v.split(/\s+/).length*450});};}
  document.querySelectorAll('[data-au]').forEach(b=>b.onclick=()=>{if(mic.on)mic.stop();if(b.classList.contains('on')){player.paused?player.play():stopAudio();return;}if(b.id==='a-play'&&player.src&&player.paused&&player.currentTime>0&&!queue.length){b.classList.add('on');player.play();return;}playSeq(b.dataset.au.split(','),b);});
  const ps=$('#a-stop');if(ps)ps.onclick=()=>{player.pause();document.querySelectorAll('.aud button.on').forEach(b=>b.classList.remove('on'));};
 }
 // ---------- micrófono: se activa cuando el estudiante está listo y se detiene solo ----------
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-const mic={on:false,r:null,segs:'',idle:null,sp:0,
- start(){if(!SR){alert('Este navegador no reconoce la voz. Usa Google Chrome (o el botón Simular voz).');return;}stopAudio();this.on=true;this.segs='';send({said:'',fb:''});this.run();},
- run(){const me=this;const r=new SR();me.r=r;r.lang='en-US';r.continuous=true;r.interimResults=true;
-  r.onspeechstart=()=>{me.sp=Date.now();};r.onspeechend=()=>{if(me.sp){send({talkMs:st.talkMs+(Date.now()-me.sp)});me.sp=0;}};
-  r.onresult=e=>{let fin='',itr='';for(let k=e.resultIndex;k<e.results.length;k++){const t=e.results[k][0].transcript;if(e.results[k].isFinal)fin+=t+' ';else itr+=t;}if(fin)me.segs+=fin;send({said:(me.segs+itr).trim()});clearTimeout(me.idle);me.idle=setTimeout(()=>me.stop(),2500);};
+const ANDR=/Android/i.test(navigator.userAgent);
+const lc=x=>String(x||'').toLowerCase().trim();
+// arma el texto con TODOS los resultados de la sesión y quita las repeticiones que hace Android ("this this is this is Brazil")
+function joinRes(res){const out=[];for(let k=0;k<res.length;k++){const t=res[k][0].transcript.trim();if(!t)continue;const last=out.length?out[out.length-1]:'';if(last&&lc(t).indexOf(lc(last))===0)out[out.length-1]=t;else if(last&&lc(last).indexOf(lc(t))===0)continue;else out.push(t);}return out.join(' ');}
+function dedupe(t){const w=t.split(/\s+/);for(let n=6;n>=1;n--){for(let i=0;i+2*n<=w.length;i++){let same=true;for(let j=0;j<n;j++)if(lc(w[i+j])!==lc(w[i+n+j])){same=false;break;}if(same){w.splice(i+n,n);i--;}}}return w.join(' ');}
+const mic={on:false,r:null,prev:'',idle:null,sp:0,
+ start(){if(!SR){alert('Este navegador no reconoce la voz. Usa Google Chrome (o el botón Simular voz).');return;}stopAudio();this.on=true;this.prev='';send({said:'',fb:''});this.run();},
+ run(){const me=this;const r=new SR();me.r=r;r.lang='en-US';r.continuous=!ANDR;r.interimResults=true;r.maxAlternatives=1;let cur='';
+  r.onspeechstart=()=>{me.sp=Date.now();};
+  r.onresult=e=>{cur=joinRes(e.results);const txt=dedupe((me.prev+' '+cur).trim());send({said:txt});clearTimeout(me.idle);me.idle=setTimeout(()=>me.stop(),2200);};
   r.onerror=e=>{if(/not-allowed|service/.test(e.error)){me.on=false;alert('Permite el micrófono para hablar.');render();}};
-  r.onend=()=>{if(me.on)setTimeout(()=>{try{me.run()}catch(e){}},80);};try{r.start()}catch(e){}
-  clearTimeout(me.idle);me.idle=setTimeout(()=>me.stop(),9000);},
- stop(){this.on=false;clearTimeout(this.idle);if(this.sp){st.talkMs+=Date.now()-this.sp;this.sp=0;push();}try{this.r&&this.r.stop()}catch(e){}render();}};
-function resetMic(){stopAudio();if(mic.on){mic.on=false;clearTimeout(mic.idle);try{mic.r&&mic.r.abort()}catch(e){}}mic.segs='';}
+  r.onend=()=>{if(me.sp){st.talkMs+=Date.now()-me.sp;me.sp=0;}me.prev=dedupe((me.prev+' '+cur).trim());cur='';if(me.on)setTimeout(()=>{if(me.on)try{me.run()}catch(e){}},60);};
+  try{r.start()}catch(e){}clearTimeout(me.idle);me.idle=setTimeout(()=>me.stop(),9000);},
+ stop(){this.on=false;clearTimeout(this.idle);try{this.r&&this.r.stop()}catch(e){}push();render();}};
+function resetMic(){stopAudio();if(mic.on){mic.on=false;clearTimeout(mic.idle);try{mic.r&&mic.r.abort()}catch(e){}}mic.prev='';}
 setInterval(()=>{const el=Math.max(1,Date.now()-st.t0),p=Math.min(100,Math.round(st.talkMs/el*100));const a=$('#mp'),b=$('#mb');if(a){a.textContent=p+'%';b.style.width=p+'%';}},1000);
 render();if(mySide&&room){poll();if(mySide==='t')push();}
 })();
