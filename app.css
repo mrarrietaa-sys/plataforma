@@ -4687,3 +4687,7 @@ textarea.tb-board:focus{outline:2px solid #ffe36a}
 @media (max-width:980px){.db-ring{flex:none}.wrap.db .db-ring small{white-space:normal;text-align:center;line-height:1.1;max-width:54px;font-size:9px}}
 @media (max-width:600px){.ringbox .rb-t{font-size:15.5px!important;white-space:nowrap}}
 @media (max-width:360px){.ringbox .rb-t{font-size:14px!important}}
+/* v221: el profe cancela una clase */
+.tp-cbtn{color:#b91c1c!important;border-color:#f3c4c6!important}
+.tp-cwarn{background:#fff7ec;border:1.5px solid #f5c98a;border-radius:12px;padding:10px 14px;margin:10px 0;font-size:14px;line-height:1.45}.tp-cwarn ul{margin:6px 0 0;padding-left:18px}.tp-cwarn li{margin:4px 0}
+.tp-lbl{display:block;font-weight:700;font-size:13.5px;color:#0B2A5B;margin-top:6px}.tp-lbl textarea{margin-top:4px;width:100%;box-sizing:border-box}

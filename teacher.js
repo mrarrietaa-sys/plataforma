@@ -31,7 +31,7 @@
   /* ---------- utilidades de UI ---------- */
   function toast(msg, bad) { const t = document.createElement('div'); t.className = 'tp-toast' + (bad ? ' bad' : ''); t.setAttribute('role', 'status'); t.textContent = msg; document.body.appendChild(t); requestAnimationFrame(() => t.classList.add('on')); setTimeout(() => { t.classList.remove('on'); setTimeout(() => t.remove(), 300); }, 3200); }
   function modal(html) { const m = document.createElement('div'); m.className = 'tp-modal'; m.setAttribute('role', 'dialog'); m.setAttribute('aria-modal', 'true'); m.innerHTML = `<div class="tp-modal-card card">${html}</div>`; document.body.appendChild(m); m.addEventListener('click', (e) => { if (e.target === m || e.target.closest('[data-x]')) m.remove(); }); return m; }
-  const errText = (e) => ({ offline: 'El portal no está conectado a la nube.', network: 'Sin conexión. Revisa tu internet e inténtalo de nuevo.', auth: 'Tu sesión no es válida. Vuelve a entrar.', booked: 'Ese espacio ya fue reservado por un estudiante.', notfound: 'No encontramos ese registro.' }[e] || 'Algo salió mal (' + e + '). Inténtalo de nuevo.');
+  const errText = (e) => ({ offline: 'El portal no está conectado a la nube.', network: 'Sin conexión. Revisa tu internet e inténtalo de nuevo.', auth: 'Tu sesión no es válida. Vuelve a entrar.', booked: 'Ese espacio ya fue reservado por un estudiante.', started: 'La clase ya empezó: no se puede cancelar.', state: 'Esta clase ya no está programada.', notfound: 'No encontramos ese registro.' }[e] || 'Algo salió mal (' + e + '). Inténtalo de nuevo.');
   async function api(action, extra) {
     const r = await MR.call(action, Object.assign({ tcode: S.tcode, pin: S.pin }, extra || {}));
     if (!r.ok && r.err === 'auth') { logout(); toast(errText('auth'), true); }
@@ -41,7 +41,7 @@
   const groupOf = (id) => (D.groups || []).find((g) => g.id === id);
   const meetOf = (c) => c.meet || (c.groupId && groupOf(c.groupId) ? groupOf(c.groupId).meet : '') || (D.teacher && String(D.teacher.meet || '').split(/[\s,;]+/).filter(Boolean)[0]) || '';
   const typeBadge = (c) => c.type === 'vip' ? '<span class="tp-badge vip">Individual</span>' : (c.type === 'club' ? '<span class="tp-badge grp">Club</span>' : '<span class="tp-badge grp">Grupal</span>');
-  const statusBadge = (c) => ({ done: '<span class="tp-st done">Dictada ✓</span>', noshow: '<span class="tp-st noshow">No asistió</span>', cancelled: '<span class="tp-st canc">Cancelada</span>', latecancel: '<span class="tp-st canc">Cancelada tarde</span>', tnoshow: '<span class="tp-st noshow">⚠️ No te conectaste</span>' }[c.status] || (c.date <= today() ? '<span class="tp-st pend">Por marcar</span>' : '<span class="tp-st sch">Programada</span>'));
+  const statusBadge = (c) => ({ done: '<span class="tp-st done">Dictada ✓</span>', noshow: '<span class="tp-st noshow">No asistió</span>', cancelled: '<span class="tp-st canc">Cancelada</span>', latecancel: '<span class="tp-st canc">Cancelada tarde</span>', tnoshow: '<span class="tp-st noshow">⚠️ No te conectaste</span>', tlate: '<span class="tp-st noshow">⚠️ Cancelaste tarde</span>' }[c.status] || (c.date <= today() ? '<span class="tp-st pend">Por marcar</span>' : '<span class="tp-st sch">Programada</span>'));
   const whoOf = (c) => c.type === 'vip' ? esc(studentName(c.students[0] || '')) : esc(c.type === 'club' ? (c.topic || 'Club') : ((groupOf(c.groupId) || {}).name || 'Grupo')) + ` · ${c.students.length} estudiante${c.students.length === 1 ? '' : 's'}`;
 
   /* ---------- entrada ---------- */
@@ -202,7 +202,8 @@
         ${c.notes && opt && opt.notes ? `<small class="tp-note">📝 ${esc(c.notes)}</small>` : ''}</div>
       <div class="tp-cls-act">
         ${c.status === 'scheduled' && c.date >= today() ? (link ? `<a class="btn k sm" href="${esc(link)}" target="_blank" rel="noopener"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6h11a2 2 0 0 1 2 2v1.6l3.4-2.3A1 1 0 0 1 22 8.1v7.8a1 1 0 0 1-1.6.8L17 14.4V16a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z"/></svg> Entrar a la clase</a>` : '<small class="muted">Sin enlace de clase</small>') : ''}
-        ${c.type === 'vip' && c.students.length && ['cancelled', 'latecancel'].indexOf(c.status) < 0 ? `<button class="btn w sm" data-board="${esc(c.id)}">📝 Tablero</button>` : ''}
+        ${c.type === 'vip' && c.students.length && ['cancelled', 'latecancel', 'tlate'].indexOf(c.status) < 0 ? `<button class="btn w sm" data-board="${esc(c.id)}">📝 Tablero</button>` : ''}
+        ${c.type === 'vip' && c.status === 'scheduled' && (c.date > today() || (c.date === today() && c.time > nowHM())) ? `<button class="btn w sm tp-cbtn" data-tcancel="${esc(c.id)}">Cancelar clase</button>` : ''}
         ${canMark ? `<button class="btn ok sm" data-mark="${esc(c.id)}">✓ Marcar como dictada</button><button class="btn w sm" data-noshow="${esc(c.id)}">No asistió</button>` : ''}
       </div></li>`;
   }
@@ -210,6 +211,7 @@
     $$('[data-mark]', root).forEach((b) => b.onclick = () => markDialog(b.dataset.mark, 'done'));
     $$('[data-noshow]', root).forEach((b) => b.onclick = () => markDialog(b.dataset.noshow, 'noshow'));
     $$('[data-board]', root).forEach((b) => b.onclick = () => boardDialog(b.dataset.board));
+    $$('[data-tcancel]', root).forEach((b) => b.onclick = () => cancelDialog(b.dataset.tcancel));
   }
   // 🧑‍🏫 pizarra digital: elegir la clase (para guardarla en su tablero) o usarla libre
   function pzPick() {
@@ -227,6 +229,21 @@
     const r = await api('tPzGet', { classId: id }); let data = null; try { data = r && r.ok && r.json ? JSON.parse(r.json) : null; } catch (e) { }
     MRPZ.open({ title: 'Pizarra de clase', sub: studentName(c.students[0]) + ' · ' + dLabel(c.date) + ' · ' + h12(c.time), file: String(c.date), data,
       onSave: async (d, pngs) => { const x = await MR.call('tPzSave', { tcode: S.tcode, pin: S.pin, classId: id, json: JSON.stringify(d), pngs }, { timeout: 120000 }); return !!(x && x.ok); } });
+  }
+  // 🔁 el profe cancela una clase individual: aviso antes de confirmar (opinión del estudiante + multa si es con menos de 12 h)
+  async function cancelDialog(id) {
+    const c = D.classes.find((x) => x.id === id); if (!c) return;
+    const hu = (new Date(c.date + 'T' + c.time + ':00-05:00').getTime() - Date.now()) / 36e5; const late = hu < 12;
+    let pen = 10000; try { const r = await api('tPay'); if (r && r.penalty) pen = r.penalty; } catch (e) { }
+    const m = modal(`<button class="tp-x" data-x aria-label="Cerrar">✕</button><h3>Cancelar clase</h3><p class="muted">${esc(studentName(c.students[0] || ''))} · ${dLabel(c.date, true)} · ${h12(c.time)}</p>
+      <div class="tp-cwarn"><b>Antes de cancelar, ten en cuenta:</b><ul><li>Tu estudiante organizó su tiempo para esta clase. Al cancelar, <b>puede dejarte una calificación u opinión negativa</b>, y eso se ve en tu perfil.</li>
+      <li>${late ? `Faltan <b>menos de 12 horas</b>: se descuentan <b>$${Number(pen).toLocaleString('es-CO')}</b> de tu pago del mes.` : 'Faltan más de 12 horas: no hay multa, pero esta clase no se paga.'}</li><li>La clase vuelve al saldo del estudiante y le enviamos horarios con otros profes. Administración recibe un aviso.</li></ul></div>
+      <label class="tp-lbl">Motivo (opcional, solo lo ve administración)<textarea class="inp" id="tc-why" rows="2" maxlength="200" placeholder="Ej: calamidad familiar"></textarea></label>
+      <div class="row" style="justify-content:flex-end;gap:8px;margin-top:10px"><button class="btn w" data-x>Mejor no cancelo</button><button class="btn r" id="tc-ok">Sí, cancelar clase</button></div>`);
+    $('#tc-ok', m).onclick = async () => { const b = $('#tc-ok', m); b.disabled = true; b.textContent = 'Cancelando…';
+      const x = await api('tCancel', { classId: id, reason: $('#tc-why', m).value.trim() });
+      if (x && x.ok) { m.remove(); toast(x.late ? '⚠️ Clase cancelada · con multa por ser tarde' : '✅ Clase cancelada · el estudiante ya fue avisado'); c.status = x.late ? 'tlate' : 'cancelled'; try { shell(); } catch (e) { } }
+      else { b.disabled = false; b.textContent = 'Sí, cancelar clase'; toast(errText((x && x.err) || 'network'), true); } };
   }
   // 📝 tablero de clase: el profe escribe lo que hizo en la clase; ve también los tableros anteriores del estudiante (de cualquier profe)
   async function boardDialog(id) {
@@ -389,7 +406,7 @@
   /* ---------- 💰 Mis pagos ---------- */
   const COP = (n) => (+n < 0 ? '−' : '') + '$' + Math.abs(Math.round(+n || 0)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
   const MES = (ym) => { const [y, m] = String(ym).split('-').map(Number); return new Date(y, m - 1, 15).toLocaleDateString('es-CO', { month: 'long', year: 'numeric' }); };
-  const PST = { done: ['ok', 'Dictada'], noshow: ['warn', 'Te conectaste · el estudiante no asistió'], cancelled: ['off', 'Cancelada a tiempo'], latecancel: ['off', 'Cancelada fuera de tiempo'], 'sin-asistentes': ['off', 'Sin reservas'], tnoshow: ['bad', '⚠️ No te conectaste · penalización (el estudiante lo reportó)'] };
+  const PST = { done: ['ok', 'Dictada'], noshow: ['warn', 'Te conectaste · el estudiante no asistió'], cancelled: ['off', 'Cancelada a tiempo'], latecancel: ['off', 'Cancelada fuera de tiempo'], 'sin-asistentes': ['off', 'Sin reservas'], tnoshow: ['bad', '⚠️ No te conectaste · penalización (el estudiante lo reportó)'], tlate: ['bad', '⚠️ Cancelaste con menos de 12 horas · penalización'] };
   let payMonth = '', payCache = {};
   async function pay(el) {
     const months = (D.pay && D.pay.months) || []; if (!payMonth) payMonth = (D.pay && D.pay.cur && D.pay.cur.month) || (months[0] && months[0].month) || '';
