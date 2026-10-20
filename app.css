@@ -4691,3 +4691,6 @@ textarea.tb-board:focus{outline:2px solid #ffe36a}
 .tp-cbtn{color:#b91c1c!important;border-color:#f3c4c6!important}
 .tp-cwarn{background:#fff7ec;border:1.5px solid #f5c98a;border-radius:12px;padding:10px 14px;margin:10px 0;font-size:14px;line-height:1.45}.tp-cwarn ul{margin:6px 0 0;padding-left:18px}.tp-cwarn li{margin:4px 0}
 .tp-lbl{display:block;font-weight:700;font-size:13.5px;color:#0B2A5B;margin-top:6px}.tp-lbl textarea{margin-top:4px;width:100%;box-sizing:border-box}
+/* v223: botón de reservar más recogido (PC y celular) */
+.btn.block.vb-ok{display:flex;width:auto;max-width:440px;margin-left:auto;margin-right:auto;justify-content:center;padding:12px 24px;font-size:16px}
+@media (max-width:600px){.btn.block.vb-ok{max-width:92%;font-size:15px;padding:11px 16px}}

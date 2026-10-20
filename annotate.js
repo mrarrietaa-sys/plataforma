@@ -64,6 +64,7 @@ body.ann-draw{user-select:none;-webkit-user-select:none}
 #ann-bar .sw{width:14px;height:14px;border-radius:50%;border:1.5px solid rgba(0,0,0,.18);margin:0}
 #ann-bar .sw.on{outline:2px solid #0B2A5B;outline-offset:1px}
 #ann-bar .tip{left:40px}#ann-bar.right .tip{right:40px}
+@media (min-width:641px){#ann-fab{width:36px;height:36px}#ann-fab svg{width:18px;height:18px}#ann-bar{padding:3px;gap:1px;border-radius:11px}#ann-bar button{width:26px;height:26px;border-radius:7px}#ann-bar button svg{width:14px;height:14px}#ann-bar .sws{gap:3px}#ann-bar .sw{width:11px;height:11px}#ann-bar .tip{left:34px;font-size:11px}#ann-bar.right .tip{right:34px}}
 @media (max-width:640px){#ann-fab{width:38px;height:38px}#ann-fab svg{width:20px;height:20px}#ann-bar button{width:28px;height:28px}#ann-bar button svg{width:15px;height:15px}#ann-bar .sw{width:12px;height:12px}#ann-bar .sws{gap:3px}}
 @media print{#ann-cv,#ann-bar,#ann-fab{display:none!important}}`;
     document.head.appendChild(s);
