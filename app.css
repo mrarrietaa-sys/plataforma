@@ -4694,3 +4694,11 @@ textarea.tb-board:focus{outline:2px solid #ffe36a}
 /* v223: botón de reservar más recogido (PC y celular) */
 .btn.block.vb-ok{display:flex;width:auto;max-width:440px;margin-left:auto;margin-right:auto;justify-content:center;padding:12px 24px;font-size:16px}
 @media (max-width:600px){.btn.block.vb-ok{max-width:92%;font-size:15px;padding:11px 16px}}
+/* v224: botones de la clase del profe (celular: Entrar + Más opciones desplegable) */
+.tp-moreb{display:none!important}.tp-more{display:contents}
+@media (max-width:700px){
+  .tp-cls-act{flex-direction:column!important;flex-wrap:nowrap!important;align-items:center!important;gap:6px!important}
+  .tp-cls-act .btn{flex:none!important;width:100%;max-width:250px;padding:8px 12px!important;font-size:13.5px!important;min-height:0!important}
+  .tp-moreb{display:inline-flex!important;justify-content:center}
+  .tp-more{display:none;flex-direction:column;align-items:center;gap:6px;width:100%}.tp-cls-act.open .tp-more{display:flex}
+}

@@ -212,6 +212,12 @@
     $$('[data-noshow]', root).forEach((b) => b.onclick = () => markDialog(b.dataset.noshow, 'noshow'));
     $$('[data-board]', root).forEach((b) => b.onclick = () => boardDialog(b.dataset.board));
     $$('[data-tcancel]', root).forEach((b) => b.onclick = () => cancelDialog(b.dataset.tcancel));
+    // 📱 celular: «Entrar a la clase» visible; Tablero y Cancelar se despliegan con «Más opciones»
+    $$('.tp-cls-act', root).forEach((a) => { if (a.querySelector('.tp-more')) return; const xs = [...a.querySelectorAll('[data-board],[data-tcancel]')]; if (!xs.length || !a.querySelector('a.btn.k')) return;
+      const box = document.createElement('div'); box.className = 'tp-more'; xs.forEach((x) => box.appendChild(x));
+      const t = document.createElement('button'); t.type = 'button'; t.className = 'btn w sm tp-moreb'; t.textContent = 'Más opciones ▾';
+      t.onclick = () => { const on = a.classList.toggle('open'); t.textContent = on ? 'Menos opciones ▴' : 'Más opciones ▾'; };
+      a.appendChild(t); a.appendChild(box); });
   }
   // 🧑‍🏫 pizarra digital: elegir la clase (para guardarla en su tablero) o usarla libre
   function pzPick() {
