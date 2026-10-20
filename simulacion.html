@@ -73,7 +73,7 @@ const N=STEPS.length;
 const qs=new URLSearchParams(location.search),rol=qs.get('rol')||'profe';document.body.classList.add(rol==='estudiante'?'only-s':'only-t');
 const TK=['i','fb','fbN','pts','ok','rep','res','fin','cheer','vurl','started'],SK=['said','aud','seen'];
 let st={i:0,fb:'',fbN:0,pts:0,ok:0,rep:0,res:[],fin:null,cheer:0,vurl:'',started:0,said:'',aud:'',seen:''};
-let room=rol==='profe'?(sessionStorage.getItem('mra_room')||String(Math.floor(1000+Math.random()*9000))):(sessionStorage.getItem('mra_room_s')||'');if(rol==='profe')sessionStorage.setItem('mra_room',room);
+let room=rol==='profe'?(sessionStorage.getItem('mra_room')||String(Math.floor(1000+Math.random()*9000))):(qs.get('sala')||'');if(rol==='profe')sessionStorage.setItem('mra_room',room);
 const mySide=rol==='estudiante'?'s':'t';let online='';
 const call=(action,data)=>fetch(CLOUD,{method:'POST',body:JSON.stringify(Object.assign({action},data)),headers:{'Content-Type':'text/plain;charset=utf-8'},redirect:'follow'}).then(r=>r.json());
 let pushT=null;const pick=ks=>{const o={v:Date.now()};ks.forEach(k=>o[k]=st[k]);return o;};
@@ -116,7 +116,7 @@ function renderT(){const m=$('#main');
   $('#t-back').onclick=()=>send({fin:null,i:N-1});$('#t-new').onclick=()=>send({i:0,fin:null,res:[],ok:0,rep:0,pts:0,fb:'',started:Date.now()});return;}
  const s=STEPS[st.i],seen=st.seen===String(st.i),mark=st.res[st.i];
  const au=s.write?(st.said?`Carlos escribió: <b style="color:${st.said.trim().toLowerCase()===s.ans.toLowerCase()?'#15803d':'#b91c1c'}">${esc(st.said)}</b>`:'Esperando lo que escriba Carlos…'):st.aud==='play'?'🔊 Carlos está escuchando el audio…':st.aud==='done'?'✔ Carlos ya escuchó el audio':st.aud==='pause'?'⏸ Carlos pausó el audio':'';
- m.innerHTML=`<div class="top"><h3>Clase con Carlos</h3><span class="chip r">● EN VIVO</span><span class="chip">${st.ok} ✔ · ${st.pts} pts</span></div>${bar()}
+ m.innerHTML=`<div class="top"><h3>Clase con Carlos</h3><span class="chip r">● EN VIVO</span><span class="chip">Código: ${room}</span><span class="chip">${st.ok} ✔ · ${st.pts} pts</span></div>${bar()}
   <div class="stage"><span>Paso ${st.i+1} de ${N} · ${esc(s.sec)}</span><select id="t-jump">${STEPS.map((x,n)=>`<option value="${n}"${n===st.i?' selected':''}>${n+1}. ${esc(x.sec)} · ${esc(x.t)}</option>`).join('')}</select></div>
   ${card(s,true)}<div class="st ${seen?'':'w'}">${I('phone')} ${seen?'Carlos ya lo tiene en su pantalla':'Enviando a Carlos…'}</div>${au?`<div class="st">${au}</div>`:''}
   <div class="ans">✅ <b>Respuesta:</b> ${esc(s.ans)}<small>${esc(s.ok)}</small></div>
@@ -130,16 +130,17 @@ function renderT(){const m=$('#main');
  $('#t-jump').onchange=e=>send({i:+e.target.value,fb:''});
  $('#t-next').onclick=()=>{if(st.i+1>=N){const sm=summary();const fin={ok:sm.ok,n:N,p:sm.p};send({fin,cheer:st.cheer+1,fb:''});celebrate(fin);}else send({i:st.i+1,fb:''});};}
 function renderS(){const m=$('#main');
- if(!room){m.innerHTML=`<div class="join"><b>Entrar a la clase</b><p style="color:#5b6577">Escribe el código que te da tu profe.</p><input id="j-in" inputmode="numeric" maxlength="6" placeholder="0000"><button id="j-go">Entrar</button></div>`;$('#j-go').onclick=()=>{const v=$('#j-in').value.replace(/\D/g,'');if(v.length<4)return;room=v;sessionStorage.setItem('mra_room_s',room);render();poll();};return;}
+ if(!room){m.innerHTML=`<div class="join"><b>Entrar a la clase</b><p style="color:#5b6577">Escribe el código que te da tu profe.</p><input id="j-in" inputmode="numeric" maxlength="6" placeholder="0000"><button id="j-go">Entrar</button></div>`;$('#j-go').onclick=()=>{const v=$('#j-in').value.replace(/\D/g,'');if(v.length<4)return;room=v;render();poll();};return;}
  const sc=`<div class="score"><span>${I('check')} ${st.ok}</span><span>${I('repeat')} ${st.rep}</span><span>${I('star')} ${st.pts} pts</span></div>`;
  if(st.fin){m.innerHTML=`<div class="done"><div class="big" style="color:${st.fin.p>=70?'#16a34a':'#E3242B'}">${I(st.fin.p>=70?'trophy':'heart')}</div><b>${st.fin.p>=70?'Congratulations!':'Good effort!'}</b><p style="color:#5b6577">${st.fin.ok} de ${st.fin.n} bien en la clase de hoy.</p></div>${sc}`;return;}
  const s=STEPS[st.i];if(st.seen!==String(st.i)){st.seen=String(st.i);st.aud='';push();}
  const fb=st.fb==='ok'?`<div class="status ok">${I('check')} Well done!</div>`:st.fb==='rep'?`<div class="status rep">${I('repeat')} Try again!</div>`:'';
  const pp=m.querySelector('.pop');
- m.innerHTML=`<div class="top"><h3>Clase con Mrs. Jennifer</h3><span class="chip r">● EN VIVO</span></div>${bar()}${card(s,false)}
+ m.innerHTML=`<div class="top"><h3>Clase con Mrs. Jennifer</h3><span class="chip r">● EN VIVO</span><button class="chip" id="s-code" style="border:0;cursor:pointer">Sala ${room} · cambiar</button></div>${bar()}${card(s,false)}
   ${s.write?`<div class="wr"><input id="w-in" placeholder="Escribe aquí" autocomplete="off" autocapitalize="words"><button id="w-ok">${I('send')}</button></div>`:`<div class="say">${I('mic')} Responde hablando a tu profe</div>`}${fb}${sc}`;
  if(pp)m.appendChild(pp);
  if(s.write){const w=$('#w-in');w.value=st.said||'';const go=()=>{const v=w.value.trim();if(v)send({said:v});};$('#w-ok').onclick=go;w.onkeydown=e=>{if(e.key==='Enter')go();};}
+ const sc2=$('#s-code');if(sc2)sc2.onclick=()=>{sessionStorage.removeItem('mra_room_s');location.reload();};
  const pl=$('#a-play');if(pl)pl.onclick=()=>{if(pl.classList.contains('on')){stopAudio();pl.classList.remove('on');return;}if(s.lis&&player.src&&player.paused&&player.currentTime>0&&!queue.length&&st.aud==='pause'){pl.classList.add('on');st.aud='play';push();player.play();return;}playSeq(pl.dataset.au.split(','),pl);};
  const ps=$('#a-stop');if(ps)ps.onclick=()=>{stopAudio();if(pl)pl.classList.remove('on');};}
 render();if(room){poll();if(mySide==='t')push();}
