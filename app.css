@@ -4710,3 +4710,10 @@ textarea.tb-board:focus{outline:2px solid #ffe36a}
 .tp-ct-id{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.tp-ct-id label{font-weight:700;font-size:13px;color:#0B2A5B}.tp-ct-id .inp{margin-top:4px;width:100%;box-sizing:border-box}
 @media (max-width:600px){.tp-ct-id{grid-template-columns:1fr}.tp-ct-doc{font-size:13.5px;padding:12px}}
 .ad-ctpend{background:#fff7ec;border:1.5px solid #f5c98a;font-size:14px}.ad-ctpend.ok{background:#eafaf0;border-color:#b7e4c7}
+/* v227: acuerdo de servicio del estudiante */
+.ag-card{max-width:min(760px,96vw)!important;width:min(760px,96vw);position:relative}
+.ag-doc{max-height:55vh;overflow:auto;border:1px solid #e3e9f3;border-radius:12px;padding:14px 18px;background:#fbfcfe;font-size:14px;line-height:1.55;text-align:justify}
+.ag-doc h2{text-align:center;font-size:17px;color:#0B2A5B;margin:4px 0 10px}.ag-doc h4{color:#0B2A5B;margin:12px 0 4px;font-size:14px}.ag-doc p{margin:0 0 8px}.ag-doc ul{margin:4px 0 8px 18px;padding:0}.ag-doc li{margin:3px 0}
+.ag-ok{background:#eafaf0;color:#15803d;font-weight:700;border-radius:10px;padding:7px 12px;margin:0 0 10px;font-size:13.5px}
+@media (max-width:600px){.ag-doc{font-size:13.5px;padding:12px}}
+.ad-cttabs{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 8px}

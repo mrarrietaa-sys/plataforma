@@ -381,7 +381,7 @@
     const MENU = { // 📂 todo el perfil organizado en 3 grupos
       learn: ['💻', 'Mis módulos', [['route', 'ib', '🧭', 'Mi ruta de aprendizaje', 'Módulos, clases y progreso'], ['games', 'ib5', '🎮', 'Zona de juegos', 'Practica jugando'], ['notes', 'ib3', '✏️', 'Mis apuntes', 'Tu cuaderno personal'], ['place', 'ib2', '📝', 'Prueba de clasificación', 'Ubica tu nivel']]],
       cls: ['🧑‍🏫', 'Mis clases', [['book', 'ib', '📅', 'Reservar clase', 'Elige profe, día y hora'], ['next', 'ib2', '🗓️', 'Mis próximas clases', 'Enlace y cancelación'], ['extra', 'ib5', '➕', 'Comprar más clases', 'Se suman a tu saldo'], ['hist', 'ib6', '📚', 'Historial y tableros', 'Lo que vio cada profe'], ['claim', 'ib3', '🚩', '¿Mi profe no se conectó?', 'Repórtalo aquí'], ['chat', 'ib4', '💬', 'Chat con mi profe', 'Escríbele en vivo']]],
-      me: ['👤', 'Mi cuenta', [].concat(staff ? [] : [['plan', 'ib', '👑', 'Mi plan', 'Planes y renovación']], [['perso', 'ib5', '🎨', 'Personalizar perfil', 'Tu foto o tu Mr. Arrieta']], staff ? [] : [['pass', 'ib3', '🔑', 'Cambiar mi código', 'Tu clave de acceso'], ['ref', 'ib4', '🎁', 'Invitar a un amigo', 'Gana clases o días']], [['pol', 'ib6', '📌', 'Política', 'Reservas y cancelaciones'], ['tour', 'ib2', '🧭', 'Ver el tour', 'Cómo funciona tu perfil']])],
+      me: ['👤', 'Mi cuenta', [].concat(staff ? [] : [['plan', 'ib', '👑', 'Mi plan', 'Planes y renovación']], [['perso', 'ib5', '🎨', 'Personalizar perfil', 'Tu foto o tu Mr. Arrieta']], staff ? [] : [['pass', 'ib3', '🔑', 'Cambiar mi código', 'Tu clave de acceso'], ['ref', 'ib4', '🎁', 'Invitar a un amigo', 'Gana clases o días']], (!staff && P.plan().paid ? [['agree', 'ib', '📄', 'Mi acuerdo', 'Leído y aceptado · copia PDF']] : []).concat([['pol', 'ib6', '📌', 'Política', 'Reservas y cancelaciones'], ['tour', 'ib2', '🧭', 'Ver el tour', 'Cómo funciona tu perfil']]))],
     };
     if (!prem) delete MENU.cls;
     if (newbie) MENU.learn[2] = MENU.learn[2].filter(x => x[0] === 'place' || x[0] === 'games').reverse(); // recién llegado: primero la prueba de clasificación
@@ -419,7 +419,7 @@
       const open = (sel, click) => { const el = $(sel); if (!el) return M.toast('Esta sección aún no está disponible.'); sdShow(el); if (el.tagName === 'DETAILS') el.open = true; el.scrollIntoView({ behavior: 'smooth', block: 'start' }); if (click) setTimeout(() => { const c = $(click); c && c.click(); }, 450); };
       ({ route: () => open('.pt-routebar') || open('.pt-route'), games: () => { location.href = 'juegos.html'; }, notes: () => open('#pt-notes'), place: () => route('placement'),
         book: () => { const c = $('#lv-book'); if (c && !c.disabled) c.click(); else open('.lv-vip'); }, next: () => open('.lv-next'), extra: () => { const x = $('#lv-extra'); if (x) x.click(); else open('.lv-vip'); }, hist: () => open('.lv-hist'), claim: () => open('.lv-claim'), chat: () => { const c = $('#lv-msg'); if (c) c.click(); else open('#pt-live'); },
-        plan: () => plans(), perso: () => route('me'), pass: () => { const b = $('#pt-pass'); b ? b.click() : null; }, ref: () => open('#pt-ref'), pol: () => window.MRPOLICY && MRPOLICY.show(), tour: () => { window.scrollTo(0, 0); portalTour(true); } }[id] || (() => { }))(); };
+        plan: () => plans(), perso: () => route('me'), pass: () => { const b = $('#pt-pass'); b ? b.click() : null; }, ref: () => open('#pt-ref'), pol: () => window.MRPOLICY && MRPOLICY.show(), agree: () => window.MRAGREE && MRAGREE.open(), tour: () => { window.scrollTo(0, 0); portalTour(true); } }[id] || (() => { }))(); };
     const closeAll = () => { $$('.sd-dd').forEach(d => d.classList.remove('open')); const sh = $('.sd-sheet'); if (sh) sh.remove(); };
     $$('.sd-dd').forEach(d => { d.querySelector('.sd-ddb').onclick = (e) => { e.stopPropagation(); const o = d.classList.contains('open'); closeAll(); if (!o) d.classList.add('open'); }; });
     $$('.sd-mi').forEach(b => b.onclick = () => act(b.dataset.act));
@@ -497,6 +497,7 @@
     MRPOLICY.show({ first: true, onClose: () => { const p = P.get(); if (p && !p.pol1) { p.pol1 = Date.now(); P.save(p); try { window.MRAC && MRAC.code() && MRAC.sync(true); } catch (e) { } } } });
   }
   function portalTour(force) {
+    if (document.querySelector(".ag-modal.need")) { setTimeout(() => portalTour(force), 1000); return; } // primero el acuerdo, después el tour
     const kind = tourKind();
     if ($('#tour')) return; const p = P.get(); if (!p || (tourSeenK(kind) && !force)) return;
     if ($('.modal') || (!force && polPending())) return setTimeout(() => portalTour(force), 800); // espera a que cierre el saludo y la política
@@ -673,6 +674,7 @@
     const ann = r.conf && r.conf.announcement; if (ann && $('#pt-ann')) $('#pt-ann').innerHTML = `<div class="pt-ann">📣 ${esc(ann)}</div>`;
     if (r.trialLeft != null && r.trialLeft > 0 && $('#pt-ann')) $('#pt-ann').insertAdjacentHTML('afterbegin', `<div class="pt-ann pt-trial"><span>🎁 ${r.trialLeft === 1 ? '<b>Hoy es tu último día</b> de acceso gratuito.' : 'Te quedan <b>' + r.trialLeft + ' días</b> de acceso gratuito.'}</span><a class="btn k sm" href="#" data-plans>Quiero inscribirme</a></div>`);
     refCard(); notesCard();
+    if (window.MRAGREE && (P.get() || {}).type !== 'staff' && P.plan().paid) await MRAGREE.check(); // 📄 acuerdo de servicio (una sola vez)
     if (!r.premium) { if (box) box.innerHTML = ''; return; }
     if (box) { renderLive(box, r); boardsHook(); sdTidy(); }
     askReview(r.premium && r.premium.reviewDue);
