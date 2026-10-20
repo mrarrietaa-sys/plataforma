@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>Simulación · Clase guiada HABLANDO</title>
+<script src="https://unpkg.com/@daily-co/daily-js@0.92.2/dist/daily.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--n:#0B2A5B;--r:#E3242B;--g:#16a34a;--bd:#e3e9f3}
@@ -43,6 +44,7 @@ body.only-s #vbox{position:sticky;top:0;z-index:20;background:#eef2f8;padding-to
 .help{max-width:1500px;margin:10px auto 0;padding:0 16px;font-size:13px;color:#5b6577}.help a{color:var(--n);font-weight:700}
 @media (max-width:900px){.layout{grid-template-columns:1fr}body.only-t #vbox iframe{height:45vh;position:static}}
 .ct .ph{max-width:340px}.ct .txtR{font-size:15px}.ct .q{font-size:19px}
+.panel{position:relative;overflow:hidden}.btn.sel{box-shadow:0 0 0 4px rgba(11,42,91,.25)}.btn.again.sel{background:#fde8ea}
 </style></head><body>
 <canvas id="cf"></canvas><div class="cheer" id="cheer"></div>
 <header><img src="mra-brand.png" alt="mrarrieta.com" onerror="this.style.display='none'"><div><h1>Clase guiada HABLANDO · simulación</h1><small>Módulo 1 · Tema 3: The Nationalities (A1)</small></div></header>
@@ -77,7 +79,8 @@ let room=rol==='profe'?(sessionStorage.getItem('mra_room')||String(Math.floor(10
 const mySide=rol==='estudiante'?'s':'t';let online='';
 const call=(action,data)=>fetch(CLOUD,{method:'POST',body:JSON.stringify(Object.assign({action},data)),headers:{'Content-Type':'text/plain;charset=utf-8'},redirect:'follow'}).then(r=>r.json());
 let pushT=null;const pick=ks=>{const o={v:Date.now()};ks.forEach(k=>o[k]=st[k]);return o;};
-function push(){if(!room)return;clearTimeout(pushT);pushT=setTimeout(()=>call('liveSet',{room,side:mySide,data:pick(mySide==='t'?TK:SK)}).then(()=>{online='ok';}).catch(()=>{online='err';}),mySide==='t'?0:300);}
+let CF=null,CFOK=false;
+function push(){if(CF&&CFOK){try{CF.sendAppMessage({mra:1,side:mySide,data:pick(mySide==='t'?TK:SK)},'*');}catch(e){}}if(!room)return;clearTimeout(pushT);pushT=setTimeout(()=>call('liveSet',{room,side:mySide,data:pick(mySide==='t'?TK:SK)}).then(()=>{online='ok';}).catch(()=>{online='err';}),mySide==='t'?0:300);}
 let lastOther=0;
 function merge(o,ks){if(!o||!o.v||o.v<=lastOther)return;lastOther=o.v;const i0=st.i,fbN=st.fbN,ch=st.cheer;ks.forEach(k=>{if(k in o)st[k]=o[k];});if(mySide==='s'&&st.i!==i0){stopAudio();st.said='';}render();if(mySide==='s'&&st.fbN!==fbN&&st.fb)pop(st.fb);if(st.cheer!==ch&&st.fin)celebrate(st.fin);}
 function poll(){if(!room)return;call('liveGet',{room}).then(r=>{online='ok';if(r&&r.ok)merge(mySide==='t'?r.s:r.t,mySide==='t'?SK:TK);}).catch(()=>{online='err';}).finally(()=>setTimeout(poll,350));}
@@ -103,7 +106,11 @@ function card(s,forT){const k=s.k?C[s.k]:null;let h=`<small>${esc(s.sec)} · ${e
  return `<div class="card${forT?' ct':''}">${h}</div>`;}
 // ---------- video ----------
 let curV=null;function videoUI(){const vb=$('#vbox');if(st.vurl===curV)return;curV=st.vurl;
- if(st.vurl){vb.innerHTML=`<iframe src="${esc(st.vurl)}" allow="camera; microphone; fullscreen; display-capture; autoplay; speaker-selection" title="Video de la clase"></iframe>`;return;}
+ if(st.vurl){vb.innerHTML='';if(window.Daily||window.DailyIframe){try{const D=window.Daily||window.DailyIframe;CF=D.createFrame(vb,{showLeaveButton:true,iframeStyle:{width:'100%',border:'0',borderRadius:'16px'}});
+   CF.on('joined-meeting',()=>{CFOK=true;push();});CF.on('participant-joined',()=>push());
+   CF.on('app-message',e=>{const d=e&&e.data;if(d&&d.mra&&d.side!==mySide)merge(d.data,mySide==='t'?SK:TK);});
+   CF.join({url:st.vurl}).catch(()=>{});return;}catch(e){CF=null;}}
+  vb.innerHTML=`<iframe src="${esc(st.vurl)}" allow="camera; microphone; fullscreen; display-capture; autoplay; speaker-selection" title="Video de la clase"></iframe>`;return;}
  if(rol!=='profe'){vb.innerHTML='';return;}
  vb.innerHTML=`<div class="vset"><div>${I('phone')} Código de sala para el estudiante: <b>${room}</b></div><input id="v-url" value="https://mrarrieta.daily.co/prueba"><button id="v-go">Activar video de la clase</button><small style="opacity:.8">En la versión real esto es automático: no hay códigos ni enlaces.</small></div>`;
  $('#v-go').onclick=()=>{const v=$('#v-url').value.trim().replace(/\/+$/,'');if(!/^https:\/\/[a-z0-9-]+\.daily\.co\/[A-Za-z0-9_-]+$/.test(v))return alert('El enlace debe verse así: https://mrarrieta.daily.co/prueba');send({vurl:v});};}
@@ -111,6 +118,7 @@ let curV=null;function videoUI(){const vb=$('#vbox');if(st.vurl===curV)return;cu
 function render(){videoUI();if(rol==='profe')renderT();else renderS();}
 function bar(){return `<div class="steps">${STEPS.map((x,n)=>`<i class="${st.res[n]===true?'d':st.res[n]===false?'x':n===st.i&&!st.fin?'c':''}"></i>`).join('')}</div>`;}
 function summary(){const ok=st.res.filter(x=>x===true).length,miss=STEPS.filter((x,n)=>st.res[n]===false);return {ok,miss,p:Math.round(ok/N*100)};}
+function flashT(k){const m=$('#main');const d=document.createElement('div');d.className='pop '+(k==='ok'?'ok':'rep');d.innerHTML=`<div>${k==='ok'?I('check')+'Enviado: Well done!':I('repeat')+'Enviado: Try again!'}</div>`;m.appendChild(d);setTimeout(()=>d.remove(),1300);}
 function renderT(){const m=$('#main');
  if(st.fin){const s=summary();m.innerHTML=`<div class="top"><h3>Resumen de la clase</h3><span class="chip">Tema 3: The Nationalities</span></div>${bar()}<div class="sum"><div><b>${s.ok}/${N}</b><span>bien a la primera</span></div><div><b>${st.rep}</b><span>veces repitió</span></div><div><b>${st.pts}</b><span>puntos</span></div></div>${s.miss.length?`<div class="miss"><b>Para reforzar en la próxima clase:</b><br>${s.miss.map(x=>'• '+esc(x.t)+': '+esc(x.ans)).join('<br>')}</div>`:'<div class="ans"><b>¡Excelente! Lo hizo todo bien.</b></div>'}<p class="more">Este resumen se guarda solo en el tablero de la clase.</p><div class="nav"><button class="btn prev" id="t-back">${I('back')} Volver</button><button class="btn next" id="t-new">Empezar de nuevo</button></div>`;
   $('#t-back').onclick=()=>send({fin:null,i:N-1});$('#t-new').onclick=()=>send({i:0,fin:null,res:[],ok:0,rep:0,pts:0,fb:'',started:Date.now()});return;}
@@ -120,12 +128,13 @@ function renderT(){const m=$('#main');
   <div class="stage"><span>Paso ${st.i+1} de ${N} · ${esc(s.sec)}</span><select id="t-jump">${STEPS.map((x,n)=>`<option value="${n}"${n===st.i?' selected':''}>${n+1}. ${esc(x.sec)} · ${esc(x.t)}</option>`).join('')}</select></div>
   ${card(s,true)}<div class="st ${seen?'':'w'}">${I('phone')} ${seen?'Carlos ya lo tiene en su pantalla':'Enviando a Carlos…'}</div>${au?`<div class="st">${au}</div>`:''}
   <div class="ans">✅ <b>Respuesta:</b> ${esc(s.ans)}<small>${esc(s.ok)}</small></div>
-  <div class="grade"><button class="btn ok" id="t-ok">${I('check')} Bien</button><button class="btn again" id="t-rep">${I('repeat')} Otra vez</button></div>
-  <div class="marked ${mark===true?'g':mark===false?'r':''}">${mark===true?'Marcado: bien ✔':mark===false?'Marcado: lo repitió':''}</div>
+  <div class="grade"><button class="btn ok${mark===true?' sel':''}" id="t-ok">${I('check')} Bien</button><button class="btn again${mark===false?' sel':''}" id="t-rep">${I('repeat')} Otra vez</button></div>
+  <div class="marked ${mark===true?'g':mark===false?'r':''}">${mark===true?'✔ Enviado a Carlos: «Well done!»':mark===false?'↻ Enviado a Carlos: «Try again!» · cuando lo diga bien, toca Bien':''}</div>
   <div class="nav"><button class="btn prev" id="t-prev"${st.i?'':' disabled'}>${I('back')} Atrás</button><button class="btn next" id="t-next">${st.i+1>=N?I('flag')+' Terminar clase':'Siguiente '+I('next')}</button></div>`;
- const setRes=v=>{const r=st.res.slice();if(r[st.i]===undefined||v===true&&r[st.i]!==true)r[st.i]=v;return r;};
- $('#t-ok').onclick=()=>send({fb:'ok',fbN:st.fbN+1,pts:st.pts+10,ok:st.ok+1,res:setRes(st.res[st.i]===false?false:true)});
- $('#t-rep').onclick=()=>send({fb:'rep',fbN:st.fbN+1,rep:st.rep+1,res:setRes(false)});
+ const setRes=v=>{const r=st.res.slice();r[st.i]=v;return r;};
+ const okN=r=>r.filter(x=>x===true).length;
+ $('#t-ok').onclick=()=>{const r=setRes(true);send({fb:'ok',fbN:st.fbN+1,res:r,ok:okN(r),pts:okN(r)*10});flashT('ok');};
+ $('#t-rep').onclick=()=>{const r=setRes(false);send({fb:'rep',fbN:st.fbN+1,rep:st.rep+1,res:r,ok:okN(r),pts:okN(r)*10});flashT('rep');};
  $('#t-prev').onclick=()=>send({i:Math.max(0,st.i-1),fb:''});
  $('#t-jump').onchange=e=>send({i:+e.target.value,fb:''});
  $('#t-next').onclick=()=>{if(st.i+1>=N){const sm=summary();const fin={ok:sm.ok,n:N,p:sm.p};send({fin,cheer:st.cheer+1,fb:''});celebrate(fin);}else send({i:st.i+1,fb:''});};}
