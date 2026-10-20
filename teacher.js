@@ -31,7 +31,7 @@
   /* ---------- utilidades de UI ---------- */
   function toast(msg, bad) { const t = document.createElement('div'); t.className = 'tp-toast' + (bad ? ' bad' : ''); t.setAttribute('role', 'status'); t.textContent = msg; document.body.appendChild(t); requestAnimationFrame(() => t.classList.add('on')); setTimeout(() => { t.classList.remove('on'); setTimeout(() => t.remove(), 300); }, 3200); }
   function modal(html) { const m = document.createElement('div'); m.className = 'tp-modal'; m.setAttribute('role', 'dialog'); m.setAttribute('aria-modal', 'true'); m.innerHTML = `<div class="tp-modal-card card">${html}</div>`; document.body.appendChild(m); m.addEventListener('click', (e) => { if (e.target === m || e.target.closest('[data-x]')) m.remove(); }); return m; }
-  const errText = (e) => ({ offline: 'El portal no está conectado a la nube.', network: 'Sin conexión. Revisa tu internet e inténtalo de nuevo.', auth: 'Tu sesión no es válida. Vuelve a entrar.', booked: 'Ese espacio ya fue reservado por un estudiante.', started: 'La clase ya empezó: no se puede cancelar.', state: 'Esta clase ya no está programada.', notfound: 'No encontramos ese registro.' }[e] || 'Algo salió mal (' + e + '). Inténtalo de nuevo.');
+  const errText = (e) => ({ offline: 'El portal no está conectado a la nube.', network: 'Sin conexión. Revisa tu internet e inténtalo de nuevo.', auth: 'Tu sesión no es válida. Vuelve a entrar.', booked: 'Ese espacio ya fue reservado por un estudiante.', started: 'La clase ya empezó: no se puede cancelar.', reason: 'Escribe el motivo de la cancelación.', state: 'Esta clase ya no está programada.', notfound: 'No encontramos ese registro.' }[e] || 'Algo salió mal (' + e + '). Inténtalo de nuevo.');
   async function api(action, extra) {
     const r = await MR.call(action, Object.assign({ tcode: S.tcode, pin: S.pin }, extra || {}));
     if (!r.ok && r.err === 'auth') { logout(); toast(errText('auth'), true); }
@@ -238,10 +238,10 @@
     const m = modal(`<button class="tp-x" data-x aria-label="Cerrar">✕</button><h3>Cancelar clase</h3><p class="muted">${esc(studentName(c.students[0] || ''))} · ${dLabel(c.date, true)} · ${h12(c.time)}</p>
       <div class="tp-cwarn"><b>Antes de cancelar, ten en cuenta:</b><ul><li>Tu estudiante organizó su tiempo para esta clase. Al cancelar, <b>puede dejarte una calificación u opinión negativa</b>, y eso se ve en tu perfil.</li>
       <li>${late ? `Faltan <b>menos de 12 horas</b>: se descuentan <b>$${Number(pen).toLocaleString('es-CO')}</b> de tu pago del mes.` : 'Faltan más de 12 horas: no hay multa, pero esta clase no se paga.'}</li><li>La clase vuelve al saldo del estudiante y le enviamos horarios con otros profes. Administración recibe un aviso.</li></ul></div>
-      <label class="tp-lbl">Motivo (opcional, solo lo ve administración)<textarea class="inp" id="tc-why" rows="2" maxlength="200" placeholder="Ej: calamidad familiar"></textarea></label>
+      <label class="tp-lbl">Motivo de la cancelación <span style="color:#b91c1c">*</span> <small class="muted" style="font-weight:600">(obligatorio · lo revisa administración)</small><textarea class="inp" id="tc-why" rows="2" maxlength="200" placeholder="Ej: calamidad familiar, cita médica…"></textarea></label><small id="tc-err" style="color:#b91c1c;font-weight:700;display:none">Escribe el motivo (mínimo 10 caracteres).</small>
       <div class="row" style="justify-content:flex-end;gap:8px;margin-top:10px"><button class="btn w" data-x>Mejor no cancelo</button><button class="btn r" id="tc-ok">Sí, cancelar clase</button></div>`);
-    $('#tc-ok', m).onclick = async () => { const b = $('#tc-ok', m); b.disabled = true; b.textContent = 'Cancelando…';
-      const x = await api('tCancel', { classId: id, reason: $('#tc-why', m).value.trim() });
+    $('#tc-ok', m).onclick = async () => { const why = $('#tc-why', m).value.trim(); if (why.length < 10) { $('#tc-err', m).style.display = 'block'; $('#tc-why', m).classList.add('wrong'); $('#tc-why', m).focus(); return; } const b = $('#tc-ok', m); b.disabled = true; b.textContent = 'Cancelando…';
+      const x = await api('tCancel', { classId: id, reason: why });
       if (x && x.ok) { m.remove(); toast(x.late ? '⚠️ Clase cancelada · con multa por ser tarde' : '✅ Clase cancelada · el estudiante ya fue avisado'); c.status = x.late ? 'tlate' : 'cancelled'; try { shell(); } catch (e) { } }
       else { b.disabled = false; b.textContent = 'Sí, cancelar clase'; toast(errText((x && x.err) || 'network'), true); } };
   }
