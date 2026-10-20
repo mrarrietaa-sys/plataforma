@@ -31,7 +31,7 @@
   /* ---------- utilidades de UI ---------- */
   function toast(msg, bad) { const t = document.createElement('div'); t.className = 'tp-toast' + (bad ? ' bad' : ''); t.setAttribute('role', 'status'); t.textContent = msg; document.body.appendChild(t); requestAnimationFrame(() => t.classList.add('on')); setTimeout(() => { t.classList.remove('on'); setTimeout(() => t.remove(), 300); }, 3200); }
   function modal(html) { const m = document.createElement('div'); m.className = 'tp-modal'; m.setAttribute('role', 'dialog'); m.setAttribute('aria-modal', 'true'); m.innerHTML = `<div class="tp-modal-card card">${html}</div>`; document.body.appendChild(m); m.addEventListener('click', (e) => { if (e.target === m || e.target.closest('[data-x]')) m.remove(); }); return m; }
-  const errText = (e) => ({ offline: 'El portal no está conectado a la nube.', network: 'Sin conexión. Revisa tu internet e inténtalo de nuevo.', auth: 'Tu sesión no es válida. Vuelve a entrar.', booked: 'Ese espacio ya fue reservado por un estudiante.', started: 'La clase ya empezó: no se puede cancelar.', reason: 'Escribe el motivo de la cancelación.', state: 'Esta clase ya no está programada.', notfound: 'No encontramos ese registro.' }[e] || 'Algo salió mal (' + e + '). Inténtalo de nuevo.');
+  const errText = (e) => ({ offline: 'El portal no está conectado a la nube.', network: 'Sin conexión. Revisa tu internet e inténtalo de nuevo.', auth: 'Tu sesión no es válida. Vuelve a entrar.', booked: 'Ese espacio ya fue reservado por un estudiante.', started: 'La clase ya empezó: no se puede cancelar.', reason: 'Escribe el motivo de la cancelación.', doc: 'Escribe tu cédula y el lugar de expedición.', state: 'Esta clase ya no está programada.', notfound: 'No encontramos ese registro.' }[e] || 'Algo salió mal (' + e + '). Inténtalo de nuevo.');
   async function api(action, extra) {
     const r = await MR.call(action, Object.assign({ tcode: S.tcode, pin: S.pin }, extra || {}));
     if (!r.ok && r.err === 'auth') { logout(); toast(errText('auth'), true); }
@@ -73,11 +73,51 @@
       b.disabled = false; b.textContent = 'Entrar';
       if (!r.ok) { er.textContent = r.err === 'auth' ? 'Código o PIN incorrecto.' : errText(r.err); er.hidden = false; return; }
       try { localStorage.setItem('mra_last_role', JSON.stringify({ role: 'teacher', first: (r.teacher && (r.teacher.hello || String(r.teacher.name || '').split(' ')[0])) || '' })); } catch (e) { } // 🔑 la entrada le muestra "Entrar"
-      S = { tcode, pin }; ss.set(SKEY, S); D = r; tab = 'home'; ss.set(TABKEY, tab); shell(); try { window.MRANN && MRANN.sync(); } catch (e) { } firstTour() ? tour() : (welcome(), setTimeout(popNew, 1500));
+      S = { tcode, pin }; ss.set(SKEY, S); D = r; tab = 'home'; ss.set(TABKEY, tab); shell(); try { window.MRANN && MRANN.sync(); } catch (e) { } contractCheck().then((blk) => { if (blk) { const iv = setInterval(() => { if (!document.querySelector('.tp-ct')) { clearInterval(iv); firstTour() ? tour() : welcome(); } }, 600); } else { firstTour() ? tour() : (welcome(), setTimeout(popNew, 1500)); } });
     };
   }
   // 🧭 tour de Mr. Arrieta: la primera vez que el profe entra (por código, en este dispositivo y en la nube)
   const TKEY = () => 'mra_ttour_' + String((D && D.teacher && D.teacher.code) || '').toUpperCase();
+  /* 📄 contrato: se acepta UNA vez por versión y por año; al aceptar se descarga el PDF (y llega al correo con copia a administración) */
+  let CT = null;
+  const mdHtml = (t) => { const inl = (x) => esc(x).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>'); let o = '', ul = false; String(t || '').split(/\n/).forEach((l) => { const v = l.trim(); if (/^- /.test(v)) { if (!ul) { o += '<ul>'; ul = true; } o += '<li>' + inl(v.slice(2)) + '</li>'; return; } if (ul) { o += '</ul>'; ul = false; } if (!v) return; o += /^# /.test(v) ? '<h2>' + inl(v.slice(2)) + '</h2>' : /^## /.test(v) ? '<h4>' + inl(v.slice(3)) + '</h4>' : '<p>' + inl(v) + '</p>'; }); return o + (ul ? '</ul>' : ''); };
+  const fmtAcc = (d) => { const x = String(d || ''); const dd = new Date(x.slice(0, 10) + 'T12:00:00'); return dd.toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' }) + (x.length > 15 ? ' · ' + h12(x.slice(11, 16)) : ''); };
+  function loadPdfLib() { return new Promise((ok) => { if (window.jspdf) return ok(window.jspdf); const a = document.createElement('script'); a.src = 'js/jspdf.min.js'; a.onload = () => ok(window.jspdf); a.onerror = () => { const b = document.createElement('script'); b.src = 'jspdf.min.js'; b.onload = () => ok(window.jspdf); b.onerror = () => ok(null); document.head.appendChild(b); }; document.head.appendChild(a); }); }
+  async function contractPdf(c) {
+    const L = await loadPdfLib(); if (!L) { toast('No se pudo generar el PDF. Inténtalo de nuevo.', true); return; }
+    const d = new L.jsPDF({ unit: 'pt', format: 'letter' }); const W = 612, M = 54, CW = W - 2 * M; let y = 60; const t = D.teacher || {};
+    const need = (hh) => { if (y + hh > 740) { d.addPage(); y = 60; } };
+    try { const im = await new Promise((ok, ko) => { const i = new Image(); i.crossOrigin = 'anonymous'; i.onload = () => ok(i); i.onerror = ko; i.src = 'mra-brand.png'; }); const cv = document.createElement('canvas'); cv.width = im.width; cv.height = im.height; cv.getContext('2d').drawImage(im, 0, 0); d.addImage(cv.toDataURL('image/png'), 'PNG', M, 30, 90, 90 * im.height / im.width); y = 30 + 90 * im.height / im.width + 14; } catch (e) { }
+    d.setDrawColor(227, 36, 43); d.setLineWidth(2); d.line(M, y, W - M, y); y += 22;
+    const plain = (x) => String(x).replace(/\*\*(.+?)\*\*/g, '$1');
+    String(c.text).split(/\n/).forEach((l) => { const v = l.trim(); if (!v) { y += 4; return; }
+      if (/^# /.test(v)) { d.setFont('helvetica', 'bold'); d.setFontSize(14); d.setTextColor(11, 42, 91); need(24); d.text(plain(v.slice(2)), W / 2, y, { align: 'center' }); y += 16; d.setFontSize(8.5); d.setFont('helvetica', 'normal'); d.setTextColor(110); d.text('Versión ' + c.version + ' · Docente de inglés', W / 2, y, { align: 'center' }); y += 18; return; }
+      if (/^## /.test(v)) { d.setFont('helvetica', 'bold'); d.setFontSize(10.5); d.setTextColor(11, 42, 91); need(22); y += 4; d.text(plain(v.slice(3)), M, y); y += 14; return; }
+      const bul = /^- /.test(v); const txt = plain(bul ? v.slice(2) : v); d.setFont('helvetica', 'normal'); d.setFontSize(10); d.setTextColor(25);
+      const lines = d.splitTextToSize(txt, CW - (bul ? 14 : 0)); lines.forEach((ln, i) => { need(14); if (bul && !i) d.text('•', M + 2, y); d.text(ln, M + (bul ? 14 : 0), y, bul ? {} : { align: 'justify', maxWidth: CW }); y += 13.5; }); y += 3; });
+    need(110); y += 10; d.setDrawColor(11, 42, 91); d.setLineWidth(1.5); d.roundedRect(M, y, CW, 92, 8, 8); d.setFont('helvetica', 'bold'); d.setFontSize(10.5); d.setTextColor(11, 42, 91); d.text('CONSTANCIA DE ACEPTACIÓN ELECTRÓNICA', M + 12, y + 18);
+    d.setFont('helvetica', 'normal'); d.setFontSize(9.5); d.setTextColor(25); d.text('Leído y aceptado por ' + String(t.name || '').toUpperCase() + ' · C.C. ' + ((c.accepted && c.accepted.doc) || '') + ' · Código ' + (t.code || ''), M + 12, y + 36);
+    d.text('Fecha y hora: ' + fmtAcc(c.accepted && c.accepted.date) + ' (hora Colombia) · Versión ' + c.version, M + 12, y + 50);
+    d.text('EL CONTRATANTE: John Jairo Arrieta Jaramillo · Representante legal · C.C. 1.047.374.279', M + 12, y + 68); d.text('EL CONTRATISTA: ' + (t.name || '') + ' · aceptado electrónicamente en la plataforma', M + 12, y + 82);
+    d.save('contrato-mrarrieta-' + String(t.name || 'profe').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-') + '.pdf');
+  }
+  function contractModal(c) {
+    const must = c.needs; const m = document.createElement('div'); m.className = 'tp-modal'; m.setAttribute('role', 'dialog');
+    m.innerHTML = `<div class="tp-modal-card card tp-ct">${must ? '' : '<button class="tp-x" data-x aria-label="Cerrar">✕</button>'}<h3>📄 ${must ? 'Antes de empezar: tu contrato' : 'Mi contrato'}</h3>
+      ${must ? '<p class="muted" style="margin:0 0 8px">Léelo con calma. Al aceptarlo se descarga una copia en PDF y te llega a tu correo.</p>' : `<p class="tp-ct-ok">✔ Leído y aceptado el ${fmtAcc(c.accepted.date)} · versión ${esc(c.version)}</p>`}
+      <div class="tp-ct-doc">${mdHtml(c.text)}</div>
+      ${must && c.missingDoc ? `<div class="tp-ct-id"><label>Cédula de ciudadanía<input class="inp" id="ct-doc" inputmode="numeric" placeholder="Ej: 1.127.573.975"></label><label>Lugar de expedición<input class="inp" id="ct-city" placeholder="Ej: Cartagena, Bolívar"></label></div>` : ''}
+      <div class="row" style="justify-content:center;gap:8px;margin-top:12px">${must ? '<button class="btn k" id="ct-ok">✅ Leí y acepto</button>' : '<button class="btn w" id="ct-dl">⬇️ Descargar copia (PDF)</button>'}</div></div>`;
+    document.body.appendChild(m);
+    if (!must) { m.addEventListener('click', (e) => { if (e.target === m || e.target.closest('[data-x]')) m.remove(); }); $('#ct-dl', m).onclick = () => contractPdf(c); return; }
+    $('#ct-ok', m).onclick = async () => { const doc = $('#ct-doc', m) ? $('#ct-doc', m).value.trim() : '', city = $('#ct-city', m) ? $('#ct-city', m).value.trim() : '';
+      if ($('#ct-doc', m) && (doc.replace(/\D/g, '').length < 5 || city.length < 3)) { toast('Escribe tu cédula y el lugar de expedición', true); return; }
+      const b = $('#ct-ok', m); b.disabled = true; b.textContent = 'Guardando…';
+      const x = await api('tContractAccept', { version: c.version, doc, docCity: city });
+      if (x && x.ok) { CT = x; m.remove(); toast('✅ Contrato aceptado · se descargó tu copia'); contractPdf(x); }
+      else { b.disabled = false; b.textContent = '✅ Leí y acepto'; toast(x && x.err === 'version' ? 'El contrato se actualizó: recarga la página.' : errText((x && x.err) || 'network'), true); } };
+  }
+  async function contractCheck() { const r = await api('tContract').catch(() => null); if (!r || !r.ok) return false; CT = r; if (r.needs) { contractModal(r); return true; } return false; }
   function firstTour() { if (D && D.teacher && D.teacher.tour) return false; try { return !localStorage.getItem(TKEY()); } catch (e) { return true; } }
   let TOUR_R = null; // tarifas reales para el tour
   async function tour() {
@@ -156,7 +196,7 @@
             <button class="tp-mi tp-tab" data-tab="pay"><i class="ib4">💰</i><span><b>Mis pagos</b><small>Detalle del mes</small></span></button></div></div>
           <div class="tp-dd"><button class="tp-ddb" data-dd="me">👤 Mi cuenta <span class="car">▾</span><i class="tp-dot" id="tp-chatdot" hidden></i></button><div class="tp-ddm">
             <button class="tp-mi" id="tp-chat"><i class="ib4">💬</i><span><b>Chat con estudiantes</b><small>Responde dudas y tareas</small></span></button>
-            <button class="tp-mi" id="tp-pol"><i class="ib">📌</i><span><b>Política de clases</b><small>Puntualidad, pagos y compromisos</small></span></button>
+            <button class="tp-mi" id="tp-ct"><i class="ib">📄</i><span><b>Mi contrato</b><small>Leído y aceptado · descargar copia</small></span></button><button class="tp-mi" id="tp-pol"><i class="ib">📌</i><span><b>Política de clases</b><small>Puntualidad, pagos y compromisos</small></span></button>
             <button class="tp-mi" id="tp-pinch"><i class="ib3">🔑</i><span><b>Cambiar PIN</b><small>Tu clave de acceso</small></span></button>
             <button class="tp-mi" id="tp-tour"><i class="ib5">🧭</i><span><b>Ver el tour</b><small>Cómo funciona tu portal</small></span></button></div></div>
         </div>
@@ -166,6 +206,7 @@
     if ($('#tp-mat')) $('#tp-mat').onclick = material;
     if ($('#tp-pz')) $('#tp-pz').onclick = () => pzPick();
     if ($('#tp-ann')) $('#tp-ann').onclick = () => { if (window.MRANN) { MRANN.show(); toast('✏️ Barra activada. Muévela arrastrando su botón redondo.'); } };
+    if ($('#tp-ct')) $('#tp-ct').onclick = async () => { const r = CT && !CT.needs ? CT : await api('tContract').catch(() => null); if (r && r.ok) contractModal(r); else toast(errText('network'), true); };
     if ($('#tp-pol')) $('#tp-pol').onclick = async () => { const r = await api('tPay').catch(() => null); window.MRPOLICY && MRPOLICY.showTeacher({ rate: r && r.rate, noshow: r && r.noshowRate, penalty: r && r.penalty, onAccept: () => toast('✅ Gracias por tu compromiso') }); }; // 📌 política (puntualidad, 15 minutos)
     if ($('#tp-pinch')) $('#tp-pinch').onclick = () => { // 🔑 cambiar PIN
       const m = document.createElement('div'); m.className = 'modal'; m.innerHTML = `<div class="card"><button class="mx" aria-label="Cerrar">✕</button><h3>🔑 Cambiar mi PIN</h3><p class="muted">Usa de 4 a 8 números.</p>
@@ -486,7 +527,7 @@
     if (!S || !S.tcode || !MR.on) { S = null; loginView(); return; }
     app.innerHTML = '<div class="tp-loading">Cargando tu portal…</div>';
     const r = await MR.call('tLogin', { tcode: S.tcode, pin: S.pin });
-    if (r.ok) { D = r; shell(); setTimeout(popNew, 600); } else { if (r.err === 'auth') ss.del(SKEY); loginView(r.err === 'auth' ? '' : errText(r.err)); }
+    if (r.ok) { D = r; shell(); contractCheck().then((blk) => { if (!blk) setTimeout(popNew, 600); }); } else { if (r.err === 'auth') ss.del(SKEY); loginView(r.err === 'auth' ? '' : errText(r.err)); }
   }
   start();
 })();

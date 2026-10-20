@@ -4702,3 +4702,11 @@ textarea.tb-board:focus{outline:2px solid #ffe36a}
   .tp-moreb{display:inline-flex!important;justify-content:center}
   .tp-more{display:none;flex-direction:column;align-items:center;gap:6px;width:100%}.tp-cls-act.open .tp-more{display:flex}
 }
+/* v226: contrato del profe */
+.tp-ct{max-width:min(760px,96vw)!important;width:min(760px,96vw)}
+.tp-ct-doc{max-height:52vh;overflow:auto;border:1px solid #e3e9f3;border-radius:12px;padding:14px 18px;background:#fbfcfe;font-size:14px;line-height:1.55;text-align:justify}
+.tp-ct-doc h2{text-align:center;font-size:17px;color:#0B2A5B;margin:4px 0 10px}.tp-ct-doc h4{color:#0B2A5B;margin:12px 0 4px;font-size:14px}.tp-ct-doc p{margin:0 0 8px}.tp-ct-doc ul{margin:4px 0 8px 18px;padding:0}.tp-ct-doc li{margin:3px 0}
+.tp-ct-ok{background:#eafaf0;color:#15803d;font-weight:700;border-radius:10px;padding:7px 12px;margin:0 0 10px;font-size:13.5px}
+.tp-ct-id{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.tp-ct-id label{font-weight:700;font-size:13px;color:#0B2A5B}.tp-ct-id .inp{margin-top:4px;width:100%;box-sizing:border-box}
+@media (max-width:600px){.tp-ct-id{grid-template-columns:1fr}.tp-ct-doc{font-size:13.5px;padding:12px}}
+.ad-ctpend{background:#fff7ec;border:1.5px solid #f5c98a;font-size:14px}.ad-ctpend.ok{background:#eafaf0;border-color:#b7e4c7}
