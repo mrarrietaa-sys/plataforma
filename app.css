@@ -4717,3 +4717,12 @@ textarea.tb-board:focus{outline:2px solid #ffe36a}
 .ag-ok{background:#eafaf0;color:#15803d;font-weight:700;border-radius:10px;padding:7px 12px;margin:0 0 10px;font-size:13.5px}
 @media (max-width:600px){.ag-doc{font-size:13.5px;padding:12px}}
 .ad-cttabs{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 8px}
+/* v228: lectura en voz alta (opcional) */
+.reading .rw{font-style:normal;border-radius:4px;transition:background .15s,color .15s}
+.reading .rw.ok{background:#dcfce7;color:#166534}
+.reading .rw.miss{background:#ffedd5;color:#9a3412}
+.reading.rv-on .rw.cur{box-shadow:0 2px 0 #E3242B}
+.reading #rv small{font-weight:600;opacity:.75}
+.reading #rv.playing{background:#E3242B;color:#fff;border-color:#E3242B}
+.rv-res{margin-top:12px;border-radius:12px;padding:10px 14px;font-size:14.5px;line-height:1.45}.rv-res.g{background:#eafaf0;border:1.5px solid #b7e4c7}.rv-res.m{background:#fff7ec;border:1.5px solid #f5c98a}.rv-res.b{background:#fde8ea;border:1.5px solid #f3c4c6}
+.rv-miss{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;align-items:center}.rv-miss button{border:1px solid #e3e9f3;background:#fff;border-radius:20px;padding:4px 10px;font:600 13px Inter,sans-serif;color:#0B2A5B;cursor:pointer}

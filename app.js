@@ -544,6 +544,45 @@
   }
 
   /* ---------- class steps ---------- */
+  /* 🎙️ LECTURA EN VOZ ALTA (opcional): el estudiante lee el texto, la plataforma lo escucha y va marcando cada palabra que dijo bien.
+     Alineación palabra por palabra (tolera pausas, repeticiones y errores pequeños). En computador además graba su voz para escucharse. */
+  const NUMW = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen', 'twenty'];
+  const rNorm = (w) => { w = String(w).toLowerCase().replace(/[’‘`]/g, "'").replace(/[^a-z0-9']/g, '').replace(/^'+|'+$/g, ''); if (/^\d+$/.test(w) && +w <= 20) w = NUMW[+w]; return w; };
+  const lev = (a, b) => { if (a === b) return 0; const m = a.length, n = b.length; if (!m || !n) return m || n; let p = Array.from({ length: n + 1 }, (_, j) => j); for (let i = 1; i <= m; i++) { const c = [i]; for (let j = 1; j <= n; j++) c[j] = Math.min(p[j] + 1, c[j - 1] + 1, p[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); p = c; } return p[n]; };
+  const rSame = (a, b) => { if (!a || !b) return false; if (a === b) return true; const x = a.replace(/'/g, ''), y = b.replace(/'/g, ''); if (x === y) return true; if (x.length >= 4 && y.length >= 4 && lev(x, y) <= (Math.max(x.length, y.length) >= 7 ? 2 : 1)) return true; return (x + 's' === y || y + 's' === x) && x.length >= 3; };
+  function readAloud(box, btn, res) {
+    if (!btn) return; const words = $$('.rw', box); const target = words.map(w => rNorm(w.textContent)); const N = target.filter(Boolean).length;
+    const touch = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent); let sess = null, rec = null, stream = null, chunks = [], url = '', auto = null, maxT = null;
+    const align = (txt) => { // marca las palabras dichas en orden; busca hasta 8 palabras adelante si el estudiante se saltó alguna
+      const said = String(txt).split(/\s+/).map(rNorm).filter(Boolean); let p = 0; const ok = new Array(target.length).fill(false);
+      said.forEach(w => { for (let k = p; k < Math.min(target.length, p + 8); k++) { if (!target[k]) continue; if (rSame(w, target[k])) { ok[k] = true; p = k + 1; return; } } });
+      words.forEach((el, i) => el.classList.toggle('ok', ok[i])); const last = ok.lastIndexOf(true); words.forEach((el, i) => el.classList.toggle('cur', i === last + 1)); return { ok, last };
+    };
+    const finish = (txt) => {
+      clearTimeout(auto); clearTimeout(maxT); btn.classList.remove('playing'); btn.innerHTML = '🎙️ Leer otra vez <small>(opcional)</small>'; box.classList.remove('rv-on');
+      const { ok } = align(txt || ''); const good = ok.filter(Boolean).length; const pct = N ? Math.round(good / N * 100) : 0;
+      words.forEach((el, i) => { el.classList.remove('cur'); el.classList.toggle('miss', !!target[i] && !ok[i]); });
+      const miss = [...new Set(target.filter((w, i) => w && !ok[i]))].slice(0, 8);
+      res.hidden = false; res.className = 'rv-res ' + (pct >= 85 ? 'g' : pct >= 60 ? 'm' : 'b');
+      res.innerHTML = `<b>${pct >= 85 ? '¡Excelente lectura!' : pct >= 60 ? '¡Muy bien! Sigue practicando' : 'Buen intento: léela otra vez con calma'}</b> · leíste bien <b>${pct}%</b> de las palabras (${good} de ${N}).` +
+        (miss.length ? `<div class="rv-miss">Practica: ${miss.map(w => { const d = w === 'i' ? 'I' : w.replace(/^i'/, "I'"); return `<button type="button" data-w="${esc(d)}">🔊 ${esc(d)}</button>`; }).join('')}</div>` : '') + (url ? `<div style="margin-top:8px"><button type="button" class="btn w sm" id="rv-me">▶ Escucharme</button></div>` : '');
+      $$('[data-w]', res).forEach(b => b.onclick = () => { try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(b.dataset.w); u.lang = 'en-US'; u.rate = .85; speechSynthesis.speak(u); } catch (e) { } });
+      const me = $('#rv-me', res); if (me) me.onclick = () => { stop(); const a = M.trackAudio(new Audio(url)); a.play(); };
+      if (pct >= 85) sfx('win'); else sfx('ok');
+    };
+    const stopAll = () => { if (sess) { const s = sess; sess = null; s.onend = () => finish(s.text()); s.stop(); } try { rec && rec.state !== 'inactive' && rec.stop(); } catch (e) { } };
+    btn.onclick = async () => {
+      if (btn.classList.contains('playing')) { stopAll(); return; }
+      stop(); res.hidden = true; words.forEach(el => el.classList.remove('ok', 'miss', 'cur')); if (url) { URL.revokeObjectURL(url); url = ''; }
+      if (!M.canSR && !navigator.mediaDevices) { M.toast('Tu navegador no permite usar el micrófono. Usa Google Chrome.'); return; }
+      btn.classList.add('playing'); btn.innerHTML = '⏹ Terminar lectura'; box.classList.add('rv-on'); sfx('tap');
+      if (!touch || !M.canSR) { try { stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } }); rec = new MediaRecorder(stream); chunks = []; rec.ondataavailable = e => chunks.push(e.data); rec.onstop = () => { stream.getTracks().forEach(t => t.stop()); if (chunks.length) url = URL.createObjectURL(new Blob(chunks, { type: rec.mimeType || 'audio/webm' })); if (!M.canSR) finish(''); }; rec.start(); } catch (e) { rec = null; } }
+      if (!M.canSR) { if (!rec) { btn.classList.remove('playing'); btn.innerHTML = '🎙️ Léela en voz alta <small>(opcional)</small>'; box.classList.remove('rv-on'); M.toast('Activa el permiso del micrófono para leer en voz alta.'); } else M.toast('Grabando… tu navegador no evalúa la voz, pero podrás escucharte.'); return; }
+      sess = M.srSession((txt) => { const { last } = align(txt); clearTimeout(auto); if (last >= target.length - 2) auto = setTimeout(stopAll, 1500); }, (err) => { sess = null; try { rec && rec.stop(); } catch (e) { } btn.classList.remove('playing'); btn.innerHTML = '🎙️ Léela en voz alta <small>(opcional)</small>'; box.classList.remove('rv-on'); M.toast(/not-allowed|service/.test(err) ? 'Activa el permiso del micrófono para leer en voz alta.' : 'No se pudo usar el micrófono. Inténtalo de nuevo.'); });
+      if (!sess) return; maxT = setTimeout(stopAll, 180000);
+    };
+  }
+
   const STEP = {
     goal: async (stage, p) => {
       const prev = M.prevPart(p);
@@ -606,7 +645,7 @@
       const r = p.reading;
       const body = A.head(stage, { lbl: 'Reading', title: `📖 ${r.title}`, ins: 'Escucha y lee al mismo tiempo. Luego responde <b>YES</b> o <b>NO</b>.' });
       const sents = r.text.match(/[^.!?]+[.!?]+["”]?\s*/g) || [r.text];
-      const box = h(`<div class="reading">${photo(r.img)}<div><div class="row" style="margin-bottom:10px"><button class="btn k sm" id="rp">▶ Escuchar lectura</button></div><div class="txt">${sents.map(s => `<span class="s">${esc(s)}</span>`).join('')}</div></div></div>`);
+      const box = h(`<div class="reading">${photo(r.img)}<div><div class="row" style="margin-bottom:10px"><button class="btn k sm" id="rp">▶ Escuchar lectura</button><button class="btn w sm" id="rv">🎙️ Léela en voz alta <small>(opcional)</small></button></div><div class="txt">${sents.map(s => `<span class="s">${s.split(/(\s+)/).map(w => /\S/.test(w) ? `<i class="rw">${esc(w)}</i>` : w).join('')}</span>`).join('')}</div><div class="rv-res" id="rvr" hidden></div></div></div>`);
       body.appendChild(box);
       // approximate karaoke highlight by character proportion
       const rp = $('#rp', box);
@@ -617,6 +656,7 @@
         if (rp._t) { const go = () => { try { a.currentTime = rp._t; } catch (e) { } }; if (a.readyState >= 1) go(); else a.addEventListener('loadedmetadata', go, { once: true }); }
         a.play(); window.__ra = a; rp.innerHTML = '⏹ Detener lectura'; rp.classList.add('playing'); const hideF = M.floatStop(rp); a.addEventListener('ended', hideF); };
       rp.onclick = () => { if (rp.classList.contains('playing')) stop(); else karaoke(); };
+      readAloud(box, $('#rv', box), $('#rvr', box));
       body.appendChild(h(`<h3 style="margin-top:18px">Answer YES or NO</h3>`));
       const qs = r.q.map((q, i) => { const e = h(`<div class="yn"><p>${i + 1}) ${esc(q.s)}</p><div class="b"><button data-v="yes">YES</button><button data-v="no">NO</button></div></div>`); $$('button', e).forEach(b => b.onclick = () => { $$('button', e).forEach(x => x.classList.remove('sel')); b.classList.add('sel'); e._v = b.dataset.v; sfx('tap'); }); body.appendChild(e); return e; });
       const bar = h(`<div class="actionbar"><button class="btn k lg">Comprobar ✓</button></div>`); body.appendChild(bar);
