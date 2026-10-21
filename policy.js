@@ -13,7 +13,7 @@
     <li><b>Si cancelas con menos de 12 horas o no te conectas,</b> la clase se descuenta de tu plan y no se repone.</li></ul></section>
   <section><h3>3. Si tu profe no se conecta</h3><ul>
     <li>Repórtalo desde tu perfil con el botón <b>"Mi profe no se conectó"</b> (hasta 24 horas después de la clase).</li>
-    <li>Administración lo revisa en máximo 24 horas y, si se confirma, <b>la clase vuelve a tu saldo</b>.</li></ul></section>
+    <li>Administración lo revisa en máximo 24 horas y, si se confirma, <b>la clase vuelve a tu saldo</b>. Te avisamos por correo con el resultado.</li></ul></section>
   <section><h3>4. Horario de la escuela</h3><p><b>Lunes a viernes:</b> 7:00 a. m. a 9:00 p. m. (jornada continua) · <b>Sábados:</b> 7:00 a. m. a 5:00 p. m. · <b>Domingos y festivos de Colombia:</b> no hay clases ni atención por chat. (Hora Colombia)</p></section>
   <section><h3>5. Duración y puntualidad</h3><ul>
     <li>Todas las clases individuales duran <b>50 minutos</b>, contados desde la hora reservada.</li>

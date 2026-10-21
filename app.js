@@ -18,7 +18,7 @@
   /* ---------------- top bar ---------------- */
   function topbar() {
     const tb = $('#topbar');
-    tb.innerHTML = `<div class="brand" id="go-home"><span class="logo-pill"><img class="logo" src="mra-brand.png" alt="mrarrieta.com"></span></div><div class="sp"></div><span class="tb-tag">${M.MOD.es.toUpperCase()} · ${M.MOD.id}</span>
+    tb.innerHTML = `<div class="brand" id="go-home"><span class="logo-pill"><img class="logo" src="mra-brand.png" alt="mrarrieta.com"></span></div><div class="sp"></div><span class="tb-tag">${M.MOD.es.toUpperCase()} · ${M.MOD.id === 'B2' ? 'B1' : M.MOD.id}</span>
       <button class="pill y ce-pts" id="pts-b" title="${esc(M.PTS_TIP)}" aria-label="${S.xp} puntos. ${esc(M.PTS_TIP)}">⚡ ${S.xp} <span class="ce-ptw">puntos</span></button>
       <span class="pill hide-s" title="Días seguidos estudiando">🔥 ${S.streak.n || 0}</span>
       <button class="iconbtn chat-ic" id="chat-tb" title="Chat con mi profe" aria-label="Chat con mi profe"><svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><path fill="#fff" d="M16 3C8.8 3 3 8.6 3 15.6c0 2.5.8 4.9 2.1 6.9L3.6 28l5.7-1.5c2 1.1 4.3 1.7 6.7 1.7 7.2 0 13-5.6 13-12.6S23.2 3 16 3zm6.3 17.6c-.3.8-1.6 1.5-2.2 1.6-.6.1-1.3.1-2.1-.1-.5-.2-1.1-.4-1.9-.7-3.3-1.4-5.5-4.7-5.6-4.9-.2-.2-1.3-1.8-1.3-3.4s.8-2.4 1.1-2.7c.3-.3.6-.4.8-.4h.6c.2 0 .5-.1.7.6.3.7.9 2.3 1 2.5.1.2.1.4 0 .6-.1.2-.2.4-.3.6l-.5.6c-.2.2-.3.4-.1.7.2.3.9 1.5 2 2.4 1.4 1.2 2.5 1.6 2.9 1.8.4.2.6.1.8-.1.2-.2.9-1 1.1-1.4.2-.4.5-.3.8-.2.3.1 2 .9 2.3 1.1.3.2.6.3.7.4.1.3.1 1-.2 1.8z"/></svg><i class="fbadge hidden" id="chat-n"></i></button>${S.dictHidden ? '<button class="iconbtn" id="dict-b" title="Diccionario">🔎</button>' : ''}${window.MRAP && MRAP.get() ? (MRAP.pic() ? `<a class="tb-avbtn" id="prof-b" href="index.html" title="Mi perfil">${MRAP.avHTML('tb-av')}</a>` : '<a class="iconbtn" id="prof-b" href="index.html" title="Mi perfil">👤</a>') : ''}<button class="iconbtn" id="menu-b" title="Menú">☰</button>`;
@@ -414,7 +414,7 @@
   const SCENES = { rocket: { a: 'up', say: 'Blast off!' }, drums: { a: 'stage', say: 'Rock on!' }, guitar: { a: 'stage', say: "Let's rock!" },
     surf: { a: 'surf', say: 'Catch the wave!' }, hero: { a: 'fly', say: 'Super English!' }, books: { a: 'pop', say: "Let's read!" }, laptop: { a: 'pop', say: 'Homework time!' }, travel: { a: 'walk', say: "Let's go!" }, wave: { a: 'pop', say: 'Hello!' }, rocket3: { a: 'up', say: 'Full speed!' }, rocket5: { a: 'up', say: 'To the moon!' }, 'plane-red': { a: 'fly', say: 'Ready for takeoff!' }, 'plane-blue': { a: 'fly', say: 'Great job!' }, 'plane-yellow': { a: 'fly', say: 'This way!' }, 'plane-green': { a: 'fly', say: 'Keep flying!' } };
   const SEC_IC = { Goal: '🎯', Speaking: '🗣️', Reading: '📖', Review: '🔁', Explanation: '💡', 'Listen & practice': '🎧', Practice: '🎮', 'Oral task': '🎤', Music: '🎵', Homework: '📝' };
-  const SEC_SC = { Reading: 'books', Homework: 'laptop', Music: 'guitar', Review: 'travel' };
+  const SEC_SC = { Reading: 'books', Homework: 'laptop', Music: 'guitar', Review: 'plane-blue' };
   const FREE = ['rocket', 'plane-red', 'rocket3', 'plane-blue', 'drums', 'plane-yellow', 'surf', 'rocket5', 'plane-green', 'hero'];
   const ITL_ON = true;
   let sceneN = Math.floor(Math.random() * FREE.length);
@@ -458,15 +458,14 @@
     const p = M.partById(id);
     if (!M.isUnlocked(p.topic)) { route('home'); return lockGate(p.topic); }
     const revM = M.reviewMode(); if (revM) { S.rev = S.rev || {}; if (!S.rev[id]) { S.rev[id] = { s: Date.now() }; save(); } }
-    app.innerHTML = `<div class="wrap center ld-load"><img class="ld-load-mra" src="mra-x-rocket3.webp?v=2" alt="Mr. Arrieta"><h2>¿Listo para hablar inglés? 🚀</h2><p class="ld-load-t">Preparando tu clase…</p><div class="ld-load-bar"><i></i></div><b class="ld-load-p">0%</b></div>`;
-    // ⏳ barra de carga: muestra qué se está cargando y cuánto falta
-    let tgt = 8, cur = 0; const bar = $('.ld-load-bar i', app), pc = $('.ld-load-p', app), lt = $('.ld-load-t', app);
-    const tick = setInterval(() => { cur += Math.max(0.4, (tgt - cur) * 0.12); if (cur > tgt) cur = tgt; if (bar) { bar.style.width = cur + '%'; pc.textContent = Math.round(cur) + '%'; } }, 60);
-    const pv = M.prevPart(p); await M.loadAudio(['common', ...[].concat(M.MOD.games || []), M.MOD.audio + p.topic].concat(pv ? [M.MOD.audio + pv.topic] : []), (d, t) => { tgt = t ? 8 + Math.round(d / t * 82) : 90; if (lt) lt.textContent = t && d < t ? `Cargando audios y actividades… (${d + 1} de ${t})` : 'Preparando tus actividades…'; });
-    tgt = 100; if (lt) lt.textContent = '¡Todo listo!'; await new Promise(r => { const w = setInterval(() => { if (cur >= 99.5) { clearInterval(w); r(); } }, 50); setTimeout(() => { clearInterval(w); r(); }, 900); }); clearInterval(tick); if (bar) { bar.style.width = '100%'; pc.textContent = '100%'; } await new Promise(r => setTimeout(r, 250));
-    { // 🏁 conteo: Ready? 3, 2, 1… GO!
-      const ld = $('.ld-load', app); if (ld) { const cd = document.createElement('div'); cd.className = 'ld-count'; ld.appendChild(cd);
-        for (const [t, ms] of [['Ready?', 750], ['3', 600], ['2', 600], ['1', 600], ['GO!', 650]]) { cd.textContent = t; cd.classList.remove('pop'); void cd.offsetWidth; cd.classList.add('pop'); if (t === 'GO!') { cd.classList.add('go'); try { sfx('win'); } catch (e) { } } else { try { sfx('tap'); } catch (e) { } } await new Promise(r => setTimeout(r, ms)); } } }
+    app.innerHTML = `<div class="wrap center ld-load"><img class="ld-load-mra" src="mra-x-rocket3.webp?v=2" alt="Mr. Arrieta"><h2>¿Listo para hablar inglés? 🚀</h2><div class="ld-count"></div><p class="ld-load-t muted"></p></div>`;
+    // 🚀 conteo 1, 2, 3 mientras carga; en el 3 Mr. Arrieta sale volando y dice GO!
+    const lt = $('.ld-load-t', app), cd = $('.ld-count', app), rk = $('.ld-load-mra', app); let loaded = false;
+    const pv = M.prevPart(p); const loadP = M.loadAudio(['common', ...[].concat(M.MOD.games || []), M.MOD.audio + p.topic].concat(pv ? [M.MOD.audio + pv.topic] : [])).then(() => { loaded = true; }, () => { loaded = true; });
+    const pop = (t) => { cd.textContent = t; cd.classList.remove('pop'); void cd.offsetWidth; cd.classList.add('pop'); };
+    for (const t of ['1', '2', '3']) { pop(t); try { sfx('tap'); } catch (e) { } await new Promise(r => setTimeout(r, 750)); }
+    if (!loaded) { lt.textContent = 'Preparando tu clase…'; await loadP; lt.textContent = ''; }
+    pop('GO!'); cd.classList.add('go'); if (rk) rk.classList.add('fly'); try { sfx('win'); } catch (e) { } await new Promise(r => setTimeout(r, 1000));
     const steps = buildSteps(p); const secs = [...new Set(steps.map(s => s.sec))];
     const rec = S.parts[id] = S.parts[id] || { done: false, stars: 0, best: 0 };
     let startAt = 0;
@@ -1043,7 +1042,7 @@
     ['xp1000', '⚡', '1000 puntos', 'Acumula 1000 puntos', () => S.xp >= 1000],
     ['speaker', '🎤', 'Gran speaker', 'Speaking por encima de 80%', () => S.skills.speaking[1] >= 10 && M.skillPct('speaking') >= 80],
     ['half', '⭐', 'Mitad del camino', 'Completa 14 clases', () => M.allParts().filter(p => S.parts[p.id] && S.parts[p.id].done).length >= 14],
-    ['grad', '🎓', 'Graduado ' + M.MOD.id, 'Aprueba el examen final', () => S.final && S.final.best >= C.PASS_SCORE],
+    ['grad', '🎓', 'Graduado ' + (M.MOD.id === 'B2' ? 'B1' : M.MOD.id), 'Aprueba el examen final', () => S.final && S.final.best >= C.PASS_SCORE],
   ];
   function checkBadges() { S.badges = S.badges || []; BADGES.forEach(([id, e, n]) => { if (!S.badges.includes(id) && BADGES.find(b => b[0] === id)[4]()) { S.badges.push(id); setTimeout(() => M.toast(`🏅 ¡Nueva insignia: ${n} ${e}!`), 1500); } }); save(); }
 

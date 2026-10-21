@@ -335,7 +335,7 @@
   // ---------- correo + panel del profesor ----------
   function setN(id, ok, txt) { const e = $('#' + id); if (e) { e.className = ok === true ? 'ok' : ok === false ? 'err' : 'pending'; e.textContent = txt; } }
   async function notify(r) {
-    const params = { subject: `${MOD.en} Final Exam${r.attempt > 1 ? (r.attempt > CFG.ATTEMPTS ? ' – Additional Attempt' : ' – Attempt ' + r.attempt) : ''} – ${r.name} – ${MOD.id} – ${r.fin.toFixed(1)}/10`,
+    const params = { subject: `${MOD.en} Final Exam${r.attempt > 1 ? (r.attempt > CFG.ATTEMPTS ? ' – Additional Attempt' : ' – Attempt ' + r.attempt) : ''} – ${r.name} – ${MOD.id === 'B2' ? 'B1' : MOD.id} – ${r.fin.toFixed(1)}/10`,
       student_name: r.name, student_whatsapp: 'No aplica', student_whatsapp_link: '#', course_interest: 'No aplica', module: MOD.en, level: MOD.level,
       result_label: 'Resultado final', result_headline: r.passed ? 'Aprobado' : 'No aprobado', result_detail: MOD.es + ' — ' + MOD.level + ' · Puntaje: ' + r.fin.toFixed(1) + '/10.0', result_color: r.passed ? '#1E8E5A' : '#E8453C',
       attempt_label: r.attemptLabel, date: r.date.toLocaleDateString(), time: r.date.toLocaleTimeString(),
@@ -362,7 +362,7 @@
     const e2 = $('#n2'); if (e2) e2.textContent = e2.className === 'ok' ? `✓ Correo enviado al profesor (${r.temail}).` : '✗ No se pudo enviar el correo al profesor. Usa “Copiar resumen”.';
     setN('n3', await send(CFG.ADMIN_EMAIL), ''); const e3 = $('#n3'); if (e3) e3.textContent = e3.className === 'ok' ? '✓ Copia enviada a administración.' : '✗ No se pudo enviar la copia a administración.';
   }
-  function summaryText(r) { return `📋 Examen final — ${MOD.es} (${MOD.id}) · mrarrieta.com\n👤 ${r.name}\n📅 ${r.date.toLocaleString()}\n🔁 ${r.attemptLabel}\n🎧 Listening: ${r.per.listening.score.toFixed(1)}\n📖 Reading: ${r.per.reading.score.toFixed(1)}\n✍️ Writing: ${r.per.writing.score.toFixed(1)}\n🎤 Speaking: ${r.per.speaking.score.toFixed(1)}\n⭐ Nota final: ${r.fin.toFixed(1)} / 10 — ${r.passed ? 'APROBADO' : 'NO APROBADO'}\n💬 ${comment(r.per, r.b)}`; }
+  function summaryText(r) { return `📋 Examen final — ${MOD.es} (${MOD.id === 'B2' ? 'B1' : MOD.id}) · mrarrieta.com\n👤 ${r.name}\n📅 ${r.date.toLocaleString()}\n🔁 ${r.attemptLabel}\n🎧 Listening: ${r.per.listening.score.toFixed(1)}\n📖 Reading: ${r.per.reading.score.toFixed(1)}\n✍️ Writing: ${r.per.writing.score.toFixed(1)}\n🎤 Speaking: ${r.per.speaking.score.toFixed(1)}\n⭐ Nota final: ${r.fin.toFixed(1)} / 10 — ${r.passed ? 'APROBADO' : 'NO APROBADO'}\n💬 ${comment(r.per, r.b)}`; }
   async function copySummary() { const t = summaryText(last_); try { await navigator.clipboard.writeText(t); M.toast('✓ Resumen copiado'); } catch (e) { const ta = h(`<textarea style="position:fixed;opacity:0">${esc(t)}</textarea>`); document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); M.toast('✓ Resumen copiado'); } }
   const jspdf = () => loadScript((document.querySelector('script[src*="final.js"]').getAttribute('src') || '').replace(/final\.js.*$/, '') + 'jspdf.min.js', () => !!window.jspdf).then(ok => ok || loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js', () => !!window.jspdf));
   async function reportPDF() {

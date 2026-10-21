@@ -25,10 +25,10 @@ if (!window.M1) window.M1 = {
       perks: ['Descubre tu nivel en 10 minutos', 'Tu ruta personalizada', 'Habla y la plataforma te corrige'], note: 'No incluye clases individuales.' },
     Object.assign({ id: 'membership', tag: 'Aprende a tu ritmo', icon: '🖥️',
       perks: ['Habla desde el día 1: te escucha y te corrige', 'Del A1 al B2+, a tu ritmo, 24/7', 'Certificado por cada módulo'], note: 'No incluye clases individuales.' }, pp('membership', '🖥️ PLATAFORMA', '$59.900')),
-    Object.assign({ id: 'premium', tag: '+ 4 clases con profe', icon: '🎓',
-      perks: ['Todo lo de Plataforma', '4 clases 1 a 1 con profe al mes', 'Tú eliges profe, día y hora', 'Clases no acumulables: úsalas en tu periodo mensual'] }, pp('premium', '🎓 PREMIUM · 4 CLASES', '$169.900')),
-    Object.assign({ id: 'premium8', tag: '+ 8 clases con profe', icon: '🏅', best: true,
-      perks: ['Todo lo de Plataforma', '8 clases 1 a 1: 2 por semana', 'Gana fluidez real, más rápido', 'Clases no acumulables: úsalas en tu periodo mensual'] }, pp('premium8', '🏅 PREMIUM · 8 CLASES', '$289.900')),
+    Object.assign({ id: 'premium', tag: '+ 4 clases con profe', icon: '👑',
+      perks: ['Todo lo de Plataforma', '4 clases 1 a 1 con profe al mes', 'Tú eliges profe, día y hora', 'Clases no acumulables: úsalas en tu periodo mensual'] }, pp('premium', '👑 PREMIUM · 4 CLASES', '$169.900')),
+    Object.assign({ id: 'premium8', tag: '+ 8 clases con profe', icon: '💎', best: true,
+      perks: ['Todo lo de Plataforma', '8 clases 1 a 1: 2 por semana', 'Gana fluidez real, más rápido', 'Clases no acumulables: úsalas en tu periodo mensual'] }, pp('premium8', '💎 PREMIUM · 8 CLASES', '$289.900')),
   ];
   const XP = () => { const P = window.MRPLANS; const n = P && P.extra ? P.extra() : 39900; return '$' + String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.'); };
   function stCount() { const el = document.querySelector('[data-stc]'); if (!el) return; const run = (N) => { const t0 = performance.now(); const fr = (t) => { const k = Math.min(1, (t - t0) / 1400); el.textContent = '+' + Math.round(N * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(fr); }; requestAnimationFrame(fr); };
@@ -52,7 +52,7 @@ if (!window.M1) window.M1 = {
   function render() {
     const DIRECT = !!st.plan && st.plan !== 'free' && !st.pickAll; const SP = planOf(st.plan) || {};
     app.innerHTML = `
-    ${DIRECT ? `<section class="card in-direct"><span class="in-plan-ic" aria-hidden="true">${SP.icon}</span><div class="grow"><span class="lbl">Tu plan</span><h1>${esc(SP.name)}</h1><p><b>${esc(SP.price)}</b> ${esc(SP.per || '')} · ${esc(SP.tag || '')}</p></div><button type="button" class="btn w sm" id="in-chg">Cambiar plan</button>${/^premium/.test(st.plan) && window.MRPLANS && MRPLANS.xbox ? `<div class="in-dx">${MRPLANS.xbox(st.plan)}</div>` : ''}</section>` : ''}
+    ${DIRECT ? `<section class="card in-direct"><span class="in-plan-ic" aria-hidden="true">${window.MRI ? MRI({ free: "gift", membership: "monitor", premium: "crown", premium8: "gem" }[SP.id] || "gift") : SP.icon}</span><div class="grow"><span class="lbl">Tu plan</span><h1>${esc(SP.name)}</h1><p><b>${esc(SP.price)}</b> ${esc(SP.per || '')} · ${esc(SP.tag || '')}</p></div><button type="button" class="btn w sm" id="in-chg">Cambiar plan</button>${/^premium/.test(st.plan) && window.MRPLANS && MRPLANS.xbox ? `<div class="in-dx">${MRPLANS.xbox(st.plan)}</div>` : ''}</section>` : ''}
     <section class="in-hero"${DIRECT ? ' hidden' : ''}>
       <div class="in-hero-txt">
         

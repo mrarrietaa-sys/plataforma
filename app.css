@@ -4772,3 +4772,26 @@ textarea.tb-board:focus{outline:2px solid #ffe36a}
 .pt-nc-b{display:flex;flex-direction:column;gap:8px;min-width:200px}.pt-nc.empty .pt-nc-d{background:#16a34a}
 .pt-nc-x{border:0;background:none;color:#b91c1c;font:700 13px Inter,sans-serif;text-decoration:underline;cursor:pointer;padding:4px}
 .tp-livetabs{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}.tp-livetabs button{border:1.5px solid #e3e9f3;background:#fff;color:#0B2A5B;font:700 12.5px Poppins,sans-serif;border-radius:20px;padding:6px 12px;cursor:pointer}.tp-livetabs button.on{background:#0B2A5B;color:#fff;border-color:#0B2A5B}
+/* v294 · ícono del plan en inscripción = mismo ícono de la página de planes */
+.in-plan-ic:has(.mri){width:58px;height:58px;border-radius:14px;background:#fde8ea;color:#E3242B;display:grid;place-items:center;flex:none;font-size:0!important}
+.in-plan-ic .mri{width:30px;height:30px}
+/* v294 · la presentación de cada profe siempre visible, también en celular */
+@media (max-width:560px){.ld-pf{grid-template-columns:1fr!important}.ld-pc ul{display:grid!important;font-size:13.5px}.ld-pc img{width:84px;height:84px}}
+[hidden]{display:none!important}
+/* v294 · Mr. Arrieta sale volando en el cohete al decir GO! */
+.ld-load{overflow:hidden}
+.ld-load-mra.fly{animation:ldFly 1s cubic-bezier(.55,0,.8,.4) forwards}
+@keyframes ldFly{0%{transform:translateY(0)}18%{transform:translateY(14px) scale(1.04)}100%{transform:translate(90px,-115vh) rotate(-6deg)}}
+/* v294 · botones más compactos y elegantes en toda la plataforma */
+body .btn{padding:9px 18px;font-size:15px;border-radius:12px;line-height:1.2}
+body .btn.lg{padding:11px 22px;font-size:16px}
+body .btn.sm{padding:6px 12px;font-size:13.5px}
+body .btn.block,.ad-login .btn,.tp-lform .btn,.in-page form > .btn{display:flex;width:fit-content;min-width:200px;max-width:100%;justify-self:center;align-self:center;margin-left:auto;margin-right:auto}
+.pending-card .btn{align-self:flex-start}
+@media (max-width:600px){.pending-card .btn{align-self:center}}
+/* v294 · testimonios más pequeños y elegantes */
+.ld-tes>.ld-t{flex:0 0 158px!important;padding:4px!important;border-radius:18px!important}
+.ld-t figcaption b{font-size:13px!important}
+.ld-t figcaption small{font-size:10.5px!important}
+.ld-t figcaption{padding:6px 6px!important}
+@media (max-width:560px){.ld-tes>.ld-t{flex:0 0 44%!important}}

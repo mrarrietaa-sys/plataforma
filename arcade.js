@@ -149,7 +149,7 @@
       </section>
       <section class="ar-lvbar">
         <div class="ar-lvhead"><b>Nivel de los juegos</b><small class="muted">Se abre en tu nivel. Puedes cambiarlo cuando quieras.</small></div>
-        <div class="ar-lvs" role="tablist">${LEVELS.map(l => `<button class="ar-lv ${l.id === LV ? 'on' : ''}" data-lv="${l.id}" role="tab" aria-selected="${l.id === LV}"><b>${l.id}</b><small>${l.es}</small>${l.id === MINE ? '<i>Tu nivel</i>' : ''}</button>`).join('')}</div>
+        <div class="ar-lvs" role="tablist">${LEVELS.map(l => `<button class="ar-lv ${l.id === LV ? 'on' : ''}" data-lv="${l.id}" role="tab" aria-selected="${l.id === LV}"><b>${l.id === "B2" ? "B1" : l.id}</b><small>${l.es}</small>${l.id === MINE ? '<i>Tu nivel</i>' : ''}</button>`).join('')}</div>
       </section>
       ${trial ? `<div class="ar-trial"><span>🟢</span><div><b>Acceso gratuito:</b> tienes 2 juegos abiertos. Los demás se abren con <b>Plataforma</b> o <b>Premium</b>.</div></div>` : ''}
       <section class="ar-grid">${GAMES.map((g, i) => `<article class="ar-gc c-${g.c} ${locked(g) ? 'lock' : ''}" data-g="${g.id}" style="--d:${i * 55}ms">
@@ -162,7 +162,7 @@
         <div class="ar-mgrid">${MEDALS.map(m => `<div class="ar-md ${S.medals[m.id] ? 'on' : ''}" title="${esc(m.d)}"><span>${S.medals[m.id] ? m.icon : '🔒'}</span><b>${m.name}</b><small>${m.d}</small></div>`).join('')}</div>
       </section>
     </div>`;
-    $$('.ar-lv', app).forEach(b => b.onclick = () => { LV = b.dataset.lv; fx('tap'); loadLevelAudio(); lobby(); M.toast(`Nivel ${LV} · ${lvl().es}`); });
+    $$('.ar-lv', app).forEach(b => b.onclick = () => { LV = b.dataset.lv; fx('tap'); loadLevelAudio(); lobby(); M.toast(`Nivel ${LV === "B2" ? "B1" : LV} · ${lvl().es}`); });
     $$('.ar-gc', app).forEach(c => c.onclick = () => {
       const g = GAMES.find(x => x.id === c.dataset.g);
       if (locked(g)) return lockModal(g);
@@ -200,7 +200,7 @@
       <button class="btn w sm ar-x" id="ar-exit">← Sala de juegos</button>
       <div class="ar-intro-ic">${g.icon}</div><h1>${g.name}</h1><p class="ar-gc-en">${g.en} · Nivel ${LV}</p>
       <ol class="ar-how">${HOW[g.id].map(x => `<li>${x}</li>`).join('')}</ol>
-      ${best ? `<p class="ar-rec">🏆 Tu récord en ${LV}: <b>${fmt(best)}</b></p>` : '<p class="ar-rec">🏆 ¡Aún no tienes récord en este nivel!</p>'}
+      ${best ? `<p class="ar-rec">🏆 Tu récord en ${LV === "B2" ? "B1" : LV}: <b>${fmt(best)}</b></p>` : '<p class="ar-rec">🏆 ¡Aún no tienes récord en este nivel!</p>'}
       <button class="btn lg ar-go" id="ar-start">¡Jugar! ▶</button>
       <p class="muted ar-loading hidden" id="ar-ld">Cargando audios…</p></div></div>`;
     $('#ar-exit').onclick = lobby;
@@ -294,7 +294,7 @@
   async function start(g) {
     window.scrollTo(0, 0);
     app.innerHTML = `<div class="ar-game c-${g.c}" data-game="${g.id}">
-      <div class="ar-gbar"><button class="btn w sm" id="ar-quit" aria-label="Salir">✕</button><div class="ar-gname"><span>${g.icon}</span><b>${g.name}</b><small>${LV}</small></div></div>
+      <div class="ar-gbar"><button class="btn w sm" id="ar-quit" aria-label="Salir">✕</button><div class="ar-gname"><span>${g.icon}</span><b>${g.name}</b><small>${LV === "B2" ? "B1" : LV}</small></div></div>
       <div class="ar-hud" id="ar-hud"></div>
       <div class="ar-stage" id="ar-stage"></div></div>`;
     const stage = $('#ar-stage'), hud = $('#ar-hud');

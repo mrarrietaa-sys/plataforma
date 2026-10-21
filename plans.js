@@ -1,5 +1,5 @@
 /* =====================================================================
-   PLANES — 🎁 Acceso gratuito · 🖥️ Plataforma · 🎓 Premium · 4 clases · 🏅 Premium · 8 clases
+   PLANES — 🎁 Acceso gratuito · 🖥️ Plataforma · 👑 Premium · 4 clases · 💎 Premium · 8 clases
    Precios: los define administración (nube); aquí solo hay valores por defecto.
    Elegir un plan abre la compra (Mercado Pago o transferencia con comprobante).
    ===================================================================== */
@@ -8,8 +8,8 @@
   const fmt = (n) => '$' + String(Math.round(+n || 0)).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
   const PL = {
     membership: { name: '🖥️ PLATAFORMA', price: '$59.900', per: 'COP/mes', n: 59900, classes: 0 },
-    premium: { name: '🎓 PREMIUM · 4 CLASES', price: '$169.900', per: 'COP/mes', n: 169900, classes: 4 },
-    premium8: { name: '🏅 PREMIUM · 8 CLASES', price: '$289.900', per: 'COP/mes', n: 289900, classes: 8 },
+    premium: { name: '👑 PREMIUM · 4 CLASES', price: '$169.900', per: 'COP/mes', n: 169900, classes: 4 },
+    premium8: { name: '💎 PREMIUM · 8 CLASES', price: '$289.900', per: 'COP/mes', n: 289900, classes: 8 },
   };
   const FREE = { name: '🎁 ACCESO GRATUITO', price: '$0', per: 'COP · prueba de 3 días' };
   let EXTRA = 39900;
@@ -77,7 +77,7 @@
     return m;
   }
   function payInfo() { return `<div class="to-pay"><b>Formas de pago</b><div><span>${window.MRI ? MRI('card') : ''} Tarjeta débito o crédito (Mercado Pago) · se habilita de inmediato</span><span>${window.MRI ? MRI('bank') : ''} Transferencia: Nequi 3017810841 · Llave (Breve-B) 1047374279</span></div></div><p class="center" style="margin:10px 0 0;font-size:14px"><a target="_blank" rel="noopener" style="color:#16A34A;font-weight:800" href="${WA('¡Hola! ' + (who() ? 'Soy ' + who() + '. ' : '') + 'Tengo una pregunta sobre los planes de mrarrieta.com')}">¿Dudas? Escríbenos por WhatsApp</a></p>`; }
-  function badge() { const pl = window.MRAP && MRAP.plan ? MRAP.plan() : {}; if (pl.eff === 'staff') return '👨‍🏫 Profe'; if (pl.expired) return '⏰ Plan vencido'; return { premium: '🎓 Premium · 4', premium8: '🏅 Premium · 8', membership: '🖥️ Plataforma', free: '🎁 Acceso gratuito', legacy: '🎓 Estudiante' }[pl.plan === 'premium8' && pl.eff !== 'free' ? 'premium8' : pl.eff] || '🎁 Acceso gratuito'; }
+  function badge() { const pl = window.MRAP && MRAP.plan ? MRAP.plan() : {}; if (pl.eff === 'staff') return '👨‍🏫 Profe'; if (pl.expired) return '⏰ Plan vencido'; return { premium: '👑 Premium · 4', premium8: '💎 Premium · 8', membership: '🖥️ Plataforma', free: '🎁 Acceso gratuito', legacy: '🎓 Estudiante' }[pl.plan === 'premium8' && pl.eff !== 'free' ? 'premium8' : pl.eff] || '🎁 Acceso gratuito'; }
   // ➕ clases extra dentro de las tarjetas Premium: el estudiante suma clases y ve al instante el precio de su paquete
   function xbox(k) { if (!/^premium/.test(k)) return ''; return `<span class="ipx" data-xk="${k}" data-n="0"><span class="ipx-row"><span class="ipx-t"><b>Suma clases extra</b><small>${fmt(EXTRA)} c/u</small></span><span class="ipx-b" role="button" aria-label="Menos" data-xb="-1">−</span><b class="ipx-n">0</b><span class="ipx-b" role="button" aria-label="Más" data-xb="1">+</span></span><span class="ipx-tot">Total primer mes: <b class="ipx-c">${PL[k].classes} clases</b> por <b class="ipx-p">${fmt(PL[k].n)} COP</b></span></span>`; }
   if (!window.__ipxWired) { window.__ipxWired = 1; document.addEventListener('click', (e) => { const b = e.target.closest && e.target.closest('[data-xb]'); if (!b) return; e.preventDefault(); e.stopPropagation();
