@@ -223,6 +223,8 @@
     cards.forEach((d, i) => { d.style.transform = `rotateY(${i * st}deg) translateZ(${R}px)`; });
     const dots = $('#ld-profes .ld-cyd'); if (dots) dots.innerHTML = cards.map((_, i) => `<i data-i="${i}"></i>`).join('');
     let k = 0; const go = (to) => { k = to; const a = ((k % n) + n) % n; c.style.transform = `translateZ(-${R}px) rotateY(${-k * st}deg)`; cards.forEach((d, i) => d.classList.toggle('f', i === a)); if (dots) [...dots.children].forEach((x, i) => x.classList.toggle('on', i === a)); };
+    const fit = () => { c.style.height = 'auto'; cards.forEach(d => d.style.height = 'auto'); const H = Math.max(200, ...cards.map(d => d.scrollHeight)) + 4; c.style.height = H + 'px'; cards.forEach(d => d.style.height = H + 'px'); const w8 = $('#ld-profes .ld-cylw'); if (w8) w8.style.height = (H + 60) + 'px'; };
+    cylWire.fit = fit; fit(); setTimeout(fit, 400); cards.forEach(d => { const im = d.querySelector('img'); if (im && !im.complete) im.addEventListener('load', fit, { once: true }); });
     go(0); clearInterval(cylWire.t); let hold = 0; cylWire.t = setInterval(() => { if (!hold && !document.hidden) go(k + 1); }, 3000);
     const w8 = $('#ld-profes .ld-cylw'); w8.onmouseenter = () => hold = 1; w8.onmouseleave = () => hold = 0;
     $$('#ld-profes [data-cy]').forEach(b => b.onclick = () => { go(k + (+b.dataset.cy)); hold = 1; setTimeout(() => hold = 0, 6000); });
@@ -239,6 +241,7 @@
     const r = await MRAC.call('reviews', {}).catch(() => null); const all = (r && r.reviews) || [];
     const by = MRPROFES.map(p => { const k = nrm(p.name), f = k.split(' ')[0], l = k.split(' ').slice(-1)[0]; return all.filter(x => { const t = nrm(x.teacher); return t === k || (t.indexOf(f) >= 0 && t.indexOf(l) >= 0); }); });
     $$('[data-pf]').forEach(el => { const L = by[+el.dataset.pf]; if (!L.length) { el.innerHTML = ''; el.style.display = 'none'; return; } /* sin opiniones: solo su formación y experiencia */ const avg = L.reduce((a, x) => a + x.stars, 0) / L.length; el.innerHTML = starsHTML(avg) + ` <small><b>${avg.toFixed(1)}</b> · ${L.length} ${L.length === 1 ? 'opinión' : 'opiniones'}</small>`; const bt = $(`[data-pfr="${el.dataset.pf}"]`); if (bt) { bt.hidden = false; bt.textContent = `Ver opiniones (${L.length})`; } }); // el botón solo aparece si el profe tiene opiniones
+    try { cylWire.fit && cylWire.fit(); } catch (e) { }
     $$('[data-pfc]').forEach(c => c.addEventListener('click', e => { if (e.target.closest('[data-pfr]')) return; if (!c.classList.contains('f')) return; const b = c.querySelector('[data-pfr]'); if (b && b.onclick) b.onclick(); }));
     $$('[data-pfr]').forEach(b => b.onclick = () => { const p = MRPROFES[+b.dataset.pfr], L = by[+b.dataset.pfr];
       M.modal(`<div class="center"><img src="${esc(p.img)}" alt="" style="width:84px;height:84px;border-radius:50%;object-fit:cover"><h3 style="margin:8px 0 2px">${p.title === 'Director' ? 'Director' : esc(p.title)} ${esc(p.name)}</h3>${L.length ? starsHTML(L.reduce((a, x) => a + x.stars, 0) / L.length) + ` <small>${L.length} ${L.length === 1 ? 'opinión' : 'opiniones'}</small>` : ''}</div>

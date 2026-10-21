@@ -4882,11 +4882,57 @@ body .btn{max-width:100%;box-sizing:border-box}
  #ld-planes .pv-note,#ld-planes .pv-cond{font-size:11.5px!important;margin:0 0 8px!important}
  #ld-planes .pv-bt{padding:8px 10px!important;font-size:13.5px!important}
  #ld-planes .pv-rib{font-size:11px!important;padding:3px 10px!important}
- #ld-profes .ld-pf.ld-cyl{height:225px!important}
- #ld-profes .ld-cylw{height:265px!important}
 }
-#ld-profes .ld-pf.ld-cyl{height:240px}
-#ld-profes .ld-cylw{height:290px}
-#ld-profes .ld-pf.ld-cyl{top:34px!important}#ld-profes .ld-cylw{height:305px}@media (max-width:600px){#ld-profes .ld-cylw{height:285px!important}}
-@media (min-width:601px){#ld-profes .ld-pf.ld-cyl{top:48px!important}#ld-profes .ld-cylw{height:320px!important}}
 #ld-profes .ld-cyl>.ld-pc{border:3px solid transparent!important}#ld-profes .ld-cyl>.ld-pc.f{border-color:#E3242B!important;box-shadow:0 16px 34px rgba(227,36,43,.18)!important}
+/* v313 · cilindro de profes: alto automático según el contenido (estrellas, opiniones y botón siempre visibles) */
+#ld-profes .ld-pf.ld-cyl{top:30px!important}
+#ld-profes .ld-cyl .ld-pc{justify-content:flex-start}
+#ld-profes .ld-cyl .ld-stars{white-space:nowrap;font-size:13px}
+#ld-profes .ld-cyl .ld-stars small{font-size:12px}
+#ld-profes .ld-cyl .ld-pc ul{flex:0 0 auto!important;margin:2px 0 6px!important}
+#ld-profes .ld-cyl [data-pfr]{margin-top:auto;flex:none}
+@media (max-width:600px){#ld-profes .ld-cyl .ld-stars{font-size:12px}#ld-profes .ld-cyl .ld-pc ul{font-size:12px!important}#ld-profes .ld-cyl .ld-pc b{font-size:14.5px}}
+#ld-profes .ld-cyl .ld-stars{white-space:normal!important;line-height:1.3}#ld-profes .ld-cyl .ld-stars small{display:block;margin-top:1px}
+
+/* v313 · «Cambiar plan»: mismo tamaño de planes que en la página de entrada */
+@media (max-width:600px){
+ .modal .pv-grid{display:flex!important;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px!important;padding:16px 2px 10px!important;grid-template-columns:none!important}
+ .modal .pv-grid>.pv{scroll-snap-align:center;min-width:0}
+ .modal .pv-grid>.pv{flex:0 0 78%!important;padding:14px 14px 12px!important;border-radius:16px!important}
+ .modal .pv-grid{scroll-padding:0 11%;padding-left:2px!important}
+ .modal .pv-ic{width:30px!important;height:30px!important;margin:0 0 6px!important;border-radius:9px!important}
+ .modal .pv-ic .mri{width:16px!important;height:16px!important}
+ .modal .pv-n{font-size:15.5px!important}
+ .modal .pv-pr{margin:2px 0 0!important}
+ .modal .pv-pr b,.modal .pv-pr strong,.modal .pv-pr>span:first-child{font-size:26px!important}
+ .modal .pv-pc{font-size:12px!important;padding:3px 8px!important;margin:4px 0 6px!important}
+ .modal .pv-pc0{height:6px!important}
+ .modal .pv-out{font-size:13.5px!important;margin:4px 0 8px!important;line-height:1.35}
+ .modal .pv-ul{gap:5px!important;margin:0 0 8px!important}
+ .modal .pv-li{font-size:13px!important}
+ .modal .pv-li .mri{width:15px!important;height:15px!important}
+ .modal .pv-note,.modal .pv-cond{font-size:11.5px!important;margin:0 0 8px!important}
+ .modal .pv-bt{padding:8px 10px!important;font-size:13.5px!important}
+ .modal .pv-rib{font-size:11px!important;padding:3px 10px!important}
+}
+/* v313 · inscripción → «Cambiar plan»: mismo tamaño */
+@media (max-width:600px){
+ .in-plans.pv-grid{display:flex!important;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px!important;padding:16px 2px 10px!important;grid-template-columns:none!important}
+ .in-plans.pv-grid>.pv{scroll-snap-align:center;min-width:0}
+ .in-plans.pv-grid>.pv{flex:0 0 78%!important;padding:14px 14px 12px!important;border-radius:16px!important}
+ .in-plans.pv-grid{scroll-padding:0 11%;padding-left:2px!important}
+ .in-plans .pv-ic{width:30px!important;height:30px!important;margin:0 0 6px!important;border-radius:9px!important}
+ .in-plans .pv-ic .mri{width:16px!important;height:16px!important}
+ .in-plans .pv-n{font-size:15.5px!important}
+ .in-plans .pv-pr{margin:2px 0 0!important}
+ .in-plans .pv-pr b,.in-plans .pv-pr strong,.in-plans .pv-pr>span:first-child{font-size:26px!important}
+ .in-plans .pv-pc{font-size:12px!important;padding:3px 8px!important;margin:4px 0 6px!important}
+ .in-plans .pv-pc0{height:6px!important}
+ .in-plans .pv-out{font-size:13.5px!important;margin:4px 0 8px!important;line-height:1.35}
+ .in-plans .pv-ul{gap:5px!important;margin:0 0 8px!important}
+ .in-plans .pv-li{font-size:13px!important}
+ .in-plans .pv-li .mri{width:15px!important;height:15px!important}
+ .in-plans .pv-note,.in-plans .pv-cond{font-size:11.5px!important;margin:0 0 8px!important}
+ .in-plans .pv-bt{padding:8px 10px!important;font-size:13.5px!important}
+ .in-plans .pv-rib{font-size:11px!important;padding:3px 10px!important}
+}
