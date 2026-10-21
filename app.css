@@ -4839,3 +4839,17 @@ body .btn{max-width:100%;box-sizing:border-box}
 @media (max-width:760px){.ld-combo{grid-template-columns:1fr;gap:20px;padding:18px!important}.ld-combo h2{text-align:center!important}}
 @media (max-width:760px){.ld-combo .ld-gi small{display:none!important}.ld-combo .ld-gi b{font-size:13.5px!important}.ld-combo .ld-gi{align-items:center!important}}
 .ld-combo>.ld-note2{grid-column:1/-1;margin:0!important;background:#f6f9ff!important;border:0!important;box-shadow:none!important;border-radius:14px!important;display:flex;gap:12px;align-items:center}
+/* v304 · profes en cilindro 3D */
+#ld-profes .ld-cylw{perspective:1500px;height:360px;position:relative;overflow:hidden;margin-top:6px}
+#ld-profes .ld-pf.ld-cyl{display:block!important;position:absolute!important;left:50%;top:22px;width:210px;height:310px;margin-left:-105px;transform-style:preserve-3d;transition:transform .8s cubic-bezier(.25,.8,.3,1);overflow:visible!important;padding:0!important;gap:0!important}
+#ld-profes .ld-cyl>.ld-pc{position:absolute!important;inset:0;width:auto!important;flex:none!important;margin:0!important;backface-visibility:hidden;box-sizing:border-box;overflow:hidden;cursor:pointer;transition:box-shadow .3s,opacity .3s;opacity:.85}
+#ld-profes .ld-cyl>.ld-pc.f{opacity:1;box-shadow:0 0 0 3px #E3242B,0 16px 34px rgba(227,36,43,.2)!important}
+#ld-profes .ld-cyl .ld-pc ul{display:grid!important;font-size:12.5px!important}
+#ld-profes .ld-cyl .ld-pc img{width:84px!important;height:84px!important}
+.ld-cyln{display:flex;justify-content:center;align-items:center;gap:14px;margin-top:4px}
+.ld-cyb{width:40px;height:40px;border-radius:50%;border:0;background:#0B2A5B;color:#fff;font-size:22px;line-height:1;cursor:pointer}
+.ld-cyd{display:flex;gap:6px}.ld-cyd i{width:8px;height:8px;border-radius:6px;background:#cfd8e6;cursor:pointer;transition:width .3s}.ld-cyd i.on{background:#E3242B;width:20px}
+@media (max-width:600px){#ld-profes .ld-cylw{height:340px}#ld-profes .ld-pf.ld-cyl{width:180px;height:295px;margin-left:-90px}#ld-profes .ld-cyl .ld-pc img{width:72px!important;height:72px!important}#ld-profes .ld-cyl .ld-pc{padding:14px 10px!important}}
+#ld-profes .ld-pf.ld-cyl{background:none!important;box-shadow:none!important;border:0!important;height:270px}
+#ld-profes .ld-cylw{height:320px}
+@media (max-width:600px){#ld-profes .ld-pf.ld-cyl{height:265px}#ld-profes .ld-cylw{height:310px}}
