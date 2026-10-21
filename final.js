@@ -109,7 +109,7 @@
       <span class="lbl" style="margin-top:6px">✦ Examen final interactivo</span>
       <h1 style="font-size:clamp(26px,5.5vw,34px);margin:10px 0 4px">${MOD.course ? '🏆 Examen final del curso' : 'Examen final · ' + MOD.es}</h1>
       <p style="font-weight:800;margin:0">Listening + Reading + Writing + Speaking</p>
-      <p class="muted" style="margin:4px 0 12px">${MOD.course ? `${N} preguntas — Evaluación de toda tu ruta de aprendizaje: A1 → A2 → B2 → B2+` : `Nivel ${MOD.levelEs} — Evaluación de los ${MOD.topics} temas del ${MOD.es}`}</p>
+      <p class="muted" style="margin:4px 0 12px">${MOD.course ? `${N} preguntas — Evaluación de toda tu ruta de aprendizaje: A1 → A2 → B1 → B2+` : `Nivel ${MOD.levelEs} — Evaluación de los ${MOD.topics} temas del ${MOD.es}`}</p>
       <div class="fx-info">${M.mascot('fx-wmra', 'point')}<div>Vas a completar ${MOD.course ? 'el <b>examen final del curso</b>: al aprobarlo recibes el certificado de tu ruta completa' : 'el examen final del ' + MOD.es}. Primero te pediremos algunos datos, luego verás las instrucciones y comenzarás con la sección de <b>Listening</b>.<br><span class="muted">⏱ ${CFG.TIME_MIN} minutos · ${CFG.ATTEMPTS} intentos ${ST.attempts ? `· Ya usaste <b>${ST.attempts}</b> de ${maxAttempts()}` : ''}</span></div></div>
       <button class="btn k lg" id="go">Continuar →</button></div>`);
     wireExit(); $('#go').onclick = studentInfo;
@@ -342,7 +342,7 @@
       listening_score: r.per.listening.score.toFixed(1), reading_score: r.per.reading.score.toFixed(1), writing_score: r.per.writing.score.toFixed(1), speaking_score: r.per.speaking.score.toFixed(1),
       final_score: r.fin.toFixed(1), performance: r.b.l.replace(/^\S+\s/, ''), status: r.passed ? 'PASSED' : 'NOT PASSED', feedback: comment(r.per, r.b),
       next_steps_display: r.passed ? 'block' : 'none',
-      next_steps_text: r.passed && MOD.course ? '¡Felicitaciones! Completaste toda tu ruta de aprendizaje en mrarrieta.com (A1 → A2 → B2 → B2+). Tu certificado de finalización ya está disponible en tu perfil. ¡Gracias por aprender inglés HABLANDO con nosotros!' : r.passed ? '¡Felicitaciones! Al aprobar, continuarás al siguiente módulo: ' + MOD.next + '. Este nuevo módulo inicia en tu próxima clase, en el mismo horario habitual.\n\nSi deseas cambiar de profesor(a) para el próximo módulo, puedes solicitarlo en las próximas 24 horas. Si no recibimos tu solicitud, continuarás con el mismo profesor(a).\n\nSi estás en un curso grupal, el cambio de profesor(a) requiere que todo el grupo esté de acuerdo.' : '' };
+      next_steps_text: r.passed && MOD.course ? '¡Felicitaciones! Completaste toda tu ruta de aprendizaje en mrarrieta.com (A1 → A2 → B1 → B2+). Tu certificado de finalización ya está disponible en tu perfil. ¡Gracias por aprender inglés HABLANDO con nosotros!' : r.passed ? '¡Felicitaciones! Al aprobar, continuarás al siguiente módulo: ' + MOD.next + '. Este nuevo módulo inicia en tu próxima clase, en el mismo horario habitual.\n\nSi deseas cambiar de profesor(a) para el próximo módulo, puedes solicitarlo en las próximas 24 horas. Si no recibimos tu solicitud, continuarás con el mismo profesor(a).\n\nSi estás en un curso grupal, el cambio de profesor(a) requiere que todo el grupo esté de acuerdo.' : '' };
     // 0) ☁️ plataforma: el profe y administración reciben el resultado como notificación
     if (cloud()) {
       MRAC.examResult({ exam: EXAM_ID, attempt: r.attemptLabel, listening: params.listening_score, reading: params.reading_score, writing: params.writing_score, speaking: params.speaking_score, final: params.final_score, passed: !!r.passed })
@@ -396,7 +396,7 @@
     app.innerHTML = `<div class="wrap fx"><div class="fx-congrats noprint">${M.mascot('mascot bounce', 'celebrate')}<div class="bubble">Congratulations, ${esc(r.name.split(' ')[0])}! 🎉 You did it!</div></div>
       <div class="cert2" id="cert"><div class="cert2-in"><img class="cert2-logo" src="mra-logo-cert.png" alt="mrarrieta.com">
         <div class="cert2-t">${MOD.course ? 'Certificate of Achievement' : 'Certificate of Completion'}</div><div class="cert2-s">This is to certify that</div><div class="cert2-n">${esc(nm)}</div>
-        <div class="cert2-s">${MOD.course ? 'has successfully completed the entire' : 'has satisfactorily completed'}</div><div class="cert2-m">${MOD.course ? 'English Learning Path · A1 → A2 → B2 → B2+' : MOD.en + ' · ' + MOD.level}</div>
+        <div class="cert2-s">${MOD.course ? 'has successfully completed the entire' : 'has satisfactorily completed'}</div><div class="cert2-m">${MOD.course ? 'English Learning Path · A1 → A2 → B1 → B2+' : MOD.en + ' · ' + MOD.level}</div>
         <div class="cert2-s">${MOD.course ? 'and passed the Final Course Exam' : 'of the English program'} at <b>MRARRIETA.COM</b>${r.fin ? `, with a final score of <b>${Number(r.fin).toFixed(1)}/10</b>` : ''}.</div>
         <div class="cert2-s cert2-held">Held on <b>${esc(date)}</b></div>
         <div class="cert2-f c"><div class="sigbox"><img class="cert2-sig" src="mra-signature.png" alt="Firma"><b>John Jairo Arrieta Jaramillo</b><span>Director · mrarrieta.com</span></div></div></div></div>
@@ -415,7 +415,7 @@
       d.setFont('times', 'bolditalic'); d.setFontSize(40); d.setTextColor(17, 17, 17); d.text(nm, W / 2, 292, { align: 'center' });
       d.setDrawColor(17, 17, 17); d.setLineWidth(1.5); d.line(W / 2 - 220, 304, W / 2 + 220, 304);
       d.setFont('helvetica', 'normal'); d.setFontSize(15); d.setTextColor(80); d.text(MOD.course ? 'has successfully completed the entire' : 'has satisfactorily completed', W / 2, 336, { align: 'center' });
-      d.setFont('helvetica', 'bold'); d.setFontSize(24); d.setTextColor(17, 17, 17); d.text(MOD.course ? 'ENGLISH LEARNING PATH  ·  A1 > A2 > B2 > B2+' : (MOD.en + ' · ' + MOD.level).toUpperCase(), W / 2, 372, { align: 'center' });
+      d.setFont('helvetica', 'bold'); d.setFontSize(24); d.setTextColor(17, 17, 17); d.text(MOD.course ? 'ENGLISH LEARNING PATH  ·  A1 > A2 > B1 > B2+' : (MOD.en + ' · ' + MOD.level).toUpperCase(), W / 2, 372, { align: 'center' });
       d.setFont('helvetica', 'normal'); d.setFontSize(14); d.setTextColor(80);
       d.text((MOD.course ? 'and passed the Final Course Exam at MRARRIETA.COM' : 'of the English program at MRARRIETA.COM') + (r.fin ? `, with a final score of ${Number(r.fin).toFixed(1)}/10.` : '.'), W / 2, 402, { align: 'center' });
       d.setFont('helvetica', 'italic'); d.setFontSize(13); d.setTextColor(80); d.text('Held on ' + date, W / 2, 426, { align: 'center' });

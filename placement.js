@@ -1,7 +1,7 @@
 /* =====================================================================
    PRUEBA DE CLASIFICACIÓN (Placement Test) — ADAPTATIVA
    · Evalúa las 4 habilidades (Listening, Reading, Writing, Speaking) en CADA nivel
-   · Nivel por nivel (A1 → A2 → B2 → B2+): 4 preguntas por nivel, una de cada habilidad
+   · Nivel por nivel (A1 → A2 → B1 → B2+): 4 preguntas por nivel, una de cada habilidad
      - 3/3 en Listening+Reading+Writing → sube de nivel
      - 2/3 → 2 preguntas de confirmación del mismo nivel (precisión)
      - 0-1/3 → se detiene: ese es su módulo

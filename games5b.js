@@ -160,7 +160,7 @@
   /* ====== t10p2 — LA LÁMPARA DEL GENIO ====== */
   async function genieLamp(stage, p) {
     const R = sample(G().genie || [], 6); let c = 0; const missed = [];
-    const TY = [['now', '🕐 Presente', 'wish + past'], ['past', '⏪ Pasado', 'wish + had + participio'], ['would', '😤 Queja', 'wish + would']];
+    const TY = [['now', '🕐 Presente', 'wish + past simple'], ['past', '👤 Ser / estar', 'wish + were'], ['would', '💪 Habilidad', 'wish + could']];
     for (let k = 0; k < R.length && live(stage); k++) {
       const r = R[k];
       const body = head(stage, { lbl: 'Game', title: '🧞 La lámpara del genio', ins: 'Alguien frota la lámpara y se queja. 1️⃣ ¿Qué tipo de deseo es? 2️⃣ Formula el deseo <b>correctamente</b> para que el genio lo cumpla.', count: `Deseo ${k + 1} / ${R.length}` });

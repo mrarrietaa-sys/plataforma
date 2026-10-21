@@ -1350,7 +1350,7 @@ a.iconbtn{display:inline-grid;place-items:center;text-decoration:none}
 @media (max-width:600px){.mb-x{display:none}}
 .hero.solo{grid-template-columns:1fr}
 /* BEGIN g5b */
-/* ===== Juegos únicos Módulo 3 (B2) · temas 8–13 (g5b) ===== */
+/* ===== Juegos únicos Módulo 3 (B1) · temas 8–13 (g5b) ===== */
 .g5b-col{grid-template-columns:1fr!important;max-width:620px;margin-left:auto;margin-right:auto}
 .g5b-col .opt{font-size:16px;text-align:left;line-height:1.3;padding:12px 14px}
 .g5b-four{grid-template-columns:repeat(4,1fr);max-width:560px;margin-left:auto;margin-right:auto}
@@ -1773,7 +1773,7 @@ a.iconbtn{display:inline-grid;place-items:center;text-decoration:none}
 @media(min-width:761px){.g6c-pad{grid-template-columns:120px minmax(0,1fr)}}
 /* END g6c */
 /* BEGIN g5a */
-/* ===== g5a — juegos únicos Módulo 3 (B2) temas 1–7 ===== */
+/* ===== g5a — juegos únicos Módulo 3 (B1) temas 1–7 ===== */
 .g5a-col{grid-template-columns:1fr!important}
 .g5a-col .opt{font-size:16px;padding:11px 12px;line-height:1.3}
 .g5a-q{text-align:center;font-weight:800;color:var(--k);margin:14px 0 2px;font-size:16px}
