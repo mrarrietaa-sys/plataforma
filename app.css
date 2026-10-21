@@ -4853,3 +4853,9 @@ body .btn{max-width:100%;box-sizing:border-box}
 #ld-profes .ld-pf.ld-cyl{background:none!important;box-shadow:none!important;border:0!important;height:270px}
 #ld-profes .ld-cylw{height:320px}
 @media (max-width:600px){#ld-profes .ld-pf.ld-cyl{height:265px}#ld-profes .ld-cylw{height:310px}}
+/* v306 · ¿Qué ganas? en 4 puntos */
+.ld-glist{grid-template-columns:repeat(4,minmax(0,1fr))!important;column-gap:22px}
+@media (max-width:980px){.ld-glist{grid-template-columns:1fr 1fr!important}}
+@media (max-width:520px){.ld-glist{grid-template-columns:1fr!important}}
+.pt-or span{line-height:1.6}
+.ld-glist .ld-gi{border-bottom:0!important;border-top:0!important}

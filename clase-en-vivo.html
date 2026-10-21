@@ -2,8 +2,10 @@
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>Clase en vivo · mrarrieta.com</title>
 <script src="https://unpkg.com/@daily-co/daily-js@0.92.2/dist/daily.js"></script>
-<script src="clase-topics.js?v=304"></script>
-<script src="config.js?v=304"></script>
+<script src="clase-topics.js?v=306"></script>
+<script src="config.js?v=306"></script>
+<script src="goals.js?v=306"></script>
+<script src="goalsdata.js?v=306"></script>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--n:#0B2A5B;--n2:#1e4a8f;--r:#E3242B;--y:#FFC21A;--g:#16a34a;--bd:#e3e9f3;--mu:#5b6577;--bg:#eef2f8}
@@ -117,7 +119,7 @@ body.only-s #vbox{position:sticky;top:0;z-index:20;background:var(--bg);padding-
 <script>
 (function(){
 const CLOUD=(window.M1CONFIG&&M1CONFIG.CLOUD_URL)||'https://script.google.com/macros/s/AKfycbzGXtwZH_eBIPz01faL6e8cMydhW-0u2H4UtzdHQYCr8CqMG62Tdp1dNDZ4MY4khE0N/exec';
-const CV='304',SESSION_MIN=60,CLASS_MIN=50;let SNAME='Carlos',TNAME='Mrs. Jennifer';
+const CV='306',SESSION_MIN=60,CLASS_MIN=50;let SNAME='Carlos',TNAME='Mrs. Jennifer';
 const QP=new URLSearchParams(location.search),CID=(QP.get('c')||'').replace(/[^\w]/g,''),DEMO=QP.get('demo')==='1',PLATFORM=!!CID;let INFO=null,VTOKEN='',GATE=PLATFORM,TAUTH=null,SAVED=0,MARKED=0;
 const base=()=>PLATFORM&&INFO?INFO.startMs:st.started;if(DEMO)SNAME='tu estudiante';
 const TOPICS_M1=[['The Greetings','Los saludos'],['The Alphabet','El abecedario'],['The Nationalities','Las nacionalidades'],['Numbers and Colors','Números y colores'],['Verb To Be and A / An','Verbo to be y a / an'],['Jobs and Occupations','Trabajos y ocupaciones'],['Family and Animals','Familia y animales'],['The Food vs. The Fruit and Vegetables','Comida, frutas y verduras'],['Weekdays and Months of the Year','Días y meses del año'],['The Weather Forecast and the Clothes','El clima y la ropa'],['School Supplies and Parts of the House','Útiles escolares y partes de la casa'],['The Singular and the Plural Nouns','Sustantivos singulares y plurales'],['Demonstrative Pronouns','Pronombres demostrativos'],['There is and There are','There is y there are']];
@@ -335,6 +337,7 @@ function renderT(){const l=L(),top=$('#m-top'),body=$('#m-body');
  $('#t-pz').onclick=()=>send({pzOn:st.pzOn?0:1});$('#t-cnt').onclick=contentModal;$('#t-top').onclick=()=>topicModal();const rs=$('#t-rs');if(rs)rs.onclick=()=>{if(!confirm('¿Empezar la clase de nuevo desde el paso 1? Se borran los puntos de hoy.'))return;stopAudio(true);send({started:Date.now()+3900,i:0,res:[],ok:0,rep:0,pts:0,fb:'',fin:null,hl:-1,sh:-1,cheer:st.cheer});countdown(3900);};
  if(!st.started){body.innerHTML=animKey('pre'+st.mod+st.topic,`<div class="pre"><div class="hero"><img src="${U(l.cover,1100,620)}" alt=""><div><small>Tema ${l.n} · ${modLabel(l)}</small><h2>${esc(l.title)}</h2><p>${esc(l.goal)}</p></div></div>
    <div class="sug">${DEMO?`<span>${I('book')} Modo práctica · sin estudiante</span>`:`<span>${I('check')} Elegido por ${esc(SNAME)}: <b>${esc(PLATFORM?(INFO.topic||'No eligió tema'):(topicsOf(CHOSEN_M)[CHOSEN-1]||[''])[0])}</b></span>`}${SUGGEST?`<span>${I('bulb')} Sugerido según sus errores: <b>${esc(TOPICS[SUGGEST.n-1][0])}</b> (${esc(SUGGEST.why)})</span>`:''}</div>${PLATFORM&&!INFO.topicN?`<div class="tip n" style="margin-bottom:8px"><b>${I('bulb')} ${esc(SNAME)} pidió un tema libre</b><small>Elige con «Cambiar tema» el tema de su módulo que más se acerque, o usa la Pizarra y el Contenido del tema para guiar la conversación.</small></div>`:''}
+   ${PLATFORM&&INFO&&INFO.goal&&window.MRGOAL?`<div class="tip n gl-live"><b>🧭 Objetivo de ${esc(SNAME)}: ${MRGOAL.chip(INFO.goal)}</b>${(()=>{const w=MRGOAL.why(st.mod,st.topic,INFO.goal);return w?`<small>Para su objetivo: ${esc(w.t)}</small>`:''})()}<div class="gl-qs">${MRGOAL.questions(INFO.goal,st.topic).map((q,i)=>`<div>💬 ${esc(q)}</div>`).join('')}</div></div>`:''}
    <div class="tip n"><b>Clase de ${CLASS_MIN} minutos · ${l.steps.length} pasos · Speaking, Listening, Reading y Writing.</b><small>En cada paso verás arriba qué hacer, el botón de audio (suena en los dos equipos), la respuesta esperada y el tiempo sugerido.</small></div>
    ${DEMO?'':`<div class="st ${st.ready?'':'w'}">${I('phone')} ${st.ready?esc(SNAME)+' ya entró y ve la pantalla de bienvenida':'Esperando a que '+esc(SNAME)+' entre'+(PLATFORM?'…':' con el código '+room+'…')}</div>`}
    <div class="nav" style="grid-template-columns:1fr"><button class="btn go" id="t-start">${I('play')} Empezar clase (${CLASS_MIN} min)</button></div></div>`);

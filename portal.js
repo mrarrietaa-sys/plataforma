@@ -119,7 +119,7 @@
       { id: 'membership', icon: '🖥️', name: 'PLATAFORMA', price: pp('membership').price || '$59.900', per: 'COP/mes', tag: 'Aprende a tu ritmo', perks: (PL.BEN || {}).membership ? PL.BEN.membership.filter(b => !/^No incluye/.test(b)) : [], note: 'No incluye clases individuales.' },
       { id: 'premium', icon: '👑', name: 'PREMIUM · 4 CLASES', price: pp('premium').price || '$169.900', per: 'COP/mes', tag: '+ 4 clases con profe', perks: (PL.BEN || {}).premium || [] },
       { id: 'premium8', icon: '💎', name: 'PREMIUM · 8 CLASES', price: pp('premium8').price || '$289.900', per: 'COP/mes', tag: '+ 8 clases con profe', perks: (PL.BEN || {}).premium8 || [], best: true }];
-    const GAN = [['user', 'r', 'Clases 1 a 1', 'Con profes reales, a tu ritmo'], ['monitor', 'b', '100% online', 'Desde tu celular o computador'], ['award', 'g', 'Certificados', 'Al terminar cada módulo'], ['clock', 'y', 'A tu ritmo', 'Estudia cuando quieras'], ['compass', 'b', 'Ruta A1 → B2+', 'Sabes qué estudiar cada día'], ['check', 'r', 'Te escucha y te corrige', 'La plataforma corrige tu pronunciación al instante']];
+    const GAN = [['check', 'r', 'Hablas desde el día 1', 'La plataforma te escucha y te corrige'], ['user', 'b', 'Clases 1 a 1 con profes reales', 'Tú eliges profe, día y hora'], ['award', 'g', 'Del A1 al B2+ con certificado', 'Una ruta clara para cada nivel'], ['clock', 'y', '100% online, a tu ritmo', 'Desde tu celular, cuando quieras']];
     const wrap = document.createElement('div'); wrap.className = 'ld';
     wrap.innerHTML = `<section class="ld-hero"><div class="ld-copy"><h1>Aprende inglés <em>HABLANDO</em></h1><p class="ld-lead">La plataforma que <b>te escucha, te corrige y te pone a hablar</b> desde el primer día. <b>100% virtual</b>, a tu ritmo y con profes reales.</p>
         <div class="ld-cta"><button class="btn k lg" data-trial>${MRI('gift')} Prueba gratis 3 días</button><a class="btn w lg" href="#ld-planes">${MRI('crown')} Ver planes</a></div><p class="ld-count-st"><b data-stc>+300</b> estudiantes ya hablan inglés con nosotros</p>
@@ -138,7 +138,7 @@
     const pw = card.closest('.pt-wrap'); if (pw) pw.classList.add('ld-on');
     card.parentNode.insertBefore(wrap, card); wrap.querySelector('.ld-login').appendChild(card);
     const free = $('.pt-free'); if (free) free.remove();
-    const or = $('.pt-or'); if (or) or.innerHTML = `<span>¿Aún no eres estudiante? <a href="#" data-trial>Prueba gratis 3 días</a></span>`;
+    const or = $('.pt-or'); if (or) or.innerHTML = `<span>¿Aún no eres estudiante?<br><a href="#" data-trial>Prueba gratis 3 días</a></span>`;
     const links = $('.pt-links'); if (links) links.remove();
     const WAN = (C.WHATSAPP || '573017810841');
     wrap.insertAdjacentHTML('afterend', `<footer class="ld-foot"><div class="ld-foot-in"><div><h4>mrarrieta.com</h4><p>Aprende inglés HABLANDO con la metodología RealTalk®. Clases 100% online.</p></div>
@@ -303,6 +303,10 @@
         if (r.err === 'moved') return bad('Este código gratuito ya no funciona: al activar tu plan te enviamos un código nuevo a tu correo. Entra con ese.');
         if (r.err === 'trial_over') { b.disabled = false; return trialOver(v); }
         if (r.err === 'network' || r.err === 'offline') return bad('No hay conexión con la nube. Revisa tu internet e inténtalo de nuevo.');
+        // 🔑 una sola entrada: clave de administración o código de profe
+        b.disabled = true; b.textContent = 'Entrando…'; const w = await MRAC.call('who', { k: v }).catch(() => null); b.disabled = false; b.textContent = 'Entrar →';
+        if (w && w.role === 'admin') { try { sessionStorage.setItem('mra_admin_key', v); localStorage.setItem('mra_last_role', JSON.stringify({ role: 'admin' })); } catch (e) { } location.href = 'administracion.html'; return; }
+        if (w && w.role === 'teacher') return teacherPin(v.toUpperCase());
         return bad();
       }
       // 2) códigos guardados en config.js (modo sin nube / profes)
@@ -311,6 +315,17 @@
       P.save(Object.assign({ created: Date.now() }, old, { type: r.type, demo: !!r.demo, codeHash: M.codeHash(i.value), module: r.module || old.module || null, assignedBy: r.module ? 'admin' : (old.assignedBy || null) }));
       sfx('win'); M.confetti(1500); greetVoice(); route('home'); };
     $('#ok').onclick = go; i.onkeydown = e => { if (e.key === 'Enter') go(); };
+    function teacherPin(tcode) { // 👩‍🏫 profe: después de su código, pide su PIN y entra a su portal
+      const card = i.closest('.pt-login') || document; const h = card.querySelector('h1'), pm = card.querySelector('h1 + p');
+      if (h) h.textContent = 'Hola, profe 👋'; if (pm) pm.textContent = 'Ahora escribe tu PIN para entrar a tu portal.';
+      i.value = ''; i.placeholder = 'Tu PIN'; i.setAttribute('autocomplete', 'current-password'); i.focus();
+      const ok = $('#ok'); ok.onclick = tgo; i.onkeydown = e => { if (e.key === 'Enter') tgo(); };
+      async function tgo() { const pin = i.value.trim(); if (!pin) return bad('Escribe tu PIN 🙂'); ok.disabled = true; ok.textContent = 'Entrando…';
+        const r = await MRAC.call('tLogin', { tcode, pin }).catch(() => null); ok.disabled = false; ok.textContent = 'Entrar →';
+        if (!r || !r.ok) return bad(r && r.err === 'auth' ? 'PIN incorrecto 😕' : 'No se pudo entrar. Inténtalo de nuevo.');
+        try { sessionStorage.setItem('mra_tp_session', JSON.stringify({ tcode, pin })); localStorage.setItem('mra_last_role', JSON.stringify({ role: 'teacher', first: (r.teacher && (r.teacher.hello || String(r.teacher.name || '').split(' ')[0])) || '' })); } catch (e) { }
+        location.href = 'docente.html'; }
+    }
   }
   function nameStep() {
     const s1 = (M.S && M.S.name) || ''; const p = P.get();
@@ -393,8 +408,8 @@
     const pct = curMod ? curMod.pct : 0;
     const side = `<aside class="db-side card">
         <div class="db-me"><button class="pt-avwrap" id="me-av" title="Personaliza tu foto">${P.avHTML('pt-av')}<i class="pt-pen">✏️</i></button>
-          <div class="db-me-tx"><span class="db-greet">${greet}!</span><h2>${esc(P.look().nick || p.first)} ${esc(p.last || '')}</h2><span class="db-chip ${plNow.eff}">${MRI(plIc)} ${plName}</span>${plNow.end && plNow.paid && !P.isExpired() ? `<small class="muted">Activo hasta el ${fmtD(plNow.end, { day: 'numeric', month: 'long' })}</small>` : ''}</div></div>
-        ${curMod ? `<div class="db-ring" style="--p:${pct}"><div><b>${pct}%</b><small>de tu módulo</small></div></div><small class="muted db-modtx">${esc(a.name)} · ${esc(a.lv || a.id)} · ${curMod.done} de ${trial ? 4 : a.classes} clases</small>` : staff ? '' : `<div class="db-ring" style="--p:0"><div><b>0%</b><small>tu progreso</small></div></div><small class="muted db-modtx">Empieza con tu prueba de clasificación</small>`}
+          <div class="db-me-tx"><span class="db-greet">${greet}!</span><h2>${esc(P.look().nick || p.first)} ${esc(p.last || '')}</h2><span class="db-chip ${plNow.eff}">${MRI(plIc)} ${plName}</span>${!staff && window.MRGOAL ? MRGOAL.lineHTML() : ''}${plNow.end && plNow.paid && !P.isExpired() ? `<small class="muted">Activo hasta el ${fmtD(plNow.end, { day: 'numeric', month: 'long' })}</small>` : ''}</div></div>
+        ${curMod ? `<div class="db-ring" style="--p:${pct}"><div><b>${pct}%</b><small>de tu módulo</small></div></div><small class="muted db-modtx">${esc(a.name)} · ${esc(a.lv || a.id)} · ${curMod.done} de ${trial ? 4 : a.classes} clases</small>${!staff && window.MRGOAL ? MRGOAL.cardHTML(pct) : ''}` : staff ? '' : `<div class="db-ring" style="--p:0"><div><b>0%</b><small>tu progreso</small></div></div><small class="muted db-modtx">Empieza con tu prueba de clasificación</small>`}
         <nav class="db-qa">${staff ? '' : `<button class="btn w" id="pt-plans">${MRI('crown')} Mi plan</button>`}${!staff && P.plan().premium ? `<button class="btn w" data-go="#pt-live">${MRI('calendar')} Mis clases</button>` : ''}${!staff && P.plan().premium ? `<button class="btn w pt-polb">${MRI('file')} Política de reservas</button>` : ''}<button class="btn w" id="me-go2">${MRI('user')} Personalizar perfil</button>${staff ? '' : `<button class="btn w" id="pt-pass">${MRI('unlock')} Cambiar mi código</button>`}<button class="btn w" id="pt-tour">${MRI('compass')} Ver el tour</button></nav></aside>`;
     const prem = !staff && P.plan().premium;
     const MENU = { // 📂 todo el perfil organizado en 3 grupos
@@ -427,6 +442,10 @@
       <p class="center fx-foot db-foot" style="margin-top:22px;font-size:13.5px;font-weight:600">¡Aprende inglés HABLANDO!<br><a class="foot-wa" href="https://wa.me/${esc(C.WHATSAPP)}?text=${encodeURIComponent((window.MRNE || String)('¡Hola, mrarrieta.com! Soy ' + ((p.first || '') + ' ' + (p.last || '')).trim() + '. Tengo una pregunta.'))}" target="_blank" rel="noopener">WhatsApp ${esc(C.WHATSAPP.replace(/^57/, '').replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3'))}</a></p></div>
       <nav class="db-tabbar sd-tab"><button class="on" data-st="top">${MRI('compass')}<span>Inicio</span></button>${Object.keys(MENU).map((k) => `<button data-st="${k}"><b class="sd-ti">${MENU[k][0]}</b><span>${k === 'cls' ? 'Clases' : k === 'me' ? 'Cuenta' : 'Módulos'}</span></button>`).join('')}</nav>`;
     if ($('#pt')) $('#pt').onclick = () => route('placement');
+    if (!staff && window.MRGOAL) { // 🎯 objetivo personal: elegir o cambiar
+      const gw = () => $$('[data-goal]').forEach(b => b.onclick = () => MRGOAL.ask({ noSkip: true }).then(g => { if (g) home(); }));
+      gw(); if (MRGOAL.shouldAsk()) setTimeout(() => { if (!document.querySelector('.modal')) MRGOAL.ask().then(g => { if (g) home(); }); }, 900);
+    }
     const plans = (e) => { if (e) e.preventDefault(); M.modal(`<div class="pt-plmodal">${planSection()}</div>`, { x: true }); };
     $$('.tb-up').forEach(x => x.onclick = plans); if ($('#pt-tour')) $('#pt-tour').onclick = () => { window.scrollTo(0, 0); portalTour(true); }; if ($('#pt-plans')) $('#pt-plans').onclick = plans;
     wireBirth(); live(); birthdayParty();
