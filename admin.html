@@ -26,7 +26,7 @@
     </div>
     <div id="modbox"><label style="font-weight:800">Módulo (solo estudiantes, opcional)</label>
     <select class="inp" id="mod" style="margin:6px 0 14px;text-align:left;font-size:16px">
-      <option value="">Que tome la prueba de clasificación</option><option value="1">Asignar directamente: Módulo 1 · A1</option><option value="2">Asignar directamente: Módulo 2 · A2</option><option value="3">Asignar directamente: Módulo 3 · B2</option><option value="4">Asignar directamente: Módulo 4 · B2+</option>
+      <option value="">Que tome la prueba de clasificación</option><option value="1">Asignar directamente: Módulo 1 · A1</option><option value="2">Asignar directamente: Módulo 2 · A2</option><option value="3">Asignar directamente: Módulo 3 · B1</option><option value="4">Asignar directamente: Módulo 4 · B2+</option>
     </select></div>
     <label style="font-weight:800">Nota (opcional, solo para ti)</label>
     <input class="inp" id="note" placeholder="Ej: Laura Gómez - pagó 1 oct" style="margin:6px 0 14px;text-align:left;font-size:16px">
@@ -63,6 +63,6 @@ document.getElementById('gen').onclick=()=>{
 };
 document.getElementById('copy').onclick=()=>{const t=document.getElementById('line');t.select();navigator.clipboard?navigator.clipboard.writeText(t.value):document.execCommand('copy');document.getElementById('copy').textContent='✅ Copiado';};
 </script>
-<script src="idle.js?v=292"></script>
+<script src="idle.js?v=293"></script>
 </body>
 </html>
