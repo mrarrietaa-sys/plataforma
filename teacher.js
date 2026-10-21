@@ -208,7 +208,7 @@
     if ($('#tp-mat')) $('#tp-mat').onclick = material;
     if ($('#tp-pz')) $('#tp-pz').onclick = () => pzPick();
     if ($('#tp-live')) $('#tp-live').onclick = () => { // 🎥 práctica de las clases en vivo de los 4 módulos
-      const show = (mod) => { const T = (window.CLASE_TOPICS || {})[mod] || []; const LV = { 1: 'A1', 2: 'A2', 3: 'B2', 4: 'B2+' };
+      const show = (mod) => { const T = (window.CLASE_TOPICS || {})[mod] || []; const LV = { 1: 'A1', 2: 'A2', 3: 'B1', 4: 'B2+' };
         const m = modal(`<button class="tp-x" data-x aria-label="Cerrar">✕</button><h3>🎥 Clases en vivo</h3><p class="muted">Cada tema es una clase completa de 50 minutos: te dice qué hacer en cada paso, con audio, respuestas, pizarra y reloj. Ábrela en <b>modo práctica</b> para prepararte; en la clase real entras desde <b>Mis clases → Entrar a la clase</b>.</p>
           <div class="tp-livetabs">${[1, 2, 3, 4].map((x) => `<button class="${x === mod ? 'on' : ''}" data-lm="${x}">Módulo ${x} · ${LV[x]}</button>`).join('')}</div>
           <div class="tp-livel">${T.map((t, i) => `<a class="tp-livei" href="clase-en-vivo.html?rol=profe&demo=1&m=${mod}&t=${i + 1}"><b>${i + 1}</b><span>${esc(t[0])}</span><em>Practicar →</em></a>`).join('') || '<p class="muted">Cargando…</p>'}</div>`);
