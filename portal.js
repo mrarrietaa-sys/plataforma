@@ -143,7 +143,7 @@
     const WAN = (C.WHATSAPP || '573017810841');
     wrap.insertAdjacentHTML('afterend', `<footer class="ld-foot"><div class="ld-foot-in"><div><h4>mrarrieta.com</h4><p>Aprende inglés HABLANDO con la metodología RealTalk®. Clases 100% online.</p></div>
       <div><h4>Escuela</h4><a href="#ld-planes">Planes</a><a href="recomienda.html">Recomienda y gana</a><a href="politica.html">Política de reservas</a><a href="privacidad.html">Política de privacidad</a></div>
-      <div><h4>Equipo</h4><a href="reclutamiento.html">Trabaja con nosotros</a><a href="profesores.html">Soy profesor</a><a href="administracion.html">Administración</a></div>
+      <div><h4>Equipo</h4><a href="reclutamiento.html">Trabaja con nosotros</a></div>
       <div><h4>Contacto</h4><a target="_blank" rel="noopener" href="https://wa.me/${WAN}">WhatsApp ${esc(WAN.replace(/^57/, '').replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3'))}</a><span>Lun–vie 7 a. m.–9 p. m. · Sáb 7 a. m.–5 p. m.</span><span>Pagos: tarjeta (Mercado Pago), Nequi y Llave (Breve-B)</span></div></div>
       <p class="ld-copy-r">© ${new Date().getFullYear()} mrarrieta.com · Todos los derechos reservados</p></footer>
       <div class="ld-wawrap" id="ld-wa"><button class="ld-wax" aria-label="Ocultar">✕</button><a class="ld-wa" target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp" href="${WA('¡Hola! Quiero información sobre las clases de inglés de mrarrieta.com')}"><svg viewBox="0 0 32 32" width="30" height="30" aria-hidden="true"><path fill="#fff" d="M16 3C8.8 3 3 8.6 3 15.6c0 2.5.8 4.9 2.1 6.9L3.6 28l5.7-1.5c2 1.1 4.3 1.7 6.7 1.7 7.2 0 13-5.6 13-12.6S23.2 3 16 3zm6.3 17.6c-.3.8-1.6 1.5-2.2 1.6-.6.1-1.3.1-2.1-.1-.5-.2-1.1-.4-1.9-.7-3.3-1.4-5.5-4.7-5.6-4.9-.2-.2-1.3-1.8-1.3-3.4s.8-2.4 1.1-2.7c.3-.3.6-.4.8-.4h.6c.2 0 .5-.1.7.6.3.7.9 2.3 1 2.5.1.2.1.4 0 .6-.1.2-.2.4-.3.6l-.5.6c-.2.2-.3.4-.1.7.2.3.9 1.5 2 2.4 1.4 1.2 2.5 1.6 2.9 1.8.4.2.6.1.8-.1.2-.2.9-1 1.1-1.4.2-.4.5-.3.8-.2.3.1 2 .9 2.3 1.1.3.2.6.3.7.4.1.3.1 1-.2 1.8z"/></svg></a></div>`);
@@ -306,7 +306,7 @@
         // 🔑 una sola entrada: clave de administración o código de profe
         b.disabled = true; b.textContent = 'Entrando…'; const w = await MRAC.call('who', { k: v }).catch(() => null); b.disabled = false; b.textContent = 'Entrar →';
         if (w && w.role === 'admin') { try { sessionStorage.setItem('mra_admin_key', v); localStorage.setItem('mra_last_role', JSON.stringify({ role: 'admin' })); } catch (e) { } location.href = 'administracion.html'; return; }
-        if (w && w.role === 'teacher' && w.tcode) { try { sessionStorage.setItem('mra_tp_session', JSON.stringify({ tcode: w.tcode, pin: w.pin })); localStorage.setItem('mra_last_role', JSON.stringify({ role: 'teacher' })); } catch (e) { } location.href = 'docente.html'; return; }
+        if (w && w.role === 'teacher' && w.tcode) { try { sessionStorage.setItem('mra_tp_session', JSON.stringify({ tcode: w.tcode, pin: w.pin })); localStorage.setItem('mra_last_role', JSON.stringify({ role: 'teacher' })); } catch (e) { } location.href = 'profesores.html'; return; }
         return bad();
       }
       // 2) códigos guardados en config.js (modo sin nube / profes)

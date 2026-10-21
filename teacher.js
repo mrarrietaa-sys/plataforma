@@ -46,6 +46,7 @@
 
   /* ---------- entrada ---------- */
   function loginView(msg) {
+    if (!msg && MR.on) { try { location.replace('index.html'); return; } catch (e) { } } // 🔑 los profes entran con su clave en la página de entrada
     outBtn.classList.add('hidden');
     const off = !MR.on;
     app.innerHTML = `<section class="card tp-login center">
