@@ -39,7 +39,7 @@
   }
   const studentName = (code) => { const s = D && D.students[String(code).toUpperCase()]; return s ? s.name || s.code : code; };
   const groupOf = (id) => (D.groups || []).find((g) => g.id === id);
-  const meetOf = (c) => c.meet || (c.groupId && groupOf(c.groupId) ? groupOf(c.groupId).meet : '') || (D.teacher && String(D.teacher.meet || '').split(/[\s,;]+/).filter(Boolean)[0]) || '';
+  const meetOf = () => ''; // 🎥 las clases son en la clase en vivo de la plataforma (sin enlaces externos)
   const typeBadge = (c) => c.type === 'vip' ? '<span class="tp-badge vip">Individual</span>' : (c.type === 'club' ? '<span class="tp-badge grp">Club</span>' : '<span class="tp-badge grp">Grupal</span>');
   const statusBadge = (c) => ({ done: '<span class="tp-st done">Dictada ✓</span>', noshow: '<span class="tp-st noshow">No asistió</span>', cancelled: '<span class="tp-st canc">Cancelada</span>', latecancel: '<span class="tp-st canc">Cancelada tarde</span>', tnoshow: '<span class="tp-st noshow">⚠️ No te conectaste</span>', tlate: '<span class="tp-st noshow">⚠️ Cancelaste tarde</span>' }[c.status] || (c.date <= today() ? '<span class="tp-st pend">Por marcar</span>' : '<span class="tp-st sch">Programada</span>'));
   const whoOf = (c) => c.type === 'vip' ? esc(studentName(c.students[0] || '')) : esc(c.type === 'club' ? (c.topic || 'Club') : ((groupOf(c.groupId) || {}).name || 'Grupo')) + ` · ${c.students.length} estudiante${c.students.length === 1 ? '' : 's'}`;
@@ -58,7 +58,7 @@
         <label for="tp-code">Código de profesor</label>
         <input class="inp" id="tp-code" autocomplete="username" autocapitalize="characters" placeholder="Ej: PROFE-ANA" required>
         <label for="tp-pin">PIN</label>
-        <input class="inp" id="tp-pin" type="password" inputmode="numeric" autocomplete="current-password" placeholder="••••" required>
+        <input class="inp" id="tp-pin" type="password" autocapitalize="characters" autocomplete="current-password" placeholder="••••" required>
         <p class="tp-err" id="tp-lerr" ${msg ? '' : 'hidden'}>${esc(msg || '')}</p>
         <button class="btn k lg block" id="tp-go" ${off ? 'disabled' : ''}>Entrar</button>
       </form>
@@ -213,12 +213,12 @@
     if ($('#tp-pol')) $('#tp-pol').onclick = async () => { const r = await api('tPay').catch(() => null); window.MRPOLICY && MRPOLICY.showTeacher({ rate: r && r.rate, noshow: r && r.noshowRate, penalty: r && r.penalty, onAccept: () => toast('✅ Gracias por tu compromiso') }); }; // 📌 política (puntualidad, 15 minutos)
     if ($('#tp-pinch')) $('#tp-pinch').onclick = () => { // 🔑 cambiar PIN
       const m = document.createElement('div'); m.className = 'modal'; m.innerHTML = `<div class="card"><button class="mx" aria-label="Cerrar">✕</button><h3>🔑 Cambiar mi PIN</h3><p class="muted">Usa de 4 a 8 números.</p>
-        <input class="inp" id="pc-old" type="password" inputmode="numeric" placeholder="PIN actual" style="margin-bottom:8px"><input class="inp" id="pc-new" type="password" inputmode="numeric" placeholder="Nuevo PIN" style="margin-bottom:8px"><input class="inp" id="pc-new2" type="password" inputmode="numeric" placeholder="Repite el nuevo PIN">
+        <input class="inp" id="pc-old" type="password" autocapitalize="characters" placeholder="PIN actual" style="margin-bottom:8px"><input class="inp" id="pc-new" type="password" autocapitalize="characters" placeholder="Nuevo PIN" style="margin-bottom:8px"><input class="inp" id="pc-new2" type="password" autocapitalize="characters" placeholder="Repite el nuevo PIN">
         <p id="pc-msg" style="color:#b91c1c;font-weight:700;min-height:20px;margin:8px 0;text-align:center"></p><button class="btn k block lg" id="pc-go">Guardar nuevo PIN</button></div>`; document.body.appendChild(m);
       m.querySelector('.mx').onclick = () => m.remove(); m.onclick = (e) => { if (e.target === m) m.remove(); };
       m.querySelector('#pc-go').onclick = async () => { const o = m.querySelector('#pc-old').value.trim(), n = m.querySelector('#pc-new').value.trim(), n2 = m.querySelector('#pc-new2').value.trim(), msg = m.querySelector('#pc-msg');
         if (o !== String(S.pin)) return msg.textContent = 'El PIN actual no es correcto.';
-        if (!/^[0-9]{4,8}$/.test(n)) return msg.textContent = 'Usa de 4 a 8 números.';
+        if (!/^[A-Za-z0-9]{4,12}$/.test(n)) return msg.textContent = 'Usa de 4 a 12 letras o números (sin espacios ni símbolos).';
         if (n !== n2) return msg.textContent = 'Los dos PIN nuevos no coinciden.';
         const b = m.querySelector('#pc-go'); b.disabled = true; b.textContent = 'Guardando…';
         const r = await api('tPinChange', { newPin: n }).catch(() => null);
@@ -266,7 +266,7 @@
         ${(c.type === 'group' || c.type === 'club') && c.status === 'scheduled' ? `<small class="muted">✅ ${+c.confirmed || 0} confirmado(s)${c.flags === 'cutoff' ? '' : ' · se cierra 3 h antes'}</small>` : ''}${c.status === 'sin-asistentes' ? '<small class="tp-note">🙌 Nadie confirmó: no necesitas conectarte.</small>' : ''}
         ${c.notes && opt && opt.notes ? `<small class="tp-note">📝 ${esc(c.notes)}</small>` : ''}</div>
       <div class="tp-cls-act">
-        ${c.status === 'scheduled' && c.date >= today() ? (c.type === 'vip' ? (c.date === today() ? `<a class="btn k sm" href="clase-en-vivo.html?c=${encodeURIComponent(c.id)}&rol=profe"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6h11a2 2 0 0 1 2 2v1.6l3.4-2.3A1 1 0 0 1 22 8.1v7.8a1 1 0 0 1-1.6.8L17 14.4V16a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z"/></svg> Entrar a la clase</a><small class="muted tp-live-n">Se activa 5 min antes</small>` : '<small class="muted">El botón para entrar aparece el día de la clase</small>') : (link ? `<a class="btn k sm" href="${esc(link)}" target="_blank" rel="noopener"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6h11a2 2 0 0 1 2 2v1.6l3.4-2.3A1 1 0 0 1 22 8.1v7.8a1 1 0 0 1-1.6.8L17 14.4V16a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z"/></svg> Entrar a la clase</a>` : '<small class="muted">Sin enlace de clase</small>')) : ''}
+        ${c.status === 'scheduled' && c.date >= today() ? (c.type === 'vip' ? (c.date === today() ? `<a class="btn k sm" href="clase-en-vivo.html?c=${encodeURIComponent(c.id)}&rol=profe"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6h11a2 2 0 0 1 2 2v1.6l3.4-2.3A1 1 0 0 1 22 8.1v7.8a1 1 0 0 1-1.6.8L17 14.4V16a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z"/></svg> Entrar a la clase</a><small class="muted tp-live-n">Se activa 5 min antes</small>` : '<small class="muted">El botón para entrar aparece el día de la clase</small>') : '') : ''}
         ${c.type === 'vip' && c.students.length && ['cancelled', 'latecancel', 'tlate'].indexOf(c.status) < 0 ? `<button class="btn w sm" data-board="${esc(c.id)}">👤 Ficha</button>` : ''}
         ${c.type === 'vip' && c.status === 'scheduled' && (c.date > today() || (c.date === today() && c.time > nowHM())) ? `<button class="btn w sm tp-cbtn" data-tcancel="${esc(c.id)}">Cancelar clase</button>` : ''}
         ${canMark ? `<button class="btn ok sm" data-mark="${esc(c.id)}">✓ Marcar como dictada</button><button class="btn w sm" data-noshow="${esc(c.id)}">No asistió</button>` : ''}
@@ -492,7 +492,7 @@
         ${next ? `<p class="tp-small">Próxima sesión: <b>${rel(next.date) || dLabel(next.date)}</b> · ${h12(next.time)}</p>` : ''}
         <div class="tp-l">Estudiantes (${list.length})</div>
         ${list.length ? `<ul class="tp-studs">${list.map((s) => `<li><span class="tp-av">${esc((s.name || '?')[0].toUpperCase())}</span><span>${esc(s.name || s.code)}<small>${esc(s.code)}${s.module ? ' · Módulo ' + esc(s.module) : ''}</small></span></li>`).join('')}</ul>` : '<p class="muted tp-small">Aún no hay estudiantes en este grupo.</p>'}
-        ${g.meet ? `<a class="btn k sm" href="${esc(g.meet)}" target="_blank" rel="noopener"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6h11a2 2 0 0 1 2 2v1.6l3.4-2.3A1 1 0 0 1 22 8.1v7.8a1 1 0 0 1-1.6.8L17 14.4V16a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z"/></svg> Enlace de la clase</a>` : ''}</article>`; }).join('')}</div>`
+</article>`; }).join('')}</div>`
       : `<div class="card tp-card"><div class="tp-empty"><img src="mra-wink.webp" alt="" width="110" height="110"><p>Aún no tienes grupos asignados. La administración te asignará grupos según los niveles que dictas.</p></div></div>`;
   }
 

@@ -2,7 +2,7 @@
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>Clase en vivo · mrarrieta.com</title>
 <script src="https://unpkg.com/@daily-co/daily-js@0.92.2/dist/daily.js"></script>
-<script src="config.js?v=289"></script>
+<script src="config.js?v=290"></script>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--n:#0B2A5B;--n2:#1e4a8f;--r:#E3242B;--y:#FFC21A;--g:#16a34a;--bd:#e3e9f3;--mu:#5b6577;--bg:#eef2f8}
@@ -75,6 +75,7 @@ body.only-s .layout{grid-template-columns:minmax(0,1fr);max-width:620px;padding:
 .sbar{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:150;background:var(--n);color:#fff;font:700 14px Poppins;border-radius:14px;padding:12px 44px 12px 16px;box-shadow:0 14px 34px rgba(0,0,0,.3);max-width:min(92vw,620px);animation:en .35s;line-height:1.45}.sbar.w{background:#b45309}.sbar button{position:absolute;right:8px;top:8px;border:0;background:rgba(255,255,255,.2);color:#fff;border-radius:50%;width:26px;height:26px}
 #cf{position:fixed;inset:0;pointer-events:none;z-index:99}
 .cheer{position:fixed;left:50%;top:40%;transform:translate(-50%,-50%) scale(.6);opacity:0;z-index:100;background:#fff;border:3px solid var(--n);border-radius:20px;padding:16px 26px;font:800 22px Poppins;color:var(--n);text-align:center;transition:all .35s;pointer-events:none;box-shadow:0 20px 50px rgba(0,0,0,.25);width:max-content;max-width:90vw}.cheer.show{opacity:1;transform:translate(-50%,-50%) scale(1)}.cheer small{display:block;font:600 14px Inter;color:var(--mu);margin-top:4px}
+.claimb{display:flex;align-items:center;justify-content:center;gap:6px;margin:14px auto 0;border:1.5px solid #f5a3a8;background:#fff;color:#b91c1c;font:700 13.5px Poppins;border-radius:12px;padding:9px 14px}
 .hback{font:700 13px Poppins;color:var(--n);text-decoration:none;border:1.5px solid var(--bd);border-radius:10px;padding:6px 10px;white-space:nowrap}.hback:hover{border-color:var(--n)}
 .help{max-width:1500px;margin:10px auto 0;padding:0 16px;font-size:13px;color:var(--mu)}.help a{color:var(--n);font-weight:700}
 @media (max-width:900px){.layout{grid-template-columns:minmax(0,1fr)}body.only-t .vc{height:45vh;position:static}}
@@ -114,7 +115,7 @@ body.only-s #vbox{position:sticky;top:0;z-index:20;background:var(--bg);padding-
 <script>
 (function(){
 const CLOUD=(window.M1CONFIG&&M1CONFIG.CLOUD_URL)||'https://script.google.com/macros/s/AKfycbzGXtwZH_eBIPz01faL6e8cMydhW-0u2H4UtzdHQYCr8CqMG62Tdp1dNDZ4MY4khE0N/exec';
-const CV='289',SESSION_MIN=60,CLASS_MIN=50;let SNAME='Carlos',TNAME='Mrs. Jennifer';
+const CV='290',SESSION_MIN=60,CLASS_MIN=50;let SNAME='Carlos',TNAME='Mrs. Jennifer';
 const QP=new URLSearchParams(location.search),CID=(QP.get('c')||'').replace(/[^\w]/g,''),DEMO=QP.get('demo')==='1',PLATFORM=!!CID;let INFO=null,VTOKEN='',GATE=PLATFORM,TAUTH=null,SAVED=0,MARKED=0;
 const base=()=>PLATFORM&&INFO?INFO.startMs:st.started;if(DEMO)SNAME='tu estudiante';
 const TOPICS=[['The Greetings','Los saludos'],['The Alphabet','El abecedario'],['The Nationalities','Las nacionalidades'],['Numbers and Colors','Números y colores'],['Verb To Be and A / An','Verbo to be y a / an'],['Jobs and Occupations','Trabajos y ocupaciones'],['Family and Animals','Familia y animales'],['The Food vs. The Fruit and Vegetables','Comida, frutas y verduras'],['Weekdays and Months of the Year','Días y meses del año'],['The Weather Forecast and the Clothes','El clima y la ropa'],['School Supplies and Parts of the House','Útiles escolares y partes de la casa'],['The Singular and the Plural Nouns','Sustantivos singulares y plurales'],['Demonstrative Pronouns','Pronombres demostrativos'],['There is and There are','There is y there are']];
@@ -229,13 +230,14 @@ let pzRaf=0;function pzApply(m){if(m.op==='clear')PZ.strokes=[];else if(m.op==='
 function pzSendAll(){am({pz:{op:'clear'}});PZ.strokes.forEach(s=>{for(let i=0;i<s.p.length;i+=300)am({pz:{op:'add',id:s.id,c:s.c,w:s.w,p:s.p.slice(i,i+300)}});});}
 function pzForCloud(){let a=PZ.strokes.slice();while(a.length&&JSON.stringify(a).length>80000)a.shift();return a;}
 // ---------- video propio (Daily en modo "call object": sin la barra de Daily) ----------
-let curV=null;const OTHER=rol==='profe'?SNAME:TNAME;
+let curV=null,REMOTE=false;const otherName=()=>rol==='profe'?SNAME:TNAME;
 const trk=(p,k)=>{const t=p&&p.tracks&&p.tracks[k];if(!t||t.state==='off'||t.state==='blocked')return null;return t.persistentTrack||(t.state==='playable'?t.track:null);};
 function setTrack(el,t,isA){if(!el)return;const cur=el.srcObject&&el.srcObject.getTracks()[0];if(cur===t)return;el.srcObject=t?new MediaStream([t]):null;if(t){const p=el.play();if(p&&p.catch)p.catch(()=>{if(isA){const b=$('#vsnd');if(b)b.hidden=false;}});}}
 function vUpd(){if(!CO)return;const ps=CO.participants(),loc=ps.local,rem=Object.values(ps).find(p=>!p.local);
  setTrack($('#vl'),trk(loc,'video'));setTrack($('#vr'),trk(rem,'video'));setTrack($('#ar'),trk(rem,'audio'),true);
- const lab=$('#vlab');if(lab)lab.textContent=!rem?`Esperando a ${OTHER}…`:trk(rem,'video')?'':`${OTHER} tiene la cámara apagada`;
- const nm=$('#vname');if(nm)nm.textContent=rem?OTHER:'';
+ if(rem&&!REMOTE){REMOTE=true;const cb=$('#s-claim');if(cb)cb.remove();}
+ const lab=$('#vlab');if(lab)lab.textContent=!rem?`Esperando a ${otherName()}…`:trk(rem,'video')?'':`${otherName()} tiene la cámara apagada`;
+ const nm=$('#vname');if(nm)nm.textContent=rem?otherName():'';
  const a=CO.localAudio(),v=CO.localVideo(),m=$('#vmic'),c=$('#vcam');if(m){m.classList.toggle('off',!a);m.innerHTML=I(a?'mic':'micoff');}if(c){c.classList.toggle('off',!v);c.innerHTML=I(v?'cam':'camoff');}}
 function netUI(){const n=$('#vnet');if(!n)return;const q=st.net;const bad=q==='low'||q==='very-low';n.hidden=!bad;n.textContent=rol==='profe'?(q==='very-low'?'Internet de '+SNAME+' muy débil: el audio puede cortarse':'Internet de '+SNAME+' débil'):(q==='very-low'?'Tu internet está muy débil: acércate al router':'Tu internet está débil');}
 function videoUI(){const vb=$('#vbox');
@@ -363,6 +365,12 @@ function renderT(){const l=L(),top=$('#m-top'),body=$('#m-body');
  $('#t-prev').onclick=()=>nxt({i:Math.max(0,st.i-1)});
  $('#t-jump').onchange=e=>nxt({i:+e.target.value});
  $('#t-next').onclick=()=>{if(last){const sm=summary();const fin={ok:sm.ok,n:sm.N,p:sm.p,end:Date.now()};nxt({fin,cheer:st.cheer+1,pzOn:0});celebrate(fin);if(PLATFORM)saveBoard();}else nxt({i:st.i+1});};}
+function claimBtn(){return PLATFORM&&!REMOTE&&!st.fin?`<button class="claimb" id="s-claim">${I('flag')} Mi profe no se conectó</button>`:'';}
+function bindClaim(){const b=$('#s-claim');if(!b)return;b.onclick=()=>{const left=Math.ceil((INFO.startMs+15*60000-Date.now())/60000);
+ if(left>0)return modal(`<h3>⏳ Aún no puedes reportar</h3><p>El tiempo de espera para reportar es de <b>15 minutos</b> después de la hora de inicio de la clase (${h12ms(INFO.startMs)}). <b>Aún faltan ${left} minuto${left===1?'':'s'}.</b></p><p class="stt">Tu profe también debe esperarte 15 minutos. Mantén esta página abierta.</p>`);
+ const m=modal(`<h3>🚩 ¿Tu profe no se conectó?</h3><p>Cuéntanos qué pasó (opcional). Administración lo revisa y, si se confirma, la clase vuelve a tu saldo.</p><textarea id="cl-n" rows="3" style="width:100%;border:2px solid var(--bd);border-radius:12px;padding:10px;font:600 15px Inter" placeholder="Ej.: esperé 15 minutos y mi profe no entró"></textarea><button class="btn go" id="cl-go" style="width:100%;margin-top:10px">Enviar reporte</button>`);
+ m.querySelector('#cl-go').onclick=async e=>{e.target.disabled=true;let p=null;try{p=JSON.parse(localStorage.getItem('mra_profile_v1')||'null');}catch(x){}const r=await call('claim',{code:p&&p.code,classId:CID,note:m.querySelector('#cl-n').value}).catch(()=>null);m.remove();
+  modal(r&&r.ok?'<h3>✅ Reporte enviado</h3><p>Administración lo revisa en máximo 24 horas. Si se confirma, la clase vuelve a tu saldo.</p>':r&&r.err==='exists'?'<h3>Ya reportaste esta clase</h3><p>Administración ya la está revisando.</p>':'<h3>No se pudo enviar</h3><p>Inténtalo de nuevo o hazlo desde tu perfil.</p>');};};}
 function renderS(){const l=L(),top=$('#m-top'),body=$('#m-body');
  if(!room){top.innerHTML='';body.innerHTML=`<div class="join"><b>Entrar a la clase</b><p style="color:var(--mu)">Escribe el código que te da tu profe.</p><input id="j-in" inputmode="numeric" maxlength="6" placeholder="0000"><button id="j-go">Entrar</button></div>`;
   $('#j-go').onclick=()=>{const v=$('#j-in').value.replace(/\D/g,'');if(v.length<4)return;unlockAudio();room=v;st.ready=Date.now();render();poll();push();};return;}
@@ -370,7 +378,7 @@ function renderS(){const l=L(),top=$('#m-top'),body=$('#m-body');
  top.innerHTML=`<div class="top"><h3>Clase con ${TNAME}</h3><span class="chip r live">EN VIVO</span></div>${st.started?bar():''}`;
  if(!st.started){body.innerHTML=animKey('wel'+st.topic,`<div class="hero" style="margin-top:10px;min-height:300px"><img src="${U(l.cover,1100,700)}" alt=""><div><small>Today's class</small><h2>${esc(l.title)}</h2><p>${esc(l.es)} · Tema ${l.n} · Módulo 1 (A1)</p></div></div>
    <div class="box b" style="text-align:center"><h4>Today's goal</h4><div style="font:700 18px Poppins;color:var(--n)">${esc(l.goalEn)}</div><small class="stt">${esc(l.goal)}</small></div>
-   <div class="wait">${I('clock')} Tu clase dura ${CLASS_MIN} minutos · ${TNAME} empieza en un momento <span class="dots"><i></i><i></i><i></i></span></div>`);return;}
+   <div class="wait">${I('clock')} Tu clase dura ${CLASS_MIN} minutos · ${TNAME} empieza en un momento <span class="dots"><i></i><i></i><i></i></span></div>${claimBtn()}`);bindClaim();return;}
  if(st.fin){const s=summary();body.innerHTML=animKey('fin',`<div class="sumH" style="margin-top:10px"><div class="big">${I(st.fin.p>=70?'trophy':'heart')}</div><h2>${st.fin.p>=70?'Congratulations, '+SNAME+'!':'Good effort, '+SNAME+'!'}</h2><p>${st.fin.ok} de ${st.fin.n} bien en la clase de hoy</p></div>
    <div class="sum"><div><b>${st.fin.ok}/${st.fin.n}</b><span>bien</span></div><div><b>${st.pts}</b><span>puntos</span></div><div><b>${Math.max(1,Math.round((st.fin.end-st.started)/60000))}</b><span>minutos</span></div></div>
    <div class="box g"><h4>Today you learned</h4><div class="chips">${l.learned.map(w=>`<span>${esc(w)}</span>`).join('')}</div></div>
@@ -379,7 +387,7 @@ function renderS(){const l=L(),top=$('#m-top'),body=$('#m-body');
  const fb=st.fb==='ok'?`<div class="status ok">${I('check')} Well done!</div>`:st.fb==='rep'?`<div class="status rep">${I('repeat')} Try again!</div>`:'';
  const wi=$('#w-in'),wv=wi?wi.value:null,wf=wi&&document.activeElement===wi;
  const hint=s.type==='write'?`<div class="wr"><input id="w-in" placeholder="Escribe aquí" autocomplete="off" autocapitalize="sentences"><button id="w-ok" aria-label="Enviar">${I('send')}</button></div>`:s.type==='free'?`<div class="fw"><textarea id="w-in" placeholder="Write here… / Escribe aquí…" autocapitalize="sentences"></textarea><button id="w-ok">${I('send')} Enviar a mi profe</button></div>`:s.type==='qa'||s.type==='intro'||s.type==='yn'?'':s.items?`<div class="hint">${I('mic')} Escucha y repite</div>`:s.type==='read'?`<div class="hint">${I('mic')} Escucha, lee y después lee en voz alta</div>`:`<div class="hint">${I('mic')} Responde hablando a tu profe</div>`;
- body.innerHTML=animKey(key,`<div style="margin-top:10px">${st.pzOn?'':card(s,false)}</div>${hint}${fb}${graded(s)?sc:''}`);
+ body.innerHTML=animKey(key,`<div style="margin-top:10px">${st.pzOn?'':card(s,false)}</div>${hint}${fb}${graded(s)?sc:''}${claimBtn()}`);bindClaim();
  if(s.type==='write'||s.type==='free'){const w=$('#w-in');w.value=wv!=null?wv:(st.said||'');if(wf)w.focus();const go=()=>{const v=w.value.trim();if(v){send({said:v});flashMsg('Enviado a tu profe','ok');}};$('#w-ok').onclick=go;if(s.type==='write')w.onkeydown=e=>{if(e.key==='Enter')go();};}
  body.querySelectorAll('[data-yn]').forEach(b=>b.onclick=()=>{const y=st.yn.slice();y[+b.dataset.yn]=b.dataset.v;send({yn:y});});
  const pl=$('#a-play');if(pl)pl.onclick=()=>{pl.classList.remove('pulse');if(player.dataset.k)return flashMsg('Escuchando… tu profe puede detenerlo');if(s.items)shareAudio(s.items.map(x=>x.au),null,s.items.map((x,n)=>n));else shareAudio(s.au);};
