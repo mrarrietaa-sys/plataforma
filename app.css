@@ -4863,11 +4863,4 @@ body .btn{max-width:100%;box-sizing:border-box}
 .pt-or{margin:12px 0 2px!important;justify-content:center}
 .pt-or:before,.pt-or:after{display:none!important}
 .pt-or .pt-trialk{color:#E3242B;font:800 15px Poppins,sans-serif;text-decoration:underline;text-underline-offset:3px}
-/* v310 · celular: inicio más compacto; el cohete grande no deja espacio vacío */
-@media (max-width:600px){
- .ld-hero .ld-hero-mra{display:none!important}
- .ld-hero::before,.ld-hero::after,.ld-copy::before,.ld-copy::after{display:none!important}
- .ld-hero .ld-copy{padding-bottom:6px!important;min-height:0!important}
- .ld-hero .ld-login{margin-top:12px!important}
- .ld-hero .ld-login .pt-login{box-shadow:0 6px 18px rgba(11,42,91,.08)!important}
-}
+
