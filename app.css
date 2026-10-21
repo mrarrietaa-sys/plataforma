@@ -4806,8 +4806,6 @@ body .btn{max-width:100%;box-sizing:border-box}
 .lv-vip #lv-book,.lv-vip #lv-extra{white-space:normal!important;min-width:0!important;max-width:100%!important;width:auto!important;justify-self:start;font-size:14px!important;padding:9px 16px!important;line-height:1.25;text-align:left}
 @media (max-width:600px){.lv-vip #lv-book,.lv-vip #lv-extra{justify-self:center;text-align:center;margin:4px 0 0!important}}
 /* v300 · página de entrada uniforme: todas las secciones en la misma caja, misma separación */
-.ld-steps .card{align-items:flex-start!important}
-.ld-steps h3{margin:2px 0 0!important}
 .ld-sd{display:block;color:#5a6a86;font-size:13.5px;margin-top:3px}
 /* profes más compactos en PC: 4 por fila */
 @media (min-width:981px){.ld-pf{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:14px!important}.ld-pc{padding:16px 12px!important}.ld-pc img{width:76px!important;height:76px!important}.ld-pc b{font-size:15px}.ld-pc ul{font-size:12.5px}}
