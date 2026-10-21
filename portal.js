@@ -138,7 +138,7 @@
     const pw = card.closest('.pt-wrap'); if (pw) pw.classList.add('ld-on');
     card.parentNode.insertBefore(wrap, card); wrap.querySelector('.ld-login').appendChild(card);
     const free = $('.pt-free'); if (free) free.remove();
-    const or = $('.pt-or'); if (or) or.innerHTML = `<span>¿Aún no eres estudiante?<br><a href="#" data-trial>Prueba gratis 3 días</a></span>`;
+    const or = $('.pt-or'); if (or) or.innerHTML = `<a href="#" data-trial class="pt-trialk">🎁 Prueba gratis 3 días</a>`;
     const links = $('.pt-links'); if (links) links.remove();
     const WAN = (C.WHATSAPP || '573017810841');
     wrap.insertAdjacentHTML('afterend', `<footer class="ld-foot"><div class="ld-foot-in"><div><h4>mrarrieta.com</h4><p>Aprende inglés HABLANDO con la metodología RealTalk®. Clases 100% online.</p></div>
