@@ -2,6 +2,7 @@
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>Clase en vivo · mrarrieta.com</title>
 <script src="https://unpkg.com/@daily-co/daily-js@0.92.2/dist/daily.js"></script>
+<script src="config.js?v=282"></script>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--n:#0B2A5B;--n2:#1e4a8f;--r:#E3242B;--y:#FFC21A;--g:#16a34a;--bd:#e3e9f3;--mu:#5b6577;--bg:#eef2f8}
@@ -12,7 +13,7 @@ header{background:#fff;border-bottom:3px solid var(--r);padding:8px 16px;display
 .layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;max-width:1500px;margin:12px auto 30px;padding:0 16px}
 body.only-s .layout{grid-template-columns:minmax(0,1fr);max-width:620px;padding:0 10px}
 .vset{background:linear-gradient(135deg,#0B2A5B,#1e4a8f);color:#fff;border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:10px;justify-content:center;min-height:300px}.vset b{font:800 30px Poppins;letter-spacing:6px;background:#fff;color:var(--n);border-radius:10px;padding:2px 12px;display:inline-block}
-.vset input{border:0;border-radius:10px;padding:10px;font-size:14px;width:100%}.vset button{border:0;background:var(--r);color:#fff;font:800 15px Poppins;border-radius:10px;padding:11px}
+.vset .vt{font:800 20px Poppins;display:flex;align-items:center;gap:8px}.vset input{border:0;border-radius:10px;padding:10px;font-size:14px;width:100%}.vset button{border:0;background:var(--r);color:#fff;font:800 15px Poppins;border-radius:10px;padding:11px}
 .panel{background:#fff;border-radius:20px;padding:14px 16px 16px;box-shadow:0 12px 34px rgba(11,42,91,.12);position:relative;overflow:hidden}
 .top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.top h3{margin:0;font:800 16px Poppins;color:var(--n);flex:1;min-width:120px}
 .chip{font:700 12px Poppins;border-radius:20px;padding:4px 10px;background:#eef3fb;color:var(--n);border:0}.chip.r{background:var(--r);color:#fff}.chip.live::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:#fff;margin-right:5px;animation:bl 1.4s infinite}
@@ -70,8 +71,11 @@ body.only-s .layout{grid-template-columns:minmax(0,1fr);max-width:620px;padding:
 .tlist{display:grid;gap:6px;margin-top:10px}.tlist button{display:flex;align-items:center;gap:10px;text-align:left;border:1.5px solid var(--bd);background:#fff;border-radius:12px;padding:9px 12px;font:600 14px Inter;color:#1d2b45}.tlist button b{font:800 14px Poppins;color:var(--n);width:24px}.tlist button:not(:disabled):hover{border-color:var(--n)}.tlist button.cur{background:#eef3fb;border-color:var(--n)}.tlist button>span{flex:1}.tlist em{font-style:normal;font:700 11px Inter;border-radius:10px;padding:2px 8px;background:#eef3fb;color:var(--mu);white-space:nowrap}.tlist em.c{background:var(--n);color:#fff}.tlist em.s{background:var(--y);color:var(--n)}
 .cnt h4{font:800 14px Poppins;color:var(--n);margin:14px 0 6px;display:flex;align-items:center;gap:6px}.cnt table{width:100%;border-collapse:collapse;font-size:14px}.cnt td{border-bottom:1px solid var(--bd);padding:5px 4px}.cnt td:first-child{font-weight:700;color:var(--n)}.cnt p{margin:4px 0;font-size:14.5px;line-height:1.6}.cnt .ro{font:700 11px Inter;background:#eef3fb;color:var(--mu);border-radius:10px;padding:2px 8px}
 .pre{text-align:center}.pre .hero{min-height:220px;margin-bottom:12px}.sug{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:8px 0}.sug span{font:600 13px Inter;background:#f4f7fc;border-radius:10px;padding:6px 10px}
+
+.sbar{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:150;background:var(--n);color:#fff;font:700 14px Poppins;border-radius:14px;padding:12px 44px 12px 16px;box-shadow:0 14px 34px rgba(0,0,0,.3);max-width:min(92vw,620px);animation:en .35s;line-height:1.45}.sbar.w{background:#b45309}.sbar button{position:absolute;right:8px;top:8px;border:0;background:rgba(255,255,255,.2);color:#fff;border-radius:50%;width:26px;height:26px}
 #cf{position:fixed;inset:0;pointer-events:none;z-index:99}
 .cheer{position:fixed;left:50%;top:40%;transform:translate(-50%,-50%) scale(.6);opacity:0;z-index:100;background:#fff;border:3px solid var(--n);border-radius:20px;padding:16px 26px;font:800 22px Poppins;color:var(--n);text-align:center;transition:all .35s;pointer-events:none;box-shadow:0 20px 50px rgba(0,0,0,.25);width:max-content;max-width:90vw}.cheer.show{opacity:1;transform:translate(-50%,-50%) scale(1)}.cheer small{display:block;font:600 14px Inter;color:var(--mu);margin-top:4px}
+.hback{font:700 13px Poppins;color:var(--n);text-decoration:none;border:1.5px solid var(--bd);border-radius:10px;padding:6px 10px;white-space:nowrap}.hback:hover{border-color:var(--n)}
 .help{max-width:1500px;margin:10px auto 0;padding:0 16px;font-size:13px;color:var(--mu)}.help a{color:var(--n);font-weight:700}
 @media (max-width:900px){.layout{grid-template-columns:minmax(0,1fr)}body.only-t .vc{height:45vh;position:static}}
 @media (max-width:520px){.tl{grid-template-columns:1fr 1fr}.will{grid-template-columns:1fr}.hero h2{font-size:25px}.card .q{font-size:19px}.grid{grid-template-columns:repeat(2,1fr)}.clock b{font-size:19px}}
@@ -91,6 +95,7 @@ body.only-s #vbox{position:sticky;top:0;z-index:20;background:var(--bg);padding-
 .sk{display:inline-block;font:800 10.5px Poppins;letter-spacing:.6px;border-radius:8px;padding:2px 8px;text-transform:uppercase;vertical-align:1px}.sk.speaking{background:#fde8ea;color:#b91c1c}.sk.listening{background:#dbeafe;color:#1e40af}.sk.reading{background:#dcfce7;color:#166534}.sk.writing{background:#fef3c7;color:#92400e}
 .card .sk{margin-left:6px}
 /* lectura guiada */
+.txtR.exp{font-size:15.5px}.txtR.exp b{display:inline;font:inherit;font-weight:800;color:var(--n);margin:0}.txtR.exp p{margin:4px 0}.ph img[src*=flagcdn]{object-fit:contain;background:#fff}.tile img[src*=flagcdn]{object-fit:contain;background:#f4f7fc;padding:10px}
 .txtR .s{border-radius:6px;transition:background .2s;cursor:default}.txtR .s.on{background:#FFC21A;color:#0B2A5B}.txtR .s.hi{background:#dbeafe;box-shadow:0 0 0 2px #93c5fd}body.only-t .txtR .s{cursor:pointer}body.only-t .txtR .s:hover{background:#eef3fb}
 .yn{display:flex;align-items:center;gap:10px;background:#fff;color:#1d2b45;border-radius:12px;padding:9px 10px;margin-top:8px;text-align:left;font-size:15px}.yn p{margin:0;flex:1}.yn button{border:2px solid #c9d6ea;background:#fff;color:var(--n);font:800 13px Poppins;border-radius:10px;padding:7px 11px}.yn button.sel{background:var(--n);color:#fff;border-color:var(--n)}.yn .r{font:800 13px Poppins;min-width:66px;text-align:right}.yn .r.g{color:#15803d}.yn .r.b{color:#b91c1c}
 .fw textarea{width:100%;border:2px solid var(--n);border-radius:12px;padding:10px 12px;font:600 17px Inter;color:var(--n);min-height:96px;resize:vertical}.fw button{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:8px;border:0;background:var(--r);color:#fff;font:800 15px Poppins;border-radius:12px;padding:11px}
@@ -103,31 +108,33 @@ body.only-s #vbox{position:sticky;top:0;z-index:20;background:var(--bg);padding-
 .stars i{position:absolute;width:3px;height:3px;background:#fff;border-radius:50%;opacity:.7;animation:bl 2s infinite}
 </style></head><body>
 <canvas id="cf"></canvas><div class="cheer" id="cheer"></div>
-<header><img src="mra-brand.png" alt="mrarrieta.com" onerror="this.style.display='none'"><div><h1>Clase en vivo · HABLANDO</h1><small id="hsub">Módulo 1 (A1)</small></div></header>
+<header><img src="mra-brand.png" alt="mrarrieta.com" onerror="this.style.display='none'"><div style="flex:1"><h1>Clase en vivo · HABLANDO</h1><small id="hsub">Módulo 1 (A1)</small></div><a id="hback" class="hback" hidden>← Mi portal</a></header>
 <div class="help" id="help">Simulación: abre <a href="?rol=profe">la pantalla del profe</a> en el computador y, en el celular, <b>clase-en-vivo.html?rol=estudiante</b> con el código de sala.</div>
 <div class="layout"><div id="vbox"></div><div class="panel" id="main"><div id="m-top"></div><div id="pzw"></div><div id="m-body"></div></div></div>
 <script>
 (function(){
-const CLOUD='https://script.google.com/macros/s/AKfycbzGXtwZH_eBIPz01faL6e8cMydhW-0u2H4UtzdHQYCr8CqMG62Tdp1dNDZ4MY4khE0N/exec';
-const CV='278',SNAME='Carlos',TNAME='Mrs. Jennifer',CLASS_MIN=50;
+const CLOUD=(window.M1CONFIG&&M1CONFIG.CLOUD_URL)||'https://script.google.com/macros/s/AKfycbzGXtwZH_eBIPz01faL6e8cMydhW-0u2H4UtzdHQYCr8CqMG62Tdp1dNDZ4MY4khE0N/exec';
+const CV='282',SESSION_MIN=60,CLASS_MIN=50;let SNAME='Carlos',TNAME='Mrs. Jennifer';
+const QP=new URLSearchParams(location.search),CID=(QP.get('c')||'').replace(/[^\w]/g,''),DEMO=QP.get('demo')==='1',PLATFORM=!!CID;let INFO=null,VTOKEN='',GATE=PLATFORM,TAUTH=null,SAVED=0,MARKED=0;
+const base=()=>PLATFORM&&INFO?INFO.startMs:st.started;if(DEMO)SNAME='tu estudiante';
 const TOPICS=[['The Greetings','Los saludos'],['The Alphabet','El abecedario'],['The Nationalities','Las nacionalidades'],['Numbers and Colors','Números y colores'],['Verb To Be and A / An','Verbo to be y a / an'],['Jobs and Occupations','Trabajos y ocupaciones'],['Family and Animals','Familia y animales'],['The Food vs. The Fruit and Vegetables','Comida, frutas y verduras'],['Weekdays and Months of the Year','Días y meses del año'],['The Weather Forecast and the Clothes','El clima y la ropa'],['School Supplies and Parts of the House','Útiles escolares y partes de la casa'],['The Singular and the Plural Nouns','Sustantivos singulares y plurales'],['Demonstrative Pronouns','Pronombres demostrativos'],['There is and There are','There is y there are']];
-const AVAIL=[1],CHOSEN=1,SUGGEST={n:2,why:'falló 4 de 10 en su última práctica'};
+const AVAIL=[1,2,3,4,5,6,7,8,9,10,11,12,13,14];let CHOSEN=DEMO?Math.min(14,Math.max(1,+QP.get('t')||1)):1,SUGGEST=PLATFORM||DEMO?null:{n:2,why:'falló 4 de 10 en su última práctica'};
 const P={check:'<path d="M20 6 9 17l-5-5"/>',repeat:'<path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/>',next:'<path d="M5 12h14M12 5l7 7-7 7"/>',back:'<path d="M19 12H5M12 19l-7-7 7-7"/>',play:'<polygon points="6 3 20 12 6 21 6 3"/>',pause:'<rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>',mic:'<path d="M12 19v3"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><rect x="9" y="2" width="6" height="13" rx="3"/>',star:'<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/>',trophy:'<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>',heart:'<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>',send:'<path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>',phone:'<rect width="14" height="20" x="5" y="2" rx="2"/><path d="M12 18h.01"/>',flag:'<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/>',clock:'<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',pen:'<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>',book:'<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>',swap:'<path d="m16 3 4 4-4 4"/><path d="M20 7H4"/><path d="m8 21-4-4 4-4"/><path d="M4 17h16"/>',hand:'<path d="M18 11V6a2 2 0 0 0-4 0v5"/><path d="M14 10V4a2 2 0 0 0-4 0v6"/><path d="M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/>',undo:'<path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/>',trash:'<path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',save:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/>',x:'<path d="M18 6 6 18M6 6l12 12"/>',speaker:'<path d="M11 4.7a.7.7 0 0 0-1.2-.5L6.4 7.6A1.4 1.4 0 0 1 5.4 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.4a1.4 1.4 0 0 1 1 .4l3.4 3.4a.7.7 0 0 0 1.2-.5z"/><path d="M16 9a5 5 0 0 1 0 6"/><path d="M19.4 18.4a9 9 0 0 0 0-12.8"/>',bulb:'<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/>'};
 const I=n=>`<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${P[n]||''}</svg>`;
-const U=(id,w=960,h=540)=>`https://images.unsplash.com/${id}?w=${w}&h=${h}&fit=crop&crop=entropy&q=82&auto=format`;
+const U=(id,w=960,h=540)=>/^flag:/.test(id||'')?`https://flagcdn.com/w640/${id.slice(5)}.png`:`https://images.unsplash.com/${id}?w=${w}&h=${h}&fit=crop&crop=entropy&q=82&auto=format`;
 const $=s=>document.querySelector(s);const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const mmss=s=>{s=Math.max(0,Math.round(s));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');};
 // ---------- carga de temas (archivo del tema + voces reales de la plataforma) ----------
 function loadJS(paths){return new Promise((ok,ko)=>{const tr=n=>{if(n>=paths.length)return ko();const s=document.createElement('script');s.src=paths[n];s.onload=ok;s.onerror=()=>{s.remove();tr(n+1);};document.head.appendChild(s);};tr(0);});}
 const LOADING={},AUDL={};
-function ensureTopic(n){window.CLASES=window.CLASES||{};if(CLASES[n])return Promise.resolve();if(!LOADING[n])LOADING[n]=loadJS(['js/clase-t'+n+'.js?v='+CV,'clase-t'+n+'.js?v='+CV]).then(()=>render()).catch(()=>{});if(!AUDL[n])AUDL[n]=loadJS(['js/audio/t'+n+'.js','t'+n+'.js']).catch(()=>{});return LOADING[n];}
+function ensureTopic(n){window.CLASES=window.CLASES||{};if(CLASES[n])return Promise.resolve();if(!LOADING[n])LOADING[n]=loadJS(['js/clase-t'+n+'.js?v='+CV,'clase-t'+n+'.js?v='+CV]).then(()=>render()).catch(()=>{});if(!AUDL[n])AUDL[n]=loadJS(['js/audio/t'+n+'.js','t'+n+'.js']).catch(()=>{});if(n===2&&!AUDL.c)AUDL.c=loadJS(['js/audio/common.js','common.js']).catch(()=>{});return LOADING[n];}
 // ---------- estado y conexión ----------
 Object.assign(P,{cam:'<path d="m16 13 5.2 3.5a.5.5 0 0 0 .8-.4V7.9a.5.5 0 0 0-.8-.4L16 11"/><rect x="2" y="6" width="14" height="12" rx="2"/>',camoff:'<path d="M10.7 6H14a2 2 0 0 1 2 2v3.3l1 1L22 7v10"/><path d="M16 16a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h2"/><path d="m2 2 20 20"/>',micoff:'<path d="m2 2 20 20"/><path d="M18.9 13a7 7 0 0 0 .1-1v-2"/><path d="M5 10v2a7 7 0 0 0 12 5"/><path d="M15 9.3V5a3 3 0 0 0-5.7-1.3"/><path d="M9 9v3a3 3 0 0 0 5.1 2.1"/><path d="M12 19v3"/>',out:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/>',stop:'<rect x="5" y="5" width="14" height="14" rx="2"/>'});
-const qs=new URLSearchParams(location.search),rol=qs.get('rol')==='estudiante'?'estudiante':'profe';document.body.classList.add(rol==='estudiante'?'only-s':'only-t');
+const qs=new URLSearchParams(location.search),rol=qs.get('rol')==='estudiante'||(PLATFORM&&qs.get('rol')!=='profe')?'estudiante':'profe';document.body.classList.add(rol==='estudiante'?'only-s':'only-t');
 const mySide=rol==='estudiante'?'s':'t';
 const TK=['i','fb','fbN','pts','ok','rep','res','fin','cheer','vurl','started','topic','hl','rp','pzOn','pzv','sh'],SK=['said','aud','seen','ready','sp','yn','net'];
 let st={i:0,fb:'',fbN:0,pts:0,ok:0,rep:0,res:[],fin:null,cheer:0,vurl:'',started:0,topic:CHOSEN,hl:-1,rp:null,pzOn:0,pzv:0,sh:-1,said:'',aud:'',seen:'',ready:0,sp:null,yn:[],net:'good'};
-let room=rol==='profe'?(sessionStorage.getItem('mra_room')||String(Math.floor(1000+Math.random()*9000))):'';if(rol==='profe')sessionStorage.setItem('mra_room',room);
+let room=PLATFORM?CID:DEMO?'':rol==='profe'?(sessionStorage.getItem('mra_room')||String(Math.floor(1000+Math.random()*9000))):'';if(rol==='profe')sessionStorage.setItem('mra_room',room);
 const call=(action,data)=>fetch(CLOUD,{method:'POST',body:JSON.stringify(Object.assign({action},data)),headers:{'Content-Type':'text/plain;charset=utf-8'},redirect:'follow'}).then(r=>r.json());
 const pick=(ks,full)=>{const o={v:Date.now()};ks.forEach(k=>o[k]=st[k]);if(full&&mySide==='t')o.pz=pzForCloud();return o;};
 let CO=null,COOK=false,pushT=null;
@@ -180,7 +187,7 @@ const SKN={speaking:'Speaking',listening:'Listening',reading:'Reading',writing:'
 const skc=s=>s.sk?`<span class="sk ${s.sk}">${SKN[s.sk]}</span>`:'';
 const sents=t=>{const q=t.replace(/\b(Mrs|Mr|Ms|Dr)\./g,'$1§').replace(/\b([ap])\.m\./g,'$1¤');const out=[];let cur='',inq=false;for(let i=0;i<q.length;i++){const c=q[i];cur+=c;if(c==='"')inq=!inq;if(/[.!?]/.test(c)&&!inq){while(q[i+1]===' '){cur+=' ';i++;}out.push(cur);cur='';}}if(cur)out.push(cur);return out.map(x=>x.replace(/¤/g,'.m.').replace(/§/g,'.'));};
 const norm=x=>String(x||'').toLowerCase().replace(/[’`]/g,"'").replace(/[^a-z' ]/g,'').replace(/\s+/g,' ').trim();
-const fill=t=>String(t||'').replace(/\{S\}/g,SNAME);
+const fill=t=>String(t||'').replace(/^\{S\}/,SNAME.charAt(0).toUpperCase()+SNAME.slice(1)).replace(/\{S\}/g,SNAME);
 function summary(){const S=L().steps;const ok=S.filter((s,n)=>graded(s)&&st.res[n]===true).length,miss=S.filter((s,n)=>graded(s)&&st.res[n]===false),N=gradedN();const by={};S.forEach((s,n)=>{if(!graded(s)||!s.sk)return;by[s.sk]=by[s.sk]||[0,0];by[s.sk][1]++;if(st.res[n]===true)by[s.sk][0]++;});return {ok,miss,N,by,p:Math.round(ok/N*100)};}
 function card(s,forT){const l=L();let h=`<small>${esc(s.sec)} · ${esc(s.t)}</small>${skc(s)}`;
  if(s.type==='intro')return `<div class="card${forT?' ct':''}"><div class="hero"><img src="${U(l.cover,1100,620)}" alt=""><div><small>Today's topic · Tema ${l.n}</small><h2>${esc(l.title)}</h2><p>${esc(l.es)} · Módulo 1 (A1)</p></div></div><div class="box b" style="text-align:center;margin-top:12px"><h4>Today's goal</h4><div style="font:700 18px Poppins;color:var(--n)">${esc(l.goalEn)}</div><small class="stt">${esc(l.goal)}</small></div></div>`;
@@ -189,6 +196,7 @@ function card(s,forT){const l=L();let h=`<small>${esc(s.sec)} · ${esc(s.t)}</sm
  if(s.img)h+=`<div class="ph"${wide?' style="aspect-ratio:16/6"':''}><img src="${U(s.img,1000,wide?380:560)}" alt="">${s.clock?`<span class="clk">${I('clock')} ${esc(s.clock)}</span>`:''}</div>`;
  if(s.txt)h+=`<div class="txtR">${s.title?`<b>${esc(s.title)}</b>`:''}${sents(s.txt).map((x,n)=>`<span class="s${st.sh===n?' hi':''}" data-s="${n}">${esc(x)}</span>`).join('')}</div>`;
  h+=`<div class="q">${esc(s.q)}</div>${s.es?`<div class="es">${esc(s.es)}</div>`:''}`;
+ if(s.html)h+=`<div class="txtR exp">${s.html}</div>`;
  if(s.tl)h+=`<div class="tl">${s.tl.map(x=>`<div><small>${esc(x[0])}</small><b>${esc(x[1])}</b><span>${esc(x[2])}</span></div>`).join('')}</div>`;
  if(s.items)h+=`<div class="grid">${s.items.map((x,n)=>`<button class="tile${st.hl===n?' hl':''}" data-n="${n}"><img src="${U(x.img,480,360)}" alt="">${x.h?`<em>${esc(x.h)}</em>`:''}<div><b>${esc(x.en)}</b><span>${esc(x.es)}</span></div></button>`).join('')}</div>`;
  if(s.lines)h+=`<ul>${s.lines.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`;
@@ -230,8 +238,10 @@ function vUpd(){if(!CO)return;const ps=CO.participants(),loc=ps.local,rem=Object
  const nm=$('#vname');if(nm)nm.textContent=rem?OTHER:'';
  const a=CO.localAudio(),v=CO.localVideo(),m=$('#vmic'),c=$('#vcam');if(m){m.classList.toggle('off',!a);m.innerHTML=I(a?'mic':'micoff');}if(c){c.classList.toggle('off',!v);c.innerHTML=I(v?'cam':'camoff');}}
 function netUI(){const n=$('#vnet');if(!n)return;const q=st.net;const bad=q==='low'||q==='very-low';n.hidden=!bad;n.textContent=rol==='profe'?(q==='very-low'?'Internet de '+SNAME+' muy débil: el audio puede cortarse':'Internet de '+SNAME+' débil'):(q==='very-low'?'Tu internet está muy débil: acércate al router':'Tu internet está débil');}
-function videoUI(){const vb=$('#vbox');if(st.vurl===curV)return;curV=st.vurl;
- if(!st.vurl){if(rol!=='profe'){vb.innerHTML='';return;}
+function videoUI(){const vb=$('#vbox');
+ if(PLATFORM&&!GATE&&INFO&&!INFO.video){if(curV==='none')return;curV='none';vb.innerHTML=`<div class="vset"><div class="vt">${I('camoff')} Video no disponible</div><p style="margin:0;opacity:.9">No pudimos conectar el video de la clase. Recarga la página; si sigue igual, escríbele a administración.</p><button onclick="location.reload()">Recargar</button></div>`;return;}
+ if(st.vurl===curV)return;curV=st.vurl;
+ if(!st.vurl){if(DEMO&&rol==='profe'){vb.innerHTML=`<div class="vset"><div class="vt">${I('book')} Modo práctica</div><p style="margin:0;opacity:.9">Recorre la clase paso a paso para prepararte. En una clase real, aquí verás el video del estudiante.</p></div>`;return;}if(rol!=='profe'||PLATFORM){vb.innerHTML='';return;}
   vb.innerHTML=`<div class="vset"><div>${I('phone')} Código de sala para el estudiante: <b>${room}</b></div><input id="v-url" value="https://mrarrieta.daily.co/prueba"><button id="v-go">Activar video de la clase</button><small style="opacity:.8">En la versión real esto es automático: no hay códigos ni enlaces.</small></div>`;
   $('#v-go').onclick=()=>{const v=$('#v-url').value.trim().replace(/\/+$/,'');if(!/^https:\/\/[a-z0-9-]+\.daily\.co\/[A-Za-z0-9_-]+$/.test(v))return alert('El enlace debe verse así: https://mrarrieta.daily.co/prueba');send({vurl:v});};return;}
  vb.innerHTML=`<div class="vc"><video id="vr" autoplay playsinline></video><div class="vlab" id="vlab">Conectando el video…</div><span class="vname" id="vname"></span><video id="vl" autoplay playsinline muted></video><audio id="ar" autoplay></audio><div class="vctl"><button id="vmic" aria-label="Micrófono">${I('mic')}</button><button id="vcam" aria-label="Cámara">${I('cam')}</button>${rol==='profe'?`<button id="vout" aria-label="Salir del video">${I('out')}</button>`:''}</div><span class="vnet" id="vnet" hidden></span><button class="vsnd" id="vsnd" hidden>${I('speaker')} Toca para activar el sonido</button></div>`;
@@ -247,54 +257,96 @@ function videoUI(){const vb=$('#vbox');if(st.vurl===curV)return;curV=st.vurl;
  $('#vmic').onclick=()=>{autoMuted=false;CO.setLocalAudio(!CO.localAudio());setTimeout(vUpd,200);};$('#vcam').onclick=()=>{CO.setLocalVideo(!CO.localVideo());setTimeout(vUpd,200);};
  const vo=$('#vout');if(vo)vo.onclick=()=>{if(!confirm('¿Salir del video?'))return;CO.leave();COOK=false;$('#vlab').textContent='Saliste del video. Recarga la página para volver a entrar.';};
  CO.on('network-quality-change',e=>{if(mySide==='t')return;const q=e&&e.threshold||'good';if(q!==st.net){st.net=q;if(mySide==='s')push();netUI();}});
- CO.join({url:st.vurl,startVideoOff:false,startAudioOff:false}).then(()=>{CO.setLocalAudio(true);try{CO.updateSendSettings({video:'bandwidth-optimized'});}catch(e){}vUpd();}).catch(()=>{$('#vlab').textContent='No se pudo entrar al video. Revisa el enlace de la sala.';});}
+ CO.join(Object.assign({url:st.vurl,startVideoOff:false,startAudioOff:false},VTOKEN?{token:VTOKEN}:{})).then(()=>{CO.setLocalAudio(true);try{CO.updateSendSettings({video:'bandwidth-optimized'});}catch(e){}vUpd();}).catch(()=>{$('#vlab').textContent='No se pudo entrar al video. Revisa el enlace de la sala.';});}
 // ---------- modales del profe ----------
 function modal(html){const m=document.createElement('div');m.className='mod';m.innerHTML=`<div><button class="mx" aria-label="Cerrar">✕</button>${html}</div>`;document.body.appendChild(m);m.addEventListener('click',e=>{if(e.target===m||e.target.closest('.mx'))m.remove();});return m;}
-function topicModal(){const m=modal(`<h3>Cambiar tema</h3><p class="stt" style="margin:0">La clase cambia en las dos pantallas. El reloj sigue corriendo.</p><div class="tlist">${TOPICS.map((t,n)=>{n++;const ok=AVAIL.includes(n);return `<button data-t="${n}" class="${n===st.topic?'cur':''}"${ok?'':' disabled'}><b>${n}</b><span>${esc(t[0])}<br><small class="stt">${esc(t[1])}</small></span>${n===CHOSEN?'<em class="c">Elegido por '+SNAME+'</em>':''}${n===SUGGEST.n?'<em class="s">Sugerido</em>':''}${ok?'':'<em>Próximamente</em>'}</button>`;}).join('')}</div>`);
+function topicModal(){const m=modal(`<h3>Cambiar tema</h3><p class="stt" style="margin:0">La clase cambia en las dos pantallas. El reloj sigue corriendo.</p><div class="tlist">${TOPICS.map((t,n)=>{n++;const ok=AVAIL.includes(n);return `<button data-t="${n}" class="${n===st.topic?'cur':''}"${ok?'':' disabled'}><b>${n}</b><span>${esc(t[0])}<br><small class="stt">${esc(t[1])}</small></span>${n===CHOSEN?'<em class="c">Elegido por '+esc(SNAME)+'</em>':''}${SUGGEST&&n===SUGGEST.n?'<em class="s">Sugerido</em>':''}${ok?'':'<em>Próximamente</em>'}</button>`;}).join('')}</div>`);
  m.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{const n=+b.dataset.t;m.remove();if(n===st.topic)return;ensureTopic(n).then(()=>send({topic:n,i:0,res:[],ok:0,rep:0,pts:0,fb:'',hl:-1,fin:null,rp:null}));});}
 function contentModal(){const l=L(),c=l.content;modal(`<h3>Contenido del tema</h3><span class="ro">Solo lectura · para consultar durante la clase</span><div class="cnt">
  <h4>${I('bulb')} Explicación</h4>${c.explain}
  <h4>${I('book')} Vocabulario</h4><table>${c.vocab.map(v=>`<tr><td>${esc(v[0])}</td><td>${esc(v[1])}</td></tr>`).join('')}</table>
- <h4>${I('book')} Lectura · ${esc(c.reading.title)}</h4><p>${esc(c.reading.text)}</p>
+ ${c.reading&&c.reading.text?`<h4>${I('book')} Lectura · ${esc(c.reading.title)}</h4><p>${esc(c.reading.text)}</p>`:''}
  <h4>${I('hand')} Preguntas clave</h4><table>${c.keyq.map(v=>`<tr><td>${esc(v[0])}</td><td>${esc(v[1])}</td></tr>`).join('')}</table>
- <h4>${I('repeat')} Errores comunes</h4><table>${c.errors.map(v=>`<tr><td style="color:#b91c1c;font-weight:600">${esc(v[0])}</td><td>${esc(v[1])}</td></tr>`).join('')}</table></div>`);}
+ ${c.errors?`<h4>${I('repeat')} Errores comunes</h4><table>${c.errors.map(v=>`<tr><td style="color:#b91c1c;font-weight:600">${esc(v[0])}</td><td>${esc(v[1])}</td></tr>`).join('')}</table>`:''}${c.tips&&c.tips.length?`<h4>${I('mic')} Pronunciación y errores comunes</h4>${c.tips.map(x=>`<p>• ${x}</p>`).join('')}`:''}</div>`);}
+// ---------- plataforma: entrada automática por clase reservada ----------
+const tcall=(a,d)=>call(a,Object.assign({},TAUTH||{},d)).catch(()=>null);
+const h12ms=ms=>new Date(ms).toLocaleTimeString('es-CO',{hour:'numeric',minute:'2-digit',timeZone:'America/Bogota'}).replace(/\s?a\.?\s?m\.?/i,' a. m.').replace(/\s?p\.?\s?m\.?/i,' p. m.');
+function gateMsg(kind,r){const portal=rol==='profe'?'profesores.html':'index.html';$('#m-top').innerHTML='';const box=(ic,t,p,btn)=>`<div class="pre" style="padding:24px 8px"><div class="qa"><div class="big">${I(ic)}</div></div><h2 style="font:800 22px Poppins;color:var(--n);margin:4px 0">${t}</h2><p style="color:var(--mu);margin:6px 0 16px">${p}</p>${btn||''}</div>`;const back=`<a class="btn next" href="${portal}" style="text-decoration:none;display:inline-flex;padding:12px 22px">Ir a mi ${rol==='profe'?'portal docente':'perfil'}</a>`;
+ let h;if(kind==='login'||kind==='auth'||kind==='notfound_user')h=box('phone','Inicia sesión para entrar',`Abre tu ${rol==='profe'?'portal docente':'perfil'} en este navegador y entra a la clase desde «Mis clases».`,back);
+ else if(kind==='early'){const op=r.startMs-r.earlyMin*60000;h=box('clock','Tu clase aún no empieza',`La clase es a las <b>${h12ms(r.startMs)}</b> (hora Colombia). Podrás entrar desde las <b>${h12ms(op)}</b>; esta página se abrirá sola a esa hora.`,back);const w=op-Date.now()+1500;if(w>0&&w<6*3600000)setTimeout(()=>location.reload(),w);}
+ else if(kind==='ended')h=box('flag','Esta clase ya terminó','La sesión de video se cierra a los 60 minutos de la hora reservada.',back);
+ else if(kind==='cancelled')h=box('x','Esta clase fue cancelada','Revisa tus clases en tu portal.',back);
+ else if(kind==='forbidden'||kind==='notfound')h=box('x','No encontramos esta clase',`Esta clase no aparece en tu cuenta. Entra desde «Mis clases» en tu ${rol==='profe'?'portal docente':'perfil'}.`,back);
+ else h=box('x','No pudimos conectar','Revisa tu conexión a internet e inténtalo de nuevo.','<button class="btn next" onclick="location.reload()" style="display:inline-flex;padding:12px 22px">Reintentar</button>');
+ $('#m-body').innerHTML=h;}
+async function boot(){$('#m-body').innerHTML='<div class="wait">Preparando tu clase <span class="dots"><i></i><i></i><i></i></span></div>';
+ const P={role:rol==='profe'?'t':'s',classId:CID};
+ if(rol==='profe'){let x=null;try{x=JSON.parse(sessionStorage.getItem('mra_tp_session')||'null');}catch(e){}if(!x||!x.tcode)return gateMsg('login');TAUTH={tcode:x.tcode,pin:x.pin};Object.assign(P,TAUTH);}
+ else{let p=null;try{p=JSON.parse(localStorage.getItem('mra_profile_v1')||'null');}catch(e){}if(!p||!p.code)return gateMsg('login');P.code=p.code;}
+ let r=null;try{r=await call('liveJoin',P);}catch(e){}
+ if(!r)return gateMsg('net');if(!r.ok)return gateMsg(r.err,r);
+ INFO=r;SNAME=r.student||'tu estudiante';TNAME=r.teacher||'Tu profe';VTOKEN=r.token||'';CHOSEN=r.topicN||0;st.topic=CHOSEN||1;
+ document.title=(rol==='profe'?'Clase con '+SNAME:'Clase con '+TNAME)+' · mrarrieta.com';ensureTopic(st.topic);render();}
+function gateUI(){if(!INFO)return;const l=L();if(!l){$('#m-body').innerHTML='<div class="wait">Cargando la clase <span class="dots"><i></i><i></i><i></i></span></div>';return;}
+ $('#m-top').innerHTML=`<div class="top"><h3>${rol==='profe'?'Clase con '+esc(SNAME):'Clase con '+esc(TNAME)}</h3><span class="chip">Hoy · ${h12ms(INFO.startMs)}</span></div>`;
+ $('#m-body').innerHTML=`<div class="enter"><div class="hero" style="margin-top:10px;min-height:240px"><img src="${U(l.cover,1100,620)}" alt=""><div><small>${rol==='profe'?'Tema pedido':'Your class'}</small><h2>${esc(INFO.topicN?l.title:(INFO.topic||l.title))}</h2><p>${rol==='profe'?esc(SNAME)+' · '+(INFO.module?'Módulo '+INFO.module:'Módulo 1'):'Con '+esc(TNAME)+' · 50 minutos'}</p></div></div>
+  <div class="tip n"><b>${I('clock')} La clase dura ${CLASS_MIN} minutos.</b><small>${rol==='profe'?'La videollamada se cierra sola a los '+SESSION_MIN+' minutos de la hora reservada (quedan 10 min para preguntas).':'Ten a mano tu celular o computador con cámara y micrófono.'}</small></div>
+  <div class="nav" style="grid-template-columns:1fr"><button class="btn go" id="g-in">${I('play')} Entrar a la clase</button></div>
+  <p class="stt" style="text-align:center">Al entrar, tu navegador te pedirá permiso para usar la cámara y el micrófono.</p></div>`;
+ $('#g-in').onclick=()=>{unlockAudio();GATE=false;if(INFO.video)st.vurl=INFO.video;if(rol!=='profe')st.ready=Date.now();render();poll();push();};}
+function pzPNG(){if(!PZ.strokes.length)return '';const c=document.createElement('canvas');c.width=1600;c.height=1000;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,1600,1000);x.lineCap='round';x.lineJoin='round';PZ.strokes.forEach(s=>{const p=s.p;x.strokeStyle=s.c;x.lineWidth=s.w*1.6;x.beginPath();x.moveTo(p[0]*1.6,p[1]*1.6);if(p.length===2)x.lineTo(p[0]*1.6+.1,p[1]*1.6);for(let i=2;i<p.length;i+=2)x.lineTo(p[i]*1.6,p[i+1]*1.6);x.stroke();});return c.toDataURL('image/png').split(',')[1];}
+function saveBoard(){const s=summary(),l=L();const by=Object.keys(SKN).map(k=>s.by[k]?SKN[k]+' '+s.by[k][0]+'/'+s.by[k][1]:'').filter(Boolean).join(' · ');
+ const txt=`🎥 Clase en vivo · Tema ${l.n}: ${l.title}\nResultado: ${s.ok}/${s.N} bien${by?' · '+by:''}`+(s.miss.length?`\nPara reforzar: ${s.miss.map(x=>x.ans).join(' | ')}`:'');
+ SAVED=0;render();tcall('tLiveSave',{classId:CID,text:txt,png:pzPNG()}).then(r=>{SAVED=r&&r.ok?1:-1;render();});}
 // ---------- pantallas ----------
 let lastKey='';
-function render(){videoUI();pzUI();if(st.topic&&!L()){ensureTopic(st.topic);$('#m-top').innerHTML='';$('#m-body').innerHTML='<div class="wait">Cargando la clase <span class="dots"><i></i><i></i><i></i></span></div>';return;}
+function render(){if(PLATFORM&&(!INFO||GATE)){videoUI();return gateUI();}videoUI();pzUI();if(st.topic&&!L()){ensureTopic(st.topic);$('#m-top').innerHTML='';$('#m-body').innerHTML='<div class="wait">Cargando la clase <span class="dots"><i></i><i></i><i></i></span></div>';return;}
  $('#hsub').textContent=`Módulo 1 (A1) · Tema ${L().n}: ${L().title}`;if(rol==='profe')renderT();else renderS();marks();}
 function bar(){const S=L().steps;return `<div class="steps">${S.map((x,n)=>`<i style="flex:${x.min}" class="${st.fin?(graded(x)?(st.res[n]===true?'d':st.res[n]===false?'x':'p'):'p'):graded(x)&&st.res[n]===true?'d':graded(x)&&st.res[n]===false?'x':n===st.i?'c':n<st.i?'p':''}" title="${esc(x.sec)}"></i>`).join('')}</div>`;}
 function animKey(k,html){const a=k!==lastKey;lastKey=k;return a?`<div class="enter">${html}</div>`:html;}
 let stepT0=Date.now(),stepI=-1;
-function clockHTML(){if(!st.started)return '';const el=(Date.now()-st.started)/1000,s=L().steps[st.i],a=startOf(st.i),b=a+s.min*60;let pill;
+function clockHTML(){if(!st.started)return '';const el=(Date.now()-base())/1000,s=L().steps[st.i],a=startOf(st.i),b=a+s.min*60;let pill;
  if(st.fin)pill='<span class="pill ok">Clase terminada</span>';else if(el>CLASS_MIN*60)pill='<span class="pill late">Tiempo cumplido · cierra la clase</span>';else if(el>b+60)pill=`<span class="pill late">Vas ${Math.round((el-b)/60)} min atrasado · avanza un poco</span>`;else if(el<a-90)pill=`<span class="pill early">Vas ${Math.round((a-el)/60)} min adelantado · puedes profundizar</span>`;else pill='<span class="pill ok">Vas a tiempo</span>';
  return `${I('clock')}<b>${mmss(el)} <small>/ ${CLASS_MIN}:00</small></b>${pill}`;}
 function stepClock(){const s=L().steps[st.i],e=(Date.now()-stepT0)/1000;return `<span class="stt${e>s.min*60?' over':''}">${I('clock')} ${mmss(e)} de ${mmss(s.min*60)}</span>`;}
 setInterval(()=>{if(rol!=='profe'||!L()||!st.started)return;const c=$('#clk');if(c)c.innerHTML=clockHTML();const s=$('#sclk');if(s)s.innerHTML=stepClock();},1000);
+let ended=false,warned={};
+let tickStart=0;function sessionTick(){if(st.started!==tickStart){tickStart=st.started;warned={};}if((!st.started&&!PLATFORM)||ended||(PLATFORM&&(!INFO||GATE)))return;const m=(Date.now()-base())/60000;if(m<0)return;
+ const note=(k,t,cls)=>{if(warned[k])return;warned[k]=1;const d=document.createElement('div');d.className='sbar '+(cls||'');d.innerHTML=t+'<button aria-label="Cerrar">✕</button>';d.querySelector('button').onclick=()=>d.remove();document.body.appendChild(d);setTimeout(()=>d.remove(),20000);};
+ if(m>=CLASS_MIN&&m<SESSION_MIN)note('50',rol==='profe'?`${I('clock')} Terminaron los ${CLASS_MIN} min de clase. Tienes ${SESSION_MIN-CLASS_MIN} min para preguntas; la videollamada se cierra sola a los ${SESSION_MIN} min.`:`${I('clock')} Your class is over! La clase de ${CLASS_MIN} min terminó. Si tienes preguntas, tu profe puede resolverlas unos minutos.`);
+ if(m>=SESSION_MIN-2&&m<SESSION_MIN)note('58',`${I('clock')} La videollamada se cerrará en 2 minutos.`,'w');
+ if(m>=SESSION_MIN){ended=true;document.querySelectorAll('.sbar').forEach(x=>x.remove());try{if(CO){CO.leave();COOK=false;}}catch(e){}stopAudio(true);const v=$('#vlab');if(v)v.textContent='La sesión terminó.';
+  const d=document.createElement('div');d.className='mod';d.innerHTML=`<div style="text-align:center"><div class="sumH"><div class="big">${I('flag')}</div><h2>${rol==='profe'?'Sesión cerrada':'See you next class!'}</h2><p>${rol==='profe'?'La videollamada se cerró automáticamente a los '+SESSION_MIN+' minutos.':'Tu clase terminó. ¡Gracias por participar!'}</p></div></div>`;document.body.appendChild(d);}}
+setInterval(sessionTick,5000);
 function renderT(){const l=L(),top=$('#m-top'),body=$('#m-body');
  if(st.i!==stepI){stepI=st.i;stepT0=Date.now();}
- const live=st.ready?`<span class="chip">${SNAME} conectado</span>`:`<span class="chip">Código: ${room}</span>`;
- top.innerHTML=`<div class="top"><h3>Clase con ${SNAME}</h3><span class="chip r live">EN VIVO</span>${live}<span class="chip">${st.ok} ✔ · ${st.pts} pts</span></div>
+ const live=DEMO?'<span class="chip">Modo práctica</span>':st.ready?`<span class="chip">${esc(SNAME)} conectado</span>`:PLATFORM?`<span class="chip">Esperando a ${esc(SNAME)}</span>`:`<span class="chip">Código: ${room}</span>`;
+ top.innerHTML=`<div class="top"><h3>${DEMO?'Práctica · Tema '+l.n:'Clase con '+esc(SNAME)}</h3>${DEMO?'':'<span class="chip r live">EN VIVO</span>'}${live}<span class="chip">${st.ok} ✔ · ${st.pts} pts</span></div>
   <div class="tools"><button class="tb${st.pzOn?' on':''}" id="t-pz">${I('pen')} Pizarra</button><button class="tb" id="t-cnt">${I('book')} Contenido del tema</button><button class="tb" id="t-top">${I('swap')} Cambiar tema</button>${st.started?`<button class="tb" id="t-rs">${I('repeat')} Empezar de nuevo</button>`:''}</div>
   ${st.started?`<div class="clock" id="clk">${clockHTML()}</div>${bar()}`:''}`;
  $('#t-pz').onclick=()=>send({pzOn:st.pzOn?0:1});$('#t-cnt').onclick=contentModal;$('#t-top').onclick=topicModal;const rs=$('#t-rs');if(rs)rs.onclick=()=>{if(!confirm('¿Empezar la clase de nuevo desde el paso 1? Se borran los puntos de hoy.'))return;stopAudio(true);send({started:Date.now()+3900,i:0,res:[],ok:0,rep:0,pts:0,fb:'',fin:null,hl:-1,sh:-1,cheer:st.cheer});countdown(3900);};
  if(!st.started){body.innerHTML=animKey('pre'+st.topic,`<div class="pre"><div class="hero"><img src="${U(l.cover,1100,620)}" alt=""><div><small>Tema ${l.n} · Módulo 1 (A1)</small><h2>${esc(l.title)}</h2><p>${esc(l.goal)}</p></div></div>
-   <div class="sug"><span>${I('check')} Elegido por ${SNAME}: <b>${esc(TOPICS[CHOSEN-1][0])}</b></span><span>${I('bulb')} Sugerido según sus errores: <b>${esc(TOPICS[SUGGEST.n-1][0])}</b> (${esc(SUGGEST.why)})</span></div>
+   <div class="sug">${DEMO?`<span>${I('book')} Modo práctica · sin estudiante</span>`:`<span>${I('check')} Elegido por ${esc(SNAME)}: <b>${esc(PLATFORM?(INFO.topic||'No eligió tema'):TOPICS[CHOSEN-1][0])}</b></span>`}${SUGGEST?`<span>${I('bulb')} Sugerido según sus errores: <b>${esc(TOPICS[SUGGEST.n-1][0])}</b> (${esc(SUGGEST.why)})</span>`:''}</div>${PLATFORM&&!INFO.topicN?`<div class="tip n" style="margin-bottom:8px"><b>${I('bulb')} ${esc(SNAME)} pidió un tema fuera del Módulo 1</b><small>Elige con «Cambiar tema» el tema del Módulo 1 que más se acerque, o usa la Pizarra y el Contenido del tema para guiar la conversación.</small></div>`:''}
    <div class="tip n"><b>Clase de ${CLASS_MIN} minutos · ${l.steps.length} pasos · Speaking, Listening, Reading y Writing.</b><small>En cada paso verás arriba qué hacer, el botón de audio (suena en los dos equipos), la respuesta esperada y el tiempo sugerido.</small></div>
-   <div class="st ${st.ready?'':'w'}">${I('phone')} ${st.ready?SNAME+' ya entró y ve la pantalla de bienvenida':'Esperando a que '+SNAME+' entre con el código '+room+'…'}</div>
+   ${DEMO?'':`<div class="st ${st.ready?'':'w'}">${I('phone')} ${st.ready?esc(SNAME)+' ya entró y ve la pantalla de bienvenida':'Esperando a que '+esc(SNAME)+' entre'+(PLATFORM?'…':' con el código '+room+'…')}</div>`}
    <div class="nav" style="grid-template-columns:1fr"><button class="btn go" id="t-start">${I('play')} Empezar clase (${CLASS_MIN} min)</button></div></div>`);
   $('#t-start').onclick=()=>{const t=Date.now()+3900;send({started:t,i:0,res:[],ok:0,rep:0,pts:0,fb:'',fin:null,hl:-1,sh:-1});countdown(3900);};return;}
  if(st.fin){const s=summary(),used=Math.round((st.fin.end-st.started)/60000);body.innerHTML=animKey('fin',`<div class="sumH"><div class="big">${I(s.p>=70?'trophy':'heart')}</div><h2>Resumen de la clase</h2><p>${esc(l.title)} · ${used} min</p></div>
    <div class="sum"><div><b>${s.ok}/${s.N}</b><span>bien</span></div><div><b>${st.rep}</b><span>veces repitió</span></div><div><b>${st.pts}</b><span>puntos</span></div></div>
    <div class="sks">${Object.keys(SKN).map(k=>`<div><span class="sk ${k}">${SKN[k]}</span><b>${s.by[k]?s.by[k][0]+'/'+s.by[k][1]:'–'}</b></div>`).join('')}</div>
    ${s.miss.length?`<div class="box y"><h4>Para reforzar en la próxima clase</h4>${s.miss.map(x=>'• '+esc(x.t)+': <b>'+esc(x.ans)+'</b>').join('<br>')}</div>`:s.ok===s.N?'<div class="box g"><h4>¡Excelente! Lo hizo todo bien.</h4></div>':`<div class="box b"><h4>${s.N-s.ok} pasos quedaron sin calificar</h4>Toca «Bien» u «Otra vez» en cada paso para que el resumen sea completo.</div>`}
-   <p class="stt">Este resumen y la pizarra se guardan en el tablero de la clase.</p>
-   <div class="nav"><button class="btn prev" id="t-back">${I('back')} Volver</button><button class="btn next" id="t-new">Empezar de nuevo</button></div>`);
+   ${PLATFORM?`<p class="stt">${SAVED===1?'✔ Resumen y pizarra guardados en el tablero de la clase.':SAVED===-1?'⚠ No se pudo guardar en el tablero. <a href="#" id="t-resave">Reintentar</a>':'Guardando en el tablero de la clase…'}</p>
+   <div class="nav" style="grid-template-columns:1fr 1fr"><button class="btn ok" id="t-mark"${MARKED?' disabled':''}>${I('check')} ${MARKED?'Marcada como dictada':'Marcar como dictada'}</button><a class="btn next" href="profesores.html" style="text-decoration:none">Volver a mi portal</a></div>
+   <div class="nav"><button class="btn prev" id="t-back">${I('back')} Volver</button><button class="btn prev" id="t-new">Empezar de nuevo</button></div>`:`<p class="stt">${DEMO?'En una clase real, este resumen y la pizarra se guardan solos en el tablero de la clase.':'Este resumen y la pizarra se guardan en el tablero de la clase.'}</p>
+   <div class="nav"><button class="btn prev" id="t-back">${I('back')} Volver</button><button class="btn next" id="t-new">Empezar de nuevo</button></div>`}`);
+  const tm=$('#t-mark');if(tm)tm.onclick=()=>{tm.disabled=true;tcall('tMark',{classId:CID,status:'done',attendance:{[INFO.code]:true},notes:'Clase en vivo · Tema '+l.n+': '+l.title}).then(r=>{if(r&&r.ok){MARKED=1;flashMsg('Clase marcada como dictada','ok');render();}else{tm.disabled=false;flashMsg('No se pudo marcar. Hazlo desde tu portal.','rep');}});};
+  const rv=$('#t-resave');if(rv)rv.onclick=e=>{e.preventDefault();saveBoard();};
   $('#t-back').onclick=()=>send({fin:null,i:l.steps.length-1});$('#t-new').onclick=()=>send({i:0,fin:null,res:[],ok:0,rep:0,pts:0,fb:'',started:0,hl:-1,sh:-1});return;}
  const S=l.steps,s=S[st.i],AU=s.au||(s.items&&s.items.map(x=>x.au)),seen=st.seen===st.topic+':'+st.i,mark=st.res[st.i],g=graded(s),last=st.i+1>=S.length;
  const au=s.type==='write'?(st.said?`${SNAME} escribió: <b style="color:${norm(st.said)===norm(s.ans)?'#15803d':'#b91c1c'}">${esc(st.said)}</b>`:`Esperando lo que escriba ${SNAME}…`):s.type==='free'?(st.said?`${SNAME} escribió:`:`Esperando lo que escriba ${SNAME}…`):s.type==='yn'?`${SNAME} respondió ${st.yn.filter(Boolean).length} de ${s.yn.length}`:st.aud==='play'?`${I('speaker')} ${SNAME} está escuchando el audio…`:st.aud==='done'?`✔ ${SNAME} ya escuchó el audio`:st.aud==='pause'?`⏸ ${SNAME} pausó el audio`:'';
  body.innerHTML=animKey(st.topic+':'+st.i,`<div class="stage"><span>Paso ${st.i+1} de ${S.length} · ${esc(s.sec)} ${skc(s)} <span id="sclk">${stepClock()}</span></span><select id="t-jump">${S.map((x,n)=>`<option value="${n}"${n===st.i?' selected':''}>${n+1}. ${esc(x.sec)} · ${esc(x.t)} (${x.min} min)</option>`).join('')}</select></div>
   <div class="ins"><small>${I('bulb')} Qué hacer ahora</small><p>${esc(fill(s.ins))}</p>
-   <div class="st ${seen?'':'w'}">${I('phone')} ${seen?SNAME+' ya lo tiene en su pantalla':'Enviando a '+SNAME+'…'}</div>${au?`<div class="st">${au}</div>`:''}${s.type==='free'&&st.said?`<div class="said">${esc(st.said)}</div>`:''}</div>
+   ${DEMO?'':`<div class="st ${seen?'':'w'}">${I('phone')} ${seen?esc(SNAME)+' ya lo tiene en su pantalla':'Enviando a '+esc(SNAME)+'…'}</div>`}${au?`<div class="st">${au}</div>`:''}${s.type==='free'&&st.said?`<div class="said">${esc(st.said)}</div>`:''}</div>
   ${AU?`<button class="bigau" id="t-rp"></button>`:''}
   ${st.pzOn?'':card(s,true)}
   ${g?`<div class="tip"><b>✅ Respuesta:</b> ${esc(s.ans)}<small>${esc(s.ok)}</small></div>`:`<div class="tip n"><b>${I('bulb')} Consejo</b><small>${esc(s.ok)}</small></div>`}
@@ -310,7 +362,7 @@ function renderT(){const l=L(),top=$('#m-top'),body=$('#m-body');
  const nxt=p=>{stopAudio(true);send(Object.assign({fb:'',hl:-1,sh:-1},p));};
  $('#t-prev').onclick=()=>nxt({i:Math.max(0,st.i-1)});
  $('#t-jump').onchange=e=>nxt({i:+e.target.value});
- $('#t-next').onclick=()=>{if(last){const sm=summary();const fin={ok:sm.ok,n:sm.N,p:sm.p,end:Date.now()};nxt({fin,cheer:st.cheer+1,pzOn:0});celebrate(fin);}else nxt({i:st.i+1});};}
+ $('#t-next').onclick=()=>{if(last){const sm=summary();const fin={ok:sm.ok,n:sm.N,p:sm.p,end:Date.now()};nxt({fin,cheer:st.cheer+1,pzOn:0});celebrate(fin);if(PLATFORM)saveBoard();}else nxt({i:st.i+1});};}
 function renderS(){const l=L(),top=$('#m-top'),body=$('#m-body');
  if(!room){top.innerHTML='';body.innerHTML=`<div class="join"><b>Entrar a la clase</b><p style="color:var(--mu)">Escribe el código que te da tu profe.</p><input id="j-in" inputmode="numeric" maxlength="6" placeholder="0000"><button id="j-go">Entrar</button></div>`;
   $('#j-go').onclick=()=>{const v=$('#j-in').value.replace(/\D/g,'');if(v.length<4)return;unlockAudio();room=v;st.ready=Date.now();render();poll();push();};return;}
@@ -318,7 +370,7 @@ function renderS(){const l=L(),top=$('#m-top'),body=$('#m-body');
  top.innerHTML=`<div class="top"><h3>Clase con ${TNAME}</h3><span class="chip r live">EN VIVO</span></div>${st.started?bar():''}`;
  if(!st.started){body.innerHTML=animKey('wel'+st.topic,`<div class="hero" style="margin-top:10px;min-height:300px"><img src="${U(l.cover,1100,700)}" alt=""><div><small>Welcome, ${SNAME}!</small><h2>${esc(l.title)}</h2><p>${esc(l.es)} · Tema ${l.n} · Módulo 1 (A1)</p></div></div>
    <div class="box b" style="text-align:center"><h4>Today's goal</h4><div style="font:700 18px Poppins;color:var(--n)">${esc(l.goalEn)}</div><small class="stt">${esc(l.goal)}</small></div>
-   <div class="wait">${TNAME} empieza la clase en un momento <span class="dots"><i></i><i></i><i></i></span></div>`);return;}
+   <div class="wait">${I('clock')} Tu clase dura ${CLASS_MIN} minutos · ${TNAME} empieza en un momento <span class="dots"><i></i><i></i><i></i></span></div>`);return;}
  if(st.fin){const s=summary();body.innerHTML=animKey('fin',`<div class="sumH" style="margin-top:10px"><div class="big">${I(st.fin.p>=70?'trophy':'heart')}</div><h2>${st.fin.p>=70?'Congratulations, '+SNAME+'!':'Good effort, '+SNAME+'!'}</h2><p>${st.fin.ok} de ${st.fin.n} bien en la clase de hoy</p></div>
    <div class="sum"><div><b>${st.fin.ok}/${st.fin.n}</b><span>bien</span></div><div><b>${st.pts}</b><span>puntos</span></div><div><b>${Math.max(1,Math.round((st.fin.end-st.started)/60000))}</b><span>minutos</span></div></div>
    <div class="box g"><h4>Today you learned</h4><div class="chips">${l.learned.map(w=>`<span>${esc(w)}</span>`).join('')}</div></div>
@@ -332,7 +384,8 @@ function renderS(){const l=L(),top=$('#m-top'),body=$('#m-body');
  body.querySelectorAll('[data-yn]').forEach(b=>b.onclick=()=>{const y=st.yn.slice();y[+b.dataset.yn]=b.dataset.v;send({yn:y});});
  const pl=$('#a-play');if(pl)pl.onclick=()=>{pl.classList.remove('pulse');if(player.dataset.k)return flashMsg('Escuchando… tu profe puede detenerlo');if(s.items)shareAudio(s.items.map(x=>x.au),null,s.items.map((x,n)=>n));else shareAudio(s.au);};
  body.querySelectorAll('.tile').forEach(b=>b.onclick=()=>{if(player.dataset.k)return;const n=+b.dataset.n;shareAudio([s.items[n].au],n);});}
-ensureTopic(st.topic);render();if(rol==='profe'){poll();push();}
-if(rol==='estudiante')$('#help').style.display='none';
+if(PLATFORM)boot();else{ensureTopic(st.topic);render();if(rol==='profe'&&!DEMO){poll();push();}}
+if(rol==='estudiante'||PLATFORM||DEMO)$('#help').style.display='none';
+if(PLATFORM||DEMO){const hb=$('#hback');hb.href=rol==='profe'?'profesores.html':'index.html';hb.hidden=false;}
 })();
 </script></body></html>
