@@ -306,7 +306,7 @@
         // 🔑 una sola entrada: clave de administración o código de profe
         b.disabled = true; b.textContent = 'Entrando…'; const w = await MRAC.call('who', { k: v }).catch(() => null); b.disabled = false; b.textContent = 'Entrar →';
         if (w && w.role === 'admin') { try { sessionStorage.setItem('mra_admin_key', v); localStorage.setItem('mra_last_role', JSON.stringify({ role: 'admin' })); } catch (e) { } location.href = 'administracion.html'; return; }
-        if (w && w.role === 'teacher') return teacherPin(v.toUpperCase());
+        if (w && w.role === 'teacher' && w.tcode) { try { sessionStorage.setItem('mra_tp_session', JSON.stringify({ tcode: w.tcode, pin: w.pin })); localStorage.setItem('mra_last_role', JSON.stringify({ role: 'teacher' })); } catch (e) { } location.href = 'docente.html'; return; }
         return bad();
       }
       // 2) códigos guardados en config.js (modo sin nube / profes)
@@ -315,17 +315,6 @@
       P.save(Object.assign({ created: Date.now() }, old, { type: r.type, demo: !!r.demo, codeHash: M.codeHash(i.value), module: r.module || old.module || null, assignedBy: r.module ? 'admin' : (old.assignedBy || null) }));
       sfx('win'); M.confetti(1500); greetVoice(); route('home'); };
     $('#ok').onclick = go; i.onkeydown = e => { if (e.key === 'Enter') go(); };
-    function teacherPin(tcode) { // 👩‍🏫 profe: después de su código, pide su PIN y entra a su portal
-      const card = i.closest('.pt-login') || document; const h = card.querySelector('h1'), pm = card.querySelector('h1 + p');
-      if (h) h.textContent = 'Hola, profe 👋'; if (pm) pm.textContent = 'Ahora escribe tu PIN para entrar a tu portal.';
-      i.value = ''; i.placeholder = 'Tu PIN'; i.setAttribute('autocomplete', 'current-password'); i.focus();
-      const ok = $('#ok'); ok.onclick = tgo; i.onkeydown = e => { if (e.key === 'Enter') tgo(); };
-      async function tgo() { const pin = i.value.trim(); if (!pin) return bad('Escribe tu PIN 🙂'); ok.disabled = true; ok.textContent = 'Entrando…';
-        const r = await MRAC.call('tLogin', { tcode, pin }).catch(() => null); ok.disabled = false; ok.textContent = 'Entrar →';
-        if (!r || !r.ok) return bad(r && r.err === 'auth' ? 'PIN incorrecto 😕' : 'No se pudo entrar. Inténtalo de nuevo.');
-        try { sessionStorage.setItem('mra_tp_session', JSON.stringify({ tcode, pin })); localStorage.setItem('mra_last_role', JSON.stringify({ role: 'teacher', first: (r.teacher && (r.teacher.hello || String(r.teacher.name || '').split(' ')[0])) || '' })); } catch (e) { }
-        location.href = 'docente.html'; }
-    }
   }
   function nameStep() {
     const s1 = (M.S && M.S.name) || ''; const p = P.get();
