@@ -4797,3 +4797,4 @@ body .btn.block,.ad-login .btn,.tp-lform .btn,.in-page form > .btn{display:flex;
 @media (max-width:560px){.ld-tes>.ld-t{flex:0 0 44%!important}}
 /* v296 · campos de código / clave / PIN más cortos y centrados */
 .pw-wrap{max-width:300px!important;margin-left:auto!important;margin-right:auto!important}
+.ld-load h2.ld-ready{font-size:clamp(34px,6vw,48px);margin:10px 0 0;white-space:nowrap}
