@@ -18,7 +18,7 @@
   const DAYN = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
   const MON = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
   const DEF = { a: { fon: ['Lunes', '18:00'], conv: ['Miércoles', '18:00'] }, b: { fon: ['Lunes', '19:00'], conv: ['Miércoles', '19:00'] } };
-  const BAND = { a: 'A1·A2', b: 'B2·B2+' };
+  const BAND = { a: 'A1·A2', b: 'B1·B2+' };
   const META = {
     conv: { icon: '🎙️', name: 'Club de Conversación', what: 'Practica en voz alta lo que aprendes en tus clases, en formato talk show.', ep: 'Episodio', pack: 'clubconv' },
     fon: { icon: '👄', name: 'Club de Fonética', what: 'Entrena tu oído y tu boca: pronuncia como un americano, sonido por sonido.', ep: 'Sesión', pack: 'clubfon' },
