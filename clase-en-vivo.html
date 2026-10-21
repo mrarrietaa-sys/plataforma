@@ -2,7 +2,7 @@
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>Clase en vivo · mrarrieta.com</title>
 <script src="https://unpkg.com/@daily-co/daily-js@0.92.2/dist/daily.js"></script>
-<script src="config.js?v=290"></script>
+<script src="config.js?v=291"></script>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--n:#0B2A5B;--n2:#1e4a8f;--r:#E3242B;--y:#FFC21A;--g:#16a34a;--bd:#e3e9f3;--mu:#5b6577;--bg:#eef2f8}
@@ -115,7 +115,7 @@ body.only-s #vbox{position:sticky;top:0;z-index:20;background:var(--bg);padding-
 <script>
 (function(){
 const CLOUD=(window.M1CONFIG&&M1CONFIG.CLOUD_URL)||'https://script.google.com/macros/s/AKfycbzGXtwZH_eBIPz01faL6e8cMydhW-0u2H4UtzdHQYCr8CqMG62Tdp1dNDZ4MY4khE0N/exec';
-const CV='290',SESSION_MIN=60,CLASS_MIN=50;let SNAME='Carlos',TNAME='Mrs. Jennifer';
+const CV='291',SESSION_MIN=60,CLASS_MIN=50;let SNAME='Carlos',TNAME='Mrs. Jennifer';
 const QP=new URLSearchParams(location.search),CID=(QP.get('c')||'').replace(/[^\w]/g,''),DEMO=QP.get('demo')==='1',PLATFORM=!!CID;let INFO=null,VTOKEN='',GATE=PLATFORM,TAUTH=null,SAVED=0,MARKED=0;
 const base=()=>PLATFORM&&INFO?INFO.startMs:st.started;if(DEMO)SNAME='tu estudiante';
 const TOPICS=[['The Greetings','Los saludos'],['The Alphabet','El abecedario'],['The Nationalities','Las nacionalidades'],['Numbers and Colors','Números y colores'],['Verb To Be and A / An','Verbo to be y a / an'],['Jobs and Occupations','Trabajos y ocupaciones'],['Family and Animals','Familia y animales'],['The Food vs. The Fruit and Vegetables','Comida, frutas y verduras'],['Weekdays and Months of the Year','Días y meses del año'],['The Weather Forecast and the Clothes','El clima y la ropa'],['School Supplies and Parts of the House','Útiles escolares y partes de la casa'],['The Singular and the Plural Nouns','Sustantivos singulares y plurales'],['Demonstrative Pronouns','Pronombres demostrativos'],['There is and There are','There is y there are']];
@@ -367,7 +367,7 @@ function renderT(){const l=L(),top=$('#m-top'),body=$('#m-body');
  $('#t-next').onclick=()=>{if(last){const sm=summary();const fin={ok:sm.ok,n:sm.N,p:sm.p,end:Date.now()};nxt({fin,cheer:st.cheer+1,pzOn:0});celebrate(fin);if(PLATFORM)saveBoard();}else nxt({i:st.i+1});};}
 function claimBtn(){return PLATFORM&&!REMOTE&&!st.fin?`<button class="claimb" id="s-claim">${I('flag')} Mi profe no se conectó</button>`:'';}
 function bindClaim(){const b=$('#s-claim');if(!b)return;b.onclick=()=>{const left=Math.ceil((INFO.startMs+15*60000-Date.now())/60000);
- if(left>0)return modal(`<h3>⏳ Aún no puedes reportar</h3><p>El tiempo de espera para reportar es de <b>15 minutos</b> después de la hora de inicio de la clase (${h12ms(INFO.startMs)}). <b>Aún faltan ${left} minuto${left===1?'':'s'}.</b></p><p class="stt">Tu profe también debe esperarte 15 minutos. Mantén esta página abierta.</p>`);
+ if(left>0)return modal(`<h3>⏳ Aún no puedes reportar</h3><p>El tiempo de espera para reportar es de <b>15 minutos</b> después de la hora de inicio de la clase (${h12ms(INFO.startMs)}). <b>Aún faltan ${left} minuto${left===1?'':'s'}.</b></p>`);
  const m=modal(`<h3>🚩 ¿Tu profe no se conectó?</h3><p>Cuéntanos qué pasó (opcional). Administración lo revisa y, si se confirma, la clase vuelve a tu saldo.</p><textarea id="cl-n" rows="3" style="width:100%;border:2px solid var(--bd);border-radius:12px;padding:10px;font:600 15px Inter" placeholder="Ej.: esperé 15 minutos y mi profe no entró"></textarea><button class="btn go" id="cl-go" style="width:100%;margin-top:10px">Enviar reporte</button>`);
  m.querySelector('#cl-go').onclick=async e=>{e.target.disabled=true;let p=null;try{p=JSON.parse(localStorage.getItem('mra_profile_v1')||'null');}catch(x){}const r=await call('claim',{code:p&&p.code,classId:CID,note:m.querySelector('#cl-n').value}).catch(()=>null);m.remove();
   modal(r&&r.ok?'<h3>✅ Reporte enviado</h3><p>Administración lo revisa en máximo 24 horas. Si se confirma, la clase vuelve a tu saldo.</p>':r&&r.err==='exists'?'<h3>Ya reportaste esta clase</h3><p>Administración ya la está revisando.</p>':'<h3>No se pudo enviar</h3><p>Inténtalo de nuevo o hazlo desde tu perfil.</p>');};};}

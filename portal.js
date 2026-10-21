@@ -802,9 +802,10 @@
           <p>${pic ? `<img src="${pic}" alt="">` : ''}Con <b>${esc(c.th || c.teacher || 'tu profe')}</b>${topic ? ' · ' + esc(topic) : ''}</p>
           <p class="pt-nc-c">${left}${up.length > 1 ? ` · y ${up.length - 1} clase${up.length > 2 ? 's' : ''} más reservada${up.length > 2 ? 's' : ''}` : ''}</p>
           <small class="muted">Entra 5 minutos antes · la clase dura 50 minutos</small></div>
-        <div class="pt-nc-b">${isToday ? `<a class="btn k" href="clase-en-vivo.html?c=${encodeURIComponent(c.id)}">${MRI('video')} Entrar a la clase</a>` : `<button class="btn w" data-go="#pt-live">${MRI('calendar')} Ver mis clases</button>`}${left0 ? `<button class="btn ${isToday ? 'w' : 'k'}" data-bk>${MRI('plus')} Reservar otra clase</button>` : ''}</div>`;
+        <div class="pt-nc-b">${isToday ? `<a class="btn k" href="clase-en-vivo.html?c=${encodeURIComponent(c.id)}">${MRI('video')} Entrar a la clase</a>` : `<button class="btn w" data-go="#pt-live">${MRI('calendar')} Ver mis clases</button>`}${left0 ? `<button class="btn ${isToday ? 'w' : 'k'}" data-bk>${MRI('plus')} Reservar otra clase</button>` : ''}${c.canCancel ? `<button class="pt-nc-x" data-cx>Cancelar esta clase</button>` : ''}</div>`;
       const g = el.querySelector('[data-go]'); if (g) g.onclick = () => { const t = $('#pt-live'); if (t) t.scrollIntoView({ behavior: 'smooth' }); };
-      const bk = el.querySelector('[data-bk]'); if (bk) bk.onclick = book; };
+      const bk = el.querySelector('[data-bk]'); if (bk) bk.onclick = book;
+      const cx = el.querySelector('[data-cx]'); if (cx) cx.onclick = () => cancelVip(c.id, 'vip', !!c.lateCancel); };
     paint(); host.after(el); ncTimer = setInterval(() => { if (!document.body.contains(el)) return clearInterval(ncTimer); paint(); }, 30000);
   }
   function renderLive(box, r) {
