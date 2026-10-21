@@ -412,10 +412,10 @@
 
   /* ---------- transición divertida entre secciones de la clase ---------- */
   const SCENES = { rocket: { a: 'up', say: 'Blast off!' }, drums: { a: 'stage', say: 'Rock on!' }, guitar: { a: 'stage', say: "Let's rock!" },
-    surf: { a: 'surf', say: 'Catch the wave!' }, hero: { a: 'fly', say: 'Super English!' }, books: { a: 'pop', say: "Let's read!" }, laptop: { a: 'pop', say: 'Homework time!' }, wave: { a: 'pop', say: 'Hello!' }, rocket3: { a: 'up', say: 'Full speed!' }, rocket5: { a: 'up', say: 'To the moon!' }, 'plane-red': { a: 'fly', say: 'Ready for takeoff!' }, 'plane-blue': { a: 'fly', say: 'Great job!' }, 'plane-yellow': { a: 'fly', say: 'This way!' }, 'plane-green': { a: 'fly', say: 'Keep flying!' } };
+    surf: { a: 'surf', say: 'Catch the wave!' }, hero: { a: 'fly', say: 'Super English!' }, balloon1: { a: 'balloon', say: 'Up, up and away!' }, balloon2: { a: 'balloon', say: "Let's explore!" }, balloon3: { a: 'balloon', say: 'Here we go!' }, laptop: { a: 'pop', say: 'Homework time!' }, wave: { a: 'pop', say: 'Hello!' }, rocket3: { a: 'up', say: 'Full speed!' }, rocket5: { a: 'up', say: 'To the moon!' }, 'plane-red': { a: 'fly', say: 'Ready for takeoff!' }, 'plane-blue': { a: 'fly', say: 'Great job!' }, 'plane-yellow': { a: 'fly', say: 'This way!' }, 'plane-green': { a: 'fly', say: 'Keep flying!' } };
   const SEC_IC = { Goal: '🎯', Speaking: '🗣️', Reading: '📖', Review: '🔁', Explanation: '💡', 'Listen & practice': '🎧', Practice: '🎮', 'Oral task': '🎤', Music: '🎵', Homework: '📝' };
-  const SEC_SC = { Reading: 'books', Homework: 'laptop', Music: 'guitar', Review: 'plane-blue' };
-  const FREE = ['rocket', 'plane-red', 'rocket3', 'plane-blue', 'drums', 'plane-yellow', 'surf', 'rocket5', 'plane-green', 'hero'];
+  const SEC_SC = { Reading: 'balloon2', Homework: 'laptop', Music: 'guitar', Review: 'plane-blue' };
+  const FREE = ['rocket', 'balloon1', 'plane-red', 'rocket3', 'balloon3', 'plane-blue', 'drums', 'plane-yellow', 'balloon2', 'surf', 'rocket5', 'plane-green', 'hero'];
   const ITL_ON = true;
   let sceneN = Math.floor(Math.random() * FREE.length);
   const preloadScenes = () => Object.keys(SCENES).forEach(k => { const i = new Image(); i.src = 'mra-x-' + k + '.webp?v=6'; });

@@ -4798,3 +4798,10 @@ body .btn.block,.ad-login .btn,.tp-lform .btn,.in-page form > .btn{display:flex;
 /* v296 · campos de código / clave / PIN más cortos y centrados */
 .pw-wrap{max-width:300px!important;margin-left:auto!important;margin-right:auto!important}
 .ld-load h2.ld-ready{font-size:clamp(34px,6vw,48px);margin:10px 0 0;white-space:nowrap}
+/* v299 · Mr. Arrieta en globo: sube flotando y sale volando */
+.itl-balloon .itl-actor{animation-name:itlBalloon}
+@keyframes itlBalloon{0%{transform:translate(-8vw,80vh) rotate(-4deg)}35%{transform:translate(0,0) rotate(2deg)}50%{transform:translate(0,-10px) rotate(-2deg)}68%{transform:translate(0,0) rotate(1deg)}100%{transform:translate(12vw,-110vh) rotate(5deg)}}
+/* v299 · ningún botón se sale de su tarjeta; botones de reserva más cortos */
+body .btn{max-width:100%;box-sizing:border-box}
+.lv-vip #lv-book,.lv-vip #lv-extra{white-space:normal!important;min-width:0!important;max-width:100%!important;width:auto!important;justify-self:start;font-size:14px!important;padding:9px 16px!important;line-height:1.25;text-align:left}
+@media (max-width:600px){.lv-vip #lv-book,.lv-vip #lv-extra{justify-self:center;text-align:center;margin:4px 0 0!important}}
