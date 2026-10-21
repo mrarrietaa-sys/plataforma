@@ -591,6 +591,7 @@
         <p class="muted" style="font-size:17px;margin:4px 0 14px">${esc(p.title)} — ${esc(p.es)}</p>
         <div class="mainph" style="max-width:460px">${photo(p._t.cover)}</div>
         <div class="lesson" style="text-align:left;margin-top:6px"><h3>🎯 Goal</h3><p style="font-size:18px;margin:4px 0"><b>${esc(p.goal ? p.goal.en : p.title)}</b></p><p class="muted" style="margin:0">${esc(p.goal ? p.goal.es : p.es)}</p></div>
+        ${window.MRGOAL ? `<div style="max-width:620px;margin:12px auto 0">${MRGOAL.whyHTML(M.MOD.n, p.topic)}</div>` : ''}
         ${prev && !(S.parts[prev.id] && S.parts[prev.id].done) ? `<p class="hint" style="margin-top:6px">💡 Te recomendamos completar primero: ${esc(prev._t.title)} · ${PL(prev)}</p>` : ''}
       </div>`;
       await A.waitNext(stage, '¡Empezar clase! 🚀'); M.confetti(2200); sfx('win'); return null;
