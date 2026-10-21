@@ -690,6 +690,7 @@
     if (r.mail && r.mail.bad && $('#pt-ann')) { $('#pt-ann').insertAdjacentHTML('afterbegin', `<div class="pt-ann pt-mailbad"><span>✉️ No hemos podido enviarte correos a <b>${esc(r.mail.email)}</b>. Corrígelo para recibir los avisos de tus clases.</span><button class="btn w sm" id="pt-mailfix">✏️ Corregir mi correo</button></div>`); $('#pt-mailfix').onclick = () => mailEdit(r.mail.email); }
     if (window.MRAGREE && (P.get() || {}).type !== 'staff' && P.plan().paid) await MRAGREE.check(); // 📄 acuerdo de servicio (una sola vez)
     if (!r.premium) { if (box) box.innerHTML = ''; return; }
+    nextClassCard(r);
     if (box) { renderLive(box, r); boardsHook(); sdTidy(); }
     askReview(r.premium && r.premium.reviewDue);
   }
@@ -777,6 +778,35 @@
       const r = await MRAC.call('reviewAdd', { code: MRAC.code(), classId: c.id, stars: st, text: $('#rv-t', m).value }).catch(() => null); m.remove();
       M.toast(r && r.ok ? '⭐ ¡Gracias por tu opinión!' : 'No se pudo enviar. Inténtalo más tarde.'); };
   }
+  // 📌 «Tu próxima clase»: siempre visible arriba del perfil mientras tenga una clase reservada
+  let ncTimer = null;
+  function nextClassCard(r) {
+    const old = $('#pt-nc'); if (old) old.remove(); clearInterval(ncTimer);
+    const host = $('#pt-ann'); if (!host || !r || !r.premium) return;
+    const startMs = (c) => new Date(c.date + 'T' + String(c.time).slice(0, 5) + ':00-05:00').getTime();
+    const up = (r.premium.upcoming || []).filter((c) => c.type === 'vip' && Date.now() < startMs(c) + 50 * 60000).sort((a, b) => startMs(a) - startMs(b));
+    const left0 = ((r.premium.credits || {}).vipLeft) || 0, book = () => { const b = $('#lv-book'); if (b && !b.disabled) b.click(); else { const t = $('#pt-live'); if (t) t.scrollIntoView({ behavior: 'smooth' }); } };
+    if (!up.length) { if (!left0) return; const e0 = document.createElement('div'); e0.id = 'pt-nc'; e0.className = 'card pt-nc empty';
+      e0.innerHTML = `<div class="pt-nc-d"><b>${left0}</b><small>clase${left0 === 1 ? '' : 's'}</small></div><div class="pt-nc-t"><span class="pt-nc-l">📅 Reserva tu clase</span><h3>Aún no tienes clases reservadas</h3><p>Te ${left0 === 1 ? 'queda <b>1 clase</b>' : 'quedan <b>' + left0 + ' clases</b>'} individuales en tu plan. ¡Úsalas!</p></div><div class="pt-nc-b"><button class="btn k" data-bk>${MRI('calendar')} Reservar clase</button></div>`;
+      e0.querySelector('[data-bk]').onclick = book; host.after(e0); return; }
+    const c = up[0], today = P.todayISO(), isToday = c.date === today;
+    const tom = new Date(today + 'T12:00:00'); tom.setDate(tom.getDate() + 1); const isTom = c.date === tom.toISOString().slice(0, 10);
+    const pic = window.MRPROFPIC && MRPROFPIC(c.teacher);
+    const topic = String(c.topic || '').replace(/^Módulo \d+ · /, '').replace(/\s*\([^)]*\)$/, '');
+    const el = document.createElement('div'); el.id = 'pt-nc'; el.className = 'card pt-nc' + (isToday ? ' hoy' : '');
+    const paint = () => { const ms = startMs(c) - Date.now(), min = Math.round(ms / 60000);
+      const left = ms <= 0 ? '🔴 Tu clase está en curso' : min <= 5 ? '🟢 ¡Ya puedes entrar!' : min < 60 ? `Empieza en ${min} min` : min < 24 * 60 ? `Faltan ${Math.floor(min / 60)} h ${min % 60} min` : (Math.round(min / 1440) === 1 ? 'Falta 1 día' : `Faltan ${Math.round(min / 1440)} días`);
+      el.innerHTML = `<div class="pt-nc-d"><b>${fmtD(c.date, { day: 'numeric' })}</b><small>${fmtD(c.date, { month: 'short' })}</small></div>
+        <div class="pt-nc-t"><span class="pt-nc-l">${isToday ? '📌 Hoy tienes clase' : '📌 Tu próxima clase'}</span>
+          <h3>${isToday ? 'Hoy' : isTom ? 'Mañana' : fmtD(c.date, { weekday: 'long', day: 'numeric', month: 'long' })} · ${fmtT(c.time)}</h3>
+          <p>${pic ? `<img src="${pic}" alt="">` : ''}Con <b>${esc(c.th || c.teacher || 'tu profe')}</b>${topic ? ' · ' + esc(topic) : ''}</p>
+          <p class="pt-nc-c">${left}${up.length > 1 ? ` · y ${up.length - 1} clase${up.length > 2 ? 's' : ''} más reservada${up.length > 2 ? 's' : ''}` : ''}</p>
+          <small class="muted">Entra 5 minutos antes · la clase dura 50 minutos</small></div>
+        <div class="pt-nc-b">${isToday ? `<a class="btn k" href="clase-en-vivo.html?c=${encodeURIComponent(c.id)}">${MRI('video')} Entrar a la clase</a>` : `<button class="btn w" data-go="#pt-live">${MRI('calendar')} Ver mis clases</button>`}${left0 ? `<button class="btn ${isToday ? 'w' : 'k'}" data-bk>${MRI('plus')} Reservar otra clase</button>` : ''}</div>`;
+      const g = el.querySelector('[data-go]'); if (g) g.onclick = () => { const t = $('#pt-live'); if (t) t.scrollIntoView({ behavior: 'smooth' }); };
+      const bk = el.querySelector('[data-bk]'); if (bk) bk.onclick = book; };
+    paint(); host.after(el); ncTimer = setInterval(() => { if (!document.body.contains(el)) return clearInterval(ncTimer); paint(); }, 30000);
+  }
   function renderLive(box, r) {
     const pr = r.premium, cr = pr.credits, g = pr.group;
     const up = pr.upcoming || [];
@@ -797,7 +827,7 @@
       <div class="card lv-card lv-next"><div class="lv-h"><span class="lv-ic ic-cal">${MRI('calendar')}</span><div><h3>Mis próximas clases</h3></div></div>
         ${up.length ? `<div class="lv-list">${up.map(c => `<div class="lv-cl ${c.type}${c.date === today ? ' hoy' : ''}"><div class="lv-dt"><b>${fmtD(c.date, { day: 'numeric' })}</b><small>${fmtD(c.date, { month: 'short' })}</small></div>
           <div class="grow"><b>${c.type === 'vip' ? '🎯 Clase individual' : c.type === 'club' ? esc(c.club || '🎙️ Club') : '👥 Clase grupal'}${c.date === today ? ' <i class="lv-today">HOY</i>' : ''}</b><small>${fmtD(c.date, { weekday: 'long' })} · ${fmtT(c.time)} · ${(window.MRPROFPIC && MRPROFPIC(c.teacher)) ? `<img class="lv-tpic" src="${MRPROFPIC(c.teacher)}" alt="">` : ''}${esc(c.teacher || '')}${c.topic ? ' · ' + esc(c.topic) : ''}</small></div>
-          <div class="lv-act">${c.type === 'club' ? (c.confirmed ? '<span class="lv-ok">✅ Reservada</span>' : c.full ? '<span class="lv-pend">🚫 Cupos llenos (10/10)</span>' : c.canConfirm ? `<button class="btn k sm" data-conf="${esc(c.id)}">✅ Reservar cupo</button><small class="lv-spots">${c.spots} cupo${c.spots === 1 ? '' : 's'} libre${c.spots === 1 ? '' : 's'}</small>` : '<span class="lv-pend">⏰ Reservas cerradas (3 h antes)</span>') : ''}${c.type === 'vip' ? (c.date === today ? `<a class="btn k sm" href="clase-en-vivo.html?c=${encodeURIComponent(c.id)}">${ICO.cam} Entrar a la clase</a><small class="lv-live-n">Se activa 5 min antes</small>` : '') : c.meet && (c.type !== 'club' || c.confirmed) ? `<a class="btn k sm" target="_blank" rel="noopener" href="${esc(c.meet)}">${ICO.cam} Entrar</a>` : ''}${c.canCancel ? `<button class="btn w sm" data-cancel="${esc(c.id)}" data-kind="${c.type}" data-late="${c.lateCancel ? 1 : ''}">Cancelar</button>` : ''}</div></div>`).join('')}</div>` : '<p class="muted">No tienes clases programadas todavía. Aquí aparecerán las clases individuales que reserves.</p>'}${up.some(c => c.type === 'club') ? '<p class="muted lv-note">🎙️ Reserva tu cupo en las clases grupales mínimo <b>3 horas antes</b>. El enlace aparece al reservar.</p>' : ''}</div>
+          <div class="lv-act">${c.type === 'club' ? (c.confirmed ? '<span class="lv-ok">✅ Reservada</span>' : c.full ? '<span class="lv-pend">🚫 Cupos llenos (10/10)</span>' : c.canConfirm ? `<button class="btn k sm" data-conf="${esc(c.id)}">✅ Reservar cupo</button><small class="lv-spots">${c.spots} cupo${c.spots === 1 ? '' : 's'} libre${c.spots === 1 ? '' : 's'}</small>` : '<span class="lv-pend">⏰ Reservas cerradas (3 h antes)</span>') : ''}${c.type === 'vip' ? (c.date === today ? `<a class="btn k sm" href="clase-en-vivo.html?c=${encodeURIComponent(c.id)}">${ICO.cam} Entrar a la clase</a><small class="lv-live-n">Se activa 5 min antes</small>` : '') : ''}${c.canCancel ? `<button class="btn w sm" data-cancel="${esc(c.id)}" data-kind="${c.type}" data-late="${c.lateCancel ? 1 : ''}">Cancelar</button>` : ''}</div></div>`).join('')}</div>` : '<p class="muted">No tienes clases programadas todavía. Aquí aparecerán las clases individuales que reserves.</p>'}${up.some(c => c.type === 'club') ? '<p class="muted lv-note">🎙️ Reserva tu cupo en las clases grupales mínimo <b>3 horas antes</b>. El enlace aparece al reservar.</p>' : ''}</div>
       ${`<div class="card lv-card lv-claim"><div class="lv-h"><span class="lv-ic ic-flag">${MRI('flag')}</span><div><h3>¿Tu profe no se conectó?</h3></div></div>
         ${(pr.claimable || []).length ? `<p class="muted">Si tu profe no se conecta, repórtalo aquí (hasta 24 horas después de la clase). Si se confirma, <b>la clase vuelve a tu saldo</b>.</p><div class="lv-list">${pr.claimable.map(c => `<div class="lv-cl"><div class="grow"><b>${fmtD(c.date, { weekday: 'long', day: 'numeric', month: 'short' })} · ${fmtT(c.time)}</b><small>${(window.MRPROFPIC && MRPROFPIC(c.teacher)) ? `<img class="lv-tpic" src="${MRPROFPIC(c.teacher)}" alt="">` : ''}${esc(c.teacher || '')}</small></div><button class="btn w sm" data-claim="${esc(c.id)}">${MRI('flag')} Mi profe no se conectó</button></div>`).join('')}</div>` : ''}
         ${(pr.claims || []).length ? `<div class="lv-list" style="margin-top:8px">${pr.claims.map(c => `<div class="lv-cl"><div class="grow"><b>${fmtD(c.date, { day: 'numeric', month: 'short' })} · ${fmtT(c.time)} · ${esc(c.teacher || '')}</b><small>${c.status === 'aprobado' ? '✅ Aprobado · la clase volvió a tu saldo' : c.status === 'rechazado' ? '❌ No se confirmó' : '⏳ En revisión (máx. 24 h)'}</small></div></div>`).join('')}</div>` : ''}${!(pr.claimable || []).length ? '<p class="muted" style="margin:0">Cuando reserves una clase individual, aquí aparecerá el botón <b>"Mi profe no se conectó"</b>. Si tu profe no se conecta, repórtalo y, si se confirma, la clase vuelve a tu saldo.</p>' : ''}</div>`}

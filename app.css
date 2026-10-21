@@ -4759,3 +4759,14 @@ textarea.tb-board:focus{outline:2px solid #ffe36a}
 .fi-rf{background:#fff7ec;border-radius:10px;padding:6px 10px;margin-top:8px;font-size:13.5px}
 .fi-pz{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px}.fi-pz img{width:96px;height:60px;object-fit:cover;border-radius:8px;border:1.5px solid #c9d6ea;background:#fff}.fi-pz small{color:#64748B;font-size:12px}
 .fi-go{margin-top:14px;text-align:center}.fi-n{font-size:12.5px;text-align:center;margin:8px 0 0}
+/* 📌 tu próxima clase (perfil del estudiante) */
+.pt-nc{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center;border:2px solid #0B2A5B;border-radius:18px;padding:16px 18px;margin:0 0 16px;background:linear-gradient(135deg,#fff,#f4f7fc);box-shadow:0 10px 26px rgba(11,42,91,.12)}
+.pt-nc.hoy{border-color:#E3242B;background:linear-gradient(135deg,#fff,#fff1f2);box-shadow:0 10px 26px rgba(227,36,43,.18)}
+.pt-nc-d{background:#0B2A5B;color:#fff;border-radius:14px;width:68px;height:72px;display:flex;flex-direction:column;align-items:center;justify-content:center}.pt-nc.hoy .pt-nc-d{background:#E3242B}
+.pt-nc-d b{font:800 28px/1 Poppins,sans-serif}.pt-nc-d small{font:700 12px Poppins,sans-serif;text-transform:uppercase;opacity:.9}
+.pt-nc-l{font:800 11.5px Poppins,sans-serif;letter-spacing:.6px;text-transform:uppercase;color:#E3242B}
+.pt-nc h3{margin:2px 0 4px;font:800 20px Poppins,sans-serif;color:#0B2A5B}.pt-nc h3::first-letter{text-transform:uppercase}
+.pt-nc p{margin:0 0 4px;color:#3e4e6a;font-size:14.5px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}.pt-nc p img{width:26px;height:26px;border-radius:50%;object-fit:cover}
+.pt-nc-c{font-weight:700;color:#0B2A5B!important}.pt-nc.hoy .pt-nc-c{color:#b91c1c!important}
+@media (max-width:640px){.pt-nc{grid-template-columns:auto 1fr}.pt-nc-b{grid-column:1/-1}.pt-nc-b .btn{width:100%}}
+.pt-nc-b{display:flex;flex-direction:column;gap:8px;min-width:200px}.pt-nc.empty .pt-nc-d{background:#16a34a}
