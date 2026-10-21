@@ -129,7 +129,7 @@
       ['idea', 'Cómo funciona la escuela', 'Damos <b>clases 1 a 1 de 50 minutos</b> en nuestra <b>clase en vivo</b> (video integrado en la plataforma), con la metodología <b>RealTalk®</b>: el estudiante habla desde el primer minuto. Los estudiantes <b>no tienen profe fijo</b>: cualquier estudiante Premium puede reservar contigo.', 'home'],
       ['point', 'Horario de la escuela', '<b>Lunes a viernes:</b> 7:00 a. m. a 9:00 p. m.<br><b>Sábados:</b> 7:00 a. m. a 5:00 p. m.<br>Domingos y festivos de Colombia no hay clases. (Hora Colombia)', null],
       ['point', 'Resumen', 'Aquí ves tus <b>notificaciones</b> (clases reservadas y mensajes), tus próximas clases y tus estadísticas. Cada mañana también te llega un correo con tu resumen del día.', 'home'],
-      ['idea', 'Mi disponibilidad', 'Publica <b>solo</b> los horarios en los que realmente puedes dictar. Los estudiantes reservan desde <b>mañana</b> y hasta <b>5 días adelante</b> (nunca el mismo día). Mantenla siempre al día.', 'avail'],
+      ['idea', 'Mi disponibilidad', 'Publica <b>solo</b> los horarios en los que realmente puedes dictar. Los estudiantes reservan desde <b>mañana</b> y hasta <b>5 días adelante</b> (nunca el mismo día). Cada <b>viernes</b> confírmala con un clic (plazo: <b>sábado 5:00 p. m.</b>); si no, tus horas de la semana siguiente se ocultan hasta que la confirmes.', 'avail'],
       ['present', 'Antes de cada clase', 'En <b>Mis clases</b> toca <b>📝 Tablero</b>: ves el nivel y avance del estudiante, el tema que quiere reforzar y lo que trabajaron otros profes con él. Prepara tu clase con eso.', 'classes'],
       ['watch', 'Puntualidad', 'Conéctate <b>a la hora exacta</b>. La clase dura 50 minutos desde la hora reservada: si el estudiante llega tarde, no se extiende (9:00 → termina 9:50). Si a los <b>15 minutos</b> no se ha conectado, puedes retirarte y marcas <b>No asistió</b>.', null],
       ['pointside', 'Durante la clase', 'Entra desde <b>Mis clases → Entrar a la clase</b> (se activa 5 minutos antes). La clase en vivo te guía paso a paso: qué hacer, audio, respuesta esperada, <b>pizarra</b> y reloj de 50 minutos. Practica antes en <b>Herramientas → Clases en vivo</b>. Haz que el estudiante hable la mayor parte del tiempo.', null],
@@ -163,6 +163,9 @@
     const t = D.teacher || {}; const first = String(t.name || '').split(/\s+/)[0];
     const sl = first.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z]/g, '');
     const hasWeek = Object.keys(t.weekly || {}).length > 0;
+    const wd = (() => { const nm = t.weekNext, dow = new Date(today() + 'T12:00:00').getDay(); return hasWeek && nm && t.weekOk !== nm && (t.weekCut || dow === 5 || dow === 6 || dow === 0) ? dLabel(nm) + ' al ' + dLabel(addDays(nm, 5)) : ''; })();
+    if (wd) { const m = modal(`<div style="text-align:center"><div style="font-size:52px">📅</div><h2>¡Welcome, ${esc(first)}!</h2><p><b>Confirma tu disponibilidad de la próxima semana</b> (${wd}). Los estudiantes reservan con base en tus horas.</p><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px"><button class="btn k" id="wl-av">📅 Revisar y confirmar</button><button class="btn w" data-x>Más tarde</button></div></div>`);
+      $('#wl-av', m).onclick = () => { m.remove(); tab = 'avail'; ss.set(TABKEY, tab); shell(); }; return; }
     const m = modal(`<div style="text-align:center"><div style="font-size:52px">👋</div><h2>¡Welcome, ${esc(first)}!</h2>
       <p>${hasWeek ? 'Antes de empezar, revisa que tu <b>disponibilidad semanal</b> esté al día. Los estudiantes Premium solo pueden reservar clases individuales en los horarios que publiques.' : '<b>Aún no has escrito tu disponibilidad semanal.</b> Márcala ahora para que los estudiantes Premium puedan reservar tus clases individuales.'}</p>
       <p class="muted">Lunes a sábado · domingos y festivos no hay clases.</p>
@@ -231,8 +234,29 @@
     dds.forEach((d) => { d.querySelector('.tp-ddb').onclick = (e) => { e.stopPropagation(); const o = d.classList.contains('open'); closeDD(); if (!o) d.classList.add('open'); }; d.querySelectorAll('.tp-mi').forEach((x) => x.addEventListener('click', closeDD)); });
     if (!window.__tpdd) { window.__tpdd = 1; document.addEventListener('click', (e) => { if (!e.target.closest('.tp-dd')) $$('.tp-dd').forEach((d) => d.classList.remove('open')); }); document.addEventListener('keydown', (e) => { if (e.key === 'Escape') $$('.tp-dd').forEach((d) => d.classList.remove('open')); }); }
     ({ home, avail, classes, groups, pay }[tab] || home)($('#tp-body'));
+    weekBanner($('#tp-body'));
   }
 
+
+  /* 📅 confirmación semanal de disponibilidad (viernes a domingo, o si no tiene horas publicadas) */
+  function weekBanner(el) {
+    const t = D && D.teacher; if (!t || !el) return; const tg = t.weekNext; if (!tg) return;
+    const dow = new Date(today() + 'T12:00:00').getDay(), w = t.weekly || {}, has = Object.keys(w).some((d) => (w[d] || []).length);
+    const done = t.weekOk === tg, end = addDays(tg, 5), weekend = dow === 5 || dow === 6 || dow === 0;
+    const hidden = (D.slots || []).filter((x) => x.status === 'hidden' && x.date >= today() && x.date <= end).length;
+    const N = { 1: 'Lunes', 2: 'Martes', 3: 'Miércoles', 4: 'Jueves', 5: 'Viernes', 6: 'Sábado' };
+    const rng = dLabel(tg) + ' al ' + dLabel(end);
+    const rows = Object.keys(N).filter((d) => (w[d] || []).length).map((d) => `<li><b>${N[d]}</b><span>${w[d].map(h12).join(' · ')}</span></li>`).join('');
+    const btns = (main) => `<div class="tp-wk-b">${has ? `<button class="btn ok" id="tp-wkok">✅ ${main}</button>` : ''}<button class="btn ${has ? 'w' : 'k'}" id="tp-wkch">✏️ ${has ? 'Cambiar mis horas' : 'Agregar mis horas'}</button></div>`;
+    let html = '';
+    if (!done && (hidden || (t.weekCut && !weekend))) html = `<div class="tp-wk bad"><div class="tp-wk-h"><span class="tp-wk-i">⚠️</span><div><h2>Tus horas de la semana del ${rng} están ocultas</h2><p>No confirmaste tu disponibilidad a tiempo, así que los estudiantes no pueden reservar contigo esa semana. Las clases ya reservadas siguen igual. Confírmala ahora y tus horas vuelven a aparecer al instante.</p></div></div>${has ? `<ul class="tp-wk-l">${rows}</ul>` : ''}${btns('Confirmar y volver a publicar')}</div>`;
+    else if (!has) html = `<div class="tp-wk due"><div class="tp-wk-h"><span class="tp-wk-i">📅</span><div><h2>Publica tu disponibilidad</h2><p>Aún no tienes horas publicadas: los estudiantes no pueden reservar contigo.</p></div></div>${btns('')}</div>`;
+    else if (weekend && !done) html = `<div class="tp-wk due"><div class="tp-wk-h"><span class="tp-wk-i">📅</span><div><h2>${dow === 6 ? 'Último aviso: confirma tu disponibilidad antes de las 5:00 p. m.' : 'Confirma tu disponibilidad de la próxima semana'}</h2><p>Semana del <b>${rng}</b>. Revisa tus horas: los estudiantes reservan con base en ellas.</p></div></div><ul class="tp-wk-l">${rows}</ul>${btns('Sí, está al día')}<small>Plazo: <b>sábado 5:00 p. m.</b> Si no la confirmas, tus horas de esa semana se ocultan hasta que lo hagas. Si cambias tus horas y guardas, también queda confirmada.</small></div>`;
+    else if (tab === 'avail') html = `<div class="tp-wk okk">✅ Disponibilidad confirmada para la semana del <b>${rng}</b>. Cada viernes te pediremos confirmar la siguiente (plazo: sábado 5:00 p. m.).</div>`;
+    if (!html) return; const box = document.createElement('div'); box.innerHTML = html; el.prepend(box.firstElementChild);
+    const ok = $('#tp-wkok'); if (ok) ok.onclick = async () => { const lb = ok.textContent; ok.disabled = true; ok.textContent = 'Guardando…'; const r = await api('tWeekOk'); if (!r || !r.ok) { ok.disabled = false; ok.textContent = lb; if (!r || r.err !== 'auth') toast('No se pudo guardar. Inténtalo de nuevo.', true); return; } D = r; toast('✅ ¡Gracias! Disponibilidad confirmada para la semana del ' + rng + '.'); shell(); };
+    const ch = $('#tp-wkch'); if (ch) ch.onclick = () => { tab = 'avail'; ss.set(TABKEY, tab); shell(); setTimeout(() => { const g = $('#tp-wg'); if (g) g.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100); };
+  }
   /* ---------- 1. Resumen ---------- */
   function classRow(c, opt) {
     const r = rel(c.date), link = meetOf(c), canMark = c.status === 'scheduled' && c.date <= today();
@@ -318,13 +342,13 @@
         <div class="tp-stat red"><b>${+D.stats.taughtMonth || 0}</b><span>clases dictadas este mes</span></div>
         <div class="tp-stat"><b>${+D.stats.taughtTotal || 0}</b><span>clases dictadas en total</span></div>
         <div class="tp-stat"><b>${up.length}</b><span>próximas clases</span></div>
-        <div class="tp-stat"><b>${free}</b><span>espacios libres</span></div>
+        <div class="tp-stat"><b>${free}</b><span>espacios disponibles</span></div>
       </div>
       ${pend.length ? `<div class="tp-alert warn"><b>📌 Tienes ${pend.length} clase${pend.length > 1 ? 's' : ''} por marcar.</b> Registra la asistencia para que el estudiante vea su progreso. <button class="btn k sm" data-go="classes">Ir a Mis clases</button></div>` : ''}
       <div class="card tp-card"><div class="tp-card-h"><h2>Próximas clases</h2><small class="muted">hora Colombia</small></div>
         ${up.length ? `<ul class="tp-list">${up.slice(0, 8).map((c) => classRow(c)).join('')}</ul>` : `<div class="tp-empty"><img src="mra-think.webp" alt="" width="110" height="110"><p>No tienes clases programadas.${free ? '' : ' Agrega espacios en <b>Mi disponibilidad</b> para que tus estudiantes Premium reserven clases individuales.'}</p></div>`}
       </div>
-      ${!free ? `<div class="tp-alert"><b>🗓️ No tienes espacios libres.</b> Los estudiantes Premium solo pueden reservar en los horarios que publiques. <button class="btn w sm" data-go="avail">Agregar disponibilidad</button></div>` : ''}`;
+      ${!free ? `<div class="tp-alert"><b>🗓️ No tienes espacios disponibles.</b> Los estudiantes Premium solo pueden reservar en los horarios que publiques. <button class="btn w sm" data-go="avail">Agregar disponibilidad</button></div>` : ''}`;
     $$('[data-go]', el).forEach((b) => b.onclick = () => { tab = b.dataset.go; ss.set(TABKEY, tab); shell(); });
     bindMarks(el);
   }
@@ -345,30 +369,15 @@
     const slots = D.slots.filter((s) => s.status !== 'deleted' && s.date >= t0 && !(s.date === t0 && s.status === 'free' && s.time <= nowHM()));
     const byDate = {}; slots.forEach((s) => (byDate[s.date] = byDate[s.date] || []).push(s));
     el.innerHTML = `<div class="card tp-card tp-week"><div class="tp-card-h"><h2>📅 Mi disponibilidad semanal</h2></div>
-        <p class="muted tp-small">Marca las horas en que puedes dictar cada semana. La plataforma crea automáticamente tus espacios de <b>50 minutos</b> para las próximas <b>4 semanas</b> (y los renueva cada día). Los estudiantes Premium los verán para reservar sus clases individuales.</p>
+        <p class="muted tp-small">Con estas horas la plataforma publica tus espacios de las próximas <b>4 semanas</b> y los renueva cada día. Los estudiantes Premium reservan ahí. <b>Cada viernes te pediremos confirmarla.</b></p>
         <div id="tp-wg"></div><button class="btn k lg block" id="tp-wsave" style="margin-top:12px">Guardar mi disponibilidad semanal</button></div>
-      <div class="tp-cols">
-      <div class="card tp-card tp-addcard">
-        <div class="tp-card-h"><h2>Agregar un espacio extra (fecha específica)</h2></div>
-        <p class="muted tp-small">Publica los horarios reales en los que puedes dictar. Los estudiantes Premium los verán y reservarán (desde mañana y hasta 5 días adelante, nunca para el mismo día). Pueden cancelar sin penalidad hasta 12 horas antes; te llega un correo y un aviso aquí cuando reservan o cancelan. <a href="politica.html" target="_blank" rel="noopener">📌 Política de reservas y cancelaciones</a> Todo en <b>hora Colombia</b>.</p>
-        <label class="tp-l" for="tp-date">1. Fecha</label>
-        <input class="inp tp-inp" type="date" id="tp-date" min="${t0}" value="${form.date}">
-        <div class="tp-l">2. Hora(s) de inicio <small class="muted">(elige una o varias)</small></div>
-        <div class="tp-hours" role="group" aria-label="Horas">${HOURS.concat(extra).map((h) => `<button type="button" class="tp-hour${form.hours.indexOf(h) >= 0 ? ' on' : ''}${(form.date === t0 && h <= nowHM()) || !workOK(form.date, h) ? ' past' : ''}" data-h="${h}" aria-pressed="${form.hours.indexOf(h) >= 0}">${h12(h)}</button>`).join('')}</div>
-        <div class="tp-other"><label for="tp-time">Otra hora:</label><input class="inp tp-inp" type="time" id="tp-time" step="300"><button type="button" class="btn w sm" id="tp-addh">Añadir</button></div>
-        <div class="tp-l">3. Duración</div>
-        <p class="tp-dur">⏱️ Todas las clases de la escuela duran <b>50 minutos</b>.</p>
-        <label class="tp-rep"><input type="checkbox" id="tp-rep" ${form.repeat ? 'checked' : ''}> <span>Repetir cada semana</span></label>
-        <div class="tp-weeks${form.repeat ? '' : ' hidden'}"><label for="tp-weeks">durante</label><select class="inp tp-inp" id="tp-weeks">${[1, 2, 3, 4, 5, 6, 7, 8].map((n) => `<option value="${n}" ${+form.weeks === n ? 'selected' : ''}>${n} semana${n > 1 ? 's' : ''}</option>`).join('')}</select></div>
-        <div class="tp-preview" id="tp-prev"></div>
-        <button class="btn k lg block" id="tp-save">Guardar disponibilidad</button>
-      </div>
+      <div class="tp-cols1">
       <div class="card tp-card">
-        <div class="tp-card-h"><h2>Mis espacios</h2><small class="muted">${slots.filter((s) => s.status === 'free').length} libres · ${slots.filter((s) => s.status === 'booked').length} reservados</small></div>
+        <div class="tp-card-h"><h2>Mis espacios</h2><small class="muted">${slots.filter((s) => s.status === 'free').length} disponibles · ${slots.filter((s) => s.status === 'booked').length} reservados</small></div>
         ${Object.keys(byDate).length ? Object.keys(byDate).sort().map((d) => `<div class="tp-day"><h3>${rel(d) ? `<span class="tp-rel">${rel(d)}</span> ` : ''}${dLabel(d, true)}</h3><ul>${byDate[d].map((s) => {
           const c = s.status === 'booked' ? D.classes.find((x) => x.id === s.classId) : null;
           return `<li class="tp-slot ${s.status}"><span class="tp-slot-t">${h12(s.time)} – ${h12(endHM(s.time, s.duration))}<small>50 min</small></span>
-            ${s.status === 'free' ? `<span class="tp-st free">Libre</span><button class="tp-del" data-del="${esc(s.id)}" title="Borrar espacio" aria-label="Borrar espacio de las ${esc(s.time)}">🗑</button>`
+            ${s.status === 'hidden' ? `<span class="tp-st hid">Oculto</span><button class="tp-del" data-del="${esc(s.id)}" title="Borrar espacio" aria-label="Borrar espacio de las ${esc(s.time)}">🗑</button>` : s.status === 'free' ? `<span class="tp-st free">Disponible</span><button class="tp-del" data-del="${esc(s.id)}" title="Borrar espacio" aria-label="Borrar espacio de las ${esc(s.time)}">🗑</button>`
               : `<span class="tp-st booked">Reservado</span><span class="tp-slot-who">👤 ${c ? esc(studentName(c.students[0] || '')) : 'Estudiante'}</span>`}</li>`; }).join('')}</ul></div>`).join('')
           : `<div class="tp-empty"><img src="mra-point.webp" alt="" width="110" height="110"><p>Aún no tienes espacios publicados. Agrega tus horarios con el formulario.</p></div>`}
       </div></div>`;
@@ -376,32 +385,12 @@
     $('#tp-wsave', el).onclick = async () => { const b = $('#tp-wsave', el); b.disabled = true; b.textContent = 'Guardando…';
       const r = await api('tWeekly', { weekly: WG ? WG.get() : {} }); b.disabled = false; b.textContent = 'Guardar mi disponibilidad semanal';
       if (!r.ok) { if (r.err !== 'auth') toast(errText(r.err), true); return; } D = r; toast('✅ Disponibilidad semanal guardada. Tus espacios de las próximas 4 semanas ya están publicados.'); avail(el); };
-    const prev = () => { const p = planned(), box = $('#tp-prev', el); const dates = [...new Set(p.map((x) => x.date))];
-      box.innerHTML = p.length ? `Se crearán <b>${p.length}</b> espacio${p.length > 1 ? 's' : ''} de ${form.dur} min: ${dates.slice(0, 8).map((d) => dLabel(d)).join(', ')} · ${[...new Set(p.map((x) => x.time))].map(h12).join(', ')}` : '<span class="muted">Elige fecha y al menos una hora futura.</span>';
-      $('#tp-save', el).disabled = !p.length; };
-    $('#tp-date', el).oninput = (e) => { const v = e.target.value; if (window.MRFEST && MRFEST.isOff(v)) toast('🚫 El ' + v + ' es ' + MRFEST.why(v) + ': no se dictan clases. Elige otro día.', true); };
-    $('#tp-date', el).onchange = (e) => { form.date = e.target.value < t0 ? t0 : e.target.value; avail(el); };
-    $$('.tp-hour', el).forEach((b) => b.onclick = () => { const h = b.dataset.h, i = form.hours.indexOf(h); i >= 0 ? form.hours.splice(i, 1) : form.hours.push(h); b.classList.toggle('on', i < 0); b.setAttribute('aria-pressed', i < 0); prev(); });
-    $('#tp-addh', el).onclick = () => { const v = $('#tp-time', el).value; if (!/^\d{2}:\d{2}$/.test(v)) { toast('Elige una hora válida.', true); return; } if (!workOK(form.date, v)) { toast('Fuera del horario laboral: L–V 7:00 a. m.–9:00 p. m. y sábados 7:00 a. m.–5:00 p. m. (la clase de 50 min debe terminar dentro del horario).', true); return; } if (form.hours.indexOf(v) < 0) form.hours.push(v); avail(el); };
-    $$('.tp-segb', el).forEach((b) => b.onclick = () => { form.dur = b.dataset.d; $$('.tp-segb', el).forEach((x) => { x.classList.toggle('on', x === b); x.setAttribute('aria-checked', x === b); }); prev(); });
-    $('#tp-rep', el).onchange = (e) => { form.repeat = e.target.checked; $('.tp-weeks', el).classList.toggle('hidden', !form.repeat); prev(); };
-    $('#tp-weeks', el).onchange = (e) => { form.weeks = +e.target.value; prev(); };
-    $('#tp-save', el).onclick = async () => {
-      const p = planned(); if (!p.length) return; const b = $('#tp-save', el); b.disabled = true; b.textContent = 'Guardando…';
-      const r = await api('tSlotAdd', { slots: p });
-      b.disabled = false; b.textContent = 'Guardar disponibilidad';
-      if (!r.ok) { if (r.err !== 'auth') toast(errText(r.err), true); return; }
-      const skipped = p.length - (+r.added || 0);
-      form.hours = []; toast(`✅ ${r.added} espacio${r.added === 1 ? '' : 's'} agregado${r.added === 1 ? '' : 's'}${skipped > 0 ? ` (${skipped} ya existía${skipped > 1 ? 'n' : ''})` : ''}`);
-      await reload();
-    };
     $$('[data-del]', el).forEach((b) => b.onclick = async () => {
       const s = D.slots.find((x) => x.id === b.dataset.del); if (!s || !confirm(`¿Borrar el espacio del ${dLabel(s.date)} a las ${h12(s.time)}?`)) return;
       b.disabled = true; const r = await api('tSlotDel', { slotId: s.id });
       if (!r.ok) { b.disabled = false; if (r.err !== 'auth') toast(errText(r.err), true); if (r.err === 'booked') reload(); return; }
       toast('🗑 Espacio borrado'); await reload();
     });
-    prev();
   }
 
   /* ---------- 3. Mis clases ---------- */

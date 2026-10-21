@@ -4739,3 +4739,15 @@ textarea.tb-board:focus{outline:2px solid #ffe36a}
 .tp-livei span{flex:1;font:600 14px Inter,sans-serif}.tp-livei em{font-style:normal;font:700 12px Poppins,sans-serif;color:#E3242B;white-space:nowrap}
 .tp-live-n{display:block;margin-top:3px;font-size:11.5px}
 .lv-live-n{display:block;font-size:11.5px;color:#64748B;margin-top:3px;text-align:center}
+.tp-cols1{margin-top:16px}
+/* 📅 confirmación semanal de disponibilidad (portal docente) */
+.tp-wk{border-radius:18px;padding:16px 18px;margin:0 0 16px;font-family:Inter,sans-serif}
+.tp-wk.due{background:linear-gradient(135deg,#fff8e1,#fff3c4);border:2px solid #f5c84a;box-shadow:0 10px 26px rgba(245,200,74,.28)}
+.tp-wk-h{display:flex;gap:12px;align-items:flex-start}.tp-wk-i{font-size:30px;line-height:1}
+.tp-wk h2{margin:0;font:800 19px Poppins,sans-serif;color:#0B2A5B}.tp-wk p{margin:4px 0 0;color:#3e4e6a;font-size:14.5px}
+.tp-wk-l{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:6px}.tp-wk-l li{display:flex;gap:10px;background:#fff;border-radius:10px;padding:8px 12px;font-size:14px;flex-wrap:wrap}.tp-wk-l b{min-width:90px;color:#0B2A5B}
+.tp-wk-b{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}.tp-wk-b .btn{flex:1;min-width:180px}
+.tp-wk small{display:block;margin-top:8px;color:#8a6d0b;font-size:12.5px}
+.tp-wk.okk{background:#eafaf0;border:1.5px solid #9be0b4;color:#166534;font-size:14px;padding:10px 14px}
+.tp-wk.bad{background:linear-gradient(135deg,#fff1f2,#ffe4e6);border:2px solid #E3242B;box-shadow:0 10px 26px rgba(227,36,43,.2)}.tp-wk.bad h2{color:#b91c1c}
+.tp-st.hid{background:#fde8ea;color:#b91c1c;border:1.5px solid #f5a3a8;border-radius:20px;padding:2px 10px;font:800 12px Poppins,sans-serif}
