@@ -514,7 +514,7 @@
   async function settings() {
     view().innerHTML = '<div class="ad-loading">⏳ Cargando…</div>';
     const r = await api('aList', { table: 'Config', size: 200 }); const conf = {}; (r.rows || []).forEach(x => conf[x.key] = x.value);
-    const links = [['🌐 Plataforma (estudiantes)', BASE], ['📝 Formulario de inscripción', BASE + 'inscripcion.html'], ['👩‍🏫 Proceso de selección de profes', BASE + 'reclutamiento.html'], ['🧑‍🏫 Portal de profesores', BASE + 'profesores.html'], ['💬 Chat de docentes', BASE + 'docente.html']];
+    const links = [['🌐 Plataforma (estudiantes)', BASE], ['📝 Formulario de inscripción', BASE + 'inscripcion.html'], ['👩‍🏫 Proceso de selección de profes', BASE + 'reclutamiento.html'], ['🧑‍🏫 Portal de profesores', BASE + 'profesores.html']];
     view().innerHTML = `<div class="ad-head"><h1>⚙️ Ajustes</h1></div>
       <div class="card"><h3>🔗 Enlaces para compartir</h3><div class="ad-mini">${links.map(([n, u]) => `<div class="ad-mrow ad-link"><b>${n}</b><span>${esc(u)}</span><button class="btn w sm" data-cp="${esc(u)}">📋</button></div>`).join('')}</div></div>
       <div class="card"><h3>📣 Anuncio para todos los estudiantes</h3><p class="muted">Aparece en el perfil de cada estudiante. Déjalo vacío para ocultarlo.</p><textarea class="inp" data-k="announcement" rows="2">${esc(conf.announcement)}</textarea></div>
