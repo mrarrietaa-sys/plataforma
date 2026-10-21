@@ -4864,3 +4864,29 @@ body .btn{max-width:100%;box-sizing:border-box}
 .pt-or:before,.pt-or:after{display:none!important}
 .pt-or .pt-trialk{color:#E3242B;font:800 15px Poppins,sans-serif;text-decoration:underline;text-underline-offset:3px}
 
+/* v312 · celular: planes más compactos (cada plan cabe completo) y profes sin espacio vacío */
+@media (max-width:600px){
+ #ld-planes .pv-grid>.pv{flex:0 0 78%!important;padding:14px 14px 12px!important;border-radius:16px!important}
+ #ld-planes .pv-grid{scroll-padding:0 11%;padding-left:2px!important}
+ #ld-planes .pv-ic{width:30px!important;height:30px!important;margin:0 0 6px!important;border-radius:9px!important}
+ #ld-planes .pv-ic .mri{width:16px!important;height:16px!important}
+ #ld-planes .pv-n{font-size:15.5px!important}
+ #ld-planes .pv-pr{margin:2px 0 0!important}
+ #ld-planes .pv-pr b,#ld-planes .pv-pr strong,#ld-planes .pv-pr>span:first-child{font-size:26px!important}
+ #ld-planes .pv-pc{font-size:12px!important;padding:3px 8px!important;margin:4px 0 6px!important}
+ #ld-planes .pv-pc0{height:6px!important}
+ #ld-planes .pv-out{font-size:13.5px!important;margin:4px 0 8px!important;line-height:1.35}
+ #ld-planes .pv-ul{gap:5px!important;margin:0 0 8px!important}
+ #ld-planes .pv-li{font-size:13px!important}
+ #ld-planes .pv-li .mri{width:15px!important;height:15px!important}
+ #ld-planes .pv-note,#ld-planes .pv-cond{font-size:11.5px!important;margin:0 0 8px!important}
+ #ld-planes .pv-bt{padding:8px 10px!important;font-size:13.5px!important}
+ #ld-planes .pv-rib{font-size:11px!important;padding:3px 10px!important}
+ #ld-profes .ld-pf.ld-cyl{height:225px!important}
+ #ld-profes .ld-cylw{height:265px!important}
+}
+#ld-profes .ld-pf.ld-cyl{height:240px}
+#ld-profes .ld-cylw{height:290px}
+#ld-profes .ld-pf.ld-cyl{top:34px!important}#ld-profes .ld-cylw{height:305px}@media (max-width:600px){#ld-profes .ld-cylw{height:285px!important}}
+@media (min-width:601px){#ld-profes .ld-pf.ld-cyl{top:48px!important}#ld-profes .ld-cylw{height:320px!important}}
+#ld-profes .ld-cyl>.ld-pc{border:3px solid transparent!important}#ld-profes .ld-cyl>.ld-pc.f{border-color:#E3242B!important;box-shadow:0 16px 34px rgba(227,36,43,.18)!important}
