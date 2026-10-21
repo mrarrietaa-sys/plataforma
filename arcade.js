@@ -19,7 +19,7 @@
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { } };
   const LEVELS = [
     { id: 'A1', es: 'Elemental', grp: 'arcade_a1' }, { id: 'A2', es: 'Básico', grp: 'arcade_a2' },
-    { id: 'B2', es: 'Intermedio alto', grp: 'arcade_b2' }, { id: 'B2+', es: 'Avanzado', grp: 'arcade_b2p' }];
+    { id: 'B2', es: 'Intermedio', grp: 'arcade_b2' }, { id: 'B2+', es: 'Avanzado', grp: 'arcade_b2p' }];
   function myLevel() {
     try { const a = P.assigned && P.assigned(); if (a && a.id) return a.id; const p = P.get(); const m = p && p.module && P.mod(+p.module); if (m) return m.id; } catch (e) { }
     return 'A1';
