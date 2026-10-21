@@ -4805,3 +4805,28 @@ body .btn.block,.ad-login .btn,.tp-lform .btn,.in-page form > .btn{display:flex;
 body .btn{max-width:100%;box-sizing:border-box}
 .lv-vip #lv-book,.lv-vip #lv-extra{white-space:normal!important;min-width:0!important;max-width:100%!important;width:auto!important;justify-self:start;font-size:14px!important;padding:9px 16px!important;line-height:1.25;text-align:left}
 @media (max-width:600px){.lv-vip #lv-book,.lv-vip #lv-extra{justify-self:center;text-align:center;margin:4px 0 0!important}}
+/* v300 · página de entrada uniforme: todas las secciones en la misma caja, misma separación */
+.ld>.ld-sec{background:linear-gradient(180deg,#fff,#f6f9ff)!important;border:1px solid #e3e9f3!important;border-radius:28px!important;padding:30px 24px 28px!important;box-shadow:0 6px 18px rgba(11,42,91,.05)}
+.ld>section{margin-top:26px!important;margin-bottom:0!important}
+.ld>section.ld-hero{margin-top:0!important}
+.ld>.ld-sec h2{margin-top:0}
+.ld-sec .ld-glist{box-shadow:none!important;border:0!important;background:transparent!important;padding:0!important}
+.ld-sec .ld-steps .card,.ld-sec .ld-note{box-shadow:0 2px 8px rgba(11,42,91,.05)}
+.ld-steps .card{align-items:flex-start!important}
+.ld-steps h3{margin:2px 0 0!important}
+.ld-sd{display:block;color:#5a6a86;font-size:13.5px;margin-top:3px}
+/* profes más compactos en PC: 4 por fila */
+@media (min-width:981px){.ld-pf{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:14px!important}.ld-pc{padding:16px 12px!important}.ld-pc img{width:76px!important;height:76px!important}.ld-pc b{font-size:15px}.ld-pc ul{font-size:12.5px}}
+/* celular: planes y profes en carrusel deslizable, todo del mismo ancho */
+@media (max-width:600px){
+ .ld>.ld-sec{padding:22px 14px 20px!important;border-radius:22px!important}
+ #ld-planes .pv-grid{display:flex!important;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px!important;padding:16px 2px 10px;scrollbar-width:thin}
+ #ld-planes .pv-grid>.pv{flex:0 0 86%;scroll-snap-align:center}
+ .ld-pf{display:flex!important;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px!important;padding:4px 2px 10px;scrollbar-width:thin}
+ .ld-pf>.ld-pc{flex:0 0 80%;scroll-snap-align:center}
+ .pv-tr{width:100%!important;box-sizing:border-box}
+ .ld-newsf .btn,.ld-final .btn{width:auto!important;justify-self:start;align-self:flex-start}
+}
+/* botones de los planes más compactos */
+.pv-bt{padding:9px 14px!important;font-size:14.5px!important;border-radius:11px!important}
+.ld>.ld-ref{max-width:none!important;width:auto!important}
