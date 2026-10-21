@@ -4751,3 +4751,11 @@ textarea.tb-board:focus{outline:2px solid #ffe36a}
 .tp-wk.okk{background:#eafaf0;border:1.5px solid #9be0b4;color:#166534;font-size:14px;padding:10px 14px}
 .tp-wk.bad{background:linear-gradient(135deg,#fff1f2,#ffe4e6);border:2px solid #E3242B;box-shadow:0 10px 26px rgba(227,36,43,.2)}.tp-wk.bad h2{color:#b91c1c}
 .tp-st.hid{background:#fde8ea;color:#b91c1c;border:1.5px solid #f5a3a8;border-radius:20px;padding:2px 10px;font:800 12px Poppins,sans-serif}
+/* 👤 ficha del estudiante (portal docente) */
+.fi-h{font:800 16px Poppins,sans-serif;color:#0B2A5B;margin:16px 0 8px}.fi-h small{font:600 12px Inter,sans-serif;color:#64748B}
+.fi-c{border:1.5px solid #e3e9f3;border-radius:14px;padding:12px 14px;margin-bottom:10px;font-size:14px;line-height:1.55}.fi-c>b{color:#0B2A5B;display:block;margin-bottom:2px}
+.fi-t{font-weight:700;color:#1d2b45}.fi-sk{display:inline-block;font:800 10.5px Poppins,sans-serif;border-radius:8px;padding:2px 7px;margin:5px 4px 0 0;background:#eef3fb;color:#0B2A5B}
+.fi-sk.s{background:#fde8ea;color:#b91c1c}.fi-sk.l{background:#dbeafe;color:#1e40af}.fi-sk.r{background:#dcfce7;color:#166534}.fi-sk.w{background:#fef3c7;color:#92400e}
+.fi-rf{background:#fff7ec;border-radius:10px;padding:6px 10px;margin-top:8px;font-size:13.5px}
+.fi-pz{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px}.fi-pz img{width:96px;height:60px;object-fit:cover;border-radius:8px;border:1.5px solid #c9d6ea;background:#fff}.fi-pz small{color:#64748B;font-size:12px}
+.fi-go{margin-top:14px;text-align:center}.fi-n{font-size:12.5px;text-align:center;margin:8px 0 0}

@@ -130,10 +130,10 @@
       ['point', 'Horario de la escuela', '<b>Lunes a viernes:</b> 7:00 a. m. a 9:00 p. m.<br><b>Sábados:</b> 7:00 a. m. a 5:00 p. m.<br>Domingos y festivos de Colombia no hay clases. (Hora Colombia)', null],
       ['point', 'Resumen', 'Aquí ves tus <b>notificaciones</b> (clases reservadas y mensajes), tus próximas clases y tus estadísticas. Cada mañana también te llega un correo con tu resumen del día.', 'home'],
       ['idea', 'Mi disponibilidad', 'Publica <b>solo</b> los horarios en los que realmente puedes dictar. Los estudiantes reservan desde <b>mañana</b> y hasta <b>5 días adelante</b> (nunca el mismo día). Cada <b>viernes</b> confírmala con un clic (plazo: <b>sábado 5:00 p. m.</b>); si no, tus horas de la semana siguiente se ocultan hasta que la confirmes.', 'avail'],
-      ['present', 'Antes de cada clase', 'En <b>Mis clases</b> toca <b>📝 Tablero</b>: ves el nivel y avance del estudiante, el tema que quiere reforzar y lo que trabajaron otros profes con él. Prepara tu clase con eso.', 'classes'],
+      ['present', 'Antes de cada clase', 'En <b>Mis clases</b> toca <b>👤 Ficha</b>: ves el nivel del estudiante, el tema que quiere reforzar y el resumen de sus clases anteriores con otros profes (resultado, qué reforzar y la pizarra). Prepara tu clase con eso.', 'classes'],
       ['watch', 'Puntualidad', 'Conéctate <b>a la hora exacta</b>. La clase dura 50 minutos desde la hora reservada: si el estudiante llega tarde, no se extiende (9:00 → termina 9:50). Si a los <b>15 minutos</b> no se ha conectado, puedes retirarte y marcas <b>No asistió</b>.', null],
       ['pointside', 'Durante la clase', 'Entra desde <b>Mis clases → Entrar a la clase</b> (se activa 5 minutos antes). La clase en vivo te guía paso a paso: qué hacer, audio, respuesta esperada, <b>pizarra</b> y reloj de 50 minutos. Practica antes en <b>Herramientas → Clases en vivo</b>. Haz que el estudiante hable la mayor parte del tiempo.', null],
-      ['present', 'Después de cada clase', 'Al terminar la clase en vivo, el resumen y la pizarra se guardan solos en el <b>tablero</b> y puedes marcarla como <b>Dictada</b> ahí mismo. Si no asistió, márcala como <b>No asistió</b> en Mis clases. El estudiante lo ve y el próximo profe sabe qué se vio.', 'classes'],
+      ['present', 'Después de cada clase', 'Al terminar la clase en vivo, el resumen y la pizarra se guardan solos en la <b>ficha del estudiante</b> y puedes marcarla como <b>Dictada</b> ahí mismo. Si no asistió, márcala como <b>No asistió</b> en Mis clases. El estudiante lo ve y el próximo profe sabe qué se vio.', 'classes'],
       ['pointside', 'Chat con estudiantes', 'En el <b>Chat con estudiantes</b> (menú Mi cuenta) respondes dudas y tareas. Responde con amabilidad y dentro del horario de la escuela.', null],
       ['watch', 'Si no te conectas', `El estudiante puede reportarlo con "Mi profe no se conectó". Si se confirma, la clase vuelve a su saldo y se descuentan <b>${cop(R.penalty || 10000)}</b> de tu pago. Si tienes un imprevisto, avisa a administración lo antes posible.`, null],
       ['thumbs', 'Tus pagos', `No hay sueldo fijo: se paga cada mes por clase. Clase dictada: <b>${cop(R.rate || 21800)}</b>. Si te conectas, esperas 15 minutos y el estudiante no llega: <b>${cop(R.noshow || 10000)}</b>. Las canceladas y no dictadas no se pagan. Revisa tu detalle en <b>Mis pagos</b>.`, 'pay'],
@@ -150,7 +150,7 @@
         <p class="muted" style="font-size:13px">${i + 1} / ${steps.length}</p><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">${i ? '<button class="btn w" data-b>← Atrás</button>' : '<button class="btn w" data-s>Saltar</button>'}<button class="btn k" data-n>${last ? '📌 Leer y aceptar la política' : 'Siguiente →'}</button></div></div>`;
       m.querySelector('[data-n]').onclick = () => { if (last) { m.remove(); if (window.MRPOLICY) return MRPOLICY.showTeacher({ rate: R.rate, noshow: R.noshow, penalty: R.penalty, onAccept: () => { toast('✅ Gracias por tu compromiso'); end(true); } }); return end(true); } i++; draw(); };
       const b = m.querySelector('[data-b]'); if (b) b.onclick = () => { i--; draw(); };
-      const sk = m.querySelector('[data-s]'); if (sk) sk.onclick = () => { end(false); tab = 'home'; ss.set(TABKEY, tab); shell(); welcome(); };
+      const sk = m.querySelector('[data-s]'); if (sk) sk.onclick = () => { end(false); tab = 'home'; ss.set(TABKEY, tab); shell(); }; // el saludo fue al entrar: no se repite
     };
     draw();
     // voz de bienvenida también en el tour
@@ -189,9 +189,8 @@
         <div class="tp-head-txt"><h1>¡Hola, ${esc(t.hello || String(t.name || '').split(' ')[0])}!</h1><p class="muted">${dLabel(today(), true)} · <b>${h12(nowHM())}</b> hora Colombia · Código <b>${esc(t.code)}</b></p></div>
         <div class="tp-dds">
           <div class="tp-dd"><button class="tp-ddb" data-dd="tools">🛠 Herramientas <span class="car">▾</span></button><div class="tp-ddm">
-            <button class="tp-mi" id="tp-pz"><i class="ib">🧑‍🏫</i><span><b>Pizarra</b><small>Pizarra digital para tus clases</small></span></button>
             <button class="tp-mi" id="tp-live"><i class="ib2">🎥</i><span><b>Clases en vivo · Módulo 1</b><small>Practica cada clase y su contenido</small></span></button>
-            <button class="tp-mi" id="tp-mat"><i class="ib3">📚</i><span><b>Material de clases</b><small>Módulos y actividades</small></span></button></div></div>
+</div></div>
           <div class="tp-dd"><button class="tp-ddb" data-dd="cls">${({ home: '🏠 Resumen', avail: '🗓️ Mi disponibilidad', classes: '🎓 Mis clases', pay: '💰 Mis pagos' })[tab] || '🎓 Mis clases'} <span class="car">▾</span></button><div class="tp-ddm">
             <button class="tp-mi tp-tab" data-tab="home"><i class="ib6">🏠</i><span><b>Resumen</b><small>Próximas clases y estadísticas</small></span></button>
             <button class="tp-mi tp-tab" data-tab="classes"><i class="ib">🎓</i><span><b>Mis clases</b><small>Próximas y pasadas · tablero</small></span></button>
@@ -268,7 +267,7 @@
         ${c.notes && opt && opt.notes ? `<small class="tp-note">📝 ${esc(c.notes)}</small>` : ''}</div>
       <div class="tp-cls-act">
         ${c.status === 'scheduled' && c.date >= today() ? (c.type === 'vip' ? (c.date === today() ? `<a class="btn k sm" href="clase-en-vivo.html?c=${encodeURIComponent(c.id)}&rol=profe"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6h11a2 2 0 0 1 2 2v1.6l3.4-2.3A1 1 0 0 1 22 8.1v7.8a1 1 0 0 1-1.6.8L17 14.4V16a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z"/></svg> Entrar a la clase</a><small class="muted tp-live-n">Se activa 5 min antes</small>` : '<small class="muted">El botón para entrar aparece el día de la clase</small>') : (link ? `<a class="btn k sm" href="${esc(link)}" target="_blank" rel="noopener"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6h11a2 2 0 0 1 2 2v1.6l3.4-2.3A1 1 0 0 1 22 8.1v7.8a1 1 0 0 1-1.6.8L17 14.4V16a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z"/></svg> Entrar a la clase</a>` : '<small class="muted">Sin enlace de clase</small>')) : ''}
-        ${c.type === 'vip' && c.students.length && ['cancelled', 'latecancel', 'tlate'].indexOf(c.status) < 0 ? `<button class="btn w sm" data-board="${esc(c.id)}">📝 Tablero</button>` : ''}
+        ${c.type === 'vip' && c.students.length && ['cancelled', 'latecancel', 'tlate'].indexOf(c.status) < 0 ? `<button class="btn w sm" data-board="${esc(c.id)}">👤 Ficha</button>` : ''}
         ${c.type === 'vip' && c.status === 'scheduled' && (c.date > today() || (c.date === today() && c.time > nowHM())) ? `<button class="btn w sm tp-cbtn" data-tcancel="${esc(c.id)}">Cancelar clase</button>` : ''}
         ${canMark ? `<button class="btn ok sm" data-mark="${esc(c.id)}">✓ Marcar como dictada</button><button class="btn w sm" data-noshow="${esc(c.id)}">No asistió</button>` : ''}
       </div></li>`;
@@ -318,20 +317,22 @@
       else { b.disabled = false; b.textContent = 'Sí, cancelar clase'; toast(errText((x && x.err) || 'network'), true); } };
   }
   // 📝 tablero de clase: el profe escribe lo que hizo en la clase; ve también los tableros anteriores del estudiante (de cualquier profe)
+  // 👤 Ficha del estudiante (solo lectura): nivel, tema a reforzar y sus clases anteriores con cualquier profe (resumen + pizarra de la clase en vivo)
   async function boardDialog(id) {
     const c = D.classes.find((x) => x.id === id); if (!c) return; const code = String(c.students[0] || '').toUpperCase();
-    const m = modal(`<button class="tp-x" data-x aria-label="Cerrar">✕</button><h3>📝 Tablero de clase</h3><p class="muted">${esc(studentName(code))} · ${dLabel(c.date, true)} · ${h12(c.time)}</p>${(() => { const st = D.students[code] || {}; const MID = { 1: 'A1', 2: 'A2', 3: 'B2', 4: 'B2+' }[st.module]; const pr = MID && (st.progress || {})[MID]; return `<div class="tb-info">🎓 <b>Nivel:</b> ${MID ? 'Módulo ' + st.module + ' · ' + MID + (pr ? ' · ' + pr.pct + '% (' + pr.done + '/' + pr.total + ' clases)' : '') : 'Sin prueba de clasificación'}${c.topic ? `<br>🎯 <b>Quiere reforzar:</b> ${esc(c.topic)}` : ''}</div>`; })()}
-      <textarea class="tb-board" id="tb-tx" rows="9" placeholder="Vocabulary: …&#10;Phrases: …&#10;Corrections: …&#10;Homework: …" disabled>Cargando…</textarea>
-      <div class="row tb-row"><button class="btn k" id="tb-sv" disabled>💾 Guardar tablero</button><small class="tb-ok" id="tb-ok"></small></div>
-      <p class="muted" style="font-size:12.5px;margin:6px 0 0">El estudiante lo verá en su historial de clases.</p><button class="btn r sm" id="tb-pz" style="margin-top:10px">🧑‍🏫 Abrir la pizarra de esta clase</button><div id="tb-prev"></div>`);
-    const r = await api('tBoards', { code }); const L = (r && r.ok && r.boards) || []; const mine = L.find((b) => b.classId === id);
-    const tx = $('#tb-tx', m), sv = $('#tb-sv', m); tx.disabled = false; sv.disabled = false; tx.value = mine ? mine.text : ''; if (mine) $('#tb-ok', m).textContent = '✓ Guardado';
-    const prev = L.filter((b) => b.classId !== id && b.text).reverse();
-    if (prev.length) $('#tb-prev', m).innerHTML = `<details class="tb-prev"><summary>📚 Clases anteriores de ${esc(studentName(code).split(' ')[0])} (${prev.length})</summary>${prev.map((b) => `<div class="tb-pi"><b>${dLabel(b.date)} · ${h12(b.time)} · ${esc(b.teacher || '')}</b><div class="tb-board ro">${esc(b.text)}</div></div>`).join('')}</details>`;
-    $('#tb-pz', m).onclick = () => { m.remove(); pzOpen(id); };
-    tx.oninput = () => { $('#tb-ok', m).textContent = ''; };
-    sv.onclick = async () => { sv.disabled = true; sv.textContent = 'Guardando…'; const x = await api('tBoardSave', { classId: id, text: tx.value }); sv.disabled = false; sv.textContent = '💾 Guardar tablero';
-      if (x && x.ok) { $('#tb-ok', m).textContent = '✓ Guardado ' + h12(nowHM()); toast('✅ Tablero guardado'); } else toast(errText((x && x.err) || 'network'), true); };
+    const live = c.type === 'vip' && c.status === 'scheduled' && c.date === today();
+    const m = modal(`<button class="tp-x" data-x aria-label="Cerrar">✕</button><h3>👤 Ficha de ${esc(studentName(code))}</h3><p class="muted">Clase del ${dLabel(c.date, true)} · ${h12(c.time)}</p>${(() => { const st = D.students[code] || {}; const MID = { 1: 'A1', 2: 'A2', 3: 'B2', 4: 'B2+' }[st.module]; const pr = MID && (st.progress || {})[MID]; return `<div class="tb-info">🎓 <b>Nivel:</b> ${MID ? 'Módulo ' + st.module + ' · ' + MID + (pr ? ' · ' + pr.pct + '% (' + pr.done + '/' + pr.total + ' clases)' : '') : 'Sin prueba de clasificación'}${c.topic ? `<br>🎯 <b>Quiere reforzar:</b> ${esc(c.topic)}` : ''}</div>`; })()}
+      <h4 class="fi-h">📚 Sus clases anteriores <small>(con cualquier profe)</small></h4><div id="fi-l"><p class="muted">Cargando…</p></div>
+      ${live ? `<a class="btn k block fi-go" href="clase-en-vivo.html?c=${encodeURIComponent(c.id)}&rol=profe">🎥 Entrar a la clase</a>` : c.status === 'scheduled' ? '<p class="muted fi-n">El botón para entrar a la clase aparece el día de la clase.</p>' : ''}
+      <p class="muted fi-n">No tienes que escribir nada: al terminar la clase en vivo, el resumen y la pizarra se guardan solos aquí.</p>`);
+    const r = await api('tBoards', { code }); const L = ((r && r.ok && r.boards) || []).filter((b) => (b.text || (b.imgs || []).length) && b.classId !== id).reverse();
+    const SKC = { Speaking: 's', Listening: 'l', Reading: 'r', Writing: 'w' };
+    const body = (t) => String(t || '').split(/\n+/).map((ln) => { ln = ln.trim(); if (!ln) return '';
+      if (/^🎥/.test(ln)) return `<div class="fi-t">${esc(ln.replace(/^🎥\s*Clase en vivo\s*·\s*/, ''))}</div>`;
+      if (/^Resultado:/.test(ln)) { const [a, ...sk] = ln.split(' · '); return `<small class="muted">${esc(a)}</small><div>${sk.map((x) => { const k = x.split(' ')[0]; return `<span class="fi-sk ${SKC[k] || ''}">${esc(x)}</span>`; }).join('')}</div>`; }
+      if (/^Para reforzar:/.test(ln)) return `<div class="fi-rf">⚠️ ${esc(ln)}</div>`;
+      return `<div>${esc(ln)}</div>`; }).join('');
+    $('#fi-l', m).innerHTML = L.length ? L.map((b) => `<div class="fi-c"><b>${dLabel(b.date)} · ${esc(b.teacher || '')}</b>${body(b.text)}${(b.imgs || []).length ? `<div class="fi-pz">${b.imgs.map((u, k) => `<a href="${esc(u)}" target="_blank" rel="noopener"><img src="${esc(u)}" alt="Pizarra ${k + 1}" loading="lazy"></a>`).join('')}<small>Pizarra de esa clase</small></div>` : ''}</div>`).join('') : `<p class="muted">Es su primera clase individual: aún no hay clases anteriores.</p>`;
   }
   function home(el) {
     const t0 = today();

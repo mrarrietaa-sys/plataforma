@@ -2,7 +2,7 @@
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>Clase en vivo · mrarrieta.com</title>
 <script src="https://unpkg.com/@daily-co/daily-js@0.92.2/dist/daily.js"></script>
-<script src="config.js?v=285"></script>
+<script src="config.js?v=286"></script>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--n:#0B2A5B;--n2:#1e4a8f;--r:#E3242B;--y:#FFC21A;--g:#16a34a;--bd:#e3e9f3;--mu:#5b6577;--bg:#eef2f8}
@@ -114,7 +114,7 @@ body.only-s #vbox{position:sticky;top:0;z-index:20;background:var(--bg);padding-
 <script>
 (function(){
 const CLOUD=(window.M1CONFIG&&M1CONFIG.CLOUD_URL)||'https://script.google.com/macros/s/AKfycbzGXtwZH_eBIPz01faL6e8cMydhW-0u2H4UtzdHQYCr8CqMG62Tdp1dNDZ4MY4khE0N/exec';
-const CV='285',SESSION_MIN=60,CLASS_MIN=50;let SNAME='Carlos',TNAME='Mrs. Jennifer';
+const CV='286',SESSION_MIN=60,CLASS_MIN=50;let SNAME='Carlos',TNAME='Mrs. Jennifer';
 const QP=new URLSearchParams(location.search),CID=(QP.get('c')||'').replace(/[^\w]/g,''),DEMO=QP.get('demo')==='1',PLATFORM=!!CID;let INFO=null,VTOKEN='',GATE=PLATFORM,TAUTH=null,SAVED=0,MARKED=0;
 const base=()=>PLATFORM&&INFO?INFO.startMs:st.started;if(DEMO)SNAME='tu estudiante';
 const TOPICS=[['The Greetings','Los saludos'],['The Alphabet','El abecedario'],['The Nationalities','Las nacionalidades'],['Numbers and Colors','Números y colores'],['Verb To Be and A / An','Verbo to be y a / an'],['Jobs and Occupations','Trabajos y ocupaciones'],['Family and Animals','Familia y animales'],['The Food vs. The Fruit and Vegetables','Comida, frutas y verduras'],['Weekdays and Months of the Year','Días y meses del año'],['The Weather Forecast and the Clothes','El clima y la ropa'],['School Supplies and Parts of the House','Útiles escolares y partes de la casa'],['The Singular and the Plural Nouns','Sustantivos singulares y plurales'],['Demonstrative Pronouns','Pronombres demostrativos'],['There is and There are','There is y there are']];
@@ -335,9 +335,9 @@ function renderT(){const l=L(),top=$('#m-top'),body=$('#m-body');
    <div class="sum"><div><b>${s.ok}/${s.N}</b><span>bien</span></div><div><b>${st.rep}</b><span>veces repitió</span></div><div><b>${st.pts}</b><span>puntos</span></div></div>
    <div class="sks">${Object.keys(SKN).map(k=>`<div><span class="sk ${k}">${SKN[k]}</span><b>${s.by[k]?s.by[k][0]+'/'+s.by[k][1]:'–'}</b></div>`).join('')}</div>
    ${s.miss.length?`<div class="box y"><h4>Para reforzar en la próxima clase</h4>${s.miss.map(x=>'• '+esc(x.t)+': <b>'+esc(x.ans)+'</b>').join('<br>')}</div>`:s.ok===s.N?'<div class="box g"><h4>¡Excelente! Lo hizo todo bien.</h4></div>':`<div class="box b"><h4>${s.N-s.ok} pasos quedaron sin calificar</h4>Toca «Bien» u «Otra vez» en cada paso para que el resumen sea completo.</div>`}
-   ${PLATFORM?`<p class="stt">${SAVED===1?'✔ Resumen y pizarra guardados en el tablero de la clase.':SAVED===-1?'⚠ No se pudo guardar en el tablero. <a href="#" id="t-resave">Reintentar</a>':'Guardando en el tablero de la clase…'}</p>
+   ${PLATFORM?`<p class="stt">${SAVED===1?'✔ Resumen y pizarra guardados en la ficha del estudiante.':SAVED===-1?'⚠ No se pudo guardar en la ficha del estudiante. <a href="#" id="t-resave">Reintentar</a>':'Guardando en la ficha del estudiante…'}</p>
    <div class="nav" style="grid-template-columns:1fr 1fr"><button class="btn ok" id="t-mark"${MARKED?' disabled':''}>${I('check')} ${MARKED?'Marcada como dictada':'Marcar como dictada'}</button><a class="btn next" href="profesores.html" style="text-decoration:none">Volver a mi portal</a></div>
-   <div class="nav"><button class="btn prev" id="t-back">${I('back')} Volver</button><button class="btn prev" id="t-new">Empezar de nuevo</button></div>`:`<p class="stt">${DEMO?'En una clase real, este resumen y la pizarra se guardan solos en el tablero de la clase.':'Este resumen y la pizarra se guardan en el tablero de la clase.'}</p>
+   <div class="nav"><button class="btn prev" id="t-back">${I('back')} Volver</button><button class="btn prev" id="t-new">Empezar de nuevo</button></div>`:`<p class="stt">${DEMO?'En una clase real, este resumen y la pizarra se guardan solos en la ficha del estudiante.':'Este resumen y la pizarra se guardan en la ficha del estudiante.'}</p>
    <div class="nav"><button class="btn prev" id="t-back">${I('back')} Volver</button><button class="btn next" id="t-new">Empezar de nuevo</button></div>`}`);
   const tm=$('#t-mark');if(tm)tm.onclick=()=>{tm.disabled=true;tcall('tMark',{classId:CID,status:'done',attendance:{[INFO.code]:true},notes:'Clase en vivo · Tema '+l.n+': '+l.title}).then(r=>{if(r&&r.ok){MARKED=1;flashMsg('Clase marcada como dictada','ok');render();}else{tm.disabled=false;flashMsg('No se pudo marcar. Hazlo desde tu portal.','rep');}});};
   const rv=$('#t-resave');if(rv)rv.onclick=e=>{e.preventDefault();saveBoard();};
@@ -368,7 +368,7 @@ function renderS(){const l=L(),top=$('#m-top'),body=$('#m-body');
   $('#j-go').onclick=()=>{const v=$('#j-in').value.replace(/\D/g,'');if(v.length<4)return;unlockAudio();room=v;st.ready=Date.now();render();poll();push();};return;}
  const sc=`<div class="score"><span>${I('check')} ${st.ok}</span><span>${I('repeat')} ${st.rep}</span><span>${I('star')} ${st.pts} pts</span></div>`;
  top.innerHTML=`<div class="top"><h3>Clase con ${TNAME}</h3><span class="chip r live">EN VIVO</span></div>${st.started?bar():''}`;
- if(!st.started){body.innerHTML=animKey('wel'+st.topic,`<div class="hero" style="margin-top:10px;min-height:300px"><img src="${U(l.cover,1100,700)}" alt=""><div><small>Welcome, ${SNAME}!</small><h2>${esc(l.title)}</h2><p>${esc(l.es)} · Tema ${l.n} · Módulo 1 (A1)</p></div></div>
+ if(!st.started){body.innerHTML=animKey('wel'+st.topic,`<div class="hero" style="margin-top:10px;min-height:300px"><img src="${U(l.cover,1100,700)}" alt=""><div><small>Today's class</small><h2>${esc(l.title)}</h2><p>${esc(l.es)} · Tema ${l.n} · Módulo 1 (A1)</p></div></div>
    <div class="box b" style="text-align:center"><h4>Today's goal</h4><div style="font:700 18px Poppins;color:var(--n)">${esc(l.goalEn)}</div><small class="stt">${esc(l.goal)}</small></div>
    <div class="wait">${I('clock')} Tu clase dura ${CLASS_MIN} minutos · ${TNAME} empieza en un momento <span class="dots"><i></i><i></i><i></i></span></div>`);return;}
  if(st.fin){const s=summary();body.innerHTML=animKey('fin',`<div class="sumH" style="margin-top:10px"><div class="big">${I(st.fin.p>=70?'trophy':'heart')}</div><h2>${st.fin.p>=70?'Congratulations, '+SNAME+'!':'Good effort, '+SNAME+'!'}</h2><p>${st.fin.ok} de ${st.fin.n} bien en la clase de hoy</p></div>
@@ -384,7 +384,8 @@ function renderS(){const l=L(),top=$('#m-top'),body=$('#m-body');
  body.querySelectorAll('[data-yn]').forEach(b=>b.onclick=()=>{const y=st.yn.slice();y[+b.dataset.yn]=b.dataset.v;send({yn:y});});
  const pl=$('#a-play');if(pl)pl.onclick=()=>{pl.classList.remove('pulse');if(player.dataset.k)return flashMsg('Escuchando… tu profe puede detenerlo');if(s.items)shareAudio(s.items.map(x=>x.au),null,s.items.map((x,n)=>n));else shareAudio(s.au);};
  body.querySelectorAll('.tile').forEach(b=>b.onclick=()=>{if(player.dataset.k)return;const n=+b.dataset.n;shareAudio([s.items[n].au],n);});}
-if(PLATFORM)boot();else{ensureTopic(st.topic);render();if(rol==='profe'&&!DEMO){poll();push();}}
+if(DEMO&&(()=>{try{return !JSON.parse(sessionStorage.getItem('mra_tp_session')||'null');}catch(e){return true;}})()){$('#m-top').innerHTML='';$('#m-body').innerHTML=`<div class="pre" style="padding:24px 8px"><h2 style="font:800 22px Poppins;color:var(--n)">Solo para profes de mrarrieta.com</h2><p style="color:var(--mu)">Entra a tu portal docente y abre la práctica desde Herramientas → Clases en vivo.</p><a class="btn next" href="profesores.html" style="text-decoration:none;display:inline-flex;padding:12px 22px">Ir a mi portal docente</a></div>`;$('#vbox').innerHTML='';}
+else if(PLATFORM)boot();else{ensureTopic(st.topic);render();if(rol==='profe'&&!DEMO){poll();push();}}
 if(rol==='estudiante'||PLATFORM||DEMO)$('#help').style.display='none';
 if(PLATFORM||DEMO){const hb=$('#hback');hb.href=rol==='profe'?'profesores.html':'index.html';hb.hidden=false;}
 })();
