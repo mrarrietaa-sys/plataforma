@@ -4771,3 +4771,4 @@ textarea.tb-board:focus{outline:2px solid #ffe36a}
 @media (max-width:640px){.pt-nc{grid-template-columns:auto 1fr}.pt-nc-b{grid-column:1/-1}.pt-nc-b .btn{width:100%}}
 .pt-nc-b{display:flex;flex-direction:column;gap:8px;min-width:200px}.pt-nc.empty .pt-nc-d{background:#16a34a}
 .pt-nc-x{border:0;background:none;color:#b91c1c;font:700 13px Inter,sans-serif;text-decoration:underline;cursor:pointer;padding:4px}
+.tp-livetabs{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}.tp-livetabs button{border:1.5px solid #e3e9f3;background:#fff;color:#0B2A5B;font:700 12.5px Poppins,sans-serif;border-radius:20px;padding:6px 12px;cursor:pointer}.tp-livetabs button.on{background:#0B2A5B;color:#fff;border-color:#0B2A5B}

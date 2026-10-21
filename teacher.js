@@ -189,7 +189,7 @@
         <div class="tp-head-txt"><h1>¡Hola, ${esc(t.hello || String(t.name || '').split(' ')[0])}!</h1><p class="muted">${dLabel(today(), true)} · <b>${h12(nowHM())}</b> hora Colombia · Código <b>${esc(t.code)}</b></p></div>
         <div class="tp-dds">
           <div class="tp-dd"><button class="tp-ddb" data-dd="tools">🛠 Herramientas <span class="car">▾</span></button><div class="tp-ddm">
-            <button class="tp-mi" id="tp-live"><i class="ib2">🎥</i><span><b>Clases en vivo · Módulo 1</b><small>Practica cada clase y su contenido</small></span></button>
+            <button class="tp-mi" id="tp-live"><i class="ib2">🎥</i><span><b>Clases en vivo</b><small>Practica las clases de los 4 módulos</small></span></button>
 </div></div>
           <div class="tp-dd"><button class="tp-ddb" data-dd="cls">${({ home: '🏠 Resumen', avail: '🗓️ Mi disponibilidad', classes: '🎓 Mis clases', pay: '💰 Mis pagos' })[tab] || '🎓 Mis clases'} <span class="car">▾</span></button><div class="tp-ddm">
             <button class="tp-mi tp-tab" data-tab="home"><i class="ib6">🏠</i><span><b>Resumen</b><small>Próximas clases y estadísticas</small></span></button>
@@ -207,8 +207,14 @@
     if ($('#tp-tour')) $('#tp-tour').onclick = () => tour();
     if ($('#tp-mat')) $('#tp-mat').onclick = material;
     if ($('#tp-pz')) $('#tp-pz').onclick = () => pzPick();
-    if ($('#tp-live')) $('#tp-live').onclick = () => { const T = ['The Greetings', 'The Alphabet', 'The Nationalities', 'Numbers and Colors', 'Verb To Be and A / An', 'Jobs and Occupations', 'Family and Animals', 'The Food vs. The Fruit and Vegetables', 'Weekdays and Months of the Year', 'The Weather Forecast and the Clothes', 'School Supplies and Parts of the House', 'The Singular and the Plural Nouns', 'Demonstrative Pronouns', 'There is and There are'];
-      modal(`<button class="tp-x" data-x aria-label="Cerrar">✕</button><h3>🎥 Clases en vivo · Módulo 1 (A1)</h3><p class="muted">Cada tema es una clase completa de 50 minutos: te dice qué hacer en cada paso, con audio, respuestas, pizarra y reloj. Ábrela en <b>modo práctica</b> para prepararte; en la clase real entras desde <b>Mis clases → Entrar a la clase</b>.</p><div class="tp-livel">${T.map((t, i) => `<a class="tp-livei" href="clase-en-vivo.html?rol=profe&demo=1&t=${i + 1}"><b>${i + 1}</b><span>${esc(t)}</span><em>Practicar →</em></a>`).join('')}</div>`); };
+    if ($('#tp-live')) $('#tp-live').onclick = () => { // 🎥 práctica de las clases en vivo de los 4 módulos
+      const show = (mod) => { const T = (window.CLASE_TOPICS || {})[mod] || []; const LV = { 1: 'A1', 2: 'A2', 3: 'B2', 4: 'B2+' };
+        const m = modal(`<button class="tp-x" data-x aria-label="Cerrar">✕</button><h3>🎥 Clases en vivo</h3><p class="muted">Cada tema es una clase completa de 50 minutos: te dice qué hacer en cada paso, con audio, respuestas, pizarra y reloj. Ábrela en <b>modo práctica</b> para prepararte; en la clase real entras desde <b>Mis clases → Entrar a la clase</b>.</p>
+          <div class="tp-livetabs">${[1, 2, 3, 4].map((x) => `<button class="${x === mod ? 'on' : ''}" data-lm="${x}">Módulo ${x} · ${LV[x]}</button>`).join('')}</div>
+          <div class="tp-livel">${T.map((t, i) => `<a class="tp-livei" href="clase-en-vivo.html?rol=profe&demo=1&m=${mod}&t=${i + 1}"><b>${i + 1}</b><span>${esc(t[0])}</span><em>Practicar →</em></a>`).join('') || '<p class="muted">Cargando…</p>'}</div>`);
+        m.querySelectorAll('[data-lm]').forEach((b) => b.onclick = () => { m.remove(); show(+b.dataset.lm); }); };
+      if (window.CLASE_TOPICS) return show(1);
+      const sc = document.createElement('script'); sc.src = 'js/clase-topics.js?v=' + Date.now().toString().slice(0, 7); sc.onload = () => show(1); sc.onerror = () => { const s2 = document.createElement('script'); s2.src = 'clase-topics.js'; s2.onload = () => show(1); document.head.appendChild(s2); }; document.head.appendChild(sc); };
     if ($('#tp-ct')) $('#tp-ct').onclick = async () => { const r = CT && !CT.needs ? CT : await api('tContract').catch(() => null); if (r && r.ok) contractModal(r); else toast(errText('network'), true); };
     if ($('#tp-pol')) $('#tp-pol').onclick = async () => { const r = await api('tPay').catch(() => null); window.MRPOLICY && MRPOLICY.showTeacher({ rate: r && r.rate, noshow: r && r.noshowRate, penalty: r && r.penalty, onAccept: () => toast('✅ Gracias por tu compromiso') }); }; // 📌 política (puntualidad, 15 minutos)
     if ($('#tp-pinch')) $('#tp-pinch').onclick = () => { // 🔑 cambiar PIN
