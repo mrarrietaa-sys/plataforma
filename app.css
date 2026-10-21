@@ -4806,20 +4806,13 @@ body .btn{max-width:100%;box-sizing:border-box}
 .lv-vip #lv-book,.lv-vip #lv-extra{white-space:normal!important;min-width:0!important;max-width:100%!important;width:auto!important;justify-self:start;font-size:14px!important;padding:9px 16px!important;line-height:1.25;text-align:left}
 @media (max-width:600px){.lv-vip #lv-book,.lv-vip #lv-extra{justify-self:center;text-align:center;margin:4px 0 0!important}}
 /* v300 · página de entrada uniforme: todas las secciones en la misma caja, misma separación */
-.ld>.ld-sec{background:linear-gradient(180deg,#fff,#f6f9ff)!important;border:1px solid #e3e9f3!important;border-radius:28px!important;padding:30px 24px 28px!important;box-shadow:0 6px 18px rgba(11,42,91,.05)}
-.ld>section{margin-top:26px!important;margin-bottom:0!important}
-.ld>section.ld-hero{margin-top:0!important}
-.ld>.ld-sec h2{margin-top:0}
-.ld-sec .ld-glist{box-shadow:none!important;border:0!important;background:transparent!important;padding:0!important}
-.ld-sec .ld-steps .card,.ld-sec .ld-note{box-shadow:0 2px 8px rgba(11,42,91,.05)}
 .ld-steps .card{align-items:flex-start!important}
 .ld-steps h3{margin:2px 0 0!important}
 .ld-sd{display:block;color:#5a6a86;font-size:13.5px;margin-top:3px}
 /* profes más compactos en PC: 4 por fila */
-@media (min-width:981px){.ld-pf{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:14px!important}.ld-pc{padding:16px 12px!important}.ld-pc img{width:76px!important;height:76px!important}.ld-pc b{font-size:15px}.ld-pc ul{font-size:12.5px}}
+@media (min-width:981px){.ld-pf{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:14px!important}.ld-pc{padding:16px 12px!important}.ld-pc img{width:76px!important;height:76px!important}.ld-pc b{font-size:15px}.ld-pc ul{font-size:12.5px}}
 /* celular: planes y profes en carrusel deslizable, todo del mismo ancho */
 @media (max-width:600px){
- .ld>.ld-sec{padding:22px 14px 20px!important;border-radius:22px!important}
  #ld-planes .pv-grid{display:flex!important;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px!important;padding:16px 2px 10px;scrollbar-width:thin}
  #ld-planes .pv-grid>.pv{flex:0 0 86%;scroll-snap-align:center}
  .ld-pf{display:flex!important;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px!important;padding:4px 2px 10px;scrollbar-width:thin}
@@ -4829,7 +4822,22 @@ body .btn{max-width:100%;box-sizing:border-box}
 }
 /* botones de los planes más compactos */
 .pv-bt{padding:9px 14px!important;font-size:14.5px!important;border-radius:11px!important}
-.ld>.ld-ref{max-width:none!important;width:auto!important}
 /* v301 · globos más pequeños: no tocan el texto ni se sale el globo de diálogo */
 .itl-k-balloon1 .itl-img,.itl-k-balloon2 .itl-img,.itl-k-balloon3 .itl-img{height:min(42vh,360px);width:auto;max-width:100%;margin:0 auto}
 .itl-k-balloon1,.itl-k-balloon2,.itl-k-balloon3{margin-top:4vh}
+/* v302 · ¿Qué ganas? + Cómo funciona compactos en un solo bloque */
+.ld-combo{display:grid;grid-template-columns:1.1fr 1fr;gap:26px;padding:24px!important;align-items:start}
+.ld-combo h2{font-size:22px!important;text-align:left!important;margin:0 0 14px!important}
+.ld-combo .ld-glist{display:grid!important;grid-template-columns:1fr 1fr!important;gap:12px 16px!important;padding:0!important;border:0!important;box-shadow:none!important;background:none!important}
+.ld-combo .ld-gi{padding:0!important;border:0!important;gap:10px!important;align-items:center}
+.ld-combo .ld-gi .ld-ic{width:36px!important;height:36px!important;border-radius:10px!important;flex:none}
+.ld-combo .ld-gi .ld-ic .mri{width:18px;height:18px}
+.ld-combo .ld-gi b{font-size:14px!important}.ld-combo .ld-gi small{font-size:12.5px!important;line-height:1.3}
+.ld-combo .ld-steps{display:grid!important;grid-template-columns:1fr!important;gap:8px!important}
+.ld-combo .ld-steps .card{padding:8px 10px!important;box-shadow:none!important;border:0!important;background:#f6f9ff!important;border-radius:12px!important;align-items:center!important}
+.ld-combo .ld-steps .ld-n{width:28px!important;height:28px!important;font-size:13px!important;flex:none}
+.ld-combo .ld-steps h3{font-size:14px!important;margin:0!important}.ld-combo .ld-sd{font-size:12.5px;margin-top:1px}
+.ld-note2{margin-top:12px!important;padding:12px 16px!important;font-size:14px}
+@media (max-width:760px){.ld-combo{grid-template-columns:1fr;gap:20px;padding:18px!important}.ld-combo h2{text-align:center!important}}
+@media (max-width:760px){.ld-combo .ld-gi small{display:none!important}.ld-combo .ld-gi b{font-size:13.5px!important}.ld-combo .ld-gi{align-items:center!important}}
+.ld-combo>.ld-note2{grid-column:1/-1;margin:0!important;background:#f6f9ff!important;border:0!important;box-shadow:none!important;border-radius:14px!important;display:flex;gap:12px;align-items:center}
