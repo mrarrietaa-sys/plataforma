@@ -74,18 +74,59 @@
   const say = (au, opts) => M.play(au, opts);
   const buzz = (ms) => { try { if (S.sound && navigator.vibrate) navigator.vibrate(ms); } catch (e) { } };
 
+
+  /* ---------------- íconos de línea premium (estilo Lucide, ISC) ---------------- */
+  const IP = {
+    rain: '<path d="M4 14.9A7 7 0 1 1 15.7 8h1.8a4.5 4.5 0 0 1 2.5 8.24"/><path d="M16 14v6M8 14v6M12 16v6"/>',
+    memory: '<rect x="2" y="7" width="11" height="15" rx="2"/><path d="M8 7V4a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2h-7"/><path d="M6 13.5h3M7.5 12v3"/>',
+    race: '<path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/>',
+    wheel: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="2.2"/><path d="M12 2v7.8M12 14.2V22M2 12h7.8M14.2 12H22M4.9 4.9l5.5 5.5M13.6 13.6l5.5 5.5M19.1 4.9l-5.5 5.5M10.4 13.6l-5.5 5.5"/>',
+    mole: '<path d="M6 8.5a6.5 6.5 0 1 1 13 0c0 6-6 6-6 10a3.5 3.5 0 1 1-7 0"/><path d="M15 8.5a2.5 2.5 0 0 0-5 0v1a2 2 0 1 1 0 4"/>',
+    tower: '<path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/>',
+    quiz: '<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>',
+    voice: '<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3"/>',
+    echo: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3M8 9v4M11 7.5v7M14 9v4"/>',
+    swipe: '<path d="M8 3 4 7l4 4M4 7h16M16 21l4-4-4-4M20 17H4"/>',
+    coin: '<circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18M7 6h1v4M16.71 13.88l.7.71-2.82 2.82"/>',
+    star: '<path d="M11.53 2.3a.53.53 0 0 1 .95 0l2.31 4.68a2.12 2.12 0 0 0 1.6 1.16l5.16.76a.53.53 0 0 1 .3.9l-3.74 3.64a2.12 2.12 0 0 0-.61 1.88l.88 5.14a.53.53 0 0 1-.77.56l-4.62-2.43a2.12 2.12 0 0 0-1.97 0L6.4 21.01a.53.53 0 0 1-.77-.56l.88-5.14a2.12 2.12 0 0 0-.61-1.88L2.16 9.8a.53.53 0 0 1 .3-.91l5.16-.75a2.12 2.12 0 0 0 1.6-1.16z"/>',
+    flame: '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>',
+    lock: '<rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+    play: '<path d="M6 3.5v17a1 1 0 0 0 1.5.86l14-8.5a1 1 0 0 0 0-1.72l-14-8.5A1 1 0 0 0 6 3.5Z" fill="currentColor" stroke="none"/>',
+    pad: '<path d="M6 12h4M8 10v4M15 13h.01M18 11h.01"/><rect width="20" height="12" x="2" y="6" rx="3"/>',
+    target: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
+    medal: '<path d="M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15M11 12 5.12 2.2M13 12l5.88-9.8M8 7h8"/><circle cx="12" cy="17" r="5"/><path d="M12 18v-2h-.5"/>',
+    zap: '<path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/>',
+    repeat: '<path d="m17 2 4 4-4 4M3 11v-1a4 4 0 0 1 4-4h14M7 22l-4-4 4-4M21 13v1a4 4 0 0 1-4 4H3"/>',
+    gem: '<path d="M6 3h12l4 6-10 13L2 9Z"/><path d="M11 3 8 9l4 13 4-13-3-6M2 9h20"/>',
+    check: '<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>',
+    flag: '<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/>',
+    rocket: '<path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>',
+    cal: '<rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M9 16l2 2 4-4"/>',
+    compass: '<circle cx="12" cy="12" r="10"/><path d="m16.24 7.76-2.12 6.36-6.36 2.12 2.12-6.36z"/>',
+    trophy: '<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>',
+    heart: '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>',
+    users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',
+    swap: '<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8M21 3v5h-5M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16M8 16H3v5"/>',
+    bulb: '<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5M9 18h6M10 22h4"/>',
+    hand: '<path d="M18 11V6a2 2 0 0 0-4 0v5M14 10V4a2 2 0 0 0-4 0v2M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/>',
+    vol: '<path d="M11 4.7a.7.7 0 0 0-1.2-.5L6.41 7.59A1.4 1.4 0 0 1 5.42 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.42a1.4 1.4 0 0 1 .99.41l3.39 3.39a.7.7 0 0 0 1.2-.5z"/><path d="M16 9a5 5 0 0 1 0 6M19.36 18.36a9 9 0 0 0 0-12.73"/>',
+    mute: '<path d="M11 4.7a.7.7 0 0 0-1.2-.5L6.41 7.59A1.4 1.4 0 0 1 5.42 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.42a1.4 1.4 0 0 1 .99.41l3.39 3.39a.7.7 0 0 0 1.2-.5z"/><path d="m22 9-6 6M16 9l6 6"/>',
+  };
+  const I = (n, c) => `<svg class="ari${c ? ' ' + c : ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IP[n] || ''}</svg>`;
+  const lvName = (id) => id === 'B2' ? 'B1' : id;
+
   /* ---------------- catálogo de juegos ---------------- */
   const GAMES = [
-    { id: 'rain', icon: '🌧️', name: 'Lluvia de palabras', en: 'Word Rain', c: 'b', tag: 'Reflejos', desc: 'Atrapa la palabra en inglés que cae del cielo antes de que toque el piso.' },
-    { id: 'memory', icon: '🧠', name: 'Memoria sonora', en: 'Sound Memory', c: 'r', tag: 'Memoria', desc: 'Une cada sonido con su foto. ¡Escucha bien y recuerda dónde está!' },
-    { id: 'race', icon: '🏎️', name: 'Gran carrera', en: 'Grand Race', c: 'k', tag: 'Velocidad', desc: 'Responde rápido para acelerar tu carro y ganarle al rival.' },
-    { id: 'wheel', icon: '🎡', name: 'Rueda de la fortuna', en: 'Wheel of Phrases', c: 'w', tag: 'Frases', desc: 'Gira la rueda, adivina letras y descubre la frase escondida.' },
-    { id: 'mole', icon: '🔨', name: 'Atrapa lo que oyes', en: 'Whack-a-Word', c: 'r', tag: 'Escucha', desc: 'Escucha la palabra y golpea el letrero correcto cuando salga del hueco.' },
-    { id: 'tower', icon: '🧱', name: 'Torre de oraciones', en: 'Sentence Tower', c: 'b', tag: 'Gramática', desc: 'Toca los bloques en orden para armar la oración antes de que la torre llegue arriba.' },
-    { id: 'quiz', icon: '💰', name: '¿Quién quiere ser bilingüe?', en: 'Quiz Show', c: 'k', tag: 'Concurso', desc: '10 preguntas, 4 comodines y una escalera de puntos. ¿Llegas a la cima?' },
-    { id: 'voice', icon: '🚀', name: 'Cohete de voz', en: 'Voice Rocket', c: 'w', tag: 'Pronunciación', desc: 'Di cada palabra en voz alta para darle combustible a tu cohete.' },
-    { id: 'echo', icon: '🕵️', name: 'Detective de sonidos', en: 'Sound Detective', c: 'r', tag: 'Escucha', desc: 'Escucha la oración y descubre cuál de las tres versiones es la que oíste.' },
-    { id: 'swipe', icon: '👉', name: 'Desliza y traduce', en: 'Swipe & Translate', c: 'b', tag: 'Contrarreloj', desc: '¿La traducción es correcta? Desliza a la derecha (sí) o a la izquierda (no).' },
+    { id: 'rain', icon: I('rain'), name: 'Lluvia de palabras', en: 'Word Rain', c: 'b', tag: 'Reflejos', desc: 'Atrapa la palabra en inglés que cae del cielo antes de que toque el piso.' },
+    { id: 'memory', icon: I('memory'), name: 'Memoria sonora', en: 'Sound Memory', c: 'r', tag: 'Memoria', desc: 'Une cada sonido con su foto. ¡Escucha bien y recuerda dónde está!' },
+    { id: 'race', icon: I('race'), name: 'Gran carrera', en: 'Grand Race', c: 'k', tag: 'Velocidad', desc: 'Responde rápido para acelerar tu carro y ganarle al rival.' },
+    { id: 'wheel', icon: I('wheel'), name: 'Rueda de la fortuna', en: 'Wheel of Phrases', c: 'w', tag: 'Frases', desc: 'Gira la rueda, adivina letras y descubre la frase escondida.' },
+    { id: 'mole', icon: I('mole'), name: 'Atrapa lo que oyes', en: 'Whack-a-Word', c: 'r', tag: 'Escucha', desc: 'Escucha la palabra y golpea el letrero correcto cuando salga del hueco.' },
+    { id: 'tower', icon: I('tower'), name: 'Torre de oraciones', en: 'Sentence Tower', c: 'b', tag: 'Gramática', desc: 'Toca los bloques en orden para armar la oración antes de que la torre llegue arriba.' },
+    { id: 'quiz', icon: I('quiz'), name: '¿Quién quiere ser bilingüe?', en: 'Quiz Show', c: 'k', tag: 'Concurso', desc: '10 preguntas, 4 comodines y una escalera de puntos. ¿Llegas a la cima?' },
+    { id: 'voice', icon: I('voice'), name: 'Cohete de voz', en: 'Voice Rocket', c: 'w', tag: 'Pronunciación', desc: 'Di cada palabra en voz alta para darle combustible a tu cohete.' },
+    { id: 'echo', icon: I('echo'), name: 'Detective de sonidos', en: 'Sound Detective', c: 'r', tag: 'Escucha', desc: 'Escucha la oración y descubre cuál de las tres versiones es la que oíste.' },
+    { id: 'swipe', icon: I('swipe'), name: 'Desliza y traduce', en: 'Swipe & Translate', c: 'b', tag: 'Contrarreloj', desc: '¿La traducción es correcta? Desliza a la derecha (sí) o a la izquierda (no).' },
   ];
   const FREE = ['rain', 'memory'];
   const locked = (g) => trial && !FREE.includes(g.id);
@@ -93,18 +134,18 @@
   const featured = () => { const pool = trial ? GAMES.filter(g => FREE.includes(g.id)) : GAMES; return pool[dayIdx() % pool.length].id; };
 
   const MEDALS = [
-    { id: 'first', icon: '🎮', name: 'Primer juego', d: 'Termina tu primera partida' },
-    { id: 'ten', icon: '🔟', name: 'Jugador fiel', d: 'Juega 10 partidas' },
-    { id: 'combo10', icon: '🔥', name: 'En llamas', d: 'Logra un combo de 10' },
-    { id: 'k1', icon: '⭐', name: '1.000 puntos', d: 'Suma 1.000 puntos en total' },
-    { id: 'k10', icon: '💎', name: '10.000 puntos', d: 'Suma 10.000 puntos en total' },
-    { id: 'record', icon: '🏆', name: 'Rompe récords', d: 'Supera uno de tus récords' },
-    { id: 'perfect', icon: '💯', name: 'Partida perfecta', d: '8 aciertos o más sin errores' },
-    { id: 'racer', icon: '🏁', name: 'Piloto veloz', d: 'Gana la Gran carrera' },
-    { id: 'millionaire', icon: '💰', name: '¡Bilingüe!', d: 'Responde las 10 del concurso' },
-    { id: 'rocket', icon: '🚀', name: 'En órbita', d: 'Lanza el Cohete de voz' },
-    { id: 'streak3', icon: '📅', name: 'Racha de 3 días', d: 'Juega 3 días seguidos' },
-    { id: 'explorer', icon: '🌈', name: 'Explorador', d: trial ? 'Juega los juegos abiertos' : 'Juega los 10 juegos' },
+    { id: 'first', icon: I('pad'), name: 'Primer juego', d: 'Termina tu primera partida' },
+    { id: 'ten', icon: I('repeat'), name: 'Jugador fiel', d: 'Juega 10 partidas' },
+    { id: 'combo10', icon: I('flame'), name: 'En llamas', d: 'Logra un combo de 10' },
+    { id: 'k1', icon: I('star'), name: '1.000 puntos', d: 'Suma 1.000 puntos en total' },
+    { id: 'k10', icon: I('gem'), name: '10.000 puntos', d: 'Suma 10.000 puntos en total' },
+    { id: 'record', icon: I('trophy'), name: 'Rompe récords', d: 'Supera uno de tus récords' },
+    { id: 'perfect', icon: I('check'), name: 'Partida perfecta', d: '8 aciertos o más sin errores' },
+    { id: 'racer', icon: I('flag'), name: 'Piloto veloz', d: 'Gana la Gran carrera' },
+    { id: 'millionaire', icon: I('medal'), name: '¡Bilingüe!', d: 'Responde las 10 del concurso' },
+    { id: 'rocket', icon: I('rocket'), name: 'En órbita', d: 'Lanza el Cohete de voz' },
+    { id: 'streak3', icon: I('cal'), name: 'Racha de 3 días', d: 'Juega 3 días seguidos' },
+    { id: 'explorer', icon: I('compass'), name: 'Explorador', d: trial ? 'Juega los juegos abiertos' : 'Juega los 10 juegos' },
   ];
 
   /* ---------------- encabezado ---------------- */
@@ -113,8 +154,8 @@
     tb.innerHTML = `<a class="brand" href="index.html" title="Mi perfil"><span class="logo-pill"><img class="logo" src="mra-brand.png" alt="mrarrieta.com"></span></a>
       <div class="sp"></div><a class="ar-back" href="index.html">← Mi perfil</a>
       <span class="tb-tag ar-hide-s">ZONA DE JUEGOS</span>
-      <span class="pill y ar-tpts" title="Puntos de la Zona de juegos">🪙 <b id="ar-total">${fmt(S.total)}</b></span>
-      <button class="iconbtn" id="ar-snd" title="Sonido" aria-label="Sonido">${S.sound ? '🔊' : '🔇'}</button>`;
+      <span class="pill y ar-tpts" title="Puntos de la Zona de juegos">${I('coin')} <b id="ar-total">${fmt(S.total)}</b></span>
+      <button class="iconbtn" id="ar-snd" title="Sonido" aria-label="Sonido">${S.sound ? I('vol') : I('mute')}</button>`;
     $('#ar-snd', tb).onclick = () => {
       S.sound = !S.sound; save(); topbar();
       if (S.sound) fx('ok');
@@ -131,39 +172,38 @@
     const feat = featured();
     const earned = MEDALS.filter(m => S.medals[m.id]).length;
     const best = (g) => S.best[g.id + '|' + LV] || 0;
-    app.innerHTML = `<div class="wrap ar-wrap">
-      <section class="ar-hero card">
+    app.innerHTML = `<div class="wrap ar-wrap ar2">
+      <section class="ar-hero2">
         <div class="ar-hero-tx">
-          <span class="lbl r">🎮 Zona de juegos</span>
+          <span class="ar-eyebrow">${I('pad')} Zona de juegos</span>
           <h1>¡A jugar${nick() ? ', ' + esc(nick()) : ''}!</h1>
-          <p class="muted">Let's play! · Aprende inglés jugando: suma puntos, rompe récords y gana medallas.</p>
-          <div class="ar-stats">
-            <div class="ar-stat"><b>${fmt(S.total)}</b><small>🪙 puntos</small></div>
-            <div class="ar-stat"><b>${S.games}</b><small>🎯 partidas</small></div>
-            <div class="ar-stat"><b>${earned}/${MEDALS.length}</b><small>🏅 medallas</small></div>
-            <div class="ar-stat"><b>${S.days.last && streakAlive() ? S.days.n : 0}</b><small>🔥 días seguidos</small></div>
+          <p>Aprende inglés jugando, con palabras y frases de tu nivel y audios con voces reales.</p>
+          <div class="ar-kpis">
+            <div><span>${I('coin')}</span><b>${fmt(S.total)}</b><small>Puntos</small></div>
+            <div><span>${I('target')}</span><b>${S.games}</b><small>Partidas</small></div>
+            <div><span>${I('medal')}</span><b>${earned}/${MEDALS.length}</b><small>Medallas</small></div>
+            <div><span>${I('flame')}</span><b>${S.days.last && streakAlive() ? S.days.n : 0}</b><small>Días seguidos</small></div>
           </div>
         </div>
         <img class="ar-hero-mra" src="mra-celebrate.webp" alt="Mr. Arrieta" draggable="false">
-        <i class="ar-spark s1">✦</i><i class="ar-spark s2">★</i><i class="ar-spark s3">✦</i>
       </section>
-      <section class="ar-lvbar">
-        <div class="ar-lvhead"><b>Nivel de los juegos</b><small class="muted">Se abre en tu nivel. Puedes cambiarlo cuando quieras.</small></div>
-        <div class="ar-lvs" role="tablist">${LEVELS.map(l => `<button class="ar-lv ${l.id === LV ? 'on' : ''}" data-lv="${l.id}" role="tab" aria-selected="${l.id === LV}"><b>${l.id === "B2" ? "B1" : l.id}</b><small>${l.es}</small>${l.id === MINE ? '<i>Tu nivel</i>' : ''}</button>`).join('')}</div>
+      <section class="ar-lvbar2">
+        <div><b>Nivel de los juegos</b><small>Se abre en tu nivel. Puedes cambiarlo cuando quieras.</small></div>
+        <div class="ar-seg" role="tablist">${LEVELS.map(l => `<button class="ar-lv ${l.id === LV ? 'on' : ''}" data-lv="${l.id}" role="tab" aria-selected="${l.id === LV}"><b>${lvName(l.id)}</b><small>${l.es}</small>${l.id === MINE ? '<i>Tu nivel</i>' : ''}</button>`).join('')}</div>
       </section>
-      ${trial ? `<div class="ar-trial"><span>🟢</span><div><b>Acceso gratuito:</b> tienes 2 juegos abiertos. Los demás se abren con <b>Plataforma</b> o <b>Premium</b>.</div></div>` : ''}
-      <section class="ar-grid">${GAMES.map((g, i) => `<article class="ar-gc c-${g.c} ${locked(g) ? 'lock' : ''}" data-g="${g.id}" style="--d:${i * 55}ms">
-          ${g.id === feat && !locked(g) ? '<span class="ar-feat">⚡ Juego del día · puntos x2</span>' : ''}
-          <div class="ar-gc-top"><span class="ar-gc-ic">${g.icon}</span><span class="ar-gc-tag">${g.tag}</span></div>
-          <h3>${g.name}</h3><p class="ar-gc-en">${g.en}</p><p class="ar-gc-d">${g.desc}</p>
-          <div class="ar-gc-ft"><span>🏆 ${best(g) ? fmt(best(g)) : '—'}</span>${locked(g) ? '<span class="ar-gc-lk">🔒 Plataforma o Premium</span>' : '<button class="btn k ar-play">Jugar ▶</button>'}</div>
+      ${trial ? `<div class="ar-trial2">${I('lock')}<div><b>Acceso gratuito:</b> tienes 2 juegos abiertos. Los demás se abren con <b>Plataforma</b> o <b>Premium</b>.</div></div>` : ''}
+      <section class="ar-grid2">${GAMES.map((g, i) => `<article class="ar-gcard t-${g.c} ${locked(g) ? 'lock' : ''}" data-g="${g.id}" style="--d:${i * 45}ms" tabindex="0">
+          <div class="ar-gcard-top"><span class="ar-gtile">${g.icon}</span><span class="ar-chip">${g.tag}</span>${g.id === feat && !locked(g) ? `<span class="ar-day">${I('zap')} Juego del día · x2</span>` : ''}</div>
+          <h3>${g.name}</h3><p class="ar-en">${g.en}</p><p class="ar-d">${g.desc}</p>
+          <div class="ar-gcard-ft"><span class="ar-best">${I('trophy')} ${best(g) ? fmt(best(g)) : 'Sin récord'}</span>${locked(g) ? `<span class="ar-lk">${I('lock')} Plataforma o Premium</span>` : `<button class="ar-playb" aria-label="Jugar ${esc(g.name)}">${I('play')} Jugar</button>`}</div>
         </article>`).join('')}</section>
-      <section class="card ar-medals"><h2>🏅 Mis medallas</h2><p class="muted">Gana medallas jugando. ¡Colecciónalas todas!</p>
-        <div class="ar-mgrid">${MEDALS.map(m => `<div class="ar-md ${S.medals[m.id] ? 'on' : ''}" title="${esc(m.d)}"><span>${S.medals[m.id] ? m.icon : '🔒'}</span><b>${m.name}</b><small>${m.d}</small></div>`).join('')}</div>
+      <section class="ar-medals2"><div class="ar-sec-h"><h2>${I('medal')} Mis medallas</h2><small>${earned} de ${MEDALS.length}</small></div>
+        <div class="ar-mgrid2">${MEDALS.map(m => `<div class="ar-md2 ${S.medals[m.id] ? 'on' : ''}" title="${esc(m.d)}"><span>${S.medals[m.id] ? m.icon : I('lock')}</span><div><b>${m.name}</b><small>${m.d}</small></div></div>`).join('')}</div>
       </section>
     </div>`;
-    $$('.ar-lv', app).forEach(b => b.onclick = () => { LV = b.dataset.lv; fx('tap'); loadLevelAudio(); lobby(); M.toast(`Nivel ${LV === "B2" ? "B1" : LV} · ${lvl().es}`); });
-    $$('.ar-gc', app).forEach(c => c.onclick = () => {
+    $$('.ar-lv', app).forEach(b => b.onclick = () => { LV = b.dataset.lv; fx('tap'); loadLevelAudio(); lobby(); M.toast(`Nivel ${lvName(LV)} · ${lvl().es}`); });
+    $$('.ar-gcard', app).forEach(c => c.onkeydown = (e) => { if (e.key === 'Enter') c.click(); });
+    $$('.ar-gcard', app).forEach(c => c.onclick = () => {
       const g = GAMES.find(x => x.id === c.dataset.g);
       if (locked(g)) return lockModal(g);
       fx('tap'); intro(g);
@@ -173,7 +213,7 @@
   function streakAlive() { const y = new Date(new Date(todayISO() + 'T12:00:00').getTime() - 864e5).toISOString().slice(0, 10); return S.days.last === todayISO() || S.days.last === y; }
   function lockModal(g) {
     fx('bad');
-    M.modal(`<div class="ar-lockm"><div class="ar-lockic">🔒</div><h3>${g.icon} ${esc(g.name)}</h3>
+    M.modal(`<div class="ar-lockm"><div class="ar-lockic">${I('lock')}</div><h3>${esc(g.name)}</h3>
       <p>Este juego se abre con el plan <b>Plataforma</b> o <b>Premium</b>.</p>
       <p class="muted">Con tu acceso gratuito puedes jugar <b>Lluvia de palabras</b> y <b>Memoria sonora</b>.</p>
       <div class="ar-row"><a class="btn k" href="index.html">Ver planes en mi perfil</a></div></div>`, { x: true });
@@ -198,10 +238,10 @@
     const best = S.best[g.id + '|' + LV] || 0;
     app.innerHTML = `<div class="wrap ar-wrap"><div class="card ar-intro c-${g.c}">
       <button class="btn w sm ar-x" id="ar-exit">← Sala de juegos</button>
-      <div class="ar-intro-ic">${g.icon}</div><h1>${g.name}</h1><p class="ar-gc-en">${g.en} · Nivel ${LV}</p>
+      <div class="ar-intro-ic">${g.icon}</div><h1>${g.name}</h1><p class="ar-gc-en">${g.en} · Nivel ${lvName(LV)}</p>
       <ol class="ar-how">${HOW[g.id].map(x => `<li>${x}</li>`).join('')}</ol>
-      ${best ? `<p class="ar-rec">🏆 Tu récord en ${LV === "B2" ? "B1" : LV}: <b>${fmt(best)}</b></p>` : '<p class="ar-rec">🏆 ¡Aún no tienes récord en este nivel!</p>'}
-      <button class="btn lg ar-go" id="ar-start">¡Jugar! ▶</button>
+      ${best ? `<p class="ar-rec">${I('trophy')} Tu récord en ${lvName(LV)}: <b>${fmt(best)}</b></p>` : `<p class="ar-rec">${I('trophy')} ¡Aún no tienes récord en este nivel!</p>`}
+      <button class="btn lg ar-go" id="ar-start">${I('play')} ¡Jugar!</button>
       <p class="muted ar-loading hidden" id="ar-ld">Cargando audios…</p></div></div>`;
     $('#ar-exit').onclick = lobby;
     $('#ar-start').onclick = async () => {
@@ -255,8 +295,8 @@
     G.hudTimer = () => { const t = G.timer; if (!t) return; const bar = $('.ar-tbar i', hud), lb = $('.ar-tlbl', hud); if (bar) { bar.style.width = Math.max(0, Math.min(100, t.left / t.total * 100)) + '%'; bar.classList.toggle('low', t.left <= 5); } if (lb) lb.textContent = Math.ceil(t.left) + 's'; };
     G.hud = (bump) => {
       hud.innerHTML = `<div class="ar-hscore ${bump ? 'bump' : ''}"><small>Puntos</small><b>${fmt(G.score)}</b></div>
-        <div class="ar-hcombo ${G.combo >= 2 ? 'on' : ''}">🔥 <b>${G.combo}</b><small>combo</small>${G.mult() > 1 ? `<i>x${G.mult()}</i>` : ''}</div>
-        ${G.maxLives ? `<div class="ar-hlives" aria-label="Vidas">${Array.from({ length: G.maxLives }, (_, i) => `<span class="${i < G.lives ? '' : 'off'}">${i < G.lives ? '❤️' : '🤍'}</span>`).join('')}</div>` : ''}
+        <div class="ar-hcombo ${G.combo >= 2 ? 'on' : ''}">${I('flame')} <b>${G.combo}</b><small>combo</small>${G.mult() > 1 ? `<i>x${G.mult()}</i>` : ''}</div>
+        ${G.maxLives ? `<div class="ar-hlives" aria-label="Vidas">${Array.from({ length: G.maxLives }, (_, i) => `<span class="${i < G.lives ? '' : 'off'}">${I('heart')}</span>`).join('')}</div>` : ''}
         ${G.timer ? `<div class="ar-htime"><div class="ar-tbar"><i></i></div><span class="ar-tlbl"></span></div>` : ''}
         ${G.extra.html ? `<div class="ar-hx">${G.extra.html}</div>` : ''}`;
       G.hudTimer();
@@ -294,7 +334,7 @@
   async function start(g) {
     window.scrollTo(0, 0);
     app.innerHTML = `<div class="ar-game c-${g.c}" data-game="${g.id}">
-      <div class="ar-gbar"><button class="btn w sm" id="ar-quit" aria-label="Salir">✕</button><div class="ar-gname"><span>${g.icon}</span><b>${g.name}</b><small>${LV === "B2" ? "B1" : LV}</small></div></div>
+      <div class="ar-gbar"><button class="btn w sm" id="ar-quit" aria-label="Salir">✕</button><div class="ar-gname"><span>${g.icon}</span><b>${g.name}</b><small>${lvName(LV)}</small></div></div>
       <div class="ar-hud" id="ar-hud"></div>
       <div class="ar-stage" id="ar-stage"></div></div>`;
     const stage = $('#ar-stage'), hud = $('#ar-hud');
@@ -345,9 +385,9 @@
       <h2>${title}</h2>${res.msg ? `<p class="muted">${res.msg}</p>` : ''}
       <div class="ar-res-score"><small>Puntos</small><b data-n="${score}">0</b>${isFeat ? '<i>⚡ x2 juego del día</i>' : ''}</div>
       <div class="ar-res-row"><span>✅ <b>${G.ok}</b> aciertos</span><span>❌ <b>${G.bad}</b> errores</span><span>🔥 <b>${G.maxCombo}</b> combo máx.</span></div>
-      <p class="ar-res-best">🏆 Récord ${LV}: <b>${fmt(S.best[key] || 0)}</b>${record && prev ? ` <small>(antes ${fmt(prev)})</small>` : ''}</p>
+      <p class="ar-res-best">${I('trophy')} Récord ${lvName(LV)}: <b>${fmt(S.best[key] || 0)}</b>${record && prev ? ` <small>(antes ${fmt(prev)})</small>` : ''}</p>
       ${newM.length ? `<div class="ar-res-m"><b>¡Nueva medalla!</b><div>${newM.map((m, i) => `<span style="--d:${300 + i * 200}ms" title="${esc(m.d)}">${m.icon} ${m.name}</span>`).join('')}</div></div>` : ''}
-      <div class="ar-row"><button class="btn w" id="ar-lobby">🎮 Sala de juegos</button><button class="btn k" id="ar-again">🔁 Jugar otra vez</button></div></div></div>`);
+      <div class="ar-row"><button class="btn w" id="ar-lobby">${I('pad')} Sala de juegos</button><button class="btn k" id="ar-again">${I('repeat')} Jugar otra vez</button></div></div></div>`);
     app.appendChild(ov);
     // contador animado del puntaje
     const b = $('.ar-res-score b', ov); const t0 = performance.now();
@@ -419,7 +459,7 @@
   function memory(G, st, D) {
     const pairs = sample(D.w, 6); const cards = shuffle(pairs.flatMap((w, i) => [{ k: i, w, snd: true }, { k: i, w, snd: false }]));
     let open = [], lock = false, moves = 0, matched = 0; const t0 = performance.now();
-    G.extra.html = '👆 <b id="mv">0</b> mov.'; G.hud();
+    G.extra.html = I('hand') + ' <b id="mv">0</b> mov.'; G.hud();
     st.innerHTML = `<div class="ar-mem">${cards.map((c, i) => `<button class="ar-card" data-i="${i}" type="button"><span class="ar-cin"><span class="ar-cb">?</span><span class="ar-cf ${c.snd ? 'snd' : ''}">${c.snd ? '<span class="ar-snd">🔊</span><small>Escucha</small>' : `${photo(c.w.img, 320, 240)}<b>${esc(c.w.en)}</b>`}</span></span></button>`).join('')}</div>`;
     const els = $$('.ar-card', st);
     const setMv = () => { const e = $('#mv'); if (e) e.textContent = moves; };
@@ -455,7 +495,7 @@
     st.innerHTML = `<div class="ar-race"><div class="ar-track">
         <div class="ar-lane me"><span class="ar-car" id="car-me">🏎️</span><small>Tú</small></div>
         <div class="ar-lane riv"><span class="ar-car" id="car-riv">🚙</span><small>Rival</small></div><div class="ar-finish"></div></div>
-      <div class="ar-rq card"><div class="ar-rq-ph" id="rph"></div><div class="ar-rq-w"><button class="ar-say" id="rsay" aria-label="Escuchar">🔊</button><b id="rw"></b></div></div>
+      <div class="ar-rq card"><div class="ar-rq-ph" id="rph"></div><div class="ar-rq-w"><button class="ar-say" id="rsay" aria-label="Escuchar">${I('vol')}</button><b id="rw"></b></div></div>
       <div class="ar-ropts" id="ropts"></div></div>`;
     const carMe = $('#car-me', st), carRiv = $('#car-riv', st);
     const place = () => { carMe.style.left = `calc(${me}% * .86)`; carRiv.style.left = `calc(${rival}% * .86)`; };
@@ -511,9 +551,9 @@
     }).join('');
     st.innerHTML = `<div class="ar-wheel">
       <div class="ar-wtop"><div class="ar-wwrap"><div class="ar-wptr">▼</div><svg viewBox="0 0 220 220" class="ar-wsvg" id="wsvg"><g id="wg">${wedges}<circle cx="110" cy="110" r="16" fill="#fff" stroke="#0B2A5B" stroke-width="4"/></g></svg></div>
-        <div class="ar-wside"><div class="ar-wround" id="wround"></div><div class="ar-wbank"><small>Puntos de la ronda</small><b id="wbank">0</b></div><div class="ar-wval" id="wval">Gira la rueda 🎡</div></div></div>
+        <div class="ar-wside"><div class="ar-wround" id="wround"></div><div class="ar-wbank"><small>Puntos de la ronda</small><b id="wbank">0</b></div><div class="ar-wval" id="wval">Gira la rueda</div></div></div>
       <div class="ar-wclue" id="wclue"></div><div class="ar-board" id="board"></div>
-      <div class="ar-wbtns"><button class="btn lg" id="wspin">🎡 Girar</button><button class="btn k" id="wsolve">💡 Resolver</button></div>
+      <div class="ar-wbtns"><button class="btn lg" id="wspin">${I('wheel')} Girar</button><button class="btn k" id="wsolve">${I('bulb')} Resolver</button></div>
       <div class="ar-keys" id="keys"></div><div id="wsolvebox"></div></div>`;
     const letters = (s) => [...new Set(s.toUpperCase().replace(/[^A-Z]/g, ''))];
     function renderBoard(reveal) {
@@ -526,10 +566,10 @@
     }
     function newRound() {
       if (!G.alive) return;
-      if (round >= ROUNDS) return G.end({ win: true, title: '¡Rueda completada! 🎡', msg: 'Descubriste las 3 frases.' });
+      if (round >= ROUNDS) return G.end({ win: true, title: '¡Rueda completada!', msg: 'Descubriste las 3 frases.' });
       round++; phrase = pool[(round - 1) % pool.length]; shown = new Set(); used = new Set(); bank = 0; phase = 'spin';
-      $('#wround', st).textContent = `Frase ${round} de ${ROUNDS}`; $('#wbank', st).textContent = '0'; $('#wval', st).textContent = 'Gira la rueda 🎡';
-      $('#wclue', st).innerHTML = `🇪🇸 Pista: <b>${esc(phrase.es)}</b>`; $('#wsolvebox', st).innerHTML = '';
+      $('#wround', st).textContent = `Frase ${round} de ${ROUNDS}`; $('#wbank', st).textContent = '0'; $('#wval', st).textContent = 'Gira la rueda';
+      $('#wclue', st).innerHTML = `<span class="ar-es">ES</span> Pista: <b>${esc(phrase.es)}</b>`; $('#wsolvebox', st).innerHTML = '';
       renderBoard(); renderKeys(); if (round === 1) voice('Spin the wheel!');
     }
     function spin() {
@@ -588,7 +628,7 @@
      ================================================================= */
   function mole(G, st, D) {
     const TARGETS = 14; let n = 0, target = null, upMs = 2600, ups = [], cycle = 0; const next = deck(D.w);
-    st.innerHTML = `<div class="ar-mole"><div class="ar-mq"><button class="btn k" id="mrep">🔊 Escuchar otra vez</button><span id="mcount"></span></div>
+    st.innerHTML = `<div class="ar-mole"><div class="ar-mq"><button class="btn k" id="mrep">${I('vol')} Escuchar otra vez</button><span id="mcount"></span></div>
       <div class="ar-holes">${Array.from({ length: 9 }, (_, i) => `<div class="ar-hole" data-h="${i}"><button class="ar-sign" type="button"><span></span></button><i class="ar-dirt"></i></div>`).join('')}</div></div>`;
     const holes = $$('.ar-hole', st);
     holes.forEach((ho, i) => $('.ar-sign', ho).addEventListener('pointerdown', (e) => { e.preventDefault(); whack(i); }));
@@ -637,7 +677,7 @@
       if (!G.alive) return;
       if (done >= SENT) return G.end({ win: true, title: '¡Torre dominada! 🏗️', msg: 'Armaste todas las oraciones.' });
       sent = next(); idx = 0; junkT = 0; blocks.forEach(b => b.el.remove()); blocks = []; bar.innerHTML = '<span class="ar-tph">Toca los bloques en orden…</span>';
-      $('#tcount', st).textContent = `Oración ${done + 1} de ${SENT}`; $('#tes', st).textContent = '🇪🇸 ' + sent.es;
+      $('#tcount', st).textContent = `Oración ${done + 1} de ${SENT}`; $('#tes', st).innerHTML = '<span class="ar-es">ES</span> ' + esc(sent.es);
       const toks = sent.en.split(' '); const W = well.clientWidth;
       shuffle(toks.map((t, i) => ({ t, i }))).forEach((o, k) => {
         const el = h(`<button class="ar-blk" type="button">${esc(o.t)}</button>`); well.appendChild(el);
@@ -699,9 +739,9 @@
     st.innerHTML = `<div class="ar-quiz"><div class="ar-ladder" id="ladder">${LADDER.map((v, i) => `<span data-i="${i}"><i>${i + 1}</i>${fmt(v)}</span>`).join('')}</div>
       <div class="ar-qmain"><div class="ar-lifes" id="lifes">
         <button class="ar-life" data-l="half" title="Quita dos respuestas incorrectas">50:50</button>
-        <button class="ar-life" data-l="aud" title="Pregúntale al público">👥 Público</button>
-        <button class="ar-life" data-l="ear" title="Escucha la respuesta">🔊 Escuchar</button>
-        <button class="ar-life" data-l="swap" title="Cambia la pregunta">🔄 Cambiar</button></div>
+        <button class="ar-life" data-l="aud" title="Pregúntale al público">${I('users')} Público</button>
+        <button class="ar-life" data-l="ear" title="Escucha la respuesta">${I('vol')} Escuchar</button>
+        <button class="ar-life" data-l="swap" title="Cambia la pregunta">${I('swap')} Cambiar</button></div>
         <div class="ar-qcard card" id="qcard"></div><div class="ar-qopts" id="qopts"></div><div id="qaud"></div></div></div>`;
     function ladder() { $$('#ladder span', st).forEach((s, i) => { s.classList.toggle('on', i === q); s.classList.toggle('done', i < q); }); }
     function show(replace) {
@@ -727,7 +767,7 @@
           G.after(1300, () => show());
         } else {
           b.classList.add('bad'); G.miss(b, { life: false });
-          G.after(1700, () => G.end({ win: false, title: q >= 5 ? '¡Gran concurso! 🎤' : '¡Fin del concurso! 🎤', msg: `Llegaste a la pregunta ${q + 1}. La respuesta era «${esc(cur.a)}».` }));
+          G.after(1700, () => G.end({ win: false, title: q >= 5 ? '¡Gran concurso!' : '¡Fin del concurso!', msg: `Llegaste a la pregunta ${q + 1}. La respuesta era «${esc(cur.a)}».` }));
         }
       });
     }
@@ -740,7 +780,7 @@
         const raw = wrong.map(() => Math.random() + .2); const sum = raw.reduce((a, b) => a + b, 0) || 1;
         const wv = raw.map(r => Math.floor(r / sum * (100 - right))); if (wv.length) wv[0] += 100 - right - wv.reduce((a, b) => a + b, 0);
         let wi2 = 0; const vals = live.map(x => isR(x) ? right : wv[wi2++]);
-        $('#qaud', st).innerHTML = `<div class="ar-aud card"><b>👥 El público votó:</b>${live.map((x, i) => `<div class="ar-audr"><i>${$('i', x).textContent}</i><span><em style="width:${vals[i]}%"></em></span><b>${vals[i]}%</b></div>`).join('')}</div>`;
+        $('#qaud', st).innerHTML = `<div class="ar-aud card"><b>${I('users')} El público votó:</b>${live.map((x, i) => `<div class="ar-audr"><i>${$('i', x).textContent}</i><span><em style="width:${vals[i]}%"></em></span><b>${vals[i]}%</b></div>`).join('')}</div>`;
       }
       else if (l === 'ear') { M.play(cur.au); M.toast('🔊 Escucha con atención: el audio dice la respuesta correcta.'); }
       else if (l === 'swap') show(true);
@@ -763,14 +803,14 @@
       if (!G.alive) return; busy = false; tries = 0; const w = items[i]; $('#vres', st).innerHTML = ''; modeBtn();
       if (mic) {
         $('#vcard', st).innerHTML = `<small>Palabra ${i + 1} de ${N} · <b>Say it!</b></small>${photo(w.img)}<b class="ar-vw">${esc(w.en)}</b><small class="muted">${esc(w.es)}</small>
-          <div class="ar-row"><button class="btn w" id="vmodel">🔊 Escuchar</button><button class="btn lg ar-mic" id="vmic">🎤 Decirlo</button></div>`;
+          <div class="ar-row"><button class="btn w" id="vmodel">${I('vol')} Escuchar</button><button class="btn lg ar-mic" id="vmic">${I('voice')} Decirlo</button></div>`;
         $('#vmodel', st).onclick = () => say(w.au); $('#vmic', st).onclick = talk; say(w.au);
         G.cheat = () => busy ? null : $('#vmic', st);
       } else {
         const opts = shuffle([w, ...others(D.w, w, 2)]); let sel = -1;
         $('#vcard', st).innerHTML = `<small>Palabra ${i + 1} de ${N} · modo escucha</small>${photo(w.img)}<b class="ar-vw">${esc(w.en)}</b>
           <p class="muted">¿Cuál audio dice <b>${esc(w.en)}</b>? Toca para escuchar y elige.</p>
-          <div class="ar-vopts">${opts.map((o, k) => `<button class="btn w ar-vo" data-k="${k}">🔊 ${'ABC'[k]}</button>`).join('')}</div>
+          <div class="ar-vopts">${opts.map((o, k) => `<button class="btn w ar-vo" data-k="${k}">${I('vol')} ${'ABC'[k]}</button>`).join('')}</div>
           <button class="btn k lg" id="vok" disabled>✅ Es este</button>`;
         $$('.ar-vo', st).forEach((b, k) => b.onclick = () => { sel = k; $$('.ar-vo', st).forEach(x => x.classList.toggle('sel', x === b)); $('#vok', st).disabled = false; say(opts[k].au); });
         $('#vok', st).onclick = () => { if (busy || sel < 0) return; judge(opts[sel] === w ? 100 : 0, ''); };
@@ -781,7 +821,7 @@
       if (busy || !G.alive) return; busy = true; const w = items[i]; M.stop();
       const b = $('#vmic', st); b.classList.add('rec'); b.textContent = '🎙️ Te escucho…';
       const r = await M.listen(5000); if (!G.alive) return;
-      b.classList.remove('rec'); b.textContent = '🎤 Decirlo';
+      b.classList.remove('rec'); b.innerHTML = I('voice') + ' Decirlo';
       if (!r.alts.length && ['not-allowed', 'service-not-allowed', 'audio-capture', 'network', 'nosupport', 'start'].includes(r.error)) {
         mic = false; M.toast('No pudimos usar el micrófono: jugamos en modo escucha 🎧'); return render();
       }
@@ -798,7 +838,7 @@
       } else {
         G.miss($('#vcard', st), { life: false }); setTimeout(() => M.encourage(), 200);
         $('#vres', st).innerHTML = `<div class="ar-vr bad">❌ ${mic ? 'No sonó bien todavía.' : 'Ese no es.'} Escucha el modelo y vuelve a intentarlo.${heard ? ` <small>Te escuché: “${esc(heard)}”</small>` : ''}
-          <div class="ar-row"><button class="btn w sm" id="vm2">🔊 Modelo</button><button class="btn k sm" id="vre">🔁 Intentar otra vez</button>${tries >= 2 ? '<button class="btn w sm" id="vskip">Saltar ⏭️</button>' : ''}</div></div>`;
+          <div class="ar-row"><button class="btn w sm" id="vm2">${I('vol')} Modelo</button><button class="btn k sm" id="vre">${I('repeat')} Intentar otra vez</button>${tries >= 2 ? '<button class="btn w sm" id="vskip">Saltar ⏭️</button>' : ''}</div></div>`;
         $('#vm2', st).onclick = () => say(w.au);
         $('#vre', st).onclick = () => { busy = false; $('#vres', st).innerHTML = ''; if (mic) talk(); else { $$('.ar-vo', st).forEach(x => x.classList.remove('sel')); $('#vok', st).disabled = true; } };
         if ($('#vskip', st)) $('#vskip', st).onclick = () => { i++; fly(); if (i >= N) { G.end({ win: false, title: '¡Buen vuelo! 🚀', msg: 'Sigue practicando la pronunciación.' }); return; } render(); };
@@ -815,7 +855,7 @@
   function echo(G, st, D) {
     G.setLives(3);
     const ROUNDS = 10; const items = shuffle(D.f); let r = 0, cur = null, reps = 0, busy = false;
-    st.innerHTML = `<div class="ar-echo"><div class="card ar-ecard"><small id="ecount"></small><button class="ar-ebig" id="eplay" aria-label="Escuchar"><span>🕵️</span><b>🔊 Escuchar</b></button><button class="btn w sm" id="erep">🔁 Repetir (<b id="ereps">2</b>)</button></div><div class="ar-eopts" id="eopts"></div></div>`;
+    st.innerHTML = `<div class="ar-echo"><div class="card ar-ecard"><small id="ecount"></small><button class="ar-ebig" id="eplay" aria-label="Escuchar"><span>${I('echo')}</span><b>${I('vol')} Escuchar</b></button><button class="btn w sm" id="erep">🔁 Repetir (<b id="ereps">2</b>)</button></div><div class="ar-eopts" id="eopts"></div></div>`;
     function round() {
       if (!G.alive) return;
       if (r >= ROUNDS) return G.end({ win: true, title: '¡Caso resuelto! 🕵️', msg: 'Tienes oído de detective.' });

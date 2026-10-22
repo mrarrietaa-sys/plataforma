@@ -648,8 +648,16 @@
       const r = p.reading;
       const body = A.head(stage, { lbl: 'Reading', title: `📖 ${r.title}`, ins: 'Escucha y lee al mismo tiempo. Luego responde <b>YES</b> o <b>NO</b>.' });
       const sents = r.text.match(/[^.!?]+[.!?]+["”]?\s*/g) || [r.text];
-      const box = h(`<div class="reading">${photo(r.img)}<div><div class="row" style="margin-bottom:10px"><button class="btn k sm" id="rp">▶ Escuchar lectura</button><button class="btn w sm" id="rv">🎙️ Léela en voz alta <small>(opcional)</small></button></div><div class="txt">${sents.map(s => `<span class="s">${s.split(/(\s+)/).map(w => /\S/.test(w) ? `<i class="rw">${esc(w)}</i>` : w).join('')}</span>`).join('')}</div><div class="rv-res" id="rvr" hidden></div></div></div>`);
+      const box = h(`<div class="reading">${photo(r.img)}<div><div class="row" style="margin-bottom:10px"><button class="btn k sm" id="rp">▶ Escuchar lectura</button><button class="btn w sm" id="rv">🎙️ Léela en voz alta <small>(opcional)</small></button></div><div class="txt">${sents.map(s => `<span class="s">${s.split(/(\s+)/).map(w => /\S/.test(w) ? `<i class="rw">${esc(w)}</i>` : w).join('')}</span>`).join('')}</div><div class="rv-res" id="rvr" hidden></div><button class="rd-tr" id="rdtr" type="button" aria-expanded="false"><span>ES</span> Ver traducción al español</button><div class="rd-es" id="rdes" hidden></div></div></div>`);
       body.appendChild(box);
+      { const tb = $('#rdtr', box), pane = $('#rdes', box);
+        const getES = () => window.MRRDES ? Promise.resolve() : new Promise(res => { const base = (document.querySelector('script[src*="core.js"]').getAttribute('src') || '').replace(/core\.js(\?.*)?$/, ''); const q = ((document.querySelector('script[src*="core.js"]').getAttribute('src') || '').match(/\?.*$/) || [''])[0]; const sc = document.createElement('script'); sc.src = base + 'rdes.js' + q; sc.onload = res; sc.onerror = res; document.head.appendChild(sc); });
+        tb.onclick = async () => {
+          if (!pane.hidden) { pane.hidden = true; tb.setAttribute('aria-expanded', 'false'); tb.innerHTML = '<span>ES</span> Ver traducción al español'; return; }
+          await getES(); const t = window.MRRDES && MRRDES[r.au];
+          pane.innerHTML = t ? `<b>${esc(t.t)}</b>${t.x.split(/\n+/).map(x => `<p>${esc(x)}</p>`).join('')}` : '<p>La traducción de esta lectura no está disponible.</p>';
+          pane.hidden = false; tb.setAttribute('aria-expanded', 'true'); tb.innerHTML = '<span>ES</span> Ocultar traducción'; };
+      }
       // approximate karaoke highlight by character proportion
       const rp = $('#rp', box);
       const karaoke = () => { stop(); const a = M.trackAudio(new Audio(M.audioSrc(r.au))); const spans = $$('.s', box); const lens = sents.map(s => s.length); const tot = lens.reduce((x, y) => x + y, 0);
