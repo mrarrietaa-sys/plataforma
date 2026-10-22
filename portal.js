@@ -250,7 +250,7 @@
   function trialClick(e) { const b = e.target.closest && e.target.closest('[data-trial]'); if (!b) return; e.preventDefault(); trialForm(); }
   // 🎁 acceso gratuito automático: nombre, WhatsApp y correo → se crea el código y entra de una
   function trialForm() {
-    const m = M.modal(`<div class="center"><div class="to-ic">${MRI('gift')}</div><h3>Prueba gratis 3 días</h3><p class="muted">Crea tu acceso en segundos. Sin tarjeta, sin compromiso.</p></div>
+    const m = M.modal(`<div class="center"><div class="to-ic">${MRI('gift')}</div><h3>Prueba gratis 3 días</h3><p class="muted to-what">Pruebas <b>la plataforma</b>: tu prueba de nivel y los primeros temas de tu ruta, con práctica que te escucha y te corrige. <b>No incluye clases con profe.</b></p><p class="muted" style="font-size:13px;margin-top:-4px">Sin tarjeta, sin compromiso.</p></div>
       <div class="tf"><div class="tf-who" role="tablist"><button type="button" class="on" data-who="me">Para mí</button><button type="button" data-who="kid">Para mi hijo(a)</button></div>
       <input class="inp" id="tf-n" placeholder="Nombre y apellido" autocomplete="name"><input class="inp tf-k hidden" id="tf-g" placeholder="Nombre del papá o la mamá" autocomplete="name"><input class="inp" id="tf-w" type="tel" placeholder="WhatsApp" autocomplete="tel"><input class="inp" id="tf-e" type="email" placeholder="Correo" autocomplete="email"><input class="inp tf-k hidden" id="tf-e2" type="email" placeholder="Correo del otro padre o madre (opcional)">
       <label class="tf-ok"><input type="checkbox" id="tf-c"> <span id="tf-ct">Autorizo a mrarrieta.com a contactarme por correo y WhatsApp y a tratar mis datos según su <a href="privacidad.html" target="_blank" rel="noopener">política de privacidad</a>.</span></label>
@@ -275,6 +275,40 @@
       $('#tf-in', m).onclick = () => { m.remove(); const i = $('#cd'); if (i) { i.value = r.code; $('#ok').click(); } };
     };
   }
+  // 🚀 recorrido volando de Mr. Arrieta en la página de entrada (1 vez por visita; al tocarlo se repite)
+  function rocketTour(force) {
+    const mob = innerWidth <= 600; const el = mob ? $('.ld-hero-mra') : $('.ld-login .pt-rkt'); if (!el || el.offsetParent === null) return;
+    if (matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (!el._tw) { el._tw = 1; el.style.cursor = 'pointer'; el.addEventListener('click', () => rocketTour(true)); }
+    if (!force) { try { if (sessionStorage.getItem('mra_rkt')) return; sessionStorage.setItem('mra_rkt', '1'); } catch (e) { } }
+    if (el._fly) return; el._fly = 1;
+    const r = el.getBoundingClientRect(), W = innerWidth, H = innerHeight;
+    let K;
+    if (true) { // 🎢 opción 2: rizo (loop) completo en el aire + regreso con onda de aterrizaje
+      const Rx = mob ? Math.min(W * 0.3, 120) : Math.min(230, (r.left - 60) / 2), Ry = Math.max(40, Math.min(mob ? 120 : 140, r.top - 90)), cx0 = -Rx; K = [{ t: 'translate(0px,0px) rotate(0deg) scale(1)', o: 1, f: 0 }];
+      for (let k = 1; k <= 16; k++) { const th = k / 16 * 2 * Math.PI, x = mob ? W * 0.12 * Math.sin(th) : cx0 + Rx * Math.cos(th), y = mob ? -Ry * (1 - Math.cos(th)) : -Ry * Math.sin(th) - 20 * Math.sin(th / 2); K.push({ t: `translate(${x.toFixed(1)}px,${y.toFixed(1)}px) rotate(${(-k * 22.5).toFixed(1)}deg) scale(${(1 - (mob ? 0.45 : 0.25) * Math.sin(th / 2)).toFixed(2)})`, o: 1, f: +(.05 + k / 16 * .72).toFixed(3) }); }
+      K.push({ t: 'translate(0px,-14px) rotate(-366deg) scale(1.08)', o: 1, f: .84 }, { t: 'translate(0px,10px) rotate(-360deg) scale(.96)', o: 1, f: .91 }, { t: 'translate(0px,-5px) rotate(-360deg) scale(1.02)', o: 1, f: .96 }, { t: 'translate(0px,0px) rotate(-360deg) scale(1)', o: 1, f: 1 });
+    } else {
+    // 🌌 se aleja hacia el fondo (se hace pequeño), da la vuelta allá lejos y regresa hacia el frente hasta su lugar
+    const cx = W / 2 - (r.left + r.width / 2), cy = Math.max(-r.top + 40, -H * 0.3);
+    const fx = mob ? cx * 0.6 : cx * 0.55, fy = mob ? cy * 0.9 : cy;
+    K = [
+      { t: 'translate(0px,0px) rotate(0deg) scale(1)', o: 1, f: 0 },
+      { t: `translate(${fx * 0.25}px,${fy * 0.3 + 10}px) rotate(-8deg) scale(1.08)`, o: 1, f: .1 },
+      { t: `translate(${fx * 0.7}px,${fy * 0.85}px) rotate(-16deg) scale(.55)`, o: 1, f: .28 },
+      { t: `translate(${fx}px,${fy}px) rotate(-22deg) scale(.14)`, o: .85, f: .42 },
+      { t: `translate(${fx * 1.25}px,${fy * 0.9}px) rotate(160deg) scale(.1)`, o: .7, f: .52 },
+      { t: `translate(${fx * 0.8}px,${fy * 0.6}px) rotate(350deg) scale(.4)`, o: 1, f: .64 },
+      { t: `translate(${fx * 0.25}px,${fy * 0.2}px) rotate(360deg) scale(1.18)`, o: 1, f: .8 },
+      { t: 'translate(0px,10px) rotate(360deg) scale(.97)', o: 1, f: .9 },
+      { t: 'translate(0px,-5px) rotate(360deg) scale(1.02)', o: 1, f: .96 },
+      { t: 'translate(0px,0px) rotate(360deg) scale(1)', o: 1, f: 1 }];
+    }
+    el.style.position = el.style.position || 'relative'; el.style.zIndex = 50;
+    const a = el.animate(K.map(k => ({ transform: k.t, opacity: k.o, offset: k.f })), { duration: mob ? 3600 : 4000, easing: 'cubic-bezier(.4,0,.3,1)' });
+    const tr = setInterval(() => { const b = el.getBoundingClientRect(); const st = document.createElement('span'); st.className = 'rk-star'; st.textContent = Math.random() < .5 ? '✦' : '★'; st.style.left = (b.left + b.width * (mob ? .18 : .2) + window.scrollX) + 'px'; st.style.top = (b.top + b.height * .72 + window.scrollY) + 'px'; document.body.appendChild(st); setTimeout(() => st.remove(), 900); }, 70);
+    a.onfinish = () => { clearInterval(tr); el._fly = 0; el.style.zIndex = ''; const b = el.getBoundingClientRect(), rg = document.createElement('span'); rg.className = 'rk-ring'; rg.style.left = (b.left + b.width / 2 + scrollX) + 'px'; rg.style.top = (b.top + b.height * .8 + scrollY) + 'px'; document.body.appendChild(rg); setTimeout(() => rg.remove(), 800); };
+  }
   function login() {
     app.innerHTML = `<div class="wrap pt-wrap"><div class="card pt-login">
       
@@ -291,6 +325,7 @@
         <a class="btn w block pt-insc" href="inscripcion.html">📝 Formulario de inscripción</a></div></div>
       <p class="center pt-links"><a href="recomienda.html"><b>🤝 Recomienda y gana</b></a> · <a href="reclutamiento.html">👩‍🏫 Trabaja con nosotros</a> · <a href="profesores.html">🧑‍🏫 Soy profesor</a> · <a href="administracion.html">🔐 Administración</a></p></div>`;
     landing();
+    setTimeout(() => rocketTour(), 700); // 🚀 Mr. Arrieta da una vuelta volando y vuelve a su lugar
     const i = $('#cd'); setTimeout(() => { if (window.innerWidth > 900) i.focus(); }, 200);
     leadPop();
     const bad = (msg) => { i.classList.add('wrong'); sfx('bad'); setTimeout(() => i.classList.remove('wrong'), 500); M.toast(msg || 'Código no válido 😕'); };
