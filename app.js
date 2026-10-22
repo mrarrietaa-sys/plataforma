@@ -415,7 +415,7 @@
   const SCENES = { rocket: { a: 'up', say: 'Blast off!' }, drums: { a: 'stage', say: 'Rock on!' }, guitar: { a: 'stage', say: "Let's rock!" },
     surf: { a: 'surf', say: 'Catch the wave!' }, hero: { a: 'fly', say: 'Super English!' }, balloon1: { a: 'balloon', say: 'Up, up and away!' }, balloon2: { a: 'balloon', say: "Let's explore!" }, balloon3: { a: 'balloon', say: 'Here we go!' }, laptop: { a: 'pop', say: 'Homework time!' }, wave: { a: 'pop', say: 'Hello!' }, rocket3: { a: 'up', say: 'Full speed!' }, rocket5: { a: 'up', say: 'To the moon!' }, 'plane-red': { a: 'fly', say: 'Ready for takeoff!' }, 'plane-blue': { a: 'fly', say: 'Great job!' }, 'plane-yellow': { a: 'fly', say: 'This way!' }, 'plane-green': { a: 'fly', say: 'Keep flying!' } };
   // 🎯 misión del tema según el objetivo (solo en la última parte del tema y si el estudiante eligió objetivo)
-  function missionFor(p) { try { const g = window.MRGOAL && MRGOAL.get(); if (!g || !window.MRMISSIONS) return null; const t = p._t || {}; if (t.parts && t.parts.length && t.parts[t.parts.length - 1].id !== p.id) return null; const x = MRMISSIONS[(+M.MOD.n || 1) + '-' + p.topic]; return x && x[g.k] ? Object.assign({ k: g.k }, x[g.k]) : null; } catch (e) { return null; } }
+  function missionFor(p) { try { const g = window.MRGOAL && MRGOAL.get(); if (!g || !window.MRMISSIONS) return null; const x = MRMISSIONS[(+M.MOD.n || 1) + '-' + p.topic]; const L = x && x[g.k]; if (!L) return null; const arr = Array.isArray(L) ? L : [L]; const k = Math.max(0, (+p.part || 1) - 1) * 2; const two = arr.slice(k, k + 2); return two.length ? { k: g.k, list: two } : null; } catch (e) { return null; } }
   const SEC_IC = { Goal: '🎯', Mission: '🚀', Speaking: '🗣️', Reading: '📖', Review: '🔁', Explanation: '💡', 'Listen & practice': '🎧', Practice: '🎮', 'Oral task': '🎤', Music: '🎵', Homework: '📝' };
   const SEC_SC = { Reading: 'balloon2', Homework: 'laptop', Music: 'guitar', Review: 'plane-blue' };
   const FREE = ['rocket', 'balloon1', 'plane-red', 'rocket3', 'balloon3', 'plane-blue', 'drums', 'plane-yellow', 'balloon2', 'surf', 'rocket5', 'plane-green', 'hero'];
@@ -464,7 +464,7 @@
     app.innerHTML = `<div class="wrap center ld-load"><img class="ld-load-mra" src="mra-x-rocket3.webp?v=2" alt="Mr. Arrieta"><h2 class="ld-ready">Are you ready?</h2><div class="ld-count"></div><p class="ld-load-t muted"></p></div>`;
     // 🚀 conteo 1, 2, 3 mientras carga; en el 3 Mr. Arrieta sale volando y dice GO!
     const lt = $('.ld-load-t', app), cd = $('.ld-count', app), rk = $('.ld-load-mra', app); let loaded = false;
-    const pv = M.prevPart(p); const loadP = M.loadAudio(['common', ...[].concat(M.MOD.games || []), M.MOD.audio + p.topic].concat(pv ? [M.MOD.audio + pv.topic] : []).concat(missionFor(p) ? ['gm' + (+M.MOD.n || 1)] : [])).then(() => { loaded = true; }, () => { loaded = true; });
+    const pv = M.prevPart(p); const loadP = M.loadAudio(['common', ...[].concat(M.MOD.games || []), M.MOD.audio + p.topic].concat(pv ? [M.MOD.audio + pv.topic] : []).concat(missionFor(p) ? ['gm' + (+M.MOD.n || 1) + 't' + p.topic] : [])).then(() => { loaded = true; }, () => { loaded = true; });
     const pop = (t) => { cd.textContent = t; cd.classList.remove('pop'); void cd.offsetWidth; cd.classList.add('pop'); };
     for (const t of ['1', '2', '3']) { pop(t); try { sfx('tap'); } catch (e) { } await new Promise(r => setTimeout(r, 750)); }
     if (!loaded) { lt.textContent = 'Preparando tu clase…'; await loadP; lt.textContent = ''; }
@@ -690,37 +690,45 @@
 
     // 🚀 MISIÓN según el objetivo: situación real + pregunta en audio + respuesta en voz alta con corrección
     mission: async (stage, p) => {
-      const x = missionFor(p); if (!x) return null;
-      const GN = { v: ['plane', 'Viajar', 'r'], t: ['briefcase', 'Trabajo', 'b'], e: ['grad', 'Estudios', 'g'] }[x.k] || ['target', '', 'r'];
-      const body = A.head(stage, { lbl: 'Mission', title: 'Tu misión', ins: 'Una situación real de <b>tu objetivo</b>. Escucha y responde en voz alta, con tu voz normal.' });
-      const el = h(`<div class="ms"><div class="ms-top"><span class="ms-badge ${GN[2]}">${window.MRI ? MRI(GN[0]) : ''}Misión · ${esc(GN[1])}</span><span class="ms-xp">⏱ 2 min</span></div>
-        <div class="ms-sit"><small>La situación</small>${esc(x.sit)}</div>
-        <div class="ms-q"><button type="button" class="ms-play" aria-label="Escuchar">🔊</button><div><b>${esc(x.q)}</b><small>${esc(x.es)}</small></div></div>
-        <button type="button" class="ms-mic">🎙️<span>Toca y responde</span></button>
-        <div class="ms-msg">Responde con tus palabras. ¡No tiene que ser perfecto!</div>
-        <div class="ms-heard" hidden></div>
-        <div class="ms-model" hidden><small>Una respuesta modelo</small><div><button type="button" class="ms-play2" aria-label="Escuchar respuesta">🔊</button><b>${esc(x.a)}</b></div></div></div>`);
-      body.appendChild(el); const $e = (q) => el.querySelector(q);
-      $e('.ms-play').onclick = () => { stop(); play(x.qau); }; $e('.ms-play2').onclick = () => { stop(); play(x.aau); };
-      setTimeout(() => play(x.qau), 400);
-      let tries = 0, okk = false;
-      const showModel = () => { $e('.ms-model').hidden = false; setTimeout(() => play(x.aau), 500); };
-      await new Promise((done) => {
-        $e('.ms-mic').onclick = async () => {
-          const b = $e('.ms-mic'); if (b.disabled) return;
-          if (!M.canSR) { showModel(); $e('.ms-msg').textContent = 'Di la respuesta en voz alta 🗣️'; okk = true; return setTimeout(done, 2500); }
-          b.disabled = true; stop(); el.classList.add('rec'); b.querySelector('span').textContent = 'Te escucho…';
-          const r = await M.listen(10000); el.classList.remove('rec'); b.disabled = false; b.querySelector('span').textContent = 'Intentar otra vez';
-          if (!r.alts || !r.alts.length) { $e('.ms-msg').textContent = 'No te escuché 🙉 Acércate un poco al micrófono e intenta otra vez.'; return; }
-          tries++; const sc = M.speechScore(x.a, r.alts), nw = M.words(r.alts[0]).length;
-          okk = nw >= 3 && (sc.score >= 35 || nw >= 5); // respuesta libre: basta con responder con una frase completa
-          const hd = $e('.ms-heard'); hd.hidden = false; hd.className = 'ms-heard ' + (okk ? 'good' : 'bad'); hd.innerHTML = `<small>Escuché</small>“${esc(r.alts[0])}”`;
-          if (okk) { sfx('ok'); M.praise(); el.classList.add('done'); $e('.ms-msg').innerHTML = '✅ <b>¡Misión cumplida!</b> Compara con la respuesta modelo.'; showModel(); setTimeout(done, 3200); }
-          else { sfx('bad'); $e('.ms-msg').textContent = nw < 3 ? 'Responde con una frase completa (3 palabras o más).' : 'Casi. Escucha la respuesta modelo e inténtalo otra vez.'; if (tries >= 1) showModel(); if (tries >= 3) { setTimeout(done, 2500); } }
-        };
-      });
+      const X = missionFor(p); if (!X) return null;
+      const GN = { v: ['plane', 'Viajar', 'r'], t: ['briefcase', 'Trabajo', 'b'], e: ['grad', 'Estudios', 'g'] }[X.k] || ['target', '', 'r'];
+      let c = 0; const N = X.list.length;
+      for (let mi = 0; mi < N; mi++) {
+        if (!stage.isConnected) break; const x = X.list[mi];
+        const body = A.head(stage, { lbl: 'Mission', title: 'Tu misión', ins: 'Una situación real de <b>tu objetivo</b>. Escucha y responde en voz alta, con tu voz normal.', count: `${mi + 1} / ${N}` });
+        const el = h(`<div class="ms"><div class="ms-top"><span class="ms-badge ${GN[2]}">${window.MRI ? MRI(GN[0]) : ''}Misión · ${esc(GN[1])}</span><span class="ms-xp">Misión ${mi + 1} de ${N}</span></div>
+          ${x.img ? `<div class="ms-ph">${photo('u:' + x.img)}<div class="ms-sit"><small>La situación</small>${esc(x.sit)}</div></div>` : `<div class="ms-sit"><small>La situación</small>${esc(x.sit)}</div>`}
+          <div class="ms-q"><button type="button" class="ms-play" aria-label="Escuchar">🔊</button><div><b>${esc(x.q)}</b><small>${esc(x.es)}</small></div></div>
+          <button type="button" class="ms-mic"></button>
+          <div class="ms-msg">Responde con tus palabras. ¡No tiene que ser perfecto!</div>
+          <div class="ms-heard" hidden></div>
+          <button type="button" class="ms-hint">💡 Escuchar una respuesta modelo</button>
+          <div class="ms-model" hidden><small>Una respuesta modelo</small><div><button type="button" class="ms-play2" aria-label="Escuchar respuesta">🔊</button><b>${esc(x.a)}</b></div></div></div>`);
+        body.appendChild(el); const $e = (q) => el.querySelector(q); const mic = $e('.ms-mic');
+        const lab = (t) => { mic.innerHTML = `<span class="ms-mi">🎙️</span><span class="ms-mt">${t}</span>`; }; lab('Toca y responde');
+        $e('.ms-play').onclick = () => { stop(); play(x.qau); }; $e('.ms-play2').onclick = () => { stop(); play(x.aau); };
+        $e('.ms-hint').onclick = () => { $e('.ms-model').hidden = false; $e('.ms-hint').hidden = true; stop(); play(x.aau); };
+        setTimeout(() => play(x.qau), 400);
+        let tries = 0, okk = false;
+        await new Promise((done) => {
+          mic.onclick = async () => {
+            if (mic.disabled) return;
+            if (!M.canSR) { $e('.ms-msg').textContent = 'Di la respuesta en voz alta 🗣️'; okk = true; return setTimeout(done, 2200); }
+            mic.disabled = true; stop(); el.classList.add('rec'); lab('Te escucho…');
+            const r = await M.listen(10000, { quick: true }); el.classList.remove('rec'); mic.disabled = false; lab('Intentar otra vez');
+            if (!r.alts || !r.alts.length) { $e('.ms-msg').textContent = 'No te escuché 🙉 Acércate un poco al micrófono e intenta otra vez.'; return; }
+            tries++; const sc = M.speechScore(x.a, r.alts), nw = M.words(r.alts[0]).length;
+            okk = nw >= 3 && (sc.score >= 35 || nw >= 5);
+            const hd = $e('.ms-heard'); hd.hidden = false; hd.className = 'ms-heard ' + (okk ? 'good' : 'bad'); hd.innerHTML = `<small>Escuché</small>“${esc(r.alts[0])}”`;
+            if (okk) { sfx('ok'); M.praise(); el.classList.add('done'); mic.hidden = true; $e('.ms-msg').innerHTML = '✅ <b>¡Misión cumplida!</b>'; setTimeout(done, 2200); }
+            else { sfx('bad'); $e('.ms-msg').textContent = nw < 3 ? 'Responde con una frase completa (3 palabras o más).' : 'Casi. Inténtalo otra vez; si quieres, escucha la respuesta modelo.'; if (tries >= 3) setTimeout(done, 2500); }
+          };
+        });
+        if (okk) c++;
+        if (mi < N - 1) await sleep(300);
+      }
       await A.waitNext(stage, 'Continuar');
-      return A.result(okk ? 1 : 0, 1, 'speaking');
+      return A.result(c, N, 'speaking');
     },
 
     // 📹 KEY QUESTIONS en videollamada con Mr. Arrieta (un personaje por módulo). Mismas preguntas, audios y corrección de voz.
@@ -757,12 +765,12 @@
             if (busy || over) return;
             if (!M.canSR) { showAns('Dila en voz alta'); if (k.aau) play(k.aau); $v('.vk-msg').textContent = 'Tu navegador no reconoce voz: repite en voz alta 🗣️'; setTimeout(() => finish(true), 2600); return; }
             busy = true; stop(); vc.classList.add('rec'); $v('.vk-msg').textContent = '🎧 Te escucho… habla con tu voz normal';
-            const rr = await M.listen(9000); vc.classList.remove('rec'); busy = false; if (over) return;
+            const rr = await M.listen(9000, { quick: true }); vc.classList.remove('rec'); busy = false; if (over) return;
             if (!rr.alts || !rr.alts.length) { $v('.vk-msg').textContent = rr.error === 'not-allowed' ? 'Permite el micrófono en tu navegador para responder 🎙️' : 'No te escuché 🙉 Acércate un poco al micrófono e intenta otra vez.'; return; }
             const sc = M.speechScore(tgt.replace(/___/g, ''), rr.alts); const ok = blank ? M.words(rr.alts[0]).length >= 2 && sc.score >= 45 : sc.score >= 55;
             const fb = $v('.vk-fb'); fb.hidden = false; fb.className = 'vk-fb ' + (ok ? 'good' : 'bad'); fb.innerHTML = `<small>Escuché</small>“${esc(sc.heard || rr.alts[0])}”`;
             if (ok) { sfx('ok'); M.praise(); vc.classList.add('ok'); $v('.vk-msg').textContent = late ? '✅ ¡Bien dicho!' : '✅ ¡Excelente!'; setTimeout(() => finish(true), 1500); }
-            else { sfx('bad'); setTimeout(M.encourage, 250); $v('.vk-msg').textContent = 'Casi. Escucha la respuesta y vuelve a intentarlo.'; showAns('Así se dice'); if (k.aau) setTimeout(() => play(k.aau), 900); }
+            else { sfx('bad'); setTimeout(M.encourage, 250); $v('.vk-msg').textContent = 'Casi. Inténtalo otra vez o escucha la respuesta.'; const va = $v('.vk-ans'); if (va.hidden || !va.querySelector('b')) { va.innerHTML = `<button type="button" class="vk-hear">🔊 Escuchar la respuesta</button>`; va.hidden = false; va.querySelector('.vk-hear').onclick = () => { showAns('Así se dice'); if (k.aau) play(k.aau); }; } }
           };
         });
         if (r.ok) { c++; if (!r.late) { streak++; pts += (r.hinted ? 50 : 100) * Math.min(3, streak); } else streak = 0; } else streak = 0;

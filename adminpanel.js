@@ -58,7 +58,7 @@
   }
 
   /* ======================= ESTRUCTURA ======================= */
-  const TABS = [['home', '📊', 'Resumen'], ['students', '🎓', 'Estudiantes'], ['enroll', '📝', 'Inscripciones'], ['buys', '💳', 'Pagos'], ['claims', '🚩', 'Reclamos'], ['reviews', '⭐', 'Opiniones'], ['leads', '📣', 'Interesados'], ['placement', '🧭', 'Placement'], ['recruit', '👩‍🏫', 'Reclutamiento'], ['teachers', '🧑‍🏫', 'Profesores'], ['contracts', '📄', 'Contratos'], ['tes', '🎬', 'Testimonios'], ['boards', '📝', 'Tableros'], ['classes', '📅', 'Clases'], ['requests', '🔁', 'Solicitudes'], ['chats', '💬', 'Chats'], ['settings', '⚙️', 'Ajustes']];
+  const TABS = [['today', '✅', 'Tareas de hoy'], ['home', '📊', 'Resumen'], ['students', '🎓', 'Estudiantes'], ['enroll', '📝', 'Inscripciones'], ['buys', '💳', 'Pagos'], ['claims', '🚩', 'Reclamos'], ['reviews', '⭐', 'Opiniones'], ['leads', '📣', 'Interesados'], ['placement', '🧭', 'Placement'], ['recruit', '👩‍🏫', 'Reclutamiento'], ['teachers', '🧑‍🏫', 'Profesores'], ['contracts', '📄', 'Contratos'], ['tes', '🎬', 'Testimonios'], ['boards', '📝', 'Tableros'], ['classes', '📅', 'Clases'], ['requests', '🔁', 'Solicitudes'], ['chats', '💬', 'Chats'], ['settings', '⚙️', 'Ajustes']];
   let TAB = 'home', STATS = null;
   // "Atrás": dentro del panel vuelve al Resumen (nunca saca a otra página por error)
   document.addEventListener('click', (e) => { const b = e.target.closest && e.target.closest('.tb-back'); if (!b || !key()) return; if (document.querySelector('.modal, .wa-wrap')) return; e.preventDefault(); e.stopImmediatePropagation(); if (TAB !== 'home') go('home'); else window.scrollTo(0, 0); }, true);
@@ -68,12 +68,55 @@
     app.innerHTML = `<nav class="ad-tabs" id="tabs">${TABS.map(([k, i, n]) => `<button data-t="${k}"><span>${i}</span>${n}<i class="ad-badge" data-b="${k}"></i></button>`).join('')}</nav><div id="view" class="ad-view"><div class="ad-loading">⏳ Cargando…</div></div>`;
     $$('#tabs button').forEach(b => b.onclick = () => go(b.dataset.t));
     await loadRef();
-    const h = (location.hash || '').slice(1); go(TABS.some(t => t[0] === h) ? h : 'home');
+    const h = (location.hash || '').slice(1); go(TABS.some(t => t[0] === h) ? h : 'today');
   }
   function go(t) { TAB = t; history.replaceState(null, '', '#' + t); $$('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === t)); const on = $(`#tabs button[data-t="${t}"]`); on && on.scrollIntoView({ inline: 'center', block: 'nearest' }); window.scrollTo(0, 0); (VIEWS[t] || VIEWS.home)(); }
   const view = () => $('#view');
   function badges(s) { const set = (k, n) => { const e = $(`[data-b="${k}"]`); if (e) { e.textContent = n || ''; e.style.display = n ? '' : 'none'; } };
     set('enroll', s.enrollNew); set('recruit', s.recruitNew); set('requests', s.requestsPending); set('buys', s.buysPending); set('claims', s.claimsPending); }
+
+  /* ======================= ✅ TAREAS DE HOY ======================= */
+  async function today() {
+    view().innerHTML = '<div class="ad-loading">⏳ Revisando lo de hoy…</div>';
+    const r = await api('aToday'); if (!r.ok) return view().innerHTML = '<p class="ad-err">No se pudieron cargar las tareas de hoy.</p>';
+    const MP = 'https://link.mercadopago.com.co/mrarrieta', F = (n) => String(n || '').split(' ')[0];
+    const DK = 'mra_today_' + r.today; let DONE = {}; try { DONE = JSON.parse(localStorage.getItem(DK) || '{}'); } catch (e) { }
+    const mark = (id) => { DONE[id] = 1; try { localStorage.setItem(DK, JSON.stringify(DONE)); } catch (e) { } };
+    const MSG = {
+      exp0: (x) => `Hola ${F(x.name)}, hoy vence tu plan ${x.plan} en mrarrieta.com. Renuévalo hoy para no perder tu acceso ni tu progreso: ${MP}\n\nLas clases se reservan y se cancelan únicamente en la plataforma.`,
+      exp3: (x) => `Hola ${F(x.name)}, tu plan ${x.plan} en mrarrieta.com vence en 3 días. Recuerda que las clases no son acumulables: resérvalas antes de esa fecha. Renueva aquí: ${MP}\n\nLas clases se reservan y se cancelan únicamente en la plataforma.`,
+      trial1: (x) => `Hola ${F(x.name)}, hoy es tu último día de prueba gratis en mrarrieta.com. ¿Te gustó? Elige tu plan y sigue aprendiendo inglés HABLANDO: ${MP}`,
+      trial0: (x) => `Hola ${F(x.name)}, tu prueba gratis en mrarrieta.com terminó. Si te inscribes en las próximas 24 horas tienes 10% de descuento en tu primer mes: ${MP}`,
+      bday: (x) => `¡Feliz cumpleaños, ${F(x.name)}! Todo el equipo de mrarrieta.com te desea un día increíble. ¡Sigue aprendiendo inglés HABLANDO!`,
+      week: (x) => `Hola ${F(x.name)}, te recordamos confirmar tu disponibilidad de la próxima semana en tu portal de mrarrieta.com. ¡Gracias!`
+    };
+    const G = [['buy', '💳 Pagos por confirmar'], ['claim', '🚩 Reclamos por revisar'], ['req', '📨 Solicitudes'], ['enroll', '📝 Inscripciones nuevas'], ['exp0', '⏰ Planes que vencen hoy'], ['trial0', '💸 Pruebas gratis terminadas (ofrecer 10%)'], ['trial1', '🎁 Último día de prueba gratis'], ['exp3', '📅 Planes que vencen en 3 días'], ['week', '🗓️ Profes sin confirmar disponibilidad'], ['bday', '🎂 Cumpleaños de hoy'], ['recruit', '👩‍🏫 Candidatos nuevos']];
+    const T = r.tasks.map((x, i) => Object.assign(x, { uid: x.k + ':' + (x.id || x.code || i) })); const pend = T.filter(x => !DONE[x.uid]);
+    const act = (x) => {
+      if (x.k === 'buy') return `${x.proof ? `<a class="btn w sm" target="_blank" rel="noopener" href="${esc(x.proof)}">🧾 Comprobante</a>` : ''}<button class="btn k sm" data-a="buy-ok">✅ Aprobar</button><button class="btn w sm" data-a="buy-no">Rechazar</button>`;
+      if (x.k === 'claim') return `<button class="btn k sm" data-a="claim-ok">✅ Aprobar</button><button class="btn w sm" data-a="claim-no">Rechazar</button>`;
+      if (x.k === 'req') return `<button class="btn k sm" data-a="req-ok">✅ Aprobar</button><button class="btn w sm" data-a="req-no">Rechazar</button>`;
+      if (x.k === 'enroll') return `<button class="btn k sm" data-a="open-enroll">Abrir</button>`;
+      if (x.k === 'recruit') return `<button class="btn k sm" data-a="open-recruit">Ver candidato</button>`;
+      if (MSG[x.k]) return `${x.wa ? `<a class="btn sm ad-wa" target="_blank" rel="noopener" data-a="wa" href="${waLink(x.wa, MSG[x.k](x))}">📲 WhatsApp</a>` : '<span class="muted" style="font-size:12.5px">Sin WhatsApp</span>'}${x.code ? `<button class="btn w sm" data-a="open-st">Ver ficha</button>` : ''}`;
+      return '';
+    };
+    const card = (x) => `<div class="td-row${DONE[x.uid] ? ' done' : ''}" data-u="${esc(x.uid)}"><div class="td-tx"><b>${esc(x.name || '')}</b><span>${esc(x.txt || '')}</span>${x.note ? `<em>“${esc(x.note)}”</em>` : ''}</div><div class="td-ac">${DONE[x.uid] ? '<span class="td-ok">✓ Hecho</span>' : act(x)}</div></div>`;
+    view().innerHTML = `<div class="ad-head"><h1>✅ Tareas de hoy</h1><p class="muted">${fD(r.today, { weekday: 'long', day: 'numeric', month: 'long' })} · ${pend.length ? `<b>${pend.length}</b> pendiente${pend.length > 1 ? 's' : ''}` : '¡Todo al día! 🎉'}</p></div>
+      ${pend.length ? '' : '<div class="card td-empty">🎉 No tienes tareas pendientes hoy. ¡Buen trabajo!</div>'}
+      ${G.map(([k, t]) => { const L = T.filter(x => x.k === k); return L.length ? `<div class="card td-g"><h3>${t} <span class="td-n">${L.filter(x => !DONE[x.uid]).length}</span></h3>${L.map(card).join('')}</div>` : ''; }).join('')}
+      <div class="card td-g"><h3>🎥 Clases de hoy <span class="td-n">${r.classes.length}</span></h3>${r.classes.length ? r.classes.map(c => `<div class="td-row"><div class="td-tx"><b>${esc(fT(c.time))} · ${esc(c.teacher)}</b><span>${esc(c.students.join(', '))}${c.topic ? ' · ' + esc(c.topic) : ''}</span></div></div>`).join('') : '<p class="muted">No hay clases individuales hoy.</p>'}</div>`;
+    const find = (el) => T.find(x => x.uid === el.closest('.td-row').dataset.u);
+    const doneUI = (el) => { const row = el.closest('.td-row'); row.classList.add('done'); row.querySelector('.td-ac').innerHTML = '<span class="td-ok">✓ Hecho</span>'; };
+    $$('[data-a]', view()).forEach(b => b.addEventListener('click', async (e) => { const x = find(b), a = b.dataset.a; if (!x) return;
+      if (a === 'wa') { mark(x.uid); setTimeout(() => doneUI(b), 300); return; }
+      if (a === 'open-st') return studentDetail(x.code); if (a === 'open-enroll') return go('enroll'); if (a === 'open-recruit') return go('recruit');
+      e.preventDefault(); b.disabled = true; let res = null;
+      if (a === 'buy-ok' || a === 'buy-no') res = await api('aBuyDecide', { id: x.id, ok: a === 'buy-ok' });
+      if (a === 'claim-ok' || a === 'claim-no') res = await api('aClaimDecide', { id: x.id, act: a === 'claim-ok' ? 'approve' : 'reject' });
+      if (a === 'req-ok' || a === 'req-no') res = await api('aReq', { id: x.id, status: a === 'req-ok' ? 'aprobada' : 'rechazada' });
+      if (res && res.ok) { mark(x.uid); doneUI(b); toast('✅ Listo'); } else { b.disabled = false; toast((res && res.err) || 'No se pudo completar'); } }));
+  }
 
   /* ======================= RESUMEN ======================= */
   async function home() {
@@ -212,7 +255,7 @@
         <div class="ad-dact">${s.whatsapp ? `<a class="btn ad-wa sm" target="_blank" rel="noopener" href="${waLink(s.whatsapp, hiMsg(s))}">💬 WhatsApp${s.guardian ? ' (papá/mamá)' : ''}</a>` : ''}${s.whatsapp2 ? `<a class="btn ad-wa sm" target="_blank" rel="noopener" href="${waLink(s.whatsapp2, hiMsg2(s))}">💬 WhatsApp (otro padre/madre)</a>` : ''}<button class="btn w sm" id="d-share">🔑 Enviar código</button><button class="btn w sm" id="d-rst">♻️ Reiniciar progreso</button><button class="btn w sm ad-del" id="d-del">🗑️ Borrar</button></div></div>
       <div class="card ad-plan"><h3>💎 Plan</h3>
         <p>${st.eff === 'free' && !st.expired ? 'Acceso gratuito: prueba de clasificación + los 2 primeros temas.' : `${PLAN[s.plan] ? PLAN[s.plan].join(' ') : ''} · desde ${fD(s.planStart)} hasta <b>${fD(s.planEnd)}</b> ${st.expired ? chip('VENCIDO', 'p-expired') : st.daysLeft !== null ? chip(st.daysLeft + ' días restantes', st.daysLeft <= 5 ? 'p-expired' : 'gray') : ''}`}</p>
-        ${r.trial != null ? `<p class="ad-t2">${r.trial > 0 ? '🎁 Acceso gratuito activo: ' + r.trial + ' día' + (r.trial > 1 ? 's' : '') + ' restante' + (r.trial > 1 ? 's' : '') + (s.trial2 ? ' (segundo acceso)' : '') : s.trial2 ? '🔒 Ya usó su segundo acceso gratuito (' + fD(s.trial2) + ').' : `🔒 Su acceso gratuito terminó. <button class="btn w sm" id="d-t2">🎁 Dar segundo acceso gratis · 2 días</button>`}</p>` : ''}
+        ${r.trial != null ? `<p class="ad-t2">${r.trial > 0 ? '🎁 Acceso gratuito activo: ' + r.trial + ' día' + (r.trial > 1 ? 's' : '') + ' restante' + (r.trial > 1 ? 's' : '') + (s.trial2 ? ' (segundo acceso)' : '') : s.trial2 ? '🔒 Ya usó su segundo acceso gratuito (' + fD(s.trial2) + ').' : `🔒 Su acceso gratuito terminó. <button class="btn k sm" id="d-t2">🎁 Reactivar acceso gratuito · 2 días</button>`}</p>` : ''}
         <div class="ad-planbtns"><button class="btn w" data-plan="membership">🖥️ Plataforma</button><button class="btn k" data-plan="premium">👑 Premium · 4</button><button class="btn k" data-plan="premium8">💎 Premium · 8</button>${s.plan !== 'free' ? `<button class="btn w" data-plan="${esc(s.plan)}" data-renew="1">🔁 Renovar ${esc(PLAN[s.plan][1])}</button><button class="btn w" data-plan="free">🟢 Pasar a gratuito</button>` : ''}</div>
         ${st.eff === 'premium' && r.credits ? `<div class="ad-cred"><span>🎯 Clases individuales: <b>${r.credits.vipUsed}/${r.credits.vipTotal}</b> usadas${r.credits.vipBonus ? ' (incluye ' + r.credits.vipBonus + ' adicionales)' : ''}</span><span>Ciclo: ${fD(r.credits.cycleStart)} → ${fD(r.credits.cycleEnd)}</span></div>` : ''}
         ${(r.plans || []).length ? `<details><summary>Historial de pagos/planes (${r.plans.length})</summary><div class="ad-mini">${r.plans.map(p => `<div class="ad-mrow"><b>${PLAN[p.plan] ? PLAN[p.plan].join(' ') : esc(p.plan)} · ${esc(p.months || 0)} mes(es) · ${money(p.amount)}</b><span>${fDT(p.date)} · ${fD(p.start)} → ${fD(p.end)}${p.note ? ' · ' + esc(p.note) : ''}</span></div>`).join('')}</div></details>` : ''}</div>
@@ -231,7 +274,9 @@
     $$('[data-pl]').forEach(x => x.onclick = () => placementDetail(x.dataset.pl, () => studentDetail(code)));
     $$('[data-plan]').forEach(b => b.onclick = () => planModal(s, b.dataset.plan, !!b.dataset.renew));
     if ($('#d-t2')) $('#d-t2').onclick = () => { const m = modal(`<div class="center"><div style="font-size:44px">🎁</div><h2>¿Dar 2 días más gratis a ${esc(s.first)}?</h2><p class="muted">Entra con el mismo código (${esc(s.code)}). Le llega un correo con sus datos y la duración (2 días). Solo se puede dar una vez.</p><div class="row" style="justify-content:center"><button class="btn w" id="t2-n">Cancelar</button><button class="btn k" id="t2-y">✅ Sí, activar</button></div></div>`);
-      $('#t2-n', m).onclick = () => m.remove(); $('#t2-y', m).onclick = async () => { $('#t2-y', m).disabled = true; const x = await api('aTrial2', { code: s.code }); m.remove(); if (x.ok) { toast(x.mailed ? '🎁 Activado · correo enviado' : '🎁 Activado'); studentDetail(s.code); } else toast(x.err || 'No se pudo activar'); }; };
+      $('#t2-n', m).onclick = () => m.remove(); $('#t2-y', m).onclick = async () => { $('#t2-y', m).disabled = true; const x = await api('aTrial2', { code: s.code }); m.remove(); if (x.ok) { const s2 = Object.assign({}, s, { trial2: new Date().toISOString().slice(0, 10) }); studentDetail(s.code);
+        const m2 = modal(`<div class="center"><div style="font-size:44px">✅</div><h2>Acceso gratuito reactivado</h2><p class="muted">${x.mailed ? '📧 Ya le llegó el correo con su código y la duración (2 días).' : '⚠️ No tiene correo registrado o no se pudo enviar.'}</p>${s.whatsapp ? `<a class="btn k" id="t2-wa" target="_blank" rel="noopener" href="${waLink(s.whatsapp, accessMsg(s2))}">📲 Enviar credenciales por WhatsApp</a>` : '<p class="muted">No tiene WhatsApp registrado.</p>'}<p><button class="btn w sm" id="t2-ok">Listo</button></p></div>`);
+        $('#t2-ok', m2).onclick = () => m2.remove(); if ($('#t2-wa', m2)) $('#t2-wa', m2).addEventListener('click', () => setTimeout(() => m2.remove(), 400)); } else toast(x.err || 'No se pudo activar'); }; };
     $('#d-save').onclick = async () => { const d = formData($('.ad-form', view())); const b = $('#d-save'); b.disabled = true;
       const res = await api('aSave', { table: 'Estudiantes', row: Object.assign(d, { code: s.code }) }); b.disabled = false; if (res.ok) { toast('✅ Guardado'); studentDetail(code); } else toast('No se pudo guardar'); };
   }
@@ -626,6 +671,6 @@
       const m = modal(`<div class="center"><div style="font-size:44px">📢</div><h2>¿Publicar nueva versión?</h2><p class="muted">${K === 'teacher' ? 'Todos los profes' : 'Todos los estudiantes con este plan'} deberán leerla y aceptarla otra vez al entrar.</p><div class="row" style="justify-content:center"><button class="btn w" id="cp-n">Cancelar</button><button class="btn k" id="cp-y">Sí, publicar</button></div></div>`);
       $('#cp-n', m).onclick = () => m.remove(); $('#cp-y', m).onclick = async () => { $('#cp-y', m).disabled = true; const x = await api('aContractSave', { text: tx, kind: K }); m.remove(); if (x.ok) { toast('📢 Publicada la versión ' + x.version); contracts(); } else toast(x.err === 'corto' ? 'El texto es muy corto' : 'No se pudo publicar'); }; };
   }
-  const VIEWS = { contracts, boards, tes, buys, claims, reviews, home, students, enroll, leads, placement, recruit, teachers, classes, requests, chats, settings };
+  const VIEWS = { today, contracts, boards, tes, buys, claims, reviews, home, students, enroll, leads, placement, recruit, teachers, classes, requests, chats, settings };
   key() && MRAC.on ? boot() : login();
 })();

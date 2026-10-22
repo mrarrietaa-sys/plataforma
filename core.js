@@ -203,13 +203,13 @@
     if (interim && interim[0]) { const t = (out[0] + ' ' + interim[0]).trim(); if (lc(interim[0]) && lc(out[0]).indexOf(lc(interim[0])) < 0) out.unshift(t); }
     return out;
   }
-  function listen(timeoutMs = 8000) {
+  function listen(timeoutMs = 8000, opts = {}) { // opts.quick: termina apenas el estudiante deja de hablar
     return new Promise((res) => {
       if (!SR) return res({ error: 'nosupport', alts: [] });
       const t0 = Date.now(); let done = false, r = null, segs = [], interim = [], lastErr = '', idle = null, heardAny = false;
       timeoutMs = Math.max(timeoutMs, 9000); // nunca menos de 9 s: da tiempo a pensar y hablar con calma
       const fin = (err) => { if (done) return; done = true; clearTimeout(idle); try { r && r.abort(); } catch (e) { } const alts = segAlts(segs, interim); res(alts.length ? { alts } : { alts: [], error: err || lastErr || 'no-speech' }); };
-      const arm = () => { clearTimeout(idle); idle = setTimeout(() => fin(), segs.length ? 1800 : 2600); }; // espera 1,8 s de silencio real antes de terminar
+      const arm = () => { clearTimeout(idle); idle = setTimeout(() => fin(), opts.quick ? (segs.length ? 650 : (interim.length ? 1000 : 2600)) : (segs.length ? 1800 : 2600)); }; // espera 1,8 s de silencio real antes de terminar
       const start = () => {
         if (done) return;
         r = new SR(); r.lang = 'en-US'; r.interimResults = true; r.maxAlternatives = 5; r.continuous = true;

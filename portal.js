@@ -275,6 +275,22 @@
       $('#tf-in', m).onclick = () => { m.remove(); const i = $('#cd'); if (i) { i.value = r.code; $('#ok').click(); } };
     };
   }
+  // ✨ bienvenida en la página de entrada: lluvia de estrellas doradas y destellos (1 vez por visita) → luego vuela Mr. Arrieta
+  function welcomeFx() {
+    let seen = false; try { seen = !!sessionStorage.getItem('mra_rkt'); } catch (e) { }
+    if (seen || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) return;
+    const cv = document.createElement('canvas'); cv.className = 'wfx'; document.body.appendChild(cv); const x = cv.getContext('2d');
+    const fit = () => { cv.width = innerWidth * devicePixelRatio; cv.height = innerHeight * devicePixelRatio; x.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0); }; fit();
+    const W = innerWidth, H = innerHeight, N = innerWidth < 600 ? 46 : 80, COL = ['#FFD23F', '#FFC21A', '#ffffff', '#E3242B', '#7fb2ff'];
+    const P = Array.from({ length: N }, () => ({ x: Math.random() * W, y: -20 - Math.random() * H * 0.6, s: 5 + Math.random() * 9, v: 1.6 + Math.random() * 2.4, r: Math.random() * 6.28, vr: (Math.random() - .5) * 0.12, sw: Math.random() * 6.28, c: COL[Math.floor(Math.random() * COL.length)], k: Math.random() < .7 ? 'star' : 'spark' }));
+    const star = (s) => { x.beginPath(); for (let i = 0; i < 10; i++) { const a = i * Math.PI / 5 - Math.PI / 2, rr = i % 2 ? s * 0.45 : s; x.lineTo(Math.cos(a) * rr, Math.sin(a) * rr); } x.closePath(); x.fill(); };
+    const t0 = performance.now(), DUR = 2300;
+    const loop = (t) => { const e = t - t0; x.clearRect(0, 0, W, H); const fade = e > DUR - 500 ? Math.max(0, (DUR - e) / 500) : 1;
+      P.forEach((p) => { p.y += p.v; p.sw += 0.05; p.r += p.vr; const px = p.x + Math.sin(p.sw) * 14; x.save(); x.globalAlpha = fade * (p.k === 'spark' ? 0.6 + 0.4 * Math.sin(e / 90 + p.sw) : 1); x.translate(px, p.y); x.rotate(p.r); x.fillStyle = p.c; x.shadowColor = p.c; x.shadowBlur = p.k === 'spark' ? 10 : 4;
+        if (p.k === 'star') star(p.s); else { x.fillRect(-p.s * 0.12, -p.s, p.s * 0.24, p.s * 2); x.fillRect(-p.s, -p.s * 0.12, p.s * 2, p.s * 0.24); } x.restore(); });
+      if (e < DUR) requestAnimationFrame(loop); else { cv.remove(); rocketTour(); } };
+    requestAnimationFrame(loop);
+  }
   // 🚀 recorrido volando de Mr. Arrieta en la página de entrada (1 vez por visita; al tocarlo se repite)
   function rocketTour(force) {
     const mob = innerWidth <= 600; const el = mob ? $('.ld-hero-mra') : $('.ld-login .pt-rkt'); if (!el || el.offsetParent === null) return;
@@ -325,9 +341,8 @@
         <a class="btn w block pt-insc" href="inscripcion.html">📝 Formulario de inscripción</a></div></div>
       <p class="center pt-links"><a href="recomienda.html"><b>🤝 Recomienda y gana</b></a> · <a href="reclutamiento.html">👩‍🏫 Trabaja con nosotros</a> · <a href="profesores.html">🧑‍🏫 Soy profesor</a> · <a href="administracion.html">🔐 Administración</a></p></div>`;
     landing();
-    setTimeout(() => rocketTour(), 700); // 🚀 Mr. Arrieta da una vuelta volando y vuelve a su lugar
+    welcomeFx(); // ✨ lluvia de estrellas de bienvenida y después el vuelo de Mr. Arrieta
     const i = $('#cd'); setTimeout(() => { if (window.innerWidth > 900) i.focus(); }, 200);
-    leadPop();
     const bad = (msg) => { i.classList.add('wrong'); sfx('bad'); setTimeout(() => i.classList.remove('wrong'), 500); M.toast(msg || 'Código no válido 😕'); };
     const go = async () => { try { if (window.speechSynthesis) { const w = new SpeechSynthesisUtterance(' '); w.volume = 0; speechSynthesis.speak(w); } } catch (e) { } // desbloquea la voz en iPhone
       const v = i.value.trim(); if (!v) return bad('Escribe tu código 🙂');
