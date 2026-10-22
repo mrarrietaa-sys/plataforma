@@ -405,6 +405,7 @@
     const sp = acts.find(a => a === 'speak' || a === 'speakWords') || (p.sentences ? 'speak' : 'speakWords');
     if (!p.letters) st.push({ sec: 'Oral task', k: sp });
     else st.push({ sec: 'Oral task', k: 'speakLetters' });
+    if (missionFor(p)) st.push({ sec: 'Mission', k: 'mission' }); // 🎯 misión según el objetivo del estudiante
     if (songFor(p)) st.push({ sec: 'Music', k: 'music' });
     if (p.hw) st.push({ sec: 'Homework', k: 'hw' });
     return st;
@@ -413,7 +414,9 @@
   /* ---------- transición divertida entre secciones de la clase ---------- */
   const SCENES = { rocket: { a: 'up', say: 'Blast off!' }, drums: { a: 'stage', say: 'Rock on!' }, guitar: { a: 'stage', say: "Let's rock!" },
     surf: { a: 'surf', say: 'Catch the wave!' }, hero: { a: 'fly', say: 'Super English!' }, balloon1: { a: 'balloon', say: 'Up, up and away!' }, balloon2: { a: 'balloon', say: "Let's explore!" }, balloon3: { a: 'balloon', say: 'Here we go!' }, laptop: { a: 'pop', say: 'Homework time!' }, wave: { a: 'pop', say: 'Hello!' }, rocket3: { a: 'up', say: 'Full speed!' }, rocket5: { a: 'up', say: 'To the moon!' }, 'plane-red': { a: 'fly', say: 'Ready for takeoff!' }, 'plane-blue': { a: 'fly', say: 'Great job!' }, 'plane-yellow': { a: 'fly', say: 'This way!' }, 'plane-green': { a: 'fly', say: 'Keep flying!' } };
-  const SEC_IC = { Goal: '🎯', Speaking: '🗣️', Reading: '📖', Review: '🔁', Explanation: '💡', 'Listen & practice': '🎧', Practice: '🎮', 'Oral task': '🎤', Music: '🎵', Homework: '📝' };
+  // 🎯 misión del tema según el objetivo (solo en la última parte del tema y si el estudiante eligió objetivo)
+  function missionFor(p) { try { const g = window.MRGOAL && MRGOAL.get(); if (!g || !window.MRMISSIONS) return null; const t = p._t || {}; if (t.parts && t.parts.length && t.parts[t.parts.length - 1].id !== p.id) return null; const x = MRMISSIONS[(+M.MOD.n || 1) + '-' + p.topic]; return x && x[g.k] ? Object.assign({ k: g.k }, x[g.k]) : null; } catch (e) { return null; } }
+  const SEC_IC = { Goal: '🎯', Mission: '🚀', Speaking: '🗣️', Reading: '📖', Review: '🔁', Explanation: '💡', 'Listen & practice': '🎧', Practice: '🎮', 'Oral task': '🎤', Music: '🎵', Homework: '📝' };
   const SEC_SC = { Reading: 'balloon2', Homework: 'laptop', Music: 'guitar', Review: 'plane-blue' };
   const FREE = ['rocket', 'balloon1', 'plane-red', 'rocket3', 'balloon3', 'plane-blue', 'drums', 'plane-yellow', 'balloon2', 'surf', 'rocket5', 'plane-green', 'hero'];
   const ITL_ON = true;
@@ -461,7 +464,7 @@
     app.innerHTML = `<div class="wrap center ld-load"><img class="ld-load-mra" src="mra-x-rocket3.webp?v=2" alt="Mr. Arrieta"><h2 class="ld-ready">Are you ready?</h2><div class="ld-count"></div><p class="ld-load-t muted"></p></div>`;
     // 🚀 conteo 1, 2, 3 mientras carga; en el 3 Mr. Arrieta sale volando y dice GO!
     const lt = $('.ld-load-t', app), cd = $('.ld-count', app), rk = $('.ld-load-mra', app); let loaded = false;
-    const pv = M.prevPart(p); const loadP = M.loadAudio(['common', ...[].concat(M.MOD.games || []), M.MOD.audio + p.topic].concat(pv ? [M.MOD.audio + pv.topic] : [])).then(() => { loaded = true; }, () => { loaded = true; });
+    const pv = M.prevPart(p); const loadP = M.loadAudio(['common', ...[].concat(M.MOD.games || []), M.MOD.audio + p.topic].concat(pv ? [M.MOD.audio + pv.topic] : []).concat(missionFor(p) ? ['gm' + (+M.MOD.n || 1)] : [])).then(() => { loaded = true; }, () => { loaded = true; });
     const pop = (t) => { cd.textContent = t; cd.classList.remove('pop'); void cd.offsetWidth; cd.classList.add('pop'); };
     for (const t of ['1', '2', '3']) { pop(t); try { sfx('tap'); } catch (e) { } await new Promise(r => setTimeout(r, 750)); }
     if (!loaded) { lt.textContent = 'Preparando tu clase…'; await loadP; lt.textContent = ''; }
@@ -683,6 +686,41 @@
         await A.feedback(ok, `${it.en} (${it.es})`, 'Repasa la clase anterior si lo necesitas.'); return ok;
       });
       return A.result(r.c, items.length, 'listening', r.missed);
+    },
+
+    // 🚀 MISIÓN según el objetivo: situación real + pregunta en audio + respuesta en voz alta con corrección
+    mission: async (stage, p) => {
+      const x = missionFor(p); if (!x) return null;
+      const GN = { v: ['plane', 'Viajar', 'r'], t: ['briefcase', 'Trabajo', 'b'], e: ['grad', 'Estudios', 'g'] }[x.k] || ['target', '', 'r'];
+      const body = A.head(stage, { lbl: 'Mission', title: 'Tu misión', ins: 'Una situación real de <b>tu objetivo</b>. Escucha y responde en voz alta, con tu voz normal.' });
+      const el = h(`<div class="ms"><div class="ms-top"><span class="ms-badge ${GN[2]}">${window.MRI ? MRI(GN[0]) : ''}Misión · ${esc(GN[1])}</span><span class="ms-xp">⏱ 2 min</span></div>
+        <div class="ms-sit"><small>La situación</small>${esc(x.sit)}</div>
+        <div class="ms-q"><button type="button" class="ms-play" aria-label="Escuchar">🔊</button><div><b>${esc(x.q)}</b><small>${esc(x.es)}</small></div></div>
+        <button type="button" class="ms-mic">🎙️<span>Toca y responde</span></button>
+        <div class="ms-msg">Responde con tus palabras. ¡No tiene que ser perfecto!</div>
+        <div class="ms-heard" hidden></div>
+        <div class="ms-model" hidden><small>Una respuesta modelo</small><div><button type="button" class="ms-play2" aria-label="Escuchar respuesta">🔊</button><b>${esc(x.a)}</b></div></div></div>`);
+      body.appendChild(el); const $e = (q) => el.querySelector(q);
+      $e('.ms-play').onclick = () => { stop(); play(x.qau); }; $e('.ms-play2').onclick = () => { stop(); play(x.aau); };
+      setTimeout(() => play(x.qau), 400);
+      let tries = 0, okk = false;
+      const showModel = () => { $e('.ms-model').hidden = false; setTimeout(() => play(x.aau), 500); };
+      await new Promise((done) => {
+        $e('.ms-mic').onclick = async () => {
+          const b = $e('.ms-mic'); if (b.disabled) return;
+          if (!M.canSR) { showModel(); $e('.ms-msg').textContent = 'Di la respuesta en voz alta 🗣️'; okk = true; return setTimeout(done, 2500); }
+          b.disabled = true; stop(); el.classList.add('rec'); b.querySelector('span').textContent = 'Te escucho…';
+          const r = await M.listen(10000); el.classList.remove('rec'); b.disabled = false; b.querySelector('span').textContent = 'Intentar otra vez';
+          if (!r.alts || !r.alts.length) { $e('.ms-msg').textContent = 'No te escuché 🙉 Acércate un poco al micrófono e intenta otra vez.'; return; }
+          tries++; const sc = M.speechScore(x.a, r.alts), nw = M.words(r.alts[0]).length;
+          okk = nw >= 3 && (sc.score >= 35 || nw >= 5); // respuesta libre: basta con responder con una frase completa
+          const hd = $e('.ms-heard'); hd.hidden = false; hd.className = 'ms-heard ' + (okk ? 'good' : 'bad'); hd.innerHTML = `<small>Escuché</small>“${esc(r.alts[0])}”`;
+          if (okk) { sfx('ok'); M.praise(); el.classList.add('done'); $e('.ms-msg').innerHTML = '✅ <b>¡Misión cumplida!</b> Compara con la respuesta modelo.'; showModel(); setTimeout(done, 3200); }
+          else { sfx('bad'); $e('.ms-msg').textContent = nw < 3 ? 'Responde con una frase completa (3 palabras o más).' : 'Casi. Escucha la respuesta modelo e inténtalo otra vez.'; if (tries >= 1) showModel(); if (tries >= 3) { setTimeout(done, 2500); } }
+        };
+      });
+      await A.waitNext(stage, 'Continuar');
+      return A.result(okk ? 1 : 0, 1, 'speaking');
     },
 
     // 📹 KEY QUESTIONS en videollamada con Mr. Arrieta (un personaje por módulo). Mismas preguntas, audios y corrección de voz.

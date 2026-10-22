@@ -2,10 +2,11 @@
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>Clase en vivo · mrarrieta.com</title>
 <script src="https://unpkg.com/@daily-co/daily-js@0.92.2/dist/daily.js"></script>
-<script src="clase-topics.js?v=323"></script>
-<script src="config.js?v=323"></script>
-<script src="goals.js?v=323"></script>
-<script src="goalsdata.js?v=323"></script>
+<script src="clase-topics.js?v=324"></script>
+<script src="config.js?v=324"></script>
+<script src="goals.js?v=324"></script>
+<script src="goalsdata.js?v=324"></script>
+<script src="missions.js?v=324"></script>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--n:#0B2A5B;--n2:#1e4a8f;--r:#E3242B;--y:#FFC21A;--g:#16a34a;--bd:#e3e9f3;--mu:#5b6577;--bg:#eef2f8}
@@ -119,7 +120,7 @@ body.only-s #vbox{position:sticky;top:0;z-index:20;background:var(--bg);padding-
 <script>
 (function(){
 const CLOUD=(window.M1CONFIG&&M1CONFIG.CLOUD_URL)||'https://script.google.com/macros/s/AKfycbzGXtwZH_eBIPz01faL6e8cMydhW-0u2H4UtzdHQYCr8CqMG62Tdp1dNDZ4MY4khE0N/exec';
-const CV='323',SESSION_MIN=60,CLASS_MIN=50;let SNAME='Carlos',TNAME='Mrs. Jennifer';
+const CV='324',SESSION_MIN=60,CLASS_MIN=50;let SNAME='Carlos',TNAME='Mrs. Jennifer';
 const QP=new URLSearchParams(location.search),CID=(QP.get('c')||'').replace(/[^\w]/g,''),DEMO=QP.get('demo')==='1',PLATFORM=!!CID;let INFO=null,VTOKEN='',GATE=PLATFORM,TAUTH=null,SAVED=0,MARKED=0;
 const base=()=>PLATFORM&&INFO?INFO.startMs:st.started;if(DEMO)SNAME='tu estudiante';
 const TOPICS_M1=[['The Greetings','Los saludos'],['The Alphabet','El abecedario'],['The Nationalities','Las nacionalidades'],['Numbers and Colors','Números y colores'],['Verb To Be and A / An','Verbo to be y a / an'],['Jobs and Occupations','Trabajos y ocupaciones'],['Family and Animals','Familia y animales'],['The Food vs. The Fruit and Vegetables','Comida, frutas y verduras'],['Weekdays and Months of the Year','Días y meses del año'],['The Weather Forecast and the Clothes','El clima y la ropa'],['School Supplies and Parts of the House','Útiles escolares y partes de la casa'],['The Singular and the Plural Nouns','Sustantivos singulares y plurales'],['Demonstrative Pronouns','Pronombres demostrativos'],['There is and There are','There is y there are']];
@@ -134,8 +135,12 @@ const mmss=s=>{s=Math.max(0,Math.round(s));return Math.floor(s/60)+':'+String(s%
 // ---------- carga de temas (archivo del tema + voces reales de la plataforma) ----------
 function loadJS(paths){return new Promise((ok,ko)=>{const tr=n=>{if(n>=paths.length)return ko();const s=document.createElement('script');s.src=paths[n];s.onload=ok;s.onerror=()=>{s.remove();tr(n+1);};document.head.appendChild(s);};tr(0);});}
 const LOADING={},AUDL={};
+// 🎯 misión según el objetivo del estudiante (reemplaza el «Repaso» final; mismos pasos en profe y estudiante)
+function addMission(m,n){try{const l=CLASES[kOf(m,n)];if(!l||l._mis||!PLATFORM||!INFO)return;l._mis=1;const g0=INFO.goal;if(!g0||!window.MRMISSIONS)return;const gk={x:'v',c:'t'}[g0.k]||g0.k,GN={v:'Viajar',t:'Trabajo',e:'Estudios'}[gk];const x=(MRMISSIONS[m+'-'+n]||{})[gk];if(!x)return;
+ const step={type:'ask',sk:'speaking',sec:'Misión',t:'Misión · '+GN,q:x.q,es:x.es,ans:x.a,ok:'Situación: '+x.sit+' Acepta cualquier respuesta completa y natural; corrige con amabilidad y pídele que la repita mejorada.',au:[x.qau],ins:'Objetivo de {S}: '+GN+'. Plantéale la situación («'+x.sit+'») y hazle la pregunta.',min:2};
+ const i=l.steps.map(s=>s.sec).lastIndexOf('Repaso');if(i>=0)l.steps[i]=step;else{l.steps.splice(Math.max(0,l.steps.length-1),0,step);const big=l.steps.filter(s=>s!==step&&s.min>=3).sort((a,b)=>b.min-a.min)[0];if(big)big.min=Math.max(1.5,big.min-step.min);}}catch(e){}}
 function ensureTopic(n,m){m=+(m||st.mod||1);window.CLASES=window.CLASES||{};const k=kOf(m,n);if(CLASES[k])return Promise.resolve();const f=m===1?'clase-t'+n+'.js':'clase-m'+m+'-t'+n+'.js',pre={1:'t',2:'b',3:'c',4:'d'}[m]||'t';
- if(!LOADING[k])LOADING[k]=loadJS(['js/'+f+'?v='+CV,f+'?v='+CV]).then(()=>render()).catch(()=>{});if(!AUDL[k])AUDL[k]=loadJS(['js/audio/'+pre+n+'.js',pre+n+'.js']).catch(()=>{});if(m===1&&n===2&&!AUDL.c)AUDL.c=loadJS(['js/audio/common.js','common.js']).catch(()=>{});return LOADING[k];}
+ if(!LOADING[k])LOADING[k]=loadJS(['js/'+f+'?v='+CV,f+'?v='+CV]).then(()=>{addMission(m,n);render();}).catch(()=>{});if(!AUDL['gm'+m])AUDL['gm'+m]=loadJS(['js/audio/gm'+m+'.js','gm'+m+'.js']).catch(()=>{});if(!AUDL[k])AUDL[k]=loadJS(['js/audio/'+pre+n+'.js',pre+n+'.js']).catch(()=>{});if(m===1&&n===2&&!AUDL.c)AUDL.c=loadJS(['js/audio/common.js','common.js']).catch(()=>{});return LOADING[k];}
 // ---------- estado y conexión ----------
 Object.assign(P,{cam:'<path d="m16 13 5.2 3.5a.5.5 0 0 0 .8-.4V7.9a.5.5 0 0 0-.8-.4L16 11"/><rect x="2" y="6" width="14" height="12" rx="2"/>',camoff:'<path d="M10.7 6H14a2 2 0 0 1 2 2v3.3l1 1L22 7v10"/><path d="M16 16a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h2"/><path d="m2 2 20 20"/>',micoff:'<path d="m2 2 20 20"/><path d="M18.9 13a7 7 0 0 0 .1-1v-2"/><path d="M5 10v2a7 7 0 0 0 12 5"/><path d="M15 9.3V5a3 3 0 0 0-5.7-1.3"/><path d="M9 9v3a3 3 0 0 0 5.1 2.1"/><path d="M12 19v3"/>',out:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/>',stop:'<rect x="5" y="5" width="14" height="14" rx="2"/>'});
 const qs=new URLSearchParams(location.search),rol=qs.get('rol')==='estudiante'||(PLATFORM&&qs.get('rol')!=='profe')?'estudiante':'profe';document.body.classList.add(rol==='estudiante'?'only-s':'only-t');
@@ -310,7 +315,7 @@ function saveBoard(){const s=summary(),l=L();const by=Object.keys(SKN).map(k=>s.
  SAVED=0;render();tcall('tLiveSave',{classId:CID,text:txt,png:pzPNG()}).then(r=>{SAVED=r&&r.ok?1:-1;render();});}
 // ---------- pantallas ----------
 let lastKey='';
-function render(){if(PLATFORM&&(!INFO||GATE)){videoUI();return gateUI();}videoUI();pzUI();if(st.topic&&!L()){ensureTopic(st.topic);$('#m-top').innerHTML='';$('#m-body').innerHTML='<div class="wait">Cargando la clase <span class="dots"><i></i><i></i><i></i></span></div>';return;}
+function render(){if(PLATFORM&&(!INFO||GATE)){videoUI();return gateUI();}addMission(st.mod||1,st.topic);videoUI();pzUI();if(st.topic&&!L()){ensureTopic(st.topic);$('#m-top').innerHTML='';$('#m-body').innerHTML='<div class="wait">Cargando la clase <span class="dots"><i></i><i></i><i></i></span></div>';return;}
  $('#hsub').textContent=`${modLabel(L())} · Tema ${L().n}: ${L().title}`;if(rol==='profe')renderT();else renderS();marks();}
 function bar(){const S=L().steps;return `<div class="steps">${S.map((x,n)=>`<i style="flex:${x.min}" class="${st.fin?(graded(x)?(st.res[n]===true?'d':st.res[n]===false?'x':'p'):'p'):graded(x)&&st.res[n]===true?'d':graded(x)&&st.res[n]===false?'x':n===st.i?'c':n<st.i?'p':''}" title="${esc(x.sec)}"></i>`).join('')}</div>`;}
 function animKey(k,html){const a=k!==lastKey;lastKey=k;return a?`<div class="enter">${html}</div>`:html;}
@@ -337,7 +342,7 @@ function renderT(){const l=L(),top=$('#m-top'),body=$('#m-body');
  $('#t-pz').onclick=()=>send({pzOn:st.pzOn?0:1});$('#t-cnt').onclick=contentModal;$('#t-top').onclick=()=>topicModal();const rs=$('#t-rs');if(rs)rs.onclick=()=>{if(!confirm('¿Empezar la clase de nuevo desde el paso 1? Se borran los puntos de hoy.'))return;stopAudio(true);send({started:Date.now()+3900,i:0,res:[],ok:0,rep:0,pts:0,fb:'',fin:null,hl:-1,sh:-1,cheer:st.cheer});countdown(3900);};
  if(!st.started){body.innerHTML=animKey('pre'+st.mod+st.topic,`<div class="pre"><div class="hero"><img src="${U(l.cover,1100,620)}" alt=""><div><small>Tema ${l.n} · ${modLabel(l)}</small><h2>${esc(l.title)}</h2><p>${esc(l.goal)}</p></div></div>
    <div class="sug">${DEMO?`<span>${I('book')} Modo práctica · sin estudiante</span>`:`<span>${I('check')} Elegido por ${esc(SNAME)}: <b>${esc(PLATFORM?(INFO.topic||'No eligió tema'):(topicsOf(CHOSEN_M)[CHOSEN-1]||[''])[0])}</b></span>`}${SUGGEST?`<span>${I('bulb')} Sugerido según sus errores: <b>${esc(TOPICS[SUGGEST.n-1][0])}</b> (${esc(SUGGEST.why)})</span>`:''}</div>${PLATFORM&&!INFO.topicN?`<div class="tip n" style="margin-bottom:8px"><b>${I('bulb')} ${esc(SNAME)} pidió un tema libre</b><small>Elige con «Cambiar tema» el tema de su módulo que más se acerque, o usa la Pizarra y el Contenido del tema para guiar la conversación.</small></div>`:''}
-   ${PLATFORM&&INFO&&INFO.goal&&window.MRGOAL?`<div class="tip n gl-live"><b>🧭 Objetivo de ${esc(SNAME)}: ${MRGOAL.chip(INFO.goal)}</b>${(()=>{const w=MRGOAL.why(st.mod,st.topic,INFO.goal);return w?`<small>Para su objetivo: ${esc(w.t)}</small>`:''})()}<div class="gl-qs">${MRGOAL.questions(INFO.goal,st.topic).map((q,i)=>`<div>💬 ${esc(q)}</div>`).join('')}</div></div>`:''}
+   ${PLATFORM&&INFO&&INFO.goal&&window.MRGOAL?`<div class="tip n gl-live"><b>🧭 Objetivo de ${esc(SNAME)}: ${MRGOAL.chip(INFO.goal)}</b>${(()=>{const w=MRGOAL.why(st.mod,st.topic,INFO.goal);return w?`<small>Para su objetivo: ${esc(w.t)}</small>`:''})()}<div class="gl-qs">${MRGOAL.questions(INFO.goal,st.topic).map((q,i)=>`<div>💬 ${esc(q)}</div>`).join('')}</div>${l.steps.some(x=>x.sec==='Misión')?`<small style="display:block;margin-top:8px;color:#E3242B;font-weight:700">🚀 Al final: una Misión de su objetivo (situación real) ya incluida en los pasos.</small>`:''}</div>`:''}
    <div class="tip n"><b>Clase de ${CLASS_MIN} minutos · ${l.steps.length} pasos · Speaking, Listening, Reading y Writing.</b><small>En cada paso verás arriba qué hacer, el botón de audio (suena en los dos equipos), la respuesta esperada y el tiempo sugerido.</small></div>
    ${DEMO?'':`<div class="st ${st.ready?'':'w'}">${I('phone')} ${st.ready?esc(SNAME)+' ya entró y ve la pantalla de bienvenida':'Esperando a que '+esc(SNAME)+' entre'+(PLATFORM?'…':' con el código '+room+'…')}</div>`}
    <div class="nav" style="grid-template-columns:1fr"><button class="btn go" id="t-start">${I('play')} Empezar clase (${CLASS_MIN} min)</button></div></div>`);
