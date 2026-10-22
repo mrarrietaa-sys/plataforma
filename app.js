@@ -685,30 +685,59 @@
       return A.result(r.c, items.length, 'listening', r.missed);
     },
 
+    // 📹 KEY QUESTIONS en videollamada con Mr. Arrieta (un personaje por módulo). Mismas preguntas, audios y corrección de voz.
     keyq: async (stage, p) => {
-      const body = A.head(stage, { lbl: 'Listen & practice', title: 'Key questions', });
-      let c = 0; const done = new Set();
-      p.keyq.forEach((k, i) => {
-        const ans = k.a.replace(/___/g, '<b>___</b>');
-        const e = h(`<div class="kq"><div class="kq-n">Pregunta ${i + 1}</div>
-          <div class="kstep q"><span class="kn">1</span><div class="grow"><small>Escucha la pregunta</small><div class="kt">${esc(k.q)}</div>${k.es ? `<div class="qes">${esc(k.es)}</div>` : ''}</div></div>
-          <div class="kstep a"><span class="kn">2</span><div class="grow"><small>Escucha la respuesta</small><div class="kt ans">${ans}</div></div></div>
-          <div class="kstep k3"><span class="kn">3</span><div class="grow"><small>Ahora di la respuesta en voz alta</small><div class="act"></div></div></div><div class="out"></div></div>`);
-        $('.q', e).appendChild(A.playBtn(k.qau, false)); if (k.aau) $('.a', e).appendChild(A.playBtn(k.aau, false));
-        const mic = h(`<button class="btn sm k">🎤 Decir la respuesta</button>`); $('.act', e).appendChild(mic);
-        if (k.a.includes('___')) $('.act', e).appendChild(h(`<span class="muted" style="font-size:13px">Completa el ___ con tu información personal</span>`));
-        mic.onclick = async () => {
-          if (!M.canSR) { e.classList.add('done'); if (!done.has(i)) { done.add(i); c++; } M.toast('¡Bien! Repite en voz alta 🗣️'); return; }
-          stop(); mic.textContent = '🎧 Te escucho…'; const r = await M.listen(8000); mic.textContent = '🎤 Decir la respuesta';
-          if (!r.alts.length) { M.toast('No te escuché 🙉 intenta otra vez'); return; }
-          const tgt = k.a.split(' / ')[0].replace(/___/g, ''); const sc = M.speechScore(tgt, r.alts); const okk = k.a.includes('___') ? M.words(r.alts[0]).length >= 2 && sc.score >= 50 : sc.score >= 60;
-          $('.out', e).innerHTML = `<div class="heardbox" style="font-size:15px">Escuché: “${esc(sc.heard)}” — ${okk ? '✅ ¡Muy bien! Lo dijiste correctamente.' : '❌ Todavía no. Escucha la respuesta 🔊 y toca 🎤 para intentarlo otra vez.'}</div>`;
-          if (okk) { sfx('ok'); M.praise(); e.classList.add('done'); if (!done.has(i)) { done.add(i); c++; } } else { sfx('bad'); setTimeout(M.encourage, 250); }
-        };
-        body.appendChild(e);
-      });
-      await A.waitNext(stage, 'Continuar');
-      return A.result(c, p.keyq.length, 'speaking');
+      const MN = +M.MOD.n || 1, PIC = { 1: 'mra-wink', 2: 'mra-celebrate', 3: 'mra-wow', 4: 'mra-point' }[MN] || 'mra-wink', SECS = { 1: 15, 2: 12, 3: 10, 4: 10 }[MN] || 12;
+      const Q = p.keyq, N = Q.length; let c = 0, pts = 0, streak = 0;
+      const body = A.head(stage, { lbl: 'Listen & practice', title: 'Key questions', ins: 'Mr. Arrieta te hace una videollamada. Escucha la pregunta y <b>responde en voz alta</b>, con tu voz normal.' });
+      const vc = h(`<div class="vk"><div class="vk-top"><span class="vk-live">● EN VIVO</span><div class="vk-sc"><span class="vk-n">Pregunta 1/${N}</span><span>★ <b class="vk-p">0</b></span><span class="vk-st" hidden>🔥 x<b>1</b></span></div></div>
+        <div class="vk-q"><b class="vk-qt"></b><small class="vk-qes"></small></div>
+        <div class="vk-screen"><img src="${PIC}.webp?v=2" alt="Mr. Arrieta" draggable="false"><span class="vk-name">Mr. Arrieta</span><div class="vk-self"><span>🙂</span><small>Tú</small></div><div class="vk-fb" hidden></div></div>
+        <div class="vk-bot"><div class="vk-timer"><b>${SECS}</b></div>
+          <div class="vk-btns"><button type="button" class="vk-b vk-rep" title="Escuchar otra vez" aria-label="Escuchar la pregunta otra vez">${window.MRI ? MRI('send') : '🔊'}</button><button type="button" class="vk-b vk-mic" aria-label="Responder">🎙️</button><button type="button" class="vk-b vk-hint" title="Pista" aria-label="Ver una pista">💡</button></div>
+          <div class="vk-msg">Toca el micrófono y responde</div><div class="vk-ans" hidden></div><button type="button" class="btn k sm vk-next" hidden>Siguiente pregunta →</button></div></div>`);
+      body.appendChild(vc);
+      const $v = (sel) => vc.querySelector(sel); $v('.vk-rep').innerHTML = '🔊';
+      const setT = (t, frac) => { $v('.vk-timer b').textContent = Math.max(0, Math.ceil(t)); $v('.vk-timer').style.setProperty('--f', Math.max(0, frac)); };
+      for (let i = 0; i < N; i++) {
+        if (!stage.isConnected) break;
+        const k = Q[i], tgt = k.a.split(' / ')[0], blank = k.a.includes('___');
+        $v('.vk-n').textContent = `Pregunta ${i + 1}/${N}`; $v('.vk-qt').textContent = k.q; $v('.vk-qes').textContent = k.es || '';
+        $v('.vk-ans').hidden = true; $v('.vk-next').hidden = true; $v('.vk-fb').hidden = true; $v('.vk-msg').textContent = 'Escucha la pregunta…';
+        vc.classList.remove('ok', 'late'); const img = $v('.vk-screen img'); img.classList.remove('talk'); void img.offsetWidth; img.classList.add('talk');
+        await play(k.qau); if (!stage.isConnected) break;
+        const r = await new Promise((done) => {
+          let left = SECS, timer = null, busy = false, over = false, late = false, hinted = false;
+          const showAns = (why) => { $v('.vk-ans').innerHTML = `<small>${why}</small><b>${esc(tgt).replace(/___/g, '<u>___</u>')}</b>${blank ? '<em>Completa el ___ con tu información</em>' : ''}`; $v('.vk-ans').hidden = false; };
+          const tick = () => { if (busy || over) return; left -= 0.1; setT(left, left / SECS); if (left <= 0) { clearInterval(timer); late = true; vc.classList.add('late'); $v('.vk-msg').textContent = 'Take your time! Escucha la respuesta e inténtalo (sin puntos).'; showAns('Respuesta modelo'); if (k.aau) play(k.aau); $v('.vk-next').hidden = false; } };
+          setT(left, 1); timer = setInterval(tick, 100); $v('.vk-msg').textContent = blank ? 'Responde con tu información personal' : 'Toca el micrófono y responde';
+          const finish = (ok) => { if (over) return; over = true; clearInterval(timer); done({ ok, late, hinted }); };
+          $v('.vk-rep').onclick = () => { stop(); play(k.qau); };
+          $v('.vk-hint').onclick = () => { if (hinted) return; hinted = true; const w = tgt.replace(/___/g, '').trim().split(/\s+/); $v('.vk-msg').innerHTML = `💡 Empieza así: <b>${esc(w.slice(0, Math.min(2, w.length)).join(' '))}…</b>`; };
+          $v('.vk-next').onclick = () => finish(false);
+          $v('.vk-mic').onclick = async () => {
+            if (busy || over) return;
+            if (!M.canSR) { showAns('Dila en voz alta'); if (k.aau) play(k.aau); $v('.vk-msg').textContent = 'Tu navegador no reconoce voz: repite en voz alta 🗣️'; setTimeout(() => finish(true), 2600); return; }
+            busy = true; stop(); vc.classList.add('rec'); $v('.vk-msg').textContent = '🎧 Te escucho… habla con tu voz normal';
+            const rr = await M.listen(9000); vc.classList.remove('rec'); busy = false; if (over) return;
+            if (!rr.alts || !rr.alts.length) { $v('.vk-msg').textContent = rr.error === 'not-allowed' ? 'Permite el micrófono en tu navegador para responder 🎙️' : 'No te escuché 🙉 Acércate un poco al micrófono e intenta otra vez.'; return; }
+            const sc = M.speechScore(tgt.replace(/___/g, ''), rr.alts); const ok = blank ? M.words(rr.alts[0]).length >= 2 && sc.score >= 45 : sc.score >= 55;
+            const fb = $v('.vk-fb'); fb.hidden = false; fb.className = 'vk-fb ' + (ok ? 'good' : 'bad'); fb.innerHTML = `<small>Escuché</small>“${esc(sc.heard || rr.alts[0])}”`;
+            if (ok) { sfx('ok'); M.praise(); vc.classList.add('ok'); $v('.vk-msg').textContent = late ? '✅ ¡Bien dicho!' : '✅ ¡Excelente!'; setTimeout(() => finish(true), 1500); }
+            else { sfx('bad'); setTimeout(M.encourage, 250); $v('.vk-msg').textContent = 'Casi. Escucha la respuesta y vuelve a intentarlo.'; showAns('Así se dice'); if (k.aau) setTimeout(() => play(k.aau), 900); }
+          };
+        });
+        if (r.ok) { c++; if (!r.late) { streak++; pts += (r.hinted ? 50 : 100) * Math.min(3, streak); } else streak = 0; } else streak = 0;
+        $v('.vk-p').textContent = pts; const se = $v('.vk-st'); se.hidden = streak < 2; se.querySelector('b').textContent = Math.min(3, streak);
+        await sleep(300);
+      }
+      if (stage.isConnected) {
+        const stars = c === N ? 3 : c >= Math.ceil(N * 0.6) ? 2 : c ? 1 : 0;
+        vc.innerHTML = `<div class="vk-end"><img src="${PIC}.webp?v=2" alt=""><h3>¡Llamada terminada!</h3><div class="vk-stars">${'★'.repeat(stars)}${'☆'.repeat(3 - stars)}</div><p>Respondiste <b>${c} de ${N}</b> · <b>${pts}</b> puntos</p></div>`;
+        if (stars >= 2) { M.confetti(1200); sfx('win'); }
+        await A.waitNext(stage, 'Continuar');
+      }
+      return A.result(c, N, 'speaking');
     },
 
     speakLetters: async (stage, p) => {
@@ -741,6 +770,7 @@
 
     hw: async (stage, p) => homework(stage, p),
   };
+  window.M1STEP = STEP; // (pruebas)
   // practice activities map
   ['learn', 'listenChoose', 'pickWord', 'typeWord', 'typeLetter', 'typeNumber', 'phone', 'spellName', 'typeSentence', 'fill', 'unscramble', 'memory', 'sort', 'crossword', 'speed', 'spell', 'plural', 'dialogue', 'speak', 'speakWords', 'wordSearch', 'hangman', 'bubblePop', 'matchLines', 'quizShow', 'oddOneOut', 'catchWord', 'spinWheel', 'raceGame', 'sayPop', 'clockGreet', 'chatReply', 'simonLetters', 'plateGame', 'passport', 'airport', 'bingo', 'colorMix', 'slotBe', 'whackAn', 'riddleJob', 'elevator', 'familyTree', 'animalSounds', 'restaurant', 'market', 'dayFlip', 'specialDates', 'weatherTV', 'suitcase', 'flashlight', 'housePlan', 'pluralMachine', 'magicMirror', 'nearFar', 'theseRush', 'countRoom', 'memoryRoom']
     .forEach(k => { STEP[k] = (stage, p) => A[k](stage, p); });
