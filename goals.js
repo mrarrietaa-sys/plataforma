@@ -65,7 +65,7 @@
   function shouldAsk() { const p = P() && P().get(); return !!p && p.type !== 'staff' && !get() && !skipped(); }
   // "por qué te sirve" para un tema (módulo m, tema n)
   function why(m, n, g) { g = valid(g || get()); if (!g || !window.MRGOALWHY) return ''; const x = MRGOALWHY[(+m || 1) + '-' + n]; return x && x[g.k] ? { k: g.k, name: G[g.k].short, t: x[g.k] } : ''; }
-  function whyHTML(m, n, g) { const w = why(m, n, g); return w ? `<div class="gl-why">${icon(w.k, 'sm')}<div><b>Para tu objetivo · ${esc(w.name)}</b><span>${esc(w.t)}</span></div></div>` : ''; }
+  function whyHTML(m, n, g) { const w = why(m, n, g); return w ? `<div class="gl-why"><div><b>Para tu objetivo · ${esc(w.name)}</b><span>${esc(w.t)}</span></div></div>` : ''; }
   // para el profe: chip + 3 preguntas sugeridas
   function chip(g) { g = valid(g); return g ? `<span class="gl-chip">${esc(G[g.k].short)}${g.months ? ' · meta en ' + MONTHS.find(x => x[0] === +g.months)[1] : ''}</span>` : '<span class="muted">Aún no lo ha elegido</span>'; }
   function questions(g, seed) { g = valid(g); if (!g) return []; const q = G[g.k].q, s = Math.abs(+seed || 0) % q.length; return [0, 1, 2].map(i => q[(s + i * 2) % q.length]); }
@@ -97,7 +97,7 @@
 .gl-o{align-items:center}.gl-o .gl-ic{width:44px;height:44px}
 .gl-opts{grid-template-columns:1fr!important}
 .gl-card{background:#fff!important;border:1px solid #e3e9f3!important;border-radius:18px!important;padding:14px!important;box-shadow:0 6px 16px rgba(11,42,91,.06)}
-.gl-top{display:flex;align-items:center;gap:10px}.gl-tt{flex:1;min-width:0}.gl-tt small{display:block;font:700 10.5px Inter,sans-serif;letter-spacing:1.2px;text-transform:uppercase;color:#8a96ab}.gl-tt b{display:block;font:800 15px Poppins,sans-serif;color:#0B2A5B;line-height:1.2}
+.gl-top{display:flex;align-items:center;gap:10px}.gl-tt{flex:1;min-width:0}.gl-tt small{display:block;white-space:nowrap;font:700 10px Inter,sans-serif;letter-spacing:.8px;text-transform:uppercase;color:#8a96ab}.gl-tt b{display:block;font:800 15px Poppins,sans-serif;color:#0B2A5B;line-height:1.2}
 .gl-ch{border:1.5px solid #e3e9f3!important;border-radius:20px!important;padding:4px 10px!important;font-size:12px!important;background:#fff!important}
 .gl-meta{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0}.gl-meta span{display:inline-flex;align-items:center;gap:5px;background:#f4f7fc;border-radius:20px;padding:4px 9px;font:600 12px Inter,sans-serif;color:#3e4e6a}.gl-meta .mri{width:13px;height:13px;color:#0B2A5B}
 .gl-prog{display:flex;align-items:center;gap:10px;margin:12px 0 4px}.gl-prog .gl-bar{flex:1;height:9px!important;margin:0!important}.gl-prog b{font:800 14px Poppins,sans-serif;color:#E3242B;min-width:38px;text-align:right}
