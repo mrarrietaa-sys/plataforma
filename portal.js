@@ -113,7 +113,7 @@
     plane: '<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>', brief: '<path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/>',
     grad: '<path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6M6 12.5V16a6 3 0 0 0 12 0v-3.5"/>', ok: '<path d="m5 12 5 5L20 7"/>', star: '<path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.9L12 17.8 5.8 21.1 7 14.2 2 9.3l6.9-1z"/>',
     shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>', medal: '<circle cx="12" cy="15" r="5"/><path d="M8 3h8l-2 7h-4z"/>', pad: '<path d="M6 12h4M8 10v4M15 13h.01M18 11h.01"/><rect width="20" height="12" x="2" y="6" rx="3"/>', user: '<circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/>',
-    chart: '<path d="M3 3v18h18"/><path d="m7 14 4-4 4 4 5-6"/>', check: '<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>', mail: '<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-10 5L2 7"/>', cal: '<rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>', copy: '<rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>' };
+    nocard: '<rect width="20" height="14" x="2" y="5" rx="2"/><path d="M2 10h20M3 3l18 18"/>', users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>', repeat: '<path d="m17 2 4 4-4 4M3 11v-1a4 4 0 0 1 4-4h14M7 22l-4-4 4-4M21 13v1a4 4 0 0 1-4 4H3"/>', chart: '<path d="M3 3v18h18"/><path d="m7 14 4-4 4 4 5-6"/>', check: '<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>', mail: '<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-10 5L2 7"/>', cal: '<rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>', copy: '<rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>' };
   function pathCards() {
     return `<div class="ld-path"><a class="ld-pc2" href="adultos.html"><span class="ic a">${LPI.adult}</span><span class="tx"><b>Adultos</b><small>Desde 18 años</small></span><span class="ar">›</span></a>
       <a class="ld-pc2" href="ninos.html"><span class="ic k">${LPI.kids}</span><span class="tx"><b>Niños y jóvenes</b><small>De 9 a 17 años</small></span><span class="ar">›</span></a></div>`;
@@ -129,16 +129,17 @@
       <button class="lp-ex" id="lp-ex" aria-label="Escuchar el ejemplo" title="Escuchar el ejemplo">${LI(LP.vol)}</button></div>
       <div class="lp-gift">${MRI('gift')} Pronúncialo bien y gana <b>10% en tu primer mes</b></div><div class="lp-res" id="lp-res" hidden></div></div>`;
   }
+  function lpGoalBar() {
+    return `<div class="lp-gbar" id="lp-gbar"><div class="lp-gtabs">${Object.keys(LP_GOALS).map((k, i) => `<button type="button" data-goal="${k}" class="${i ? '' : 'on'}"><span class="lp-gfill"></span><span class="lp-gl">${LI(LP[LP_GOALS[k][0]])} ${LP_GOALS[k][1]}</span></button>`).join('')}</div>
+      <p class="lp-gtx" id="lp-ans">${LI(LP.ok)} <span>${LP_GOALS.v[2]}</span></p></div>`;
+  }
   function heroAdult() {
-    const g = LP_GOALS.t;
     return `<section class="lp-hero lp-a">${lpSky(40)}${lpClouds()}<span class="lp-badge b1"><i class="r">${LI(LP.user)}</i>Clases solo contigo</span><span class="lp-badge b2"><i class="g">${LI(LP.mic)}</i>Te corrige al hablar</span>
       <div class="lp-in"><div class="lp-copy"><span class="lp-ey"><i class="lp-eyi a">${LPI.adult}</i>ADULTOS · DESDE 18 AÑOS</span>
       <div class="lp-hrow"><h1>Tu inglés, cada día <em>más alto</em></h1><img class="lp-bal" src="mra-x-balloon1.webp" alt="Mr. Arrieta" draggable="false"></div>
-      <p class="lp-lead">La escuela donde <b>no eres un número</b>: <b>eliges tu profe</b>, clases <b>solo contigo</b> y practicas <b>a tu ritmo</b> con una plataforma que <b>te corrige</b>.</p>
-      <p class="lp-q">¿Para qué lo necesitas?</p><div class="lp-pills">${Object.keys(LP_GOALS).map(k => `<button type="button" data-goal="${k}" class="${k === 't' ? 'on' : ''}">${LI(LP[LP_GOALS[k][0]])} ${LP_GOALS[k][1]}</button>`).join('')}</div>
-      <div class="lp-ans" id="lp-ans">${LI(LP.ok)} ${g[2]}</div>
+      ${lpGoalBar()}
       ${lpChallenge('adultos')}
-      <div class="lp-cta"><button class="btn r lg" data-trial>${MRI('gift')} Prueba gratis 3 días</button></div><div class="lp-trust"><span>${LI(LP.ok)} Sin tarjeta</span><span>${LI(LP.ok)} +300 estudiantes</span><span>${LI(LP.ok)} Mes a mes</span></div></div></div></section>`;
+      <div class="lp-cta"><button class="btn r lg" data-trial>${MRI('gift')} Prueba gratis 3 días</button></div><div class="lp-trust"><span><i>${LI(LP.nocard)}</i>Sin tarjeta</span><span><i>${LI(LP.users)}</i>+300 estudiantes</span><span><i>${LI(LP.repeat)}</i>Mes a mes</span></div></div></div></section>`;
   }
   const LP_AGE = (a) => a <= 12 ? ['k', 'Experiencia Kids', 'Camino de aventuras, medallas y juegos. ' + (a < 12 ? 'Tú apruebas sus clases.' : 'Tú ves todo su progreso.')] : ['t', 'Experiencia Teens', 'Misiones, XP y ranking con temas de su mundo. Reserva solo y tú ves todo.'];
   function heroKids() {
@@ -146,11 +147,11 @@
     return `<section class="lp-hero lp-k"><span class="lp-sun"></span>${lpClouds()}<span class="lp-badge b1"><i class="r">${LI(LP.medal)}</i>Medallas y misiones</span><span class="lp-badge b2"><i class="n">${LI(LP.pad)}</i>Juegos con voces reales</span>
       <div class="lp-in"><div class="lp-copy"><span class="lp-ey"><i class="lp-eyi k">${LPI.kids}</i>NIÑOS Y JÓVENES · 9 A 17 AÑOS</span>
       <div class="lp-hrow"><h1>El inglés que tus hijos <em>sí quieren</em> practicar</h1><img class="lp-bal" src="mra-x-balloon2.webp" alt="Mr. Arrieta" draggable="false"></div>
-      <p class="lp-lead">Una aventura hecha para su edad: hablan, juegan y ganan medallas. Clases solo con su profe, y tú ves todo su progreso.</p>
+      <p class="lp-lead">Hablan, juegan y ganan medallas con clases solo con su profe. Tú ves todo su progreso.</p>
       <div class="lp-age"><div class="lp-age-h"><b>¿Qué edad tiene tu hijo(a)?</b><span id="lp-av">10 años</span></div><input type="range" id="lp-ar" min="9" max="17" value="10" aria-label="Edad"><div class="lp-agel"><span>9</span><span>12</span><span>17</span></div>
       <div class="lp-pv"><span class="pi k" id="lp-pi">${LI(LP.star)}</span><div><b id="lp-pt">${A[1]}</b><small id="lp-pd">${A[2]}</small></div></div></div>
       ${lpChallenge('ninos')}
-      <div class="lp-cta"><button class="btn k lg" data-trial data-kid>${MRI('gift')} Prueba gratis para mi hijo(a)</button></div><div class="lp-trust"><span>${LI(LP.shield)} Clases sin grabación</span><span>${LI(LP.ok)} Reporte cada lunes</span><span>${LI(LP.ok)} Sin tarjeta</span></div></div></div></section>`;
+      <div class="lp-cta"><button class="btn k lg" data-trial data-kid>${MRI('gift')} Prueba gratis para mi hijo(a)</button></div><div class="lp-trust"><span><i>${LI(LP.shield)}</i>Sin grabación</span><span><i>${LI(LP.mail)}</i>Reporte cada lunes</span><span><i>${LI(LP.nocard)}</i>Sin tarjeta</span></div></div></div></section>`;
   }
   function kidsSections() {
     const ci = (ic, t, d) => `<div class="lp-ci"><span class="ic">${LI(LP[ic])}</span><div><b>${t}</b><span>${d}</span></div></div>`;
@@ -160,14 +161,43 @@
       <section class="ld-sec" id="lp-control"><h2>Tú tienes el control</h2><p class="ld-sub">El panel de papás, incluido en todos los planes</p><div class="card lp-ctrl">
         ${ci('chart', 'Su progreso en vivo', 'Temas, minutos de práctica, pronunciación y notas.')}${ci('check', 'Apruebas sus clases', 'Menores de 12: cada reserva pasa por ti.')}${ci('mail', 'Reporte cada lunes', 'Con el comentario del profe y lo que debe reforzar.')}${ci('shield', 'Seguro y privado', 'Clases sin grabación, solo en nuestra plataforma.')}</div></section>`;
   }
+
+  // 📱 todo en una sola pantalla: cada sección es una pestaña (sin bajar)
+  const LPT = { home: ['Inicio', '<path d="M3 10.5 12 3l9 7.5V21H3z"/>'], planes: ['Planes', '<path d="m2 7 4 10h12l4-10-5 3-5-6-5 6z"/>'], opin: ['Opiniones', '<path d="M11.53 2.3a.53.53 0 0 1 .95 0l2.31 4.68a2.12 2.12 0 0 0 1.6 1.16l5.16.76a.53.53 0 0 1 .3.9l-3.74 3.64a2.12 2.12 0 0 0-.61 1.88l.88 5.14a.53.53 0 0 1-.77.56l-4.62-2.43a2.12 2.12 0 0 0-1.97 0L6.4 21.01a.53.53 0 0 1-.77-.56l.88-5.14a2.12 2.12 0 0 0-.61-1.88L2.16 9.8a.53.53 0 0 1 .3-.91l5.16-.75a2.12 2.12 0 0 0 1.6-1.16z"/>'], profes: ['Profes', '<circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/>'], papas: ['Papás', '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>'] };
+  function lpPanels() {
+    const wrap = $('.lp-page'); if (!wrap || wrap.dataset.pn) return; wrap.dataset.pn = '1';
+    const map = PAGE === 'ninos' ? { home: ['.lp-hero'], papas: ['.lp-exp', '#lp-control'], planes: ['#ld-planes'], profes: ['#ld-profes'] } : { home: ['.lp-hero'], planes: ['#ld-planes'], opin: ['#ld-testimonios'], profes: ['#ld-profes'] };
+    const box = document.createElement('div'); box.className = 'lp-panels';
+    Object.keys(map).forEach(k => { const p = document.createElement('section'); p.className = 'lp-panel' + (k === 'home' ? ' on' : ''); p.dataset.p = k; map[k].forEach(sel => { const el = wrap.querySelector(sel); if (el) p.appendChild(el); });
+      if (k === 'planes') p.insertAdjacentHTML('beforeend', `<p class="lp-legal"><a href="politica.html">Política de reservas</a> · <a href="privacidad.html">Privacidad</a> · <a href="recomienda.html">Recomienda y gana</a> · <a href="reclutamiento.html">Trabaja con nosotros</a></p>`);
+      if (p.children.length) box.appendChild(p); });
+    [...wrap.children].forEach(c => { if (!c.classList.contains('lp-hid')) c.remove(); });
+    wrap.appendChild(box);
+    const dock = document.createElement('nav'); dock.className = 'lp-dock'; dock.setAttribute('aria-label', 'Secciones');
+    dock.innerHTML = [...box.children].map(p => `<button type="button" data-tab="${p.dataset.p}" class="${p.dataset.p === 'home' ? 'on' : ''}">${LI(LPT[p.dataset.p][1])}<span>${LPT[p.dataset.p][0]}</span></button>`).join('');
+    dock.insertAdjacentHTML('beforeend', `<a class="lp-dwa" target="_blank" rel="noopener" href="https://wa.me/${(C.WHATSAPP || '573017810841')}?text=${encodeURIComponent(PAGE === 'ninos' ? '¡Hola! Quiero información sobre las clases de inglés para mi hijo(a) en mrarrieta.com' : '¡Hola! Quiero información sobre las clases de inglés de mrarrieta.com')}"><svg viewBox="0 0 32 32" class="mri"><path fill="currentColor" d="M16 3a13 13 0 0 0-11.2 19.6L3 29l6.6-1.7A13 13 0 1 0 16 3zm0 23.6c-2 0-4-.6-5.7-1.6l-.4-.2-3.9 1 1-3.8-.3-.4A10.6 10.6 0 1 1 16 26.6zm5.8-7.9c-.3-.2-1.9-.9-2.2-1-.3-.1-.5-.2-.7.2l-1 1.2c-.2.2-.4.2-.7.1a8.7 8.7 0 0 1-4.3-3.8c-.3-.6.3-.5.9-1.7.1-.2 0-.4 0-.6l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.2-1.2 2.9s1.2 3.4 1.4 3.6c.2.2 2.4 3.7 5.9 5.2 2.2.9 3 1 4.1.8.7-.1 1.9-.8 2.2-1.5.3-.8.3-1.4.2-1.5l-.6-.4z"/></svg><span>WhatsApp</span></a>`);
+    document.body.appendChild(dock); document.body.classList.add('lp-app');
+    const go = (k) => { if (!box.querySelector(`[data-p="${k}"]`)) return; $$('.lp-panel', box).forEach(p => p.classList.toggle('on', p.dataset.p === k)); $$('[data-tab]').forEach(b => b.classList.toggle('on', b.dataset.tab === k)); const cur = box.querySelector(`[data-p="${k}"]`); cur.scrollTop = 0;
+      if (k === 'profes') { try { cylWire.fit && cylWire.fit(); } catch (e) { } } if (k === 'opin') { const t = $('#ld-testimonios'); if (t) t.hidden = false; } };
+    window.__lpTab = go;
+    dock.addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (b) go(b.dataset.tab); });
+    document.addEventListener('click', e => { const a = e.target.closest('[data-tab],a[href^="#ld-"],a[href="#lp-control"]'); if (!a || dock.contains(a)) return; const h = a.dataset.tab || ({ '#ld-planes': 'planes', '#ld-testimonios': 'opin', '#ld-profes': 'profes', '#lp-control': 'papas' })[a.getAttribute('href')]; if (!h) return; e.preventDefault(); e.stopImmediatePropagation(); go(h); }, true);
+    const fit = () => { const tb = document.getElementById('topbar'); const top = box.getBoundingClientRect().top + scrollY; const dh = dock.offsetHeight + 18; box.style.height = Math.max(360, innerHeight - top - dh) + 'px'; };
+    fit(); addEventListener('resize', fit); setTimeout(fit, 300);
+  }
   // ---------- comportamiento de las páginas de Adultos y de Niños y jóvenes ----------
   const PZK = 'mra_prize_v1';
   const prizeGet = () => { try { const x = JSON.parse(localStorage.getItem(PZK) || 'null'); return x && x.code ? x : null; } catch (e) { return null; } };
   function lpWire() {
-    $$('[data-goal]').forEach(b => b.onclick = () => { $$('[data-goal]').forEach(x => x.classList.toggle('on', x === b)); const g = LP_GOALS[b.dataset.goal]; const a = $('#lp-ans'); if (a) { a.innerHTML = LI(LP.ok) + ' ' + g[2]; a.classList.remove('pop'); void a.offsetWidth; a.classList.add('pop'); } });
+    { const gb = $('#lp-gbar'); if (gb) { const K = Object.keys(LP_GOALS); let gi = 0, auto = true, tm = null;
+      const pick = (k) => { gi = K.indexOf(k); $$('[data-goal]', gb).forEach(x => { x.classList.toggle('on', x.dataset.goal === k); x.classList.remove('run'); }); const a = $('#lp-ans'); a.querySelector('span').textContent = LP_GOALS[k][2]; a.classList.remove('pop'); void a.offsetWidth; a.classList.add('pop');
+        if (auto) { const b = gb.querySelector(`[data-goal="${k}"]`); void b.offsetWidth; b.classList.add('run'); clearTimeout(tm); tm = setTimeout(() => { if (auto) pick(K[(gi + 1) % K.length]); }, 3600); } };
+      $$('[data-goal]', gb).forEach(b => b.onclick = () => { auto = false; clearTimeout(tm); gb.classList.add('man'); pick(b.dataset.goal); });
+      pick(K[0]); } }
     const ar = $('#lp-ar'); if (ar) { const paint = () => { const v = +ar.value, A = LP_AGE(v); $('#lp-av').textContent = v + ' años'; $('#lp-pt').textContent = A[1]; $('#lp-pd').textContent = A[2]; $('#lp-pi').className = 'pi ' + A[0]; ar.style.setProperty('--p', ((v - 9) / 8 * 100) + '%'); }; ar.oninput = paint; paint(); }
     // 📱 en celular el globo va al lado del título
     lpChallengeWire();
+    lpPanels();
   }
   function lpChallengeWire() {
     const box = $('#lp-demo'); if (!box) return; const ph = LP_PH[PAGE]; const res = $('#lp-res'), mic = $('#lp-mic');
@@ -213,7 +243,7 @@
         <a class="btn r block lg" href="#ld-planes" id="pz-pl">Usarlo ahora: ver planes</a><button class="btn w block" id="pz-x" style="margin-top:8px">Cerrar</button></div>`;
       const cd = $('#pz-cd', m); const tick = () => { if (!document.body.contains(cd)) return clearInterval(tm); const [d, hh, mm] = left(); cd.innerHTML = `<span>${d}<small>DÍAS</small></span><span>${hh}<small>HORAS</small></span><span>${mm}<small>MIN</small></span>`; }; let tm; if (cd) { tick(); tm = setInterval(tick, 30000); }
       const cp = $('#pz-cp', m); if (cp) cp.onclick = () => { try { navigator.clipboard.writeText(r.code); M.toast('Código copiado'); } catch (e) { } };
-      const pl = $('#pz-pl', m); if (pl) pl.onclick = (e) => { e.preventDefault(); m.remove(); const s2 = $('#ld-planes'); if (s2) s2.scrollIntoView({ behavior: 'smooth' }); };
+      const pl = $('#pz-pl', m); if (pl) pl.onclick = (e) => { e.preventDefault(); m.remove(); if (window.__lpTab) window.__lpTab('planes'); };
       $('#pz-x', m).onclick = () => m.remove();
       const res = $('#lp-res'); if (res && r.state === 'activo') { res.hidden = false; res.innerHTML = `<div class="lp-own">${MRI('gift')} <span>Ganaste tu premio: <b>${esc(r.code)}</b> · 10% en tu primer mes · válido hasta el ${esc(r.until)}</span></div>`; }
     };
@@ -223,7 +253,7 @@
     const card = $('.pt-login'); if (!card || !window.MRI) return;
     const LOGIN_IC = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mri"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/></svg>';
     const tb = $('#topbar .tb-tag'); if (tb) tb.outerHTML = PAGE === 'home' ? `<nav class="ld-nav ld-nav-h"><button class="btn k sm ld-in" data-goin>${LOGIN_IC} Ingresar</button></nav>`
-      : `<nav class="ld-nav"><a href="#ld-planes">Planes</a>${PAGE === 'adultos' ? '<a href="#ld-testimonios">Testimonios</a>' : '<a href="#lp-control">Papás</a>'}<a href="#ld-profes">Profes</a><a class="btn w sm ld-back" href="index.html">← Inicio</a></nav>`;
+      : `<nav class="ld-nav lp-tnav"><a href="index.html" class="btn w sm ld-back">← Inicio</a></nav>`;
     if (!window.__ldNav) { window.__ldNav = 1; document.addEventListener('click', (e) => {
       const gi = e.target.closest('[data-goin]'); if (gi) { const lg = document.querySelector('.ld-login .pt-login') || document.querySelector('.ld-login'); if (lg) { const bar = (document.getElementById('topbar') || { offsetHeight: 0 }).offsetHeight; scrollTo({ top: Math.max(0, scrollY + lg.getBoundingClientRect().top - bar - 12), behavior: 'smooth' }); const inp = lg.querySelector('input'); if (inp) setTimeout(() => inp.focus({ preventScroll: true }), 450); } return; } // 🔑 estudiante reconocido: directo a escribir su código // 🧭 el menú muestra la sección completa (sin quedar tapada por la barra de arriba)
       const a = e.target.closest('a[href^="#ld-"]'); if (!a) return; const sec = document.querySelector(a.getAttribute('href')); if (!sec) return; e.preventDefault();
@@ -408,8 +438,7 @@
   }
   // ✨ bienvenida en la página de entrada: lluvia de estrellas doradas y destellos (1 vez por visita) → luego vuela Mr. Arrieta
   function welcomeFx() {
-    let seen = false; try { seen = !!sessionStorage.getItem('mra_rkt'); } catch (e) { }
-    if (seen || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) return;
+    if ((window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) return;
     const cv = document.createElement('canvas'); cv.className = 'wfx'; document.body.appendChild(cv); const x = cv.getContext('2d');
     const fit = () => { cv.width = innerWidth * devicePixelRatio; cv.height = innerHeight * devicePixelRatio; x.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0); }; fit();
     const W = innerWidth, H = innerHeight, N = innerWidth < 600 ? 46 : 80, COL = ['#FFD23F', '#FFC21A', '#ffffff', '#E3242B', '#7fb2ff'];
@@ -427,7 +456,6 @@
     const mob = innerWidth <= 600; const el = mob ? $('.ld-hero-mra') : $('.ld-login .pt-rkt'); if (!el || el.offsetParent === null) return;
     if (matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     if (!el._tw) { el._tw = 1; el.style.cursor = 'pointer'; el.addEventListener('click', () => rocketTour(true)); }
-    if (!force) { try { if (sessionStorage.getItem('mra_rkt')) return; sessionStorage.setItem('mra_rkt', '1'); } catch (e) { } }
     if (el._fly) return; el._fly = 1;
     const r = el.getBoundingClientRect(), W = innerWidth, H = innerHeight;
     let K;
@@ -472,7 +500,7 @@
         <a class="btn w block pt-insc" href="inscripcion.html">📝 Formulario de inscripción</a></div></div>
       <p class="center pt-links"><a href="recomienda.html"><b>🤝 Recomienda y gana</b></a> · <a href="reclutamiento.html">👩‍🏫 Trabaja con nosotros</a> · <a href="profesores.html">🧑‍🏫 Soy profesor</a> · <a href="administracion.html">🔐 Administración</a></p></div>`;
     landing();
-    if (PAGE === 'home') welcomeFx(); // ✨ lluvia de estrellas de bienvenida y después el vuelo de Mr. Arrieta
+    if (PAGE === 'home') { welcomeFx(); if (!window.__wfxPS) { window.__wfxPS = 1; addEventListener('pageshow', (e) => { if (e.persisted && !P.get() && $('.ld-hero')) { const el = $('.ld-hero-mra') || $('.ld-login .pt-rkt'); if (el) el._fly = 0; welcomeFx(); } }); } } // ✨ cada vez que vuelve a la entrada: estrellas + vuelo // ✨ lluvia de estrellas de bienvenida y después el vuelo de Mr. Arrieta
     const i = $('#cd'); setTimeout(() => { if (window.innerWidth > 900) i.focus(); }, 200);
     if (PAGE === 'home') { let ac = ''; try { ac = sessionStorage.getItem('mra_autocode') || ''; sessionStorage.removeItem('mra_autocode'); } catch (e) { } if (ac) setTimeout(() => { i.value = ac; $('#ok').click(); }, 400); }
     const bad = (msg) => { i.classList.add('wrong'); sfx('bad'); setTimeout(() => i.classList.remove('wrong'), 500); M.toast(msg || 'Código no válido 😕'); };
