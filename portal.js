@@ -211,7 +211,7 @@
     return (window.MRTESTIMONIOS || []).map((t, i) => `<figure class="ld-t" data-tes="${i}"><div class="ld-tv">${MRTES.poster(t) ? `<img src="${esc(MRTES.poster(t))}" alt="${esc(t.name)}" loading="lazy">` : ''}${PL}</div><figcaption><span class="ld-st">★★★★★</span><b>${esc(t.name)}</b>${t.info ? `<small>${esc(t.info)}</small>` : ''}</figcaption></figure>`).join(''); }
   function tesWire() {
     const box = $('#ld-testimonios'); if (!box) return; const T = window.MRTESTIMONIOS || [];
-    box.hidden = !T.length; const g = $('.ld-tes', box); if (g) g.innerHTML = tesGrid();
+    box.hidden = !T.length && !box.querySelector('.ld-srv-c'); const g = $('.ld-tes', box); if (g) g.innerHTML = tesGrid();
     box.onclick = (e) => { const f = e.target.closest('.ld-t'); if (!f || f.classList.contains('on')) return; const t = T[+f.dataset.tes]; if (!t) return; // ▶️ se reproduce en su propio lugar
       box.querySelectorAll('.ld-t.on').forEach(o => { o.classList.remove('on'); const v = o.querySelector('video'); if (v) v.pause(); const x = T[+o.dataset.tes]; o.querySelector('.ld-tv').innerHTML = (MRTES.poster(x) ? `<img src="${esc(MRTES.poster(x))}" alt="">` : '') + '<button class="ld-play"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg></button>'; });
       f.classList.add('on'); f.querySelector('.ld-tv').innerHTML = MRTES.player(t); };
@@ -238,6 +238,10 @@
     if (!window.MRPROFES || !$('#ld-profes')) return;
     try { await (window.MRPROFREADY || Promise.resolve()); const g = $('#ld-profes .ld-pf'); if (g) g.innerHTML = pfGrid(); } catch (e) { } cylWire(); // 👩‍🏫 profes creados en administración
     const r = await MRAC.call('reviews', {}).catch(() => null); const all = (r && r.reviews) || [];
+    try { const SV = ((r && r.school) || []).filter(x => x.text).slice(0, 6), box = $('#ld-testimonios'); // ⭐ opiniones de la escuela publicadas desde administración
+      if (SV.length && box) { box.hidden = false; const sub = $('.ld-sub', box); if (sub) sub.textContent = (window.MRTESTIMONIOS || []).length ? 'Testimonios en video y opiniones verificadas' : 'Opiniones verificadas de nuestros estudiantes';
+        let g = $('.ld-srv', box); if (!g) { g = document.createElement('div'); g.className = 'ld-srv'; box.appendChild(g); }
+        g.innerHTML = SV.map(x => `<div class="ld-srv-c">${starsHTML(x.stars)}<p>“${esc(x.text)}”</p><small><b>${esc(x.name)}</b> · ${esc(x.module)}</small><span class="ld-srv-v">${MRI('check')} Estudiante verificado</span></div>`).join(''); } } catch (e) { }
     const by = MRPROFES.map(p => { const k = nrm(p.name), f = k.split(' ')[0], l = k.split(' ').slice(-1)[0]; return all.filter(x => { const t = nrm(x.teacher); return t === k || (t.indexOf(f) >= 0 && t.indexOf(l) >= 0); }); });
     $$('[data-pf]').forEach(el => { const L = by[+el.dataset.pf]; if (!L.length) { el.innerHTML = ''; el.style.display = 'none'; return; } /* sin opiniones: solo su formación y experiencia */ const avg = L.reduce((a, x) => a + x.stars, 0) / L.length; el.innerHTML = starsHTML(avg) + ` <small><b>${avg.toFixed(1)}</b> · ${L.length} ${L.length === 1 ? 'opinión' : 'opiniones'}</small>`; const bt = $(`[data-pfr="${el.dataset.pf}"]`); if (bt) { bt.hidden = false; bt.textContent = `Ver opiniones (${L.length})`; } }); // el botón solo aparece si el profe tiene opiniones
     try { cylWire.fit && cylWire.fit(); } catch (e) { }

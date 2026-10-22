@@ -239,7 +239,7 @@
     const pt = $('#pend-t', app); if (pt) pt.onclick = () => { const l = $('#pend-l', app); const open = l.classList.toggle('hidden') === false; pt.innerHTML = `📋 ${open ? 'Ocultar' : 'Ver'} mis tareas pendientes (${pendingHW().length}) ${open ? '▴' : '▾'}`; sfx('tap'); };
     if ($('#rem-b')) $('#rem-b').onclick = reminderModal;
     if (window.MRTEACH && MRTEACH.on()) return;
-    if (!S.tourDone) setTimeout(tour, 700); else dailyReminder();
+    if (!S.tourDone) setTimeout(tour, 700); else if (!(window.MRSRV && MRSRV.check({ mod: M.MOD.id, done: doneN, total: totP, review: rev }))) dailyReminder(); // ⭐ opinión de la escuela (mitad y final del módulo)
   }
 
   /* ---------------- tareas pendientes + recordatorio diario ---------------- */

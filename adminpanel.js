@@ -88,9 +88,10 @@
       trial1: (x) => `Hola ${F(x.name)}, hoy es tu último día de prueba gratis en mrarrieta.com. ¿Te gustó? Elige tu plan y sigue aprendiendo inglés HABLANDO: ${MP}`,
       trial0: (x) => `Hola ${F(x.name)}, tu prueba gratis en mrarrieta.com terminó. Si te inscribes en las próximas 24 horas tienes 10% de descuento en tu primer mes: ${MP}`,
       bday: (x) => `¡Feliz cumpleaños, ${F(x.name)}! Todo el equipo de mrarrieta.com te desea un día increíble. ¡Sigue aprendiendo inglés HABLANDO!`,
+      review: (x) => `Hola ${F(x.name)}, te escribimos de mrarrieta.com. Gracias por tu opinión sobre la plataforma: la leímos con atención y queremos ayudarte. ¿Nos cuentas un poco más para mejorar tu experiencia?`,
       week: (x) => `Hola ${F(x.name)}, te recordamos confirmar tu disponibilidad de la próxima semana en tu portal de mrarrieta.com. ¡Gracias!`
     };
-    const G = [['buy', '💳 Pagos por confirmar'], ['claim', '🚩 Reclamos por revisar'], ['req', '📨 Solicitudes'], ['enroll', '📝 Inscripciones nuevas'], ['exp0', '⏰ Planes que vencen hoy'], ['trial0', '💸 Pruebas gratis terminadas (ofrecer 10%)'], ['trial1', '🎁 Último día de prueba gratis'], ['exp3', '📅 Planes que vencen en 3 días'], ['week', '🗓️ Profes sin confirmar disponibilidad'], ['bday', '🎂 Cumpleaños de hoy'], ['recruit', '👩‍🏫 Candidatos nuevos']];
+    const G = [['buy', '💳 Pagos por confirmar'], ['claim', '🚩 Reclamos por revisar'], ['review', '⭐ Opiniones bajas (1–3 ★) · contactar hoy'], ['req', '📨 Solicitudes'], ['enroll', '📝 Inscripciones nuevas'], ['exp0', '⏰ Planes que vencen hoy'], ['trial0', '💸 Pruebas gratis terminadas (ofrecer 10%)'], ['trial1', '🎁 Último día de prueba gratis'], ['exp3', '📅 Planes que vencen en 3 días'], ['week', '🗓️ Profes sin confirmar disponibilidad'], ['bday', '🎂 Cumpleaños de hoy'], ['recruit', '👩‍🏫 Candidatos nuevos']];
     const T = r.tasks.map((x, i) => Object.assign(x, { uid: x.k + ':' + (x.id || x.code || i) })); const pend = T.filter(x => !DONE[x.uid]);
     const act = (x) => {
       if (x.k === 'buy') return `${x.proof ? `<a class="btn w sm" target="_blank" rel="noopener" href="${esc(x.proof)}">🧾 Comprobante</a>` : ''}<button class="btn k sm" data-a="buy-ok">✅ Aprobar</button><button class="btn w sm" data-a="buy-no">Rechazar</button>`;
@@ -98,6 +99,7 @@
       if (x.k === 'req') return `<button class="btn k sm" data-a="req-ok">✅ Aprobar</button><button class="btn w sm" data-a="req-no">Rechazar</button>`;
       if (x.k === 'enroll') return `<button class="btn k sm" data-a="open-enroll">Abrir</button>`;
       if (x.k === 'recruit') return `<button class="btn k sm" data-a="open-recruit">Ver candidato</button>`;
+      if (x.k === 'review') return `${x.wa ? `<a class="btn sm ad-wa" target="_blank" rel="noopener" data-a="wa-only" href="${waLink(x.wa, MSG.review(x))}">📲 WhatsApp</a>` : '<span class="muted" style="font-size:12.5px">Sin WhatsApp</span>'}<button class="btn k sm" data-a="rv-done">✓ Atendida</button>`;
       if (MSG[x.k]) return `${x.wa ? `<a class="btn sm ad-wa" target="_blank" rel="noopener" data-a="wa" href="${waLink(x.wa, MSG[x.k](x))}">📲 WhatsApp</a>` : '<span class="muted" style="font-size:12.5px">Sin WhatsApp</span>'}${x.code ? `<button class="btn w sm" data-a="open-st">Ver ficha</button>` : ''}`;
       return '';
     };
@@ -110,10 +112,12 @@
     const doneUI = (el) => { const row = el.closest('.td-row'); row.classList.add('done'); row.querySelector('.td-ac').innerHTML = '<span class="td-ok">✓ Hecho</span>'; };
     $$('[data-a]', view()).forEach(b => b.addEventListener('click', async (e) => { const x = find(b), a = b.dataset.a; if (!x) return;
       if (a === 'wa') { mark(x.uid); setTimeout(() => doneUI(b), 300); return; }
+      if (a === 'wa-only') return;
       if (a === 'open-st') return studentDetail(x.code); if (a === 'open-enroll') return go('enroll'); if (a === 'open-recruit') return go('recruit');
       e.preventDefault(); b.disabled = true; let res = null;
       if (a === 'buy-ok' || a === 'buy-no') res = await api('aBuyDecide', { id: x.id, ok: a === 'buy-ok' });
       if (a === 'claim-ok' || a === 'claim-no') res = await api('aClaimDecide', { id: x.id, act: a === 'claim-ok' ? 'approve' : 'reject' });
+      if (a === 'rv-done') res = await api('aSchoolSet', { id: x.id, status: 'atendida' });
       if (a === 'req-ok' || a === 'req-no') res = await api('aReq', { id: x.id, status: a === 'req-ok' ? 'aprobada' : 'rechazada' });
       if (res && res.ok) { mark(x.uid); doneUI(b); toast('✅ Listo'); } else { b.disabled = false; toast((res && res.err) || 'No se pudo completar'); } }));
   }
@@ -599,15 +603,46 @@
     $$('[data-no]').forEach(b => b.onclick = async () => { const note = prompt('Motivo del rechazo (lo verá el estudiante):', 'No encontramos el pago con ese comprobante.'); if (note === null) return; b.disabled = true; const x = await api('aBuyDecide', { id: b.dataset.no, ok: false, note }); toast(x.ok ? 'Pago rechazado · le avisamos al estudiante' : 'No se pudo rechazar'); buys(); });
   }
 
-  /* ======================= ⭐ OPINIONES (públicas en la página de entrada) ======================= */
-  async function reviews() {
+  /* ======================= ⭐ OPINIONES: de la escuela y de los profes ======================= */
+  let RVT = 's'; // pestaña de opiniones: 's' escuela · 't' profes
+  const rvSeg = (k) => `<div class="sr-seg"><button data-rvt="s" class="${k === 's' ? 'on' : ''}">La escuela</button><button data-rvt="t" class="${k === 't' ? 'on' : ''}">Los profes</button></div>`;
+  const rvSegWire = () => $$('[data-rvt]', view()).forEach(b => b.onclick = () => { RVT = b.dataset.rvt; reviews(); });
+  async function reviews() { if (RVT === 't') { await teacherReviews(); return rvSegWire(); } return schoolReviews(); }
+  let SRF = 'all';
+  async function schoolReviews() {
+    view().innerHTML = '<div class="ad-loading">⏳ Cargando opiniones…</div>';
+    const r = await api('aSchoolReviews'); if (!r.ok) return view().innerHTML = '<p class="ad-err">No se pudieron cargar las opiniones.</p>';
+    const S5 = (n) => `<span class="sr-st">${[1, 2, 3, 4, 5].map(k => `<i class="${k <= n ? 'on' : ''}">★</i>`).join('')}</span>`;
+    const F = (n) => String(n || '').split(' ')[0];
+    const FL = { all: ['Todas', () => true], pend: ['Por atender', (x) => x.stars <= 3 && x.status === 'nueva'], pub: ['Para publicar', (x) => x.stars >= 4 && x.consent && x.status === 'nueva'], live: ['Publicadas', (x) => x.status === 'publicada'] };
+    const L = r.rows.filter(FL[SRF][1]);
+    const ST = { nueva: '', atendida: '<span class="sr-pill ok">✓ Atendida</span>', publicada: '<span class="sr-pill pub">● Publicada</span>', oculta: '<span class="sr-pill hid">Oculta</span>' };
+    const tagTop = Object.entries(r.tags || {}).sort((a, b) => b[1] - a[1]).slice(0, 6);
+    const row = (x) => { const low = x.stars <= 3;
+      const acts = low ? `${x.wa ? `<a class="btn sm ad-wa" target="_blank" rel="noopener" href="${waLink(x.wa, `Hola ${F(x.name)}, te escribimos de mrarrieta.com. Gracias por tu opinión sobre la plataforma: la leímos con atención y queremos ayudarte. ¿Nos cuentas un poco más para mejorar tu experiencia?`)}">📲 WhatsApp</a>` : ''}${x.status === 'nueva' ? `<button class="btn k sm" data-sr="${esc(x.id)}" data-s="atendida">✓ Marcar atendida</button>` : ''}`
+        : `${x.consent ? (x.status === 'publicada' ? `<button class="btn w sm" data-sr="${esc(x.id)}" data-s="oculta">Quitar de la página</button>` : `<button class="btn k sm" data-sr="${esc(x.id)}" data-s="publicada">Publicar en la página</button>`) : '<span class="muted" style="font-size:12px">No autorizó publicarla</span>'}${x.status !== 'oculta' && x.status !== 'publicada' ? `<button class="btn w sm" data-sr="${esc(x.id)}" data-s="oculta">Ocultar</button>` : ''}`;
+      return `<div class="sr-row${low && x.status === 'nueva' ? ' low' : ''}"><div class="sr-rh"><b>${esc(x.name)}</b><small>${esc(x.mname)} · ${x.stage === 'end' ? 'final' : 'mitad'} · ${fD(x.date, { day: 'numeric', month: 'short' })}</small>${S5(x.stars)}</div>
+        ${x.text ? `<p>“${esc(x.text)}”</p>` : ''}${x.tags ? `<div class="sr-tags">${x.tags.split(', ').map(t => `<span>${esc(t)}</span>`).join('')}</div>` : ''}
+        <div class="sr-ac">${low && x.status === 'nueva' ? '<span class="sr-pill alert">Por atender</span>' : ''}${!low && x.consent && x.status === 'nueva' ? '<span class="sr-pill pub">Permite publicar</span>' : ''}${ST[x.status] || ''}${acts}</div></div>`; };
+    view().innerHTML = `<div class="ad-head"><h1>⭐ Opiniones</h1>${rvSeg('s')}<p class="muted">Las dan los estudiantes de planes pagos a la mitad y al final de cada módulo.</p></div>
+      <div class="sr-kpis"><div><b class="g">${r.n ? r.avg.toFixed(1) : '—'}</b><span>Promedio · ${r.n} ${r.n === 1 ? 'opinión' : 'opiniones'}</span></div><div><b>${r.good}%</b><span>Dan 4 o 5 estrellas</span></div><div class="${r.pending ? 'al' : ''}"><b>${r.pending}</b><span>Por atender (1–3 ★)</span></div></div>
+      <div class="ad-grid2"><div class="card sr-mods"><h3>Promedio por módulo</h3>${r.byMod.map(m => `<div class="sr-br"><span>${esc(m.name)}</span><i><em style="width:${m.avg / 5 * 100}%"></em></i><b>${m.n ? m.avg.toFixed(1) : '—'}</b><small>${m.n}</small></div>`).join('')}</div>
+        <div class="card sr-mods"><h3>Lo que más mencionan</h3>${tagTop.length ? tagTop.map(([t, n]) => `<div class="sr-br"><span>${esc(t)}</span><i><em class="b" style="width:${n / tagTop[0][1] * 100}%"></em></i><b>${n}</b></div>`).join('') : '<p class="muted">Aún no hay datos.</p>'}</div></div>
+      <div class="card"><div class="sr-fil">${Object.keys(FL).map(k => `<button data-f="${k}" class="${SRF === k ? 'on' : ''}">${FL[k][0]} <small>${r.rows.filter(FL[k][1]).length}</small></button>`).join('')}</div>
+        ${L.length ? L.map(row).join('') : '<p class="muted" style="margin:14px 0 4px">No hay opiniones en esta lista.</p>'}</div>`;
+    rvSegWire();
+    $$('[data-f]', view()).forEach(b => b.onclick = () => { SRF = b.dataset.f; schoolReviews(); });
+    $$('[data-sr]', view()).forEach(b => b.onclick = async () => { b.disabled = true; const res = await api('aSchoolSet', { id: b.dataset.sr, status: b.dataset.s }); toast(res && res.ok ? '✅ Listo' : 'No se pudo completar'); schoolReviews(); });
+  }
+  async function teacherReviews() {
     view().innerHTML = '<div class="ad-loading">⏳ Cargando opiniones…</div>';
     const r = await api('aReviews'); if (!r.ok) return view().innerHTML = '<p class="ad-err">No se pudieron cargar las opiniones.</p>';
     const st = (n) => '★'.repeat(+n || 0) + '☆'.repeat(5 - (+n || 0));
-    view().innerHTML = `<div class="ad-head"><h1>⭐ Opiniones de los profes</h1><p class="muted">Las escriben los estudiantes al terminar una clase individual. Son públicas en la página de entrada. Puedes ocultar una si es inapropiada.</p></div>
+    view().innerHTML = `<div class="ad-head"><h1>⭐ Opiniones</h1>${rvSeg('t')}<h2 class="sr-h2">Opiniones de los profes</h2><p class="muted">Las escriben los estudiantes al terminar una clase individual. Son públicas en la página de entrada. Puedes ocultar una si es inapropiada.</p></div>
       <div class="card">${r.reviews.length ? `<div class="ad-mini">${r.reviews.map(x => `<div class="ad-mrow" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><div style="flex:1;min-width:220px"><b style="color:#f5a623">${st(x.stars)}</b> · profe <b>${esc(x.teacherName)}</b><br>${x.text ? '“' + esc(x.text) + '”<br>' : ''}<small class="muted">${esc(x.studentName)} (${esc(x.code)}) · ${esc(String(x.date).slice(0, 10))}${x.status === 'oculta' ? ' · 🙈 Oculta' : ''}</small></div><button class="btn w sm" data-rv="${esc(x.id)}" data-h="${x.status === 'oculta' ? '' : '1'}">${x.status === 'oculta' ? 'Mostrar' : 'Ocultar'}</button></div>`).join('')}</div>` : '<p class="muted">Aún no hay opiniones.</p>'}</div>`;
-    $$('[data-rv]').forEach(b => b.onclick = async () => { b.disabled = true; await api('aReviewSet', { id: b.dataset.rv, hide: !!b.dataset.h }); reviews(); });
+    $$('[data-rv]').forEach(b => b.onclick = async () => { b.disabled = true; await api('aReviewSet', { id: b.dataset.rv, hide: !!b.dataset.h }); teacherReviews(); });
   }
+
 
   /* ======================= 🚩 RECLAMOS (profe no se conectó) ======================= */
   async function claims() {

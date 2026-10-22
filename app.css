@@ -5153,3 +5153,79 @@ body .btn{max-width:100%;box-sizing:border-box}
 .ar-es{font:800 10px var(--fh);color:#fff;background:var(--k);border-radius:5px;padding:2px 5px;margin-right:4px}
 .ar-life .ari,.ar-wbtns .ari,.ar-mq .ari,.ar-row .ari{font-size:1.05em}
 .ar-ebig>span .ari{font-size:40px}
+/* ===== v328 · Opinión de la escuela (ventana premium) ===== */
+body.srv-lock{overflow:hidden}
+.srv{position:fixed;inset:0;z-index:120;display:grid;place-items:center;padding:16px;background:rgba(8,24,52,.62);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);opacity:0;transition:opacity .25s;overflow-y:auto}
+.srv.on{opacity:1}
+.srv-card{position:relative;width:100%;max-width:420px;background:#fff;border-radius:26px;padding:0 24px 20px;text-align:center;box-shadow:0 30px 60px rgba(4,16,40,.35);transform:translateY(16px) scale(.98);transition:transform .3s cubic-bezier(.2,.8,.2,1);margin:auto}
+.srv.on .srv-card{transform:none}
+.srv-top{margin:0 -24px 14px;padding:26px 0 0;border-radius:26px 26px 0 0;background:radial-gradient(120% 90% at 50% 0%,#eaf1ff 0%,#f6f9ff 55%,#fff 100%);display:flex;justify-content:center;align-items:flex-end;height:156px}
+.srv-mra{height:128px;width:auto;display:block;filter:drop-shadow(0 10px 14px rgba(11,42,91,.18))}
+.srv-chip{display:inline-block;font:700 11px var(--fh);letter-spacing:.8px;text-transform:uppercase;color:var(--y);background:#fdeced;border-radius:99px;padding:5px 12px}
+.srv-card h3{font:800 clamp(20px,5vw,23px) var(--fh);color:var(--k);margin:10px 0 6px;letter-spacing:-.3px}
+.srv-sub{margin:0 auto;max-width:330px;color:var(--mut);font-size:14px;line-height:1.5}
+.srv-stars{display:flex;justify-content:center;gap:6px;margin:16px 0 4px}
+.srv-stars button{background:none;border:0;padding:4px;cursor:pointer;line-height:0;transition:transform .15s}
+.srv-stars button:hover{transform:scale(1.12)}
+.srv-stars svg{width:40px;height:40px;fill:#e3e8f0;transition:fill .15s}
+.srv-stars button.on svg{fill:#f5a623;filter:drop-shadow(0 3px 6px rgba(245,166,35,.35))}
+.srv-stars button.on{animation:srvPop .3s}
+@keyframes srvPop{50%{transform:scale(1.22)}}
+.srv-lab{font:700 13px var(--fh);color:#94a3b8;min-height:18px}
+.srv-lab.s4,.srv-lab.s5{color:#b7791f}.srv-lab.s1,.srv-lab.s2{color:var(--y)}.srv-lab.s3{color:#64748b}
+.srv-more{margin-top:12px;animation:arIn .3s both}
+.srv-q{font:700 14px var(--fh);color:var(--k);margin:0 0 10px}
+.srv-tags{display:flex;flex-wrap:wrap;justify-content:center;gap:7px;margin-bottom:12px}
+.srv-tags button{border:1.5px solid #dbe3ee;background:#fff;color:var(--k);border-radius:99px;padding:6px 12px;font:600 12.5px var(--fb,Inter),sans-serif;cursor:pointer;transition:all .15s}
+.srv-tags button.on{background:var(--k);border-color:var(--k);color:#fff}
+.srv-card textarea{width:100%;border:1.5px solid #dbe3ee;border-radius:14px;padding:11px 12px;font:14px var(--fb,Inter),sans-serif;color:#1e293b;resize:vertical;min-height:76px;outline:none;transition:border-color .15s}
+.srv-card textarea:focus{border-color:var(--k)}
+.srv-ok{display:flex;gap:9px;align-items:flex-start;text-align:left;font-size:13px;color:#475569;margin-top:10px;cursor:pointer}
+.srv-ok input{width:18px;height:18px;margin:1px 0 0;accent-color:var(--k);flex:none}
+.srv-go{display:block;width:100%;margin-top:16px;border:0;border-radius:14px;padding:13px;background:var(--k);color:#fff;font:700 15px var(--fh);cursor:pointer;box-shadow:0 10px 20px -8px rgba(11,42,91,.55);transition:opacity .15s,transform .1s}
+.srv-go:disabled{opacity:.35;box-shadow:none;cursor:not-allowed}
+.srv-go:not(:disabled):active{transform:scale(.98)}
+.srv-note{margin:10px 0 0;font-size:11.5px;color:#a3afc2}
+.srv-st5{display:flex;justify-content:center;gap:4px;margin:2px 0 0}.srv-st5 svg{width:24px;height:24px;fill:#f5a623}.srv-st5 i svg{fill:#e3e8f0}
+.srv-quote{margin:14px 0 4px;background:#f6f8fc;border-radius:14px;padding:11px 14px;font-size:13.5px;color:#334155;font-style:italic;text-align:left;border-left:3px solid #f5a623}
+.srv-copied{margin:0;font:700 12px var(--fh);color:#15803d;text-align:left}
+.srv-g{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:16px;border:1.5px solid #dadce0;border-radius:14px;padding:12px;font:700 15px var(--fb,Inter),sans-serif;color:#3c4043;text-decoration:none;background:#fff;box-shadow:0 2px 8px rgba(60,64,67,.12);transition:box-shadow .15s}
+.srv-g:hover{box-shadow:0 6px 16px rgba(60,64,67,.18)}.srv-g svg{width:22px;height:22px}
+.srv-skip{display:block;width:100%;margin-top:8px;background:none;border:0;padding:10px;color:var(--mut);font:700 14px var(--fh);cursor:pointer}
+.srv-heart{width:76px;height:76px;margin:28px auto 10px;border-radius:50%;background:#fdeced;display:grid;place-items:center}.srv-heart svg{width:36px;height:36px;fill:var(--y)}
+.srv-glink{display:inline-block;margin-top:12px;font-size:12.5px;color:var(--mut);text-decoration:underline;text-underline-offset:3px}
+@media(max-width:420px){.srv-card{padding:0 18px 16px}.srv-top{margin:0 -18px 12px;height:132px}.srv-mra{height:112px}.srv-stars svg{width:36px;height:36px}}
+/* v328 · admin: opiniones de la escuela */
+.sr-seg{display:inline-grid;grid-template-columns:1fr 1fr;gap:4px;background:#e8edf5;border-radius:12px;padding:4px;margin:6px 0 4px}
+.sr-seg button{border:0;background:transparent;border-radius:9px;padding:7px 16px;font:700 13px var(--fh);color:var(--mut);cursor:pointer}
+.sr-seg button.on{background:#fff;color:var(--k);box-shadow:0 2px 8px rgba(11,42,91,.12)}
+.sr-h2{font-size:18px;margin:6px 0 4px}
+.sr-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:10px 0 14px}
+.sr-kpis>div{background:#fff;border:1px solid #e3e9f3;border-radius:16px;padding:14px 16px;box-shadow:0 4px 14px rgba(11,42,91,.05)}
+.sr-kpis b{display:block;font:800 28px var(--fh);color:var(--k);line-height:1.1}.sr-kpis b.g{color:#b7791f}
+.sr-kpis span{font-size:12.5px;color:var(--mut);font-weight:600}
+.sr-kpis .al{border-color:#f7c5c8;background:#fff8f8}.sr-kpis .al b{color:var(--y)}
+.sr-mods h3{margin-top:0;font-size:15px}
+.sr-br{display:grid;grid-template-columns:minmax(0,130px) 1fr 34px 26px;gap:10px;align-items:center;font-size:13px;color:#475569;margin:8px 0}
+.sr-br span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sr-br i{height:8px;background:#eef2f7;border-radius:9px;overflow:hidden}.sr-br em{display:block;height:100%;background:linear-gradient(90deg,#f6c453,#f5a623);border-radius:9px}.sr-br em.b{background:linear-gradient(90deg,#3b82f6,#1d4ed8)}
+.sr-br b{color:var(--k);text-align:right}.sr-br small{color:#a3afc2;text-align:right}
+.sr-fil{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}
+.sr-fil button{border:0;background:#f1f4f9;color:var(--mut);border-radius:10px;padding:7px 12px;font:700 12.5px var(--fh);cursor:pointer}
+.sr-fil button small{opacity:.7;margin-left:3px}.sr-fil button.on{background:var(--k);color:#fff}
+.sr-row{border:1px solid #e9eef5;border-radius:14px;padding:12px 14px;margin-top:10px}
+.sr-row.low{border-color:#f7c5c8;background:#fff9f9}
+.sr-rh{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px}.sr-rh b{color:var(--k)}.sr-rh small{color:var(--mut);font-size:12px}
+.sr-st{margin-left:auto;letter-spacing:1px}.sr-st i{font-style:normal;color:#dbe2ec}.sr-st i.on{color:#f5a623}
+.sr-row p{margin:6px 0;color:#334155;font-size:14px}
+.sr-tags{display:flex;flex-wrap:wrap;gap:5px;margin:6px 0}.sr-tags span{font-size:11.5px;font-weight:600;color:var(--k);background:#eef3fb;border-radius:99px;padding:3px 9px}
+.sr-ac{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px}
+.sr-pill{font:700 11px var(--fh);border-radius:99px;padding:4px 9px}.sr-pill.alert{background:#fdeced;color:var(--y)}.sr-pill.pub{background:#e7f6ec;color:#15803d}.sr-pill.ok{background:#eef2f7;color:#475569}.sr-pill.hid{background:#f1f4f9;color:#94a3b8}
+@media(max-width:640px){.sr-kpis{grid-template-columns:1fr 1fr 1fr;gap:8px}.sr-kpis>div{padding:10px}.sr-kpis b{font-size:22px}.sr-kpis span{font-size:11px}}
+/* v328 · página de entrada: opiniones verificadas */
+.ld-srv{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;margin-top:18px;text-align:left}
+.ld-srv-c{background:#fff;border:1px solid #e3e9f3;border-radius:18px;padding:16px 18px;box-shadow:0 4px 14px rgba(11,42,91,.06);display:flex;flex-direction:column;gap:8px}
+.ld-srv-c .st5{font-size:16px}
+.ld-srv-c p{margin:0;color:#334155;font-size:14.5px;line-height:1.5;flex:1}
+.ld-srv-c small{color:var(--mut);font-weight:600;font-size:12.5px}.ld-srv-c small b{color:var(--k)}
+.ld-srv-v{display:inline-flex;align-items:center;gap:5px;color:#15803d;font:700 11px var(--fh);letter-spacing:.3px}
