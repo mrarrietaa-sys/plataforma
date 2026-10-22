@@ -13,9 +13,10 @@
   /* ============ ATRAPA LA PALABRA (caen del cielo) ============ */
   async function catchWord(stage, p) {
     const P = pool(p); const R = Math.min(6, P.length); const items = sample(P, R); let c = 0; const missed = [];
-    const body = head(stage, { lbl: 'Game', title: '🪂 Atrapa la palabra', ins: 'Escucha 🔊 y lee la pista. Toca la palabra correcta <b>antes de que llegue al suelo</b>.' });
-    const hud = h(`<div class="cw-hud"><span>Ronda <b id="cr">1</b>/${R}</span><span class="cw-clue" id="cc"></span><span>⭐ <b id="cs">0</b></span></div>`); body.appendChild(hud);
-    const sky = h(`<div class="cw-sky"><div class="cw-ground">🌱🌱🌱🌱🌱🌱🌱🌱🌱🌱</div></div>`); body.appendChild(sky);
+    const body = head(stage, { lbl: 'Game', title: 'Atrapa la palabra', ins: 'Escucha el audio y lee la pista. Toca la palabra correcta <b>antes de que llegue al suelo</b>.' });
+    const hud = h(`<div class="cw-hud cw2"><div class="cw-chips"><span class="cw-chip">Ronda <b id="cr">1</b>/${R}</span><span class="cw-dots">${Array.from({ length: R }, (_, i) => `<i data-d="${i}"></i>`).join('')}</span><span class="cw-chip cw-sc">★ <b id="cs">0</b></span></div><div class="cw-cluebox"><small>¿Cómo se dice?</small><span class="cw-clue" id="cc"></span></div></div>`); body.appendChild(hud);
+    const sky = h(`<div class="cw-sky cw2"><div class="cw-stars"></div><div class="cw-cloud c1"></div><div class="cw-cloud c2"></div><div class="cw-ground"><svg viewBox="0 0 366 40" preserveAspectRatio="none"><path d="M0 40V26h18v-9h14v9h10V12h16v14h12v-6h14v6h20V8h18v18h10v-11h16v11h14V16h12v10h18v-7h16v7h12V10h18v16h14v-8h12v8h16V14h14v12h12v-6h16v6h20V18h14v8h10v14z" fill="#0a2149"/></svg></div></div>`); body.appendChild(sky);
+    const PARA = '<svg class="cw-para" viewBox="0 0 64 40" aria-hidden="true"><path d="M2 20C2 9 15 2 32 2s30 7 30 18c-5-3-10-3-15 0-5-3-10-3-15 0-5-3-10-3-15 0-5-3-12-3-15 0z" fill="#E3242B"/><path d="M17 20c0-10 7-18 15-18s15 8 15 18c-5-3-10-3-15 0-5-3-10-3-15 0z" fill="#fff"/><path d="M3 20 26 38M17 20l11 18M47 20 36 38M61 20 38 38" stroke="#cfd8e6" stroke-width="1.3" fill="none"/></svg>';
     for (let k = 0; k < R; k++) {
       if (!stage.isConnected) break;
       const it = items[k]; $('#cr', hud).textContent = k + 1;
@@ -25,11 +26,12 @@
       const lanes = shuffle([8, 38, 68]);
       const res = await new Promise(done => {
         let over = false;
-        const btns = opts.map((o, i) => { const b = h(`<button class="cw-word" style="left:${lanes[i]}%;--t:${(5.6 + i * 0.7).toFixed(1)}s;--d:${(i * 0.45).toFixed(2)}s">🪂<br>${esc(o.en)}</button>`); sky.appendChild(b);
+        const btns = opts.map((o, i) => { const b = h(`<button class="cw-word" style="left:${lanes[i]}%;--t:${(5.6 + i * 0.7).toFixed(1)}s;--d:${(i * 0.45).toFixed(2)}s">${PARA}<span class="cw-lbl">${esc(o.en)}</span></button>`); sky.appendChild(b);
           b.onclick = () => { if (over) return; over = true; btns.forEach(x => x.style.animationPlayState = 'paused'); done({ ok: o === it, b, btns }); };
           if (o === it) b.addEventListener('animationend', () => { if (over) return; over = true; done({ ok: false, late: true, b, btns }); });
           return b; });
       });
+      const dot = hud.querySelector(`[data-d="${k}"]`); if (dot) dot.className = res.ok ? 'ok' : 'no';
       if (res.ok) { c++; sfx('ok'); res.b.classList.add('got'); $('#cs', hud).textContent = c; }
       else { sfx('bad'); missed.push(it); const right = res.btns[opts.indexOf(it)]; right.classList.add('right'); if (!res.late) res.b.classList.add('wrong'); M.toast(res.late ? `⏰ ¡Se cayó! Era: ${it.en}` : `Era: ${it.en}`); }
       play(it.au); await sleep(res.ok ? 700 : 1500);

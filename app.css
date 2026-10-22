@@ -4936,3 +4936,31 @@ body .btn{max-width:100%;box-sizing:border-box}
  .in-plans .pv-bt{padding:8px 10px!important;font-size:13.5px!important}
  .in-plans .pv-rib{font-size:11px!important;padding:3px 10px!important}
 }
+/* v314 · «Atrapa la palabra» rediseñado: cielo nocturno, paracaídas de la marca, marcador premium */
+.cw-hud.cw2{display:grid;gap:10px;margin-bottom:12px}
+.cw2 .cw-chips{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.cw-chip{background:#0B2A5B;color:#fff;border-radius:20px;padding:5px 12px;font:700 13px Poppins,sans-serif;white-space:nowrap}
+.cw-chip.cw-sc{background:#FFF4CC;color:#8a6100}
+.cw-dots{display:flex;gap:5px;flex:1;justify-content:center}.cw-dots i{width:9px;height:9px;border-radius:50%;background:#dbe3ef;transition:.3s}.cw-dots i.ok{background:#16A34A}.cw-dots i.no{background:#E3242B}
+.cw-cluebox{background:#fff;border:1px solid #e3e9f3;border-radius:16px;padding:10px 14px;box-shadow:0 4px 14px rgba(11,42,91,.06);text-align:center}
+.cw-cluebox small{display:block;font:700 10.5px Inter,sans-serif;letter-spacing:1.4px;text-transform:uppercase;color:#8a96ab;margin-bottom:2px}
+.cw2 .cw-clue{justify-content:center;color:#0B2A5B!important;font:800 clamp(17px,4.4vw,21px) Poppins,sans-serif}
+.cw-sky.cw2{background:linear-gradient(180deg,#0B2A5B 0%,#1c4596 55%,#3f6fc4 100%);border:0;border-radius:22px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06),0 10px 26px rgba(11,42,91,.18)}
+.cw2 .cw-stars{position:absolute;inset:0;background-image:radial-gradient(1.5px 1.5px at 12% 18%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 30% 8%,#fff 50%,transparent 51%),radial-gradient(1.5px 1.5px at 52% 22%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 70% 12%,#fff 50%,transparent 51%),radial-gradient(1.5px 1.5px at 88% 28%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 20% 40%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 80% 45%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 45% 50%,#fff 50%,transparent 51%);opacity:.7;animation:cwTw 3s ease-in-out infinite alternate}
+@keyframes cwTw{to{opacity:.35}}
+.cw2 .cw-cloud{position:absolute;width:120px;height:34px;border-radius:30px;background:rgba(255,255,255,.10);filter:blur(1px)}
+.cw2 .cw-cloud:before{content:'';position:absolute;width:56px;height:44px;border-radius:50%;background:inherit;left:22px;top:-20px}
+.cw2 .cw-cloud.c1{top:30%;left:-30px;animation:cwCl 26s linear infinite}.cw2 .cw-cloud.c2{top:58%;left:-30px;animation:cwCl 34s linear -14s infinite;transform:scale(.8)}
+@keyframes cwCl{to{left:110%}}
+.cw-sky.cw2 .cw-ground{height:40px;background:none;border:0;line-height:0;z-index:1}.cw2 .cw-ground svg{width:100%;height:100%;display:block}
+.cw-sky.cw2 .cw-ground:before{content:'';position:absolute;left:0;right:0;top:-2px;height:2px;background:repeating-linear-gradient(90deg,#FFD23F 0 10px,transparent 10px 18px);opacity:.8}
+.cw2 .cw-word{border:0!important;background:none!important;box-shadow:none!important;padding:0!important;display:flex;flex-direction:column;align-items:center;gap:0;z-index:2;cursor:pointer}
+.cw2 .cw-para{width:60%;max-width:84px;height:auto;filter:drop-shadow(0 4px 6px rgba(0,0,0,.25));animation:cwSw 1.6s ease-in-out infinite alternate;transform-origin:50% 100%}
+@keyframes cwSw{from{transform:rotate(-4deg)}to{transform:rotate(4deg)}}
+.cw2 .cw-lbl{display:block;width:100%;background:#fff;color:#0B2A5B;border-radius:12px;padding:7px 6px;font:800 clamp(13.5px,3.6vw,17px) Poppins,sans-serif;line-height:1.2;box-shadow:0 8px 18px rgba(0,0,0,.25);border:2px solid #fff;margin-top:-2px}
+.cw2 .cw-word:hover .cw-lbl{border-color:#FFD23F}
+.cw2 .cw-word.got .cw-lbl{background:#16A34A;color:#fff;border-color:#16A34A;transform:scale(1.08)}
+.cw2 .cw-word.right .cw-lbl{background:#dcfce7;color:#15803d;border-color:#16A34A}
+.cw2 .cw-word.wrong .cw-lbl{background:#fee2e2;color:#b91c1c;border-color:#E3242B}
+.cw-hud.cw2,.cw2 .cw-chips,.cw2 .cw-cluebox{width:100%;box-sizing:border-box}
+.cw-hud.cw2,.cw-sky.cw2{align-self:stretch;width:100%!important}
