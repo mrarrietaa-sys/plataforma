@@ -58,7 +58,7 @@
   }
 
   /* ======================= ESTRUCTURA ======================= */
-  const TABS = [['today', '✅', 'Tareas de hoy'], ['home', '📊', 'Resumen'], ['students', '🎓', 'Estudiantes'], ['enroll', '📝', 'Inscripciones'], ['buys', '💳', 'Pagos'], ['claims', '🚩', 'Reclamos'], ['reviews', '⭐', 'Opiniones'], ['leads', '📣', 'Interesados'], ['placement', '🧭', 'Placement'], ['recruit', '👩‍🏫', 'Reclutamiento'], ['teachers', '🧑‍🏫', 'Profesores'], ['contracts', '📄', 'Contratos'], ['tes', '🎬', 'Testimonios'], ['boards', '📝', 'Tableros'], ['classes', '📅', 'Clases'], ['requests', '🔁', 'Solicitudes'], ['chats', '💬', 'Chats'], ['settings', '⚙️', 'Ajustes']];
+  const TABS = [['today', '✅', 'Tareas de hoy'], ['home', '📊', 'Resumen'], ['students', '🎓', 'Estudiantes'], ['enroll', '📝', 'Inscripciones'], ['buys', '💳', 'Pagos'], ['claims', '🚩', 'Reclamos'], ['reviews', '⭐', 'Opiniones'], ['prizes', '🎁', 'Premios'], ['leads', '📣', 'Interesados'], ['placement', '🧭', 'Placement'], ['recruit', '👩‍🏫', 'Reclutamiento'], ['teachers', '🧑‍🏫', 'Profesores'], ['contracts', '📄', 'Contratos'], ['tes', '🎬', 'Testimonios'], ['boards', '📝', 'Tableros'], ['classes', '📅', 'Clases'], ['requests', '🔁', 'Solicitudes'], ['chats', '💬', 'Chats'], ['settings', '⚙️', 'Ajustes']];
   let TAB = 'home', STATS = null;
   // "Atrás": dentro del panel vuelve al Resumen (nunca saca a otra página por error)
   document.addEventListener('click', (e) => { const b = e.target.closest && e.target.closest('.tb-back'); if (!b || !key()) return; if (document.querySelector('.modal, .wa-wrap')) return; e.preventDefault(); e.stopImmediatePropagation(); if (TAB !== 'home') go('home'); else window.scrollTo(0, 0); }, true);
@@ -88,10 +88,11 @@
       trial1: (x) => `Hola ${F(x.name)}, hoy es tu último día de prueba gratis en mrarrieta.com. ¿Te gustó? Elige tu plan y sigue aprendiendo inglés HABLANDO: ${MP}`,
       trial0: (x) => `Hola ${F(x.name)}, tu prueba gratis en mrarrieta.com terminó. Si te inscribes en las próximas 24 horas tienes 10% de descuento en tu primer mes: ${MP}`,
       bday: (x) => `¡Feliz cumpleaños, ${F(x.name)}! Todo el equipo de mrarrieta.com te desea un día increíble. ¡Sigue aprendiendo inglés HABLANDO!`,
+      prize: (x) => `Hola ${F(x.name)}, te recordamos que tu premio del 10% en el primer mes en mrarrieta.com (código ${x.pcode}) vence hoy. Inscríbete aquí y úsalo al pagar: ${location.href.replace(/[#?].*$/, '').replace(/[^/]*$/, '')}adultos.html#ld-planes`,
       review: (x) => `Hola ${F(x.name)}, te escribimos de mrarrieta.com. Gracias por tu opinión sobre la plataforma: la leímos con atención y queremos ayudarte. ¿Nos cuentas un poco más para mejorar tu experiencia?`,
       week: (x) => `Hola ${F(x.name)}, te recordamos confirmar tu disponibilidad de la próxima semana en tu portal de mrarrieta.com. ¡Gracias!`
     };
-    const G = [['buy', '💳 Pagos por confirmar'], ['claim', '🚩 Reclamos por revisar'], ['review', '⭐ Opiniones bajas (1–3 ★) · contactar hoy'], ['req', '📨 Solicitudes'], ['enroll', '📝 Inscripciones nuevas'], ['exp0', '⏰ Planes que vencen hoy'], ['trial0', '💸 Pruebas gratis terminadas (ofrecer 10%)'], ['trial1', '🎁 Último día de prueba gratis'], ['exp3', '📅 Planes que vencen en 3 días'], ['week', '🗓️ Profes sin confirmar disponibilidad'], ['bday', '🎂 Cumpleaños de hoy'], ['recruit', '👩‍🏫 Candidatos nuevos']];
+    const G = [['prize', '🎁 Premios del 10% que vencen hoy'], ['buy', '💳 Pagos por confirmar'], ['claim', '🚩 Reclamos por revisar'], ['review', '⭐ Opiniones bajas (1–3 ★) · contactar hoy'], ['req', '📨 Solicitudes'], ['enroll', '📝 Inscripciones nuevas'], ['exp0', '⏰ Planes que vencen hoy'], ['trial0', '💸 Pruebas gratis terminadas (ofrecer 10%)'], ['trial1', '🎁 Último día de prueba gratis'], ['exp3', '📅 Planes que vencen en 3 días'], ['week', '🗓️ Profes sin confirmar disponibilidad'], ['bday', '🎂 Cumpleaños de hoy'], ['recruit', '👩‍🏫 Candidatos nuevos']];
     const T = r.tasks.map((x, i) => Object.assign(x, { uid: x.k + ':' + (x.id || x.code || i) })); const pend = T.filter(x => !DONE[x.uid]);
     const act = (x) => {
       if (x.k === 'buy') return `${x.proof ? `<a class="btn w sm" target="_blank" rel="noopener" href="${esc(x.proof)}">🧾 Comprobante</a>` : ''}<button class="btn k sm" data-a="buy-ok">✅ Aprobar</button><button class="btn w sm" data-a="buy-no">Rechazar</button>`;
@@ -644,6 +645,20 @@
   }
 
 
+
+  /* ======================= 🎁 PREMIOS DEL RETO DE PRONUNCIACIÓN ======================= */
+  async function prizes() {
+    view().innerHTML = '<div class="ad-loading">⏳ Cargando premios…</div>';
+    const r = await api('aPrizes'); if (!r.ok) return view().innerHTML = '<p class="ad-err">No se pudieron cargar los premios.</p>';
+    const SN = { activo: ['sr-pill pub', 'Activo'], usado: ['sr-pill ok', '✓ Usado'], vencido: ['sr-pill hid', 'Vencido'], anulado: ['sr-pill hid', 'Anulado'] };
+    const pct = r.n ? Math.round(r.used / r.n * 100) : 0;
+    view().innerHTML = `<div class="ad-head"><h1>🎁 Premios del reto</h1><p class="muted">Quienes pronunciaron bien la frase en la página de Adultos o de Niños y jóvenes. 10% en el primer mes · válido 3 días · uno por WhatsApp.</p></div>
+      <div class="sr-kpis"><div><b>${r.n}</b><span>Ganaron el reto</span></div><div><b class="g">${r.active}</b><span>Premios activos</span></div><div><b>${r.used}</b><span>Compraron · ${pct}%</span></div></div>
+      <div class="card">${r.rows.length ? r.rows.map(x => { const s = SN[x.state] || ['sr-pill', x.state]; return `<div class="sr-row${x.state === 'activo' ? '' : ''}"><div class="sr-rh"><b>${esc(x.name)}</b><small>${esc(x.code)} · ${x.page === 'ninos' ? 'Niños y jóvenes' : 'Adultos'} · ${fD(x.date, { day: 'numeric', month: 'short' })}</small><span class="${s[0]}" style="margin-left:auto">${s[1]}</span></div>
+        <p style="font-size:13px;color:#475569">Vence: <b>${esc(x.until)}</b>${x.usedBy ? ` · lo usó <b>${esc(x.usedBy)}</b>` : ''}</p>
+        <div class="sr-ac">${x.whatsapp ? `<a class="btn sm ad-wa" target="_blank" rel="noopener" href="${waLink(x.whatsapp, `Hola ${String(x.name).split(' ')[0]}, ¡felicitaciones por tu pronunciación! Tu código ${x.code} te da 10% en tu primer mes en mrarrieta.com, válido hasta el ${x.until}. Elige tu plan aquí: ${location.href.replace(/[#?].*$/, '').replace(/[^/]*$/, '')}adultos.html#ld-planes`)}">📲 WhatsApp</a>` : ''}${x.state === 'activo' || x.state === 'vencido' ? `<button class="btn w sm" data-pz="${esc(x.id)}" data-a="extender">+1 día</button>` : ''}${x.state === 'activo' ? `<button class="btn w sm" data-pz="${esc(x.id)}" data-a="anular">Anular</button>` : ''}</div></div>`; }).join('') : '<p class="muted">Aún nadie ha ganado el reto.</p>'}</div>`;
+    $$('[data-pz]', view()).forEach(b => b.onclick = async () => { b.disabled = true; const res = await api('aPrizeSet', { id: b.dataset.pz, act: b.dataset.a }); toast(res && res.ok ? '✅ Listo' : 'No se pudo'); prizes(); });
+  }
   /* ======================= 🚩 RECLAMOS (profe no se conectó) ======================= */
   async function claims() {
     view().innerHTML = '<div class="ad-loading">⏳ Cargando reclamos…</div>';
@@ -706,6 +721,6 @@
       const m = modal(`<div class="center"><div style="font-size:44px">📢</div><h2>¿Publicar nueva versión?</h2><p class="muted">${K === 'teacher' ? 'Todos los profes' : 'Todos los estudiantes con este plan'} deberán leerla y aceptarla otra vez al entrar.</p><div class="row" style="justify-content:center"><button class="btn w" id="cp-n">Cancelar</button><button class="btn k" id="cp-y">Sí, publicar</button></div></div>`);
       $('#cp-n', m).onclick = () => m.remove(); $('#cp-y', m).onclick = async () => { $('#cp-y', m).disabled = true; const x = await api('aContractSave', { text: tx, kind: K }); m.remove(); if (x.ok) { toast('📢 Publicada la versión ' + x.version); contracts(); } else toast(x.err === 'corto' ? 'El texto es muy corto' : 'No se pudo publicar'); }; };
   }
-  const VIEWS = { today, contracts, boards, tes, buys, claims, reviews, home, students, enroll, leads, placement, recruit, teachers, classes, requests, chats, settings };
+  const VIEWS = { prizes, today, contracts, boards, tes, buys, claims, reviews, home, students, enroll, leads, placement, recruit, teachers, classes, requests, chats, settings };
   key() && MRAC.on ? boot() : login();
 })();

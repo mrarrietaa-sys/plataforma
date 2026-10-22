@@ -7,10 +7,11 @@
   const { $, $$, h, esc, sfx } = M;
   const app = $('#app');
   const WA = (t) => `https://wa.me/${C.WHATSAPP}?text=${encodeURIComponent((window.MRNE || String)(t))}`;
+  const PAGE = (document.body && document.body.dataset.page) || 'home'; // 🏠 entrada · 'adultos' · 'ninos'
   const U = (id, w = 800, hh = 450) => `https://images.unsplash.com/${id}?w=${w}&h=${hh}&fit=crop&crop=entropy&q=80&auto=format`;
 
   function topbar() {
-    const p = P.get();
+    const p = PAGE !== 'home' ? null : P.get();
     $('#topbar').innerHTML = `<div class="brand" id="go-home"><span class="logo-pill"><img class="logo" src="mra-brand.png" alt="mrarrieta.com"></span></div><div class="sp"></div><button class="tb-back" type="button" id="tb-back" title="Regresar">← Atrás</button><span class="tb-tag">MI PERFIL</span>
       ${p ? `<span class="pill hide-s">${window.MRPLANS ? MRPLANS.badge() : p.type === 'staff' ? '👨‍🏫 Profe' : p.type === 'trial' ? '🟢 Acceso gratis' : '🎓 Estudiante'}</span>${p.first ? `<button class="tb-avbtn" id="me-b" title="Personaliza tu perfil">${P.avHTML('tb-av')}</button>` : ''}<a class="iconbtn" href="juegos.html" title="Zona de juegos">🎮</a><button class="iconbtn" id="snd-b" title="Activar / quitar la voz de bienvenida">${voiceOn() ? '🔊' : '🔇'}</button><button class="iconbtn" id="out" title="Salir" aria-label="Salir"><svg class="pw-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 3v8"/><path d="M6.3 6.8a8 8 0 1 0 11.4 0"/></svg></button>` : ''}`;
     $('#go-home').onclick = () => route('home');
@@ -23,7 +24,7 @@
     if ($('#snd-b')) $('#snd-b').onclick = () => { const on = !voiceOn(); try { localStorage.setItem(VKEY, on ? '0' : '1'); } catch (e) { } if (!on) M.stop(); $('#snd-b').textContent = on ? '🔊' : '🔇'; M.toast(on ? '🔊 Voz de bienvenida activada' : '🔇 Voz de bienvenida desactivada'); };
   }
   let curRoute = 'home';
-  function route(r) { curRoute = r || 'home'; M.stop && M.stop(); window.scrollTo(0, 0); topbar(); const p = P.get();
+  function route(r) { curRoute = r || 'home'; M.stop && M.stop(); window.scrollTo(0, 0); topbar(); const p = PAGE !== 'home' ? null : P.get();
     if (!p) return login();
     if (!p.first || (p.cloud && p.type === 'student' && !p.birth)) return nameStep(); // nombre + fecha de nacimiento obligatorios
     if (r === 'placement') return placement();
@@ -99,12 +100,130 @@
       };
     }, 1500);
   }
+  /* =====================================================================
+     🏠 ENTRADA + 🧑 ADULTOS + 👧 NIÑOS Y JÓVENES (v329)
+     · La entrada solo tiene el inicio (cohete + ingreso) y dos caminos
+     · Cada página tiene su Mr. Arrieta en globo, su cielo y el reto de pronunciación con premio
+     ===================================================================== */
+  const LPI = { // íconos premium (figuras sólidas)
+    adult: '<svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="11" r="5.2" fill="#fff"/><path d="M6.5 27c0-5.4 4.3-9 9.5-9s9.5 3.6 9.5 9" fill="#fff" fill-opacity=".9"/><path d="M14.4 18.3 16 22l1.6-3.7" stroke="#0B2A5B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 22v4" stroke="#0B2A5B" stroke-width="1.6" stroke-linecap="round"/></svg>',
+    kids: '<svg viewBox="0 0 32 32" fill="none"><circle cx="11.5" cy="10" r="4.4" fill="#fff"/><path d="M4 26c0-4.6 3.4-7.8 7.5-7.8S19 21.4 19 26" fill="#fff" fill-opacity=".95"/><circle cx="22.5" cy="14" r="3.4" fill="#fff" fill-opacity=".8"/><path d="M17 27c.2-3.6 2.6-6 5.5-6S27.8 23.4 28 27" fill="#fff" fill-opacity=".7"/><path d="M25.6 4.6l.6 1.3 1.4.2-1 1 .2 1.4-1.2-.7-1.2.7.2-1.4-1-1 1.4-.2z" fill="#fff"/></svg>' };
+  const LI = (d) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mri">${d}</svg>`;
+  const LP = { mic: '<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3"/>', vol: '<path d="M11 4.7a.7.7 0 0 0-1.2-.5L6.4 7.6A1.4 1.4 0 0 1 5.4 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.4a1.4 1.4 0 0 1 1 .4l3.4 3.4a.7.7 0 0 0 1.2-.5z"/><path d="M16 9a5 5 0 0 1 0 6"/>',
+    plane: '<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>', brief: '<path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/>',
+    grad: '<path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6M6 12.5V16a6 3 0 0 0 12 0v-3.5"/>', ok: '<path d="m5 12 5 5L20 7"/>', star: '<path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.9L12 17.8 5.8 21.1 7 14.2 2 9.3l6.9-1z"/>',
+    shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>', medal: '<circle cx="12" cy="15" r="5"/><path d="M8 3h8l-2 7h-4z"/>', pad: '<path d="M6 12h4M8 10v4M15 13h.01M18 11h.01"/><rect width="20" height="12" x="2" y="6" rx="3"/>', user: '<circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/>',
+    chart: '<path d="M3 3v18h18"/><path d="m7 14 4-4 4 4 5-6"/>', check: '<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>', mail: '<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-10 5L2 7"/>', cal: '<rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>', copy: '<rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>' };
+  function pathCards() {
+    return `<div class="ld-path"><a class="ld-pc2" href="adultos.html"><span class="ic a">${LPI.adult}</span><span class="tx"><b>Adultos</b><small>Desde 18 años</small></span><span class="ar">›</span></a>
+      <a class="ld-pc2" href="ninos.html"><span class="ic k">${LPI.kids}</span><span class="tx"><b>Niños y jóvenes</b><small>De 9 a 17 años</small></span><span class="ar">›</span></a></div>`;
+  }
+  const LP_GOALS = { v: ['plane', 'Viajar', 'Aeropuerto, hotel y restaurantes en inglés, con misiones de viaje en cada clase.'], t: ['brief', 'Trabajo', 'Entrevistas, reuniones y correos en inglés, con misiones de tu trabajo en cada clase.'], e: ['grad', 'Estudios', 'Universidad, becas y exámenes internacionales, con práctica para tu meta.'] };
+  const LP_PH = { adultos: { t: 'Nice to meet you', es: 'Mucho gusto en conocerte', au: 'prnicetomeet' }, ninos: { t: 'I love English', es: '¡Me encanta el inglés!', au: 'priloveeng' } };
+  const lpSky = (n) => { let h = ''; for (let k = 0; k < n; k++) h += `<span class="lp-star" style="left:${(k * 37) % 100}%;top:${(k * 53) % 62}%;opacity:${(.3 + (k % 5) / 8).toFixed(2)}"></span>`; return h; };
+  const lpClouds = () => [[-8, 78, 260, 90], [52, 84, 320, 110], [18, 92, 380, 120], [72, 30, 160, 50]].map(([l, t, w, h], i) => `<span class="lp-cloud${i === 3 ? ' big' : ''}" style="left:${l}%;top:${t}%;width:${w}px;height:${h}px"></span>`).join('');
+  function lpChallenge(page) {
+    const ph = LP_PH[page];
+    return `<div class="lp-demo" id="lp-demo"><div class="lp-demo-in"><button class="lp-mic" id="lp-mic" aria-label="Toca y habla">${LI(LP.mic)}</button>
+      <div class="lp-demo-tx"><small id="lp-dl">RETO · TOCA EL MICRÓFONO Y DI</small><b>“${ph.t}${page === 'ninos' ? '!' : ''}”</b><span class="lp-es">${ph.es}</span><div class="lp-wave" id="lp-wave">${[8, 14, 20, 12, 18, 10, 16, 22, 12, 8, 15, 19, 11, 7].map(x => `<i style="height:${x}px"></i>`).join('')}</div></div>
+      <button class="lp-ex" id="lp-ex" aria-label="Escuchar el ejemplo" title="Escuchar el ejemplo">${LI(LP.vol)}</button></div>
+      <div class="lp-gift">${MRI('gift')} Pronúncialo bien y gana <b>10% en tu primer mes</b></div><div class="lp-res" id="lp-res" hidden></div></div>`;
+  }
+  function heroAdult() {
+    const g = LP_GOALS.t;
+    return `<section class="lp-hero lp-a">${lpSky(40)}${lpClouds()}<span class="lp-badge b1"><i class="r">${LI(LP.user)}</i>Clases solo contigo</span><span class="lp-badge b2"><i class="g">${LI(LP.mic)}</i>Te corrige al hablar</span>
+      <div class="lp-in"><div class="lp-copy"><span class="lp-ey"><i class="lp-eyi a">${LPI.adult}</i>ADULTOS · DESDE 18 AÑOS</span>
+      <div class="lp-hrow"><h1>Tu inglés, cada día <em>más alto</em></h1><img class="lp-bal" src="mra-x-balloon1.webp" alt="Mr. Arrieta" draggable="false"></div>
+      <p class="lp-lead">La escuela donde <b>no eres un número</b>: <b>eliges tu profe</b>, clases <b>solo contigo</b> y practicas <b>a tu ritmo</b> con una plataforma que <b>te corrige</b>.</p>
+      <p class="lp-q">¿Para qué lo necesitas?</p><div class="lp-pills">${Object.keys(LP_GOALS).map(k => `<button type="button" data-goal="${k}" class="${k === 't' ? 'on' : ''}">${LI(LP[LP_GOALS[k][0]])} ${LP_GOALS[k][1]}</button>`).join('')}</div>
+      <div class="lp-ans" id="lp-ans">${LI(LP.ok)} ${g[2]}</div>
+      ${lpChallenge('adultos')}
+      <div class="lp-cta"><button class="btn r lg" data-trial>${MRI('gift')} Prueba gratis 3 días</button></div><div class="lp-trust"><span>${LI(LP.ok)} Sin tarjeta</span><span>${LI(LP.ok)} +300 estudiantes</span><span>${LI(LP.ok)} Mes a mes</span></div></div></div></section>`;
+  }
+  const LP_AGE = (a) => a <= 12 ? ['k', 'Experiencia Kids', 'Camino de aventuras, medallas y juegos. ' + (a < 12 ? 'Tú apruebas sus clases.' : 'Tú ves todo su progreso.')] : ['t', 'Experiencia Teens', 'Misiones, XP y ranking con temas de su mundo. Reserva solo y tú ves todo.'];
+  function heroKids() {
+    const A = LP_AGE(10);
+    return `<section class="lp-hero lp-k"><span class="lp-sun"></span>${lpClouds()}<span class="lp-badge b1"><i class="r">${LI(LP.medal)}</i>Medallas y misiones</span><span class="lp-badge b2"><i class="n">${LI(LP.pad)}</i>Juegos con voces reales</span>
+      <div class="lp-in"><div class="lp-copy"><span class="lp-ey"><i class="lp-eyi k">${LPI.kids}</i>NIÑOS Y JÓVENES · 9 A 17 AÑOS</span>
+      <div class="lp-hrow"><h1>El inglés que tus hijos <em>sí quieren</em> practicar</h1><img class="lp-bal" src="mra-x-balloon2.webp" alt="Mr. Arrieta" draggable="false"></div>
+      <p class="lp-lead">Una aventura hecha para su edad: hablan, juegan y ganan medallas. Clases solo con su profe, y tú ves todo su progreso.</p>
+      <div class="lp-age"><div class="lp-age-h"><b>¿Qué edad tiene tu hijo(a)?</b><span id="lp-av">10 años</span></div><input type="range" id="lp-ar" min="9" max="17" value="10" aria-label="Edad"><div class="lp-agel"><span>9</span><span>12</span><span>17</span></div>
+      <div class="lp-pv"><span class="pi k" id="lp-pi">${LI(LP.star)}</span><div><b id="lp-pt">${A[1]}</b><small id="lp-pd">${A[2]}</small></div></div></div>
+      ${lpChallenge('ninos')}
+      <div class="lp-cta"><button class="btn k lg" data-trial data-kid>${MRI('gift')} Prueba gratis para mi hijo(a)</button></div><div class="lp-trust"><span>${LI(LP.shield)} Clases sin grabación</span><span>${LI(LP.ok)} Reporte cada lunes</span><span>${LI(LP.ok)} Sin tarjeta</span></div></div></div></section>`;
+  }
+  function kidsSections() {
+    const ci = (ic, t, d) => `<div class="lp-ci"><span class="ic">${LI(LP[ic])}</span><div><b>${t}</b><span>${d}</span></div></div>`;
+    return `<section class="ld-sec lp-exp"><h2>Una experiencia para cada edad</h2><p class="ld-sub">Mismos niveles A1 a B2+, con temas de su mundo</p><div class="lp-two">
+        <div class="lp-xc k"><small>9 A 12 AÑOS</small><b>Kids</b><ul><li>${LI(LP.ok)} Camino de aventuras y medallas</li><li>${LI(LP.ok)} Juegos con voces reales</li><li>${LI(LP.ok)} Temas: familia, mascotas, colegio</li></ul></div>
+        <div class="lp-xc t"><small>13 A 17 AÑOS</small><b>Teens</b><ul><li>${LI(LP.ok)} Misiones, XP y ranking</li><li>${LI(LP.ok)} Series, videojuegos, redes, deportes</li><li>${LI(LP.ok)} Reservan sus clases solos</li></ul></div></div></section>
+      <section class="ld-sec" id="lp-control"><h2>Tú tienes el control</h2><p class="ld-sub">El panel de papás, incluido en todos los planes</p><div class="card lp-ctrl">
+        ${ci('chart', 'Su progreso en vivo', 'Temas, minutos de práctica, pronunciación y notas.')}${ci('check', 'Apruebas sus clases', 'Menores de 12: cada reserva pasa por ti.')}${ci('mail', 'Reporte cada lunes', 'Con el comentario del profe y lo que debe reforzar.')}${ci('shield', 'Seguro y privado', 'Clases sin grabación, solo en nuestra plataforma.')}</div></section>`;
+  }
+  // ---------- comportamiento de las páginas de Adultos y de Niños y jóvenes ----------
+  const PZK = 'mra_prize_v1';
+  const prizeGet = () => { try { const x = JSON.parse(localStorage.getItem(PZK) || 'null'); return x && x.code ? x : null; } catch (e) { return null; } };
+  function lpWire() {
+    $$('[data-goal]').forEach(b => b.onclick = () => { $$('[data-goal]').forEach(x => x.classList.toggle('on', x === b)); const g = LP_GOALS[b.dataset.goal]; const a = $('#lp-ans'); if (a) { a.innerHTML = LI(LP.ok) + ' ' + g[2]; a.classList.remove('pop'); void a.offsetWidth; a.classList.add('pop'); } });
+    const ar = $('#lp-ar'); if (ar) { const paint = () => { const v = +ar.value, A = LP_AGE(v); $('#lp-av').textContent = v + ' años'; $('#lp-pt').textContent = A[1]; $('#lp-pd').textContent = A[2]; $('#lp-pi').className = 'pi ' + A[0]; ar.style.setProperty('--p', ((v - 9) / 8 * 100) + '%'); }; ar.oninput = paint; paint(); }
+    // 📱 en celular el globo va al lado del título
+    lpChallengeWire();
+  }
+  function lpChallengeWire() {
+    const box = $('#lp-demo'); if (!box) return; const ph = LP_PH[PAGE]; const res = $('#lp-res'), mic = $('#lp-mic');
+    M.loadAudio(['promo']);
+    $('#lp-ex').onclick = () => M.play(ph.au);
+    const have = prizeGet(); if (have && Date.parse(have.expires + '-05:00') > Date.now()) { showOwned(have); }
+    let busy = false, tries = 0;
+    mic.onclick = async () => {
+      if (busy) return; const h0 = prizeGet(); if (h0) return showOwned(h0, true);
+      if (!M.canSR) { res.hidden = false; res.innerHTML = `<p class="lp-rmsg">Para el reto, abre esta página en <b>Google Chrome</b> y permite el micrófono.</p>`; return; }
+      busy = true; tries++; box.classList.add('rec'); $('#lp-dl').textContent = 'TE ESTAMOS ESCUCHANDO…'; res.hidden = true;
+      const r = await M.listen(9000, { quick: true }); busy = false; box.classList.remove('rec'); $('#lp-dl').textContent = 'RETO · TOCA EL MICRÓFONO Y DI';
+      if (!r.alts || !r.alts.length) { res.hidden = false; res.innerHTML = `<p class="lp-rmsg">${r.error === 'not-allowed' || r.error === 'service-not-allowed' ? 'Permite el micrófono para jugar el reto.' : 'No te escuchamos. Toca el micrófono y habla un poco más fuerte.'}</p>`; return; }
+      const sc = M.speechScore(ph.t, r.alts); const W = ph.t.split(' ');
+      if (sc.score >= 100) return prizeWin(sc.score);
+      res.hidden = false; res.innerHTML = `<div class="lp-almost"><b>¡Casi! ${sc.score}%</b><div class="lp-wd">${W.map((w, k) => `<span class="${sc.hit[k] ? 'ok' : 'bad'}">${esc(w)}</span>`).join('')}</div><p>Escucha el ejemplo ${LI(LP.vol)} y vuelve a intentarlo. ${tries >= 3 ? '¡Tú puedes!' : ''}</p></div>`;
+    };
+    function showOwned(x, toast) { const st = Date.parse(x.expires + '-05:00') > Date.now();
+      res.hidden = false; res.innerHTML = st ? `<div class="lp-own">${MRI('gift')} <span>Ya ganaste tu premio: <b>${esc(x.code)}</b> · 10% en tu primer mes · válido hasta el ${esc(x.until || '')}</span></div>` : `<div class="lp-own off">Tu premio ${esc(x.code)} ya venció.</div>`; if (toast) M.toast('Ya ganaste tu premio: es uno por persona.'); }
+  }
+  function prizeWin(score) {
+    try { M.confetti && M.confetti(2600); } catch (e) { } sfx('win');
+    const m = M.modal(`<div class="lp-win"><div class="lp-win-top"><img src="mra-celebrate.webp" alt="Mr. Arrieta"></div><span class="lp-sc">${LI(LP.ok)} PRONUNCIACIÓN ${score}% · ¡EXCELENTE!</span>
+      <h3>¡Ganaste <b>10%</b> en tu primer mes!</h3><p>Déjanos tus datos para guardar tu premio. Te lo enviamos por WhatsApp.</p>
+      <input class="inp" id="pz-n" placeholder="${PAGE === 'ninos' ? 'Nombre del papá o la mamá' : 'Tu nombre y apellido'}" autocomplete="name"><input class="inp" id="pz-w" type="tel" placeholder="WhatsApp" autocomplete="tel">
+      <label class="tf-ok"><input type="checkbox" id="pz-c"> <span>Autorizo a mrarrieta.com a contactarme por WhatsApp y a tratar mis datos según su <a href="privacidad.html" target="_blank" rel="noopener">política de privacidad</a>.</span></label>
+      <button class="btn r block lg" id="pz-go">Guardar mi premio →</button><p class="muted center" id="pz-m" style="font-size:13px;margin:6px 0 0"></p>
+      <p class="lp-terms">Un premio por persona · válido 3 días · solo para clientes nuevos · no se suma con otros descuentos.</p></div>`, { x: true });
+    const msg = (t) => { $('#pz-m', m).textContent = t; };
+    $('#pz-go', m).onclick = async () => {
+      const name = $('#pz-n', m).value.trim(), wa = $('#pz-w', m).value.trim();
+      if (name.split(/\s+/).length < 2) return msg('Escribe nombre y apellido.'); if (wa.replace(/\D/g, '').length < 10) return msg('Revisa el número de WhatsApp (10 dígitos).'); if (!$('#pz-c', m).checked) return msg('Marca la casilla para continuar.');
+      const b = $('#pz-go', m); b.disabled = true; b.textContent = 'Guardando…';
+      const r = await MRAC.call('prizeClaim', { name, whatsapp: wa, score, phrase: LP_PH[PAGE].t, page: PAGE }).catch(() => null);
+      if (!r || !r.ok) { b.disabled = false; b.textContent = 'Guardar mi premio →'; return msg(r && r.err === 'not_new' ? 'Este premio es solo para clientes nuevos. ¡Gracias por ser parte de mrarrieta.com!' : 'No se pudo guardar. Revisa tu conexión e inténtalo de nuevo.'); }
+      try { localStorage.setItem(PZK, JSON.stringify({ code: r.code, expires: r.expires, until: r.until })); if (r.state === 'activo') localStorage.setItem('mra_ref', r.code); } catch (e) { }
+      const left = () => { const ms = new Date(r.expires + '-05:00').getTime() - Date.now(); if (ms <= 0) return [0, 0, 0]; return [Math.floor(ms / 864e5), Math.floor(ms / 36e5) % 24, Math.floor(ms / 6e4) % 60]; };
+      m.querySelector('.card').innerHTML = r.state !== 'activo' ? `<div class="lp-win"><h3>Tu premio ya venció</h3><p>El código ${esc(r.code)} venció el ${esc(r.until)}. El premio es uno por persona.</p><button class="btn k block" id="pz-x">Entendido</button></div>`
+        : `<div class="lp-win"><span class="lp-sc">${LI(LP.ok)} ${r.existing ? 'YA TENÍAS UN PREMIO' : '¡PREMIO GUARDADO!'}</span><h3>Tu 10% en el primer mes</h3>
+        <div class="lp-cp"><small>TU CÓDIGO</small><b>${esc(r.code)}</b><button class="lp-cpb" id="pz-cp" aria-label="Copiar">${LI(LP.copy)}</button><span class="lp-pc">−10%</span></div>
+        <p class="lp-val">${LI(LP.cal)} Válido hasta el <b>${esc(r.until)}</b></p><div class="lp-cd" id="pz-cd"></div>
+        <p class="muted" style="font-size:13px">Úsalo al pagar tu primer mes con el mismo WhatsApp. Ya quedó guardado en este equipo.</p>
+        <a class="btn r block lg" href="#ld-planes" id="pz-pl">Usarlo ahora: ver planes</a><button class="btn w block" id="pz-x" style="margin-top:8px">Cerrar</button></div>`;
+      const cd = $('#pz-cd', m); const tick = () => { if (!document.body.contains(cd)) return clearInterval(tm); const [d, hh, mm] = left(); cd.innerHTML = `<span>${d}<small>DÍAS</small></span><span>${hh}<small>HORAS</small></span><span>${mm}<small>MIN</small></span>`; }; let tm; if (cd) { tick(); tm = setInterval(tick, 30000); }
+      const cp = $('#pz-cp', m); if (cp) cp.onclick = () => { try { navigator.clipboard.writeText(r.code); M.toast('Código copiado'); } catch (e) { } };
+      const pl = $('#pz-pl', m); if (pl) pl.onclick = (e) => { e.preventDefault(); m.remove(); const s2 = $('#ld-planes'); if (s2) s2.scrollIntoView({ behavior: 'smooth' }); };
+      $('#pz-x', m).onclick = () => m.remove();
+      const res = $('#lp-res'); if (res && r.state === 'activo') { res.hidden = false; res.innerHTML = `<div class="lp-own">${MRI('gift')} <span>Ganaste tu premio: <b>${esc(r.code)}</b> · 10% en tu primer mes · válido hasta el ${esc(r.until)}</span></div>`; }
+    };
+  }
   // 🌟 página de entrada: hero con el ingreso, planes, testimonios, beneficios y cómo funciona
   function landing() {
     const card = $('.pt-login'); if (!card || !window.MRI) return;
-    const tb = $('#topbar .tb-tag'); if (tb) tb.outerHTML = `<nav class="ld-nav"><a href="#ld-planes">Planes</a><a href="#ld-ganas">Beneficios</a><a href="#ld-profes">Profes</a><a href="#ld-testimonios">Testimonios</a>${(() => { let lr = null; try { lr = JSON.parse(localStorage.getItem('mra_last_role') || 'null'); } catch (e) { } // 🔑 reconocido en este equipo: estudiante, profe o administración
-      if (lr && lr.role === 'teacher') return '<a class="btn r sm" href="profesores.html">Entrar</a>'; if (lr && lr.role === 'admin') return '<a class="btn r sm" href="administracion.html">Entrar</a>';
-      return (P.lastUser() || {}).first ? '<button class="btn r sm" data-goin>Entrar</button>' : '<button class="btn r sm" data-trial>Empieza gratis</button>'; })()}</nav>`;
+    const LOGIN_IC = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mri"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/></svg>';
+    const tb = $('#topbar .tb-tag'); if (tb) tb.outerHTML = PAGE === 'home' ? `<nav class="ld-nav ld-nav-h"><button class="btn k sm ld-in" data-goin>${LOGIN_IC} Ingresar</button></nav>`
+      : `<nav class="ld-nav"><a href="#ld-planes">Planes</a>${PAGE === 'adultos' ? '<a href="#ld-testimonios">Testimonios</a>' : '<a href="#lp-control">Papás</a>'}<a href="#ld-profes">Profes</a><a class="btn w sm ld-back" href="index.html">← Inicio</a></nav>`;
     if (!window.__ldNav) { window.__ldNav = 1; document.addEventListener('click', (e) => {
       const gi = e.target.closest('[data-goin]'); if (gi) { const lg = document.querySelector('.ld-login .pt-login') || document.querySelector('.ld-login'); if (lg) { const bar = (document.getElementById('topbar') || { offsetHeight: 0 }).offsetHeight; scrollTo({ top: Math.max(0, scrollY + lg.getBoundingClientRect().top - bar - 12), behavior: 'smooth' }); const inp = lg.querySelector('input'); if (inp) setTimeout(() => inp.focus({ preventScroll: true }), 450); } return; } // 🔑 estudiante reconocido: directo a escribir su código // 🧭 el menú muestra la sección completa (sin quedar tapada por la barra de arriba)
       const a = e.target.closest('a[href^="#ld-"]'); if (!a) return; const sec = document.querySelector(a.getAttribute('href')); if (!sec) return; e.preventDefault();
@@ -121,9 +240,13 @@
       { id: 'premium8', icon: '💎', name: 'PREMIUM · 8 CLASES', price: pp('premium8').price || '$289.900', per: 'COP/mes', tag: '+ 8 clases con profe', perks: (PL.BEN || {}).premium8 || [], best: true }];
     const GAN = [['check', 'r', 'Hablas desde el día 1', 'La plataforma te escucha y te corrige'], ['user', 'b', 'Clases 1 a 1 con profes reales', 'Tú eliges profe, día y hora'], ['award', 'g', 'Del A1 al B2+ con certificado', 'Una ruta clara para cada nivel'], ['clock', 'y', '100% online, a tu ritmo', 'Desde tu celular, cuando quieras']];
     const wrap = document.createElement('div'); wrap.className = 'ld';
-    wrap.innerHTML = `<section class="ld-hero"><div class="ld-copy"><h1>Aprende inglés <em>HABLANDO</em></h1><p class="ld-lead">La escuela donde <b>no eres un número</b>: <b>eliges tu profe</b>, clases <b>solo contigo</b> y practicas <b>a tu ritmo</b> con una plataforma que <b>te corrige</b>.</p>
-        <div class="ld-cta"><button class="btn k lg" data-trial>${MRI('gift')} Prueba gratis 3 días</button><a class="btn w lg" href="#ld-planes">${MRI('crown')} Ver planes</a></div><p class="ld-count-st"><b data-stc>+300</b> estudiantes ya hablan inglés con nosotros</p>
-        <img class="ld-hero-mra" src="mra-x-rocket4.webp?v=2" alt="Mr. Arrieta"></div><div class="ld-login"></div></section>
+    const PROF_ON = (window.MRPROFES || []).length;
+    const SEC_PLANES = `<section class="ld-sec" id="ld-planes"><h2>Elige tu plan</h2><p class="ld-sub">Pagos mes a mes · tarjeta o transferencia</p><div class="pv-grid n4">${['free', 'membership', 'premium', 'premium8'].map(k => `<a class="pv${PL.hot ? PL.hot(k) : ''}" ${k === 'free' ? 'href="#" data-trial' : `href="inscripcion.html?plan=${k}"`}>${PL.v2 ? PL.v2(k) : ''}</a>`).join('')}</div>${PL.trust ? PL.trust() : ''}</section>`, SEC_PROFES = PROF_ON ? `<section class="ld-sec" id="ld-profes"><h2>Conoce a tus profes</h2><p class="ld-sub">Profesionales bilingües con formación en la enseñanza del inglés</p><div class="ld-cylw"><div class="ld-pf ld-cyl">${pfGrid()}</div></div><div class="ld-cyln"><button class="ld-cyb" data-cy="-1" aria-label="Anterior">‹</button><div class="ld-cyd"></div><button class="ld-cyb" data-cy="1" aria-label="Siguiente">›</button></div></section>` : '';
+    wrap.innerHTML = PAGE === 'home' ? `<section class="ld-hero"><div class="ld-copy"><h1>Aprende inglés <em>HABLANDO</em></h1>${pathCards()}<p class="ld-lead">La escuela donde <b>no eres un número</b>: <b>eliges tu profe</b>, clases <b>solo contigo</b> y practicas <b>a tu ritmo</b> con una plataforma que <b>te corrige</b>.</p>
+        <div class="ld-cta"><button class="btn k lg" data-trial>${MRI('gift')} Prueba gratis 3 días</button></div><p class="ld-count-st"><b data-stc>+300</b> estudiantes ya hablan inglés con nosotros</p>
+        <img class="ld-hero-mra" src="mra-x-rocket4.webp?v=2" alt="Mr. Arrieta"></div><div class="ld-login"></div></section>`
+      : PAGE === 'ninos' ? heroKids() + kidsSections() + SEC_PLANES + SEC_PROFES + `<section class="ld-final card lp-final-k"><div><h2>Que tu hijo(a) pruebe gratis</h2><p>3 días · sin tarjeta · sin compromiso.</p></div><button class="btn r lg" data-trial data-kid>${MRI('gift')} Crear su acceso gratis</button></section>`
+      : heroAdult() + `
       <section class="ld-sec" id="ld-planes"><h2>Elige tu plan</h2><p class="ld-sub">Pagos mes a mes · tarjeta o transferencia</p><div class="pv-grid n4">${['free', 'membership', 'premium', 'premium8'].map(k => `<a class="pv${PL.hot ? PL.hot(k) : ''}" ${k === 'free' ? 'href="#" data-trial' : `href="inscripcion.html?plan=${k}"`}>${PL.v2 ? PL.v2(k) : ''}</a>`).join('')}</div>${PL.trust ? PL.trust() : ''}</section>
       <section class="ld-sec ld-tesbox card" id="ld-testimonios"${T.length ? '' : ' hidden'}><h2>Lo que dicen nuestros estudiantes</h2><p class="ld-sub">Testimonios reales en video</p><div class="ld-tes">${tesGrid()}</div></section>
       ${(window.MRPROFES || []).length ? `<section class="ld-ref" id="ld-ref"><div class="grow"><span><b class="ld-ref-k">Recomiéndanos:</b> tu amigo recibe <b>10% de descuento</b> y tú ganas <b>15%</b> en tu primer mes si luego te inscribes.</span></div><a class="btn r" href="recomienda.html">Quiero recomendar →</a></section>
@@ -134,14 +257,16 @@
         <form class="ld-newsf" id="ld-newsf"><input class="inp" id="nw-n" placeholder="Tu nombre" autocomplete="name"><input class="inp" id="nw-e" type="email" placeholder="Tu correo" autocomplete="email"><button class="btn k" type="submit">Quiero recibirlos</button>
         <label class="tf-ok"><input type="checkbox" id="nw-c"> Acepto recibir correos de mrarrieta.com. Puedo darme de baja cuando quiera.</label><p class="muted" id="nw-m" style="margin:0;font-size:13.5px"></p></form></section>
       <section class="ld-final card"><div><h2>¿Listo para hablar inglés?</h2><p>Empieza hoy tu prueba gratis de 3 días. Sin tarjeta, sin compromiso.</p></div><button class="btn r lg" data-trial>${MRI('gift')} Empezar gratis</button></section>`;
+    if (PAGE !== 'home') wrap.classList.add('lp-page', 'lp-' + PAGE);
     const pw = card.closest('.pt-wrap'); if (pw) pw.classList.add('ld-on');
-    card.parentNode.insertBefore(wrap, card); wrap.querySelector('.ld-login').appendChild(card);
+    card.parentNode.insertBefore(wrap, card); { const ll = wrap.querySelector('.ld-login'); if (ll) ll.appendChild(card); else { const hid = document.createElement('div'); hid.hidden = true; hid.className = 'lp-hid'; wrap.appendChild(hid); hid.appendChild(card); } }
+    if (PAGE !== 'home') lpWire();
     const free = $('.pt-free'); if (free) free.remove();
     const or = $('.pt-or'); if (or) or.innerHTML = `<a href="#" data-trial class="pt-trialk">🎁 Prueba gratis 3 días</a>`;
     const links = $('.pt-links'); if (links) links.remove();
     const WAN = (C.WHATSAPP || '573017810841');
     wrap.insertAdjacentHTML('afterend', `<footer class="ld-foot"><div class="ld-foot-in"><div><h4>mrarrieta.com</h4><p>Aprende inglés HABLANDO con la metodología RealTalk®. Clases 100% online.</p></div>
-      <div><h4>Escuela</h4><a href="#ld-planes">Planes</a><a href="recomienda.html">Recomienda y gana</a><a href="politica.html">Política de reservas</a><a href="privacidad.html">Política de privacidad</a></div>
+      <div><h4>Escuela</h4><a href="${PAGE === 'home' ? 'adultos.html#ld-planes' : '#ld-planes'}">Planes</a><a href="adultos.html">Inglés para adultos</a><a href="ninos.html">Niños y jóvenes</a><a href="recomienda.html">Recomienda y gana</a><a href="politica.html">Política de reservas</a><a href="privacidad.html">Política de privacidad</a></div>
       <div><h4>Equipo</h4><a href="reclutamiento.html">Trabaja con nosotros</a></div>
       <div><h4>Contacto</h4><a target="_blank" rel="noopener" href="https://wa.me/${WAN}">WhatsApp ${esc(WAN.replace(/^57/, '').replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3'))}</a><span>Lun–vie 7 a. m.–9 p. m. · Sáb 7 a. m.–5 p. m.</span><span>Pagos: tarjeta (Mercado Pago), Nequi y Llave (Breve-B)</span></div></div>
       <p class="ld-copy-r">© ${new Date().getFullYear()} mrarrieta.com · Todos los derechos reservados</p></footer>
@@ -251,32 +376,34 @@
         <ul class="ld-pfinfo">${p.info.map(x => `<li>${MRI('check')}<span>${esc(x)}</span></li>`).join('')}</ul>
         ${L.length ? `<h4 class="ld-pfrh">Opiniones de estudiantes</h4><div class="ld-revs">${L.slice(0, 40).map(x => `<div class="ld-rev">${starsHTML(x.stars)}${x.text ? `<p>“${esc(x.text)}”</p>` : ''}<small>${esc(x.student)} · ${esc(x.date)}</small></div>`).join('')}</div>` : ''}`, { x: true }); });
   }
-  function trialClick(e) { const b = e.target.closest && e.target.closest('[data-trial]'); if (!b) return; e.preventDefault(); trialForm(); }
+  function trialClick(e) { const b = e.target.closest && e.target.closest('[data-trial]'); if (!b) return; e.preventDefault(); trialForm(b.hasAttribute('data-kid') || PAGE === 'ninos'); }
   // 🎁 acceso gratuito automático: nombre, WhatsApp y correo → se crea el código y entra de una
-  function trialForm() {
+  function trialForm(kidFirst) {
     const m = M.modal(`<div class="center"><div class="to-ic">${MRI('gift')}</div><h3>Prueba gratis 3 días</h3><p class="muted to-what">Pruebas <b>la plataforma</b>: tu prueba de nivel y los primeros temas de tu ruta, con práctica que te escucha y te corrige. <b>No incluye clases con profe.</b></p><p class="muted" style="font-size:13px;margin-top:-4px">Sin tarjeta, sin compromiso.</p></div>
       <div class="tf"><div class="tf-who" role="tablist"><button type="button" class="on" data-who="me">Para mí</button><button type="button" data-who="kid">Para mi hijo(a)</button></div>
-      <input class="inp" id="tf-n" placeholder="Nombre y apellido" autocomplete="name"><input class="inp tf-k hidden" id="tf-g" placeholder="Nombre del papá o la mamá" autocomplete="name"><input class="inp" id="tf-w" type="tel" placeholder="WhatsApp" autocomplete="tel"><input class="inp" id="tf-e" type="email" placeholder="Correo" autocomplete="email"><input class="inp tf-k hidden" id="tf-e2" type="email" placeholder="Correo del otro padre o madre (opcional)">
+      <input class="inp" id="tf-n" placeholder="Nombre y apellido" autocomplete="name"><label class="tf-bd tf-k hidden"><span>Fecha de nacimiento del niño(a)</span><input class="inp" id="tf-b" type="date" max="${new Date().toISOString().slice(0, 10)}"><small>Con su edad lo llevamos a su experiencia: <b>Kids</b> (9 a 12) o <b>Teens</b> (13 a 17).</small></label><input class="inp tf-k hidden" id="tf-g" placeholder="Nombre del papá o la mamá" autocomplete="name"><input class="inp" id="tf-w" type="tel" placeholder="WhatsApp" autocomplete="tel"><input class="inp" id="tf-e" type="email" placeholder="Correo" autocomplete="email"><input class="inp tf-k hidden" id="tf-e2" type="email" placeholder="Correo del otro padre o madre (opcional)">
       <label class="tf-ok"><input type="checkbox" id="tf-c"> <span id="tf-ct">Autorizo a mrarrieta.com a contactarme por correo y WhatsApp y a tratar mis datos según su <a href="privacidad.html" target="_blank" rel="noopener">política de privacidad</a>.</span></label>
       <button class="btn r block lg" id="tf-go">Crear mi acceso gratis →</button><p class="muted center" id="tf-msg" style="font-size:13.5px;margin:0"></p></div>`, { x: true });
     const msg = (t) => { $('#tf-msg', m).textContent = t; }; let kid = false;
     m.querySelectorAll('[data-who]').forEach(b => b.onclick = () => { kid = b.dataset.who === 'kid'; m.querySelectorAll('[data-who]').forEach(x => x.classList.toggle('on', x === b)); m.querySelectorAll('.tf-k').forEach(x => x.classList.toggle('hidden', !kid)); msg('');
       $('#tf-n', m).placeholder = kid ? 'Nombre y apellido del niño(a)' : 'Nombre y apellido'; $('#tf-w', m).placeholder = kid ? 'WhatsApp del papá o la mamá' : 'WhatsApp'; $('#tf-e', m).placeholder = kid ? 'Correo del papá o la mamá' : 'Correo';
       const POL = '<a href="privacidad.html" target="_blank" rel="noopener">política de privacidad</a>'; $('#tf-ct', m).innerHTML = (kid ? 'Soy el papá, la mamá o el acudiente del niño(a). Autorizo a mrarrieta.com a contactarme por correo y WhatsApp y a tratar sus datos y los míos según su ' : 'Autorizo a mrarrieta.com a contactarme por correo y WhatsApp y a tratar mis datos según su ') + POL + '.'; });
+    if (kidFirst) { const kb = m.querySelector('[data-who="kid"]'); if (kb) kb.click(); }
     $('#tf-go', m).onclick = async () => {
       const name = $('#tf-n', m).value.trim(), whatsapp = $('#tf-w', m).value.trim(), email = $('#tf-e', m).value.trim(), guardian = $('#tf-g', m).value.trim(), email2 = $('#tf-e2', m).value.trim();
       if (name.split(/\s+/).length < 2) return msg(kid ? 'Escribe el nombre y apellido del niño(a).' : 'Escribe tu nombre y apellido.');
       if (kid && guardian.split(/\s+/).length < 2) return msg('Escribe el nombre y apellido del papá o la mamá.');
+      const birth = kid ? ($('#tf-b', m).value || '') : ''; if (kid) { if (!birth) return msg('Escribe la fecha de nacimiento del niño(a).'); const t = new Date(), bd = new Date(birth + 'T12:00:00'); let age = t.getFullYear() - bd.getFullYear(); if (t.getMonth() < bd.getMonth() || (t.getMonth() === bd.getMonth() && t.getDate() < bd.getDate())) age--; if (age < 9 || age > 17) return msg(age < 9 ? 'La escuela recibe niños desde los 9 años.' : 'Para mayores de 18 años elige «Para mí».'); }
       if (whatsapp.replace(/\D/g, '').length < 7) return msg('Revisa el número de WhatsApp.');
       if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return msg('Revisa el correo.');
       if (kid && email2 && (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email2) || email2.toLowerCase() === email.toLowerCase())) return msg('Revisa el segundo correo (debe ser diferente al primero).');
       if (!$('#tf-c', m).checked) return msg('Marca la casilla para continuar.');
       const b = $('#tf-go', m); b.disabled = true; b.textContent = '⏳ Creando tu acceso…';
-      setVName(name); const r = await MRAC.call('trialSignup', kid ? { name, whatsapp, email, kid: true, guardian, email2 } : { name, whatsapp, email }).catch(() => null);
+      setVName(name); const r = await MRAC.call('trialSignup', kid ? { name, whatsapp, email, kid: true, guardian, email2, birth } : { name, whatsapp, email }).catch(() => null);
       if (!r || !r.ok) { b.disabled = false; b.textContent = 'Crear mi acceso gratis →'; return msg(r && r.err === 'family' ? 'Esta familia ya tiene 3 pruebas gratis. Para otro hijo(a), escríbenos por WhatsApp o elige un plan.' : r && r.err === 'busy' ? 'Hay muchas solicitudes en este momento. Inténtalo en unos minutos.' : 'No se pudo crear tu acceso. Revisa tus datos e inténtalo de nuevo.'); }
       if (r.exists) { m.querySelector('.card').innerHTML = `<div class="center"><div class="to-ic">${MRI('clock')}</div><h3>Estos datos ya están registrados</h3><p>El acceso gratuito de 3 días es <b>solo una vez por persona</b>. Si ya eres estudiante, entra con tu código en "Ingresa a tu perfil". Si quieres continuar, elige tu plan.</p><a class="btn k block lg" href="#ld-planes" id="tf-pl">Ver planes →</a></div>`; $('#tf-pl', m).onclick = () => m.remove(); return; }
       m.querySelector('.card').innerHTML = `<div class="center">${M.mascot('mascot bounce', 'celebrate')}<h3>¡Listo, ${esc(r.first)}! 🎉</h3><p>Tu código de acceso es</p><div class="rc-code" style="font:800 28px Poppins,sans-serif;color:#0B2A5B;letter-spacing:.06em;background:#EEF3FB;border:2px dashed #9fb3d6;border-radius:14px;padding:8px 18px;display:inline-block;margin:6px 0">${esc(r.code)}</div><p class="muted">${kid ? 'También lo enviamos ' + (email2 ? 'a los dos correos' : 'al correo') + ' de los padres.' : 'También te lo enviamos al correo.'} Guárdalo para entrar después.</p><button class="btn r block lg" id="tf-in">Entrar a mi prueba gratis →</button></div>`;
-      $('#tf-in', m).onclick = () => { m.remove(); const i = $('#cd'); if (i) { i.value = r.code; $('#ok').click(); } };
+      $('#tf-in', m).onclick = () => { m.remove(); if (PAGE !== 'home') { try { sessionStorage.setItem('mra_autocode', r.code); } catch (e) { } location.href = 'index.html'; return; } const i = $('#cd'); if (i) { i.value = r.code; $('#ok').click(); } };
     };
   }
   // ✨ bienvenida en la página de entrada: lluvia de estrellas doradas y destellos (1 vez por visita) → luego vuela Mr. Arrieta
@@ -345,8 +472,9 @@
         <a class="btn w block pt-insc" href="inscripcion.html">📝 Formulario de inscripción</a></div></div>
       <p class="center pt-links"><a href="recomienda.html"><b>🤝 Recomienda y gana</b></a> · <a href="reclutamiento.html">👩‍🏫 Trabaja con nosotros</a> · <a href="profesores.html">🧑‍🏫 Soy profesor</a> · <a href="administracion.html">🔐 Administración</a></p></div>`;
     landing();
-    welcomeFx(); // ✨ lluvia de estrellas de bienvenida y después el vuelo de Mr. Arrieta
+    if (PAGE === 'home') welcomeFx(); // ✨ lluvia de estrellas de bienvenida y después el vuelo de Mr. Arrieta
     const i = $('#cd'); setTimeout(() => { if (window.innerWidth > 900) i.focus(); }, 200);
+    if (PAGE === 'home') { let ac = ''; try { ac = sessionStorage.getItem('mra_autocode') || ''; sessionStorage.removeItem('mra_autocode'); } catch (e) { } if (ac) setTimeout(() => { i.value = ac; $('#ok').click(); }, 400); }
     const bad = (msg) => { i.classList.add('wrong'); sfx('bad'); setTimeout(() => i.classList.remove('wrong'), 500); M.toast(msg || 'Código no válido 😕'); };
     const go = async () => { try { if (window.speechSynthesis) { const w = new SpeechSynthesisUtterance(' '); w.volume = 0; speechSynthesis.speak(w); } } catch (e) { } // desbloquea la voz en iPhone
       const v = i.value.trim(); if (!v) return bad('Escribe tu código 🙂');
