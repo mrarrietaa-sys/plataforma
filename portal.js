@@ -119,7 +119,7 @@
       { id: 'membership', icon: '🖥️', name: 'PLATAFORMA', price: pp('membership').price || '$59.900', per: 'COP/mes', tag: 'Aprende a tu ritmo', perks: (PL.BEN || {}).membership ? PL.BEN.membership.filter(b => !/^No incluye/.test(b)) : [], note: 'No incluye clases individuales.' },
       { id: 'premium', icon: '👑', name: 'PREMIUM · 4 CLASES', price: pp('premium').price || '$169.900', per: 'COP/mes', tag: '+ 4 clases con profe', perks: (PL.BEN || {}).premium || [] },
       { id: 'premium8', icon: '💎', name: 'PREMIUM · 8 CLASES', price: pp('premium8').price || '$289.900', per: 'COP/mes', tag: '+ 8 clases con profe', perks: (PL.BEN || {}).premium8 || [], best: true }];
-    const GAN = [['user', 'r', 'Clases 1 a 1', 'Con profes reales, a tu ritmo'], ['monitor', 'b', '100% online', 'Desde tu celular o computador'], ['award', 'g', 'Certificados', 'Al terminar cada módulo'], ['clock', 'y', 'A tu ritmo', 'Estudia cuando quieras'], ['compass', 'b', 'Ruta A1 → B2+', 'Sabes qué estudiar cada día'], ['check', 'r', 'Te escucha y te corrige', 'La plataforma corrige tu pronunciación al instante']];
+    const GAN = [['check', 'r', 'Hablas desde el día 1', 'La plataforma te escucha y te corrige'], ['user', 'b', 'Clases 1 a 1 con profes reales', 'Tú eliges profe, día y hora'], ['award', 'g', 'Del A1 al B2+ con certificado', 'Una ruta clara para cada nivel'], ['clock', 'y', '100% online, a tu ritmo', 'Desde tu celular, cuando quieras']];
     const wrap = document.createElement('div'); wrap.className = 'ld';
     wrap.innerHTML = `<section class="ld-hero"><div class="ld-copy"><h1>Aprende inglés <em>HABLANDO</em></h1><p class="ld-lead">La plataforma que <b>te escucha, te corrige y te pone a hablar</b> desde el primer día. <b>100% virtual</b>, a tu ritmo y con profes reales.</p>
         <div class="ld-cta"><button class="btn k lg" data-trial>${MRI('gift')} Prueba gratis 3 días</button><a class="btn w lg" href="#ld-planes">${MRI('crown')} Ver planes</a></div><p class="ld-count-st"><b data-stc>+300</b> estudiantes ya hablan inglés con nosotros</p>
@@ -138,12 +138,12 @@
     const pw = card.closest('.pt-wrap'); if (pw) pw.classList.add('ld-on');
     card.parentNode.insertBefore(wrap, card); wrap.querySelector('.ld-login').appendChild(card);
     const free = $('.pt-free'); if (free) free.remove();
-    const or = $('.pt-or'); if (or) or.innerHTML = `<span>¿Aún no eres estudiante? <a href="#" data-trial>Prueba gratis 3 días</a></span>`;
+    const or = $('.pt-or'); if (or) or.innerHTML = `<a href="#" data-trial class="pt-trialk">🎁 Prueba gratis 3 días</a>`;
     const links = $('.pt-links'); if (links) links.remove();
     const WAN = (C.WHATSAPP || '573017810841');
     wrap.insertAdjacentHTML('afterend', `<footer class="ld-foot"><div class="ld-foot-in"><div><h4>mrarrieta.com</h4><p>Aprende inglés HABLANDO con la metodología RealTalk®. Clases 100% online.</p></div>
       <div><h4>Escuela</h4><a href="#ld-planes">Planes</a><a href="recomienda.html">Recomienda y gana</a><a href="politica.html">Política de reservas</a><a href="privacidad.html">Política de privacidad</a></div>
-      <div><h4>Equipo</h4><a href="reclutamiento.html">Trabaja con nosotros</a><a href="profesores.html">Soy profesor</a><a href="administracion.html">Administración</a></div>
+      <div><h4>Equipo</h4><a href="reclutamiento.html">Trabaja con nosotros</a></div>
       <div><h4>Contacto</h4><a target="_blank" rel="noopener" href="https://wa.me/${WAN}">WhatsApp ${esc(WAN.replace(/^57/, '').replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3'))}</a><span>Lun–vie 7 a. m.–9 p. m. · Sáb 7 a. m.–5 p. m.</span><span>Pagos: tarjeta (Mercado Pago), Nequi y Llave (Breve-B)</span></div></div>
       <p class="ld-copy-r">© ${new Date().getFullYear()} mrarrieta.com · Todos los derechos reservados</p></footer>
       <div class="ld-wawrap" id="ld-wa"><button class="ld-wax" aria-label="Ocultar">✕</button><a class="ld-wa" target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp" href="${WA('¡Hola! Quiero información sobre las clases de inglés de mrarrieta.com')}"><svg viewBox="0 0 32 32" width="30" height="30" aria-hidden="true"><path fill="#fff" d="M16 3C8.8 3 3 8.6 3 15.6c0 2.5.8 4.9 2.1 6.9L3.6 28l5.7-1.5c2 1.1 4.3 1.7 6.7 1.7 7.2 0 13-5.6 13-12.6S23.2 3 16 3zm6.3 17.6c-.3.8-1.6 1.5-2.2 1.6-.6.1-1.3.1-2.1-.1-.5-.2-1.1-.4-1.9-.7-3.3-1.4-5.5-4.7-5.6-4.9-.2-.2-1.3-1.8-1.3-3.4s.8-2.4 1.1-2.7c.3-.3.6-.4.8-.4h.6c.2 0 .5-.1.7.6.3.7.9 2.3 1 2.5.1.2.1.4 0 .6-.1.2-.2.4-.3.6l-.5.6c-.2.2-.3.4-.1.7.2.3.9 1.5 2 2.4 1.4 1.2 2.5 1.6 2.9 1.8.4.2.6.1.8-.1.2-.2.9-1 1.1-1.4.2-.4.5-.3.8-.2.3.1 2 .9 2.3 1.1.3.2.6.3.7.4.1.3.1 1-.2 1.8z"/></svg></a></div>`);
@@ -223,6 +223,8 @@
     cards.forEach((d, i) => { d.style.transform = `rotateY(${i * st}deg) translateZ(${R}px)`; });
     const dots = $('#ld-profes .ld-cyd'); if (dots) dots.innerHTML = cards.map((_, i) => `<i data-i="${i}"></i>`).join('');
     let k = 0; const go = (to) => { k = to; const a = ((k % n) + n) % n; c.style.transform = `translateZ(-${R}px) rotateY(${-k * st}deg)`; cards.forEach((d, i) => d.classList.toggle('f', i === a)); if (dots) [...dots.children].forEach((x, i) => x.classList.toggle('on', i === a)); };
+    const fit = () => { c.style.height = 'auto'; cards.forEach(d => d.style.height = 'auto'); const H = Math.max(200, ...cards.map(d => d.scrollHeight)) + 4; c.style.height = H + 'px'; cards.forEach(d => d.style.height = H + 'px'); const w8 = $('#ld-profes .ld-cylw'); if (w8) w8.style.height = (H + 60) + 'px'; };
+    cylWire.fit = fit; fit(); setTimeout(fit, 400); cards.forEach(d => { const im = d.querySelector('img'); if (im && !im.complete) im.addEventListener('load', fit, { once: true }); });
     go(0); clearInterval(cylWire.t); let hold = 0; cylWire.t = setInterval(() => { if (!hold && !document.hidden) go(k + 1); }, 3000);
     const w8 = $('#ld-profes .ld-cylw'); w8.onmouseenter = () => hold = 1; w8.onmouseleave = () => hold = 0;
     $$('#ld-profes [data-cy]').forEach(b => b.onclick = () => { go(k + (+b.dataset.cy)); hold = 1; setTimeout(() => hold = 0, 6000); });
@@ -239,6 +241,7 @@
     const r = await MRAC.call('reviews', {}).catch(() => null); const all = (r && r.reviews) || [];
     const by = MRPROFES.map(p => { const k = nrm(p.name), f = k.split(' ')[0], l = k.split(' ').slice(-1)[0]; return all.filter(x => { const t = nrm(x.teacher); return t === k || (t.indexOf(f) >= 0 && t.indexOf(l) >= 0); }); });
     $$('[data-pf]').forEach(el => { const L = by[+el.dataset.pf]; if (!L.length) { el.innerHTML = ''; el.style.display = 'none'; return; } /* sin opiniones: solo su formación y experiencia */ const avg = L.reduce((a, x) => a + x.stars, 0) / L.length; el.innerHTML = starsHTML(avg) + ` <small><b>${avg.toFixed(1)}</b> · ${L.length} ${L.length === 1 ? 'opinión' : 'opiniones'}</small>`; const bt = $(`[data-pfr="${el.dataset.pf}"]`); if (bt) { bt.hidden = false; bt.textContent = `Ver opiniones (${L.length})`; } }); // el botón solo aparece si el profe tiene opiniones
+    try { cylWire.fit && cylWire.fit(); } catch (e) { }
     $$('[data-pfc]').forEach(c => c.addEventListener('click', e => { if (e.target.closest('[data-pfr]')) return; if (!c.classList.contains('f')) return; const b = c.querySelector('[data-pfr]'); if (b && b.onclick) b.onclick(); }));
     $$('[data-pfr]').forEach(b => b.onclick = () => { const p = MRPROFES[+b.dataset.pfr], L = by[+b.dataset.pfr];
       M.modal(`<div class="center"><img src="${esc(p.img)}" alt="" style="width:84px;height:84px;border-radius:50%;object-fit:cover"><h3 style="margin:8px 0 2px">${p.title === 'Director' ? 'Director' : esc(p.title)} ${esc(p.name)}</h3>${L.length ? starsHTML(L.reduce((a, x) => a + x.stars, 0) / L.length) + ` <small>${L.length} ${L.length === 1 ? 'opinión' : 'opiniones'}</small>` : ''}</div>
@@ -303,6 +306,10 @@
         if (r.err === 'moved') return bad('Este código gratuito ya no funciona: al activar tu plan te enviamos un código nuevo a tu correo. Entra con ese.');
         if (r.err === 'trial_over') { b.disabled = false; return trialOver(v); }
         if (r.err === 'network' || r.err === 'offline') return bad('No hay conexión con la nube. Revisa tu internet e inténtalo de nuevo.');
+        // 🔑 una sola entrada: clave de administración o código de profe
+        b.disabled = true; b.textContent = 'Entrando…'; const w = await MRAC.call('who', { k: v }).catch(() => null); b.disabled = false; b.textContent = 'Entrar →';
+        if (w && w.role === 'admin') { try { sessionStorage.setItem('mra_admin_key', v); localStorage.setItem('mra_last_role', JSON.stringify({ role: 'admin' })); } catch (e) { } location.href = 'administracion.html'; return; }
+        if (w && w.role === 'teacher' && w.tcode) { try { sessionStorage.setItem('mra_tp_session', JSON.stringify({ tcode: w.tcode, pin: w.pin })); localStorage.setItem('mra_last_role', JSON.stringify({ role: 'teacher' })); } catch (e) { } location.href = 'profesores.html'; return; }
         return bad();
       }
       // 2) códigos guardados en config.js (modo sin nube / profes)

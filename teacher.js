@@ -46,6 +46,7 @@
 
   /* ---------- entrada ---------- */
   function loginView(msg) {
+    if (!msg && MR.on) { try { location.replace('index.html'); return; } catch (e) { } } // 🔑 los profes entran con su clave en la página de entrada
     outBtn.classList.add('hidden');
     const off = !MR.on;
     app.innerHTML = `<section class="card tp-login center">
@@ -199,7 +200,7 @@
           <div class="tp-dd"><button class="tp-ddb" data-dd="me">👤 Mi cuenta <span class="car">▾</span><i class="tp-dot" id="tp-chatdot" hidden></i></button><div class="tp-ddm">
             <button class="tp-mi" id="tp-chat"><i class="ib4">💬</i><span><b>Chat con estudiantes</b><small>Responde dudas y tareas</small></span></button>
             <button class="tp-mi" id="tp-ct"><i class="ib">📄</i><span><b>Mi contrato</b><small>Leído y aceptado · descargar copia</small></span></button><button class="tp-mi" id="tp-pol"><i class="ib">📌</i><span><b>Política de clases</b><small>Puntualidad, pagos y compromisos</small></span></button>
-            <button class="tp-mi" id="tp-pinch"><i class="ib3">🔑</i><span><b>Cambiar PIN</b><small>Tu clave de acceso</small></span></button>
+            <button class="tp-mi" id="tp-pinch"><i class="ib3">🔑</i><span><b>Cambiar mi clave</b><small>Tu clave de acceso</small></span></button>
             <button class="tp-mi" id="tp-tour"><i class="ib5">🧭</i><span><b>Ver el tour</b><small>Cómo funciona tu portal</small></span></button></div></div>
         </div>
       </div>
@@ -218,18 +219,18 @@
     if ($('#tp-ct')) $('#tp-ct').onclick = async () => { const r = CT && !CT.needs ? CT : await api('tContract').catch(() => null); if (r && r.ok) contractModal(r); else toast(errText('network'), true); };
     if ($('#tp-pol')) $('#tp-pol').onclick = async () => { const r = await api('tPay').catch(() => null); window.MRPOLICY && MRPOLICY.showTeacher({ rate: r && r.rate, noshow: r && r.noshowRate, penalty: r && r.penalty, onAccept: () => toast('✅ Gracias por tu compromiso') }); }; // 📌 política (puntualidad, 15 minutos)
     if ($('#tp-pinch')) $('#tp-pinch').onclick = () => { // 🔑 cambiar PIN
-      const m = document.createElement('div'); m.className = 'modal'; m.innerHTML = `<div class="card"><button class="mx" aria-label="Cerrar">✕</button><h3>🔑 Cambiar mi PIN</h3><p class="muted">Usa de 4 a 8 números.</p>
-        <input class="inp" id="pc-old" type="password" autocapitalize="characters" placeholder="PIN actual" style="margin-bottom:8px"><input class="inp" id="pc-new" type="password" autocapitalize="characters" placeholder="Nuevo PIN" style="margin-bottom:8px"><input class="inp" id="pc-new2" type="password" autocapitalize="characters" placeholder="Repite el nuevo PIN">
-        <p id="pc-msg" style="color:#b91c1c;font-weight:700;min-height:20px;margin:8px 0;text-align:center"></p><button class="btn k block lg" id="pc-go">Guardar nuevo PIN</button></div>`; document.body.appendChild(m);
+      const m = document.createElement('div'); m.className = 'modal'; m.innerHTML = `<div class="card"><button class="mx" aria-label="Cerrar">✕</button><h3>🔑 Cambiar mi clave</h3><p class="muted">Usa de 6 a 16 letras o números. Con ella entras directo a tu portal desde la página de entrada.</p>
+        <input class="inp" id="pc-old" type="password" autocapitalize="characters" placeholder="Clave actual" style="margin-bottom:8px"><input class="inp" id="pc-new" type="password" autocapitalize="characters" placeholder="Nueva clave" style="margin-bottom:8px"><input class="inp" id="pc-new2" type="password" autocapitalize="characters" placeholder="Repite la nueva clave">
+        <p id="pc-msg" style="color:#b91c1c;font-weight:700;min-height:20px;margin:8px 0;text-align:center"></p><button class="btn k block lg" id="pc-go">Guardar nueva clave</button></div>`; document.body.appendChild(m);
       m.querySelector('.mx').onclick = () => m.remove(); m.onclick = (e) => { if (e.target === m) m.remove(); };
       m.querySelector('#pc-go').onclick = async () => { const o = m.querySelector('#pc-old').value.trim(), n = m.querySelector('#pc-new').value.trim(), n2 = m.querySelector('#pc-new2').value.trim(), msg = m.querySelector('#pc-msg');
-        if (o !== String(S.pin)) return msg.textContent = 'El PIN actual no es correcto.';
-        if (!/^[A-Za-z0-9]{4,12}$/.test(n)) return msg.textContent = 'Usa de 4 a 12 letras o números (sin espacios ni símbolos).';
-        if (n !== n2) return msg.textContent = 'Los dos PIN nuevos no coinciden.';
+        if (o !== String(S.pin)) return msg.textContent = 'La clave actual no es correcta.';
+        if (!/^[A-Za-z0-9]{6,16}$/.test(n)) return msg.textContent = 'Usa de 6 a 16 letras o números (sin espacios ni símbolos).';
+        if (n !== n2) return msg.textContent = 'Las dos claves nuevas no coinciden.';
         const b = m.querySelector('#pc-go'); b.disabled = true; b.textContent = 'Guardando…';
         const r = await api('tPinChange', { newPin: n }).catch(() => null);
-        if (r && r.ok) { S.pin = n; ss.set(SKEY, S); m.querySelector('.card').innerHTML = '<div style="text-align:center"><h3>✅ ¡Listo! Tu PIN cambió</h3><p>Desde ahora entra con tu nuevo PIN. Te enviamos una confirmación a tu correo.</p><button class="btn k block lg" id="pc-ok">Entendido</button></div>'; m.querySelector('#pc-ok').onclick = () => m.remove(); return; }
-        b.disabled = false; b.textContent = 'Guardar nuevo PIN'; msg.textContent = !r ? 'No hay conexión. Inténtalo de nuevo.' : r.err === 'same' ? 'El nuevo PIN es igual al actual.' : 'No se pudo cambiar. Inténtalo de nuevo.'; }; };
+        if (r && r.ok) { S.pin = n; ss.set(SKEY, S); m.querySelector('.card').innerHTML = '<div style="text-align:center"><h3>✅ ¡Listo! Tu clave cambió</h3><p>Desde ahora entra con tu nueva clave. Te enviamos una confirmación a tu correo.</p><button class="btn k block lg" id="pc-ok">Entendido</button></div>'; m.querySelector('#pc-ok').onclick = () => m.remove(); return; }
+        b.disabled = false; b.textContent = 'Guardar nueva clave'; msg.textContent = !r ? 'No hay conexión. Inténtalo de nuevo.' : r.err === 'same' ? 'La nueva clave es igual a la actual.' : r.err === 'taken' ? 'Esa clave no está disponible. Elige otra.' : 'No se pudo cambiar. Inténtalo de nuevo.'; }; };
     if ($('#tp-chat')) $('#tp-chat').onclick = () => openChat();
     if (/#chat\b/.test(location.hash)) { history.replaceState(null, '', location.pathname); setTimeout(() => openChat(), 300); }
     $$('.tp-tab').forEach((b) => { b.classList.toggle('on', b.dataset.tab === tab); b.onclick = () => { tab = b.dataset.tab; ss.set(TABKEY, tab); shell(); }; });
