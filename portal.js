@@ -191,7 +191,23 @@
       <div class="lp-pg">${C.map(p => `<a class="lp-pl c-${p.c}${p.tag ? ' hot' : ''}" ${p.k === 'free' ? `href="#" data-trial${kid ? ' data-kid' : ''}` : `href="inscripcion.html?plan=${p.k}"`}>${p.tag ? `<span class="lp-tag">${p.tag}</span>` : ''}
         <div class="lp-plh"><span class="ic">${MRI(p.ic)}</span><b>${p.name}</b></div><div class="lp-pr"><strong>${p.price}</strong><small>${p.per}</small></div>${p.pc ? `<span class="lp-ppc">Solo ${p.pc} por clase</span>` : '<span class="lp-ppc gh">COP</span>'}
         <p class="lp-hook">${p.hook}</p><ul>${p.b.map(x => `<li>${MRI('check')}<span>${x}</span></li>`).join('')}</ul><small class="lp-pn">${p.note}</small><span class="lp-pb">${p.btn}</span></a>`).join('')}</div>
-      <p class="lp-pnote"><a href="politica.html">Ver condiciones</a></p></section>`;
+      <p class="lp-swipe">Desliza para ver todos los planes →</p><p class="lp-pnote"><a href="politica.html">Ver condiciones</a></p></section>`;
+  }
+
+  // 👩‍🏫 profes en carrusel horizontal (desliza con el dedo o con las flechas)
+  function lpProfes(panel) {
+    const c = panel && panel.querySelector('.ld-cyl'); if (!c || c.dataset.lp) return; c.dataset.lp = '1'; clearInterval(cylWire.t);
+    c.classList.add('lp-car'); [...c.children].forEach(d => { d.style.transform = ''; d.style.height = ''; d.classList.add('f'); }); c.style.transform = ''; c.style.height = '';
+    const w = panel.querySelector('.ld-cylw'); if (w) w.style.height = '';
+    const nav = panel.querySelector('.ld-cyln'); if (nav) nav.innerHTML = `<button class="ld-cyb" data-lc="-1" aria-label="Anterior">‹</button><div class="ld-cyd">${[...c.children].map((_, i) => `<i class="${i ? '' : 'on'}"></i>`).join('')}</div><button class="ld-cyb" data-lc="1" aria-label="Siguiente">›</button>`;
+    const step = () => { const f = c.children[0]; return f ? f.getBoundingClientRect().width + 16 : 280; };
+    const dots = () => { const i = Math.round(c.scrollLeft / step()); panel.querySelectorAll('.ld-cyd i').forEach((x, k) => x.classList.toggle('on', k === i)); };
+    c.addEventListener('scroll', () => requestAnimationFrame(dots), { passive: true });
+    let hold = 0; const go = (d) => { const max = c.scrollWidth - c.clientWidth - 4; c.scrollTo({ left: d > 0 && c.scrollLeft >= max ? 0 : c.scrollLeft + d * step(), behavior: 'smooth' }); };
+    panel.querySelectorAll('[data-lc]').forEach(b => b.onclick = () => { hold = 1; go(+b.dataset.lc); setTimeout(() => hold = 0, 6000); });
+    c.addEventListener('touchstart', () => { hold = 1; setTimeout(() => hold = 0, 7000); }, { passive: true });
+    c.addEventListener('click', (e) => { const card = e.target.closest('[data-pfc]'); if (!card || e.target.closest('[data-pfr]')) return; e.stopImmediatePropagation(); const b = card.querySelector('[data-pfr]'); if (b && b.onclick) b.onclick(); }, true);
+    clearInterval(lpProfes.t); lpProfes.t = setInterval(() => { if (!hold && !document.hidden && panel.classList.contains('on')) go(1); }, 3800);
   }
   // 📱 todo en una sola pantalla: cada sección es una pestaña (sin bajar)
   const LPT = { home: ['Inicio', '<path d="M3 10.5 12 3l9 7.5V21H3z"/>'], planes: ['Planes', '<path d="m2 7 4 10h12l4-10-5 3-5-6-5 6z"/>'], opin: ['Opiniones', '<path d="M11.53 2.3a.53.53 0 0 1 .95 0l2.31 4.68a2.12 2.12 0 0 0 1.6 1.16l5.16.76a.53.53 0 0 1 .3.9l-3.74 3.64a2.12 2.12 0 0 0-.61 1.88l.88 5.14a.53.53 0 0 1-.77.56l-4.62-2.43a2.12 2.12 0 0 0-1.97 0L6.4 21.01a.53.53 0 0 1-.77-.56l.88-5.14a2.12 2.12 0 0 0-.61-1.88L2.16 9.8a.53.53 0 0 1 .3-.91l5.16-.75a2.12 2.12 0 0 0 1.6-1.16z"/>'], profes: ['Profes', '<circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/>'], papas: ['Papás', '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>'] };
@@ -210,9 +226,16 @@
     const other = PAGE === 'ninos' ? ['adultos.html', 'Adultos', '<circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/>'] : ['ninos.html', 'Niños', '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>'];
     dock.insertAdjacentHTML('beforeend', `<a class="lp-dx" href="${other[0]}">${LI(other[2])}<span>${other[1]}</span></a><a class="lp-din" href="index.html?ingresar=1">${LI('<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/>')}<span>Ingresar</span></a>`);
     dock.insertAdjacentHTML('beforeend', `<a class="lp-dwa" target="_blank" rel="noopener" href="https://wa.me/${(C.WHATSAPP || '573017810841')}?text=${encodeURIComponent(PAGE === 'ninos' ? '¡Hola! Quiero información sobre las clases de inglés para mi hijo(a) en mrarrieta.com' : '¡Hola! Quiero información sobre las clases de inglés de mrarrieta.com')}"><svg viewBox="0 0 32 32" class="mri"><path fill="currentColor" d="M16 3a13 13 0 0 0-11.2 19.6L3 29l6.6-1.7A13 13 0 1 0 16 3zm0 23.6c-2 0-4-.6-5.7-1.6l-.4-.2-3.9 1 1-3.8-.3-.4A10.6 10.6 0 1 1 16 26.6zm5.8-7.9c-.3-.2-1.9-.9-2.2-1-.3-.1-.5-.2-.7.2l-1 1.2c-.2.2-.4.2-.7.1a8.7 8.7 0 0 1-4.3-3.8c-.3-.6.3-.5.9-1.7.1-.2 0-.4 0-.6l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.2-1.2 2.9s1.2 3.4 1.4 3.6c.2.2 2.4 3.7 5.9 5.2 2.2.9 3 1 4.1.8.7-.1 1.9-.8 2.2-1.5.3-.8.3-1.4.2-1.5l-.6-.4z"/></svg><span>WhatsApp</span></a>`);
-    document.body.appendChild(dock); document.body.classList.add('lp-app');
+    dock.insertAdjacentHTML('beforeend', `<button type="button" class="lp-more" aria-label="Más opciones">${LI('<circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>')}<span>Más</span></button>`);
+    document.body.appendChild(dock); document.body.classList.add('lp-app'); document.documentElement.classList.add('lp-html');
+    const ms = document.createElement('div'); ms.className = 'lp-msheet'; ms.hidden = true;
+    ms.innerHTML = `<div class="lp-msc">${box.querySelector('[data-p="profes"]') ? `<button type="button" data-tab="profes"><i>${LI(LPT.profes[1])}</i><b>Conoce a los profes</b><span>›</span></button>` : ''}${box.querySelector('[data-p="opin"]') ? '' : ''}<a href="${other[0]}"><i>${LI(other[2])}</i><b>${PAGE === 'ninos' ? 'Inglés para adultos' : 'Niños y jóvenes'}</b><span>›</span></a><a href="https://wa.me/${(C.WHATSAPP || '573017810841')}" target="_blank" rel="noopener" class="wa"><i>${LI('<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>')}</i><b>Escríbenos por WhatsApp</b><span>›</span></a></div>`;
+    document.body.appendChild(ms);
+    const msOpen = (on) => { ms.hidden = !on; dock.querySelector('.lp-more').classList.toggle('on', on); };
+    dock.querySelector('.lp-more').onclick = (e) => { e.stopPropagation(); msOpen(ms.hidden); };
+    ms.addEventListener('click', (e) => { if (e.target === ms || e.target.closest('a,button')) msOpen(false); });
     const go = (k) => { if (!box.querySelector(`[data-p="${k}"]`)) return; $$('.lp-panel', box).forEach(p => p.classList.toggle('on', p.dataset.p === k)); $$('[data-tab]').forEach(b => b.classList.toggle('on', b.dataset.tab === k)); const cur = box.querySelector(`[data-p="${k}"]`); cur.scrollTop = 0;
-      if (k === 'profes') { try { cylWire.fit && cylWire.fit(); } catch (e) { } } if (k === 'opin') { const t = $('#ld-testimonios'); if (t) t.hidden = false; } };
+      if (k === 'profes') lpProfes(cur); if (k === 'opin') { const t = $('#ld-testimonios'); if (t) t.hidden = false; } };
     window.__lpTab = go;
     dock.addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (b) go(b.dataset.tab); });
     document.addEventListener('click', e => { const a = e.target.closest('[data-tab],a[href^="#ld-"],a[href="#lp-control"]'); if (!a || dock.contains(a)) return; const h = a.dataset.tab || ({ '#ld-planes': 'planes', '#ld-testimonios': 'opin', '#ld-profes': 'profes', '#lp-control': 'papas' })[a.getAttribute('href')]; if (!h) return; e.preventDefault(); e.stopImmediatePropagation(); go(h); }, true);
