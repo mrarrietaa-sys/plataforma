@@ -121,13 +121,9 @@
   function welcome() {
     // portada (ID de Unsplash verificado en build/imgmap3.json: 'road signs two directions')
     shell(`${top()}<div class="card center fx-welcome">${extraNotice()}
-      <figure class="ex-cover"><div class="ex-cimg"><img src="https://images.unsplash.com/photo-1583125320604-8245f1e50c1e?w=1200&h=600&fit=crop&crop=entropy&q=80&auto=format" alt="Find your starting point" onerror="this.style.opacity=0"><span class="ex-cbadge">🧭 A1 → B2+</span></div><figcaption>Find your starting point</figcaption></figure>
-      <div class="ex-skills">${EX.sections.map(s => `<span>${s.icon} ${esc(s.label)}</span>`).join('')}</div>
-      <span class="lbl" style="margin-top:6px">✦ Prueba de clasificación interactiva</span>
-      <h1 style="font-size:clamp(26px,5.5vw,34px);margin:10px 0 4px">Placement Test</h1>
-      <p style="font-weight:800;margin:0">Listening + Reading + Writing + Speaking</p>
-      <p class="muted" style="margin:4px 0 12px">⏱ Unos 10 minutos — Descubre en qué módulo debes empezar en mrarrieta.com</p>
-      <div class="fx-info">${M.mascot('fx-wmra', 'point')}<div>Vas a completar la prueba de clasificación. Es una prueba <b>inteligente</b>: se adapta a ti. Empiezas en el nivel más básico y, si respondes bien, subes de nivel. En cada nivel evaluamos tus <b>4 habilidades</b>.<br><span class="muted">⏱ Unos 10 minutos · ${ROUNDS} oportunidades de ${CFG.ATTEMPTS} intentos ${ST.attempts ? `· Ya usaste <b>${ST.attempts}</b> de ${maxAttempts()}` : ''}</span></div></div>
+      <figure class="ex-cover"><div class="ex-cimg"><img src="https://images.unsplash.com/photo-1583125320604-8245f1e50c1e?w=1200&h=600&fit=crop&crop=entropy&q=80&auto=format" alt="Find your starting point" onerror="this.style.opacity=0"><span class="ex-cbadge">🧭 A1 → B2+</span></div></figure>
+      <h1 style="font-size:clamp(24px,5vw,32px);margin:12px 0 4px">Placement Test</h1>
+      <p class="muted" style="margin:0 0 14px">${ST.attempts ? `Ya usaste <b>${ST.attempts}</b> de ${maxAttempts()} intentos` : 'Descubre en qué módulo empiezas'}</p>
       <button class="btn k lg" id="go">Continuar →</button></div>`);
     wireExit(); $('#go').onclick = () => (temail ? instructions() : studentEmail());
   }
@@ -177,7 +173,7 @@
       wa = v; saveProfile(); instructions(); };
   }
   function instructions() {
-    shell(`${top()}<div class="card fx-form center"><span class="lbl">¡Listo para empezar!</span><h2>Así de fácil 😊</h2>
+    shell(`${top()}<div class="card fx-form center"><h2>Así de fácil 😊</h2>
       <div class="pt-quick"><div><b>⏱️ 10 min</b><span>Rápida y se adapta a tu nivel</span></div><div><b>🎧📖✍️🎤</b><span>Escuchas, lees, escribes y hablas</span></div><div><b>✅ Al instante</b><span>Ves si acertaste en cada pregunta</span></div></div>
       <p class="muted" style="font-size:14px">🎤 Permite el micrófono cuando te lo pida. Responde con calma, ¡no hay presión!</p>
       <div class="actionbar"><button class="btn k lg" id="go">🚀 Comenzar prueba</button></div></div>`);
