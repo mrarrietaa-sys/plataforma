@@ -190,7 +190,7 @@
     return `<section class="lp-plans" id="ld-planes"><div class="lp-ph"><h2>Elige tu plan</h2><p>Mes a mes · sin permanencia · tarjeta o transferencia</p></div>
       <div class="lp-pg">${C.map(p => `<a class="lp-pl c-${p.c}${p.tag ? ' hot' : ''}" ${p.k === 'free' ? `href="#" data-trial${kid ? ' data-kid' : ''}` : `href="inscripcion.html?plan=${p.k}"`}>${p.tag ? `<span class="lp-tag">${p.tag}</span>` : ''}
         <div class="lp-plh"><span class="ic">${MRI(p.ic)}</span><b>${p.name}</b></div><div class="lp-pr"><strong>${p.price}</strong><small>${p.per}</small></div>${p.pc ? `<span class="lp-ppc">Solo ${p.pc} por clase</span>` : '<span class="lp-ppc gh">COP</span>'}
-        <p class="lp-hook">${p.hook}</p><ul>${p.b.map(x => `<li>${MRI('check')}<span>${x}</span></li>`).join('')}</ul><small class="lp-pn">${p.note}</small><span class="lp-pb">${p.btn}</span></a>`).join('')}</div>
+        <p class="lp-hook">${p.hook}</p><ul>${p.b.map(x => `<li>${MRI('check')}<span>${x}</span></li>`).join('')}</ul><small class="lp-pn">${p.note}</small><span class="lp-pb"><span class="lg">${p.btn}</span><span class="sh">${p.k === 'free' ? 'Empezar gratis' : 'Lo quiero'}</span></span></a>`).join('')}</div>
       <p class="lp-swipe">Desliza para ver todos los planes →</p><p class="lp-pnote"><a href="politica.html">Ver condiciones</a></p></section>`;
   }
 
@@ -224,7 +224,7 @@
     const dock = document.createElement('nav'); dock.className = 'lp-dock'; dock.setAttribute('aria-label', 'Secciones');
     dock.innerHTML = [...box.children].map(p => `<button type="button" data-tab="${p.dataset.p}" class="${p.dataset.p === 'home' ? 'on' : ''}">${LI(LPT[p.dataset.p][1])}<span>${LPT[p.dataset.p][0]}</span></button>`).join('');
     const other = PAGE === 'ninos' ? ['adultos.html', 'Adultos', '<circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/>'] : ['ninos.html', 'Niños', '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>'];
-    dock.insertAdjacentHTML('beforeend', `<a class="lp-dx" href="${other[0]}">${LI(other[2])}<span>${other[1]}</span></a><a class="lp-din" href="index.html?ingresar=1">${LI('<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/>')}<span>Ingresar</span></a>`);
+    dock.insertAdjacentHTML('beforeend', `<a class="lp-dx" href="${other[0]}">${LI(other[2])}<span>${other[1]}</span></a><a class="lp-din" hidden href="index.html?ingresar=1">${LI('<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/>')}<span>Ingresar</span></a>`);
     dock.insertAdjacentHTML('beforeend', `<a class="lp-dwa" target="_blank" rel="noopener" href="https://wa.me/${(C.WHATSAPP || '573017810841')}?text=${encodeURIComponent(PAGE === 'ninos' ? '¡Hola! Quiero información sobre las clases de inglés para mi hijo(a) en mrarrieta.com' : '¡Hola! Quiero información sobre las clases de inglés de mrarrieta.com')}"><svg viewBox="0 0 32 32" class="mri"><path fill="currentColor" d="M16 3a13 13 0 0 0-11.2 19.6L3 29l6.6-1.7A13 13 0 1 0 16 3zm0 23.6c-2 0-4-.6-5.7-1.6l-.4-.2-3.9 1 1-3.8-.3-.4A10.6 10.6 0 1 1 16 26.6zm5.8-7.9c-.3-.2-1.9-.9-2.2-1-.3-.1-.5-.2-.7.2l-1 1.2c-.2.2-.4.2-.7.1a8.7 8.7 0 0 1-4.3-3.8c-.3-.6.3-.5.9-1.7.1-.2 0-.4 0-.6l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.2-1.2 2.9s1.2 3.4 1.4 3.6c.2.2 2.4 3.7 5.9 5.2 2.2.9 3 1 4.1.8.7-.1 1.9-.8 2.2-1.5.3-.8.3-1.4.2-1.5l-.6-.4z"/></svg><span>WhatsApp</span></a>`);
     dock.insertAdjacentHTML('beforeend', `<button type="button" class="lp-more" aria-label="Más opciones">${LI('<circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>')}<span>Más</span></button>`);
     document.body.appendChild(dock); document.body.classList.add('lp-app'); document.documentElement.classList.add('lp-html');
@@ -240,7 +240,9 @@
     dock.addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (b) go(b.dataset.tab); });
     document.addEventListener('click', e => { const a = e.target.closest('[data-tab],a[href^="#ld-"],a[href="#lp-control"]'); if (!a || dock.contains(a)) return; const h = a.dataset.tab || ({ '#ld-planes': 'planes', '#ld-testimonios': 'opin', '#ld-profes': 'profes', '#lp-control': 'papas' })[a.getAttribute('href')]; if (!h) return; e.preventDefault(); e.stopImmediatePropagation(); go(h); }, true);
     const fit = () => { const tb = document.getElementById('topbar'); const top = box.getBoundingClientRect().top + scrollY; const dh = dock.offsetHeight + 18; box.style.height = Math.max(360, innerHeight - top - dh) + 'px'; };
-    fit(); addEventListener('resize', fit); setTimeout(fit, 300);
+    const gh = document.getElementById('go-home'); if (gh) gh.onclick = () => { location.href = 'index.html'; };
+    const padTop = () => { const tb = document.getElementById('topbar'), ap = document.getElementById('app'); if (tb && ap) ap.style.paddingTop = innerWidth < 900 ? (tb.offsetHeight + 10) + 'px' : ''; };
+    padTop(); fit(); addEventListener('resize', () => { padTop(); fit(); }); setTimeout(() => { padTop(); fit(); }, 300);
   }
   // ---------- comportamiento de las páginas de Adultos y de Niños y jóvenes ----------
   const PZK = 'mra_prize_v1';
@@ -310,7 +312,7 @@
     const card = $('.pt-login'); if (!card || !window.MRI) return;
     const LOGIN_IC = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mri"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/></svg>';
     const tb = $('#topbar .tb-tag'); if (tb) tb.outerHTML = PAGE === 'home' ? `<nav class="ld-nav ld-nav-h"><button class="btn k sm ld-in" data-goin>${LOGIN_IC} Ingresar</button></nav>`
-      : `<nav class="ld-nav lp-tnav"><a href="index.html" class="btn w sm ld-back">← Inicio</a></nav>`;
+      : `<nav class="ld-nav lp-tnav"><a href="index.html?ingresar=1" class="btn k sm ld-in">${LOGIN_IC} Ingresar</a></nav>`;
     if (!window.__ldNav) { window.__ldNav = 1; document.addEventListener('click', (e) => {
       const gi = e.target.closest('[data-goin]'); if (gi) { const lg = document.querySelector('.ld-login .pt-login') || document.querySelector('.ld-login'); if (lg) { const bar = (document.getElementById('topbar') || { offsetHeight: 0 }).offsetHeight; scrollTo({ top: Math.max(0, scrollY + lg.getBoundingClientRect().top - bar - 12), behavior: 'smooth' }); const inp = lg.querySelector('input'); if (inp) setTimeout(() => inp.focus({ preventScroll: true }), 450); } return; } // 🔑 estudiante reconocido: directo a escribir su código // 🧭 el menú muestra la sección completa (sin quedar tapada por la barra de arriba)
       const a = e.target.closest('a[href^="#ld-"]'); if (!a) return; const sec = document.querySelector(a.getAttribute('href')); if (!sec) return; e.preventDefault();
