@@ -5763,3 +5763,10 @@ html.home-lock body.home-app .pt-wrap{margin-bottom:0!important;padding-bottom:0
   .modal .card:has(#tf-go) .tf .inp{padding:8px 12px!important;height:auto!important;font-size:14px!important}
   .modal .card:has(#tf-go) #tf-go{padding:10px!important}
 }
+/* v342 */
+html,body{overflow-x:clip!important}
+.fx-welcome .ex-cover,.fx-welcome .ex-cimg{margin-left:auto!important;margin-right:auto!important}
+.fx-item .hd{display:flex!important;flex-wrap:wrap!important;row-gap:10px!important;column-gap:8px!important;align-items:center}
+.fx-item .hd .qcount{margin-left:0}
+.fx-item .hd + *{margin-top:12px}
+@media(max-width:899px){.topbar{position:sticky!important;top:0!important;z-index:70!important}}
