@@ -40,13 +40,13 @@
     app.innerHTML = `<div class="fm-grid"><aside class="fm-side">
         <div class="card fm-pc"><span class="fm-pav">${esc(ini)}</span><h2>${esc(f.guardian || 'Mi familia')}</h2><p>Acudiente · ${kids.length} ${kids.length === 1 ? 'hijo(a)' : 'hijos'}</p>
           <div class="fm-code"><div><small>Tu código de familia</small><b>${esc(f.fcode)}</b></div><button class="fm-cp" id="cp">${I('copy')} Copiar</button></div></div>
-        <div class="fm-al"><span class="fm-ali">${I('mail')}</span><span><b>Alerta de 7 días</b><br>Te escribimos si pasa una semana sin reservar clase (Premium) o sin practicar (Plataforma).</span><button class="fm-sw${f.alerts ? ' on' : ''}" id="sw" role="switch" aria-checked="${!!f.alerts}" aria-label="Alerta de 7 días"></button></div>
+        <div class="fm-al"><span class="fm-ali">${I('mail')}</span><span><b>Alerta de 7 días</b><br>Te escribimos si tu hijo pasa una semana sin clases o sin practicar.</span><button class="fm-sw${f.alerts ? ' on' : ''}" id="sw" role="switch" aria-checked="${!!f.alerts}" aria-label="Alerta de 7 días"></button></div>
         <p class="fm-help"><button class="fm-tourb" id="tourb">Ver recorrido</button> · ¿Dudas? WhatsApp <a href="https://wa.me/573017810841" target="_blank" rel="noopener">301 781 0841</a></p></aside>
       <div class="fm-main"><section class="fm-hero"><span class="fm-hb1"></span><span class="fm-hb2"></span><span class="fm-hdots"></span>
           <div class="fm-htx"><span class="fm-eye">${I('users')} Mi familia</span><h1>¡Hola, ${esc(first)}!</h1><p>Aquí ves a tus hijos y cómo van con su inglés: sus clases, su práctica y su nivel.</p>
             <div class="fm-hst"><span><i>${I('users')}</i><b>${kids.length}</b><small>${kids.length === 1 ? 'Hijo(a)' : 'Hijos'}</small></span><span><i>${I('calendar')}</i><b>${kids.filter(k => k.next).length}</b><small>Con clase reservada</small></span><span><i>${I('mail')}</i><b>${f.alerts ? 'Activa' : 'Apagada'}</b><small>Alerta de 7 días</small></span></div></div>
           <div class="fm-hart"><span class="fm-road"></span><img src="mra-x-bike-blue.webp" alt="Mr. Arrieta"></div></section>
-        <div class="fm-st"><h2>Mis hijos</h2><small>${kids.length} de 3</small></div>
+        <div class="fm-st"><h2>Mis hijos</h2><small>${kids.length} de 3${kids.length > 1 ? '<span class="fm-sw2"> · desliza →</span>' : ''}</small></div>
         <div class="fm-kids">${kids.length ? kids.map(kidCard).join('') : '<p class="muted center">Aún no hay hijos vinculados a esta familia.</p>'}${kids.length < 3 ? `<button class="fm-add" id="add">${I('plus')} Agregar otro hijo(a)</button>` : ''}</div></div></div>`;
     $('#tourb').onclick = () => tour();
     let hi = ''; try { hi = sessionStorage.getItem('mra_fam_hi'); sessionStorage.removeItem('mra_fam_hi'); } catch (e) { }
