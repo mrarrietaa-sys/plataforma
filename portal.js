@@ -63,7 +63,8 @@
     if (!voiceOn()) return; try { sessionStorage.setItem('mra_said', '1'); } catch (e) { }
     const p = P.get() || {}, lu = P.lastUser() || {}; const nm = (p.look && p.look.nick) || p.first || lu.first || '';
     const sl = slugN(nm); const known = !!p.first; // si aún no tiene nombre verá "Nice to meet you!" → la voz dice lo mismo
-    const go = () => M.loadAudio(['wb_' + (sl[0] || 'x')]).then(() => { if (!voiceOn()) return; const k = known && window.AUD && window.AUD['wb_' + sl] ? 'wb_' + sl : 'wb_'; M.play(k); }); // siempre: "Welcome, Nombre!" (o "Welcome!")
+    const W = M.ageGroup && M.ageGroup() !== 'adult' ? 'wf_' : 'wb_'; // 👧 Kids y Teens: voz de mujer
+    const go = () => M.loadAudio([W + (sl[0] || 'x')]).then(() => { if (!voiceOn()) return; const k = known && window.AUD && window.AUD[W + sl] ? W + sl : W; M.play(k); }); // siempre: "Welcome, Nombre!" (o "Welcome!")
     go();
   };
   /* ---------- ingreso con código ---------- */
@@ -576,7 +577,7 @@
       const v = i.value.trim(); if (!v) return bad('Escribe tu código 🙂');
       if (/^FAM-/i.test(v) && window.MRAC && MRAC.on) { // 👨‍👩‍👧 código de familia → panel de papás
         const b = $('#ok'); b.disabled = true; b.textContent = 'Entrando…'; const fr = await MRAC.call('famData', { fcode: v.toUpperCase() }).catch(() => null); b.disabled = false; b.textContent = 'Entrar →';
-        if (fr && fr.ok) { try { localStorage.setItem('mra_fam', v.toUpperCase()); localStorage.setItem('mra_last_role', JSON.stringify({ role: 'family' })); } catch (e) { } location.href = 'familia.html'; return; }
+        if (fr && fr.ok) { try { sessionStorage.setItem('mra_fam_hi', '1'); localStorage.setItem('mra_fam', v.toUpperCase()); localStorage.setItem('mra_last_role', JSON.stringify({ role: 'family' })); } catch (e) { } location.href = 'familia.html'; return; }
         return bad(fr && fr.err === 'notfound' ? 'No encontramos ese código de familia. Revísalo 🙏' : 'No hay conexión con la nube. Inténtalo de nuevo.'); }
       // 1) códigos de la nube (planes Acceso gratuito / Membership / Premium)
       if (window.MRAC && MRAC.on && !codeType(v)) {
@@ -590,7 +591,7 @@
         // 🔑 una sola entrada: clave de administración o código de profe
         b.disabled = true; b.textContent = 'Entrando…'; const w = await MRAC.call('who', { k: v }).catch(() => null); b.disabled = false; b.textContent = 'Entrar →';
         if (w && w.role === 'admin') { try { sessionStorage.setItem('mra_admin_key', v); localStorage.setItem('mra_last_role', JSON.stringify({ role: 'admin' })); } catch (e) { } location.href = 'administracion.html'; return; }
-        if (w && w.role === 'family' && w.fcode) { try { localStorage.setItem('mra_fam', w.fcode); localStorage.setItem('mra_last_role', JSON.stringify({ role: 'family' })); } catch (e) { } location.href = 'familia.html'; return; } // 👨‍👩‍👧 código de familia → panel de papás
+        if (w && w.role === 'family' && w.fcode) { try { sessionStorage.setItem('mra_fam_hi', '1'); localStorage.setItem('mra_fam', w.fcode); localStorage.setItem('mra_last_role', JSON.stringify({ role: 'family' })); } catch (e) { } location.href = 'familia.html'; return; } // 👨‍👩‍👧 código de familia → panel de papás
         if (w && w.role === 'teacher' && w.tcode) { try { sessionStorage.setItem('mra_tp_session', JSON.stringify({ tcode: w.tcode, pin: w.pin })); localStorage.setItem('mra_last_role', JSON.stringify({ role: 'teacher' })); } catch (e) { } location.href = 'profesores.html'; return; }
         return bad();
       }

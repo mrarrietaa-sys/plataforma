@@ -5910,3 +5910,17 @@ button.lp-pl{font:inherit;text-align:inherit;cursor:pointer;width:100%;appearanc
   .fm-hst span{display:flex!important;flex-direction:column;align-items:center;text-align:center;gap:3px;padding:8px 4px!important;border-radius:12px}
   .fm-hst i{width:26px!important;height:26px!important}.fm-hst b{font-size:14px!important}.fm-hst small{font-size:10px!important;white-space:normal!important;margin:0!important;line-height:1.2}
 }
+/* v352 papás: cuadros iguales, sin avatares de letras, bienvenida y recorrido */
+@media(min-width:900px){.fm-hst{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));max-width:600px}.fm-hst span{min-width:0}}
+.fm-kh{grid-template-columns:1fr auto!important}
+.fm-conf{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:9999}
+.fm-tour{position:fixed;inset:0;z-index:9000;background:rgba(11,42,91,.45);display:flex;align-items:flex-end;justify-content:center;padding:16px}
+.fm-spot{position:relative;z-index:9001!important;box-shadow:0 0 0 4px #fff,0 0 0 8px rgba(227,36,43,.55),0 18px 40px rgba(0,0,0,.25)!important;border-radius:18px}
+.fm-tc{position:relative;z-index:9002;display:flex;gap:12px;align-items:flex-end;background:#fff;border-radius:20px;padding:16px 18px;max-width:520px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,.25);margin-bottom:8px}
+.fm-tc img{height:120px;flex:none;margin:-40px 0 -16px -6px}
+.fm-tc small{font:700 11px var(--fh);color:var(--y);letter-spacing:.06em;text-transform:uppercase}.fm-tc h3{margin:2px 0 4px;font-size:18px;color:var(--k)}.fm-tc p{margin:0;font-size:13.5px;color:#475569;line-height:1.45}
+.fm-tb{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
+.fm-tourb{background:none;border:0;padding:0;font:700 12.5px var(--fb);color:var(--k);text-decoration:underline;cursor:pointer}
+@media(max-width:520px){.fm-tc img{height:90px;margin-top:-30px}}
+.fm-touring .fm-side{position:static!important}
+@media(min-width:900px){.fm-hst span{justify-content:start;text-align:left}}
