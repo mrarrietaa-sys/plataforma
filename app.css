@@ -5545,7 +5545,7 @@ body.lp-app .topbar,body.home-app .topbar{position:sticky;top:0;z-index:70}
   .lp-dock{width:calc(100% - 16px)!important}
   .lp-dock>[data-tab="profes"],.lp-dock>.lp-dx,.lp-dock>.lp-dwa{display:none!important}
   .lp-dock>.lp-more{display:flex!important;order:5}
-  .lp-dock>[data-tab="home"]{order:1}.lp-dock>[data-tab="planes"]{order:2}.lp-dock>.lp-din{display:flex!important;order:3}.lp-dock>[data-tab="opin"],.lp-dock>[data-tab="papas"]{order:4}
+  .lp-dock>[data-tab="home"]{order:1}.lp-dock>[data-tab="planes"]{order:2}.lp-dock>.lp-din{display:none!important}.lp-dock>[data-tab="opin"],.lp-dock>[data-tab="papas"]{order:4}
   .lp-dock>.lp-din{background:var(--y)!important;color:#fff!important;margin:-14px 4px 0;border-radius:16px!important;box-shadow:0 10px 18px -8px rgba(227,36,43,.8)}
   .lp-dock>.lp-more.on{color:var(--k)}
 }
@@ -5678,3 +5678,34 @@ body.lp-app .topbar,body.home-app .topbar{position:sticky;top:0;z-index:70}
 .lp-panel #ld-profes .ld-pf.ld-cyl.lp-car>.ld-pc li .mri{color:var(--k)!important}
 .lp-panel #ld-profes .ld-pf.ld-cyl.lp-car>.ld-pc [data-pfr]:not([hidden]){margin-top:auto!important;padding-top:12px}
 @media(max-width:899px){.lp-panel #ld-profes .ld-pf.ld-cyl.lp-car{padding-left:calc(50% - 125px)!important;padding-right:calc(50% - 125px)!important;scroll-padding:0 calc(50% - 125px)}.lp-panel #ld-profes .ld-pf.ld-cyl.lp-car>.ld-pc{flex-basis:250px!important}.lp-panel #ld-profes .ld-pf.ld-cyl.lp-car>.ld-pc img{height:96px!important}}
+/* ===== v337 ===== */
+.lp-panel #ld-profes .ld-pf.ld-cyl.lp-car{overflow-x:auto!important;overflow-y:hidden!important}
+@media(min-width:900px){.lp-panel #ld-profes .ld-pf.ld-cyl.lp-car{max-width:1040px!important;padding-left:calc(50% - 125px)!important;padding-right:calc(50% - 125px)!important;scroll-padding:0 calc(50% - 125px);justify-content:flex-start!important}}
+.lp-dock>.lp-din,.lp-dock>.lp-din[hidden]{display:none!important}
+/* fotos de niños completas */
+.lp-agi{height:auto!important;aspect-ratio:16/8;background-position:center 30%!important}
+@media(min-width:900px){.lp-agi{aspect-ratio:16/7}}
+/* planes centrados */
+@media(min-width:900px){.lp-pl{text-align:center;align-items:center}.lp-plh{justify-content:center}.lp-pr{justify-content:center}.lp-ppc{align-self:center}.lp-pl ul{justify-items:center}.lp-pl li{justify-content:center;text-align:left}.lp-pb{width:100%}}
+/* testimonios PC más pequeños y uniformes */
+@media(min-width:900px){.lp-panel[data-p="opin"] .ld-t{flex:0 0 clamp(150px,13vw,190px)!important}.lp-panel[data-p="opin"] .ld-tv{max-height:min(46vh,340px)!important}.lp-panel[data-p="opin"] .ld-tes{gap:20px!important}}
+/* entrada celular: el cohete llena el espacio */
+@media(max-width:899px){
+  body.home-app .ld-hero{height:calc(100dvh - 56px - 84px)!important;min-height:0!important;overflow:hidden}
+  body.home-app .ld-copy{height:100%;flex:1}
+  body.home-app .ld-hero-mra{flex:1 1 0;min-height:0;height:0;width:100%!important;max-height:none!important;object-fit:contain;object-position:center bottom;animation:hmFl 4s ease-in-out infinite}
+}
+@keyframes hmFl{50%{transform:translateY(-8px) rotate(-1deg)}}
+/* sorpresa: brillo suave en los dos caminos */
+.ld-pc2{overflow:hidden}
+.ld-pc2::after{content:'';position:absolute;top:0;bottom:0;width:40%;left:-60%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.75),transparent);transform:skewX(-18deg);animation:pcShine 5s ease-in-out infinite;pointer-events:none}
+.ld-path .ld-pc2:nth-child(2)::after{animation-delay:.6s}
+@keyframes pcShine{0%,65%{left:-60%}85%,100%{left:130%}}
+/* sorpresa: el globo llega volando al abrir la página */
+@keyframes lpBalIn{0%{transform:translateY(120vh) rotate(8deg);opacity:0}70%{transform:translateY(-12px) rotate(-2deg);opacity:1}100%{transform:none}}
+@keyframes lpBalIn2{0%{transform:translateY(120vh) rotate(8deg);opacity:0}70%{transform:translateY(calc(-50% - 12px)) rotate(-2deg);opacity:1}100%{transform:translateY(-50%)}}
+@media(max-width:899px){.lp-hrow .lp-bal{animation:lpBalIn 1.6s cubic-bezier(.2,.8,.2,1) both,lpFl 6s ease-in-out 1.6s infinite}}
+@media(min-width:900px){.lp-hrow .lp-bal{animation:lpBalIn2 1.6s cubic-bezier(.2,.8,.2,1) both,lpFl2 6s ease-in-out 1.6s infinite}}
+.lp-panel #ld-profes .ld-pf.ld-cyl.lp-car>.ld-pc{flex-shrink:0!important;min-width:240px!important}
+@media(min-width:900px){.lp-panel #ld-profes .ld-pf.ld-cyl.lp-car{padding:10px 8px 14px!important;scroll-padding:0 8px}.lp-panel #ld-profes .ld-pf.ld-cyl.lp-car>.ld-pc{flex-basis:240px!important;width:240px!important}}
+@media(max-width:899px){.lp-panel #ld-profes .ld-pf.ld-cyl.lp-car>.ld-pc{min-width:250px!important}}
