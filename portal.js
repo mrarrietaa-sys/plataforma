@@ -178,9 +178,9 @@
       <a class="lp-dwa" target="_blank" rel="noopener" href="https://wa.me/${wa}?text=${encodeURIComponent('¡Hola! Quiero información sobre las clases de inglés de mrarrieta.com')}"><svg viewBox="0 0 32 32" class="mri"><path fill="currentColor" d="M16 3a13 13 0 0 0-11.2 19.6L3 29l6.6-1.7A13 13 0 1 0 16 3zm0 23.6c-2 0-4-.6-5.7-1.6l-.4-.2-3.9 1 1-3.8-.3-.4A10.6 10.6 0 1 1 16 26.6zm5.8-7.9c-.3-.2-1.9-.9-2.2-1-.3-.1-.5-.2-.7.2l-1 1.2c-.2.2-.4.2-.7.1a8.7 8.7 0 0 1-4.3-3.8c-.3-.6.3-.5.9-1.7.1-.2 0-.4 0-.6l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.2-1.2 2.9s1.2 3.4 1.4 3.6c.2.2 2.4 3.7 5.9 5.2 2.2.9 3 1 4.1.8.7-.1 1.9-.8 2.2-1.5.3-.8.3-1.4.2-1.5l-.6-.4z"/></svg><span>WhatsApp</span></a>`;
     document.body.appendChild(d);
     // 📱 celular: la entrada no se desplaza, todo queda a la vista
-    const lock = () => { const on = innerWidth < 900 && document.body.classList.contains('home-app'); document.documentElement.classList.toggle('home-lock', on);
+    const lock = () => { const on = document.body.classList.contains('home-app'); const mob = innerWidth < 900; document.documentElement.classList.toggle('home-lock', on);
       const h = document.querySelector('.ld-hero'), tb = document.getElementById('topbar'); if (!h) return;
-      if (!on) { h.style.height = ''; return; } const top = h.getBoundingClientRect().top + scrollY; h.style.height = Math.max(360, innerHeight - top - d.offsetHeight - 22) + 'px'; scrollTo(0, 0); };
+      if (!on || !mob) { h.style.height = ''; if (on) scrollTo(0, 0); return; } const top = h.getBoundingClientRect().top + scrollY; h.style.height = Math.max(360, innerHeight - top - d.offsetHeight - 22) + 'px'; scrollTo(0, 0); };
     lock(); setTimeout(lock, 300); setTimeout(lock, 1200); addEventListener('resize', lock);
   }
   // 💳 planes compactos y de venta (caben en una pantalla)
@@ -547,7 +547,7 @@
     el.style.position = el.style.position || 'relative'; el.style.zIndex = 50;
     const a = el.animate(K.map(k => ({ transform: k.t, opacity: k.o, offset: k.f })), { duration: mob ? 3600 : 4000, easing: 'cubic-bezier(.4,0,.3,1)' });
     const tr = setInterval(() => { const b = el.getBoundingClientRect(); const st = document.createElement('span'); st.className = 'rk-star'; st.textContent = Math.random() < .5 ? '✦' : '★'; st.style.left = (b.left + b.width * (mob ? .18 : .2) + window.scrollX) + 'px'; st.style.top = (b.top + b.height * .72 + window.scrollY) + 'px'; document.body.appendChild(st); setTimeout(() => st.remove(), 900); }, 70);
-    a.onfinish = () => { clearInterval(tr); el._fly = 0; el.style.zIndex = ''; const b = el.getBoundingClientRect(), rg = document.createElement('span'); rg.className = 'rk-ring'; rg.style.left = (b.left + b.width / 2 + scrollX) + 'px'; rg.style.top = (b.top + b.height * .8 + scrollY) + 'px'; document.body.appendChild(rg); setTimeout(() => rg.remove(), 800); };
+    a.onfinish = () => { clearTimeout(rocketTour.rep); rocketTour.rep = setTimeout(() => { if (!document.hidden && document.body.classList.contains('home-app') && !document.querySelector('.modal,.sheet-on,.wfx') && $('.ld-hero')) welcomeFx(); }, 5000); /* 🔁 cada 5 s: estrellas + vuelo */ clearInterval(tr); el._fly = 0; el.style.zIndex = ''; const b = el.getBoundingClientRect(), rg = document.createElement('span'); rg.className = 'rk-ring'; rg.style.left = (b.left + b.width / 2 + scrollX) + 'px'; rg.style.top = (b.top + b.height * .8 + scrollY) + 'px'; document.body.appendChild(rg); setTimeout(() => rg.remove(), 800); };
   }
   function login() {
     app.innerHTML = `<div class="wrap pt-wrap"><div class="card pt-login">
