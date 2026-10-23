@@ -6012,3 +6012,4 @@ button.lp-pl{font:inherit;text-align:inherit;cursor:pointer;width:100%;appearanc
 @media(max-width:700px){.kd-map{height:250px}.kd-stn small{font-size:9px!important;max-width:96px;padding:2px 6px!important;hyphens:auto;overflow-wrap:anywhere}}
 @media(max-width:899px){.fm-hart{top:2px!important;right:6px!important}.fm-hart img{height:84px!important}.fm-road{display:none}.fm-hst{margin-top:16px!important}.fm-htx h1{margin-top:2px!important}}
 .kd-stn.fin small{white-space:nowrap}
+@media(max-width:899px){.fm-hart{top:16px!important;right:8px!important}.fm-hart img{height:76px!important}}
