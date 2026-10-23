@@ -5586,7 +5586,6 @@ body.lp-app .topbar,body.home-app .topbar{position:sticky;top:0;z-index:70}
   .lp-plans{max-width:1180px;margin:0 auto}
 }
 /* profes: carrusel horizontal */
-.lp-panel #ld-profes .ld-cylw{height:auto!important;perspective:none!important;overflow:visible}
 .lp-panel #ld-profes .ld-pf.ld-cyl.lp-car{display:flex!important;overflow-y:hidden;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;transform:none!important;height:auto!important;width:auto!important;position:relative!important;left:auto!important;top:auto!important;margin:0!important;padding:10px 4px 14px;scrollbar-width:none;transform-style:flat!important}
 .lp-panel #ld-profes .ld-pf.ld-cyl.lp-car::-webkit-scrollbar{display:none}
 .lp-panel #ld-profes .ld-pf.ld-cyl.lp-car>.ld-pc{position:relative!important;inset:auto!important;transform:none!important;flex:0 0 min(270px,76%);height:auto!important;scroll-snap-align:center;opacity:1!important;margin:0!important;border-radius:22px!important;padding:0 0 14px!important;overflow:hidden;text-align:center;box-shadow:0 10px 24px rgba(11,42,91,.10)!important;border:1px solid #e3e9f3!important;cursor:pointer;backface-visibility:visible!important}
@@ -5598,7 +5597,7 @@ body.lp-app .topbar,body.home-app .topbar{position:sticky;top:0;z-index:70}
 .lp-panel #ld-profes .ld-pf.ld-cyl.lp-car>.ld-pc [data-pfr]:not([hidden]){margin-top:10px}
 @media(min-width:900px){.lp-panel #ld-profes .ld-pf.ld-cyl.lp-car{justify-content:safe center}.lp-panel #ld-profes .ld-pf.ld-cyl.lp-car>.ld-pc{flex-basis:250px}}
 @media(max-width:899px){.lp-panel #ld-profes .ld-pf.ld-cyl.lp-car>.ld-pc img{height:170px!important}}
-.lp-panel #ld-profes .ld-cylw{overflow:hidden!important;position:static!important}
+/* (cilindro: regla de carrusel retirada) */
 .lp-panel #ld-profes .ld-pf.ld-cyl.lp-car{width:100%!important;max-width:1180px;margin:0 auto!important;height:auto!important}
 .lp-panel #ld-profes .ld-pf.ld-cyl.lp-car>.ld-pc{width:auto!important}
 /* barra inferior: los mismos botones en celular y PC */
@@ -5727,4 +5726,16 @@ body.lp-app .topbar,body.home-app .topbar{position:sticky;top:0;z-index:70}
   .lp-panel #ld-profes .ld-pf.ld-cyl.lp-car>.ld-pc [data-pfr]:not([hidden]){margin-top:10px!important}
   #ld-profes h2{margin-bottom:2px}#ld-profes .ld-sub{margin-bottom:6px}
   .lp-panel #ld-profes .ld-cyln{margin-top:4px}
+}
+/* ===== v339 ===== */
+/* profes: cilindro 3D de vuelta, centrado y a la vista */
+.lp-panel #ld-profes{text-align:center}
+.lp-panel #ld-profes .ld-cylw{perspective:1500px!important;position:relative!important;overflow:hidden!important;margin:6px auto 0!important;max-width:1100px}
+.lp-panel #ld-profes .ld-cyln{display:flex;justify-content:center;align-items:center;gap:14px;margin-top:6px}
+@media(max-height:760px) and (min-width:900px){.lp-panel #ld-profes h2{font-size:22px}.lp-panel #ld-profes .ld-sub{margin:2px 0 0}}
+/* entrada celular: el cohete nunca toca el borde */
+@media(max-width:899px){
+  body.home-app .ld-hero{display:flex!important;flex-direction:column;box-sizing:border-box}
+  body.home-app .ld-copy{height:auto!important;flex:1 1 auto!important;min-height:0!important;padding-bottom:22px!important;box-sizing:border-box}
+  body.home-app .ld-hero-mra{object-position:center center!important}
 }

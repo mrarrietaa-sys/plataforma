@@ -235,7 +235,7 @@
     dock.querySelector('.lp-more').onclick = (e) => { e.stopPropagation(); msOpen(ms.hidden); };
     ms.addEventListener('click', (e) => { if (e.target === ms || e.target.closest('a,button')) msOpen(false); });
     const go = (k) => { if (!box.querySelector(`[data-p="${k}"]`)) return; $$('.lp-panel', box).forEach(p => p.classList.toggle('on', p.dataset.p === k)); $$('[data-tab]').forEach(b => b.classList.toggle('on', b.dataset.tab === k)); const cur = box.querySelector(`[data-p="${k}"]`); cur.scrollTop = 0;
-      if (k === 'profes') lpProfes(cur); if (k === 'opin') { const t = $('#ld-testimonios'); if (t) t.hidden = false; } };
+      if (k === 'profes') { const fx = () => { try { cylWire.fit && cylWire.fit(); } catch (e) { } }; fx(); setTimeout(fx, 60); setTimeout(fx, 400); } if (k === 'opin') { const t = $('#ld-testimonios'); if (t) t.hidden = false; } };
     window.__lpTab = go;
     dock.addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (b) go(b.dataset.tab); });
     document.addEventListener('click', e => { const a = e.target.closest('[data-tab],a[href^="#ld-"],a[href="#lp-control"]'); if (!a || dock.contains(a)) return; const h = a.dataset.tab || ({ '#ld-planes': 'planes', '#ld-testimonios': 'opin', '#ld-profes': 'profes', '#lp-control': 'papas' })[a.getAttribute('href')]; if (!h) return; e.preventDefault(); e.stopImmediatePropagation(); go(h); }, true);
