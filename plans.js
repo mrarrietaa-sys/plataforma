@@ -37,6 +37,24 @@
       : `<a class="btn ${hot(k) ? 'k' : 'w'} block pl-go" target="_blank" rel="noopener" href="${WA(waMsg(k, opt.renew && cur))}">${opt.renew && cur ? 'Renovar' : V2()[k].bt} →</a>`;
     return `<div class="pv${hot(k)}${cur ? ' cur' : ''}">${v2(k, { btn: false })}${act}</div>`;
   }
+  // misma tarjeta de la página de entrada (diseño y tamaño iguales en toda la plataforma)
+  const CC = { free: 'g', membership: 'b', premium: 'y', premium8: 'v' };
+  function lpCard(k, opt) {
+    opt = opt || {}; if (opt.pick) return lpBody(k, `<span class="lp-pb in-plan-pick">${opt.pick}</span>`);
+    const cur = opt.current === k, d = V2()[k], ren = opt.renew && cur;
+    const lbl = ren ? 'Renovar' : d.bt, sh = ren ? 'Renovar' : 'Lo quiero';
+    const btn = cur && !opt.renew ? `<span class="lp-pb pl-cur">${CK()} Tu plan actual</span>`
+      : canBuy() ? `<button type="button" class="lp-pb" data-buy="${k}"><span class="lg">${lbl}</span><span class="sh">${sh}</span></button>`
+      : `<a class="lp-pb" target="_blank" rel="noopener" href="${WA(waMsg(k, ren))}"><span class="lg">${lbl}</span><span class="sh">${sh}</span></a>`;
+    return `<div class="${lpCls(k)}${cur ? ' cur' : ''}">${lpBody(k, btn)}</div>`;
+  }
+  const lpCls = (k) => `lp-pl c-${CC[k]}${V2()[k].hot ? ' hot' : ''}`;
+  function lpBody(k, btn) {
+    const d = V2()[k], pr = k === 'free' ? { price: '$0', per: '· 3 días' } : PL[k], note = /^premium/.test(k) ? 'Clases no acumulables: úsalas en tu periodo mensual.' : d.note;
+    return `${d.rib ? `<span class="lp-tag">${d.rib}</span>` : ''}
+      <div class="lp-plh"><span class="ic">${ico(k)}</span><b>${NM[k]}</b></div><div class="lp-pr"><strong>${esc(pr.price)}</strong><small>${esc(pr.per)}</small></div>${per(k) ? `<span class="lp-ppc">Solo ${fmt(per(k))} por clase</span>` : '<span class="lp-ppc gh">COP</span>'}
+      <p class="lp-hook">${d.out}</p><ul>${d.li.map(l => `<li>${CK()}<span>${esc(l)}</span></li>`).join('')}</ul><small class="lp-pn">${note}</small>${btn}`;
+  }
   /* 🛍️ tarjetas de planes v2 (página de entrada, inscripción y perfil): resultado, precio por clase, condiciones aparte */
   const NM = { free: 'Acceso gratuito', membership: 'Plataforma', premium: 'Premium · 4 clases', premium8: 'Premium · 8 clases' };
   const per = (k) => PL[k] && PL[k].classes ? Math.round(PL[k].n / PL[k].classes) : 0;
@@ -61,7 +79,7 @@
     const order = ['membership', 'premium', 'premium8'], i = order.indexOf(current);
     const ks = order.filter((k, j) => j > i || (renew && j === i));
     if (!ks.length) return '';
-    return `<div class="pv-grid n${ks.length}">${ks.map(k => card(k, { current, renew })).join('')}</div>${trust()}<p class="pl-note">${window.MRI ? MRI('card') : ''} Paga con tarjeta (Mercado Pago) o por transferencia (Nequi / Llave Breve-B). Todas las membresías se cobran mes a mes. <a href="politica.html" target="_blank" rel="noopener">Política de reservas y cancelaciones</a></p>`;
+    return `<div class="lp-pg pl-in n${ks.length}">${ks.map(k => lpCard(k, { current, renew })).join('')}</div>${ks.length > 1 ? '<p class="lp-swipe">Desliza para ver todos los planes →</p>' : ''}${trust()}<p class="pl-note">${window.MRI ? MRI('card') : ''} Paga con tarjeta (Mercado Pago) o por transferencia (Nequi / Llave Breve-B). Todas las membresías se cobran mes a mes. <a href="politica.html" target="_blank" rel="noopener">Política de reservas y cancelaciones</a></p>`;
   }
   // los botones "Elegir este plan" abren la compra
   document.addEventListener('click', (e) => { const b = e.target.closest && e.target.closest('[data-buy]'); if (!b || !window.MRBUY) return; e.preventDefault(); const mo = b.closest('.modal'); if (mo) mo.remove(); MRBUY.plan(b.dataset.buy); });
@@ -86,5 +104,5 @@
     box.querySelector('.ipx-n').textContent = n; box.querySelector('.ipx-c').textContent = (PL[k].classes + n) + ' clases'; box.querySelector('.ipx-p').textContent = fmt(PL[k].n + n * EXTRA) + ' COP'; box.classList.toggle('on', n > 0);
     const a = box.closest('a[href*="plan="]'); if (a) { const u = new URL(a.getAttribute('href'), location.href); if (n) u.searchParams.set('extra', n); else u.searchParams.delete('extra'); a.setAttribute('href', u.pathname.split('/').pop() + u.search); }
     document.dispatchEvent(new CustomEvent('mra-extra', { detail: { plan: k, n } })); }
-  window.MRPLANS = { v2, trust, hot, xbox, xset, PL, FREE, BEN, IC, noEmo, card, cards, modal, payInfo, badge, WA, waMsg, applyCat, extra: () => EXTRA, fmt };
+  window.MRPLANS = { lpCard, lpCls, v2, trust, hot, xbox, xset, PL, FREE, BEN, IC, noEmo, card, cards, modal, payInfo, badge, WA, waMsg, applyCat, extra: () => EXTRA, fmt };
 })();

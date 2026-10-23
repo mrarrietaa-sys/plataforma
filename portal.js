@@ -503,7 +503,7 @@
   }
   // ✨ bienvenida en la página de entrada: lluvia de estrellas doradas y destellos (1 vez por visita) → luego vuela Mr. Arrieta
   function welcomeFx() {
-    if ((window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) return;
+    // se muestra siempre (también con el ahorro de batería del celular, que activa 'reducir animaciones')
     const cv = document.createElement('canvas'); cv.className = 'wfx'; document.body.appendChild(cv); const x = cv.getContext('2d');
     const fit = () => { cv.width = innerWidth * devicePixelRatio; cv.height = innerHeight * devicePixelRatio; x.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0); }; fit();
     const W = innerWidth, H = innerHeight, N = innerWidth < 600 ? 46 : 80, COL = ['#FFD23F', '#FFC21A', '#ffffff', '#E3242B', '#7fb2ff'];
@@ -519,7 +519,6 @@
   // 🚀 recorrido volando de Mr. Arrieta en la página de entrada (1 vez por visita; al tocarlo se repite)
   function rocketTour(force) {
     const mob = innerWidth <= 600; const el = mob ? $('.ld-hero-mra') : $('.ld-login .pt-rkt'); if (!el || el.offsetParent === null) return;
-    if (matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     if (!el._tw) { el._tw = 1; el.style.cursor = 'pointer'; el.addEventListener('click', () => rocketTour(true)); }
     if (el._fly) return; el._fly = 1;
     const r = el.getBoundingClientRect(), W = innerWidth, H = innerHeight;

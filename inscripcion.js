@@ -66,13 +66,13 @@ if (!window.M1) window.M1 = {
     <form id="in-form" class="in-form" novalidate>
       ${REF ? `<p class="pt-ann" style="margin:0 0 14px">🎁 Te invitó un amigo (código <b>${esc(REF)}</b>): tienes <b>10% de descuento</b> en tu primer mes de cualquier plan pago.</p>` : ''}
       <div${DIRECT ? ' hidden' : ''}><h2 class="in-step"><span>1</span> Elige tu plan</h2>
-      <div class="in-plans pv-grid n4" role="radiogroup" aria-label="Plan">
+      <div class="in-plans lp-pg pl-in n4" role="radiogroup" aria-label="Plan">
         ${PLANS.map((p) => `
-        <button type="button" class="in-plan pv${window.MRPLANS && MRPLANS.hot ? MRPLANS.hot(p.id) : ''}${st.plan === p.id ? ' on' : ''}" role="radio" aria-checked="${st.plan === p.id}" data-plan="${p.id}">
-          ${MRPLANS.v2(p.id, { btn: st.plan === p.id ? '✓ Seleccionado' : 'Elegir este plan', btnCls: 'in-plan-pick' })}
+        <button type="button" class="in-plan ${MRPLANS.lpCls(p.id)}${st.plan === p.id ? ' on' : ''}" role="radio" aria-checked="${st.plan === p.id}" data-plan="${p.id}">
+          ${MRPLANS.lpCard(p.id, { pick: st.plan === p.id ? '✓ Seleccionado' : 'Elegir este plan' })}
         </button>`).join('')}
       </div>
-      <div id="in-px"></div>${MRPLANS.trust ? MRPLANS.trust() : ''}<p class="in-err" id="err-plan" hidden>Elige un plan para continuar.</p></div>
+      <p class="lp-swipe">Desliza para ver todos los planes →</p><div id="in-px"></div>${MRPLANS.trust ? MRPLANS.trust() : ''}<p class="in-err" id="err-plan" hidden>Elige un plan para continuar.</p></div>
 
       <h2 class="in-step"><span>${DIRECT ? 1 : 2}</span> Tus datos</h2>
       <div class="card in-card">

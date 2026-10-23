@@ -4112,7 +4112,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue)!im
 .ld-login .pt-hello .pt-mra{height:165px}
 .db-hero-mra{height:205px;right:24px;bottom:14px;filter:drop-shadow(0 14px 14px rgba(11,42,91,.18))}
 @media(max-width:980px){.ld-login .pt-hello .pt-mra{height:120px}.db-hero-mra{height:80px;right:6px;top:22px;bottom:auto}}
-@media(prefers-reduced-motion:reduce){.ld-login .pt-hello .pt-mra,.ld-hero-mra,.db-hero-mra{animation:none}}
+@media(prefers-reduced-motion:reduce){.db-hero-mra{animation:none}}
 @media(max-width:980px){.ld-hero-mra{height:172px}}
 /* v161: Mr. Arrieta en cohete (entrada) */
 .ld-login .pt-hello .pt-rkt{height:170px;width:auto;filter:drop-shadow(0 12px 14px rgba(11,42,91,.16))}
@@ -5769,4 +5769,33 @@ html,body{overflow-x:clip!important}
 .fx-item .hd{display:flex!important;flex-wrap:wrap!important;row-gap:10px!important;column-gap:8px!important;align-items:center}
 .fx-item .hd .qcount{margin-left:0}
 .fx-item .hd + *{margin-top:12px}
-@media(max-width:899px){.topbar{position:sticky!important;top:0!important;z-index:70!important}}
+@media(max-width:899px){body:not(.lp-app):not(.home-app) .topbar{position:sticky!important;top:0!important;z-index:70!important}}
+/* v343 planes: mismo diseño y tamaño en toda la plataforma */
+button.lp-pl{font:inherit;text-align:inherit;cursor:pointer;width:100%;appearance:none}
+.lp-pb{border:0;cursor:pointer;text-decoration:none;width:100%;box-sizing:border-box}
+.lp-pb.pl-cur{background:#e7f6ec!important;color:#15803d!important;display:flex;align-items:center;justify-content:center;gap:6px;cursor:default}.lp-pb.pl-cur .mri{width:15px;height:15px}
+.lp-pl.cur{border-color:#16a34a}
+.in-plans .in-plan.lp-pl{gap:0;padding:14px;border:1.5px solid #e3e9f3;border-radius:18px;box-shadow:0 6px 16px rgba(11,42,91,.06);color:inherit}
+.in-plans .in-plan.lp-pl.hot{border-color:var(--y)}
+.in-plans .in-plan.lp-pl li{padding-left:0;font-size:12.8px;line-height:1.3}.in-plans .in-plan.lp-pl li::before{display:none}
+.in-plans .in-plan.lp-pl ul{margin:0 0 12px!important;gap:5px!important}
+.in-plans .in-plan.lp-pl.on{background:#fff;outline:3px solid var(--k);outline-offset:2px}
+.in-plans .in-plan.lp-pl.on .lp-pb{background:var(--k)!important;color:#fff!important}
+@media(min-width:900px){.lp-pg.pl-in.n1{grid-template-columns:minmax(0,300px);justify-content:center}.lp-pg.pl-in.n2{grid-template-columns:repeat(2,minmax(0,280px));justify-content:center}.lp-pg.pl-in.n3{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:899px){
+  .lp-pg{padding-left:4%!important;padding-right:4%!important;scroll-padding:0 4%;gap:10px!important}
+  .lp-pl{flex-basis:92%!important}
+  .lp-pg.pl-in.n1{justify-content:center}
+  .in-plans .in-plan.lp-pl{padding:16px 15px!important}
+  .in-plans .in-plan.lp-pl li{font-size:13px!important}
+}
+/* v343 juegos celular: personaje dentro del cuadro y "Juego del día" sin pisar el título */
+@media(max-width:700px){
+  .ar-hero2{overflow:hidden}
+  .ar-hero2 .ar-hero-mra{top:14px!important;right:12px!important;bottom:auto!important;max-height:118px!important;width:auto!important;margin:0!important}
+  .ar-hero2 h1,.ar-hero2 p{padding-right:78px}
+  .ar-gcard{overflow:visible}
+  .ar-day{top:-25px!important;left:66px!important;right:auto!important;transform:none!important}
+}
+@media(min-width:900px){.modal .card:has(.lp-pg.pl-in){max-width:min(960px,94vw)!important;width:min(960px,94vw)!important}.modal .lp-pg.pl-in.n3{grid-template-columns:repeat(3,minmax(0,260px));justify-content:center}}
+@media(max-width:899px){.modal .lp-pg.pl-in{margin:0 -6px!important}}
