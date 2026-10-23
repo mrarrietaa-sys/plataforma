@@ -58,7 +58,7 @@
   }
 
   /* ======================= ESTRUCTURA ======================= */
-  const TABS = [['today', '✅', 'Tareas de hoy'], ['home', '📊', 'Resumen'], ['students', '🎓', 'Estudiantes'], ['enroll', '📝', 'Inscripciones'], ['buys', '💳', 'Pagos'], ['claims', '🚩', 'Reclamos'], ['reviews', '⭐', 'Opiniones'], ['prizes', '🎁', 'Premios'], ['leads', '📣', 'Interesados'], ['placement', '🧭', 'Placement'], ['recruit', '👩‍🏫', 'Reclutamiento'], ['teachers', '🧑‍🏫', 'Profesores'], ['contracts', '📄', 'Contratos'], ['tes', '🎬', 'Testimonios'], ['boards', '📝', 'Tableros'], ['classes', '📅', 'Clases'], ['requests', '🔁', 'Solicitudes'], ['chats', '💬', 'Chats'], ['settings', '⚙️', 'Ajustes']];
+  const TABS = [['today', '✅', 'Tareas de hoy'], ['home', '📊', 'Resumen'], ['students', '🎓', 'Estudiantes'], ['families', '👨‍👩‍👧', 'Familias'], ['enroll', '📝', 'Inscripciones'], ['buys', '💳', 'Pagos'], ['claims', '🚩', 'Reclamos'], ['reviews', '⭐', 'Opiniones'], ['prizes', '🎁', 'Premios'], ['leads', '📣', 'Interesados'], ['placement', '🧭', 'Placement'], ['recruit', '👩‍🏫', 'Reclutamiento'], ['teachers', '🧑‍🏫', 'Profesores'], ['contracts', '📄', 'Contratos'], ['tes', '🎬', 'Testimonios'], ['boards', '📝', 'Tableros'], ['classes', '📅', 'Clases'], ['requests', '🔁', 'Solicitudes'], ['chats', '💬', 'Chats'], ['settings', '⚙️', 'Ajustes']];
   let TAB = 'home', STATS = null;
   // "Atrás": dentro del panel vuelve al Resumen (nunca saca a otra página por error)
   document.addEventListener('click', (e) => { const b = e.target.closest && e.target.closest('.tb-back'); if (!b || !key()) return; if (document.querySelector('.modal, .wa-wrap')) return; e.preventDefault(); e.stopImmediatePropagation(); if (TAB !== 'home') go('home'); else window.scrollTo(0, 0); }, true);
@@ -647,6 +647,27 @@
 
 
   /* ======================= 🎁 PREMIOS DEL RETO DE PRONUNCIACIÓN ======================= */
+  /* ======================= 👨‍👩‍👧 FAMILIAS (papás con hijos Kids/Teens) ======================= */
+  async function families() {
+    view().innerHTML = '<div class="ad-loading">⏳ Cargando familias…</div>';
+    const r = await api('aFamilies'); if (!r.ok) return view().innerHTML = '<p class="ad-err">No se pudieron cargar las familias.</p>';
+    const AGN = { kids: ['fm-tag k', 'KIDS'], teens: ['fm-tag t', 'TEENS'], adult: ['fm-tag a', '18+'] };
+    let q = '', onlyAl = false;
+    const draw = () => {
+      const rows = r.families.filter(f => (!onlyAl || f.kids.some(k => k.alert && k.idle >= 7)) && (!q || (f.fcode + ' ' + f.guardian + ' ' + f.email + ' ' + f.kids.map(k => k.name + ' ' + k.code).join(' ')).toLowerCase().indexOf(q) >= 0));
+      $('#fmL', view()).innerHTML = rows.length ? rows.map(f => `<div class="sr-row"><div class="sr-rh"><b>${esc(f.guardian || '—')}</b><small>${esc(f.fcode)} · ${esc(f.email)}${f.email2 ? ' · ' + esc(f.email2) : ''}${f.whatsapp ? ' · ' + esc(f.whatsapp) : ''}</small><span class="sr-pill ${f.alerts ? 'pub' : 'hid'}" style="margin-left:auto">${f.alerts ? 'Alerta 7 días: activa' : 'Alerta apagada'}</span></div>
+        <div class="fm-adk">${f.kids.map(k => { const g = AGN[k.ag] || AGN.adult; return `<div><b>${esc(k.name)}</b> <i class="${g[0]}">${g[1]}${k.age != null ? ' ' + k.age : ''}</i> <small>${esc(k.planName)} · ${esc(k.code)} · ${k.idle <= 0 ? 'activo hoy' : k.idle === 1 ? 'activo ayer' : 'hace ' + k.idle + ' días'}</small>${k.alert ? ` <span class="sr-pill alert">Alerta enviada ${fD(k.alert, { day: 'numeric', month: 'short' })}</span>` : ''}</div>`; }).join('') || '<small class="muted">Sin hijos vinculados</small>'}</div>
+        <div class="sr-ac">${f.whatsapp ? `<a class="btn sm ad-wa" target="_blank" rel="noopener" href="${waLink(f.whatsapp, 'Hola ' + String(f.guardian || '').split(' ')[0] + ', te escribimos de mrarrieta.com.')}">📲 WhatsApp</a>` : ''}${f.kids.length ? `<button class="btn w sm" data-ft="${esc(f.fcode)}">✉️ Enviar alerta de prueba</button>` : ''}<button class="btn w sm" data-fa="${esc(f.fcode)}" data-on="${f.alerts ? 0 : 1}">${f.alerts ? 'Apagar alerta' : 'Activar alerta'}</button></div></div>`).join('') : '<p class="muted">No hay familias con ese filtro.</p>';
+      $$('[data-ft]', view()).forEach(b => b.onclick = async () => { b.disabled = true; const x = await api('aFamTest', { fcode: b.dataset.ft }); b.disabled = false; toast(x && x.ok ? '✅ Alerta de prueba enviada a ' + x.to : 'No se pudo enviar'); });
+      $$('[data-fa]', view()).forEach(b => b.onclick = async () => { b.disabled = true; const x = await api('aFamSet', { fcode: b.dataset.fa, alerts: b.dataset.on === '1' }); toast(x && x.ok ? '✅ Listo' : 'No se pudo'); families(); });
+    };
+    view().innerHTML = `<div class="ad-head"><h1>👨‍👩‍👧 Familias</h1><p class="muted">Papás y mamás con hijos en Kids (9–11) o Teens (12–17). El grupo de edad cambia solo con el cumpleaños. La alerta de 7 días se envía si un hijo no reserva clase (Premium) o no practica (Plataforma) en una semana.</p></div>
+      <div class="sr-kpis fm-k4"><div><b>${r.kpi.families}</b><span>Familias</span></div><div><b>${r.kpi.kids}</b><span>Kids (9–11)</span></div><div><b>${r.kpi.teens}</b><span>Teens (12–17)</span></div><div><b class="r">${r.kpi.alerts}</b><span>Alertas esta semana</span></div></div>
+      <div class="card"><div class="fm-adf"><input class="inp" id="fmQ" placeholder="Buscar papá, hijo o código…"><button class="btn w sm" id="fmA">Solo con alerta</button></div><div id="fmL"></div></div>`;
+    $('#fmQ', view()).oninput = (e) => { q = e.target.value.trim().toLowerCase(); draw(); };
+    $('#fmA', view()).onclick = (e) => { onlyAl = !onlyAl; e.target.classList.toggle('k', onlyAl); e.target.classList.toggle('w', !onlyAl); draw(); };
+    draw();
+  }
   async function prizes() {
     view().innerHTML = '<div class="ad-loading">⏳ Cargando premios…</div>';
     const r = await api('aPrizes'); if (!r.ok) return view().innerHTML = '<p class="ad-err">No se pudieron cargar los premios.</p>';
@@ -721,6 +742,6 @@
       const m = modal(`<div class="center"><div style="font-size:44px">📢</div><h2>¿Publicar nueva versión?</h2><p class="muted">${K === 'teacher' ? 'Todos los profes' : 'Todos los estudiantes con este plan'} deberán leerla y aceptarla otra vez al entrar.</p><div class="row" style="justify-content:center"><button class="btn w" id="cp-n">Cancelar</button><button class="btn k" id="cp-y">Sí, publicar</button></div></div>`);
       $('#cp-n', m).onclick = () => m.remove(); $('#cp-y', m).onclick = async () => { $('#cp-y', m).disabled = true; const x = await api('aContractSave', { text: tx, kind: K }); m.remove(); if (x.ok) { toast('📢 Publicada la versión ' + x.version); contracts(); } else toast(x.err === 'corto' ? 'El texto es muy corto' : 'No se pudo publicar'); }; };
   }
-  const VIEWS = { prizes, today, contracts, boards, tes, buys, claims, reviews, home, students, enroll, leads, placement, recruit, teachers, classes, requests, chats, settings };
+  const VIEWS = { families, prizes, today, contracts, boards, tes, buys, claims, reviews, home, students, enroll, leads, placement, recruit, teachers, classes, requests, chats, settings };
   key() && MRAC.on ? boot() : login();
 })();
