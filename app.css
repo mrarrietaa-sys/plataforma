@@ -4112,7 +4112,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue)!im
 .ld-login .pt-hello .pt-mra{height:165px}
 .db-hero-mra{height:205px;right:24px;bottom:14px;filter:drop-shadow(0 14px 14px rgba(11,42,91,.18))}
 @media(max-width:980px){.ld-login .pt-hello .pt-mra{height:120px}.db-hero-mra{height:80px;right:6px;top:22px;bottom:auto}}
-@media(prefers-reduced-motion:reduce){.db-hero-mra{animation:none}}
+
 @media(max-width:980px){.ld-hero-mra{height:172px}}
 /* v161: Mr. Arrieta en cohete (entrada) */
 .ld-login .pt-hello .pt-rkt{height:170px;width:auto;filter:drop-shadow(0 12px 14px rgba(11,42,91,.16))}
@@ -5853,3 +5853,33 @@ button.lp-pl{font:inherit;text-align:inherit;cursor:pointer;width:100%;appearanc
 .fm-adf{display:flex;gap:8px;align-items:center}.fm-adf .inp{flex:1;margin:0}
 .fm-adk{display:grid;gap:6px;margin:8px 0}.fm-adk>div{font-size:13.5px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}.fm-adk small{color:var(--mut)}
 @media(max-width:640px){.fm-k4{grid-template-columns:1fr 1fr!important}}
+/* v349 panel de papás: diseño de PC como el perfil del estudiante */
+.fm-pc{text-align:center;padding:18px!important;margin:0!important}
+.fm-pav{width:84px;height:84px;margin:0 auto 10px;border-radius:50%;background:var(--k);color:#fff;font:800 28px var(--fh);display:grid;place-items:center;border:4px solid var(--y)}
+.fm-pc h2{margin:0;font-size:19px}.fm-pc>p{margin:3px 0 14px;color:var(--mut);font-size:13px}
+.fm-pc .fm-code{text-align:left}
+.fm-side,.fm-main{display:flex;flex-direction:column;gap:12px;min-width:0}
+@media(max-width:899px){.fm-grid,.fm-side,.fm-main{display:contents}.fm-hero{order:1}.fm-pc{order:2}.fm-st{order:3}.fm-kids{order:4}.fm-al{order:5}.fm-help{order:6}.fm-pav{display:none}.fm-pc h2,.fm-pc>p{display:none}.fm-pc{padding:0!important;border:0!important;box-shadow:none!important;background:none!important}}
+@media(min-width:900px){
+  .fm-wrap{max-width:1180px!important;padding:22px 24px 30px!important}
+  .fm-grid{display:grid;grid-template-columns:320px minmax(0,1fr);gap:20px;align-items:start}
+  .fm-side{position:sticky;top:96px}
+  .fm-hero{min-height:200px;padding:24px 28px}.fm-hero h1{font-size:30px}.fm-hero p{font-size:15px;max-width:460px}.fm-hero img{height:205px;margin-bottom:-24px;margin-right:16px}
+  .fm-kids{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+  .fm-kid{height:100%}
+  .fm-add{min-height:150px;flex-direction:column;font-size:15px;background:#fff}.fm-add .mri{width:26px;height:26px;padding:8px;border-radius:12px;background:#EEF3FB;box-sizing:content-box}
+}
+@media(min-width:900px){
+  .fm-wrap{max-width:1280px!important}
+  .fm-pc .fm-code{flex-direction:column;align-items:stretch;gap:8px;text-align:center}.fm-pc .fm-code b{font-size:19px;white-space:nowrap}.fm-pc .fm-cp{justify-content:center}
+  .fm-kids{grid-template-columns:repeat(auto-fill,minmax(250px,1fr))!important}
+  .fm-mini b{font-size:13px}
+}
+
+/* v350 panel de papás: fondo blanco con rosado (como el perfil del estudiante) y Mr. Arrieta flotando */
+.fm-hero{background:linear-gradient(135deg,#ffffff 0%,#fff6f6 55%,#ffe4e6 100%)!important;color:var(--k)!important;border:1.5px solid #f6c9cc;box-shadow:0 8px 22px rgba(227,36,43,.08)}
+.fm-hero h1{color:var(--k)!important}.fm-hero p{color:#475569!important;opacity:1!important}
+.fm-hero .fm-eye{background:var(--k);color:#fff;border-color:var(--k)}
+.fm-hero img{animation:mraFloat 3.4s ease-in-out infinite;will-change:transform;filter:drop-shadow(0 14px 14px rgba(11,42,91,.18));margin-bottom:0!important;align-self:center}
+.fm-login img{animation:mraFloat 3.4s ease-in-out infinite}
+@media(min-width:900px){.fm-hero img{height:190px!important}}
