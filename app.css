@@ -5799,3 +5799,18 @@ button.lp-pl{font:inherit;text-align:inherit;cursor:pointer;width:100%;appearanc
 }
 @media(min-width:900px){.modal .card:has(.lp-pg.pl-in){max-width:min(960px,94vw)!important;width:min(960px,94vw)!important}.modal .lp-pg.pl-in.n3{grid-template-columns:repeat(3,minmax(0,260px));justify-content:center}}
 @media(max-width:899px){.modal .lp-pg.pl-in{margin:0 -6px!important}}
+/* v344 prueba gratis "Para mi hijo(a)": compacto, todo en una pantalla */
+.tf-h{display:block;text-align:left;font:800 12.5px var(--fh);color:var(--k);margin:4px 0 -2px;letter-spacing:.02em}
+.tf-kidm .to-list{display:none!important}
+.tf-kidm .to-ic{width:40px!important;height:40px!important;margin-bottom:2px!important}.tf-kidm .to-ic .mri{width:20px;height:20px}
+.tf-kidm h3{margin:2px 0 2px!important}.tf-kidm .to-lead{margin:0 0 4px!important;font-size:13.5px!important}
+.tf-kidm .tf{grid-template-columns:1fr 1fr;column-gap:8px!important}
+.tf-kidm .tf>*{grid-column:1/-1}
+.tf-kidm .tf>#tf-w,.tf-kidm .tf>#tf-e{grid-column:auto}
+.tf-kidm .tf-bd{display:flex!important;align-items:center;gap:10px}.tf-kidm .tf-bd span{flex:none;font-size:12.5px}.tf-kidm .tf-bd .inp{flex:1;min-width:0;margin:0!important}
+.tf-kidm .tf-ok{font-size:12.5px!important;line-height:1.35}
+@media(max-width:899px){.tf-kidm .to-ic{display:none!important}.tf-kidm .tf .inp{padding:8px 11px!important}}
+.modal .card.tf-kidm:has(#tf-go) .to-list{display:none!important}
+.modal .card.tf-kidm .tf{row-gap:6px!important}
+.modal .card.tf-kidm .tf-h{margin:2px 0 -3px}
+@media(max-width:899px){.tf-kidm .tf-bd span{max-width:84px;white-space:normal;line-height:1.2}}
