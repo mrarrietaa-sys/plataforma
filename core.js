@@ -181,9 +181,16 @@
       });
     } catch (e) { }
   }
-  function praise() { const k = Object.keys(D.praise); play(D.praise[k[Math.floor(Math.random() * k.length)]]); }
+  // 👧 Kids y Teens (9 a 17 años): la voz que felicita y anima es de mujer; adultos: voz de hombre
+  function ageGroup() { try { const p = window.MRAP && MRAP.get && MRAP.get(); const b = p && p.birth; if (!/^\d{4}-\d{2}-\d{2}/.test(b || '')) return p && (p.ag === 'kids' || p.ag === 'teens') ? p.ag : 'adult'; const t = new Date(), y = +b.slice(0, 4), m = +b.slice(5, 7), d = +b.slice(8, 10); let a = t.getFullYear() - y; if (t.getMonth() + 1 < m || (t.getMonth() + 1 === m && t.getDate() < d)) a--; return a < 12 ? 'kids' : a < 18 ? 'teens' : 'adult'; } catch (e) { return 'adult'; } }
+  const femFB = () => ageGroup() !== 'adult';
+  let fbfReq = null; const fbf = () => fbfReq || (fbfReq = loadAudio(['fbf']).catch(() => null));
+  function fbPlay(id) { if (!femFB()) return play(id); const f = 'fb_' + id; if (window.AUD && window.AUD[f]) return play(f); return fbf().then(() => play(window.AUD && window.AUD[f] ? f : id)); }
+  setTimeout(() => { if (femFB()) fbf(); }, 1500);
+  const FBP = { 'Awesome!': '98561b5346', 'Great job!': 'a88a2d51d2', 'Perfect!': '9abc262823', 'Excellent!': '54f1859c38', 'Well done!': 'b93b9f5f0f', 'You got it!': '1a9de5fa28', 'Fantastic!': 'd5bfd68ea5', 'Nice work!': 'aa2b15da71' }, FBR = { 'Try again.': 'e4bbac6f81', 'Almost! Listen again.': '2ace7bd775', 'Not quite. You can do it!': '8b4c184411' };
+  function praise() { const P = (D && D.praise) || FBP; const k = Object.keys(P); if (k.length) return fbPlay(P[k[Math.floor(Math.random() * k.length)]]); }
   // voz de ánimo cuando la respuesta no es correcta ("Try again.", "Almost! Listen again."…)
-  function encourage() { const R = D.retry || {}; const k = Object.keys(R); if (k.length) play(R[k[Math.floor(Math.random() * k.length)]]); }
+  function encourage() { const R = (D && D.retry) || FBR; const k = Object.keys(R); if (k.length) return fbPlay(R[k[Math.floor(Math.random() * k.length)]]); }
 
   /* ---------- speech recognition ---------- */
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -443,6 +450,6 @@
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
   })();
   window.M1 = { face, D, C, MOD, S, $, $$, h, esc, shuffle, sample, sleep, save, touchStreak, addSkill, addWeak, okWeak, skillPct, isUnlocked, finalUnlocked, paceDate, weakParts, reviewMode, revCount, PTS_TIP, hasAccess, progressOpen, lockReason, review, hasProfile, doneCount, totalParts, redeem, codeHash,
-    allParts, partById, trackAudio, audioUI, floatStop, recordScore, letterScorer, voiceResult, floatBubble, setBubbleHidden, prevPart, nextPart, partStars, overallPct, imgURL, photo, play, playSeq, loadAudio, stop, sfx, praise, encourage, canSR, listen, srSession, recordVoice,
+    allParts, partById, trackAudio, audioUI, floatStop, recordScore, letterScorer, voiceResult, floatBubble, setBubbleHidden, prevPart, nextPart, partStars, overallPct, imgURL, photo, play, playSeq, loadAudio, stop, sfx, praise, encourage, ageGroup, fbf, canSR, listen, srSession, recordVoice,
     norm, words, lev, speechScore, sheet, good, bad, toast, modal, xpFly, confetti, mascot, audioSrc };
 })();

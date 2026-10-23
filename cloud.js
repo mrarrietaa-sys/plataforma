@@ -33,6 +33,7 @@
     const p = Object.assign({ created: Date.now() }, base || prof() || {});
     Object.assign(p, { cloud: true, code: st.code, plan: st.plan || 'free', planStart: st.planStart || '', planEnd: st.planEnd || '', paceStart: st.paceStart || '', paceMod: +st.paceMod || 0, type: typeFor(st, state), expired: !!(state && state.expired), groupId: st.groupId || '' });
     ['first', 'last', 'email', 'whatsapp', 'birth'].forEach(k => { if (st[k] && !p[k]) p[k] = st[k]; });
+    if (st.birth) p.birth = st.birth; if (st.ag) p.ag = st.ag; // 👧 grupo de edad (Kids / Teens / Adultos) según la nube
     if (Array.isArray(st.sr)) p.sr = Array.from(new Set([...(Array.isArray(p.sr) ? p.sr : []), ...st.sr])); // ⭐ opiniones de la escuela ya enviadas
     if (st.goal && st.goal.k) p.goal = st.goal; // 🎯 objetivo guardado en la nube
     if (p.first && !p.name) p.name = (p.first + ' ' + (p.last || '')).trim();

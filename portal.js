@@ -355,6 +355,10 @@
     const pw = card.closest('.pt-wrap'); if (pw) pw.classList.add('ld-on');
     card.parentNode.insertBefore(wrap, card); { const ll = wrap.querySelector('.ld-login'); if (ll) ll.appendChild(card); else { const hid = document.createElement('div'); hid.hidden = true; hid.className = 'lp-hid'; wrap.appendChild(hid); hid.appendChild(card); } }
     if (PAGE !== 'home') lpWire();
+    if (/[?&]prueba=hijo/.test(location.search)) setTimeout(() => { // 👨‍👩‍👧 "Agregar otro hijo(a)" desde el panel de papás: formulario con los datos de los padres ya escritos
+      trialForm(true); let pf = {}; try { pf = JSON.parse(localStorage.getItem('mra_fam_prefill') || '{}'); } catch (e) { }
+      const set = (id, v) => { const i = document.getElementById(id); if (i && v) i.value = v; }; set('tf-g', pf.guardian); set('tf-w', pf.whatsapp); set('tf-e', pf.email); set('tf-e2', pf.email2);
+    }, 500);
     else homeDock();
     const free = $('.pt-free'); if (free) free.remove();
     const or = $('.pt-or'); if (or) or.innerHTML = `<a href="#" data-trial class="pt-trialk">🎁 Prueba gratis 3 días</a>`;
@@ -497,7 +501,7 @@
       setVName(name); const r = await MRAC.call('trialSignup', kid ? { name, whatsapp, email, kid: true, guardian, email2, birth } : { name, whatsapp, email }).catch(() => null);
       if (!r || !r.ok) { b.disabled = false; b.textContent = 'Crear mi acceso gratis →'; return msg(r && r.err === 'family' ? 'Esta familia ya tiene 3 pruebas gratis. Para otro hijo(a), escríbenos por WhatsApp o elige un plan.' : r && r.err === 'busy' ? 'Hay muchas solicitudes en este momento. Inténtalo en unos minutos.' : 'No se pudo crear tu acceso. Revisa tus datos e inténtalo de nuevo.'); }
       if (r.exists) { m.querySelector('.card').innerHTML = `<div class="center"><div class="to-ic">${MRI('clock')}</div><h3>Estos datos ya están registrados</h3><p>El acceso gratuito de 3 días es <b>solo una vez por persona</b>. Si ya eres estudiante, entra con tu código en "Ingresa a tu perfil". Si quieres continuar, elige tu plan.</p><a class="btn k block lg" href="#ld-planes" id="tf-pl">Ver planes →</a></div>`; $('#tf-pl', m).onclick = () => m.remove(); return; }
-      m.querySelector('.card').innerHTML = `<div class="center">${M.mascot('mascot bounce', 'celebrate')}<h3>¡Listo, ${esc(r.first)}! 🎉</h3><p>Tu código de acceso es</p><div class="rc-code" style="font:800 28px Poppins,sans-serif;color:#0B2A5B;letter-spacing:.06em;background:#EEF3FB;border:2px dashed #9fb3d6;border-radius:14px;padding:8px 18px;display:inline-block;margin:6px 0">${esc(r.code)}</div><p class="muted">${kid ? 'También lo enviamos ' + (email2 ? 'a los dos correos' : 'al correo') + ' de los padres.' : 'También te lo enviamos al correo.'} Guárdalo para entrar después.</p><button class="btn r block lg" id="tf-in">Entrar a mi prueba gratis →</button></div>`;
+      m.querySelector('.card').innerHTML = `<div class="center">${M.mascot('mascot bounce', 'celebrate')}<h3>¡Listo, ${esc(r.first)}! 🎉</h3><p>Tu código de acceso es</p><div class="rc-code" style="font:800 28px Poppins,sans-serif;color:#0B2A5B;letter-spacing:.06em;background:#EEF3FB;border:2px dashed #9fb3d6;border-radius:14px;padding:8px 18px;display:inline-block;margin:6px 0">${esc(r.code)}</div><p class="muted">${kid ? 'También lo enviamos ' + (email2 ? 'a los dos correos' : 'al correo') + ' de los padres.' : 'También te lo enviamos al correo.'} Guárdalo para entrar después.</p>${kid && r.fcode ? `<div class="tf-fam">${MRI('users')}<span>Código de familia: <b>${esc(r.fcode)}</b><small>Con él, papá y mamá ven cómo va su hijo(a). Llegó a su correo.</small></span></div>` : ''}<button class="btn r block lg" id="tf-in">Entrar a mi prueba gratis →</button></div>`;
       $('#tf-in', m).onclick = () => { m.remove(); if (PAGE !== 'home') { try { sessionStorage.setItem('mra_autocode', r.code); } catch (e) { } location.href = 'index.html'; return; } const i = $('#cd'); if (i) { i.value = r.code; $('#ok').click(); } };
     };
   }
@@ -570,6 +574,10 @@
     const bad = (msg) => { i.classList.add('wrong'); sfx('bad'); setTimeout(() => i.classList.remove('wrong'), 500); M.toast(msg || 'Código no válido 😕'); };
     const go = async () => { try { if (window.speechSynthesis) { const w = new SpeechSynthesisUtterance(' '); w.volume = 0; speechSynthesis.speak(w); } } catch (e) { } // desbloquea la voz en iPhone
       const v = i.value.trim(); if (!v) return bad('Escribe tu código 🙂');
+      if (/^FAM-/i.test(v) && window.MRAC && MRAC.on) { // 👨‍👩‍👧 código de familia → panel de papás
+        const b = $('#ok'); b.disabled = true; b.textContent = 'Entrando…'; const fr = await MRAC.call('famData', { fcode: v.toUpperCase() }).catch(() => null); b.disabled = false; b.textContent = 'Entrar →';
+        if (fr && fr.ok) { try { localStorage.setItem('mra_fam', v.toUpperCase()); localStorage.setItem('mra_last_role', JSON.stringify({ role: 'family' })); } catch (e) { } location.href = 'familia.html'; return; }
+        return bad(fr && fr.err === 'notfound' ? 'No encontramos ese código de familia. Revísalo 🙏' : 'No hay conexión con la nube. Inténtalo de nuevo.'); }
       // 1) códigos de la nube (planes Acceso gratuito / Membership / Premium)
       if (window.MRAC && MRAC.on && !codeType(v)) {
         const b = $('#ok'); b.disabled = true; b.textContent = 'Entrando…';
@@ -582,6 +590,7 @@
         // 🔑 una sola entrada: clave de administración o código de profe
         b.disabled = true; b.textContent = 'Entrando…'; const w = await MRAC.call('who', { k: v }).catch(() => null); b.disabled = false; b.textContent = 'Entrar →';
         if (w && w.role === 'admin') { try { sessionStorage.setItem('mra_admin_key', v); localStorage.setItem('mra_last_role', JSON.stringify({ role: 'admin' })); } catch (e) { } location.href = 'administracion.html'; return; }
+        if (w && w.role === 'family' && w.fcode) { try { localStorage.setItem('mra_fam', w.fcode); localStorage.setItem('mra_last_role', JSON.stringify({ role: 'family' })); } catch (e) { } location.href = 'familia.html'; return; } // 👨‍👩‍👧 código de familia → panel de papás
         if (w && w.role === 'teacher' && w.tcode) { try { sessionStorage.setItem('mra_tp_session', JSON.stringify({ tcode: w.tcode, pin: w.pin })); localStorage.setItem('mra_last_role', JSON.stringify({ role: 'teacher' })); } catch (e) { } location.href = 'profesores.html'; return; }
         return bad();
       }

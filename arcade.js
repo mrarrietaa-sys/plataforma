@@ -32,7 +32,7 @@
   const nick = () => { const p = P.get() || {}; return (p.look && p.look.nick) || p.first || ''; };
   const fmt = (n) => Math.round(n).toLocaleString('es-CO');
   const todayISO = () => P.todayISO ? P.todayISO() : new Date().toISOString().slice(0, 10);
-  const loadLevelAudio = (id) => M.loadAudio(['arcade_c', LEVELS.find(l => l.id === (id || LV)).grp]);
+  const loadLevelAudio = (id) => M.loadAudio(['arcade_c', LEVELS.find(l => l.id === (id || LV)).grp].concat(M.ageGroup && M.ageGroup() !== 'adult' ? ['fbf'] : []));
 
   /* ---------------- sonido: efectos WebAudio + voces ---------------- */
   let ac = null;
@@ -68,7 +68,8 @@
   };
   function fx(n, a) { if (!S.sound) return; try { FX[n] && FX[n](a); } catch (e) { } }
   function voice(line) {
-    if (!S.sound) return; const k = AD.voice[line]; if (!k) return;
+    if (!S.sound) return; let k = AD.voice[line]; if (!k) return;
+    if (M.ageGroup && M.ageGroup() !== 'adult' && window.AUD && window.AUD['fb_' + k]) k = 'fb_' + k; // 👧 Kids y Teens: voz de mujer
     try { const a = new Audio(M.audioSrc(k)); a.volume = .95; a.play().catch(() => { }); } catch (e) { }
   }
   const say = (au, opts) => M.play(au, opts);
