@@ -25,7 +25,7 @@
   }
   let curRoute = 'home';
   function route(r) { curRoute = r || 'home'; M.stop && M.stop(); window.scrollTo(0, 0); topbar(); const p = PAGE !== 'home' ? null : P.get();
-    if (p) { const hd = document.querySelector('.lp-dock.home'); if (hd) { hd.remove(); document.body.classList.remove('home-app'); } }
+    if (p) { const hd = document.querySelector('.lp-dock.home'); if (hd) { hd.remove(); document.body.classList.remove('home-app'); document.documentElement.classList.remove('home-lock'); } }
     if (!p) return login();
     if (!p.first || (p.cloud && p.type === 'student' && !p.birth)) return nameStep(); // nombre + fecha de nacimiento obligatorios
     if (r === 'placement') return placement();
@@ -177,6 +177,11 @@
       <button type="button" class="on" data-goin>${ic('<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/>')}<span>Ingresar</span></button>
       <a class="lp-dwa" target="_blank" rel="noopener" href="https://wa.me/${wa}?text=${encodeURIComponent('¡Hola! Quiero información sobre las clases de inglés de mrarrieta.com')}"><svg viewBox="0 0 32 32" class="mri"><path fill="currentColor" d="M16 3a13 13 0 0 0-11.2 19.6L3 29l6.6-1.7A13 13 0 1 0 16 3zm0 23.6c-2 0-4-.6-5.7-1.6l-.4-.2-3.9 1 1-3.8-.3-.4A10.6 10.6 0 1 1 16 26.6zm5.8-7.9c-.3-.2-1.9-.9-2.2-1-.3-.1-.5-.2-.7.2l-1 1.2c-.2.2-.4.2-.7.1a8.7 8.7 0 0 1-4.3-3.8c-.3-.6.3-.5.9-1.7.1-.2 0-.4 0-.6l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.2-1.2 2.9s1.2 3.4 1.4 3.6c.2.2 2.4 3.7 5.9 5.2 2.2.9 3 1 4.1.8.7-.1 1.9-.8 2.2-1.5.3-.8.3-1.4.2-1.5l-.6-.4z"/></svg><span>WhatsApp</span></a>`;
     document.body.appendChild(d);
+    // 📱 celular: la entrada no se desplaza, todo queda a la vista
+    const lock = () => { const on = innerWidth < 900 && document.body.classList.contains('home-app'); document.documentElement.classList.toggle('home-lock', on);
+      const h = document.querySelector('.ld-hero'), tb = document.getElementById('topbar'); if (!h) return;
+      if (!on) { h.style.height = ''; return; } const top = h.getBoundingClientRect().top + scrollY; h.style.height = Math.max(360, innerHeight - top - d.offsetHeight - 22) + 'px'; scrollTo(0, 0); };
+    lock(); setTimeout(lock, 300); setTimeout(lock, 1200); addEventListener('resize', lock);
   }
   // 💳 planes compactos y de venta (caben en una pantalla)
   function lpPlans() {

@@ -5739,3 +5739,9 @@ body.lp-app .topbar,body.home-app .topbar{position:sticky;top:0;z-index:70}
   body.home-app .ld-copy{height:auto!important;flex:1 1 auto!important;min-height:0!important;padding-bottom:22px!important;box-sizing:border-box}
   body.home-app .ld-hero-mra{object-position:center center!important}
 }
+/* ===== v340: entrada fija en celular ===== */
+html.home-lock,html.home-lock body{height:100%;overflow:hidden!important;overscroll-behavior:none}
+html.home-lock body.home-app{padding-bottom:0!important}
+html.home-lock body.home-app #app{padding-bottom:0!important}
+html.home-lock body.home-app .pt-wrap{margin-bottom:0!important;padding-bottom:0!important;min-height:0!important}
+@media(max-width:899px){html.home-lock body.home-app .ld-hero{min-height:0!important}}
