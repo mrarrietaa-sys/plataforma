@@ -5709,3 +5709,22 @@ body.lp-app .topbar,body.home-app .topbar{position:sticky;top:0;z-index:70}
 .lp-panel #ld-profes .ld-pf.ld-cyl.lp-car>.ld-pc{flex-shrink:0!important;min-width:240px!important}
 @media(min-width:900px){.lp-panel #ld-profes .ld-pf.ld-cyl.lp-car{padding:10px 8px 14px!important;scroll-padding:0 8px}.lp-panel #ld-profes .ld-pf.ld-cyl.lp-car>.ld-pc{flex-basis:240px!important;width:240px!important}}
 @media(max-width:899px){.lp-panel #ld-profes .ld-pf.ld-cyl.lp-car>.ld-pc{min-width:250px!important}}
+/* ===== v338 ===== */
+@media(max-width:899px){
+  body.home-app .ld-hero-mra{margin:0!important;padding:0!important;transform:none;object-position:center center!important;animation:hmFl2 4s ease-in-out infinite!important}
+  body.home-app .ld-copy{padding-bottom:16px!important}
+  body.home-app .ld-hero{padding-bottom:0!important}
+}
+@keyframes hmFl2{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px) rotate(-1deg)}}
+/* profes PC: tarjetas compactas y flechas siempre visibles */
+.lp-panel #ld-profes .ld-pf.ld-cyl.lp-car{align-items:flex-start!important}
+@media(min-width:900px){
+  .lp-panel #ld-profes .ld-pf.ld-cyl.lp-car>.ld-pc{flex-basis:220px!important;width:220px!important;min-width:220px!important;padding:16px 14px 14px!important}
+  .lp-panel #ld-profes .ld-pf.ld-cyl.lp-car>.ld-pc img{width:76px!important;height:76px!important;margin-bottom:8px!important}
+  .lp-panel #ld-profes .ld-pf.ld-cyl.lp-car>.ld-pc b{font-size:14px!important}
+  .lp-panel #ld-profes .ld-pf.ld-cyl.lp-car>.ld-pc ul{margin-top:8px!important;padding-top:8px!important}
+  .lp-panel #ld-profes .ld-pf.ld-cyl.lp-car>.ld-pc li{font-size:12px!important}
+  .lp-panel #ld-profes .ld-pf.ld-cyl.lp-car>.ld-pc [data-pfr]:not([hidden]){margin-top:10px!important}
+  #ld-profes h2{margin-bottom:2px}#ld-profes .ld-sub{margin-bottom:6px}
+  .lp-panel #ld-profes .ld-cyln{margin-top:4px}
+}
