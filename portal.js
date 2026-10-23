@@ -138,7 +138,6 @@
     return `<section class="lp-hero lp-a">${lpSky(40)}${lpClouds()}<span class="lp-badge b1"><i class="r">${LI(LP.user)}</i>Clases solo contigo</span><span class="lp-badge b2"><i class="g">${LI(LP.mic)}</i>Te corrige al hablar</span>
       <div class="lp-in"><div class="lp-copy"><span class="lp-ey"><i class="lp-eyi a">${LPI.adult}</i>ADULTOS · DESDE 18 AÑOS</span>
       <div class="lp-hrow"><h1>Tu inglés, cada día <em>más alto</em></h1><img class="lp-bal" src="mra-x-balloon1.webp" alt="Mr. Arrieta" draggable="false"></div>
-      ${lpGoalBar()}
       ${lpChallenge('adultos')}
       <div class="lp-cta"><button class="btn r lg" data-trial>${MRI('gift')} Prueba gratis 3 días</button></div><div class="lp-trust"><span><i>${LI(LP.nocard)}</i>Sin tarjeta</span><span><i>${LI(LP.users)}</i>+300 estudiantes</span><span><i>${LI(LP.repeat)}</i>Mes a mes</span></div></div></div></section>`;
   }
@@ -170,7 +169,10 @@
   // 📱 entrada como app: barra inferior (sin pie de página largo)
   function homeDock() {
     if (document.querySelector('.lp-dock')) return; document.body.classList.add('home-app');
-    const lg = document.querySelector('.ld-login .pt-login'); if (lg && !lg.querySelector('.lp-legal')) lg.insertAdjacentHTML('beforeend', `<p class="lp-legal"><a href="politica.html">Política de reservas</a> · <a href="privacidad.html">Privacidad</a> · <a href="recomienda.html">Recomienda y gana</a> · <a href="reclutamiento.html">Trabaja con nosotros</a></p>`);
+    const lw = document.querySelector('.ld-login'); // 📱 celular: el ingreso se abre como ventana (el cliente no baja)
+    const sheet = (on) => { if (innerWidth >= 900 || !lw) return; lw.classList.toggle('sheet-on', on); document.body.classList.toggle('sheet-open', on); if (on) { const inp = lw.querySelector('input'); setTimeout(() => inp && inp.focus(), 250); } };
+    if (lw && !lw.querySelector('.lp-shx')) { (lw.querySelector('.pt-login') || lw).insertAdjacentHTML('afterbegin', '<button type="button" class="lp-shx" aria-label="Cerrar">✕</button>'); lw.querySelector('.lp-shx').onclick = () => sheet(false); lw.addEventListener('click', e => { if (e.target === lw) sheet(false); }); }
+    document.addEventListener('click', e => { if (e.target.closest('[data-goin]') && innerWidth < 900) { e.preventDefault(); e.stopImmediatePropagation(); sheet(true); } }, true);
     const ic = (d) => LI(d), wa = (C.WHATSAPP || '573017810841');
     const d = document.createElement('nav'); d.className = 'lp-dock home'; d.setAttribute('aria-label', 'Menú');
     d.innerHTML = `<a href="adultos.html">${ic('<circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/>')}<span>Adultos</span></a><a href="ninos.html">${ic('<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>')}<span>Niños y jóvenes</span></a>
@@ -183,15 +185,15 @@
     const P = (window.MRPLANS && MRPLANS.PL) || {}, n = (k, d) => (P[k] && P[k].n) || d, f = (v) => '$' + String(Math.round(v)).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
     const kid = PAGE === 'ninos';
     const C = [
-      { k: 'free', ic: 'gift', c: 'g', name: 'Gratis', price: '$0', per: '3 días', hook: kid ? 'Que lo pruebe sin pagar' : 'Pruébalo sin pagar', b: ['Prueba de nivel', 'Primeros temas'], btn: 'Probar gratis' },
-      { k: 'membership', ic: 'monitor', c: 'b', name: 'Plataforma', price: f(n('membership', 59900)), per: '/mes', hook: kid ? 'Practica a su ritmo' : 'Aprende a tu ritmo', b: ['Ruta A1 → B2+', 'Te escucha y te corrige'], btn: 'Elegir' },
-      { k: 'premium', ic: 'crown', c: 'y', name: 'Premium 4', price: f(n('premium', 169900)), per: '/mes', hook: kid ? 'Habla con su profe' : 'Habla con un profe', b: ['4 clases 1 a 1', 'Todo Plataforma'], tag: 'Más elegido', pc: f(n('premium', 169900) / 4), btn: 'Elegir' },
-      { k: 'premium8', ic: 'gem', c: 'v', name: 'Premium 8', price: f(n('premium8', 289900)), per: '/mes', hook: 'Fluidez real', b: ['8 clases 1 a 1', '2 por semana'], tag: 'Mejor precio', pc: f(n('premium8', 289900) / 8), btn: 'Elegir' }];
+      { k: 'free', ic: 'gift', c: 'g', name: 'Acceso gratuito', price: '$0', per: '· 3 días', hook: kid ? 'Descubre su nivel y prueba la plataforma sin pagar nada.' : 'Descubre tu nivel y prueba la plataforma sin pagar nada.', b: ['Prueba de nivel en 10 minutos', kid ? 'Su ruta personalizada' : 'Tu ruta personalizada', 'Habla y la plataforma lo corrige'], note: 'No incluye clases con profe.', btn: 'Empezar gratis' },
+      { k: 'membership', ic: 'monitor', c: 'b', name: 'Plataforma', price: f(n('membership', 59900)), per: '/mes', hook: kid ? 'Aprende a su ritmo, cuando quiera, desde el celular.' : 'Aprende a tu ritmo, cuando quieras, desde el celular.', b: ['Habla desde el día 1: te escucha y te corrige', 'Ruta completa del A1 al B2+', 'Certificado por cada módulo'], note: 'No incluye clases con profe.', btn: 'Empezar con Plataforma' },
+      { k: 'premium', ic: 'crown', c: 'y', name: 'Premium · 4 clases', price: f(n('premium', 169900)), per: '/mes', hook: kid ? 'Pierde el miedo a hablar con un profe que lo corrige en vivo.' : 'Pierde el miedo a hablar con un profe que te corrige en vivo.', b: ['Todo lo de Plataforma', '4 clases 1 a 1 de 50 min al mes', 'Eliges profe, día y hora'], note: 'Clases no acumulables.', tag: 'Más elegido', pc: f(n('premium', 169900) / 4), btn: 'Empezar con Premium 4' },
+      { k: 'premium8', ic: 'gem', c: 'v', name: 'Premium · 8 clases', price: f(n('premium8', 289900)), per: '/mes', hook: 'Gana fluidez real: habla inglés 2 veces por semana.', b: ['Todo lo de Plataforma', '8 clases 1 a 1: 2 por semana', 'El mejor precio por clase'], note: 'Clases no acumulables.', tag: 'Mejor precio por clase', pc: f(n('premium8', 289900) / 8), btn: 'Empezar con Premium 8' }];
     return `<section class="lp-plans" id="ld-planes"><div class="lp-ph"><h2>Elige tu plan</h2><p>Mes a mes · sin permanencia · tarjeta o transferencia</p></div>
       <div class="lp-pg">${C.map(p => `<a class="lp-pl c-${p.c}${p.tag ? ' hot' : ''}" ${p.k === 'free' ? `href="#" data-trial${kid ? ' data-kid' : ''}` : `href="inscripcion.html?plan=${p.k}"`}>${p.tag ? `<span class="lp-tag">${p.tag}</span>` : ''}
-        <div class="lp-plh"><span class="ic">${MRI(p.ic)}</span><b>${p.name}</b></div><div class="lp-pr"><strong>${p.price}</strong><small>${p.per}</small></div>${p.pc ? `<span class="lp-ppc">${p.pc} por clase</span>` : '<span class="lp-ppc gh">COP</span>'}
-        <p class="lp-hook">${p.hook}</p><ul>${p.b.map(x => `<li>${MRI('check')}${x}</li>`).join('')}</ul><span class="lp-pb">${p.btn} →</span></a>`).join('')}</div>
-      <p class="lp-pnote">${MRI('check')} Tu progreso siempre se guarda · Clases no acumulables: úsalas en tu mes · <a href="politica.html">Condiciones</a></p></section>`;
+        <div class="lp-plh"><span class="ic">${MRI(p.ic)}</span><b>${p.name}</b></div><div class="lp-pr"><strong>${p.price}</strong><small>${p.per}</small></div>${p.pc ? `<span class="lp-ppc">Solo ${p.pc} por clase</span>` : '<span class="lp-ppc gh">COP</span>'}
+        <p class="lp-hook">${p.hook}</p><ul>${p.b.map(x => `<li>${MRI('check')}<span>${x}</span></li>`).join('')}</ul><small class="lp-pn">${p.note}</small><span class="lp-pb">${p.btn}</span></a>`).join('')}</div>
+      <p class="lp-pnote"><a href="politica.html">Ver condiciones</a></p></section>`;
   }
   // 📱 todo en una sola pantalla: cada sección es una pestaña (sin bajar)
   const LPT = { home: ['Inicio', '<path d="M3 10.5 12 3l9 7.5V21H3z"/>'], planes: ['Planes', '<path d="m2 7 4 10h12l4-10-5 3-5-6-5 6z"/>'], opin: ['Opiniones', '<path d="M11.53 2.3a.53.53 0 0 1 .95 0l2.31 4.68a2.12 2.12 0 0 0 1.6 1.16l5.16.76a.53.53 0 0 1 .3.9l-3.74 3.64a2.12 2.12 0 0 0-.61 1.88l.88 5.14a.53.53 0 0 1-.77.56l-4.62-2.43a2.12 2.12 0 0 0-1.97 0L6.4 21.01a.53.53 0 0 1-.77-.56l.88-5.14a2.12 2.12 0 0 0-.61-1.88L2.16 9.8a.53.53 0 0 1 .3-.91l5.16-.75a2.12 2.12 0 0 0 1.6-1.16z"/>'], profes: ['Profes', '<circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/>'], papas: ['Papás', '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>'] };
@@ -201,7 +203,7 @@
     { const op = wrap.querySelector('section#ld-planes'); if (op) op.remove(); } wrap.insertAdjacentHTML('beforeend', lpPlans());
     const box = document.createElement('div'); box.className = 'lp-panels';
     Object.keys(map).forEach(k => { const p = document.createElement('section'); p.className = 'lp-panel' + (k === 'home' ? ' on' : ''); p.dataset.p = k; map[k].forEach(sel => { const el = wrap.querySelector(sel); if (el) p.appendChild(el); });
-      if (k === 'planes') p.querySelector('.lp-plans').insertAdjacentHTML('beforeend', `<p class="lp-legal"><a href="politica.html">Política de reservas</a> · <a href="privacidad.html">Privacidad</a> · <a href="recomienda.html">Recomienda y gana</a> · <a href="reclutamiento.html">Trabaja con nosotros</a></p>`);
+      if (false) p.querySelector('.lp-plans').insertAdjacentHTML('beforeend', `<p class="lp-legal"><a href="politica.html">Política de reservas</a> · <a href="privacidad.html">Privacidad</a> · <a href="recomienda.html">Recomienda y gana</a> · <a href="reclutamiento.html">Trabaja con nosotros</a></p>`);
       if (p.children.length) box.appendChild(p); });
     [...wrap.children].forEach(c => { if (!c.classList.contains('lp-hid')) c.remove(); });
     wrap.appendChild(box);
@@ -251,8 +253,8 @@
       res.hidden = false; res.innerHTML = st ? `<div class="lp-own">${MRI('gift')} <span>Ya ganaste tu premio: <b>${esc(x.code)}</b> · 10% en tu primer mes · válido hasta el ${esc(x.until || '')}</span></div>` : `<div class="lp-own off">Tu premio ${esc(x.code)} ya venció.</div>`; if (toast) M.toast('Ya ganaste tu premio: es uno por persona.'); }
   }
   function prizeWin(score) {
-    try { M.confetti && M.confetti(2600); } catch (e) { } sfx('win');
-    const m = M.modal(`<div class="lp-win"><div class="lp-win-top"><img src="mra-celebrate.webp" alt="Mr. Arrieta"></div><h2 class="lp-congr">Congratulations!</h2><span class="lp-sc">${LI(LP.ok)} PRONUNCIACIÓN ${score}% · ¡EXCELENTE!</span>
+    try { M.confetti && M.confetti(2600); } catch (e) { } sfx('win'); setTimeout(() => { try { M.play('prcongrats'); } catch (e) { } }, 450); // 🔊 una voz real dice «Congratulations!»
+    const m = M.modal(`<div class="lp-win"><div class="lp-win-top"><img src="mra-celebrate.webp" alt="Mr. Arrieta"></div><span class="lp-sc">${LI(LP.ok)} PRONUNCIACIÓN ${score}% · ¡EXCELENTE!</span>
       <h3>¡Ganaste <b>10%</b> en tu primer mes!</h3><p>Déjanos tus datos para guardar tu premio. Te lo enviamos por WhatsApp.</p>
       <input class="inp" id="pz-n" placeholder="${PAGE === 'ninos' ? 'Nombre del papá o la mamá' : 'Tu nombre y apellido'}" autocomplete="name"><input class="inp" id="pz-w" type="tel" placeholder="WhatsApp" autocomplete="tel">
       <label class="tf-ok"><input type="checkbox" id="pz-c"> <span>Autorizo a mrarrieta.com a contactarme por WhatsApp y a tratar mis datos según su <a href="privacidad.html" target="_blank" rel="noopener">política de privacidad</a>.</span></label>
