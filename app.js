@@ -403,6 +403,7 @@
     const acts = (C.PLAN || PLAN)[p.id] || p.acts;
     acts.filter(a => !['learn', 'speak', 'speakWords'].includes(a)).forEach(a => st.push({ sec: 'Practice', k: a }));
     const sp = acts.find(a => a === 'speak' || a === 'speakWords') || (p.sentences ? 'speak' : 'speakWords');
+    if (M.ageGroup() === 'kids' && (p.sentences || []).filter(s => s.img && s.au).length >= 3) st.push({ sec: 'Practice', k: 'kidsTap' }); // 👆 escucha y toca la foto
     if (!p.letters) st.push({ sec: 'Oral task', k: sp });
     else st.push({ sec: 'Oral task', k: 'speakLetters' });
     if (missionFor(p)) st.push({ sec: 'Mission', k: 'mission' }); // 🎯 misión según el objetivo del estudiante
@@ -417,6 +418,8 @@
   // 🎯 misión del tema según el objetivo (solo en la última parte del tema y si el estudiante eligió objetivo)
   function missionFor(p) { try { const g = window.MRGOAL && MRGOAL.get(); if (!g || !window.MRMISSIONS) return null; const x = MRMISSIONS[(+M.MOD.n || 1) + '-' + p.topic]; const L = x && x[g.k]; if (!L) return null; const arr = Array.isArray(L) ? L : [L]; const k = Math.max(0, (+p.part || 1) - 1) * 2; const two = arr.slice(k, k + 2); return two.length ? { k: g.k, list: two } : null; } catch (e) { return null; } }
   const SEC_IC = { Goal: '🎯', Mission: '🚀', Speaking: '🗣️', Reading: '📖', Review: '🔁', Explanation: '💡', 'Listen & practice': '🎧', Practice: '🎮', 'Oral task': '🎤', Music: '🎵', Homework: '📝' };
+  const SEC_ICO = { Goal: 'target', Mission: 'rocket', Speaking: 'chat', Reading: 'book', Review: 'repeat', Explanation: 'bulb', 'Listen & practice': 'headphones', Practice: 'game', 'Oral task': 'mic', Music: 'music', Homework: 'pen' };
+  const SEC_MRI = s => window.MRI ? MRI(SEC_ICO[s] || 'star') + MRI('check', 'ok') : '';
   const SEC_SC = { Reading: 'balloon2', Homework: 'laptop', Music: 'guitar', Review: 'plane-blue' };
   const FREE = ['rocket', 'balloon1', 'plane-red', 'rocket3', 'balloon3', 'plane-blue', 'drums', 'plane-yellow', 'balloon2', 'surf', 'rocket5', 'plane-green', 'hero'];
   const ITL_ON = true;
@@ -478,10 +481,10 @@
       if (ok) startAt = Math.max(rec.step, (rec.run && rec.run.max) || 0);
     }
     const run = (startAt && rec.run && !Array.isArray(rec.run.res)) ? rec.run : { res: {}, xp: 0 };
-    app.innerHTML = `<div class="player"><div class="phead"><button class="x" title="Salir">✕</button><button class="back" title="Volver al paso anterior">← Atrás</button><div class="prog"><i style="width:0%"></i></div></div>
+    app.innerHTML = `<div class="player"><div class="phead"><button class="x" title="Salir">✕</button><button class="back" title="Volver al paso anterior">← Atrás</button><div class="prog"><i style="width:0%"></i></div><div class="pstep"><b></b><small></small></div></div>
       <div class="ptopic">📍 Estás en: <b>Topic ${p.topic} · ${esc(p._t.title)}</b> — ${PL(p)}: ${esc(p.title)} <span class="psec"></span>${revM ? `<span class="ce-revchip">🔁 Repasando: ${M.revCount()} de ${M.totalParts()} clases</span>` : ''}</div>
       <button class="resume hidden">⏩ Continuar donde quedé</button>
-      <div class="secbar">${secs.map(s => `<span data-s="${esc(s)}">${esc(s)}</span>`).join('')}</div><div class="stage"></div></div>`;
+      <div class="secbar rt">${secs.map((s, n) => `${n ? '<em class="rt-ln"></em>' : ''}<span data-s="${esc(s)}"><i>${SEC_MRI(s)}</i><b>${esc(s)}</b></span>`).join('')}</div><div class="stage"></div></div>`;
     $('.x', app).onclick = () => { stop(); route('home'); };
     const player = $('.player', app);
     setTimeout(() => { try { if (document.body.contains(player)) M.confetti && M.confetti(2500); } catch (e) { } }, 700); // 🎉 papelitos ya dentro de la clase
@@ -508,9 +511,9 @@
       $('.prog i', app).style.width = (i / steps.length * 100) + '%';
       $('.back', app).disabled = i === 0;
       run.max = Math.max(run.max || 0, i); curSec = s.sec; curI = i;
-      $('.psec', app).textContent = '· ' + s.sec;
+      $('.psec', app).textContent = '· ' + s.sec; { const ps = $('.pstep', app); if (ps) { $('b', ps).textContent = s.sec; $('small', ps).textContent = 'Paso ' + (i + 1) + ' de ' + steps.length; } }
       $('.resume', app).classList.toggle('hidden', i >= run.max);
-      $$('.secbar span', app).forEach(e => { const k = secs.indexOf(e.dataset.s), ck = secs.indexOf(s.sec); e.className = k === ck ? 'on' : k < ck ? 'ok' : ''; if (k === ck) e.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' }); });
+      $$('.secbar span', app).forEach(e => { const k = secs.indexOf(e.dataset.s), ck = secs.indexOf(s.sec); e.className = k === ck ? 'on' : k < ck ? 'ok' : ''; const ln = e.previousElementSibling; if (ln && ln.classList.contains('rt-ln')) ln.classList.toggle('ok', k <= ck); if (k === ck) e.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' }); });
       window.scrollTo({ top: 0, behavior: 'smooth' });
       const back = new Promise(res => { navBack = () => res('__back'); navJump = () => res('__jump'); });
       let r;
@@ -579,13 +582,51 @@
       stop(); res.hidden = true; words.forEach(el => el.classList.remove('ok', 'miss', 'cur')); if (url) { URL.revokeObjectURL(url); url = ''; }
       if (!M.canSR && !navigator.mediaDevices) { M.toast('Tu navegador no permite usar el micrófono. Usa Google Chrome.'); return; }
       btn.classList.add('playing'); btn.innerHTML = '⏹ Terminar lectura'; box.classList.add('rv-on'); sfx('tap');
-      if (!touch || !M.canSR) { try { stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } }); rec = new MediaRecorder(stream); chunks = []; rec.ondataavailable = e => chunks.push(e.data); rec.onstop = () => { stream.getTracks().forEach(t => t.stop()); if (chunks.length) url = URL.createObjectURL(new Blob(chunks, { type: rec.mimeType || 'audio/webm' })); if (!M.canSR) finish(''); }; rec.start(); } catch (e) { rec = null; } }
+      if (!touch || !M.canSR) { try { stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } }); window.MRAWAVE && MRAWAVE.stream(stream); rec = new MediaRecorder(stream); chunks = []; rec.ondataavailable = e => chunks.push(e.data); rec.onstop = () => { stream.getTracks().forEach(t => t.stop()); if (chunks.length) url = URL.createObjectURL(new Blob(chunks, { type: rec.mimeType || 'audio/webm' })); if (!M.canSR) finish(''); }; rec.start(); } catch (e) { rec = null; } }
       if (!M.canSR) { if (!rec) { btn.classList.remove('playing'); btn.innerHTML = '🎙️ Léela en voz alta <small>(opcional)</small>'; box.classList.remove('rv-on'); M.toast('Activa el permiso del micrófono para leer en voz alta.'); } else M.toast('Grabando… tu navegador no evalúa la voz, pero podrás escucharte.'); return; }
       sess = M.srSession((txt) => { const { last } = align(txt); clearTimeout(auto); if (last >= target.length - 2) auto = setTimeout(stopAll, 1500); }, (err) => { sess = null; try { rec && rec.stop(); } catch (e) { } btn.classList.remove('playing'); btn.innerHTML = '🎙️ Léela en voz alta <small>(opcional)</small>'; box.classList.remove('rv-on'); M.toast(/not-allowed|service/.test(err) ? 'Activa el permiso del micrófono para leer en voz alta.' : 'No se pudo usar el micrófono. Inténtalo de nuevo.'); });
       if (!sess) return; maxT = setTimeout(stopAll, 180000);
     };
   }
 
+  /* ---------- Fase 6: lectura por edad (Teens = chat · Kids = cuento en viñetas) ---------- */
+  function ageReading(box, r, sents, AG) {
+    const txt = $('.txt', box), spans = $$('.s', txt), ph = $('.ph', box);
+    box.classList.add('rd-' + AG);
+    if (AG === 'teens') {
+      const stg = box.closest('.stage'); if (stg) stg.classList.add('dk');
+      const nm = (r.text.match(/\bI'm ([A-Z][a-zá-ú]+)/) || [])[1] || '';
+      const chat = h(`<div class="rd-chat"><div class="rd-chd"><span class="rd-gav">${window.MRI ? MRI('users') : ''}</span><div><b>${esc(r.title)}</b><small>${nm ? esc(nm) + ' · ' : ''}chat de grupo</small></div></div><div class="rd-msgs"></div></div>`);
+      const box2 = $('.rd-msgs', chat);
+      if (ph) { const im = h(`<div class="rd-msg rd-img"></div>`); im.appendChild(ph); box2.appendChild(im); }
+      let who = nm || '', last = null;
+      spans.forEach(sp => {
+        const m = sp.textContent.trim().match(/^([A-Z][A-Za-z]+):\s/); if (m) { who = m[1]; const w0 = $('.rw', sp); if (w0 && w0.textContent === m[1] + ':') w0.classList.add('rd-who'); }
+        const me = /^(Me|Yo)$/.test(who), wrap = h(`<div class="rd-msg ${me ? 'me' : 'ot'}">${who && who !== last ? `<i>${esc(who)}</i>` : ''}</div>`);
+        wrap.appendChild(sp); box2.appendChild(wrap); last = who;
+      });
+      txt.innerHTML = ''; txt.appendChild(chat);
+      return;
+    }
+    // kids: viñetas con audio propio (se reproduce el tramo de la lectura que corresponde)
+    const n = Math.min(4, spans.length), per = Math.ceil(spans.length / n), lens = sents.map(s => s.length), tot = lens.reduce((x, y) => x + y, 0);
+    const COL = ['#f59e0b', '#38bdf8', '#fb7185', '#4ade80'];
+    const grid = h(`<div class="rd-comic"></div>`); let acc = 0;
+    for (let k = 0; k < n; k++) {
+      const grp = spans.slice(k * per, (k + 1) * per); if (!grp.length) break;
+      const st = acc / tot; grp.forEach((_, j) => acc += lens[k * per + j]); const en = acc / tot;
+      const pan = h(`<div class="rd-pan" style="--pc:${COL[k % 4]}"><div class="rd-ph"><b>${k + 1}</b><button class="rd-pp" type="button" aria-label="Escuchar viñeta ${k + 1}">${window.MRI ? MRI('vol') : '▶'}</button></div><p></p></div>`);
+      grp.forEach(sp => $('p', pan).appendChild(sp));
+      $('.rd-pp', pan).onclick = (e) => { e.stopPropagation(); stop(); sfx('tap'); const a = M.trackAudio(new Audio(M.audioSrc(r.au)));
+        $$('.rd-pan', grid).forEach(x => x.classList.remove('on')); pan.classList.add('on');
+        const go = () => { try { a.currentTime = st * a.duration; } catch (er) { } a.play(); };
+        a.ontimeupdate = () => { if (a.duration && a.currentTime >= en * a.duration - 0.05) { a.pause(); pan.classList.remove('on'); } };
+        a.addEventListener('pause', () => pan.classList.remove('on'));
+        if (a.readyState >= 1) go(); else a.addEventListener('loadedmetadata', go, { once: true }); window.__ra = a; };
+      grid.appendChild(pan);
+    }
+    txt.innerHTML = ''; txt.appendChild(grid);
+  }
   const STEP = {
     goal: async (stage, p) => {
       const prev = M.prevPart(p);
@@ -618,21 +659,35 @@
     },
 
     warm: async (stage, p) => {
-      let c = 0;
+      let c = 0; const AG = M.ageGroup();
       for (let i = 0; i < p.warm.length; i++) {
         const q = p.warm[i];
         const body = A.head(stage, { lbl: 'Speaking', title: 'Listen and answer', ins: 'Calentamiento: escucha la pregunta y <b>respóndela en voz alta</b> con tus propias palabras. ¡No hay respuestas incorrectas!', count: `${i + 1} / ${p.warm.length}` });
         const ok = await new Promise(res => {
+          let vnDone = null;
+          if (AG === 'teens') { stage.classList.add('dk');
+            const bk = 'mra_tbest_v1', key = p.id + ':' + i; let bests = {}; try { bests = JSON.parse(localStorage.getItem(bk) || '{}'); } catch (e) { }
+            const fmt = s => Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'), friend = ['Valentina', 'Mateo', 'Luciana', 'Sam'][i % 4];
+            const bars = Array.from({ length: 22 }, (_, k) => `<i style="height:${6 + Math.round(Math.abs(Math.sin(k * 1.7) * Math.cos(k * .6)) * 18)}px"></i>`).join('');
+            const top = h(`<div class="vn-wrap"><div class="vn-clock"><div><small>CONTRA EL RELOJ</small><b class="vn-t">0:00</b></div><div class="r"><small>TU MEJOR MARCA</small><b>${bests[key] ? fmt(bests[key]) : '—'}</b></div></div>
+              <div class="rd-chat"><div class="rd-chd"><span class="rd-gav">${window.MRI ? MRI('chat') : ''}</span><div><b>${esc(friend)}</b><small>te envió una nota de voz</small></div></div>
+              <div class="rd-msgs"><div class="vn"><button class="vn-pl" type="button" aria-label="Escuchar nota de voz">${window.MRI ? MRI('play') : '▶'}</button><span class="vn-w">${bars}</span></div>
+              <div class="rd-msg ot vn-q">“${esc(q.q)}”</div>${q.es ? `<p class="vn-es">${esc(q.es)}</p>` : ''}${q.ex ? `<div class="rd-msg me vn-ex"><i>Puedes responder</i>${esc(q.ex)}</div>` : ''}</div></div></div>`);
+            body.appendChild(top); $('.vn-pl', top).onclick = () => { sfx('tap'); play(q.au); };
+            const t0 = Date.now(), tEl = $('.vn-t', top), iv = setInterval(() => { if (!document.body.contains(tEl)) return clearInterval(iv); tEl.textContent = fmt(Math.floor((Date.now() - t0) / 1000)); }, 500);
+            vnDone = () => { clearInterval(iv); const s = Math.max(1, Math.round((Date.now() - t0) / 1000)), old = bests[key], rec = !old || s < old; if (rec) { bests[key] = s; try { localStorage.setItem(bk, JSON.stringify(bests)); } catch (e) { } } return ` · Tu tiempo: <b>${fmt(s)}</b>${rec && old ? ' · ¡Nuevo récord personal!' : ''}`; };
+          } else {
           const top = h(`<div class="row" style="justify-content:center;align-items:center;gap:16px;margin:6px 0 10px">${M.mascot('mascot', 'welcome')}<div class="bubble" style="font-size:19px">${esc(q.q)}</div></div>`); body.appendChild(top);
           if (q.es) body.appendChild(h(`<p class="center tr-es">${esc(q.es)}</p>`));
           if (q.es) body.appendChild(h(`<div class="warm-es">${q.ex ? `<div class="ex">💡 Puedes responder: <b>${esc(q.ex)}</b></div>` : ''}</div>`));
           const pr = h(`<div class="center"></div>`); pr.appendChild(A.playBtn(q.au)); body.appendChild(pr);
+          }
           const mic = h(`<button class="mic">🎤</button>`); body.appendChild(mic);
-          const st = h(`<p class="center" style="font-weight:700">${M.canSR ? 'Toca el micrófono y responde en inglés' : 'Escribe tu respuesta en inglés 👇'}</p>`); body.appendChild(st);
+          const st = h(`<p class="center" style="font-weight:700">${M.canSR ? (AG === 'teens' ? 'Toca el micrófono y responde con una nota de voz' : 'Toca el micrófono y responde en inglés') : 'Escribe tu respuesta en inglés 👇'}</p>`); body.appendChild(st);
           const alt = h(`<div class="${M.canSR ? 'hidden' : ''}"><input class="inp" placeholder="Escribe tu respuesta en inglés…" style="font-size:18px"></div>`); body.appendChild(alt);
           const bar = h(`<div class="actionbar">${M.canSR ? '<button class="btn w" id="ty">⌨️ Prefiero escribir</button>' : ''}<button class="btn w" id="sk">Saltar</button><button class="btn k lg" id="ok">Enviar ✓</button></div>`); body.appendChild(bar);
           setTimeout(() => play(q.au), 400);
-          const accept = async (txt) => { const n = M.words(txt).length; if (n >= 2) { sfx('ok'); M.praise(); await sheet({ ok: true, title: good(), msg: `Te escuché: “${esc(txt)}”`, tip: 'Intenta responder con oraciones completas, por ejemplo: <i>I\'m fine, thank you.</i>' }); res(true); } else { st.innerHTML = '❌ Te escuché muy poco. Responde con al menos 2 palabras y toca 🎤 otra vez.'; sfx('bad'); setTimeout(M.encourage, 250); } };
+          const accept = async (txt) => { const n = M.words(txt).length; if (n >= 2) { sfx('ok'); M.praise(); const tm = vnDone ? vnDone() : ''; await sheet({ ok: true, title: good(), msg: `Te escuché: “${esc(txt)}”${tm}`, tip: 'Intenta responder con oraciones completas, por ejemplo: <i>I\'m fine, thank you.</i>' }); res(true); } else { st.innerHTML = '❌ Te escuché muy poco. Responde con al menos 2 palabras y toca 🎤 otra vez.'; sfx('bad'); setTimeout(M.encourage, 250); } };
           mic.onclick = async () => { stop(); mic.classList.add('rec'); st.textContent = '🎧 Te escucho…'; const r = await M.listen(8000); mic.classList.remove('rec');
             if (!r.alts.length) { st.textContent = r.error === 'not-allowed' ? 'Permite el micrófono 🎤 o escribe tu respuesta.' : 'No te escuché 🙉 Intenta otra vez.'; if (r.error === 'not-allowed') alt.classList.remove('hidden'); return; } accept(r.alts[0]); };
           if ($('#ty', bar)) $('#ty', bar).onclick = () => { alt.classList.remove('hidden'); $('input', alt).focus(); };
@@ -647,10 +702,11 @@
 
     reading: async (stage, p) => {
       const r = p.reading;
-      const body = A.head(stage, { lbl: 'Reading', title: `📖 ${r.title}`, ins: 'Escucha y lee al mismo tiempo. Luego responde <b>YES</b> o <b>NO</b>.' });
+      const AG = M.ageGroup();
+      const body = A.head(stage, { lbl: 'Reading', title: AG === 'adult' ? `📖 ${r.title}` : r.title, ins: AG === 'teens' ? 'Lee el chat mientras lo escuchas. Luego responde <b>TRUE</b> o <b>FALSE</b>.' : AG === 'kids' ? 'Escucha el cuento y toca cada viñeta para oírla otra vez. Luego responde <b>YES</b> o <b>NO</b>.' : 'Escucha y lee al mismo tiempo. Luego responde <b>YES</b> o <b>NO</b>.' });
       const sents = r.text.match(/[^.!?]+[.!?]+["”]?\s*/g) || [r.text];
       const box = h(`<div class="reading">${photo(r.img)}<div><div class="row" style="margin-bottom:10px"><button class="btn k sm" id="rp">▶ Escuchar lectura</button><button class="btn w sm" id="rv">🎙️ Léela en voz alta <small>(opcional)</small></button></div><div class="txt">${sents.map(s => `<span class="s">${s.split(/(\s+)/).map(w => /\S/.test(w) ? `<i class="rw">${esc(w)}</i>` : w).join('')}</span>`).join('')}</div><div class="rv-res" id="rvr" hidden></div><button class="rd-tr" id="rdtr" type="button" aria-expanded="false"><span>ES</span> Ver traducción al español</button><div class="rd-es" id="rdes" hidden></div></div></div>`);
-      body.appendChild(box);
+      body.appendChild(box); if (AG !== 'adult') ageReading(box, r, sents, AG);
       { const tb = $('#rdtr', box), pane = $('#rdes', box);
         const getES = () => window.MRRDES ? Promise.resolve() : new Promise(res => { const base = (document.querySelector('script[src*="core.js"]').getAttribute('src') || '').replace(/core\.js(\?.*)?$/, ''); const q = ((document.querySelector('script[src*="core.js"]').getAttribute('src') || '').match(/\?.*$/) || [''])[0]; const sc = document.createElement('script'); sc.src = base + 'rdes.js' + q; sc.onload = res; sc.onerror = res; document.head.appendChild(sc); });
         tb.onclick = async () => {
@@ -669,13 +725,13 @@
         a.play(); window.__ra = a; rp.innerHTML = '⏹ Detener lectura'; rp.classList.add('playing'); const hideF = M.floatStop(rp); a.addEventListener('ended', hideF); };
       rp.onclick = () => { if (rp.classList.contains('playing')) stop(); else karaoke(); };
       readAloud(box, $('#rv', box), $('#rvr', box));
-      body.appendChild(h(`<h3 style="margin-top:18px">Answer YES or NO</h3>`));
-      const qs = r.q.map((q, i) => { const e = h(`<div class="yn"><p>${i + 1}) ${esc(q.s)}</p><div class="b"><button data-v="yes">YES</button><button data-v="no">NO</button></div></div>`); $$('button', e).forEach(b => b.onclick = () => { $$('button', e).forEach(x => x.classList.remove('sel')); b.classList.add('sel'); e._v = b.dataset.v; sfx('tap'); }); body.appendChild(e); return e; });
+      body.appendChild(h(`<h3 style="margin-top:18px">${AG === 'teens' ? 'True or false?' : 'Answer YES or NO'}</h3>`));
+      const qs = r.q.map((q, i) => { const e = h(`<div class="yn"><p>${i + 1}) ${esc(q.s)}</p><div class="b"><button data-v="yes">${AG === 'teens' ? 'TRUE' : 'YES'}</button><button data-v="no">${AG === 'teens' ? 'FALSE' : 'NO'}</button></div></div>`); $$('button', e).forEach(b => b.onclick = () => { $$('button', e).forEach(x => x.classList.remove('sel')); b.classList.add('sel'); e._v = b.dataset.v; sfx('tap'); }); body.appendChild(e); return e; });
       const bar = h(`<div class="actionbar"><button class="btn k lg">Comprobar ✓</button></div>`); body.appendChild(bar);
       const c = await new Promise(res => { $('button', bar).onclick = async () => {
         if (qs.some(e => !e._v)) { M.toast('Responde todas las preguntas 😉'); return; }
         stop();
-        let c = 0; qs.forEach((e, i) => { const ok = e._v === r.q[i].a; if (ok) c++; e.classList.add(ok ? 'right' : 'wrong'); $$('button', e).forEach(b => b.disabled = true); if (!ok) $('p', e).innerHTML += ` <b>(${r.q[i].a.toUpperCase()})</b>`; });
+        let c = 0; qs.forEach((e, i) => { const ok = e._v === r.q[i].a; if (ok) c++; e.classList.add(ok ? 'right' : 'wrong'); $$('button', e).forEach(b => b.disabled = true); if (!ok) $('p', e).innerHTML += ` <b>(${AG === 'teens' ? (r.q[i].a === 'yes' ? 'TRUE' : 'FALSE') : r.q[i].a.toUpperCase()})</b>`; });
         bar.remove(); c === qs.length ? sfx('win') : sfx(c >= qs.length / 2 ? 'ok' : 'bad');
         await A.waitNext(stage, `${c}/${qs.length} correctas — Continuar`); res(c); }; });
       stop();
@@ -824,6 +880,33 @@
     music: async (stage, p) => playLearn(stage, p),
 
     hw: async (stage, p) => homework(stage, p),
+    kidsTap: async (stage, p) => {
+      const pool = (p.sentences || []).filter(s => s.img && s.au), rounds = shuffle(pool.slice()).slice(0, Math.min(3, pool.length)); let c = 0; const missed = [];
+      for (let n = 0; n < rounds.length; n++) {
+        const tg = rounds[n], opts = shuffle([tg].concat(shuffle(pool.filter(s => s !== tg)).slice(0, 3)));
+        const body = A.head(stage, { lbl: 'Practice', title: 'Listen and tap', ins: 'Escucha y <b>toca la foto correcta</b>. Luego dilo tú en voz alta.', count: `${n + 1} / ${rounds.length}` });
+        const top = h(`<div class="kt-top">${M.mascot('mascot', 'point')}<div class="kt-bub"><b>Escucha y toca la foto</b><button class="kt-pl" type="button">${window.MRI ? MRI('vol') : '🔊'}<span>Escuchar</span></button></div></div>`); body.appendChild(top);
+        const grid = h(`<div class="kt-grid">${opts.map((o, k) => `<button class="kt-pic" type="button" data-k="${k}">${photo(o.img)}</button>`).join('')}</div>`); body.appendChild(grid);
+        const fb = h(`<div class="kt-say hidden"></div>`); body.appendChild(fb);
+        const say = () => { stop(); play(tg.au); }; $('.kt-pl', top).onclick = () => { sfx('tap'); say(); }; setTimeout(say, 450);
+        let first = true;
+        await new Promise(res => {
+          $$('.kt-pic', grid).forEach(b => b.onclick = () => {
+            const o = opts[+b.dataset.k];
+            if (o !== tg) { b.classList.add('no'); setTimeout(() => b.classList.remove('no'), 600); sfx('bad'); setTimeout(M.encourage, 200); if (first) missed.push({ en: tg.en, au: tg.au }); first = false; return; }
+            if (first) c++; $$('.kt-pic', grid).forEach(x => { x.disabled = true; if (x !== b) x.classList.add('dim'); }); b.classList.add('ok'); sfx('ok'); M.praise();
+            fb.classList.remove('hidden');
+            fb.innerHTML = `<p class="kt-en">“${esc(tg.en)}”</p><p class="kt-es">${esc(tg.es || '')}</p>${M.canSR ? `<button class="mic kt-mic" type="button">🎤</button><p class="kt-st">¡Ahora dilo tú!</p>` : ''}<div class="actionbar"><button class="btn k lg" id="kt-n">Continuar →</button></div>`;
+            const mic = $('.kt-mic', fb), stt = $('.kt-st', fb);
+            if (mic) mic.onclick = async () => { stop(); mic.classList.add('rec'); stt.textContent = '¡Te estoy escuchando!'; const r = await M.listen(6000, { quick: true }); mic.classList.remove('rec');
+              const sc = r.alts && r.alts.length ? M.speechScore(tg.en, r.alts).score : 0; if (sc >= 60) { sfx('ok'); M.praise(); stt.innerHTML = '¡Muy bien dicho! ⭐'; } else { stt.textContent = r.alts && r.alts.length ? '¡Casi! Escucha y dilo otra vez.' : 'No te escuché. Toca el micrófono otra vez.'; setTimeout(M.encourage, 200); } };
+            $('#kt-n', fb).onclick = () => { stop(); res(); };
+          });
+        });
+        stage.innerHTML = '';
+      }
+      return A.result(c, rounds.length, 'listening', missed);
+    },
   };
   window.M1STEP = STEP; // (pruebas)
   // practice activities map
@@ -993,9 +1076,14 @@
   /* ---------- HOMEWORK (writing with automatic feedback) ---------- */
   async function homework(stage, p) {
     const hw = p.hw; const saved = (S.hw[p.id] || {}).text || '';
-    const body = A.head(stage, { lbl: 'Homework', title: '✍️ Writing task', ins: esc(hw.es) });
+    const AG = M.ageGroup(); if (AG === 'teens') stage.classList.add('dk');
+    const body = A.head(stage, { lbl: 'Homework', title: AG === 'teens' ? 'Nuevo post' : AG === 'kids' ? 'Tu tarea' : '✍️ Writing task', ins: esc(hw.es) });
+    if (AG === 'kids') { const kt = h(`<div class="khw">${[['pen', '1', 'Dibuja en una hoja', 'Haz un dibujo de tu tarea'], ['file', '2', 'Escríbelo aquí', 'Abajo, en inglés'], ['mic', '3', 'Dilo en voz alta', 'Toca y practica']].map(([ic, n, t, s]) => `<div class="khw-t${n === '3' ? ' khw-say' : ''}"><span>${window.MRI ? MRI(ic) : ''}</span><b>${n}. ${t}</b><small>${s}</small></div>`).join('')}</div>`); body.appendChild(kt);
+      const ks = $('.khw-say', kt); if (!M.canSR) ks.style.display = 'none'; else ks.onclick = async () => { const txt = ($('textarea.hw', body) || {}).value || ''; if (txt.trim().length < 5) { M.toast('Primero escribe tu tarea y luego dila en voz alta 😉'); return; } stop(); ks.classList.add('rec'); $('small', ks).textContent = '¡Te estoy escuchando!'; const r = await M.listen(12000); ks.classList.remove('rec'); const sc = r.alts && r.alts.length ? M.speechScore(txt, r.alts).score : 0; $('small', ks).textContent = sc >= 60 ? '¡Muy bien dicho! ⭐' : r.alts && r.alts.length ? '¡Casi! Inténtalo otra vez' : 'No te escuché, toca otra vez'; if (sc >= 60) { sfx('ok'); M.praise(); } else M.encourage(); }; }
     body.appendChild(h(`<p><span class="hint">Mínimo ${hw.n} ${/palabras|frutas|objetos|plural/.test(hw.es) && !/oraci/.test(hw.es) ? 'elementos' : 'oraciones'}</span> ${hw.kw.length ? `<span class="hint">Usa: ${hw.kw.map(esc).join(', ')}</span>` : ''}</p>`));
-    const ta = h(`<textarea class="hw" placeholder="Escribe aquí en inglés…">${esc(saved)}</textarea>`); body.appendChild(ta);
+    const ta = h(`<textarea class="hw${AG === 'teens' ? ' tpost' : ''}" placeholder="${AG === 'teens' ? 'Escribe tu post en inglés…' : 'Escribe aquí en inglés…'}">${esc(saved)}</textarea>`); body.appendChild(ta);
+    if (AG === 'teens' && hw.kw.length) { const chips = h(`<div class="tp-kw">${hw.kw.map(k => `<em data-k="${esc(k.toLowerCase())}">${esc(k)}</em>`).join('')}</div>`); body.appendChild(chips);
+      const upd = () => { const t = ' ' + ta.value.toLowerCase().replace(/[^a-z0-9' ]/g, ' ') + ' '; $$('em', chips).forEach(e => e.classList.toggle('done', t.includes(' ' + e.dataset.k + ' '))); }; ta.addEventListener('input', upd); upd(); }
     const ex = h(`<details style="margin-top:10px"><summary style="cursor:pointer;font-weight:700">👀 Ver un ejemplo</summary><div class="tipbox" style="margin-top:8px">${esc(hw.model)}</div></details>`); body.appendChild(ex);
     const out = h(`<ul class="checks"></ul>`); body.appendChild(out);
     const sent = h(`<div class="ce-hwsent hidden"></div>`); body.appendChild(sent);
@@ -1004,7 +1092,7 @@
     const bar = h(`<div class="actionbar"></div>`); body.appendChild(bar);
     return await new Promise(res => {
       const idle = () => {
-        bar.innerHTML = '<button class="btn w" id="skip">Hacerla después</button><button class="btn k lg" id="chk">Revisar mi tarea ✓</button>';
+        bar.innerHTML = `<button class="btn w" id="skip">Hacerla después</button><button class="btn k lg" id="chk">${AG === 'teens' ? 'Publicar ✓' : 'Revisar mi tarea ✓'}</button>`;
         $('#skip', bar).onclick = () => { S.hw[p.id] = { text: ta.value, at: Date.now() }; save(); res(null); };
         $('#chk', bar).onclick = check;
       };
@@ -1081,6 +1169,23 @@
   }
 
   /* ---------------- RESULTS ---------------- */
+  /* ---------- Fase 6: cierre de clase por edad (Teens = racha + siguiente nivel · Kids = sello + álbum) ---------- */
+  function ageClose(p, nx, AG, pts) {
+    const I = n => window.MRI ? MRI(n) : '';
+    if (AG === 'teens') {
+      const n = Math.max(1, (S.streak && S.streak.n) || 1), WD = ['D', 'L', 'M', 'M', 'J', 'V', 'S'], d0 = new Date().getDay();
+      const days = Array.from({ length: 7 }, (_, k) => { const back = 6 - k; return `<i class="${back < n ? 'on' : ''}">${WD[(d0 - back + 70) % 7]}</i>`; }).join('');
+      return `<div class="tc"><div class="tc-st"><span class="tc-ic">${I('flame')}</span><div><b>Racha de ${n} día${n === 1 ? '' : 's'}</b><small>Clase completada · +${pts} puntos</small></div><span class="tc-days">${days}</span></div>
+        ${nx ? `<div class="tc-nx"><img src="mra-x-rocket5.webp?v=2" alt="Mr. Arrieta"><div><b>Next level unlocked</b><span>${esc(nx._t.title)} · ${PL(nx)}: ${esc(nx.title)}</span></div></div>` : ''}</div>`;
+    }
+    if (AG === 'kids') {
+      const T = M.D.topics, got = T.filter(t => t.parts.some(pp => S.parts[pp.id] && S.parts[pp.id].done)).length;
+      const al = T.map(t => { const on = t.parts.some(pp => S.parts[pp.id] && S.parts[pp.id].done); return `<i class="${t.n === p.topic ? 'new' : on ? 'on' : ''}">${t.n === p.topic || on ? I('star') : t.n}</i>`; }).join('');
+      return `<div class="kc"><div class="kc-stamp"><div>${I('award')}<b>TEMA ${p.topic}</b><small>${esc(p._t.title)}</small></div></div>
+        <div class="kc-alb"><b>Mi álbum de sellos · ${got} de ${T.length}</b><div class="kc-grid">${al}</div></div></div>`;
+    }
+    return '';
+  }
   function results(p, run) {
     run.res = Object.values(run.res || {});
     const c = run.res.reduce((a, r) => a + r.c, 0), t = run.res.reduce((a, r) => a + r.t, 0);
@@ -1094,12 +1199,14 @@
     const weakest = Object.entries(sk).filter(([, v]) => v[1]).sort((a, b) => a[1][0] / a[1][1] - b[1][0] / b[1][1])[0];
     const missed = []; run.res.forEach(r => (r.missed || []).forEach(m => { if (m.en && !missed.find(x => x.en === m.en)) missed.push(m); }));
     const nx = M.nextPart(p);
-    const head = pct >= 90 ? '¡Clase perfecta! 🏆' : pct >= 70 ? '¡Muy buen trabajo! 💪' : '¡Clase completada! 👏';
+    const AG = M.ageGroup();
+    const head = AG === 'kids' ? '¡Misión cumplida!' : pct >= 90 ? '¡Clase perfecta! 🏆' : pct >= 70 ? '¡Muy buen trabajo! 💪' : '¡Clase completada! 👏';
     const advice = pct >= 90 ? `¡Lo hiciste increíble, ${esc(S.name.split(' ')[0])}! Ya dominas este tema. Sigue con la próxima clase.` : pct >= 70 ? 'Vas muy bien. Repasa las palabras que te costaron y pasa a la siguiente clase.' : 'Te recomendamos repetir esta clase mañana: la repetición es la clave para aprender. ¡Tú puedes!';
     app.innerHTML = `<div class="player"><div class="card">
       <div class="center">${M.mascot('mascot bounce', pct >= 90 ? 'celebrate' : pct >= 70 ? 'thumbs' : 'smile')}<h2 style="font-size:30px">${head}</h2><p class="muted">${esc(p._t.title)} · ${PL(p)}: ${esc(p.title)}</p>${revM ? `<p class="ce-revchip">🔁 Repasando: ${M.revCount()} de ${M.totalParts()} clases</p>` : ''}</div>
       <div class="res-stars">${[1, 2, 3].map(i => `<span style="${i <= stars ? '' : 'opacity:.2;filter:grayscale(1)'}">⭐</span>`).join('')}</div>
       <div class="stats"><div class="stat"><b>${pct}%</b><small>Precisión</small></div><div class="stat"><b>+${run.xp + bonus}</b><small>Puntos ganados ⚡</small></div><div class="stat"><b>${c}/${t}</b><small>Respuestas</small></div></div>
+      ${ageClose(p, nx, AG, run.xp + bonus)}
       <h3 style="margin:18px 0 8px">📊 Tus 4 habilidades en esta clase</h3>
       <div class="skills" style="margin-top:0">${SKILLS.map(([k, ic, nm]) => { const v = sk[k]; const pc = v && v[1] ? Math.round(v[0] / v[1] * 100) : null; return `<div class="skill"><div class="ic">${ic}</div><div class="nm">${nm}</div><div class="bar"><i style="width:${pc || 0}%"></i></div><small class="muted">${pc === null ? '—' : pc + '%'}</small></div>`; }).join('')}</div>
       <div class="lesson"><h3>🧑‍🏫 Consejos del profe</h3><p>${advice}</p>
@@ -1194,6 +1301,7 @@
   /* ---------------- boot ---------------- */
   // el módulo se abre desde el perfil del estudiante (index.html)
   const PF = window.MRAP;
+  try { document.body.classList.add('ag-' + M.ageGroup()); } catch (e) { }
   if (PF) { const pr = PF.get(); const rl = pr ? PF.role(C.MODULE_ID || 'A1') : 'none';
     if (!pr || !['current', 'review'].includes(rl)) { location.replace('index.html'); return; }
     if (!S.name && pr.name) { S.name = pr.name; save(); } }

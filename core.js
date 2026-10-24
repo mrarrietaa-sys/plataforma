@@ -220,11 +220,11 @@
       const start = () => {
         if (done) return;
         r = new SR(); r.lang = 'en-US'; r.interimResults = true; r.maxAlternatives = 5; r.continuous = true;
-        r.onresult = (e) => { heardAny = true;
+        r.onresult = (e) => { heardAny = true; window.MRAWAVE && MRAWAVE.kick();
           for (let k = e.resultIndex; k < e.results.length; k++) { const rr = e.results[k], list = []; for (let i = 0; i < rr.length; i++) list.push(rr[i].transcript);
             if (rr.isFinal) { segMerge(segs, list); interim = []; } else interim = list; }
           arm(); };
-        r.onspeechstart = () => { heardAny = true; arm(); };
+        r.onspeechstart = () => { heardAny = true; window.MRAWAVE && MRAWAVE.kick(); arm(); };
         r.onerror = (e) => { lastErr = e.error; if (e.error === 'not-allowed' || e.error === 'service-not-allowed' || e.error === 'audio-capture') fin(e.error); };
         r.onend = () => { if (done) return; if (Date.now() - t0 < timeoutMs - 500) { setTimeout(() => { try { start(); } catch (e) { fin('start'); } }, 60); } else fin(); }; // el navegador cortó en una pausa: sigue escuchando
         try { r.start(); } catch (e) { fin('start'); }
@@ -239,7 +239,7 @@
     let active = true, segs = [], interim = [], r = null, ended = false;
     const text = () => segAlts(segs, interim)[0] || '';
     const start = () => { if (!active) return; r = new SR(); r.lang = 'en-US'; r.continuous = true; r.interimResults = true; r.maxAlternatives = 3;
-      r.onresult = (e) => { for (let k = e.resultIndex; k < e.results.length; k++) { const rr = e.results[k], list = []; for (let i = 0; i < rr.length; i++) list.push(rr[i].transcript); if (rr.isFinal) { segMerge(segs, list); interim = []; } else interim = list; } onText && onText(text()); };
+      r.onresult = (e) => { window.MRAWAVE && MRAWAVE.kick(); for (let k = e.resultIndex; k < e.results.length; k++) { const rr = e.results[k], list = []; for (let i = 0; i < rr.length; i++) list.push(rr[i].transcript); if (rr.isFinal) { segMerge(segs, list); interim = []; } else interim = list; } onText && onText(text()); };
       r.onerror = (e) => { if (/not-allowed|audio-capture|service-not-allowed|language-not-supported/.test(e.error)) { active = false; onFatal && onFatal(e.error); } };
       r.onend = () => { if (active) setTimeout(start, 60); else if (!ended) { ended = true; onText && onText(text()); S.onend && S.onend(); } };
       try { r.start(); } catch (e) { active = false; onFatal && onFatal('start'); } };
@@ -249,7 +249,7 @@
   }
   /* ---------- voice recording (MediaRecorder) ---------- */
   async function recordVoice(ms = 4000, onTick) {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true }); window.MRAWAVE && MRAWAVE.stream(stream);
     const rec = new MediaRecorder(stream); const chunks = [];
     rec.ondataavailable = e => chunks.push(e.data);
     const p = new Promise(r => rec.onstop = r);
@@ -292,7 +292,7 @@
     if (!scorer && /^\s*[A-Za-z]\s*$/.test(String(target || ''))) scorer = letterScorer(String(target).trim()); // letras sueltas (A, B, C…)
     let rec = null, stream = null; const chunks = [];
     try { if ((typeof SR !== 'undefined' && SR) && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) throw 0; // en celular el micrófono no se puede compartir: se prioriza el reconocimiento de voz
-      stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } }); rec = new MediaRecorder(stream); rec.ondataavailable = e => chunks.push(e.data); rec.start(); }
+      stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } }); window.MRAWAVE && MRAWAVE.stream(stream); rec = new MediaRecorder(stream); rec.ondataavailable = e => chunks.push(e.data); rec.start(); }
     catch (e) { if (!SR) throw e; }
     const t0 = Date.now(); const iv = setInterval(() => onTick && onTick(Math.min(1, (Date.now() - t0) / ms)), 100);
     let r = { alts: [] };
@@ -449,7 +449,11 @@
     const start = () => { try { new MutationObserver(sched).observe(document.body, { childList: true, subtree: true }); } catch (e) { } sched(); };
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
   })();
+  const WV = (f) => async function () { const W = window.MRAWAVE; W && W.on(); try { return await f.apply(this, arguments); } finally { W && W.off(); } };
+  const listenW = WV(listen), recordScoreW = WV(recordScore), recordVoiceW = WV(recordVoice);
+  const srSessionW = function (onText, onFatal) { const W = window.MRAWAVE; let off = !W; const o = () => { if (!off) { off = true; W.off(); } }; if (W) W.on(); const S = srSession(onText, function () { o(); return onFatal && onFatal.apply(this, arguments); }); if (!W) return S; if (!S) { o(); return S; }
+    const st = S.stop, ab = S.abort; S.stop = function () { o(); return st.apply(S, arguments); }; S.abort = function () { o(); return ab.apply(S, arguments); }; return S; };
   window.M1 = { face, D, C, MOD, S, $, $$, h, esc, shuffle, sample, sleep, save, touchStreak, addSkill, addWeak, okWeak, skillPct, isUnlocked, finalUnlocked, paceDate, weakParts, reviewMode, revCount, PTS_TIP, hasAccess, progressOpen, lockReason, review, hasProfile, doneCount, totalParts, redeem, codeHash,
-    allParts, partById, trackAudio, audioUI, floatStop, recordScore, letterScorer, voiceResult, floatBubble, setBubbleHidden, prevPart, nextPart, partStars, overallPct, imgURL, photo, play, playSeq, loadAudio, stop, sfx, praise, encourage, ageGroup, fbf, canSR, listen, srSession, recordVoice,
+    allParts, partById, trackAudio, audioUI, floatStop, recordScore: recordScoreW, letterScorer, voiceResult, floatBubble, setBubbleHidden, prevPart, nextPart, partStars, overallPct, imgURL, photo, play, playSeq, loadAudio, stop, sfx, praise, encourage, ageGroup, fbf, canSR, listen: listenW, srSession: srSessionW, recordVoice: recordVoiceW,
     norm, words, lev, speechScore, sheet, good, bad, toast, modal, xpFly, confetti, mascot, audioSrc };
 })();
