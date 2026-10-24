@@ -462,7 +462,7 @@
     const p = M.partById(id);
     if (!M.isUnlocked(p.topic)) { route('home'); return lockGate(p.topic); }
     const revM = M.reviewMode(); if (revM) { S.rev = S.rev || {}; if (!S.rev[id]) { S.rev[id] = { s: Date.now() }; save(); } }
-    app.innerHTML = `<div class="wrap center ld-load"><img class="ld-load-mra" src="mra-x-rocket3.webp?v=2" alt="Mr. Arrieta"><h2 class="ld-ready">Are you ready?</h2><div class="ld-count"></div><p class="ld-load-t muted"></p></div>`;
+    app.innerHTML = `<div class="wrap center ld-load"><img class="ld-load-mra" src="mra-x-${({ kids: 'rocket4', teens: 'rocket5' })[M.ageGroup()] || 'rocket3'}.webp?v=2" alt="Mr. Arrieta"><h2 class="ld-ready">Are you ready?</h2><div class="ld-count"></div><p class="ld-load-t muted"></p></div>`;
     // 🚀 conteo 1, 2, 3 mientras carga; en el 3 Mr. Arrieta sale volando y dice GO!
     const lt = $('.ld-load-t', app), cd = $('.ld-count', app), rk = $('.ld-load-mra', app); let loaded = false;
     const pv = M.prevPart(p); const loadP = M.loadAudio(['common', ...[].concat(M.MOD.games || []), M.MOD.audio + p.topic].concat(pv ? [M.MOD.audio + pv.topic] : []).concat(missionFor(p) ? ['gm' + (+M.MOD.n || 1) + 't' + p.topic] : []).concat(window.M1AGE_ON && (+M.MOD.n || 1) === 1 ? [(window.M1AGE_ON === 'kids' ? 'ka' : 'ta') + p.topic].concat(pv ? [(window.M1AGE_ON === 'kids' ? 'ka' : 'ta') + pv.topic] : []) : [])).then(() => { loaded = true; }, () => { loaded = true; });
