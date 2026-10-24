@@ -96,7 +96,7 @@
   function saveProg() { ST.prog = { plan: PL, first, last, temail, wa, course, cur, startedAt, answers: answers.map(a => a && (a.url || a.blob) ? Object.assign({}, a, { url: null, blob: null }) : a) }; persist(); }
   function shell(html) { stopRec(); stopPoll(); app.innerHTML = `<div class="wrap fx">${html}</div>`; window.scrollTo(0, 0); }
   function top(extra = '') {
-    return `<div class="fx-top"><span class="lbl">Placement test · Clasificación</span><span class="fx-chip">INTENTO ${Math.min(ST.attempts + 1, maxAttempts())}/${maxAttempts()}</span>${extra}<div class="grow"></div><button class="btn w sm" id="fx-exit">✕ Salir</button></div>`;
+    return `<div class="fx-top"><span class="px-ttl">${window.MRI ? MRI('compass') : ''}<b>Placement Test</b><small>Prueba de clasificación</small></span><span class="fx-chip">INTENTO ${Math.min(ST.attempts + 1, maxAttempts())}/${maxAttempts()}</span>${extra}<div class="grow"></div><button class="btn w sm" id="fx-exit">✕ Salir</button></div>`;
   }
   function wireExit() { const b = $('#fx-exit'); if (b) b.onclick = () => { stopTimer(); stopRec(); ctx.route('home'); }; }
 
@@ -206,7 +206,7 @@
     const qn = PL.asked.indexOf(cur) + 1; const pct = Math.min(96, Math.round(((PL.m - 1) + (PL.pos + 1) / (PL.queue.length + 1)) / 4 * 100));
     shell(`${top(`<span class="fx-chip t" id="fx-timer"></span>`)}
       <div class="fx-prog"><i style="width:${pct}%"></i></div><div class="secbar fx-pills">${pills()}</div>
-      <div class="card fx-item"><div class="hd"><span class="lbl">${it.icon} ${it.label} · ${esc(it.topic)}</span><span class="qcount">Pregunta ${qn}</span></div><div class="fx-body"></div><div class="fx-fb"></div>
+      <div class="card fx-item"><div class="hd"><span class="px-skill">${window.MRI ? MRI(({ Listening: 'headphones', Reading: 'book', Writing: 'pen', Speaking: 'mic' })[it.label] || 'star') : it.icon}<b>${it.label}</b><i>${esc(it.topic)}</i></span><span class="qcount">Pregunta ${qn}</span></div><div class="fx-body"></div><div class="fx-fb"></div>
       <div class="actionbar"><span class="muted" style="font-size:13px">${PL.phase === 'conf' ? '🔎 Pregunta de confirmación' : 'Nivel ' + esc(P.mod(PL.m).id)}</span><button class="btn k lg" id="nx" disabled>Siguiente →</button></div></div>`);
     wireExit(); tick();
     $('#nx').onclick = () => { if (!(answers[cur] && answers[cur].answered)) return; stopRec(); advance(); };

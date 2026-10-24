@@ -47,7 +47,7 @@
             <div class="fm-hst"><span><i>${I('users')}</i><b>${kids.length}</b><small>${kids.length === 1 ? 'Hijo(a)' : 'Hijos'}</small></span><span><i>${I('calendar')}</i><b>${kids.filter(k => k.next).length}</b><small>Con clase reservada</small></span><span><i>${I('mail')}</i><b>${f.alerts ? 'Activa' : 'Apagada'}</b><small>Alerta de 7 días</small></span></div></div>
           <div class="fm-hart"><span class="fm-road"></span><img src="mra-x-bike-blue.webp" alt="Mr. Arrieta"></div></section>
         <div class="fm-st"><h2>Mis hijos</h2><small>${kids.length} de 3${kids.length > 1 ? '<span class="fm-sw2"> · desliza →</span>' : ''}</small></div>
-        <div class="fm-kids">${kids.length ? kids.map(kidCard).join('') : '<p class="muted center">Aún no hay hijos vinculados a esta familia.</p>'}${kids.length < 3 ? `<button class="fm-add" id="add">${I('plus')} Agregar otro hijo(a)</button>` : ''}</div></div></div>`;
+        <div class="fm-kids">${kids.length ? kids.map(kidCard).join('') : '<p class="muted center">Aún no hay hijos vinculados a esta familia.</p>'}<button class="fm-add" id="add">${I('plus')} Agregar otro hijo(a)<small>Elige su plan</small></button></div></div></div>`;
     $('#tourb').onclick = () => tour();
     let hi = ''; try { hi = sessionStorage.getItem('mra_fam_hi'); sessionStorage.removeItem('mra_fam_hi'); } catch (e) { }
     if (hi) welcome(first, String(f.guardian || '').trim().split(/\s+/)[0]);
@@ -55,7 +55,7 @@
     $('#cp').onclick = () => { try { navigator.clipboard.writeText(f.fcode); $('#cp').innerHTML = I('check') + ' Copiado'; } catch (e) { } };
     app.querySelectorAll('[data-tg]').forEach(b => b.onclick = () => { const m = b.closest('.fm-kid').querySelector('.fm-more'); m.hidden = !m.hidden; b.classList.toggle('open', !m.hidden); });
     app.querySelectorAll('[data-in]').forEach(b => b.onclick = () => { try { sessionStorage.setItem('mra_autocode', b.dataset.in); sessionStorage.setItem('mra_from_fam', '1'); } catch (e) { } location.href = 'index.html'; });
-    const add = $('#add'); if (add) add.onclick = () => { LS.set('mra_fam_prefill', JSON.stringify({ guardian: f.guardian, email: f.email, email2: f.email2, whatsapp: f.whatsapp })); location.href = 'ninos.html?prueba=hijo'; };
+    const add = $('#add'); if (add) add.onclick = () => { LS.set('mra_fam_prefill', JSON.stringify({ guardian: f.guardian, email: f.email, email2: f.email2, whatsapp: f.whatsapp })); location.href = 'ninos.html?tab=planes'; };
     $('#sw').onclick = async () => { const on = !$('#sw').classList.contains('on'); $('#sw').classList.toggle('on', on); $('#sw').setAttribute('aria-checked', on);
       const x = await MRAC.call('famAlerts', { fcode: f.fcode, on }).catch(() => null); if (!x || !x.ok) { $('#sw').classList.toggle('on', !on); } };
   }

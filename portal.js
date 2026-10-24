@@ -358,6 +358,7 @@
     const pw = card.closest('.pt-wrap'); if (pw) pw.classList.add('ld-on');
     card.parentNode.insertBefore(wrap, card); { const ll = wrap.querySelector('.ld-login'); if (ll) ll.appendChild(card); else { const hid = document.createElement('div'); hid.hidden = true; hid.className = 'lp-hid'; wrap.appendChild(hid); hid.appendChild(card); } }
     if (PAGE !== 'home') lpWire();
+    { const tb = (location.search.match(/[?&]tab=(\w+)/) || [])[1]; if (tb && PAGE !== 'home') setTimeout(() => window.__lpTab && __lpTab(tb), 400); } // 👨‍👩‍👧 «Agregar otro hijo(a)» desde el panel de papás → planes
     if (/[?&]prueba=hijo/.test(location.search)) setTimeout(() => { // 👨‍👩‍👧 "Agregar otro hijo(a)" desde el panel de papás: formulario con los datos de los padres ya escritos
       trialForm(true); let pf = {}; try { pf = JSON.parse(localStorage.getItem('mra_fam_prefill') || '{}'); } catch (e) { }
       const set = (id, v) => { const i = document.getElementById(id); if (i && v) i.value = v; }; set('tf-g', pf.guardian); set('tf-w', pf.whatsapp); set('tf-e', pf.email); set('tf-e2', pf.email2);
@@ -684,7 +685,7 @@
     if (kids && a && a.ready && !P.isExpired()) { main = MRKIDS.hero(p, a, P.look().nick || p.first || '') + MRKIDS.chest(); kidsX = MRKIDS.map(a) + MRKIDS.medals(a); }
     else if (kids && newbie) main = main.replace('mra-x-plane-red.webp', 'mra-x-balloon1.webp');
     const teens = !staff && !kids && window.MRTEENS && MRTEENS.on(); document.body.classList.toggle('ag-teens', !!teens); // 🚀 perfil Teens (12 a 17 años)
-    if (teens && a && a.ready && !P.isExpired()) { main = MRTEENS.hero(p, a, P.look().nick || p.first || '') + MRTEENS.challenge(); kidsX = `<div class="tn-row">${MRTEENS.missions()}${MRTEENS.ranking()}</div>`; }
+    if (teens && a && a.ready && !P.isExpired()) { main = MRTEENS.hero(p, a, P.look().nick || p.first || '') + `<div class="tn-row">${MRTEENS.challenge()}${MRTEENS.missions()}</div>`; }
     else if (teens && newbie) main = main.replace('mra-x-plane-red.webp', 'mra-x-rocket.webp');
     const curMod = a && a.ready && !staff ? P.progress(a.id) : null;
     const plNow = P.plan(); const plName = staff ? 'Profesor' : P.isExpired() ? 'Plan vencido' : (plNow.plan === 'premium8' && plNow.eff === 'premium' ? 'Premium · 8 clases' : { free: 'Acceso gratuito', membership: 'Plataforma', premium: 'Premium · 4 clases' }[plNow.eff] || 'Acceso gratuito');

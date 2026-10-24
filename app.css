@@ -6086,3 +6086,36 @@ button.lp-pl{font:inherit;text-align:inherit;cursor:pointer;width:100%;appearanc
 @media(max-width:720px){.me-av{grid-template-columns:minmax(0,1fr)!important}.me-prev{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;min-width:0;max-width:100%;box-sizing:border-box}.me-prev .me-stage{height:180px!important}
   .me-prev #rnd,.me-prev #sv{min-width:0;overflow:hidden;text-overflow:ellipsis;font-size:12.5px!important}}
 @media(max-width:720px){.me-lg{display:none}}
+/* v361 */
+/* Teens: reto + meta semanal, Mr. Arrieta con fondo blanco detrás, sin tocar bordes */
+.tn-row{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)!important;margin-top:12px!important;align-items:stretch}
+.tn-row .tn-chal{margin-top:0!important}
+.tn-goal{display:flex;gap:12px;align-items:center;margin:0!important;padding:14px 16px!important;background:#fff!important;border:1.5px solid var(--bd)!important}
+.tn-gi{width:44px;height:44px;border-radius:13px;background:#EEF3FB;color:var(--k);display:grid;place-items:center;flex:none;font-style:normal}.tn-gi .mri{width:21px;height:21px}
+.tn-goal>div{flex:1;min-width:0}.tn-goal small{display:block;font:700 11px var(--fh);letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}.tn-goal b{display:block;font:800 16px var(--fh);color:var(--k);margin:2px 0}
+.tn-goal .tn-bar{background:#e8edf5}.tn-goal span:last-child{font-size:12px;color:var(--mut)}
+.tn-goal.ok .tn-gi{background:#e7f6ec;color:#16a34a}.tn-goal.ok .tn-bar span{background:#16a34a}
+.tn-k b span{font-size:12px;color:#a9bde3;margin-left:1px}
+.tn-art{position:relative;z-index:1;flex:none;display:grid;place-items:center;margin-right:6px}
+.tn-disc{position:absolute;width:76%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,#ffffff 0%,#ffffff 58%,rgba(255,255,255,.9) 64%,rgba(255,255,255,0) 72%);box-shadow:0 0 0 10px rgba(255,255,255,.06),0 0 0 22px rgba(255,255,255,.04)}
+.tn-art .tn-mra{position:relative;margin:0}
+@media(max-width:700px){
+  .tn-art{position:absolute;right:14px;top:16px;margin:0}.tn-art .tn-mra{position:relative!important;right:auto!important;top:auto!important;width:112px!important}
+  .tn-hero h2{padding-right:118px!important}.tn-hero p{padding-right:112px!important}
+  .tn-row{grid-template-columns:1fr!important;gap:12px!important}
+  .tn-chal{flex-wrap:nowrap!important;align-items:center}.tn-chal b{font-size:15px!important}.tn-cb{width:auto!important;padding:9px 14px!important;font-size:13.5px!important}
+  .tn-chal span{display:block}
+}
+/* Kids: globo un poco más abajo en celular */
+@media(max-width:700px){.kd-mra{top:46px!important}}
+/* Placement: encabezado y habilidad más sobrios */
+.px-ttl{display:inline-flex;align-items:baseline;gap:8px;color:var(--k)}.px-ttl .mri{width:20px;height:20px;color:var(--y);align-self:center}.px-ttl b{font:800 18px var(--fh)}.px-ttl small{font-size:13px;color:var(--mut);font-weight:600}
+.px-skill{display:inline-flex;align-items:center;gap:8px;background:#EEF3FB;border:1px solid #d7e2f3;border-radius:12px;padding:6px 12px 6px 8px;color:var(--k)}
+.px-skill .mri{width:26px;height:26px;padding:5px;border-radius:8px;background:var(--k);color:#fff;box-sizing:border-box}
+.px-skill b{font:800 13px var(--fh);letter-spacing:.06em;text-transform:uppercase}.px-skill i{font-style:normal;font-size:13px;color:#475569}.px-skill i:before{content:'·';margin-right:6px;color:#94a3b8}
+@media(max-width:600px){.px-ttl small{display:none}.px-skill i{font-size:12px}}
+/* Módulos (todas las edades, celular): más aire en el encabezado */
+@media(max-width:700px){.rolechip{display:inline-flex!important;margin:10px 0 6px!important}.mod-back{margin-bottom:12px!important}}
+/* Panel de papás: agregar hijo → planes */
+.fm-add small{display:block;font:600 12px var(--fb);color:var(--mut);margin-top:2px}.fm-add{flex-direction:column}
+@media(max-width:700px){.tn-chal{padding:14px!important;gap:10px!important}.tn-ci{width:40px;height:40px}}

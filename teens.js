@@ -35,19 +35,18 @@
     const s = state(); claim(s); const pr = P().progress(a.id); const rk = LS.get('mra_teen_pos') || '';
     return `<div class="card tn-hero"><span class="tn-glow"></span><span class="tn-grid"></span>
       <div class="tn-htx"><span class="tn-eye">${I('star')} Teens</span><h2>What's up, ${esc(nick)}?</h2>
-        <p>${pr.done ? `Vas en el <b>${esc(a.name)}</b> · ${pr.done} de ${a.classes} clases. Sigue sumando puntos esta semana.` : `Tu ruta empieza en el <b>${esc(a.name)}</b>. Cada clase suma puntos para el ranking.`}</p>
-        <div class="tn-k"><div><b>${I('star')}${fmt(points(s))}</b><small>Puntos</small></div><div><b>${I('award')}${rk ? '#' + rk : '—'}</b><small>Ranking</small></div><div><b>${I('flame')}${s.days.length}</b><small>Días esta semana</small></div></div>
+        <p>${pr.done ? `Vas en el <b>${esc(a.name)}</b>. Sigue así: cada clase te acerca a hablar con confianza.` : `Tu ruta empieza en el <b>${esc(a.name)}</b>. Una clase a la vez, a tu ritmo.`}</p>
+        <div class="tn-k"><div><b>${I('video')}${pr.done}<span>/${a.classes}</span></b><small>Clases</small></div><div><b>${I('flame')}${s.days.length}</b><small>Días esta semana</small></div><div><b>${I('mic')}${s.ch ? s.ch + '%' : '—'}</b><small>Reto de la semana</small></div></div>
         <div class="tn-hb"><a class="btn tn-go lg" href="${a.url}">${I('video')} ${pr.done ? 'Continuar mi ruta' : 'Empezar mi ruta'}</a><button class="btn tn-gh sm" id="pt3">¿No estás a gusto con tu nivel?</button></div></div>
-      <img class="tn-mra" src="mra-x-rocket.webp" alt="Mr. Arrieta"></div>`;
+      <span class="tn-art"><span class="tn-disc"></span><img class="tn-mra" src="mra-x-rocket.webp" alt="Mr. Arrieta"></span></div>`;
   }
-  function missions() {
-    const s = state(); const done = MISS.filter(m => s.claimed[m.k]).length;
-    return `<div class="card tn-card tn-miss"><div class="tn-ch"><h3>${I('target')} Misiones de la semana</h3><small>${done} de ${MISS.length} · terminan el domingo</small></div>
-      ${MISS.map(m => { const v = Math.max(0, Math.min(m.goal, m.v(s))), ok = !!s.claimed[m.k]; return `<div class="tn-m${ok ? ' ok' : ''}"><i>${I(ok ? 'check' : m.ic)}</i><div><b><span>${m.t}</span><em>+${m.pts}</em></b><div class="tn-bar"><span style="width:${Math.round(v / m.goal * 100)}%"></span></div><small>${ok ? 'Misión cumplida' : v + ' de ' + m.goal}</small></div></div>`; }).join('')}</div>`;
+  function missions() { // 🎯 una sola meta semanal: 3 clases (directo a lo que vino)
+    const s = state(), v = Math.max(0, Math.min(3, partsDone() - s.base.parts)), ok = v >= 3;
+    return `<div class="card tn-goal${ok ? ' ok' : ''}"><i class="tn-gi">${I(ok ? 'check' : 'target')}</i><div><small>Meta de la semana</small><b>${ok ? '¡Meta cumplida!' : 'Haz 3 clases'}</b><div class="tn-bar"><span style="width:${Math.round(v / 3 * 100)}%"></span></div><span>${v} de 3 · se renueva cada lunes</span></div></div>`;
   }
   function challenge() {
     const s = state(), best = s.ch || 0;
-    return `<div class="card tn-chal"><i class="tn-ci">${I('mic')}</i><div><small>Reto de pronunciación · esta semana</small><b>“${esc(PH[phraseIdx()])}”</b><span>${best ? `Tu mejor resultado: <strong>${best}%</strong>${best >= 80 ? ' · ¡+150 puntos ganados!' : ' · logra 80% y gana 150 puntos'}` : 'Dilo en voz alta: con 80% o más ganas 150 puntos.'}</span></div><button class="btn tn-cb" id="tn-chal">${best >= 80 ? 'Repetir' : 'Intentar'}</button></div>`;
+    return `<div class="card tn-chal"><i class="tn-ci">${I('mic')}</i><div><small>Reto de pronunciación</small><b>“${esc(PH[phraseIdx()])}”</b><span>${best ? `Tu mejor resultado: <strong>${best}%</strong>${best >= 80 ? ' · ¡Excelente pronunciación!' : ' · la meta es 80%'}` : 'Escúchala y dila en voz alta. La meta es 80%.'}</span></div><button class="btn tn-cb" id="tn-chal">${best >= 80 ? 'Repetir' : 'Intentar'}</button></div>`;
   }
   function ranking() {
     return `<div class="card tn-card tn-rank"><div class="tn-ch"><h3>${I('award')} Ranking de la escuela</h3><small>Solo apodos</small></div><div id="tn-rl"><p class="tn-ld">Cargando ranking…</p></div></div>`;
@@ -79,25 +78,25 @@
     m.querySelector('#tn-pl').onclick = async () => { await load(); M1.play(key); };
     m.querySelector('#tn-mic').onclick = async () => {
       const res = m.querySelector('#tn-res'), b = m.querySelector('#tn-mic');
-      if (!M1.canSR || !M1.canSR()) { res.innerHTML = '<p class="tn-bad">Tu navegador no permite usar el micrófono para el reto. Ábrelo en Google Chrome.</p>'; return; }
+      if (!M1.canSR) { res.innerHTML = '<p class="tn-bad">Tu navegador no permite usar el micrófono para el reto. Ábrelo en Google Chrome.</p>'; return; }
       b.disabled = true; b.innerHTML = I('mic') + ' Te escucho…'; res.innerHTML = '<div class="tn-wave"><i></i><i></i><i></i><i></i><i></i></div>';
       const r = await M1.listen(9000, { quick: true }); b.disabled = false; b.innerHTML = I('mic') + ' Decirla otra vez';
-      if (!r.alts || !r.alts.length) { res.innerHTML = '<p class="tn-bad">No te escuché. Revisa el micrófono e inténtalo de nuevo.</p>'; return; }
+      if (!r.alts || !r.alts.length) { res.innerHTML = `<p class="tn-bad">${/not-allowed|service-not-allowed|audio-capture/.test(r.error || '') ? 'Permite el uso del micrófono en tu navegador (ícono del candado junto a la dirección) e inténtalo de nuevo.' : 'No te escuché. Habla un poco más fuerte e inténtalo de nuevo.'}</p>`; return; }
       const sc = M1.speechScore(ph, r.alts).score; const s = state(); const first80 = sc >= 80 && (s.ch || 0) < 80; if (sc > (s.ch || 0)) { s.ch = sc; save(s); }
-      const got = claim(s);
-      res.innerHTML = `<div class="tn-sc ${sc >= 80 ? 'ok' : ''}"><b>${sc}%</b><span>${sc >= 80 ? (first80 ? '¡Excelente! Ganaste 150 puntos.' : '¡Excelente pronunciación!') : 'Casi. Escúchala otra vez e inténtalo: necesitas 80%.'}</span><small>Te escuché: “${esc(r.alts[0])}”</small></div>`;
+      const got = 0;
+      res.innerHTML = `<div class="tn-sc ${sc >= 80 ? 'ok' : ''}"><b>${sc}%</b><span>${sc >= 80 ? '¡Excelente pronunciación!' : 'Casi. Escúchala otra vez e inténtalo: necesitas 80%.'}</span><small>Te escuché: “${esc(r.alts[0])}”</small></div>`;
       try { if (sc >= 80) { M1.sfx('win'); M1.confetti(1500); M1.praise(); } else { M1.sfx('bad'); M1.encourage(); } } catch (e) { }
-      if (got) refresh(root);
+      refresh(root);
     };
   }
   function refresh(root) { const h = root.querySelector('.tn-hero'), mi = root.querySelector('.tn-miss'), c = root.querySelector('.tn-chal'); const p = P().get(), a = P().assigned();
-    if (h) { const k = h.querySelector('.tn-k div:first-child b'); if (k) k.innerHTML = I('star') + fmt(points(state())); }
+    if (h) { const k = h.querySelector('.tn-k div:nth-child(3) b'); const st = state(); if (k) k.innerHTML = I('mic') + (st.ch ? st.ch + '%' : '—'); }
     if (mi) { const t = document.createElement('div'); t.innerHTML = missions(); mi.replaceWith(t.firstElementChild); }
     if (c) { const t = document.createElement('div'); t.innerHTML = challenge(); c.replaceWith(t.firstElementChild); }
     wire(root, true); }
   function wire(root, noSync) {
     const b = root.querySelector('#tn-chal'); if (b) b.onclick = () => openChallenge(root);
-    if (!noSync) { const s = state(); sync().then(r => rankList(r, s)); }
+
   }
   window.MRTEENS = { on, hero, missions, challenge, ranking, wire };
 })();

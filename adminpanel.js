@@ -199,7 +199,7 @@
       <label>Nombre<input class="inp" name="first" value="${esc(s.first)}" required></label><label>Apellido<input class="inp" name="last" value="${esc(s.last)}"></label>
       <label>Correo<input class="inp" name="email" type="email" value="${esc(s.email)}"></label><label>WhatsApp<input class="inp" name="whatsapp" inputmode="tel" value="${esc(s.whatsapp)}"></label>
       <label>Papá / mamá <small>(solo si es menor de edad)</small><input class="inp" name="guardian" value="${esc(s.guardian)}" placeholder="Nombre del acudiente"></label><label>Segundo correo <small>(el otro padre o madre · recibe los mismos correos)</small><input class="inp" name="email2" type="email" value="${esc(s.email2)}"></label><label>Segundo WhatsApp <small>(el otro padre o madre · opcional)</small><input class="inp" name="whatsapp2" inputmode="tel" value="${esc(s.whatsapp2)}"></label>
-      <label class="np-birth" ${isNew || !s.plan || s.plan === 'free' ? 'style="display:none"' : ''}>Fecha de nacimiento<input class="inp" name="birth" type="date" value="${esc(s.birth)}"></label>
+      <label class="np-birth">Fecha de nacimiento <small>(define si es Kids, Teens o Adulto)</small><input class="inp" name="birth" type="date" max="${todayISO()}" value="${esc(s.birth)}"></label>
       <label>Módulo de su ruta<select class="inp" name="module"><option value="">Que haga la prueba de clasificación</option>${[1, 2, 3, 4].map(n => `<option value="${n}" ${String(s.module) === String(n) ? 'selected' : ''}>Módulo ${n} · ${MODN[n]}</option>`).join('')}</select></label>
       ${isNew ? `<label>Código <small>(vacío = automático)</small><input class="inp" name="code" placeholder="Ej: LAURA-2026" style="text-transform:uppercase"></label>` : `<label>Estado<select class="inp" name="status">${['activo', 'inactivo', 'archivado'].map(x => `<option ${s.status === x ? 'selected' : ''}>${x}</option>`).join('')}</select></label>`}
       <label class="full">Notas internas<textarea class="inp" name="notes" rows="2">${esc(s.notes)}</textarea></label></div>`;
@@ -211,7 +211,7 @@
       <div class="ad-form" id="np-m" style="display:none"><label>Meses<select class="inp" id="np-mo">${[1, 2, 3, 6, 12].map(n => `<option>${n}</option>`).join('')}</select></label><label>Valor pagado<input class="inp" id="np-amt" inputmode="numeric" placeholder="Automático"></label></div>
       <label class="ad-pl" style="margin:12px 0"><input type="checkbox" id="np-send" checked><span>📩 Enviarle sus datos de acceso (código y enlace) por <b>correo</b> y <b>WhatsApp</b></span></label>
       <button class="btn k block lg" id="np-ok">Crear estudiante</button>`);
-    $$('[name=_plan]', m).forEach(r => r.onchange = () => { const pl = $('[name=_plan]:checked', m).value; $('#np-m', m).style.display = pl === 'free' ? 'none' : ''; $('.np-birth', m).style.display = pl === 'free' ? 'none' : ''; if (pl === 'free') $('[name=birth]', m).value = ''; });
+    $$('[name=_plan]', m).forEach(r => r.onchange = () => { const pl = $('[name=_plan]:checked', m).value; $('#np-m', m).style.display = pl === 'free' ? 'none' : ''; });
     $('#np-ok', m).onclick = async () => {
       const d = formData($('.ad-form', m)); delete d._plan; if (!d.first) return toast('Escribe el nombre');
       const plan = $('[name=_plan]:checked', m).value; const send = $('#np-send', m).checked;
