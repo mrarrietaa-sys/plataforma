@@ -83,7 +83,9 @@
   function summary() {
     const P = window.MRAP; const p = prof() || {}; const mods = {}; let done = 0, xp = 0;
     if (P) P.MODS.forEach(m => { const pr = P.progress(m.id); done += pr.done; const s = P.modState(m.id); xp += +s.xp || 0; mods[m.id] = { done: pr.done, total: pr.total, pct: pr.pct, passed: P.passed(m.id) }; });
-    return { mods, classesDone: done, xp, first: p.first, last: p.last, email: p.email, birth: p.birth, whatsapp: p.whatsapp, module: p.module, moduleSet: p.moduleSet || 0 };
+    let tp, cur = '', ch; try { if (window.MRKIDS && P) { tp = 0; P.MODS.forEach(m => { const T = MRKIDS.topics(m); tp += T.filter(t => t.done).length; }); const a = P.assigned && P.assigned(); if (a) { const T = MRKIDS.topics(a), c = T.find(t => !t.done); cur = c ? c.name : ''; } } } catch (e) { }
+    try { const t = JSON.parse(localStorage.getItem('mra_teen_v1') || 'null'); if (t && t.ch) ch = +t.ch; } catch (e) { }
+    return { tp, cur, ch, mods, classesDone: done, xp, first: p.first, last: p.last, email: p.email, birth: p.birth, whatsapp: p.whatsapp, module: p.module, moduleSet: p.moduleSet || 0 };
   }
   let timer = null, busy = false, dirty = false;
   async function sync(now) {
