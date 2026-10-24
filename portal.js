@@ -686,7 +686,7 @@
     if (kids && a && a.ready && !P.isExpired()) { main = MRKIDS.hero(p, a, P.look().nick || p.first || '') + MRKIDS.chest(); kidsX = MRKIDS.map(a) + MRKIDS.medals(a); }
     else if (kids && newbie) main = main.replace('mra-x-plane-red.webp', 'mra-x-balloon1.webp');
     const teens = !staff && !kids && window.MRTEENS && MRTEENS.on(); document.body.classList.toggle('ag-teens', !!teens); // 🚀 perfil Teens (12 a 17 años)
-    if (teens && a && a.ready && !P.isExpired()) { main = MRTEENS.hero(p, a, P.look().nick || p.first || '') + `<div class="tn-row">${MRTEENS.challenge()}${MRTEENS.missions()}</div>`; }
+    if (teens && a && a.ready && !P.isExpired()) { main = MRTEENS.hero(p, a, P.look().nick || p.first || '') + `<div class="tn-row">${MRTEENS.challenge()}${MRTEENS.missions()}</div>` + (MRTEENS.realLife ? MRTEENS.realLife() : ''); }
     else if (teens && newbie) main = main.replace('mra-x-plane-red.webp', 'mra-x-rocket.webp');
     const curMod = a && a.ready && !staff ? P.progress(a.id) : null;
     const plNow = P.plan(); const plName = staff ? 'Profesor' : P.isExpired() ? 'Plan vencido' : (plNow.plan === 'premium8' && plNow.eff === 'premium' ? 'Premium · 8 clases' : { free: 'Acceso gratuito', membership: 'Plataforma', premium: 'Premium · 4 clases' }[plNow.eff] || 'Acceso gratuito');
