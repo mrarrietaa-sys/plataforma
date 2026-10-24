@@ -15,7 +15,7 @@
     topRight(false);
     app.innerHTML = `<section class="card fm-login"><img src="mra-smile.webp" alt="Mr. Arrieta"><div><span class="fm-eye">${I('users')} Mi familia</span><h1>Panel de papás</h1>
       <p class="muted">Escribe tu código de familia. Lo encuentras en el correo de bienvenida de tu hijo(a).</p>
-      <input class="inp" id="fc" placeholder="FAM-…" autocomplete="off" autocapitalize="characters"><button class="btn k block lg" id="go">Entrar →</button><p class="fm-err" id="er">${esc(msg || '')}</p></div></section>`;
+      <input class="inp" id="fc" placeholder="FAM-…" autocomplete="off" autocapitalize="characters"><button class="btn k block lg" id="go">Entrar →</button><p class="fm-err" id="er">${esc(msg || '')}</p><p class="fm-lh">¿No tienes tu código? <a href="https://wa.me/573017810841?text=${encodeURIComponent('Hola, soy papá/mamá de un estudiante de mrarrieta.com y necesito mi código de familia.')}" target="_blank" rel="noopener">Escríbenos por WhatsApp</a></p><a class="fm-lback" href="index.html">← Volver a mrarrieta.com</a></div></section>`;
     const go = async () => { const v = $('#fc').value.trim().toUpperCase(); if (!/^FAM-/.test(v)) return ($('#er').textContent = 'El código de familia empieza por FAM-.'); $('#go').disabled = true;
       const r = await MRAC.call('famData', { fcode: v }).catch(() => null); $('#go').disabled = false;
       if (!r || !r.ok) return ($('#er').textContent = r && r.err === 'notfound' ? 'No encontramos ese código. Revísalo e inténtalo de nuevo.' : 'No hay conexión. Inténtalo de nuevo.');
