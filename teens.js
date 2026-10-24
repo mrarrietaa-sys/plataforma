@@ -36,7 +36,7 @@
     return `<div class="card tn-hero"><span class="tn-glow"></span><span class="tn-grid"></span>
       <div class="tn-htx"><span class="tn-eye">${I('star')} Teens</span><h2>What's up, ${esc(nick)}?</h2>
         <p>${pr.done ? `Vas en el <b>${esc(a.name)}</b>. Sigue así: cada clase te acerca a hablar con confianza.` : `Tu ruta empieza en el <b>${esc(a.name)}</b>. Una clase a la vez, a tu ritmo.`}</p>
-        <div class="tn-k"><div><b>${I('video')}${pr.done}<span>/${a.classes}</span></b><small>Clases</small></div><div><b>${I('flame')}${s.days.length}</b><small>Días esta semana</small></div><div><b>${I('mic')}${s.ch ? s.ch + '%' : '—'}</b><small>Reto de la semana</small></div></div>
+        <div class="tn-k"><div><b>${I('video')}${pr.done}<span>/${a.classes}</span></b><small>Clases</small></div><div><b>${I('flame')}${s.days.length}</b><small>Días esta semana</small></div><div><b>${I('globe')}${rlDone()}<span>/3</span></b><small>Frases esta semana</small></div></div>
         <div class="tn-hb"><a class="btn tn-go lg" href="${a.url}">${I('video')} ${pr.done ? 'Continuar mi ruta' : 'Empezar mi ruta'}</a><button class="btn tn-gh sm" id="pt3">¿No estás a gusto con tu nivel?</button></div></div>
       <span class="tn-art"><span class="tn-disc"></span><img class="tn-mra" src="mra-x-rocket.webp" alt="Mr. Arrieta"></span></div>`;
   }
@@ -129,6 +129,7 @@
       const sc = M1.speechScore(RL[g][i][0].replace('…', ''), r.alts).score, x = rlState(), k = g + i, was = x.m[k] || 0;
       if (sc > was) { x.m[k] = sc; rlSave(x); }
       try { if (sc >= 80) { M1.sfx('win'); M1.praise(); if (was < 80) M1.confetti(1200); } else { M1.sfx('bad'); M1.encourage(); } } catch (e) { }
+      const kt = root.querySelector('.tn-k div:nth-child(3) b'); if (kt) kt.innerHTML = I('globe') + rlDone() + '<span>/3</span>';
       const box = root.querySelector('.rl'); if (box) { const t = document.createElement('div'); t.innerHTML = realLife(); box.replaceWith(t.firstElementChild); rlWire(root); }
       if (sc < 80) M1.toast(`${sc}%: escúchala otra vez e inténtalo. La meta es 80%.`);
       try { window.MRAC && MRAC.sync && MRAC.sync(); } catch (e) { }
@@ -140,6 +141,7 @@
     };
   }
   // para el resumen que va a la nube (papás): frases dominadas en total
+  function rlDone() { const g = goalK(); if (!g) return 0; const x = rlState(); return rlWeek(g).filter(i => x.m[g + i] >= 80).length; }
   function rlCount() { const x = rlState(); return Object.keys(x.m).filter(k => x.m[k] >= 80).length; }
   window.MRTEENS = { realLife, rlWire, rlCount, on, hero, missions, challenge, ranking, wire };
 })();
