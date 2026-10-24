@@ -8,13 +8,12 @@
   function render(inp) {
     let c = inp._agc; if (!c) { c = document.createElement('div'); c.className = 'agc'; c.setAttribute('aria-live', 'polite'); inp._agc = c; inp.insertAdjacentElement('afterend', c); }
     const a = age(inp.value); if (a === null || a < 0 || a > 110) { c.hidden = true; return; }
-    let k, t, s; const admin3 = admin || !!inp.closest('.tf-bd, [data-third]');
-    if (a < 9) { k = 'no'; t = admin3 ? 'Menor de 9 años' : 'Todavía no tienes la edad mínima'; s = 'La escuela recibe estudiantes desde los 9 años'; }
-    else if (a < 12) { k = 'kids'; t = (admin3 ? 'Es ' : 'Eres ') + 'Kids'; s = a + ' años · curso para niños de 9 a 11 años'; }
-    else if (a < 18) { k = 'teens'; t = (admin3 ? 'Es ' : 'Eres ') + 'Teens'; s = a + ' años · curso para jóvenes de 12 a 17 años'; }
-    else { k = 'adult'; t = (admin3 ? 'Es ' : 'Eres ') + 'Adulto'; s = a + ' años · curso para adultos (18 años o más)'; }
+    const admin3 = admin || !!inp.closest('.tf-bd, [data-third]'); let k, txt;
+    if (a < 9) { k = 'no'; txt = `${a} años · La escuela recibe estudiantes desde los 9 años`; }
+    else { k = a < 12 ? 'kids' : a < 18 ? 'teens' : 'adult'; const n = { kids: 'Kids (9 a 11 años)', teens: 'Teens (12 a 17 años)', adult: 'Adultos (18 años o más)' }[k];
+      txt = `${admin3 ? 'Curso' : 'Tu curso'}: <b>${n}</b> · ${a} años`; }
     c.hidden = false; c.className = 'agc agc-' + k;
-    c.innerHTML = `<span class="agc-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${I[k]}</svg></span><span><b>${t}</b><small>${s}</small></span>`;
+    c.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${k === 'no' ? '<circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/>' : '<path d="M5 12.5 10 17l9-10"/>'}</svg><span>${txt}</span>`;
   }
   const scan = (root) => { (root.querySelectorAll ? root : document).querySelectorAll(SEL).forEach(i => { if (!i._agw) { i._agw = 1; i.addEventListener('input', () => render(i)); i.addEventListener('change', () => render(i)); } render(i); }); };
   document.addEventListener('input', e => { if (e.target.matches && e.target.matches(SEL)) render(e.target); }, true);
