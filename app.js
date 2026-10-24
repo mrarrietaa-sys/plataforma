@@ -429,6 +429,7 @@
         <div class="itl-actor itl-k-${k}"><b class="itl-say">${esc(sc.say)}</b><img class="itl-img" src="mra-x-${k}.webp?v=6" alt="Mr. Arrieta"></div>
         <div class="itl-next"><small>NEXT</small><b>${SEC_IC[next] || '➡️'} ${esc(next.toUpperCase())}</b><i>Toca para continuar</i></div></div>`);
       document.body.appendChild(ov); try { sfx('win'); } catch (e) { }
+      try { if (M.ageGroup() !== 'adult') { const sayIt = () => { if (!done && window.AUD && window.AUD['itl_' + k]) play('itl_' + k); }; setTimeout(() => { if (window.AUD && window.AUD['itl_' + k]) sayIt(); else M.fbf().then(sayIt); }, 380); } } catch (e) { }
       let done = false; const end = () => { if (done) return; done = true; ov.classList.add('out'); setTimeout(() => { ov.remove(); res(); }, 250); };
       ov.onclick = end; setTimeout(end, 2600);
     });
@@ -464,7 +465,7 @@
     app.innerHTML = `<div class="wrap center ld-load"><img class="ld-load-mra" src="mra-x-rocket3.webp?v=2" alt="Mr. Arrieta"><h2 class="ld-ready">Are you ready?</h2><div class="ld-count"></div><p class="ld-load-t muted"></p></div>`;
     // 🚀 conteo 1, 2, 3 mientras carga; en el 3 Mr. Arrieta sale volando y dice GO!
     const lt = $('.ld-load-t', app), cd = $('.ld-count', app), rk = $('.ld-load-mra', app); let loaded = false;
-    const pv = M.prevPart(p); const loadP = M.loadAudio(['common', ...[].concat(M.MOD.games || []), M.MOD.audio + p.topic].concat(pv ? [M.MOD.audio + pv.topic] : []).concat(missionFor(p) ? ['gm' + (+M.MOD.n || 1) + 't' + p.topic] : [])).then(() => { loaded = true; }, () => { loaded = true; });
+    const pv = M.prevPart(p); const loadP = M.loadAudio(['common', ...[].concat(M.MOD.games || []), M.MOD.audio + p.topic].concat(pv ? [M.MOD.audio + pv.topic] : []).concat(missionFor(p) ? ['gm' + (+M.MOD.n || 1) + 't' + p.topic] : []).concat(window.M1AGE_ON && (+M.MOD.n || 1) === 1 ? [(window.M1AGE_ON === 'kids' ? 'ka' : 'ta') + p.topic].concat(pv ? [(window.M1AGE_ON === 'kids' ? 'ka' : 'ta') + pv.topic] : []) : [])).then(() => { loaded = true; }, () => { loaded = true; });
     const pop = (t) => { cd.textContent = t; cd.classList.remove('pop'); void cd.offsetWidth; cd.classList.add('pop'); };
     for (const t of ['1', '2', '3']) { pop(t); try { sfx('tap'); } catch (e) { } await new Promise(r => setTimeout(r, 750)); }
     if (!loaded) { lt.textContent = 'Preparando tu clase…'; await loadP; lt.textContent = ''; }
@@ -654,7 +655,7 @@
         const getES = () => window.MRRDES ? Promise.resolve() : new Promise(res => { const base = (document.querySelector('script[src*="core.js"]').getAttribute('src') || '').replace(/core\.js(\?.*)?$/, ''); const q = ((document.querySelector('script[src*="core.js"]').getAttribute('src') || '').match(/\?.*$/) || [''])[0]; const sc = document.createElement('script'); sc.src = base + 'rdes.js' + q; sc.onload = res; sc.onerror = res; document.head.appendChild(sc); });
         tb.onclick = async () => {
           if (!pane.hidden) { pane.hidden = true; tb.setAttribute('aria-expanded', 'false'); tb.innerHTML = '<span>ES</span> Ver traducción al español'; return; }
-          await getES(); const t = window.MRRDES && MRRDES[r.au];
+          await getES(); const t = (window.MRRDES && MRRDES[r.au]) || (window.M1AGE_ES && M1AGE_ES[r.au]);
           pane.innerHTML = t ? `<b>${esc(t.t)}</b>${t.x.split(/\n+/).map(x => `<p>${esc(x)}</p>`).join('')}` : '<p>La traducción de esta lectura no está disponible.</p>';
           pane.hidden = false; tb.setAttribute('aria-expanded', 'true'); tb.innerHTML = '<span>ES</span> Ocultar traducción'; };
       }
