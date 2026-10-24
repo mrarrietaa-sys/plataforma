@@ -185,10 +185,10 @@
 
   /* ======================= ESTUDIANTES ======================= */
   function students() {
-    list('students', { title: '🎓 Estudiantes', sub: 'Progreso, plan, grupo y clases asistidas', add: '＋ Nuevo estudiante', onAdd: newStudent,
+    list('students', { title: '🎓 Estudiantes', sub: 'Progreso, plan, grupo y clases asistidas', add: '＋ Nuevo estudiante', onAdd: newStudent, add2: '🧪 Estudiante de prueba', onAdd2: testStudent,
       filters: [{ k: '_plan', opts: [['', 'Todos los planes'], ['premium', '👑 Premium (4 y 8 clases)'], ['membership', '🖥️ Plataforma'], ['free', '🎁 Acceso gratuito'], ['renew', '⏰ Vencidos y por vencer'], ['expiring', '⏳ Por vencer (7 días)'], ['expired', '⏰ Vencidos']] }],
       row: s => { const pr = J(s.progress, {}); const mod = s.module ? ({ 1: 'A1', 2: 'A2', 3: 'B2', 4: 'B2+' })[s.module] : ''; const cur = mod && pr[mod] ? pr[mod].pct : 0;
-        return `<div class="card ad-row" data-open="${esc(s.code)}"><div class="ad-av">${esc(((s.first || '?')[0] + (s.last || '')[0]).toUpperCase())}</div><div class="grow"><b>${esc(s.first)} ${esc(s.last)}</b> ${planChip(s)}${s.mailBad ? chip('⚠️ correo', 'p-expired') : ''}${s._trial != null ? chip(s._trial > 0 ? '🎁 prueba: ' + s._trial + ' día' + (s._trial > 1 ? 's' : '') : '🔒 prueba terminada', s._trial > 0 ? '' : 'gray') : ''}${s.status && s.status !== 'activo' ? chip(esc(s.status), 'gray') : ''}
+        return `<div class="card ad-row" data-open="${esc(s.code)}"><div class="ad-av">${esc(((s.first || '?')[0] + (s.last || '')[0]).toUpperCase())}</div><div class="grow"><b>${esc(s.first)} ${esc(s.last)}</b> ${s.source === 'prueba' ? chip('🧪 PRUEBA', 'p-free') : ''}${planChip(s)}${s.mailBad ? chip('⚠️ correo', 'p-expired') : ''}${s._trial != null ? chip(s._trial > 0 ? '🎁 prueba: ' + s._trial + ' día' + (s._trial > 1 ? 's' : '') : '🔒 prueba terminada', s._trial > 0 ? '' : 'gray') : ''}${s.status && s.status !== 'activo' ? chip(esc(s.status), 'gray') : ''}
           <small>${esc(s.code)} · ${mod ? 'Módulo ' + mod : 'Sin placement'}</small>
           <div class="ad-rowstats">${mod ? `${bar(cur)}<span>${cur}% de su módulo</span>` : ''}<span>✅ ${+s.classesDone || 0} clases de la plataforma</span><span>👩‍🏫 ${s._attended} clases con profe</span><span>🕒 ${s.lastSeen ? fDT(s.lastSeen) : 'nunca'}</span></div></div></div>`; },
       open: (code) => studentDetail(code), empty: 'Aún no hay estudiantes. Crea el primero con “＋ Nuevo estudiante”.' });
@@ -232,6 +232,32 @@
         <p>${s2.whatsapp ? '💬 Se abrió WhatsApp con el mensaje listo: solo dale <b>Enviar</b>.' + ` <a href="${waLink(s2.whatsapp, accessMsg(s2))}" target="_blank" rel="noopener">Abrir otra vez</a>` : '💬 Sin WhatsApp registrado.'}</p></div>`);
     };
   }
+  // 🧪 estudiante de prueba: sin cobro, sin correos ni WhatsApp, sin el límite de "una vez por persona"; sirve para probar Kids, Teens y Adultos
+  function testStudent() {
+    const y = new Date().getFullYear(), bd = (age) => `${y - age}-01-15`;
+    const m = modal(`<h2>🧪 Estudiante de prueba</h2><p class="muted">Para probar la plataforma como Kids, Teens o Adulto. No se cobra, no se envían correos ni WhatsApp y no cuenta como acceso gratuito.</p>
+      <div class="ad-tpre">${[['Kids', 10], ['Teens', 14], ['Adulto', 30]].map(([n, a]) => `<button type="button" class="btn w sm" data-age="${a}">${n} · ${a} años</button>`).join('')}</div>
+      <div class="ad-form"><label>Nombre<input class="inp" name="first" value="Prueba"></label><label>Apellido<input class="inp" name="last" value="Kids"></label>
+      <label class="np-birth">Fecha de nacimiento <small>(define si es Kids, Teens o Adulto)</small><input class="inp" name="birth" type="date" max="${todayISO()}" value="${bd(10)}"></label>
+      <label>Módulo<select class="inp" name="module">${[1, 2, 3, 4].map(n => `<option value="${n}">Módulo ${n} · ${MODN[n]}</option>`).join('')}</select></label>
+      <label>Plan de prueba<select class="inp" id="tp-plan"><option value="membership">🖥️ Plataforma (recomendado)</option><option value="premium8">💎 Premium · 8 clases (no reserves con profes reales)</option></select></label>
+      <label>Código <small>(vacío = automático)</small><input class="inp" name="code" placeholder="Ej: PRUEBA-KIDS" style="text-transform:uppercase"></label></div>
+      <button class="btn k block lg" id="tp-ok">Crear estudiante de prueba</button>`);
+    const ln = $('[name=last]', m), b = $('[name=birth]', m);
+    $$('[data-age]', m).forEach(x => x.onclick = () => { const a = +x.dataset.age; b.value = bd(a); b.dispatchEvent(new Event('input', { bubbles: true })); ln.value = a < 12 ? 'Kids' : a < 18 ? 'Teens' : 'Adulto'; });
+    $('#tp-ok', m).onclick = async () => {
+      const d = formData($('.ad-form', m)); if (!d.first) return toast('Escribe el nombre'); if (!d.birth) return toast('Escribe la fecha de nacimiento');
+      const code = (d.code || ('PRUEBA-' + (d.last || d.first).normalize('NFD').replace(/[^A-Za-z]/g, '').toUpperCase() + '-' + Math.floor(100 + Math.random() * 900))).toUpperCase();
+      $('#tp-ok', m).disabled = true; $('#tp-ok', m).textContent = 'Creando…';
+      const r = await api('aSave', { table: 'Estudiantes', force: true, row: Object.assign(d, { code, source: 'prueba', plan: $('#tp-plan', m).value, planStart: todayISO(), planEnd: addDays(todayISO(), 365), notes: '🧪 Estudiante de prueba creado por administración' }) });
+      if (!r.ok) { $('#tp-ok', m).disabled = false; $('#tp-ok', m).textContent = 'Crear estudiante de prueba'; return toast(r.err === 'code_exists' ? '⚠️ Ese código ya existe. Escribe otro.' : 'No se pudo crear'); }
+      m.remove(); if (TAB === 'students') students();
+      modal(`<div class="center"><div style="font-size:44px">🧪</div><h2>Estudiante de prueba listo</h2><p>${esc(r.row.first)} ${esc(r.row.last)} · ${esc(AGEN(r.row.birth))}</p><div class="ad-code">${esc(r.row.code)}</div>
+        <p class="muted">Entra a la plataforma con este código (mejor en una ventana de incógnito para no cerrar tu sesión de administración).</p>
+        <a class="btn k" href="${BASE}?ingresar=1" target="_blank" rel="noopener">Abrir la plataforma</a></div>`);
+    };
+  }
+  const AGEN = (b) => { if (!/^\d{4}-\d{2}-\d{2}/.test(b || '')) return ''; const t = new Date(); let a = t.getFullYear() - +b.slice(0, 4); if (t.getMonth() + 1 < +b.slice(5, 7) || (t.getMonth() + 1 === +b.slice(5, 7) && t.getDate() < +b.slice(8, 10))) a--; return (a < 12 ? 'Kids' : a < 18 ? 'Teens' : 'Adulto') + ' · ' + a + ' años'; };
   // sin emojis: WhatsApp Web los muestra como signos negros (�) cuando llegan por enlace
   const gFirst = (s) => String(s.guardian || '').trim().split(/\s+/)[0]; // 👨‍👩‍👧 estudiante menor: el WhatsApp es del papá o la mamá
   const POLICY = '\n\n*Importante:* las clases individuales no son acumulables. Resérvalas durante el periodo mensual; las que no se usen antes del vencimiento se vencen y no se recuperan.\n\n*POLÍTICA DE RESERVAS Y CANCELACIONES*\nLas clases se reservan solo en la plataforma, desde el día siguiente y hasta con 5 días de anticipación. Cancelación sin penalización mínimo 12 horas antes. Cancelación tardía o inasistencia: la clase se descuenta del plan y no será repuesta.';

@@ -539,11 +539,15 @@
   function speakCard(body, it, { allowSkip = true } = {}) {
     return new Promise(res => {
       if (it.img) body.appendChild(h(`<div class="mainph" style="max-width:300px">${photo(it.img)}</div>`));
-      const tgt = h(`<div class="target">${M.words(it.en).length ? esc(dispTok(it.en).join(' ')) : ''}</div>`); body.appendChild(tgt);
+      const tgt = h(`<div class="target">${M.words(it.en).length ? esc(dispTok(it.en).join(' ')) : ''}</div>`);
+      const useVC = !!(window.MRVC && M.canSR);
+      if (useVC) { tgt.classList.add('vc-tgt'); body.appendChild(MRVC.card({ label: 'ESCUCHA Y REPITE · TOCA EL MICRÓFONO', sayEl: tgt, es: it.es, au: it.au, cheer: 'Escucha el modelo y repítelo.', target: null })); }
+      else { body.appendChild(tgt);
       if (it.es) body.appendChild(h(`<p class="center muted" style="margin:-4px 0 10px">${esc(it.es)}</p>`));
-      const ctr = h(`<div class="row" style="justify-content:center;margin-bottom:6px"></div>`); ctr.appendChild(playBtn(it.au, false)); body.appendChild(ctr);
+      const ctr = h(`<div class="row" style="justify-content:center;margin-bottom:6px"></div>`); ctr.appendChild(playBtn(it.au, false)); body.appendChild(ctr); }
       const mic = h(`<button class="mic" aria-label="Hablar">🎤</button>`); body.appendChild(mic);
-      const st = h(`<p class="center" style="font-weight:700;margin:4px 0">${M.canSR ? 'Toca el micrófono y di la frase' : 'Tu navegador no reconoce voz: graba tu voz y compárala 👇'}</p>`); body.appendChild(st);
+      if (useVC) { const vcm = body.querySelector('.vc .vc-mic'); mic.classList.add('vc-orig'); vcm.onclick = (e) => { e.stopPropagation(); mic.click(); }; }
+      const st = h(`<p class="center" style="font-weight:700;margin:4px 0">${useVC ? '' : M.canSR ? 'Toca el micrófono y di la frase' : 'Tu navegador no reconoce voz: graba tu voz y compárala 👇'}</p>`); body.appendChild(st);
       const out = h(`<div></div>`); body.appendChild(out);
       const recRow = h(`<div class="row" style="justify-content:center;margin-top:10px"><button class="btn w sm" id="rec">🎙️ Grabar mi voz y comprobar</button></div>`); if (!M.canSR) body.appendChild(recRow); // solo si el navegador no reconoce voz
       const bar = h(`<div class="actionbar">${allowSkip ? '<button class="btn w" id="skip">Saltar</button>' : ''}<button class="btn k lg hidden" id="nx">Continuar →</button></div>`); body.appendChild(bar);

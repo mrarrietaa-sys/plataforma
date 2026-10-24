@@ -245,6 +245,7 @@
       ${modelBox(it)}<div class="center"><button class="mic" id="mc">🎤</button><p class="fx-st" id="st">Toca el micrófono, habla y toca otra vez para detener.</p></div><div id="vr"></div>`;
     $('#tl', body).onclick = () => M.play(it.au); wireModel(body, it);
     const mc = $('#mc', body), st = $('#st', body), vr = $('#vr', body);
+    if (window.MRVC) { mc.parentNode.insertBefore(MRVC.card({ target: mc, label: 'TOCA PARA GRABAR · TOCA OTRA VEZ PARA TERMINAR', mascot: false }), mc); }
     const result = () => {
       vr.innerHTML = `<div class="vres ${a.correct === null ? 'self' : a.correct ? 'ok' : 'bad'}"><div class="vres-t">${a.neutral ? '✔ Grabación guardada (tu navegador no puede evaluar la voz).' : a.correct ? '✅ ¡Muy bien! Respondiste correctamente.' : '❌ Todavía no. ' + (it.special === 'spellName' ? 'Deletrea tu nombre letra por letra.' : `Responde con al menos ${it.minWords} palabras e incluye lo que pide la tarea.`)}</div>
         ${a.value ? `<small class="muted">Te escuché: “${esc(a.value)}”</small>` : ''}<div class="row vres-b">${a.url ? '<button class="btn w sm" id="me">▶ Mi voz</button>' : ''}<button class="btn ${a.correct ? 'w' : 'k'} sm" id="ag">🔁 Grabar de nuevo</button></div></div>`;
@@ -260,11 +261,12 @@
       stream = await navigator.mediaDevices.getUserMedia({ audio: true }); mr = new MediaRecorder(stream); mr.ondataavailable = e => e.data.size && chunks.push(e.data); mr.start(); }
       catch (e) { if (!SR) { M.toast('Permite el micrófono 🎤'); return; } }
       if (SR) { try { sr = (window.M1 && M1.srSession) ? M1.srSession(t => { transcript = ' ' + t; }, () => { srOk = false; }) : null; if (!sr) srOk = false; /* motor de voz robusto */ } catch (e) { srOk = false; } }
+      const W = window.MRAWAVE, ownW = !!W; if (W) { W.on(); if (stream) W.stream(stream); } let wOff = () => { if (ownW && W) { W.off(); wOff = () => { }; } };
       mc.classList.add('rec'); st.textContent = '🔴 Grabando… habla ahora. Toca 🎤 para detener.'; M.stop();
       const auto = setTimeout(() => rec && rec.stop(), 40000);
       rec = {
-        cancel() { cancelled = true; clearTimeout(auto); try { sr && sr.abort(); } catch (e) { } try { mr && mr.state !== 'inactive' && mr.stop(); } catch (e) { } stream && stream.getTracks().forEach(t => t.stop()); },
-        async stop() { clearTimeout(auto); rec = null; mc.classList.remove('rec'); st.textContent = '⏳ Procesando…';
+        cancel() { cancelled = true; clearTimeout(auto); wOff(); try { sr && sr.abort(); } catch (e) { } try { mr && mr.state !== 'inactive' && mr.stop(); } catch (e) { } stream && stream.getTracks().forEach(t => t.stop()); },
+        async stop() { clearTimeout(auto); rec = null; wOff(); mc.classList.remove('rec'); st.textContent = '⏳ Procesando…';
           const pRec = new Promise(r => { if (!mr || mr.state === 'inactive') return r(); mr.onstop = r; mr.stop(); });
           const pSr = new Promise(r => { if (!sr) return r(); sr.onend = r; try { sr.stop(); } catch (e) { r(); } setTimeout(r, 3500); });
           await Promise.all([pRec, pSr]); stream && stream.getTracks().forEach(t => t.stop()); if (cancelled) return;

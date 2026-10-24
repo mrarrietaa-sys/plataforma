@@ -676,14 +676,16 @@
             body.appendChild(top); $('.vn-pl', top).onclick = () => { sfx('tap'); play(q.au); };
             const t0 = Date.now(), tEl = $('.vn-t', top), iv = setInterval(() => { if (!document.body.contains(tEl)) return clearInterval(iv); tEl.textContent = fmt(Math.floor((Date.now() - t0) / 1000)); }, 500);
             vnDone = () => { clearInterval(iv); const s = Math.max(1, Math.round((Date.now() - t0) / 1000)), old = bests[key], rec = !old || s < old; if (rec) { bests[key] = s; try { localStorage.setItem(bk, JSON.stringify(bests)); } catch (e) { } } return ` · Tu tiempo: <b>${fmt(s)}</b>${rec && old ? ' · ¡Nuevo récord personal!' : ''}`; };
+          } else if (window.MRVC) {
+          if (q.ex) body.appendChild(h(`<div class="warm-es"><div class="ex">💡 Puedes responder: <b>${esc(q.ex)}</b></div></div>`));
           } else {
           const top = h(`<div class="row" style="justify-content:center;align-items:center;gap:16px;margin:6px 0 10px">${M.mascot('mascot', 'welcome')}<div class="bubble" style="font-size:19px">${esc(q.q)}</div></div>`); body.appendChild(top);
           if (q.es) body.appendChild(h(`<p class="center tr-es">${esc(q.es)}</p>`));
           if (q.es) body.appendChild(h(`<div class="warm-es">${q.ex ? `<div class="ex">💡 Puedes responder: <b>${esc(q.ex)}</b></div>` : ''}</div>`));
           const pr = h(`<div class="center"></div>`); pr.appendChild(A.playBtn(q.au)); body.appendChild(pr);
           }
-          const mic = h(`<button class="mic">🎤</button>`); body.appendChild(mic);
-          const st = h(`<p class="center" style="font-weight:700">${M.canSR ? (AG === 'teens' ? 'Toca el micrófono y responde con una nota de voz' : 'Toca el micrófono y responde en inglés') : 'Escribe tu respuesta en inglés 👇'}</p>`); body.appendChild(st);
+          const mic = h(`<button class="mic">🎤</button>`); if (window.MRVC && M.canSR) body.appendChild(MRVC.card({ target: mic, label: AG === 'teens' ? 'NOTA DE VOZ · TOCA Y RESPONDE' : 'TOCA EL MICRÓFONO Y RESPONDE', say: q.q, es: q.es, au: q.au, mascot: AG === 'kids', cheer: 'Escucha la pregunta y respóndela.' })); body.appendChild(mic);
+          const st = h(`<p class="center" style="font-weight:700">${window.MRVC && M.canSR ? '' : M.canSR ? (AG === 'teens' ? 'Toca el micrófono y responde con una nota de voz' : 'Toca el micrófono y responde en inglés') : 'Escribe tu respuesta en inglés 👇'}</p>`); body.appendChild(st);
           const alt = h(`<div class="${M.canSR ? 'hidden' : ''}"><input class="inp" placeholder="Escribe tu respuesta en inglés…" style="font-size:18px"></div>`); body.appendChild(alt);
           const bar = h(`<div class="actionbar">${M.canSR ? '<button class="btn w" id="ty">⌨️ Prefiero escribir</button>' : ''}<button class="btn w" id="sk">Saltar</button><button class="btn k lg" id="ok">Enviar ✓</button></div>`); body.appendChild(bar);
           setTimeout(() => play(q.au), 400);
@@ -771,6 +773,7 @@
           <div class="ms-model" hidden><small>Una respuesta modelo</small><div><button type="button" class="ms-play2" aria-label="Escuchar respuesta">🔊</button><b>${esc(x.a)}</b></div></div></div>`);
         body.appendChild(el); const $e = (q) => el.querySelector(q); const mic = $e('.ms-mic');
         const lab = (t) => { mic.innerHTML = `<span class="ms-mi">🎙️</span><span class="ms-mt">${t}</span>`; }; lab('Toca y responde');
+        if (window.MRVC && M.canSR) { el.classList.add('has-vc'); mic.after(MRVC.card({ target: mic, label: 'TOCA EL MICRÓFONO Y RESPONDE', say: x.q, es: x.es, au: x.qau, mascot: false })); }
         $e('.ms-play').onclick = () => { stop(); play(x.qau); }; $e('.ms-play2').onclick = () => { stop(); play(x.aau); };
         $e('.ms-hint').onclick = () => { $e('.ms-model').hidden = false; $e('.ms-hint').hidden = true; stop(); play(x.aau); };
         setTimeout(() => play(x.qau), 400);
@@ -806,6 +809,7 @@
         <div class="vk-screen"><img src="${PIC}.webp?v=2" alt="Mr. Arrieta" draggable="false"><span class="vk-name">Mr. Arrieta</span><div class="vk-self"><span>🙂</span><small>Tú</small></div><div class="vk-fb" hidden></div></div>
         <div class="vk-bot"><div class="vk-timer"><b>${SECS}</b></div>
           <div class="vk-btns"><button type="button" class="vk-b vk-rep" title="Escuchar otra vez" aria-label="Escuchar la pregunta otra vez">${window.MRI ? MRI('send') : '🔊'}</button><button type="button" class="vk-b vk-mic" aria-label="Responder">🎙️</button><button type="button" class="vk-b vk-hint" title="Pista" aria-label="Ver una pista">💡</button></div>
+          <div class="vc vc-strip vc-${M.ageGroup()}"><div class="vc-wv">${Array.from({ length: 26 }, (_, i) => `<i style="height:${[8, 14, 20, 12, 18, 10, 16, 22, 12, 8, 15, 19, 11][i % 13] * .6}px"></i>`).join('')}</div></div>
           <div class="vk-msg">Toca el micrófono y responde</div><div class="vk-ans" hidden></div><button type="button" class="btn k sm vk-next" hidden>Siguiente pregunta →</button></div></div>`);
       body.appendChild(vc);
       const $v = (sel) => vc.querySelector(sel); $v('.vk-rep').innerHTML = '🔊';
@@ -873,6 +877,7 @@
           out.addEventListener('selfok', () => { best = Math.max(best, 80); }, { once: true });
         } catch (err) { b.disabled = false; b.textContent = '🎙️ Grabar y comprobar'; M.toast('Permite el micrófono 🎤'); } };
       $('button', rb).onclick = go;
+      if (window.MRVC) rb.prepend(MRVC.card({ target: $('button', rb), label: 'TOCA EL MICRÓFONO Y DELETREA', say: nm.split('').join(' - '), es: 'Deletrea tu nombre letra por letra', onEx: playModel, mascot: false }));
       void items;
       await A.waitNext(stage, 'Continuar'); return A.result(did && best >= 75 ? 1 : 0, 1, 'speaking');
     },
@@ -896,8 +901,9 @@
             if (o !== tg) { b.classList.add('no'); setTimeout(() => b.classList.remove('no'), 600); sfx('bad'); setTimeout(M.encourage, 200); if (first) missed.push({ en: tg.en, au: tg.au }); first = false; return; }
             if (first) c++; $$('.kt-pic', grid).forEach(x => { x.disabled = true; if (x !== b) x.classList.add('dim'); }); b.classList.add('ok'); sfx('ok'); M.praise();
             fb.classList.remove('hidden');
-            fb.innerHTML = `<p class="kt-en">“${esc(tg.en)}”</p><p class="kt-es">${esc(tg.es || '')}</p>${M.canSR ? `<button class="mic kt-mic" type="button">🎤</button><p class="kt-st">¡Ahora dilo tú!</p>` : ''}<div class="actionbar"><button class="btn k lg" id="kt-n">Continuar →</button></div>`;
+            fb.innerHTML = `${window.MRVC && M.canSR ? '' : `<p class="kt-en">“${esc(tg.en)}”</p><p class="kt-es">${esc(tg.es || '')}</p>`}${M.canSR ? `<button class="mic kt-mic" type="button">🎤</button><p class="kt-st">¡Ahora dilo tú!</p>` : ''}<div class="actionbar"><button class="btn k lg" id="kt-n">Continuar →</button></div>`;
             const mic = $('.kt-mic', fb), stt = $('.kt-st', fb);
+            if (mic && window.MRVC) { mic.before(MRVC.card({ target: mic, label: '¡AHORA DILO TÚ!', say: tg.en, es: tg.es, au: tg.au, mascot: false })); stt.textContent = ''; }
             if (mic) mic.onclick = async () => { stop(); mic.classList.add('rec'); stt.textContent = '¡Te estoy escuchando!'; const r = await M.listen(6000, { quick: true }); mic.classList.remove('rec');
               const sc = r.alts && r.alts.length ? M.speechScore(tg.en, r.alts).score : 0; if (sc >= 60) { sfx('ok'); M.praise(); stt.innerHTML = '¡Muy bien dicho! ⭐'; } else { stt.textContent = r.alts && r.alts.length ? '¡Casi! Escucha y dilo otra vez.' : 'No te escuché. Toca el micrófono otra vez.'; setTimeout(M.encourage, 200); } };
             $('#kt-n', fb).onclick = () => { stop(); res(); };

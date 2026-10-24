@@ -63,7 +63,7 @@
         const mic = h(`<button class="mic">🎤</button>`); const st = h(`<p class="center" style="font-weight:700;margin:4px 0">${M.canSR ? 'Toca el micrófono y dila en inglés' : 'Escribe la palabra en inglés'}</p>`);
         const inp = h(`<div class="${M.canSR ? 'hidden' : ''}" style="max-width:420px;margin:0 auto"><input class="inp" placeholder="Escribe en inglés…" autocomplete="off" autocapitalize="off"></div>`);
         const bar = h(`<div class="actionbar"><button class="btn w" id="sh">💡 Pista</button>${M.canSR ? '<button class="btn w" id="ty">⌨️ Escribir</button>' : ''}<button class="btn k" id="sk">Comprobar ✓</button></div>`);
-        card.append(mic, st, inp); body.appendChild(bar);
+        if (window.MRVC && M.canSR) { card.append(MRVC.card({ target: mic, label: 'TOCA EL MICRÓFONO Y DILA EN INGLÉS', mascot: false }), mic, st, inp); st.textContent = ''; } else card.append(mic, st, inp); body.appendChild(bar);
         let hints = 0;
         const finish = (good, heard) => { mic.disabled = true; $$('button', bar).forEach(b => b.disabled = true); res({ good, heard }); };
         mic.onclick = async () => { stop(); mic.classList.add('rec'); st.textContent = '🎧 Te escucho…'; const r = await M.listen(6000); mic.classList.remove('rec');
@@ -122,6 +122,7 @@
       const bar = h(`<div class="actionbar"><button class="btn w" id="sd">Terminar</button></div>`);
       if (M.canSR) {
         const mic = h(`<div class="center"><button class="mic">🎤</button></div>`); body.insertBefore(mic, st);
+        if (window.MRVC) body.insertBefore(MRVC.card({ target: $('button', mic), label: 'DI UNA PALABRA DE LOS GLOBOS', mascot: false }), mic);
         let tries = 0;
         $('button', mic).onclick = async () => { const bt = $('button', mic); stop(); bt.classList.add('rec'); st.textContent = '🎧 Te escucho… di una palabra de los globos'; const r = await M.listen(5000); bt.classList.remove('rec'); tries++;
           if (!r.alts.length) { st.textContent = 'No te escuché 🙉 Intenta otra vez.'; return; }
