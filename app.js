@@ -589,6 +589,15 @@
     };
   }
 
+  /* ---------- oraciones de una lectura: no corta en a.m. / p.m., Mr. / Mrs. / Dr., iniciales ni números ---------- */
+  function splitSents(t) {
+    t = String(t || ''); const parts = t.match(/[^.!?]+[.!?]+["”]?\s*/g) || [t]; const out = []; let cur = '';
+    const ABR = /(^|[\s"“'(])(a\.m\.|p\.m\.|mr\.|mrs\.|ms\.|dr\.|st\.|jr\.|sr\.|e\.g\.|i\.e\.|etc\.|vs\.|u\.s\.|[a-z]\.)$/i;
+    parts.forEach((p, i) => { cur += p; const last = i === parts.length - 1, nx = last ? '' : parts[i + 1].trimStart(), q = (cur.match(/["“”]/g) || []).length;
+      if (!last && (!/\s$/.test(p) || ABR.test(cur.trimEnd()) || q % 2 === 1 || /^[a-z]/.test(nx))) return; out.push(cur); cur = ''; });
+    if (cur) out.push(cur); const used = out.join(''); if (used.length < t.length) out.push(t.slice(used.length));
+    return out.filter(s => s.trim());
+  }
   /* ---------- Fase 6: lectura por edad (Teens = chat · Kids = cuento en viñetas) ---------- */
   function ageReading(box, r, sents, AG) {
     const txt = $('.txt', box), spans = $$('.s', txt), ph = $('.ph', box);
@@ -706,7 +715,7 @@
       const r = p.reading;
       const AG = M.ageGroup();
       const body = A.head(stage, { lbl: 'Reading', title: AG === 'adult' ? `📖 ${r.title}` : r.title, ins: AG === 'teens' ? 'Lee el chat mientras lo escuchas. Luego responde <b>TRUE</b> o <b>FALSE</b>.' : AG === 'kids' ? 'Escucha el cuento y toca cada viñeta para oírla otra vez. Luego responde <b>YES</b> o <b>NO</b>.' : 'Escucha y lee al mismo tiempo. Luego responde <b>YES</b> o <b>NO</b>.' });
-      const sents = r.text.match(/[^.!?]+[.!?]+["”]?\s*/g) || [r.text];
+      const sents = splitSents(r.text);
       const box = h(`<div class="reading">${photo(r.img)}<div><div class="row" style="margin-bottom:10px"><button class="btn k sm" id="rp">▶ Escuchar lectura</button><button class="btn w sm" id="rv">🎙️ Léela en voz alta <small>(opcional)</small></button></div><div class="txt">${sents.map(s => `<span class="s">${s.split(/(\s+)/).map(w => /\S/.test(w) ? `<i class="rw">${esc(w)}</i>` : w).join('')}</span>`).join('')}</div><div class="rv-res" id="rvr" hidden></div><button class="rd-tr" id="rdtr" type="button" aria-expanded="false"><span>ES</span> Ver traducción al español</button><div class="rd-es" id="rdes" hidden></div></div></div>`);
       body.appendChild(box); if (AG !== 'adult') ageReading(box, r, sents, AG);
       { const tb = $('#rdtr', box), pane = $('#rdes', box);
