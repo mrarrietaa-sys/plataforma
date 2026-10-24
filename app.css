@@ -6192,3 +6192,21 @@ button.lp-pl{font:inherit;text-align:inherit;cursor:pointer;width:100%;appearanc
 .rl-ml{display:grid;gap:8px;max-height:60vh;overflow:auto;margin-top:10px}.rl-ml>div{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:8px 10px;border:1.5px solid var(--bd);border-radius:12px}.rl-ml b{display:block;font-family:var(--fh);color:var(--k)}.rl-ml small{color:var(--mut)}.rl-ml i{font-style:normal;font:800 12.5px var(--fh);color:#16a34a}
 .fm-wks{font-size:11px;color:var(--mut);font-weight:600}
 .tn-row.one{grid-template-columns:1fr!important}
+/* v368 🔤 Kids: mis 3 palabras de la semana */
+.kw{margin-top:12px!important;padding:18px!important;background:#fff!important;border:1.5px solid #f6dfa0!important;box-shadow:0 8px 20px rgba(217,119,6,.08)!important}
+.kw-h{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:14px}.kw-h h3{margin:0;font-size:18px;display:flex;gap:8px;align-items:center;color:var(--k)}.kw-h h3 .mri{width:22px;height:22px;color:#d97706}.kw-h p{margin:3px 0 0;font-size:13px;color:var(--mut)}
+.kw-g{display:inline-flex;gap:6px;align-items:center;background:#fff4dc;border:1px solid #f6dfa0;color:#b45309;font:700 12px var(--fh);border-radius:99px;padding:6px 12px}.kw-g .mri{width:14px;height:14px}
+.kw-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.kw-c{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;border:1.5px solid var(--bd);border-radius:18px;padding:10px 10px 12px;background:#fff}
+.kw-img{width:100%;aspect-ratio:4/3;border-radius:12px;background:#EEF3FB center/cover no-repeat;margin-bottom:8px;display:grid;place-items:center}.kw-img.ic{background:linear-gradient(145deg,#fff4dc,#ffe7a8);color:#d97706}.kw-img.ic .mri{width:42px;height:42px}
+.kw-c b{font:800 17px var(--fh);color:var(--k);line-height:1.2}.kw-c small{font-size:13px;color:var(--mut);margin-top:2px}
+.kw-a{display:flex;gap:8px;margin-top:10px}.kw-b{width:42px;height:42px;border-radius:12px;border:1.5px solid var(--bd);background:#fff;display:grid;place-items:center;color:var(--k);cursor:pointer}.kw-b .mri{width:19px;height:19px}.kw-b.mic{background:var(--y);border-color:var(--y);color:#fff}.kw-b.mic.on{animation:kdPulse 1s ease-in-out infinite}.kw-b.playing{border-color:var(--y);color:var(--y)}
+.kw-sc{min-height:18px;margin-top:6px;font:800 13px var(--fh);color:#16a34a}
+.kw-c.ok{border-color:#86efac;background:#f6fff9}.kw-ok{position:absolute;top:16px;right:16px;width:34px;height:34px;border-radius:50%;background:linear-gradient(145deg,#fbbf24,#d97706);color:#fff;display:grid;place-items:center;box-shadow:0 4px 10px rgba(217,119,6,.35)}.kw-ok .mri{width:18px;height:18px}
+.kw-f{display:flex;align-items:center;gap:12px;margin-top:14px;padding-top:12px;border-top:1px solid var(--bd);font-size:13px;color:var(--mut)}.kw-f b{color:var(--k)}.kw-bar{flex:1;max-width:260px;height:8px;border-radius:99px;background:#e8edf5;overflow:hidden}.kw-bar i{display:block;height:100%;background:linear-gradient(90deg,#fbbf24,#d97706);border-radius:99px}
+.kw-empty .kw-h{margin:0;align-items:center}
+@media(max-width:700px){.kw{padding:14px!important}.kw-h{flex-direction:column;gap:8px}.kw-list{grid-template-columns:1fr;gap:10px}
+  .kw-c{display:grid;grid-template-columns:92px 1fr auto;grid-template-rows:auto auto auto;column-gap:12px;text-align:left;align-items:center;padding:10px}
+  .kw-img{grid-row:1/4;margin:0;width:92px;aspect-ratio:1}.kw-c b{grid-column:2;font-size:16px}.kw-c small{grid-column:2}.kw-sc{grid-column:2;margin:2px 0 0;text-align:left}
+  .kw-a{grid-column:3;grid-row:1/4;flex-direction:column;margin:0}.kw-ok{top:8px;left:72px;right:auto;width:28px;height:28px}.kw-f{flex-wrap:wrap}.kw-bar{max-width:none;flex-basis:100%}}
+@media(min-width:701px){.kw-img{aspect-ratio:16/10;max-height:150px}}

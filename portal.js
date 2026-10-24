@@ -683,7 +683,7 @@
     }
     const kids = !staff && window.MRKIDS && MRKIDS.on(); document.body.classList.toggle('ag-kids', !!kids); // 🎈 perfil Kids (9 a 11 años)
     let kidsX = '';
-    if (kids && a && a.ready && !P.isExpired()) { main = MRKIDS.hero(p, a, P.look().nick || p.first || '') + MRKIDS.chest(); kidsX = MRKIDS.map(a) + MRKIDS.medals(a); }
+    if (kids && a && a.ready && !P.isExpired()) { main = MRKIDS.hero(p, a, P.look().nick || p.first || '') + MRKIDS.words(); kidsX = MRKIDS.map(a) + MRKIDS.medals(a); }
     else if (kids && newbie) main = main.replace('mra-x-plane-red.webp', 'mra-x-balloon1.webp');
     const teens = !staff && !kids && window.MRTEENS && MRTEENS.on(); document.body.classList.toggle('ag-teens', !!teens); // 🚀 perfil Teens (12 a 17 años)
     if (teens && a && a.ready && !P.isExpired()) { main = MRTEENS.hero(p, a, P.look().nick || p.first || '') + `<div class="tn-row one">${MRTEENS.missions()}</div>` + (MRTEENS.realLife ? MRTEENS.realLife() : ''); }
