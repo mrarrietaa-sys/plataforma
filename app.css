@@ -6071,3 +6071,18 @@ button.lp-pl{font:inherit;text-align:inherit;cursor:pointer;width:100%;appearanc
   .tn-hb .btn.lg{padding:11px 16px;font-size:15px}
   .tn-row{grid-template-columns:1fr}.tn-chal{flex-wrap:wrap}.tn-chal b{font-size:15.5px}.tn-cb{width:100%}
 }
+/* v360 globo más grande en «Primer paso» (Kids) · Mr. Arrieta siempre visible al vestirlo */
+@media(max-width:980px){.ag-kids .wrap.db .pt-step .pt-step-plane{height:118px!important;top:6px!important;right:8px!important}.ag-kids .wrap.db .pt-step h2{margin-right:92px!important}.ag-kids .wrap.db .pt-step .lbl{margin-right:0}
+  .ag-teens .wrap.db .pt-step .pt-step-plane{height:84px!important}}
+@media(min-width:981px){.ag-kids .pt-step-plane{height:190px!important}}
+.me-av{align-items:start!important}.me-wrap,.me-wrap #me-body,.me-av{overflow:visible!important}
+@media(min-width:721px){.me-prev{position:sticky!important;top:90px!important;z-index:3}}
+@media(max-width:720px){
+  .me-prev{position:sticky!important;top:66px!important;z-index:20;grid-template-columns:1fr 1fr;gap:8px!important;padding:10px!important;box-shadow:0 10px 24px rgba(11,42,91,.14)!important}
+  .me-prev .me-stage{grid-column:1/-1;height:230px!important}
+  .me-prev #rnd,.me-prev #sv{margin:0!important;padding:10px 6px!important;font-size:13px!important;white-space:nowrap}
+  .me-prev .me-chk{grid-column:1/-1;font-size:12px;margin:0}
+}
+@media(max-width:720px){.me-av{grid-template-columns:minmax(0,1fr)!important}.me-prev{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;min-width:0;max-width:100%;box-sizing:border-box}.me-prev .me-stage{height:180px!important}
+  .me-prev #rnd,.me-prev #sv{min-width:0;overflow:hidden;text-overflow:ellipsis;font-size:12.5px!important}}
+@media(max-width:720px){.me-lg{display:none}}

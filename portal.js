@@ -7,7 +7,8 @@
   const { $, $$, h, esc, sfx } = M;
   const app = $('#app');
   const WA = (t) => `https://wa.me/${C.WHATSAPP}?text=${encodeURIComponent((window.MRNE || String)(t))}`;
-  const PAGE = (document.body && document.body.dataset.page) || 'home'; // 🏠 entrada · 'adultos' · 'ninos'
+  const PAGE = (document.body && document.body.dataset.page) || 'home';
+  window.__goIn = /[?&]ingresar=1/.test(location.search) && !(() => { try { return performance.getEntriesByType('navigation')[0].type !== 'navigate'; } catch (e) { return false; } })(); // abrir «Ingresar» solo si llegó por el botón (no al recargar ni al volver) // 🏠 entrada · 'adultos' · 'ninos'
   const U = (id, w = 800, hh = 450) => `https://images.unsplash.com/${id}?w=${w}&h=${hh}&fit=crop&crop=entropy&q=80&auto=format`;
 
   function topbar() {
@@ -170,7 +171,8 @@
     const lw = document.querySelector('.ld-login'); // 📱 celular: el ingreso se abre como ventana (el cliente no baja)
     const sheet = (on) => { if (innerWidth >= 900 || !lw) return; lw.classList.toggle('sheet-on', on); document.body.classList.toggle('sheet-open', on); if (on) { const inp = lw.querySelector('input'); setTimeout(() => inp && inp.focus(), 250); } };
     if (lw && !lw.querySelector('.lp-shx')) { (lw.querySelector('.pt-login') || lw).insertAdjacentHTML('afterbegin', '<button type="button" class="lp-shx" aria-label="Cerrar">✕</button>'); lw.querySelector('.lp-shx').onclick = () => sheet(false); lw.addEventListener('click', e => { if (e.target === lw) sheet(false); }); }
-    if (/[?&]ingresar=1/.test(location.search)) setTimeout(() => { if (innerWidth < 900) sheet(true); else { const inp = document.querySelector('.ld-login input'); if (inp) inp.focus(); } }, 600);
+    if (/[?&]ingresar=1/.test(location.search)) { try { history.replaceState(null, '', location.pathname + location.hash); } catch (e) { } } // solo se abre por el clic en «Ingresar»; al volver o recargar se ve la página de entrada
+    if (window.__goIn) setTimeout(() => { if (innerWidth < 900) sheet(true); else { const inp = document.querySelector('.ld-login input'); if (inp) inp.focus(); } }, 600);
     document.addEventListener('click', e => { if (e.target.closest('[data-goin]') && innerWidth < 900) { e.preventDefault(); e.stopImmediatePropagation(); sheet(true); } }, true);
     const ic = (d) => LI(d), wa = (C.WHATSAPP || '573017810841');
     const d = document.createElement('nav'); d.className = 'lp-dock home'; d.setAttribute('aria-label', 'Menú');
@@ -932,8 +934,8 @@
         const sw = (k, list) => list.map(([hx, es, col]) => `<button class="me-sw${av[k] === hx ? ' on' : ''}" data-k="${k}" data-v="${hx}" title="${es}"><i style="background:${col}"></i><small>${EN[hx] || es}</small></button>`).join('');
         body.innerHTML = `<div class="me-av">
           <div class="me-prev card"><div class="me-stage" id="stage"><img id="pv" alt="Mi Mr. Arrieta"><b class="me-stk" id="stk"></b></div>
-            <button class="btn w block" id="rnd">🎲 Surprise me! · Sorpréndeme</button>
-            <button class="btn k block lg" id="sv">✅ Guardar mi Mr. Arrieta</button>
+            <button class="btn w block" id="rnd">🎲 Surprise me!<span class="me-lg"> · Sorpréndeme</span></button>
+            <button class="btn k block lg" id="sv">✅ Guardar<span class="me-lg"> mi Mr. Arrieta</span></button>
             <label class="me-chk"><input type="checkbox" id="guide" ${L.guide ? 'checked' : ''}><span>Que <b>mi Mr. Arrieta</b> me acompañe en todas mis clases</span></label></div>
           <div class="me-opts">
             ${acc('pose', '👤 Pose · Postura', `<div class="me-poses" data-noguide>${MRAV.POSES.map(x => `<button class="me-pose${av.pose === x ? ' on' : ''}" data-k="pose" data-v="${x}"><img src="mra-${x}.webp" alt="" loading="lazy"><small>${POSE_EN[x]}</small></button>`).join('')}</div>`, true)}
