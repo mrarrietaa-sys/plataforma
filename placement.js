@@ -346,15 +346,15 @@
   function results() {
     const r = last_; const m = P.mod(r.ms.rec); const left = maxAttempts() - ST.attempts; const trial = P.isTrial();
     const waMsg = encodeURIComponent((window.MRNE || String)(`Hola, soy ${r.name}. Acabo de hacer el Placement Test en mrarrieta.com y me ubicó en el ${m.name} (${m.es}). Me interesa: ${COURSE[r.course] || 'un curso'}. Quiero más información 😊`));
-    shell(`${top()}<div class="card center fx-res"><div class="row" style="justify-content:center;align-items:center;gap:16px">${M.mascot('mascot bounce', 'celebrate')}
-      <div><span class="lbl">🧭 Tu ruta de aprendizaje empieza en</span><div class="pt-level">${esc(m.name.toUpperCase())}</div><div class="fx-band alto">${esc(m.es)} · ${esc(m.level)}</div></div></div>
+    shell(`${top()}<div class="card center fx-res"><div class="px-head">${M.mascot('mascot bounce', 'celebrate')}
+      <div class="px-tx"><span class="px-eye">${window.MRI ? MRI('compass') : ''} Tu ruta de aprendizaje empieza en</span><div class="px-mod">${esc(m.name)}</div><div class="px-band">${esc(m.es)} · ${esc(m.level)}</div></div></div>
       <p class="muted">${esc(r.name)} — ${esc(r.attemptLabel)}</p>
       <div class="pt-mods">${[1, 2, 3, 4].map(k => { const mm = P.mod(k), x = r.ms.mods[k]; return `<div class="${k === r.ms.rec ? 'rec' : x.ok ? 'ok' : ''}"><b>${esc(mm.name)}</b><small>${esc(mm.es)}</small><span>${Math.round(x.pct * 100)}%</span><em>${k === r.ms.rec ? '📍 Empiezas aquí' : x.ok ? '✓ Dominado' : '—'}</em></div>`; }).join('')}</div>
       <div class="fx-bars">${Object.keys(r.per).map(k => `<div><span>${EX.sections.find(s => s.key === k).icon} ${NAMES[k]}</span><div class="bar"><i style="width:${r.per[k].score * 10}%"></i></div><b>${r.per[k].score.toFixed(1)}</b></div>`).join('')}</div>
       <div class="fx-comment">${r.timedOut ? `<b>⏱ Se acabó el tiempo (${CFG.TIME_MIN} minutos).</b> Tu prueba se envió automáticamente con las respuestas que tenías.<br><br>` : ''}<b>Comentario:</b> ${esc(comment(r.per, r.ms))}</div>
       ${(() => { const asg = P.assigned(); return asg && asg.n > m.n ? `<div class="pt-trial">🎓 <b>Ojo:</b> en este dispositivo ya aprobaste el examen final del ${esc(P.mod(asg.n - 1).name)}, por eso hoy tu ruta está en el <b>${esc(asg.name)} (${esc(asg.es)})</b>.</div>` : ''; })()}
       ${trial ? `<div class="pt-trial">🟢 <b>Acceso gratuito:</b> ya puedes explorar los <b>2 primeros temas</b> del ${esc((P.trialMod() || m).name)}.</div>` : ''}
-      <div class="fx-notify">${cloud() ? '<div id="n0" class="pending">⏳ Avisando a tu profe y a administración…</div>' : ''}<div id="n1" class="pending">⏳ Guardando resultados…</div><div id="n2" class="pending">⏳ Enviando correo con tu resultado…</div><div id="n3" class="pending">⏳ Enviando copia a administración…</div></div>
+      <div class="fx-notify">${cloud() ? '<div id="n0" class="pending">⏳ Enviando tu resultado a administración…</div>' : ''}<div id="n1" class="pending">⏳ Guardando resultados…</div><div id="n2" class="pending">⏳ Enviando correo con tu resultado…</div><div id="n3" class="pending">⏳ Enviando copia a administración…</div></div>
       <div class="row" style="justify-content:center;margin-top:14px"><button class="btn k lg" id="prof">${firstUrl() ? "▶ Empezar mi primera clase" : "👤 Ir a mi perfil y empezar →"}</button>
         <button class="btn w" id="pdf">📄 Descargar reporte PDF</button>
         <a class="btn" style="text-decoration:none;background:#25D366;color:#fff" target="_blank" rel="noopener" href="https://wa.me/${C.WHATSAPP}?text=${waMsg}">💬 ${trial ? 'Quiero inscribirme' : 'Escribir a mrarrieta.com'}</a>
@@ -386,7 +386,7 @@
     // ☁️ plataforma: el profe y administración reciben el resultado como notificación
     if (cloud()) {
       MRAC.examResult({ exam: 'placement', attempt: r.attemptLabel, listening: r.per.listening.score.toFixed(1), reading: r.per.reading.score.toFixed(1), writing: r.per.writing.score.toFixed(1), speaking: r.per.speaking.score.toFixed(1), final: r.fin.toFixed(1), passed: true, module: r.ms.rec, level: m.name + ' · ' + m.es })
-        .then(x => setN('n0', !!(x && x.ok), x && x.ok ? '✓ Tu profe y administración recibieron tu resultado en la plataforma' : '✗ No se pudo avisar en la plataforma (revisa tu conexión).'))
+        .then(x => setN('n0', !!(x && x.ok), x && x.ok ? '✓ Administración recibió tu resultado.' : '✗ No se pudo avisar en la plataforma (revisa tu conexión).'))
         .catch(() => setN('n0', false, '✗ No se pudo avisar en la plataforma (sin conexión).'));
     }
     const params = { subject: `📝 Prueba de clasificación${r.attempt > 1 ? (r.attempt > CFG.ATTEMPTS ? ' – intento adicional' : ' – intento ' + r.attempt) : ''} – ${r.name} – Nivel recomendado: ${m.name} (${m.es})`,
@@ -403,7 +403,7 @@
     const ok = await loadScript('https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js', () => !!window.emailjs);
     if (ok) { try { emailjs.init({ publicKey: CFG.EMAILJS_PUBLIC_KEY }); } catch (e) { } }
     const send = async (to) => { if (!ok) return false; try { await (window.MRMAILX ? emailjs.send(CFG.EMAILJS_SERVICE_ID, window.MRMAIL_TEMPLATE, Object.assign({ to_email: to }, window.MRMAILX(params))) : emailjs.send(CFG.EMAILJS_SERVICE_ID, CFG.EMAILJS_TEMPLATE_ID, Object.assign({ to_email: to }, params))); return true; } catch (e) { return false; } };
-    const s1 = await send(r.temail); setN('n2', s1, s1 ? `✓ Correo enviado a ${r.temail}.` : '✗ No se pudo enviar el correo. Usa “Copiar resumen”.');
+    const s1 = await send(r.temail); setN('n2', s1, s1 ? `✓ Te enviamos tu resultado al correo con el que te inscribiste.` : '✗ No se pudo enviar el correo. Usa “Copiar resumen”.');
     const s2 = await send(CFG.ADMIN_EMAIL); setN('n3', s2, s2 ? '✓ Copia enviada a administración.' : '✗ No se pudo enviar la copia a administración.');
   }
   function summaryText(r) { const m = P.mod(r.ms.rec); return `📋 Placement Test · mrarrieta.com\n👤 ${r.name}\n📅 ${r.date.toLocaleString()}\n🔁 ${r.attemptLabel}\n⭐ Módulo recomendado: ${m.name} — ${m.es}\n${[1, 2, 3, 4].map(k => `   ${P.mod(k).name} (${P.mod(k).es}): ${Math.round(r.ms.mods[k].pct * 100)}%`).join('\n')}\n🎧 Listening: ${r.per.listening.score.toFixed(1)}\n📖 Reading: ${r.per.reading.score.toFixed(1)}\n✍️ Writing: ${r.per.writing.score.toFixed(1)}\n🎤 Speaking: ${r.per.speaking.score.toFixed(1)}\n💬 ${comment(r.per, r.ms)}`; }

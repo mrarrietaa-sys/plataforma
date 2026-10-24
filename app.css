@@ -6013,3 +6013,12 @@ button.lp-pl{font:inherit;text-align:inherit;cursor:pointer;width:100%;appearanc
 @media(max-width:899px){.fm-hart{top:2px!important;right:6px!important}.fm-hart img{height:84px!important}.fm-road{display:none}.fm-hst{margin-top:16px!important}.fm-htx h1{margin-top:2px!important}}
 .kd-stn.fin small{white-space:nowrap}
 @media(max-width:899px){.fm-hart{top:16px!important;right:8px!important}.fm-hart img{height:76px!important}}
+/* v358 placement: encabezado del resultado más limpio · Kids: chips sin tocar el globo */
+.px-head{display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:8px}
+.px-head .mascot{height:150px!important;width:auto}
+.px-tx{display:flex;flex-direction:column;align-items:center;gap:6px}
+.px-eye{display:inline-flex;align-items:center;gap:6px;font:700 12px var(--fh);letter-spacing:.14em;text-transform:uppercase;color:var(--y)}.px-eye .mri{width:16px;height:16px}
+.px-mod{font:900 clamp(34px,7vw,46px)/1 var(--fh);color:var(--k);letter-spacing:-.5px}
+.px-band{display:inline-block;background:#EEF3FB;color:var(--k);font:700 14px var(--fh);border-radius:99px;padding:6px 14px;border:1px solid #d7e2f3}
+#n1,#n3{display:none!important}
+@media(max-width:700px){.kd-chips{padding-right:112px}}

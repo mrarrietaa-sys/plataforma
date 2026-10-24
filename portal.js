@@ -16,7 +16,7 @@
       ${p ? `<span class="pill hide-s">${window.MRPLANS ? MRPLANS.badge() : p.type === 'staff' ? '👨‍🏫 Profe' : p.type === 'trial' ? '🟢 Acceso gratis' : '🎓 Estudiante'}</span>${p.first ? `<button class="tb-avbtn" id="me-b" title="Personaliza tu perfil">${P.avHTML('tb-av')}</button>` : ''}<a class="iconbtn" href="juegos.html" title="Zona de juegos">🎮</a><button class="iconbtn" id="snd-b" title="Activar / quitar la voz de bienvenida">${voiceOn() ? '🔊' : '🔇'}</button><button class="iconbtn" id="out" title="Salir" aria-label="Salir"><svg class="pw-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 3v8"/><path d="M6.3 6.8a8 8 0 1 0 11.4 0"/></svg></button>` : ''}`;
     $('#go-home').onclick = () => route('home');
     if (!P.get() && $('#tb-back')) $('#tb-back').remove(); // en la pantalla de ingreso no hay a dónde regresar
-    if ($('#tb-back')) $('#tb-back').onclick = () => { if (curRoute && curRoute !== 'home') return route('home'); const r = document.referrer; if (r && r.indexOf(location.origin) === 0 && !/\/(index\.html)?(\?|#|$)/.test(r.replace(location.origin, '').replace(/^\/[^/]*\//, '/')) && history.length > 1) history.back(); else { route('home'); window.scrollTo(0, 0); } };
+    if ($('#tb-back')) $('#tb-back').onclick = () => { if (curRoute && curRoute !== 'home') return route('home'); if ((() => { try { return sessionStorage.getItem('mra_from_fam') === '1'; } catch (e) { return false; } })()) { location.href = 'familia.html'; return; } /* 👨‍👩‍👧 el papá entró desde su portal: regresa a su portal */ const r = document.referrer; if (r && r.indexOf(location.origin) === 0 && !/\/(index\.html)?(\?|#|$)/.test(r.replace(location.origin, '').replace(/^\/[^/]*\//, '/')) && history.length > 1) history.back(); else { route('home'); window.scrollTo(0, 0); } };
     if ($('#me-b')) $('#me-b').onclick = () => route('me');
     if ($('#ann-b')) $('#ann-b').onclick = () => { MRANN.show(); topbar(); };
     if (window.MRANN) MRANN.sync();
@@ -571,7 +571,7 @@
     landing();
     if (PAGE === 'home') { welcomeFx(); if (!window.__wfxPS) { window.__wfxPS = 1; addEventListener('pageshow', (e) => { if (e.persisted && !P.get() && $('.ld-hero')) { const el = $('.ld-hero-mra') || $('.ld-login .pt-rkt'); if (el) el._fly = 0; welcomeFx(); } }); } } // ✨ cada vez que vuelve a la entrada: estrellas + vuelo // ✨ lluvia de estrellas de bienvenida y después el vuelo de Mr. Arrieta
     const i = $('#cd'); setTimeout(() => { if (window.innerWidth > 900) i.focus(); }, 200);
-    if (PAGE === 'home') { let ac = ''; try { ac = sessionStorage.getItem('mra_autocode') || ''; sessionStorage.removeItem('mra_autocode'); } catch (e) { } if (ac) setTimeout(() => { i.value = ac; $('#ok').click(); }, 400); }
+    if (PAGE === 'home') { let ac = ''; try { ac = sessionStorage.getItem('mra_autocode') || ''; sessionStorage.removeItem('mra_autocode'); } catch (e) { } if (ac) { window.__famIn = (() => { try { return sessionStorage.getItem('mra_from_fam') === '1'; } catch (e) { return false; } })(); setTimeout(() => { i.value = ac; $('#ok').click(); }, 400); } }
     const bad = (msg) => { i.classList.add('wrong'); sfx('bad'); setTimeout(() => i.classList.remove('wrong'), 500); M.toast(msg || 'Código no válido 😕'); };
     const go = async () => { try { if (window.speechSynthesis) { const w = new SpeechSynthesisUtterance(' '); w.volume = 0; speechSynthesis.speak(w); } } catch (e) { } // desbloquea la voz en iPhone
       const v = i.value.trim(); if (!v) return bad('Escribe tu código 🙂');
@@ -583,7 +583,7 @@
       if (window.MRAC && MRAC.on && !codeType(v)) {
         const b = $('#ok'); b.disabled = true; b.textContent = 'Entrando…';
         const r = await MRAC.login(v); b.disabled = false; b.textContent = 'Entrar →';
-        if (r.ok) { try { localStorage.setItem('mra_last_role', JSON.stringify({ role: 'student' })); } catch (e) { } sfx('win'); M.confetti(1500); try { sessionStorage.removeItem('mra_back'); } catch (e) { } greetVoice(); return route('home'); }
+        if (r.ok) { try { if (!window.__famIn) sessionStorage.removeItem('mra_from_fam'); localStorage.setItem('mra_last_role', JSON.stringify({ role: 'student' })); } catch (e) { } sfx('win'); M.confetti(1500); try { sessionStorage.removeItem('mra_back'); } catch (e) { } greetVoice(); return route('home'); }
         if (r.err === 'inactive') return bad('Tu acceso está inactivo. Escríbenos por WhatsApp 🙏');
         if (r.err === 'moved') return bad('Este código gratuito ya no funciona: al activar tu plan te enviamos un código nuevo a tu correo. Entra con ese.');
         if (r.err === 'trial_over') { b.disabled = false; return trialOver(v); }

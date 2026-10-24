@@ -13,6 +13,27 @@
     e: { mi: 'grad', col: 'g', name: 'Estudios y exámenes', short: 'Estudios', desc: 'Universidad, becas y certificaciones', meta: 'lograr tu meta académica', ready: 'listo para tu meta académica',
       q: ['What would you like to study? Why?', 'Are you preparing for an English exam?', 'How do you usually study?', 'Describe a chart or a graph you saw recently.', 'What is your opinion about online learning?', 'Where would you like to study abroad?'] }
   };
+  // 👧 Kids (9–11) y Teens (12–17): objetivos propios de su edad
+  Object.assign(G, {
+    kc: { mi: 'grad', col: 'g', name: 'Ir bien en el colegio', short: 'Colegio', desc: 'Tareas, exámenes y la clase de inglés', meta: 'brillar en tu clase de inglés', ready: 'listo para tu clase de inglés', age: 'kids',
+      q: ['What is your favorite subject at school?', 'Who is your best friend at school?', 'What do you have in your backpack?', 'What time do you go to school?', 'What do you do at recess?', 'Who is your favorite teacher? Why?'] },
+    kj: { mi: 'pad', col: 'b', name: 'Jugar y ver videos', short: 'Juegos y videos', desc: 'Videojuegos, YouTube y caricaturas en inglés', meta: 'entender tus juegos y videos', ready: 'listo para tus juegos y videos', age: 'kids',
+      q: ['What is your favorite video game?', 'What cartoons do you like?', 'Who is your favorite YouTuber?', 'Describe your favorite character.', 'Do you play with friends or alone?', 'What is your favorite movie?'] },
+    kv: { mi: 'plane', col: 'r', name: 'Viajar en familia', short: 'Viajar', desc: 'Aeropuerto, hotel y hacer nuevos amigos', meta: 'disfrutar tu viaje en inglés', ready: 'listo para tu viaje', age: 'kids',
+      q: ['Where would you like to go on vacation?', 'Who do you travel with?', 'What do you pack in your suitcase?', 'Do you like the beach or the mountains?', 'What animals would you like to see?', 'How do you say hello to a new friend?'] },
+    km: { mi: 'music', col: 'y', name: 'Música y canciones', short: 'Música', desc: 'Cantar y entender tus canciones favoritas', meta: 'cantar tus canciones en inglés', ready: 'listo para cantar en inglés', age: 'kids',
+      q: ['What is your favorite song?', 'Who is your favorite singer?', 'Do you play an instrument?', 'Do you like to dance?', 'What music do you listen to with your family?', 'Can you sing a song in English?'] },
+    tc: { mi: 'grad', col: 'g', name: 'Colegio y exámenes', short: 'Colegio', desc: 'Mejores notas, ICFES y certificaciones', meta: 'subir tus notas y aprobar tus exámenes', ready: 'listo para tus exámenes', age: 'teens',
+      q: ['What subject is the hardest for you?', 'How do you prepare for an exam?', 'What do you want to study after school?', 'Do you prefer studying alone or in groups?', 'What is your opinion about homework?', 'What would you change about your school?'] },
+    ts: { mi: 'tv', col: 'r', name: 'Series, música y redes', short: 'Series y redes', desc: 'Entender sin subtítulos y crear contenido', meta: 'entender series y música sin subtítulos', ready: 'listo para ver todo sin subtítulos', age: 'teens',
+      q: ['What series are you watching now?', 'Who is your favorite artist?', 'Which social network do you use the most?', 'Would you like to be a content creator? Why?', 'Describe your favorite movie without saying its name.', 'What song do you listen to on repeat?'] },
+    tg: { mi: 'pad', col: 'b', name: 'Videojuegos y amigos', short: 'Gaming', desc: 'Jugar en línea y hablar con gente del mundo', meta: 'jugar y hablar en inglés en línea', ready: 'listo para jugar en inglés', age: 'teens',
+      q: ['What games do you play online?', 'Have you talked to people from other countries?', 'What makes a good teammate?', 'Describe your favorite game to someone who never played it.', 'How many hours do you play per week?', 'Would you like to work in the gaming industry?'] },
+    tx: { mi: 'plane', col: 'y', name: 'Viajar o estudiar afuera', short: 'Afuera', desc: 'Intercambios, viajes y becas', meta: 'prepararte para un intercambio o viaje', ready: 'listo para tu intercambio', age: 'teens',
+      q: ['Which country would you like to visit? Why?', 'Would you like to do an exchange program?', 'What would you miss about home?', 'How do you imagine a school abroad?', 'What would you pack for a year abroad?', 'What do you know about life in the USA?'] },
+  });
+  const AG = () => { try { return window.M1 && M1.ageGroup ? M1.ageGroup() : 'adult'; } catch (e) { return 'adult'; } };
+  const optsFor = () => { const a = AG(); return Object.entries(G).filter(([k, d]) => (d.age || 'adult') === a); };
   const ALIAS = { x: 'v', c: 't' };
   const icon = (k, cls) => `<span class="gl-ic ${G[k].col}${cls ? ' ' + cls : ''}">${window.MRI ? MRI(G[k].mi) : ''}</span>`;
   const MONTHS = [[1, '1 mes'], [3, '3 meses'], [6, '6 meses'], [0, 'Sin prisa']], MINS = [10, 20, 30];
@@ -35,7 +56,7 @@
   function lineHTML() { return ''; } // ya no se muestra en el encabezado (va en la tarjeta «Mi objetivo»)
   // tarjeta "Mi objetivo" del perfil · pct = avance del módulo actual
   function cardHTML(pct) {
-    const g = get(); if (!g) return `<div class="gl-card gl-empty"><div class="gl-eh">${window.MRI ? `<span class="gl-ic r">${MRI('target')}</span>` : ''}<div><b>¿Para qué quieres aprender inglés?</b><small>Adaptamos la plataforma a tu meta</small></div></div><button class="btn k sm" data-goal>Elegir mi objetivo</button></div>`;
+    const g = get(); if (!g) return `<div class="gl-card gl-empty"><div class="gl-eh">${window.MRI ? `<span class="gl-ic r">${MRI('target')}</span>` : ''}<div><b>${AG() === 'kids' ? '¿Qué te gustaría hacer con el inglés?' : '¿Para qué quieres aprender inglés?'}</b><small>Adaptamos la plataforma a tu meta</small></div></div><button class="btn k sm" data-goal>Elegir mi objetivo</button></div>`;
     const d = G[g.k], w = weeksLeft(g), mo = MONTHS.find(x => x[0] === +g.months), p = Math.round(Math.max(0, Math.min(100, pct || 0)));
     return `<div class="gl-card"><div class="gl-top">${icon(g.k)}<div class="gl-tt"><small>Mi objetivo</small><b>${esc(d.short)}</b></div><button class="gl-ch" data-goal aria-label="Cambiar mi objetivo">Cambiar</button></div>
       <div class="gl-meta"><span>${window.MRI ? MRI('calendar') : ''}${g.months ? 'Meta: ' + mo[1] : 'A tu ritmo'}</span><span>${window.MRI ? MRI('clock') : ''}${g.min} min al día</span></div>
@@ -48,8 +69,8 @@
     return new Promise(res => {
       const st = { k: cur.k, months: cur.months == null ? 3 : +cur.months, min: +cur.min || 20 };
       const m = document.createElement('div'); m.className = 'modal gl-modal';
-      m.innerHTML = `<div class="card"><h3>¿Para qué quieres aprender inglés?</h3><p class="muted">Así adaptamos la plataforma a ti. Puedes cambiarlo cuando quieras.</p>
-        <div class="gl-opts">${Object.entries(G).map(([k, d]) => `<button type="button" class="gl-o${st.k === k ? ' on' : ''}" data-k="${k}">${icon(k)}<div><b>${esc(d.name)}</b><small>${esc(d.desc)}</small></div></button>`).join('')}</div>
+      m.innerHTML = `<div class="card"><h3>${AG() === 'kids' ? '¿Qué te gustaría hacer con el inglés?' : '¿Para qué quieres aprender inglés?'}</h3><p class="muted">Así adaptamos la plataforma a ti. Puedes cambiarlo cuando quieras.</p>
+        <div class="gl-opts${AG() !== 'adult' ? ' two' : ''}">${optsFor().map(([k, d]) => `<button type="button" class="gl-o${st.k === k ? ' on' : ''}" data-k="${k}">${icon(k)}<div><b>${esc(d.name)}</b><small>${esc(d.desc)}</small></div></button>`).join('')}</div>
         <p class="gl-q">¿Tienes una fecha meta? <small>(opcional)</small></p><div class="gl-chips" data-f="months">${MONTHS.map(([v, t]) => `<button type="button" class="gl-c${st.months === v ? ' on' : ''}" data-v="${v}">${t}</button>`).join('')}</div>
         <p class="gl-q">¿Cuánto tiempo al día?</p><div class="gl-chips" data-f="min">${MINS.map(v => `<button type="button" class="gl-c${st.min === v ? ' on' : ''}" data-v="${v}">${v} min</button>`).join('')}</div>
         <div class="gl-act"><button class="btn k" id="gl-ok" ${st.k ? '' : 'disabled'}>Guardar mi objetivo</button>${opts.noSkip ? '' : '<button class="btn w sm" id="gl-no">Ahora no</button>'}</div></div>`;
@@ -64,7 +85,7 @@
   // ¿mostrar la pregunta? solo estudiantes, sin objetivo y sin haber dicho "Ahora no" hace poco
   function shouldAsk() { const p = P() && P().get(); return !!p && p.type !== 'staff' && !get() && !skipped(); }
   // "por qué te sirve" para un tema (módulo m, tema n)
-  function why(m, n, g) { g = valid(g || get()); if (!g || !window.MRGOALWHY) return ''; const x = MRGOALWHY[(+m || 1) + '-' + n]; return x && x[g.k] ? { k: g.k, name: G[g.k].short, t: x[g.k] } : ''; }
+  function why(m, n, g) { g = valid(g || get()); if (!g || !window.MRGOALWHY || G[g.k].age) return ''; const x = MRGOALWHY[(+m || 1) + '-' + n]; return x && x[g.k] ? { k: g.k, name: G[g.k].short, t: x[g.k] } : ''; }
   function whyHTML(m, n, g) { const w = why(m, n, g); return w ? `<div class="gl-why"><div><b>Para tu objetivo · ${esc(w.name)}</b><span>${esc(w.t)}</span></div></div>` : ''; }
   // para el profe: chip + 3 preguntas sugeridas
   function chip(g) { g = valid(g); return g ? `<span class="gl-chip">${esc(G[g.k].short)}${g.months ? ' · meta en ' + MONTHS.find(x => x[0] === +g.months)[1] : ''}</span>` : '<span class="muted">Aún no lo ha elegido</span>'; }
@@ -92,10 +113,12 @@
 .gl-qs{display:grid;gap:6px;margin-top:6px}.gl-qs div{background:#f6f9ff;border-radius:10px;padding:8px 10px;font-size:13.5px;color:#0B2A5B}
 @media (max-width:600px){.gl-opts{grid-template-columns:1fr}.gl-card{padding:10px 12px}.gl-card p{font-size:12px}}
 .gl-ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;flex:none}.gl-ic .mri{width:21px;height:21px}
-.gl-ic.r{background:#fde8ea;color:#E3242B}.gl-ic.b{background:#e7efff;color:#1D5FD1}.gl-ic.g{background:#e6f7ee;color:#16A34A}
+.gl-ic.r{background:#fde8ea;color:#E3242B}.gl-ic.y{background:#fff4dc;color:#d97706}.gl-ic.b{background:#e7efff;color:#1D5FD1}.gl-ic.g{background:#e6f7ee;color:#16A34A}
 .gl-ic.sm{width:32px;height:32px;border-radius:10px}.gl-ic.sm .mri{width:17px;height:17px}
 .gl-o{align-items:center}.gl-o .gl-ic{width:44px;height:44px}
 .gl-opts{grid-template-columns:1fr!important}
+@media(min-width:601px){.gl-opts.two{grid-template-columns:1fr 1fr!important}}
+.gl-empty{justify-items:center!important;text-align:center}.gl-empty .gl-eh{flex-direction:column;gap:8px;text-align:center}.gl-empty .btn{justify-self:center}
 .gl-card{background:#fff!important;border:1px solid #e3e9f3!important;border-radius:18px!important;padding:14px!important;box-shadow:0 6px 16px rgba(11,42,91,.06)}
 .gl-top{display:flex;align-items:center;gap:10px}.gl-tt{flex:1;min-width:0}.gl-tt small{display:block;white-space:nowrap;font:700 10px Inter,sans-serif;letter-spacing:.8px;text-transform:uppercase;color:#8a96ab}.gl-tt b{display:block;font:800 15px Poppins,sans-serif;color:#0B2A5B;line-height:1.2}
 .gl-ch{border:1.5px solid #e3e9f3!important;border-radius:20px!important;padding:4px 10px!important;font-size:12px!important;background:#fff!important}
