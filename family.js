@@ -55,7 +55,7 @@
     $('#cp').onclick = () => { try { navigator.clipboard.writeText(f.fcode); $('#cp').innerHTML = I('check') + ' Copiado'; } catch (e) { } };
     app.querySelectorAll('[data-tg]').forEach(b => b.onclick = () => { const m = b.closest('.fm-kid').querySelector('.fm-more'); m.hidden = !m.hidden; b.classList.toggle('open', !m.hidden); });
     app.querySelectorAll('[data-in]').forEach(b => b.onclick = () => { try { sessionStorage.setItem('mra_autocode', b.dataset.in); sessionStorage.setItem('mra_from_fam', '1'); } catch (e) { } location.href = 'index.html'; });
-    const add = $('#add'); if (add) add.onclick = () => { LS.set('mra_fam_prefill', JSON.stringify({ guardian: f.guardian, email: f.email, email2: f.email2, whatsapp: f.whatsapp })); location.href = 'ninos.html?tab=planes'; };
+    const add = $('#add'); if (add) add.onclick = () => { LS.set('mra_fam_prefill', JSON.stringify({ guardian: f.guardian, email: f.email, email2: f.email2, whatsapp: f.whatsapp })); location.href = 'ninos.html?tab=planes&fam=1'; };
     $('#sw').onclick = async () => { const on = !$('#sw').classList.contains('on'); $('#sw').classList.toggle('on', on); $('#sw').setAttribute('aria-checked', on);
       const x = await MRAC.call('famAlerts', { fcode: f.fcode, on }).catch(() => null); if (!x || !x.ok) { $('#sw').classList.toggle('on', !on); } };
   }

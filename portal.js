@@ -168,9 +168,10 @@
   // 📱 entrada como app: barra inferior (sin pie de página largo)
   function homeDock() {
     if (document.querySelector('.lp-dock')) return; document.body.classList.add('home-app');
-    const lw = document.querySelector('.ld-login'); // 📱 celular: el ingreso se abre como ventana (el cliente no baja)
-    const sheet = (on) => { if (innerWidth >= 900 || !lw) return; lw.classList.toggle('sheet-on', on); document.body.classList.toggle('sheet-open', on); if (on) { const inp = lw.querySelector('input'); setTimeout(() => inp && inp.focus(), 250); } };
-    if (lw && !lw.querySelector('.lp-shx')) { (lw.querySelector('.pt-login') || lw).insertAdjacentHTML('afterbegin', '<button type="button" class="lp-shx" aria-label="Cerrar">✕</button>'); lw.querySelector('.lp-shx').onclick = () => sheet(false); lw.addEventListener('click', e => { if (e.target === lw) sheet(false); }); }
+    const LW = () => document.querySelector('.ld-login'); // 📱 celular: el ingreso se abre como ventana (el cliente no baja) · se busca cada vez (la página se vuelve a dibujar al salir de un perfil)
+    const prep = (lw) => { if (lw && !lw.querySelector('.lp-shx')) { (lw.querySelector('.pt-login') || lw).insertAdjacentHTML('afterbegin', '<button type="button" class="lp-shx" aria-label="Cerrar">✕</button>'); lw.querySelector('.lp-shx').onclick = () => sheet(false); lw.addEventListener('click', e => { if (e.target === lw) sheet(false); }); } };
+    const sheet = (on) => { const lw = LW(); if (innerWidth >= 900 || !lw) return; prep(lw); lw.classList.toggle('sheet-on', on); document.body.classList.toggle('sheet-open', on); if (on) { const inp = lw.querySelector('input'); setTimeout(() => inp && inp.focus(), 250); } };
+    prep(LW());
     if (/[?&]ingresar=1/.test(location.search)) { try { history.replaceState(null, '', location.pathname + location.hash); } catch (e) { } } // solo se abre por el clic en «Ingresar»; al volver o recargar se ve la página de entrada
     if (window.__goIn) setTimeout(() => { if (innerWidth < 900) sheet(true); else { const inp = document.querySelector('.ld-login input'); if (inp) inp.focus(); } }, 600);
     document.addEventListener('click', e => { if (e.target.closest('[data-goin]') && innerWidth < 900) { e.preventDefault(); e.stopImmediatePropagation(); sheet(true); } }, true);
@@ -320,7 +321,7 @@
     const card = $('.pt-login'); if (!card || !window.MRI) return;
     const LOGIN_IC = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mri"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/></svg>';
     const tb = $('#topbar .tb-tag'); if (tb) tb.outerHTML = PAGE === 'home' ? `<nav class="ld-nav ld-nav-h"><button class="btn k sm ld-in" data-goin>${LOGIN_IC} Ingresar</button></nav>`
-      : `<nav class="ld-nav lp-tnav"><a href="index.html?ingresar=1" class="btn k sm ld-in">${LOGIN_IC} Ingresar</a></nav>`;
+      : /[?&]fam=1/.test(location.search) ? `<nav class="ld-nav lp-tnav"><a href="familia.html" class="btn k sm ld-in">← Mi portal de papás</a></nav>` : `<nav class="ld-nav lp-tnav"><a href="index.html?ingresar=1" class="btn k sm ld-in">${LOGIN_IC} Ingresar</a></nav>`;
     if (!window.__ldNav) { window.__ldNav = 1; document.addEventListener('click', (e) => {
       const gi = e.target.closest('[data-goin]'); if (gi) { const lg = document.querySelector('.ld-login .pt-login') || document.querySelector('.ld-login'); if (lg) { const bar = (document.getElementById('topbar') || { offsetHeight: 0 }).offsetHeight; scrollTo({ top: Math.max(0, scrollY + lg.getBoundingClientRect().top - bar - 12), behavior: 'smooth' }); const inp = lg.querySelector('input'); if (inp) setTimeout(() => inp.focus({ preventScroll: true }), 450); } return; } // 🔑 estudiante reconocido: directo a escribir su código // 🧭 el menú muestra la sección completa (sin quedar tapada por la barra de arriba)
       const a = e.target.closest('a[href^="#ld-"]'); if (!a) return; const sec = document.querySelector(a.getAttribute('href')); if (!sec) return; e.preventDefault();
