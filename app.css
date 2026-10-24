@@ -6119,3 +6119,4 @@ button.lp-pl{font:inherit;text-align:inherit;cursor:pointer;width:100%;appearanc
 /* Panel de papás: agregar hijo → planes */
 .fm-add small{display:block;font:600 12px var(--fb);color:var(--mut);margin-top:2px}.fm-add{flex-direction:column}
 @media(max-width:700px){.tn-chal{padding:14px!important;gap:10px!important}.tn-ci{width:40px;height:40px}}
+.tn-k div{text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center}.tn-k b{justify-content:center}
