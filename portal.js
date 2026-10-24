@@ -681,6 +681,9 @@
     let kidsX = '';
     if (kids && a && a.ready && !P.isExpired()) { main = MRKIDS.hero(p, a, P.look().nick || p.first || '') + MRKIDS.chest(); kidsX = MRKIDS.map(a) + MRKIDS.medals(a); }
     else if (kids && newbie) main = main.replace('mra-x-plane-red.webp', 'mra-x-balloon1.webp');
+    const teens = !staff && !kids && window.MRTEENS && MRTEENS.on(); document.body.classList.toggle('ag-teens', !!teens); // 🚀 perfil Teens (12 a 17 años)
+    if (teens && a && a.ready && !P.isExpired()) { main = MRTEENS.hero(p, a, P.look().nick || p.first || '') + MRTEENS.challenge(); kidsX = `<div class="tn-row">${MRTEENS.missions()}${MRTEENS.ranking()}</div>`; }
+    else if (teens && newbie) main = main.replace('mra-x-plane-red.webp', 'mra-x-rocket.webp');
     const curMod = a && a.ready && !staff ? P.progress(a.id) : null;
     const plNow = P.plan(); const plName = staff ? 'Profesor' : P.isExpired() ? 'Plan vencido' : (plNow.plan === 'premium8' && plNow.eff === 'premium' ? 'Premium · 8 clases' : { free: 'Acceso gratuito', membership: 'Plataforma', premium: 'Premium · 4 clases' }[plNow.eff] || 'Acceso gratuito');
     const plIc = staff ? 'user' : P.isExpired() ? 'clock' : plNow.plan === 'premium8' && plNow.eff === 'premium' ? 'gem' : ({ free: 'gift', membership: 'monitor', premium: 'crown' }[plNow.eff] || 'gift');
@@ -722,6 +725,8 @@
       <p class="center fx-foot db-foot" style="margin-top:22px;font-size:13.5px;font-weight:600">¡Aprende inglés HABLANDO!<br><a class="foot-wa" href="https://wa.me/${esc(C.WHATSAPP)}?text=${encodeURIComponent((window.MRNE || String)('¡Hola, mrarrieta.com! Soy ' + ((p.first || '') + ' ' + (p.last || '')).trim() + '. Tengo una pregunta.'))}" target="_blank" rel="noopener">WhatsApp ${esc(C.WHATSAPP.replace(/^57/, '').replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3'))}</a></p></div>
       <nav class="db-tabbar sd-tab"><button class="on" data-st="top">${MRI('compass')}<span>Inicio</span></button>${Object.keys(MENU).map((k) => `<button data-st="${k}"><b class="sd-ti">${MENU[k][0]}</b><span>${k === 'cls' ? 'Clases' : k === 'me' ? 'Cuenta' : 'Módulos'}</span></button>`).join('')}</nav>`;
     if (kids) MRKIDS.wire(app);
+    if (teens) MRTEENS.wire(app);
+    agChange();
     if ($('#pt')) $('#pt').onclick = () => route('placement');
     if (!staff && window.MRGOAL) { // 🎯 objetivo personal: elegir o cambiar
       const gw = () => $$('[data-goal]').forEach(b => b.onclick = () => MRGOAL.ask({ noSkip: true }).then(g => { if (g) home(); }));
@@ -1253,6 +1258,16 @@
   const bdKey = () => 'mra_bday_' + P.todayISO();
   const bdaySeen = () => { try { return !!localStorage.getItem(bdKey()); } catch (e) { return true; } };
   let BD_FIRST = null; const bdFirst = () => { if (BD_FIRST === null) BD_FIRST = !bdaySeen(); return BD_FIRST; }; // el saludo sale solo la primera vez que entra ese día
+  // 🎂 cambio de grupo de edad (cumple 12 → Teens · cumple 18 → Adultos): felicitación una sola vez
+  function agChange() {
+    const p = P.get(); if (!p || p.type === 'staff' || !M.ageGroup) return; const ag = M.ageGroup(), prev = p.agSeen, ORD = { kids: 1, teens: 2, adult: 3 };
+    if (prev === ag) return; p.agSeen = ag; P.save(p); if (!prev || !p.birth || (ORD[ag] || 0) <= (ORD[prev] || 0)) return;
+    const nm = esc(P.look().nick || p.first || ''); const teen = ag === 'teens';
+    setTimeout(() => { const m = M.modal(`<div class="ag-up ${teen ? 't' : 'a'}"><img src="${teen ? 'mra-x-rocket.webp' : 'mra-bday.webp'}" alt="Mr. Arrieta"><span class="ag-eye">${MRI('gift')} Feliz cumpleaños</span><h3>${teen ? `¡Ya eres Teen, ${nm}!` : `¡Feliz cumpleaños, ${nm}!`}</h3>
+      <p>${teen ? 'Desde hoy tienes tu experiencia <b>Teens</b>: puntos, misiones de la semana, reto de pronunciación y ranking de la escuela.' : 'Desde hoy tu plataforma pasa a la experiencia de <b>adultos</b>. Tu progreso, tus clases y tu nivel siguen igual.'}</p>
+      <button class="btn k block lg" id="ag-ok">${teen ? 'Ver mi nueva experiencia' : 'Continuar'}</button></div>`, { x: true });
+      try { M.confetti(2200); M.sfx('win'); } catch (e) { } const b = m.querySelector('#ag-ok'); if (b) b.onclick = () => m.remove(); }, 900);
+  }
   function birthdayBanner() { const p = P.get(); if (!P.isBirthday() || !bdFirst()) return ''; return `<div class="pt-bday" id="pt-bday"><span class="bd-cake">🎂</span><div><b>Happy Birthday, ${esc(P.look().nick || p.first)}! 🎉</b><small>¡Feliz cumpleaños! Todo el equipo de mrarrieta.com te desea un año increíble.</small></div><button class="btn w sm" id="bd-again">🎉</button></div>`; }
   // 🎂 cumpleaños: se marca por año (también en la nube) para no repetir el saludo atrasado
   const bdYear = () => P.todayISO().slice(0, 4);
