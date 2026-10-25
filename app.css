@@ -6649,3 +6649,32 @@ body.ag-teens .pg-rows{background:#fff}
 /* v392 · Mr. Arrieta flota en la guía y en "Tu siguiente paso" (todas las edades) */
 .g1-hd img{animation:mraFloat 3.4s ease-in-out infinite;will-change:transform}
 .wrap.db .db-hero-mra{animation:mraFloat 3.4s ease-in-out infinite!important}
+/* v393 · autorización de datos (obligatoria) y promociones (opcional) */
+.tf .tf-ok{border:1.5px solid #e3e9f3;border-radius:12px;padding:9px 10px!important;margin:0!important}
+.tf .tf-ok.tf-req{border-color:#fbd0d2;background:#fff7f7}
+.tf-ok a,.in-consent a{color:#E3242B;font-weight:700}
+.tf-em{display:inline-block;font-style:normal;font:800 9.5px Poppins,sans-serif;letter-spacing:.05em;border-radius:6px;padding:2px 6px;margin-left:6px;vertical-align:1px;background:#eef3fb;color:#64748b}
+.tf-em.r{background:#fde2e3;color:#b91c1c}
+.in-consent+.in-consent{margin-top:10px}
+.in-consent.tf-req{border-color:#fbd0d2;background:#fff7f7}
+/* v393 · Privacidad y mis datos */
+.pvm{min-width:min(420px,86vw)}
+.pd-hd{display:flex;gap:12px;align-items:center;margin-bottom:10px}.pd-hd h3{margin:0;font-size:19px}.pd-hd small{display:block;color:#64748b;font-size:12.5px;margin-top:2px}
+.pd-ic{width:44px;height:44px;border-radius:14px;background:#fde2e3;color:#E3242B;display:grid;place-items:center;flex:none}.pd-ic .mri{width:22px;height:22px}.pd-ic.ok{background:#dcfce7;color:#16a34a}
+.pd-row{display:flex;align-items:center;gap:11px;width:100%;border:0;background:none;padding:11px 0;border-top:1px solid #e3e9f3;text-align:left;color:#0B2A5B;cursor:pointer;font:inherit}
+.pd-row:first-child{border-top:0}
+.pd-row>i{width:36px;height:36px;border-radius:10px;background:#eef3fb;display:grid;place-items:center;flex:none}.pd-row>i .mri{width:17px;height:17px}.pd-row>i.ok{background:#dcfce7;color:#16a34a}
+.pd-row b{display:block;font:800 14px Poppins,sans-serif}.pd-row small{display:block;font-size:12px;color:#64748b}
+.pd-row .pd-ar{margin-left:auto;width:17px;height:17px;color:#94a3b8;flex:none}
+.pd-sw input{position:absolute;opacity:0;pointer-events:none}.pd-sw em{margin-left:auto;width:42px;height:24px;border-radius:99px;background:#cbd5e1;position:relative;flex:none;transition:.2s}
+.pd-sw em:after{content:"";position:absolute;left:3px;top:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.2s}
+.pd-sw input:checked+em{background:#16a34a}.pd-sw input:checked+em:after{left:21px}
+.pd-t{margin:4px 0 6px;font-size:17px}
+/* v393 · página de privacidad */
+.pl-eb{font:800 11px Poppins,sans-serif;letter-spacing:.12em;color:#E3242B}
+.pl-sum{display:grid;gap:10px;margin:14px 0 12px;background:#f6f8fc;border:1px solid #e3e9f3;border-radius:14px;padding:14px}
+.pl-sum div{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.45;color:#334155}
+.pl-sum i{width:32px;height:32px;border-radius:10px;background:#fde2e3;color:#E3242B;display:grid;place-items:center;flex:none}.pl-sum i svg{width:17px;height:17px}
+.pl-idx{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 6px}.pl-idx a{font:700 12px Poppins,sans-serif;color:#0B2A5B;background:#fff;border:1px solid #e3e9f3;border-radius:99px;padding:5px 10px;text-decoration:none}
+.pl-resp{display:grid;grid-template-columns:auto 1fr;gap:5px 14px;font-size:14.5px;line-height:1.5}.pl-resp b{color:#64748b;font-family:Inter,sans-serif}
+.pv h3{scroll-margin-top:90px}

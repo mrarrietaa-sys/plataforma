@@ -106,8 +106,10 @@ if (!window.M1) window.M1 = {
           <textarea class="inp" id="in-comments" name="comments" rows="3" maxlength="1500" placeholder="Cuéntanos tus metas: viajar, trabajo, entrevistas…"></textarea>
         </div></div>
 
-        <label class="in-consent"><input type="checkbox" id="in-ok" required>
-          <span>Autorizo a <b>mrarrieta.com</b> a tratar mis datos personales para gestionar mi inscripción y comunicarse conmigo por WhatsApp y correo, conforme a la <b>Ley 1581 de 2012</b> (Colombia). Puedo consultar, actualizar o pedir la eliminación de mis datos en cualquier momento.</span></label>
+        <label class="in-consent tf-req"><input type="checkbox" id="in-ok" required>
+          <span>Autorizo el tratamiento de mis datos personales según la <a href="privacidad.html" target="_blank" rel="noopener">política de privacidad</a> de mrarrieta.com (Ley 1581 de 2012).<em class="tf-em r">OBLIGATORIA</em></span></label>
+        <label class="in-consent"><input type="checkbox" id="in-mkt">
+          <span>Quiero recibir novedades y promociones por WhatsApp y correo. Puedo cancelarlas cuando quiera.<em class="tf-em">OPCIONAL</em></span></label>
         <p class="in-err" id="err-ok" hidden>Debes autorizar el tratamiento de datos para continuar.</p>
 
         <div class="in-summary" id="in-summary"></div>
@@ -164,7 +166,7 @@ if (!window.M1) window.M1 = {
     const v = (id) => ($('#in-' + id) ? $('#in-' + id).value.trim() : '');
     const premium = /^premium/.test(st.plan), paid = premium || st.plan === 'membership';
     return { first: v('first'), last: v('last'), email: v('email'), whatsapp: v('whatsapp'), birth: v('birth'), city: v('city'), plan: st.plan, level: st.level,
-      schedule: '', days: '', payment: '', source: st.source, comments: v('comments'), ref: REF };
+      schedule: '', days: '', payment: '', source: st.source, comments: v('comments'), ref: REF, datos: true, mkt: !!($('#in-mkt') && $('#in-mkt').checked) };
   }
   function validate(d) {
     let first = null;
