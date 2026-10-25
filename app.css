@@ -6625,3 +6625,24 @@ body.ag-teens .g1-done-teens{background:#0b2148;color:#22e58a}body.ag-teens .g1-
 }
 body.ag-teens .pg-rows{background:#fff}
 @media (min-width:981px){.db-side>*{order:2}.db-side>.db-me{order:0}.db-side>.db-pgnav{order:1;margin-top:0;border-top:0;padding-top:0;border-bottom:1px solid #e3e9f3;padding-bottom:12px}}
+/* v391 · personalizar: la pantalla queda quieta (solo se desplaza la lista de opciones) */
+.me-opts{position:relative;max-height:calc(100vh - 250px);overflow-y:auto;overscroll-behavior:contain;padding:2px 6px 10px 2px;scrollbar-width:thin}
+@media(max-width:720px){.me-opts{max-height:calc(100dvh - 400px);min-height:240px}}
+.me-stage{height:min(420px,calc(100vh - 400px))!important;min-height:260px}
+@media(max-width:720px){.me-stage{min-height:0}}
+/* v391 · Módulos en celular: tarjetas compactas (imagen pequeña a la izquierda) */
+@media(max-width:720px){
+  .wrap.db .pt-mods-grid{grid-template-columns:1fr!important;gap:10px!important}
+  .wrap.db .pt-mod{display:flex!important;flex-direction:row!important;align-items:stretch;text-align:left;min-height:0!important;padding:0!important}
+  .wrap.db .pt-mod-img{width:92px!important;min-width:92px;height:auto!important;min-height:92px;aspect-ratio:auto!important;flex:none;border-radius:0!important}
+  .wrap.db .pt-mod-img .pt-chip{display:none!important}
+  .wrap.db .pt-mod-bd{padding:10px 12px!important;min-width:0;flex:1}
+  .wrap.db .pt-mod-bd h3{font-size:15px!important;margin:0!important}
+  .wrap.db .pt-mod-bd .es{font-size:12.5px!important}
+  .wrap.db .pt-mod-bd p{display:none!important}
+  .wrap.db .pt-mod-bd .pt-bar{margin:6px 0 3px!important}
+  .wrap.db .pt-mod-bd small{font-size:12px!important}
+  .wrap.db .pt-mod.current .pt-mod-bd h3::after{content:" · Estás aquí";color:#16a34a;font-size:12px}
+}
+.g1-ad .g1-hd img{height:104px;max-width:150px}
+@media(max-width:560px){.g1-ad .g1-hd img{height:76px;max-width:110px}}

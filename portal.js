@@ -681,7 +681,7 @@
       return `<div class="card g1 g1-kd"><div class="g1-hd"><img src="${H[0]}" alt="Mr. Arrieta"><div class="g1-bub"><b>${H[1]}</b><span>${H[2]}</span><button class="g1-spk" data-kg="${H[3]}">${gi('vol')}Escuchar</button></div></div>
       <div class="g1-box"><span class="g1-lb">TU AVENTURA DE INICIO</span>${steps.map((x, i) => (i ? `<div class="g1-line${steps[i - 1].st === 'ok' ? ' ok' : ''}"></div>` : '') + row(x)).join('')}</div>
       <div class="g1-stars">Estrellas de inicio <i>${'★'.repeat(Math.min(done, base))}${'☆'.repeat(Math.max(0, base - done))}</i></div></div>`; }
-    const AH = [[`¡Hola, ${nm}!`, `Solo ${n} pasos para empezar. Todo lo demás ya está abierto.`, 'mra-welcome.webp'], [`¡Perfecto, ${nm}!`, `Tu objetivo: <b>${gname}</b>. Ahora descubre tu nivel.`, 'mra-thumbs.webp'], [`¡Muy bien, ${nm}!`, `Tu nivel es <b>${lvl}</b>. Ahora tu primera lección.`, 'mra-thumbs.webp']][stage];
+    const AH = [[`¡Hola, ${nm}!`, `Solo ${n} pasos para empezar. Todo lo demás ya está abierto.`, 'mra-x-plane-red.webp'], [`¡Perfecto, ${nm}!`, `Tu objetivo: <b>${gname}</b>. Ahora descubre tu nivel.`, 'mra-x-plane-red.webp'], [`¡Muy bien, ${nm}!`, `Tu nivel es <b>${lvl}</b>. Ahora tu primera lección.`, 'mra-x-plane-red.webp']][stage];
     return `<div class="card g1 g1-ad"><div class="g1-hd"><img src="${AH[2]}" alt="Mr. Arrieta"><div><span class="lbl db-red">Tu primer día</span><h2>${AH[0]}</h2><p>${AH[1]}</p></div></div>
       <div class="g1-box">${steps.map(row).join('')}</div></div>`;
   }
@@ -1017,7 +1017,7 @@
         const paint = () => { const bg = MRAV.BGS[av.bg] || MRAV.BGS.red; $('#stage').style.background = `linear-gradient(135deg,${bg[0]},${bg[1]})`; $('#stk').textContent = av.sticker || '';
           const my = ++tok; $('#stage').classList.add('busy'); MRAV.full(av).then(u => { if (my !== tok) return; $('#pv').src = u; $('#stage').classList.remove('busy'); }); };
         const mark = () => { $$('[data-k]', body).forEach(b => b.classList.toggle('on', av[b.dataset.k] === b.dataset.v)); $$('[data-cur]', body).forEach(e => e.innerHTML = cur(e.dataset.cur)); };
-        $$('.me-acc', body).forEach(d => d.addEventListener('toggle', () => { if (d.open) { $$('.me-acc', body).forEach(o => { if (o !== d) o.open = false; }); if (window.innerWidth < 720) setTimeout(() => d.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 60); } }));
+        $$('.me-acc', body).forEach(d => d.addEventListener('toggle', () => { if (d.open) { $$('.me-acc', body).forEach(o => { if (o !== d) o.open = false; }); const op = $('.me-opts', body); setTimeout(() => { if (op) op.scrollTo({ top: Math.max(0, d.offsetTop - 4), behavior: 'smooth' }); }, 40); } })); // 🧍 la pantalla queda quieta: solo se desplaza la lista de opciones, Mr. Arrieta siempre a la vista
         $$('[data-k]', body).forEach(b => b.onclick = () => { av[b.dataset.k] = b.dataset.v; sfx('tap'); mark(); paint(); });
         $('#rnd').onclick = () => { const pick = (a) => a[Math.floor(Math.random() * a.length)]; av = { pose: pick(MRAV.POSES), shirt: pick(MRAV.SHIRTS)[0], pants: pick(MRAV.PANTS)[0], shoes: pick(MRAV.SHOES)[0], hat: pick(Object.keys(MRAV.HATS)), bg: pick(Object.keys(MRAV.BGS)), sticker: pick(MRAV.STICKERS) }; mark(); paint(); };
         $('#sv').onclick = async () => { const b = $('#sv'); b.disabled = true; b.textContent = 'Guardando…'; let head = ''; try { head = await MRAV.head(av); } catch (e) { }
