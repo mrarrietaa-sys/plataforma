@@ -652,6 +652,7 @@
 
   /* ---------- perfil ---------- */
   /* ---------- 🧭 v383: guía del primer día (todas las edades) — en el perfil, hasta terminar la lección 1 ---------- */
+  const gK = (k) => k + '_' + (((window.MRAC && MRAC.code && MRAC.code()) || (P.get() || {}).code || '') + '').toUpperCase(); // marcas de la guía por estudiante (no por dispositivo)
   const G1K = 'mra_g1done_v1';
   const g1Today = () => { const d = new Date(); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); };
   const g1Total = () => { try { return P.MODS.reduce((t, m) => t + (P.progress(m.id).done || 0), 0); } catch (e) { return 0; } };
@@ -666,14 +667,15 @@
     const S0 = GL ? { st: gk ? 'ok' : 'on', b: 'Elige tu objetivo', s: gk ? 'Listo · ' + gname : ag === 'kids' ? 'Un toque · ¡muy rápido!' : 'Un toque · menos de 20 segundos', btn: gk ? '' : `<button class="g1-go" data-goal>${gi('target')}${ag === 'kids' ? '¡Elegir!' : 'Elegir'}</button>` } : null;
     const S1 = { st: placed ? 'ok' : hasG ? 'on' : 'off', b: 'Descubre tu nivel', s: placed ? 'Listo · ' + lvl : ag === 'kids' ? 'Un juego de preguntas · 10 min' : 'Prueba corta · unos 10 minutos', btn: !placed && hasG ? `<button class="g1-go" id="pt">${gi(ag === 'kids' ? 'play' : 'pen')}${ag === 'kids' ? '¡Vamos!' : 'Empezar'}</button>` : '' };
     const S2 = { st: placed ? 'on' : 'off', b: ag === 'kids' ? 'Tu primera lección' : 'Empieza tu ruta', s: 'Lección 1 · unos 15 minutos', btn: placed ? `<a class="g1-go" href="${url}">${gi('play')}${ag === 'kids' ? '¡Empezar!' : ag === 'teens' ? 'Empezar' : 'Empezar lección 1'}</a>` : '' };
-    const S3 = prem ? { st: placed ? 'alt' : 'off', b: 'Reserva tu clase con un profe', tag: 'EN VIVO', s: `Tienes ${nv} este mes · desde mañana`, btn: placed ? `<button class="g1-go g1-go2" data-g1act="book">${gi('cal')}Reservar</button>` : '' } : null;
+    let bk = false; try { bk = !!localStorage.getItem(gK('mra_g1book_v1')); } catch (e) { }
+    const S3 = prem && bk ? { st: 'ok', b: 'Reserva tu clase con un profe', tag: 'EN VIVO', s: 'Listo · clase reservada', btn: '' } : prem ? { st: placed ? 'alt' : 'off', b: 'Reserva tu clase con un profe', tag: 'EN VIVO', s: `Tienes ${nv} este mes · desde mañana`, btn: placed ? `<button class="g1-go g1-go2" data-g1act="book">${gi('cal')}Reservar</button>` : '' } : null;
     const steps = [S0, S1, S2, S3].filter(Boolean); steps.forEach((x, i) => x.k = i + 1);
-    try { localStorage.setItem('mra_g1seen_v1', '1'); } catch (e) { }
+    try { localStorage.setItem(gK('mra_g1seen_v1'), '1'); } catch (e) { }
     const n = steps.length, done = steps.filter(x => x.st === 'ok').length, base = steps.filter(x => !x.tag).length; // estrellas Kids: pasos sin la clase en vivo
     const row = (x) => `<div class="g1-st ${x.st}"><span class="g1-n">${x.st === 'ok' ? gi('ck') : x.k}</span><div><b>${x.b}${x.tag ? `<em class="g1-tag">${x.tag}</em>` : ''}</b><small>${x.s}</small>${x.btn ? '<div>' + x.btn + '</div>' : ''}</div></div>`;
     const stage = placed ? 2 : GL && gk ? 1 : 0; // 0: nada · 1: objetivo listo · 2: nivel listo
     if (ag === 'teens') return `<div class="card g1 g1-tn"><div class="g1-hd"><img src="mra-x-rocket5.webp" alt="Mr. Arrieta"><div>${prem ? `<span class="g1-chip">PREMIUM · ${nv} CLASES</span>` : ''}<b>Hey, ${nm}</b><span>${stage === 2 ? 'Tu nivel: ' + lvl + '. Sigue con tu misión.' : stage === 1 ? 'Objetivo: ' + gname + '. Ahora descubre tu nivel.' : 'Tu misión de hoy. Todo lo demás ya está abierto.'}</span></div></div>
-      <div class="g1-box"><span class="g1-lb">MISIÓN DE INICIO · ${done} DE ${n}</span><div class="g1-seg">${steps.map((x, i) => `<i class="${i < done ? 'on' : ''}"></i>`).join('')}</div>${steps.map(row).join('')}</div></div>`;
+      <div class="g1-box"><span class="g1-lb">MISIÓN DE INICIO · ${done} DE ${n}</span><div class="g1-seg">${steps.map(x => `<i class="${x.st === 'ok' ? 'on' : ''}"></i>`).join('')}</div>${steps.map(row).join('')}</div></div>`;
     if (ag === 'kids') { const H = [['mra-welcome.webp', `¡Hola, ${nm}!`, `Vamos a empezar tu aventura. ¡Son solo ${n} pasos!`, 'kg1'], ['mra-celebrate.webp', '¡Ganaste tu primera estrella!', 'Ya sabemos lo que te gusta. ¡Ahora descubre tu nivel!', 'kg4'], ['mra-celebrate.webp', '¡Ganaste otra estrella!', 'Ya sabemos tu nivel. ¡Ahora tu primera lección!', 'kg2']][stage];
       return `<div class="card g1 g1-kd"><div class="g1-hd"><img src="${H[0]}" alt="Mr. Arrieta"><div class="g1-bub"><b>${H[1]}</b><span>${H[2]}</span><button class="g1-spk" data-kg="${H[3]}">${gi('vol')}Escuchar</button></div></div>
       <div class="g1-box"><span class="g1-lb">TU AVENTURA DE INICIO</span>${steps.map((x, i) => (i ? `<div class="g1-line${steps[i - 1].st === 'ok' ? ' ok' : ''}"></div>` : '') + row(x)).join('')}</div>
@@ -683,7 +685,7 @@
       <div class="g1-box">${steps.map(row).join('')}</div></div>`;
   }
   function firstDayDone(ag) { // el día que termina la lección 1: mensaje de cierre (luego desaparece)
-    let d = null; try { if (!localStorage.getItem('mra_g1seen_v1')) return ''; d = localStorage.getItem(G1K); if (!d) { d = g1Today(); localStorage.setItem(G1K, d); } } catch (e) { return ''; }
+    let d = null; try { if (!localStorage.getItem(gK('mra_g1seen_v1'))) return ''; d = localStorage.getItem(gK(G1K)); if (!d) { d = g1Today(); localStorage.setItem(gK(G1K), d); } } catch (e) { return ''; }
     if (d !== g1Today()) return '';
     const t = ag === 'teens' ? 'Misión de inicio completa' : ag === 'kids' ? '¡Empezaste tu aventura!' : '¡Ya empezaste tu ruta!';
     return `<div class="g1-done g1-done-${ag}">${gi('ck')}<div><b>${t}</b><small>${ag === 'kids' ? 'Ganaste tus estrellas de inicio. ¡Sigue con la próxima lección!' : 'Tu siguiente lección te espera abajo. Puedes seguir hoy mismo, sin límite por día.'}</small></div>${ag === 'kids' ? '<button class="g1-spk" data-kg="kg3">' + gi('vol') + 'Escuchar</button>' : ''}</div>`;
@@ -1159,6 +1161,7 @@
     const startMs = (c) => new Date(c.date + 'T' + String(c.time).slice(0, 5) + ':00-05:00').getTime();
     const up = (r.premium.upcoming || []).filter((c) => c.type === 'vip' && Date.now() < startMs(c) + 50 * 60000).sort((a, b) => startMs(a) - startMs(b));
     const left0 = ((r.premium.credits || {}).vipLeft) || 0, book = () => { const b = $('#lv-book'); if (b && !b.disabled) b.click(); else { const t = $('#pt-live'); if (t) t.scrollIntoView({ behavior: 'smooth' }); } };
+    try { const cr0 = r.premium.credits || {}; if ((up.length || +cr0.vipUsed > 0) && !localStorage.getItem(gK('mra_g1book_v1'))) { localStorage.setItem(gK('mra_g1book_v1'), '1'); if ($('.g1')) { setTimeout(home, 0); return; } } } catch (e) { } // 🧭 guía: ya reservó → paso 4 en verde
     if (!up.length) { if (!left0 || $('.g1')) return; // 🧭 durante la guía del primer día no se muestra (el paso 3 la invita en su momento) const e0 = document.createElement('div'); e0.id = 'pt-nc'; e0.className = 'card pt-nc empty';
       e0.innerHTML = `<div class="pt-nc-d"><b>${left0}</b><small>clase${left0 === 1 ? '' : 's'}</small></div><div class="pt-nc-t"><span class="pt-nc-l">📅 Reserva tu clase</span><h3>Aún no tienes clases reservadas</h3><p>Te ${left0 === 1 ? 'queda <b>1 clase</b>' : 'quedan <b>' + left0 + ' clases</b>'} individuales en tu plan. ¡Úsalas!</p></div><div class="pt-nc-b"><button class="btn k" data-bk>${MRI('calendar')} Reservar clase</button></div>`;
       e0.querySelector('[data-bk]').onclick = book; host.after(e0); return; }
