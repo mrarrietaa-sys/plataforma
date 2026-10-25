@@ -6701,3 +6701,11 @@ body.ag-teens .pg-rows{background:#fff}
 .modal.vb-modal.vb-load>.card{max-width:400px!important;text-align:center}
 .modal.vb-modal.vb-load .vb h3{font-size:18px;justify-content:center}
 .modal.vb-modal.vb-load #vb-b{padding:6px 0 4px;color:#475569}
+/* v396 · horas: punto verde = hay profes libres; gris = sin profes ese día */
+.vf-help{display:flex;flex-wrap:wrap;gap:6px 14px;margin:6px 0 4px;font-size:12px;color:#64748b}.vf-help span{display:inline-flex;align-items:center;gap:5px}
+.vf-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#16a34a;box-shadow:0 0 0 3px rgba(22,163,74,.18);margin-right:5px;vertical-align:1px;flex:none}
+.vf-dot.g{background:#cbd5e1;box-shadow:none}
+.vf-chip.has{border-color:#86efac;background:#f0fdf4}
+.vf-chip.none{color:#94a3b8;background:#f8fafc;border-style:dashed}
+.vf-chip.on{background:#0B2A5B!important;border-color:#0B2A5B!important;color:#fff!important}.vf-chip.on .vf-dot{background:#4ade80;box-shadow:none}
+.vf-hrs .vf-chip{display:inline-flex;align-items:center;justify-content:center}
