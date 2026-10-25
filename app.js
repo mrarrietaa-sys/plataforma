@@ -1,9 +1,9 @@
 /* =====================================================================
-   APP — pantallas: bienvenida, inicio, lección (estructura mrarrieta.com),
+   APP — pantallas: bienvenida, inicio, clase (estructura mrarrieta.com),
    resultados, progreso, examen final, desbloqueo
    ===================================================================== */
 (function () {
-  const PL = (q) => (q && q._t && q._t.parts && q._t.parts.length === 1) ? 'Lesson' : 'Part ' + (q ? q.part : '');
+  const PL = (q) => (q && q._t && q._t.parts && q._t.parts.length === 1) ? 'Class' : 'Part ' + (q ? q.part : '');
   const M = window.M1, A = window.M1A;
   const { D, C, S, $, $$, h, esc, shuffle, sample, sleep, photo, play, stop, sfx, sheet, good, bad, save } = M;
   const app = $('#app');
@@ -86,15 +86,15 @@
     const first = esc(S.name.split(' ')[0]);
     const steps = [
       { mood: 'welcome', t: `¡Hola, ${first}! 👋`, d: 'Soy Mr. Arrieta, tu profe. Te muestro en 1 minuto cómo funciona tu plataforma.' },
-      { sel: '.ringbox', mood: 'point', t: 'Tu progreso', d: `Aquí ves cuánto llevas del ${M.MOD.es}: el porcentaje sube con cada lección que completas.` },
-      { sel: '.hello .skills', mood: 'idea', t: 'Tus 4 habilidades', d: 'Escuchar 🎧, leer 📖, hablar 🗣️ y escribir ✍️. Las barras suben con cada lección que haces.' },
-      { sel: '#tgrid > :first-child', mood: 'pointside', t: `Los ${M.MOD.topics} temas`, d: 'Cada tema tiene <b>2 lecciones</b>. Los temas se abren <b>en orden</b>: termina un tema para abrir el siguiente.' },
-      { mood: 'idea', t: '¿Cómo es una lección?', d: 'Cada lección sigue el mismo orden: <b>Goal → Speaking → Reading → Explanation → Practice → Oral task → Music → Homework</b>.<br><br>🔊 escucha · 🎤 habla (permite el micrófono) · <b>← Atrás</b> para corregir · tu avance se guarda solo.' },
+      { sel: '.ringbox', mood: 'point', t: 'Tu progreso', d: `Aquí ves cuánto llevas del ${M.MOD.es}: el porcentaje sube con cada clase que completas.` },
+      { sel: '.hello .skills', mood: 'idea', t: 'Tus 4 habilidades', d: 'Escuchar 🎧, leer 📖, hablar 🗣️ y escribir ✍️. Las barras suben con cada clase que haces.' },
+      { sel: '#tgrid > :first-child', mood: 'pointside', t: `Los ${M.MOD.topics} temas`, d: 'Cada tema tiene <b>2 clases</b>. Los temas se abren <b>en orden</b>: termina un tema para abrir el siguiente.' },
+      { mood: 'idea', t: '¿Cómo es una clase?', d: 'Cada clase sigue el mismo orden: <b>Goal → Speaking → Reading → Explanation → Practice → Oral task → Music → Homework</b>.<br><br>🔊 escucha · 🎤 habla (permite el micrófono) · <b>← Atrás</b> para corregir · tu avance se guarda solo.' },
       { sel: '#dict-fab', mood: 'present', t: 'Tu diccionario', d: '¿No entiendes una palabra? Toca aquí, <b>escríbela o dila en voz alta</b> (en español o inglés) y te doy la respuesta con su pronunciación.' },
       { sel: '#chat-tb', mood: 'present', t: 'Chat con tu profe', d: 'Con este botón le escribes a tu docente cuando tengas dudas. El botón del diccionario lo puedes <b>arrastrar</b> a donde quieras o <b>quitarlo</b> soltándolo en la ✕ del centro.' },
       { sel: '#final-b', mood: 'celebrate', t: 'Examen final', d: `Al terminar los ${M.MOD.topics} temas presentas el examen final. Si apruebas, ¡obtienes tu <b>certificado</b> del ${M.MOD.es}! 🎓` },
       { sel: '#menu-b', mood: 'watch', t: 'Menú', d: 'Aquí encuentras tu progreso, el código de acceso, el <b>recordatorio diario</b> y este tour por si quieres verlo otra vez.' },
-      { mood: 'thumbs', t: '¡Listo! 🚀', d: 'Ya sabes todo lo necesario. Recuerda: un poquito cada día hace la diferencia. ' + (Object.values(S.parts).some(x => x.done) ? '¡Vamos a tu siguiente lección!' : '¡Vamos a tu primera lección!'), last: true },
+      { mood: 'thumbs', t: '¡Listo! 🚀', d: 'Ya sabes todo lo necesario. Recuerda: un poquito cada día hace la diferencia. ' + (Object.values(S.parts).some(x => x.done) ? '¡Vamos a tu siguiente clase!' : '¡Vamos a tu primera clase!'), last: true },
     ];
     const ov = h(`<div id="tour"><div class="tour-hole"></div><div class="tour-card"></div></div>`); document.body.appendChild(ov);
     const hole = $('.tour-hole', ov), card = $('.tour-card', ov);
@@ -114,7 +114,7 @@
     function show() {
       const s = steps[i]; const el = s.sel && $(s.sel);
       card.innerHTML = `<div class="tour-in">${M.mascot('tour-mra', s.mood)}<div><div class="tour-n">${i + 1} / ${steps.length}</div><h3>${s.t}</h3><p>${s.d}</p></div></div>
-        <div class="tour-bar"><button class="btn w sm" id="tskip">${s.last ? 'Cerrar' : 'Saltar tour'}</button><div class="grow"></div>${i ? '<button class="btn w sm" id="tprev">←</button>' : ''}<button class="btn k" id="tnext">${s.last ? '¡Empezar mi lección! →' : 'Siguiente →'}</button></div>`;
+        <div class="tour-bar"><button class="btn w sm" id="tskip">${s.last ? 'Cerrar' : 'Saltar tour'}</button><div class="grow"></div>${i ? '<button class="btn w sm" id="tprev">←</button>' : ''}<button class="btn k" id="tnext">${s.last ? '¡Empezar mi clase! →' : 'Siguiente →'}</button></div>`;
       $('#tskip', card).onclick = () => end(false);
       if (i) $('#tprev', card).onclick = () => { i--; show(); };
       $('#tnext', card).onclick = () => { if (s.last) end(true); else { i++; show(); } };
@@ -138,7 +138,7 @@
   function openChat() {
     if (window.MRLIVE && window.MRAC && MRAC.code && MRAC.code()) return MRLIVE.openStudent();
     if ($('.player', app)) {
-      const m = M.modal(`<div class="center">${M.mascot('mascot', 'present')}</div><h3 class="center">¿Ir al chat con tu profe?</h3><p class="muted center">Saldrás de la lección. Tu avance queda guardado y podrás continuar donde ibas.</p><div class="row" style="justify-content:center"><button class="btn k" id="cy">Ir al chat</button><button class="btn w" id="cn">Seguir en la lección</button></div>`);
+      const m = M.modal(`<div class="center">${M.mascot('mascot', 'present')}</div><h3 class="center">¿Ir al chat con tu profe?</h3><p class="muted center">Saldrás de la clase. Tu avance queda guardado y podrás continuar donde ibas.</p><div class="row" style="justify-content:center"><button class="btn k" id="cy">Ir al chat</button><button class="btn w" id="cn">Seguir en la clase</button></div>`);
       $('#cy', m).onclick = () => { m.remove(); route('chat'); }; $('#cn', m).onclick = () => m.remove(); return;
     }
     route('chat');
@@ -186,19 +186,19 @@
           ${window.MRAP && MRAP.get() ? '<a class="mod-back" href="index.html">← Mi perfil<span class="mb-x"> · Mi ruta de aprendizaje</span></a>' : ''}<span class="lbl">${esc(M.MOD.es)} · ${esc(M.MOD.levelEs || M.MOD.id)}</span>${window.MRAP && MRAP.get() ? (MRAP.isTrial() ? ` <span class="rolechip trial">${MRAP.plan && MRAP.plan().expired ? '⏰ Plan vencido' : '🟢 Acceso gratuito'}</span>` : MRAP.role(C.MODULE_ID || 'A1') === 'review' && !MRAP.isStaff() ? ' <span class="rolechip rev">🔁 Modo repaso</span>' : MRAP.isStaff() ? ' <span class="rolechip rev">👨‍🏫 Profe</span>' : ' <span class="rolechip cur">🧭 Tu ruta de aprendizaje</span>') : ''}
           <h1 style="margin-top:10px">${greeting()}, <span class="nmw"><span class="nm">${esc(first)}!</span></span></h1>
           <div class="ringbox"><div class="ring" style="--p:${rev ? 100 : pct}"><b>${rev ? 100 : pct}%</b></div>
-            <div><div class="rb-t" style="font-weight:800;font-size:18px">Tu progreso del ${M.MOD.es}</div>${rev ? `<div class="muted">✅ Superado · ${totP} de ${totP} lecciones · 🔥 ${S.streak.n || 0} día(s) seguidos</div>${revN ? `<div class="ce-revprog"><b>🔁 Repasando: ${revN} de ${totP} lecciones</b><div class="ce-revbar"><i style="width:${Math.round(revN / totP * 100)}%"></i></div></div>` : ''}` : `<div class="muted">${doneN} de ${M.MOD.classes} lecciones completadas · 🔥 ${S.streak.n || 0} día(s) seguidos</div>`}
+            <div><div class="rb-t" style="font-weight:800;font-size:18px">Tu progreso del ${M.MOD.es}</div>${rev ? `<div class="muted">✅ Superado · ${totP} de ${totP} clases · 🔥 ${S.streak.n || 0} día(s) seguidos</div>${revN ? `<div class="ce-revprog"><b>🔁 Repasando: ${revN} de ${totP} clases</b><div class="ce-revbar"><i style="width:${Math.round(revN / totP * 100)}%"></i></div></div>` : ''}` : `<div class="muted">${doneN} de ${M.MOD.classes} clases completadas · 🔥 ${S.streak.n || 0} día(s) seguidos</div>`}
             ${!nu && window.MRAP && MRAP.isTrial() ? `<button class="btn k" style="margin-top:12px" id="buy3">🔓 Desbloquear toda mi ruta</button>` : ''}</div></div>
           <div class="skills">${SKILLS.map(([k, ic, nm]) => `<div class="skill"><div class="ic">${ic}</div><div class="nm">${nm}</div><div class="bar"><i style="width:${M.skillPct(k)}%"></i></div><small class="muted">${S.skills[k][1] ? M.skillPct(k) + '%' : '—'}</small></div>`).join('')}</div>
         </div>
       </section>
-      ${rev ? `<div class="card ce-revcard">${M.mascot('mascot', 'thumbs')}<div class="grow"><span class="lbl">🔁 Modo repaso</span><h3>¡Ya superaste el ${esc(M.MOD.es)}! ✅</h3><p class="muted">Todas sus lecciones cuentan como completadas. Repasa cuando quieras para refrescar lo que aprendiste: aquí no se bloquea nada.</p><button class="btn k" id="rev-go">🔁 ${revN ? 'Seguir repasando' : 'Empezar a repasar'}: ${esc(revNext._t.title)} · ${PL(revNext)} →</button></div></div>` : ''}
+      ${rev ? `<div class="card ce-revcard">${M.mascot('mascot', 'thumbs')}<div class="grow"><span class="lbl">🔁 Modo repaso</span><h3>¡Ya superaste el ${esc(M.MOD.es)}! ✅</h3><p class="muted">Todas sus clases cuentan como completadas. Repasa cuando quieras para refrescar lo que aprendiste: aquí no se bloquea nada.</p><button class="btn k" id="rev-go">🔁 ${revN ? 'Seguir repasando' : 'Empezar a repasar'}: ${esc(revNext._t.title)} · ${PL(revNext)} →</button></div></div>` : ''}
       ${pendingBlock()}<div id="hwfb"></div>
       <div class="sect-title"><h2>📚 Temas del ${M.MOD.es}</h2><div class="row"><button class="btn sm w" id="prog">📊 Mi progreso</button>${M.hasProfile() ? '' : '<button class="btn sm" id="code">🔑 Código de acceso</button>'}</div></div>
       <div class="grid" id="tgrid"></div>
       <div class="sect-title"><h2>🏆 Final Test</h2></div>
-      <div class="card final">${M.mascot('mascot', 'point')}<div><h3>Well done! Get ready for the test.</h3><p style="margin:6px 0 0;color:#ddd">24 preguntas de los ${M.MOD.topics} temas (Listening, Reading, Writing y Speaking) · 30 minutos · 2 intentos. Si apruebas con ${(C.PASS_SCORE / 10).toFixed(1)}/10 o más, obtienes tu certificado 🎓</p>${M.finalUnlocked() ? '' : `<p style="margin:8px 0 0;color:#fff;font-weight:800">🔒 Se abre cuando termines las ${M.totalParts()} lecciones del módulo.</p>`}
+      <div class="card final">${M.mascot('mascot', 'point')}<div><h3>Well done! Get ready for the test.</h3><p style="margin:6px 0 0;color:#ddd">24 preguntas de los ${M.MOD.topics} temas (Listening, Reading, Writing y Speaking) · 30 minutos · 2 intentos. Si apruebas con ${(C.PASS_SCORE / 10).toFixed(1)}/10 o más, obtienes tu certificado 🎓</p>${M.finalUnlocked() ? '' : `<p style="margin:8px 0 0;color:#fff;font-weight:800">🔒 Se abre cuando termines las ${M.totalParts()} clases del módulo.</p>`}
         ${S.final ? `<p style="margin:8px 0 0;color:#fff;font-weight:800">Tu mejor resultado: ${(S.final.best / 10).toFixed(1)} / 10 ${S.final.passed ? '✅ Aprobado' : ''}</p>` : ''}${S.final && S.final.passed ? `<button class="btn sm" id="cert-b" style="margin-top:8px">🎓 Ver mi certificado</button>` : ''}
-        <button class="btn lg" id="final-b">${M.finalUnlocked() ? 'FINAL TEST →' : `🔒 ${M.doneCount()}/${M.totalParts()} lecciones`}</button></div>
+        <button class="btn lg" id="final-b">${M.finalUnlocked() ? 'FINAL TEST →' : `🔒 ${M.doneCount()}/${M.totalParts()} clases`}</button></div>
       <p class="center fx-foot" style="margin-top:22px;font-size:13.5px;color:#fff;grid-column:1/-1;font-weight:600">¡Aprende inglés HABLANDO!<br><a class="foot-wa" href="https://wa.me/${esc(C.WHATSAPP)}?text=${encodeURIComponent((window.MRNE || String)('¡Hola, mrarrieta.com! Soy ' + (S.name || 'estudiante') + '. Tengo una pregunta.'))}" target="_blank" rel="noopener">WhatsApp ${esc(C.WHATSAPP.replace(/^57/, '').replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3'))}</a></p>
     </div>`;
     const g = $('#tgrid');
@@ -363,8 +363,8 @@
   function finalLockedModal() {
     const d = M.doneCount(), tot = M.totalParts();
     const m = M.modal(`<div class="center">${M.mascot('mascot', 'watch')}</div><h3 class="center">🔒 Examen final bloqueado</h3>
-      <p class="center" style="font-size:17px">Para presentar el examen y obtener tu <b>certificado</b> debes terminar <b>todas las lecciones</b> del ${M.MOD.es}.</p>
-      <div class="fl-prog"><i style="width:${Math.round(d / tot * 100)}%"></i></div><p class="center" style="font-weight:800;margin:6px 0 14px">${d} de ${tot} lecciones completadas</p>
+      <p class="center" style="font-size:17px">Para presentar el examen y obtener tu <b>certificado</b> debes terminar <b>todas las clases</b> del ${M.MOD.es}.</p>
+      <div class="fl-prog"><i style="width:${Math.round(d / tot * 100)}%"></i></div><p class="center" style="font-weight:800;margin:6px 0 14px">${d} de ${tot} clases completadas</p>
       <button class="btn k block lg" id="cl">¡Seguir estudiando! 🚀</button>`, { x: true });
     $('#cl', m).onclick = () => { m.remove(); const nu = nextUp(); if (nu) route('class', nu.id); };
   }
@@ -373,7 +373,7 @@
      CLASS — estructura: GOAL · SPEAKING · READING · REVIEW · EXPLANATION
      · LISTEN & PRACTICE · PRACTICE · ORAL TASK · MUSIC · HOMEWORK
      ================================================================= */
-  // Cada lección tiene su propia combinación de juegos para que ninguna se sienta igual
+  // Cada clase tiene su propia combinación de juegos para que ninguna se sienta igual
   const PLAN = {
     t1p1: ['learn', 'bubblePop', 'clockGreet', 'matchLines', 'sayPop', 'fill', 'quizShow', 'speakWords'], t1p2: ['learn', 'dialogue', 'chatReply', 'oddOneOut', 'unscramble', 'spinWheel', 'speak'],
     t2p1: ['learn', 'catchWord', 'simonLetters', 'typeLetter', 'spell', 'raceGame'], t2p2: ['learn', 'spellName', 'plateGame', 'dialogue', 'spell', 'catchWord'],
@@ -412,7 +412,7 @@
     return st;
   }
 
-  /* ---------- transición divertida entre secciones de la lección ---------- */
+  /* ---------- transición divertida entre secciones de la clase ---------- */
   const SCENES = { rocket: { a: 'up', say: 'Blast off!' }, drums: { a: 'stage', say: 'Rock on!' }, guitar: { a: 'stage', say: "Let's rock!" },
     surf: { a: 'surf', say: 'Catch the wave!' }, hero: { a: 'fly', say: 'Super English!' }, balloon1: { a: 'balloon', say: 'Up, up and away!' }, balloon2: { a: 'balloon', say: "Let's explore!" }, balloon3: { a: 'balloon', say: 'Here we go!' }, laptop: { a: 'pop', say: 'Homework time!' }, wave: { a: 'pop', say: 'Hello!' }, rocket3: { a: 'up', say: 'Full speed!' }, rocket5: { a: 'up', say: 'To the moon!' }, 'plane-red': { a: 'fly', say: 'Ready for takeoff!' }, 'plane-blue': { a: 'fly', say: 'Great job!' }, 'plane-yellow': { a: 'fly', say: 'This way!' }, 'plane-green': { a: 'fly', say: 'Keep flying!' } };
   // 🎯 misión del tema según el objetivo (solo en la última parte del tema y si el estudiante eligió objetivo)
@@ -471,7 +471,7 @@
     const pv = M.prevPart(p); const loadP = M.loadAudio(['common', ...[].concat(M.MOD.games || []), M.MOD.audio + p.topic].concat(pv ? [M.MOD.audio + pv.topic] : []).concat(missionFor(p) ? ['gm' + (+M.MOD.n || 1) + 't' + p.topic] : []).concat(window.M1AGE_ON && (+M.MOD.n || 1) === 1 ? [(window.M1AGE_ON === 'kids' ? 'ka' : 'ta') + p.topic].concat(pv ? [(window.M1AGE_ON === 'kids' ? 'ka' : 'ta') + pv.topic] : []) : [])).then(() => { loaded = true; }, () => { loaded = true; });
     const pop = (t) => { cd.textContent = t; cd.classList.remove('pop'); void cd.offsetWidth; cd.classList.add('pop'); };
     for (const t of ['1', '2', '3']) { pop(t); try { sfx('tap'); } catch (e) { } await new Promise(r => setTimeout(r, 750)); }
-    if (!loaded) { lt.textContent = 'Preparando tu lección…'; await loadP; lt.textContent = ''; }
+    if (!loaded) { lt.textContent = 'Preparando tu clase…'; await loadP; lt.textContent = ''; }
     pop('GO!'); cd.classList.add('go'); if (rk) rk.classList.add('fly'); try { sfx('win'); } catch (e) { } await new Promise(r => setTimeout(r, 1000));
     const steps = buildSteps(p); const secs = [...new Set(steps.map(s => s.sec))];
     const rec = S.parts[id] = S.parts[id] || { done: false, stars: 0, best: 0 };
@@ -482,12 +482,12 @@
     }
     const run = (startAt && rec.run && !Array.isArray(rec.run.res)) ? rec.run : { res: {}, xp: 0 };
     app.innerHTML = `<div class="player"><div class="phead"><button class="x" title="Salir">✕</button><button class="back" title="Volver al paso anterior">← Atrás</button><div class="prog"><i style="width:0%"></i></div><div class="pstep"><b></b><small></small></div></div>
-      <div class="ptopic">📍 Estás en: <b>Topic ${p.topic} · ${esc(p._t.title)}</b> — ${PL(p)}: ${esc(p.title)} <span class="psec"></span>${revM ? `<span class="ce-revchip">🔁 Repasando: ${M.revCount()} de ${M.totalParts()} lecciones</span>` : ''}</div>
+      <div class="ptopic">📍 Estás en: <b>Topic ${p.topic} · ${esc(p._t.title)}</b> — ${PL(p)}: ${esc(p.title)} <span class="psec"></span>${revM ? `<span class="ce-revchip">🔁 Repasando: ${M.revCount()} de ${M.totalParts()} clases</span>` : ''}</div>
       <button class="resume hidden">⏩ Continuar donde quedé</button>
       <div class="secbar rt">${secs.map((s, n) => `${n ? '<em class="rt-ln"></em>' : ''}<span data-s="${esc(s)}"><i>${SEC_MRI(s)}</i><b>${esc(s)}</b></span>`).join('')}</div><div class="stage"></div></div>`;
     $('.x', app).onclick = () => { stop(); route('home'); };
     const player = $('.player', app);
-    setTimeout(() => { try { if (document.body.contains(player)) M.confetti && M.confetti(2500); } catch (e) { } }, 700); // 🎉 papelitos ya dentro de la lección
+    setTimeout(() => { try { if (document.body.contains(player)) M.confetti && M.confetti(2500); } catch (e) { } }, 700); // 🎉 papelitos ya dentro de la clase
     let navBack = null, navJump = null;
     $('.back', app).onclick = () => { if (navBack) { sfx('tap'); navBack(); } };
     $('.resume', app).onclick = () => { if (navJump) { sfx('tap'); navJump(); } };
@@ -648,10 +648,10 @@
         ${window.MRGOAL ? `<div style="max-width:620px;margin:12px auto 0">${MRGOAL.whyHTML(M.MOD.n, p.topic)}</div>` : ''}
         ${prev && !(S.parts[prev.id] && S.parts[prev.id].done) ? `<p class="hint" style="margin-top:6px">💡 Te recomendamos completar primero: ${esc(prev._t.title)} · ${PL(prev)}</p>` : ''}
       </div>`;
-      await A.waitNext(stage, '¡Empezar lección! 🚀'); M.confetti(2200); sfx('win'); return null;
+      await A.waitNext(stage, '¡Empezar clase! 🚀'); M.confetti(2200); sfx('win'); return null;
     },
 
-    // WARM-UP GAME: juego dinámico con la lección anterior + un adelanto (2 palabras) de la lección nueva
+    // WARM-UP GAME: juego dinámico con la clase anterior + un adelanto (2 palabras) de la clase nueva
     warmGame: async (stage, p) => {
       const pv = M.prevPart(p); const uniq = (a) => a.filter((v, i, x) => v && v.en && x.findIndex(y => y.en === v.en) === i);
       const old = pv ? sample(uniq(pv.vocab || []), 6) : []; const neu = sample(uniq(p.vocab || []).filter(v => !old.some(o => o.en === v.en)), old.length ? 2 : 6);
@@ -660,7 +660,7 @@
       const POOL = ['bubblePop', 'catchWord', 'memory', 'raceGame', 'spinWheel', 'matchLines', 'oddOneOut', 'sayPop', 'quizShow'].filter(g => typeof A[g] === 'function' && !used.includes(g));
       let hsh = 0; for (const ch of String(M.MOD.id) + p.id) hsh = (hsh * 31 + ch.charCodeAt(0)) >>> 0;
       const g = POOL[hsh % POOL.length] || 'memory';
-      const body = A.head(stage, { lbl: 'Warm-up', title: '🔥 Warm-up game', ins: pv ? `Calienta motores: juega con lo que aprendiste en <b>${esc(pv._t.title)} · ${PL(pv)}</b> y descubre <b>${neu.length} palabras nuevas</b> de la lección de hoy.` : 'Calienta motores: descubre jugando algunas palabras de la lección de hoy.' });
+      const body = A.head(stage, { lbl: 'Warm-up', title: '🔥 Warm-up game', ins: pv ? `Calienta motores: juega con lo que aprendiste en <b>${esc(pv._t.title)} · ${PL(pv)}</b> y descubre <b>${neu.length} palabras nuevas</b> de la clase de hoy.` : 'Calienta motores: descubre jugando algunas palabras de la clase de hoy.' });
       /* palabras del warm-up ocultas */
       await A.waitNext(stage, '¡A jugar! 🎮');
       const pseudo = Object.assign(Object.create(p), { vocab, sentences: (pv && pv.sentences) || p.sentences, pairs: null });
@@ -759,7 +759,7 @@
         const btns = opts.map(o => { const b = h(usePh ? `<button class="opt imgopt">${photo(o.img)}<span class="imglbl">${esc(o.en)}<small class="imges">${esc(o.es || '')}</small></span></button>` : `<button class="opt">${esc(o.en)}<small class="imges">${esc(o.es || '')}</small></button>`); wrap.appendChild(b); return b; });
         setTimeout(() => play(it.au), 350);
         const i = await A.choose(btns); const ok = opts[i] === it; btns[opts.indexOf(it)].classList.add('right'); if (!ok) btns[i].classList.add('wrong');
-        await A.feedback(ok, `${it.en} (${it.es})`, 'Repasa la lección anterior si lo necesitas.'); return ok;
+        await A.feedback(ok, `${it.en} (${it.es})`, 'Repasa la clase anterior si lo necesitas.'); return ok;
       });
       return A.result(r.c, items.length, 'listening', r.missed);
     },
@@ -897,10 +897,10 @@
     kidsTap: async (stage, p) => {
       const pool = (p.sentences || []).filter(s => s.img && s.au), rounds = shuffle(pool.slice()).slice(0, Math.min(3, pool.length)); let c = 0; const missed = [];
       for (let n = 0; n < rounds.length; n++) {
-        const tg = rounds[n], seen = { [tg.img]: 1, [tg.en]: 1 }, opts = shuffle([tg].concat(shuffle(pool.filter(s => s !== tg)).filter(s => { if (seen[s.img] || seen[s.en]) return false; seen[s.img] = seen[s.en] = 1; return true; }).slice(0, 3)));
+        const tg = rounds[n], opts = shuffle([tg].concat(shuffle(pool.filter(s => s !== tg)).slice(0, 3)));
         const body = A.head(stage, { lbl: 'Practice', title: 'Listen and tap', ins: 'Escucha y <b>toca la foto correcta</b>. Luego dilo tú en voz alta.', count: `${n + 1} / ${rounds.length}` });
         const top = h(`<div class="kt-top">${M.mascot('mascot', 'point')}<div class="kt-bub"><b>Escucha y toca la foto</b><button class="kt-pl" type="button">${window.MRI ? MRI('vol') : '🔊'}<span>Escuchar</span></button></div></div>`); body.appendChild(top);
-        const grid = h(`<div class="kt-grid">${opts.map((o, k) => `<button class="kt-pic" type="button" data-k="${k}">${photo(o.img)}<span class="kt-cap">${esc(o.en)}</span></button>`).join('')}</div>`); body.appendChild(grid);
+        const grid = h(`<div class="kt-grid">${opts.map((o, k) => `<button class="kt-pic" type="button" data-k="${k}">${photo(o.img)}</button>`).join('')}</div>`); body.appendChild(grid);
         const fb = h(`<div class="kt-say hidden"></div>`); body.appendChild(fb);
         const say = () => { stop(); play(tg.au); }; $('.kt-pl', top).onclick = () => { sfx('tap'); say(); }; setTimeout(say, 450);
         let first = true;
@@ -928,7 +928,7 @@
   ['learn', 'listenChoose', 'pickWord', 'typeWord', 'typeLetter', 'typeNumber', 'phone', 'spellName', 'typeSentence', 'fill', 'unscramble', 'memory', 'sort', 'crossword', 'speed', 'spell', 'plural', 'dialogue', 'speak', 'speakWords', 'wordSearch', 'hangman', 'bubblePop', 'matchLines', 'quizShow', 'oddOneOut', 'catchWord', 'spinWheel', 'raceGame', 'sayPop', 'clockGreet', 'chatReply', 'simonLetters', 'plateGame', 'passport', 'airport', 'bingo', 'colorMix', 'slotBe', 'whackAn', 'riddleJob', 'elevator', 'familyTree', 'animalSounds', 'restaurant', 'market', 'dayFlip', 'specialDates', 'weatherTV', 'suitcase', 'flashlight', 'housePlan', 'pluralMachine', 'magicMirror', 'nearFar', 'theseRush', 'countRoom', 'memoryRoom']
     .forEach(k => { STEP[k] = (stage, p) => A[k](stage, p); });
 
-  /* ---------- MUSIC · PLAY & LEARN (una canción A1 por lección) ---------- */
+  /* ---------- MUSIC · PLAY & LEARN (una canción A1 por clase) ---------- */
   /* ---------- juegos durante la canción: BINGO (A1/A2) y BURBUJAS (B2/B2+) ---------- */
   function songTraps(sg, n) {
     const SG = window.M1SONGS || { songs: {} }; const mine = new Set((sg.kw || []).map(k => k.en.toLowerCase()));
@@ -1093,7 +1093,7 @@
     const hw = p.hw; const saved = (S.hw[p.id] || {}).text || '';
     const AG = M.ageGroup(); if (AG === 'teens') stage.classList.add('dk');
     const body = A.head(stage, { lbl: 'Homework', title: AG === 'teens' ? 'Nuevo post' : AG === 'kids' ? 'Tu tarea' : '✍️ Writing task', ins: esc(hw.es) });
-    if (AG === 'kids') { const kt = h(`<div class="khw">${[['pen', '1', 'Escríbelo aquí', 'Abajo, en inglés'], ['mic', '2', 'Dilo en voz alta', 'Toca y practica']].map(([ic, n, t, s]) => `<div class="khw-t${n === '2' ? ' khw-say' : ''}"><span>${window.MRI ? MRI(ic) : ''}</span><b>${n}. ${t}</b><small>${s}</small></div>`).join('')}</div>`); body.appendChild(kt);
+    if (AG === 'kids') { const kt = h(`<div class="khw">${[['pen', '1', 'Dibuja en una hoja', 'Haz un dibujo de tu tarea'], ['file', '2', 'Escríbelo aquí', 'Abajo, en inglés'], ['mic', '3', 'Dilo en voz alta', 'Toca y practica']].map(([ic, n, t, s]) => `<div class="khw-t${n === '3' ? ' khw-say' : ''}"><span>${window.MRI ? MRI(ic) : ''}</span><b>${n}. ${t}</b><small>${s}</small></div>`).join('')}</div>`); body.appendChild(kt);
       const ks = $('.khw-say', kt); if (!M.canSR) ks.style.display = 'none'; else ks.onclick = async () => { const txt = ($('textarea.hw', body) || {}).value || ''; if (txt.trim().length < 5) { M.toast('Primero escribe tu tarea y luego dila en voz alta 😉'); return; } stop(); ks.classList.add('rec'); $('small', ks).textContent = '¡Te estoy escuchando!'; const r = await M.listen(12000); ks.classList.remove('rec'); const sc = r.alts && r.alts.length ? M.speechScore(txt, r.alts).score : 0; $('small', ks).textContent = sc >= 60 ? '¡Muy bien dicho! ⭐' : r.alts && r.alts.length ? '¡Casi! Inténtalo otra vez' : 'No te escuché, toca otra vez'; if (sc >= 60) { sfx('ok'); M.praise(); } else M.encourage(); }; }
     body.appendChild(h(`<p><span class="hint">Mínimo ${hw.n} ${/palabras|frutas|objetos|plural/.test(hw.es) && !/oraci/.test(hw.es) ? 'elementos' : 'oraciones'}</span> ${hw.kw.length ? `<span class="hint">Usa: ${hw.kw.map(esc).join(', ')}</span>` : ''}</p>`));
     const ta = h(`<textarea class="hw${AG === 'teens' ? ' tpost' : ''}" placeholder="${AG === 'teens' ? 'Escribe tu post en inglés…' : 'Escribe aquí en inglés…'}">${esc(saved)}</textarea>`); body.appendChild(ta);
@@ -1122,7 +1122,7 @@
         const pct = fb.total ? Math.round(fb.ok / fb.total * 100) : 0;
         out.insertAdjacentHTML('afterbegin', `<li class="${pct >= 70 ? 'ok' : 'tip'} hw-auto"><span>${pct >= 70 ? '🏆' : '💪'}</span><span><b>Revisión de la plataforma: ${pct}%</b> · ${pct >= 90 ? '¡Excelente trabajo!' : pct >= 70 ? '¡Muy bien! Revisa los detalles para mejorar aún más.' : 'Vas por buen camino: corrige los puntos marcados y vuelve a revisar.'}</span></li>`);
         try { if (window.MRAC && MRAC.code && MRAC.code()) MRAC.homework({ module: M.MOD.id, part: p.id, title: `${M.MOD.es} · ${p._t.title} · ${PL(p)}: ${p.title}`, text: txt, score: fb.score }).catch(() => { }); } catch (e) { } // queda guardada (sin avisar a profes)
-        const nx = h(`<button class="btn k lg">Terminar lección →</button>`);
+        const nx = h(`<button class="btn k lg">Terminar clase →</button>`);
         bar.append(again, nx); fb.ok >= fb.total * .7 ? sfx('ok') : sfx('bad');
         out.scrollIntoView({ behavior: 'smooth', block: 'start' });
         again.onclick = () => { out.innerHTML = ''; idle(); ta.focus(); };
@@ -1184,13 +1184,13 @@
   }
 
   /* ---------------- RESULTS ---------------- */
-  /* ---------- Fase 6: cierre de lección por edad (Teens = racha + siguiente nivel · Kids = sello + álbum) ---------- */
+  /* ---------- Fase 6: cierre de clase por edad (Teens = racha + siguiente nivel · Kids = sello + álbum) ---------- */
   function ageClose(p, nx, AG, pts) {
     const I = n => window.MRI ? MRI(n) : '';
     if (AG === 'teens') {
       const n = Math.max(1, (S.streak && S.streak.n) || 1), WD = ['D', 'L', 'M', 'M', 'J', 'V', 'S'], d0 = new Date().getDay();
       const days = Array.from({ length: 7 }, (_, k) => { const back = 6 - k; return `<i class="${back < n ? 'on' : ''}">${WD[(d0 - back + 70) % 7]}</i>`; }).join('');
-      return `<div class="tc"><div class="tc-st"><span class="tc-ic">${I('flame')}</span><div><b>Racha de ${n} día${n === 1 ? '' : 's'}</b><small>Lección completada · +${pts} puntos</small></div><span class="tc-days">${days}</span></div>
+      return `<div class="tc"><div class="tc-st"><span class="tc-ic">${I('flame')}</span><div><b>Racha de ${n} día${n === 1 ? '' : 's'}</b><small>Clase completada · +${pts} puntos</small></div><span class="tc-days">${days}</span></div>
         ${nx ? `<div class="tc-nx"><img src="mra-x-rocket5.webp?v=2" alt="Mr. Arrieta"><div><b>Next level unlocked</b><span>${esc(nx._t.title)} · ${PL(nx)}: ${esc(nx.title)}</span></div></div>` : ''}</div>`;
     }
     if (AG === 'kids') {
@@ -1215,14 +1215,14 @@
     const missed = []; run.res.forEach(r => (r.missed || []).forEach(m => { if (m.en && !missed.find(x => x.en === m.en)) missed.push(m); }));
     const nx = M.nextPart(p);
     const AG = M.ageGroup();
-    const head = AG === 'kids' ? '¡Misión cumplida!' : pct >= 90 ? '¡Lección perfecta! 🏆' : pct >= 70 ? '¡Muy buen trabajo! 💪' : '¡Lección completada! 👏';
-    const advice = pct >= 90 ? `¡Lo hiciste increíble, ${esc(S.name.split(' ')[0])}! Ya dominas este tema. Sigue con la próxima lección.` : pct >= 70 ? 'Vas muy bien. Repasa las palabras que te costaron y pasa a la siguiente lección.' : 'Te recomendamos repetir esta lección mañana: la repetición es la clave para aprender. ¡Tú puedes!';
+    const head = AG === 'kids' ? '¡Misión cumplida!' : pct >= 90 ? '¡Clase perfecta! 🏆' : pct >= 70 ? '¡Muy buen trabajo! 💪' : '¡Clase completada! 👏';
+    const advice = pct >= 90 ? `¡Lo hiciste increíble, ${esc(S.name.split(' ')[0])}! Ya dominas este tema. Sigue con la próxima clase.` : pct >= 70 ? 'Vas muy bien. Repasa las palabras que te costaron y pasa a la siguiente clase.' : 'Te recomendamos repetir esta clase mañana: la repetición es la clave para aprender. ¡Tú puedes!';
     app.innerHTML = `<div class="player"><div class="card">
-      <div class="center">${M.mascot('mascot bounce', pct >= 90 ? 'celebrate' : pct >= 70 ? 'thumbs' : 'smile')}<h2 style="font-size:30px">${head}</h2><p class="muted">${esc(p._t.title)} · ${PL(p)}: ${esc(p.title)}</p>${revM ? `<p class="ce-revchip">🔁 Repasando: ${M.revCount()} de ${M.totalParts()} lecciones</p>` : ''}</div>
+      <div class="center">${M.mascot('mascot bounce', pct >= 90 ? 'celebrate' : pct >= 70 ? 'thumbs' : 'smile')}<h2 style="font-size:30px">${head}</h2><p class="muted">${esc(p._t.title)} · ${PL(p)}: ${esc(p.title)}</p>${revM ? `<p class="ce-revchip">🔁 Repasando: ${M.revCount()} de ${M.totalParts()} clases</p>` : ''}</div>
       <div class="res-stars">${[1, 2, 3].map(i => `<span style="${i <= stars ? '' : 'opacity:.2;filter:grayscale(1)'}">⭐</span>`).join('')}</div>
       <div class="stats"><div class="stat"><b>${pct}%</b><small>Precisión</small></div><div class="stat"><b>+${run.xp + bonus}</b><small>Puntos ganados ⚡</small></div><div class="stat"><b>${c}/${t}</b><small>Respuestas</small></div></div>
       ${ageClose(p, nx, AG, run.xp + bonus)}
-      <h3 style="margin:18px 0 8px">📊 Tus 4 habilidades en esta lección</h3>
+      <h3 style="margin:18px 0 8px">📊 Tus 4 habilidades en esta clase</h3>
       <div class="skills" style="margin-top:0">${SKILLS.map(([k, ic, nm]) => { const v = sk[k]; const pc = v && v[1] ? Math.round(v[0] / v[1] * 100) : null; return `<div class="skill"><div class="ic">${ic}</div><div class="nm">${nm}</div><div class="bar"><i style="width:${pc || 0}%"></i></div><small class="muted">${pc === null ? '—' : pc + '%'}</small></div>`; }).join('')}</div>
       <div class="lesson"><h3>🧑‍🏫 Consejos del profe</h3><p>${advice}</p>
         ${weakest && weakest[1][0] / weakest[1][1] < .9 ? `<div class="tipbox"><span>🎯</span><span><b>Para mejorar tu ${weakest[0]}:</b> ${SKILL_TIPS[weakest[0]]}</span></div>` : ''}
@@ -1230,11 +1230,11 @@
       </div>
       ${missed.length ? `<h3 style="margin:18px 0 8px">🔁 Palabras para repasar</h3><div class="weak">${missed.slice(0, 12).map((m, i) => `<span>${esc(m.en)} ${m.au ? `<button class="aud sm" data-i="${i}">🔊</button>` : ''}</span>`).join('')}</div>` : ''}
       <div class="row" style="margin-top:22px;justify-content:center">
-        <button class="btn w" id="again">🔁 Repetir lección</button>${window.MRAP && MRAP.get() ? '<a class="btn w" id="home" href="index.html" style="text-decoration:none">👤 Volver a mi perfil</a>' : '<button class="btn w" id="home">🏠 Inicio</button>'}
-        ${nx ? `<button class="btn k lg" id="next">Siguiente lección: ${esc(nx._t.title)} · ${PL(nx)} →</button>` : `<button class="btn k lg" id="fin">🏆 Examen final →</button>`}
+        <button class="btn w" id="again">🔁 Repetir clase</button><button class="btn w" id="home">🏠 Inicio</button>
+        ${nx ? `<button class="btn k lg" id="next">Siguiente: ${esc(nx._t.title)} · ${PL(nx)} →</button>` : `<button class="btn k lg" id="fin">🏆 Examen final →</button>`}
       </div></div></div>`;
     $$('.weak button', app).forEach(b => b.onclick = () => play(missed[+b.dataset.i].au, { btn: b }));
-    $('#again').onclick = () => route('class', p.id); if ($('#home').tagName === 'BUTTON') $('#home').onclick = () => route('home');
+    $('#again').onclick = () => route('class', p.id); $('#home').onclick = () => route('home');
     if ($('#next')) $('#next').onclick = () => M.isUnlocked(nx.topic) ? route('class', nx.id) : (route('home'), lockGate(nx.topic));
     if ($('#fin')) $('#fin').onclick = () => M.finalUnlocked() ? route('final') : (route('home'), finalLockedModal());
     sfx('win'); M.confetti(stars === 3 ? 3500 : 2000); M.praise();
@@ -1243,13 +1243,13 @@
 
   /* ---------------- BADGES ---------------- */
   const BADGES = [
-    ['first', '🚀', 'Primer paso', 'Completa tu primera lección', () => M.allParts().some(p => S.parts[p.id] && S.parts[p.id].done)],
-    ['five', '📚', 'Estudiante dedicado', 'Completa 5 lecciones', () => M.allParts().filter(p => S.parts[p.id] && S.parts[p.id].done).length >= 5],
-    ['perfect', '🏆', 'Lección perfecta', 'Obtén 3 estrellas', () => M.allParts().some(p => M.partStars(p.id) === 3)],
+    ['first', '🚀', 'Primer paso', 'Completa tu primera clase', () => M.allParts().some(p => S.parts[p.id] && S.parts[p.id].done)],
+    ['five', '📚', 'Estudiante dedicado', 'Completa 5 clases', () => M.allParts().filter(p => S.parts[p.id] && S.parts[p.id].done).length >= 5],
+    ['perfect', '🏆', 'Clase perfecta', 'Obtén 3 estrellas', () => M.allParts().some(p => M.partStars(p.id) === 3)],
     ['streak3', '🔥', 'En racha', 'Estudia 3 días seguidos', () => (S.streak.n || 0) >= 3],
     ['xp1000', '⚡', '1000 puntos', 'Acumula 1000 puntos', () => S.xp >= 1000],
     ['speaker', '🎤', 'Gran speaker', 'Speaking por encima de 80%', () => S.skills.speaking[1] >= 10 && M.skillPct('speaking') >= 80],
-    ['half', '⭐', 'Mitad del camino', 'Completa 14 lecciones', () => M.allParts().filter(p => S.parts[p.id] && S.parts[p.id].done).length >= 14],
+    ['half', '⭐', 'Mitad del camino', 'Completa 14 clases', () => M.allParts().filter(p => S.parts[p.id] && S.parts[p.id].done).length >= 14],
     ['grad', '🎓', 'Graduado ' + (M.MOD.id === 'B2' ? 'B1' : M.MOD.id), 'Aprueba el examen final', () => S.final && S.final.best >= C.PASS_SCORE],
   ];
   function checkBadges() { S.badges = S.badges || []; BADGES.forEach(([id, e, n]) => { if (!S.badges.includes(id) && BADGES.find(b => b[0] === id)[4]()) { S.badges.push(id); setTimeout(() => M.toast(`🏅 ¡Nueva insignia: ${n} ${e}!`), 1500); } }); save(); }
@@ -1264,7 +1264,7 @@
     const low = sk.sort((a, b) => a[1] - b[1])[0];
     app.innerHTML = `<div class="wrap">
       <div class="card"><div class="row"><div class="ring" style="--p:${M.overallPct()}"><b>${M.overallPct()}%</b></div><div class="grow"><span class="lbl">Mi progreso</span><h1 style="font-size:30px;margin-top:8px">${esc(S.name)}</h1><p class="muted" style="margin:4px 0">${M.MOD.es} · Nivel ${M.MOD.id}</p></div></div>
-        <div class="stats" style="grid-template-columns:repeat(4,1fr)"><div class="stat"><b>${done}/${parts.length}</b><small>Lecciones</small></div><div class="stat"><b>${stars}/${parts.length * 3}</b><small>Estrellas</small></div><div class="stat" title="${esc(M.PTS_TIP)}"><b>${S.xp}</b><small>Puntos ⚡</small></div><div class="stat"><b>🔥 ${S.streak.n || 0}</b><small>Racha (días)</small></div></div>
+        <div class="stats" style="grid-template-columns:repeat(4,1fr)"><div class="stat"><b>${done}/${parts.length}</b><small>Clases</small></div><div class="stat"><b>${stars}/${parts.length * 3}</b><small>Estrellas</small></div><div class="stat" title="${esc(M.PTS_TIP)}"><b>${S.xp}</b><small>Puntos ⚡</small></div><div class="stat"><b>🔥 ${S.streak.n || 0}</b><small>Racha (días)</small></div></div>
         <h3 style="margin:14px 0 8px">Tus 4 habilidades</h3>
         <div class="skills" style="margin-top:0">${SKILLS.map(([k, ic, nm]) => `<div class="skill"><div class="ic">${ic}</div><div class="nm">${nm}</div><div class="bar"><i style="width:${M.skillPct(k)}%"></i></div><small class="muted">${S.skills[k][1] ? M.skillPct(k) + '% · ' + S.skills[k][1] + ' ejercicios' : 'Sin datos aún'}</small></div>`).join('')}</div>
         ${low ? `<div class="tipbox" style="margin-top:12px"><span>🎯</span><span><b>Recomendación:</b> tu habilidad para mejorar es <b>${low[0]}</b>. ${SKILL_TIPS[low[0]]}</span></div>` : ''}
@@ -1283,7 +1283,7 @@
     if ($('#pw')) $('#pw').onclick = () => practiceWeak(weak);
     $('#exp').onclick = () => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(S, null, 1)], { type: 'application/json' })); a.download = `progreso-modulo1-${S.name.replace(/\s+/g, '_')}.json`; a.click(); };
     $('#imp').onchange = async (e) => { try { const d = JSON.parse(await e.target.files[0].text()); if (!d.v) throw 0; Object.keys(S).forEach(k => delete S[k]); Object.assign(S, d); save(); M.toast('Progreso restaurado ✅'); route('progress'); } catch (er) { M.toast('Archivo no válido'); } };
-    $('#rst').onclick = () => { const m = M.modal(`<h3>¿Reiniciar todo tu progreso?</h3><p class="muted">Se borrarán tus estrellas, puntos y lecciones completadas en este dispositivo. Los códigos de acceso se conservan.</p><div class="row"><button class="btn w" id="n">Cancelar</button><button class="btn k" id="y" style="background:var(--bad);color:#fff">Sí, reiniciar</button></div>`);
+    $('#rst').onclick = () => { const m = M.modal(`<h3>¿Reiniciar todo tu progreso?</h3><p class="muted">Se borrarán tus estrellas, puntos y clases completadas en este dispositivo. Los códigos de acceso se conservan.</p><div class="row"><button class="btn w" id="n">Cancelar</button><button class="btn k" id="y" style="background:var(--bad);color:#fff">Sí, reiniciar</button></div>`);
       $('#n', m).onclick = () => m.remove(); $('#y', m).onclick = () => { const keep = { name: S.name, unlocked: S.unlocked, all: S.all, review: S.review }; localStorage.removeItem('mra_m1_progress_v1'); Object.keys(S).forEach(k => delete S[k]); Object.assign(S, { v: 1, created: Date.now(), xp: 0, streak: { last: '', n: 0 }, parts: {}, skills: { listening: [0, 0], reading: [0, 0], speaking: [0, 0], writing: [0, 0] }, weak: {}, final: null, hw: {}, sound: true, badges: [] }, keep); save(); m.remove(); route('home'); }; };
   }
   async function practiceWeak(weak) {
