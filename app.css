@@ -6646,3 +6646,6 @@ body.ag-teens .pg-rows{background:#fff}
 }
 .g1-ad .g1-hd img{height:104px;max-width:150px}
 @media(max-width:560px){.g1-ad .g1-hd img{height:76px;max-width:110px}}
+/* v392 · Mr. Arrieta flota en la guía y en "Tu siguiente paso" (todas las edades) */
+.g1-hd img{animation:mraFloat 3.4s ease-in-out infinite;will-change:transform}
+.wrap.db .db-hero-mra{animation:mraFloat 3.4s ease-in-out infinite!important}
