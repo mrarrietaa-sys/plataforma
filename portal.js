@@ -1200,21 +1200,22 @@
       else { bt.disabled = false; bt.textContent = 'Avísame'; M.toast('No se pudo guardar. Inténtalo de nuevo.'); } };
   }
   async function vipBooking() {
-    const m = M.modal(`<div class="vb"><h3>📅 Reserva tu clase individual</h3><div id="vb-b" class="center">⏳ Buscando espacios disponibles…</div></div>`, { x: true });
+    const m = M.modal(`<div class="vb"><h3>📅 Reserva tu clase individual</h3><div id="vb-b" class="center">⏳ Buscando espacios disponibles…</div></div>`, { x: true }); m.classList.add('vb-modal');
     const r = await MRAC.call('vipOptions', { code: MRAC.code() }); const b = $('#vb-b', m); if (!b) return;
     if (!r.ok) { b.innerHTML = `<p>${r.err === 'not_premium' ? 'Las clases individuales son parte de los planes Premium.' : 'No pudimos cargar los espacios. Revisa tu conexión.'}</p>`; return; }
     if (!r.teachers.length) { b.innerHTML = `<p class="muted">Por ahora no hay espacios libres en los próximos días. Los profes publican nuevos horarios cada semana.</p><button class="btn k block" id="vb-wait0">🔔 Avísame cuando haya espacio</button>`; $('#vb-wait0', b).onclick = () => waitAsk(m); return; }
-    let T = null, D = null, S = null, TP = null, OT = '', ALL = false;
+    let T = null, D = null, S = null, TP = null, OT = '', ALL = false, PICK = false, FD = null, FH = null;
     const MN = (P.assigned() || {}).n || +(P.get() || {}).module || 1; const tops = TOPICS[MN] || TOPICS[1];
     const step = () => {
       if (!T && ALL) { // 📅 todos los horarios de todos los profes, por día
         const sl = []; r.teachers.forEach(t => t.slots.forEach(x => sl.push(Object.assign({ t }, x)))); sl.sort((a, c) => (a.date + a.time).localeCompare(c.date + c.time));
         const days = [...new Set(sl.map(x => x.date))];
-        b.innerHTML = `<button class="btn w sm" id="vb-allb">← Ver por profe</button><p class="vb-st">📅 Todos los horarios disponibles <small>(hora Colombia)</small></p><div class="vb-all">${days.map(d => `<div class="vb-day"><b>${fmtD(d, { weekday: 'long', day: 'numeric', month: 'short' })}</b><div class="vb-times">${sl.filter(x => x.date === d).map(x => `<button class="vb-h vb-ht" data-sid="${esc(x.id)}">${fmtT(x.time)}<small>${esc(String(x.t.name).split(' ')[0])}</small></button>`).join('')}</div></div>`).join('')}</div><button class="btn w sm vb-none" id="vb-wait">😕 Ningún horario me sirve</button>`;
+        b.innerHTML = `<button class="btn w sm" id="vb-allb">← Buscar por hora</button><p class="vb-st">📅 Todos los horarios disponibles <small>(hora Colombia)</small></p><div class="vb-all">${days.map(d => `<div class="vb-day"><b>${fmtD(d, { weekday: 'long', day: 'numeric', month: 'short' })}</b><div class="vb-times">${sl.filter(x => x.date === d).map(x => `<button class="vb-h vb-ht" data-sid="${esc(x.id)}">${fmtT(x.time)}<small>${esc(String(x.t.name).split(' ')[0])}</small></button>`).join('')}</div></div>`).join('')}</div><button class="btn w sm vb-none" id="vb-wait">😕 Ningún horario me sirve</button>`;
         $('#vb-allb', b).onclick = () => { ALL = false; step(); }; $('#vb-wait', b).onclick = () => waitAsk(m);
         $$('[data-sid]', b).forEach(x => x.onclick = () => { const it = sl.find(y => y.id === x.dataset.sid); T = it.t; D = it.date; S = T.slots.find(y => y.id === it.id); ALL = false; sfx('tap'); step(); }); return; }
-      if (!T) { b.innerHTML = `<button class="btn k sm vb-allbtn" id="vb-all">📅 Ver todos los horarios juntos</button><p class="vb-st">1️⃣ Elige tu profesor</p><div class="vb-teachers">${r.teachers.map(t => `<button class="vb-t" data-t="${esc(t.id)}">${(t.photo || (window.MRPROFPIC && MRPROFPIC(t.name))) ? `<span class="vb-av has"><img src="${esc(t.photo || MRPROFPIC(t.name))}" alt=""></span>` : `<span class="vb-av">${esc((t.name || '?').split(' ').map(x => x[0]).slice(0, 2).join(''))}</span>`}<div><b>${esc(t.name)}</b><small>${esc(t.bio || '')}</small><em>${t.slots.length} espacio${t.slots.length === 1 ? '' : 's'} disponible${t.slots.length === 1 ? '' : 's'}</em></div></button>`).join('')}</div><p class="muted vb-cr">Te quedan <b>${r.credits.vipLeft}</b> ${+r.credits.vipLeft === 1 ? 'clase individual' : 'clases individuales'} en tu plan. Puedes cancelar gratis hasta <b>12 horas antes</b> de la clase.</p><button class="btn w sm vb-none" id="vb-wait">😕 Ningún horario me sirve</button>`; $('#vb-all', b).onclick = () => { ALL = true; step(); }; $('#vb-wait', b).onclick = () => waitAsk(m);
-        $$('.vb-t', b).forEach(x => x.onclick = () => { T = r.teachers.find(t => t.id === x.dataset.t); sfx('tap'); step(); }); return; }
+      if (!T && !PICK) return finder();
+      if (!T) { b.innerHTML = `<button class="btn w sm" id="vb-fb">← Buscar por hora</button> <button class="btn k sm vb-allbtn" id="vb-all">📅 Ver todos los horarios juntos</button><p class="vb-st">1️⃣ Elige tu profesor</p><div class="vb-teachers">${r.teachers.map(t => `<button class="vb-t" data-t="${esc(t.id)}">${(t.photo || (window.MRPROFPIC && MRPROFPIC(t.name))) ? `<span class="vb-av has"><img src="${esc(t.photo || MRPROFPIC(t.name))}" alt=""></span>` : `<span class="vb-av">${esc((t.name || '?').split(' ').map(x => x[0]).slice(0, 2).join(''))}</span>`}<div><b>${esc(t.name)}</b><small>${esc(t.bio || '')}</small><em>${t.slots.length} espacio${t.slots.length === 1 ? '' : 's'} disponible${t.slots.length === 1 ? '' : 's'}</em></div></button>`).join('')}</div><p class="muted vb-cr">Te quedan <b>${r.credits.vipLeft}</b> ${+r.credits.vipLeft === 1 ? 'clase individual' : 'clases individuales'} en tu plan. Puedes cancelar gratis hasta <b>12 horas antes</b> de la clase.</p><button class="btn w sm vb-none" id="vb-wait">😕 Ningún horario me sirve</button>`; $('#vb-all', b).onclick = () => { ALL = true; step(); }; $('#vb-wait', b).onclick = () => waitAsk(m);
+        $$('.vb-t', b).forEach(x => x.onclick = () => { T = r.teachers.find(t => t.id === x.dataset.t); sfx('tap'); step(); }); { const fb = $('#vb-fb', b); if (fb) fb.onclick = () => { PICK = false; step(); }; } return; }
       const dates = [...new Set(T.slots.map(s => s.date))];
       if (!D) D = dates[0];
       const times = T.slots.filter(s => s.date === D);
@@ -1225,7 +1226,7 @@
         <div class="vb-topics">${tops.map((t, i) => `<button type="button" class="vb-tp${TP === i ? ' on' : ''}" data-tp="${i}"><b>${i + 1}. ${esc(t[0])}</b><small>${esc(t[1])}</small></button>`).join('')}<button type="button" class="vb-tp vb-other${TP === 'o' ? ' on' : ''}" data-tp="o"><b>✏️ Otro tema</b><small>Algo diferente</small></button></div>
         <input class="inp${TP === 'o' ? '' : ' hidden'}" id="vb-topic" maxlength="180" placeholder="Ej: entrevista de trabajo en inglés" value="${esc(OT)}">
         <button class="btn k block lg vb-ok" id="vb-ok" ${S && TP != null ? '' : 'disabled'}>${S && TP == null ? '👆 Elige el tema de tu clase' : S ? `✅ Reservar · ${fmtD(S.date, { weekday: 'short', day: 'numeric', month: 'short' })} · ${fmtT(S.time)}` : 'Elige una hora'}</button>`;
-      $('#vb-back', b).onclick = () => { T = null; D = null; S = null; step(); };
+      $('#vb-back', b).onclick = () => { T = null; D = null; S = null; step(); }; $('#vb-back', b).textContent = PICK ? '← Profes' : '← Buscar por hora';
       $$('.vb-d', b).forEach(x => x.onclick = () => { D = x.dataset.d; S = null; step(); });
       $$('.vb-h', b).forEach(x => x.onclick = () => { S = T.slots.find(s => s.id === x.dataset.s); sfx('tap'); OT = $('#vb-topic', b).value; step(); });
       $$('.vb-tp', b).forEach(x => x.onclick = () => { OT = $('#vb-topic', b).value; TP = x.dataset.tp === 'o' ? 'o' : +x.dataset.tp; sfx('tap'); step(); if (TP === 'o') $('#vb-topic', b).focus(); });
@@ -1239,6 +1240,59 @@
         else { M.toast({ taken: 'Ese espacio acaba de ser reservado. Elige otro 🙏', window: 'Las clases se reservan desde el día siguiente y hasta 5 días adelante.', no_credits: 'Ya reservaste todas tus clases de este periodo.', holiday: 'Ese día es domingo o festivo en Colombia: no hay clases. Elige otro día 🙏', too_late: 'Ese espacio ya no se puede reservar (muy pronto).' }[res.err] || 'No se pudo reservar. Inténtalo de nuevo.');
           if (res.err === 'taken') { const rr = await MRAC.call('vipOptions', { code: MRAC.code() }); if (rr.ok) { r.teachers = rr.teachers; T = r.teachers.find(t => t.id === T.id) || null; S = null; D = null; } step(); } else { ok.disabled = false; ok.textContent = 'Reintentar'; } } };
     };
+    /* 🔎 buscador por hora: el estudiante dice cuándo y la plataforma busca con quién */
+    function finder() {
+      const all = []; r.teachers.forEach(t => t.slots.forEach(x => all.push(Object.assign({ t }, x))));
+      const ISO = (d) => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+      const days = []; for (let k = 1; k <= 5; k++) { const d = new Date(); d.setDate(d.getDate() + k); const s = ISO(d); if (!(window.MRFEST ? MRFEST.isOff(s) : d.getDay() === 0)) days.push(s); }
+      const dow = (s) => new Date(s + 'T12:00:00').getDay(), endH = (s) => s && dow(s) === 6 ? 16 : 20;
+      const hrs = []; for (let hh = 7; hh <= 20; hh++) hrs.push(String(hh).padStart(2, '0') + ':00');
+      const hOf = (t) => String(t).slice(0, 2), okH = (s, h) => !s || s === 'any' ? +h.slice(0, 2) <= 20 : +h.slice(0, 2) <= endH(s);
+      if (FD && FD !== 'any' && days.indexOf(FD) < 0) FD = null;
+      const match = (d, h) => all.filter(x => (d === 'any' || x.date === d) && hOf(x.time) === hOf(h));
+      const rank = (x) => (r.fav && x.t.id === r.fav.teacherId ? 100 : 0) + (x.t.stars || 0) * 10 + Math.min(9, (x.t.done || 0) / 20);
+      const name = (t) => esc(t.name), pic = (t) => { const u = t.photo || (window.MRPROFPIC && MRPROFPIC(t.name)); return u ? `<img src="${esc(u)}" alt="">` : `<span class="vf-ini">${esc((t.name || '?').split(' ').map(x => x[0]).slice(0, 2).join(''))}</span>`; };
+      const stars = (t) => t.stars ? `<span class="vf-st">★ ${String(t.stars).replace('.', ',')}</span>` + (t.done ? ` · ${t.done} clases` : '') : t.done ? `${t.done} clases` : 'Profe nuevo en la escuela';
+      // ⭐ mi horario de siempre (si ese mismo profe tiene libre ese día de la semana a esa hora)
+      let favX = null; if (r.fav) favX = all.find(x => x.t.id === r.fav.teacherId && dow(x.date) === r.fav.dow && String(x.time).slice(0, 5) === r.fav.time);
+      const DN = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+      const grp = (lbl, ic, from, to) => { const L = hrs.filter(h => +h.slice(0, 2) >= from && +h.slice(0, 2) <= to); return L.length ? `<div class="vf-grp">${MRI(ic)}${lbl}</div><div class="vf-hrs">${L.map(h => `<button type="button" class="vf-chip${FH === h ? ' on' : ''}${okH(FD, h) ? '' : ' off'}" data-h="${h}" ${okH(FD, h) ? '' : 'disabled'}>${fmtT(h)}</button>`).join('')}</div>` : ''; };
+      const left = `<div class="vf-left">${favX ? `<div class="vf-fav"><span class="vf-fi">${MRI('repeat')}</span><div><b>¿Tu horario de siempre?</b><small>${DN[r.fav.dow][0].toUpperCase() + DN[r.fav.dow].slice(1)} · ${fmtT(favX.time)} con ${name(favX.t)}</small></div><button type="button" class="vf-go" id="vf-fav">Reservar</button></div>` : ''}
+        <div class="vf-card"><span class="vf-lb">1. ELIGE EL DÍA</span><div class="vf-days">${days.map(d => `<button type="button" class="vf-chip vf-d${FD === d ? ' on' : ''}" data-d="${d}">${fmtD(d, { weekday: 'short' }).replace('.', '')}<small>${fmtD(d, { day: 'numeric', month: 'short' }).replace('.', '')}</small></button>`).join('')}<button type="button" class="vf-chip vf-d${FD === 'any' ? ' on' : ''}" data-d="any">Cualquier<small>día</small></button></div>
+          <p class="vf-pol">Desde mañana y hasta 5 días · domingos y festivos no hay clases</p></div>
+        <div class="vf-card"><span class="vf-lb">2. ELIGE LA HORA</span>${grp('Mañana', 'clock', 7, 11)}${grp('Tarde', 'clock', 12, 16)}${grp('Noche', 'clock', 17, 20)}</div></div>`;
+      let right;
+      if (!FD || !FH) right = `<div class="vf-empty">${MRI('calendar')}<b>${!FD ? 'Elige el día' : 'Ahora elige la hora'}</b><span>Te mostramos al instante qué profes están libres.</span></div>`;
+      else {
+        const ex = match(FD, FH).sort((x, y) => rank(y) - rank(x) || (x.date + x.time).localeCompare(y.date + y.time));
+        const when = FD === 'any' ? `Cualquier día · ${fmtT(FH)}` : `${fmtD(FD, { weekday: 'long', day: 'numeric', month: 'long' })} · ${fmtT(FH)}`;
+        if (ex.length) {
+          right = `<div class="vf-rh"><b>${esc(when[0].toUpperCase() + when.slice(1))}</b><span class="vf-ok">${MRI('check')}${FD === 'any' ? ex.length + (ex.length === 1 ? ' opción disponible' : ' opciones disponibles') : new Set(ex.map(x => x.t.id)).size + (new Set(ex.map(x => x.t.id)).size === 1 ? ' profe disponible' : ' profes disponibles')}</span></div>
+            <div class="vf-tgrid">${ex.slice(0, 9).map((x, i) => `<div class="vf-tc${r.fav && x.t.id === r.fav.teacherId ? ' best' : ''}"><span class="vf-av">${pic(x.t)}</span><div class="vf-ti">${r.fav && x.t.id === r.fav.teacherId ? '<span class="vf-badge">TU PROFE DE SIEMPRE</span>' : ''}<b>${name(x.t)}</b><small>${stars(x.t)}</small>${FD === 'any' || String(x.time).slice(3, 5) !== '00' ? `<small class="vf-when">${fmtD(x.date, { weekday: 'short', day: 'numeric', month: 'short' })} · ${fmtT(x.time)}</small>` : ''}</div><button type="button" class="vf-rv" data-x="${i}">Reservar</button></div>`).join('')}</div>`;
+          right += `<div class="vf-foot"><button type="button" class="vf-lnk" id="vf-all">${MRI('calendar')} Ver toda la disponibilidad de los profes</button><span class="vf-pol">Clase de 50 minutos · cancelación gratis hasta 12 horas antes</span></div>`;
+          setTimeout(() => $$('.vf-rv', b).forEach(btn => btn.onclick = () => { const x = ex[+btn.dataset.x]; T = x.t; D = x.date; S = T.slots.find(y => y.id === x.id); sfx('tap'); step(); }), 0);
+        } else {
+          const near = []; if (FD !== 'any') hrs.forEach(h => { const n = match(FD, h); if (n.length && h !== FH && okH(FD, h)) near.push({ d: FD, h, n, dist: Math.abs(+h.slice(0, 2) - +FH.slice(0, 2)) }); });
+          near.sort((x, y) => x.dist - y.dist);
+          const other = days.filter(d => d !== FD).map(d => ({ d, h: FH, n: match(d, FH) })).filter(x => x.n.length);
+          let soon = []; if (!near.length && !other.length) { const seen = {}; all.slice().sort((x, y) => (x.date + x.time).localeCompare(y.date + y.time)).forEach(x => { const k = x.date + hOf(x.time); if (!seen[k] && soon.length < 4) { seen[k] = 1; soon.push({ d: x.date, h: hOf(x.time) + ':00', n: match(x.date, hOf(x.time) + ':00') }); } }); }
+          const tile = (o, sub) => `<button type="button" class="vf-al" data-d="${o.d}" data-h="${o.h}"><b>${FD === o.d ? fmtT(o.h) : (s => s[0].toUpperCase() + s.slice(1))(fmtD(o.d, { weekday: 'short', day: 'numeric' }).replace('.', '')) + ' · ' + fmtT(o.h)}</b><small>${sub}</small><span class="vf-pf">${[...new Set(o.n.map(x => x.t))].slice(0, 3).map(t => `<i>${pic(t)}</i>`).join('')}<em>${new Set(o.n.map(x => x.t.id)).size} ${new Set(o.n.map(x => x.t.id)).size === 1 ? 'profe' : 'profes'}</em></span></button>`;
+          right = `<div class="vf-rh"><b>${esc(when[0].toUpperCase() + when.slice(1))}</b></div><div class="vf-warn">${MRI('alert')}<span><b>A esa hora no hay profes libres.</b> ${near.length || other.length || soon.length ? 'Mira estos horarios cercanos:' : 'Por ahora no hay espacios en los próximos días.'}</span></div>
+            <div class="vf-alt2">${near.length ? `<div class="vf-ab"><span class="vf-lb">EL MISMO DÍA · ${esc(fmtD(FD, { weekday: 'long', day: 'numeric' }).toUpperCase())}</span><div class="vf-alt">${near.slice(0, 4).map(o => tile(o, (+o.h.slice(0, 2) < +FH.slice(0, 2) ? o.dist + (o.dist === 1 ? ' hora antes' : ' horas antes') : o.dist + (o.dist === 1 ? ' hora después' : ' horas después')))).join('')}</div></div>` : ''}
+            ${other.length ? `<div class="vf-ab"><span class="vf-lb">A LA MISMA HORA, OTRO DÍA</span><div class="vf-alt">${other.slice(0, 4).map(o => tile(o, 'misma hora')).join('')}</div></div>` : ''}
+            ${soon.length ? `<div class="vf-ab"><span class="vf-lb">LOS PRÓXIMOS ESPACIOS LIBRES</span><div class="vf-alt">${soon.map(o => tile(o, 'disponible')).join('')}</div></div>` : ''}</div>
+            ${near.length || other.length || soon.length ? '' : `<button class="btn k block" id="vf-wait">🔔 Avísame cuando haya espacio</button>`}
+            <div class="vf-foot"><button type="button" class="vf-btnw" id="vf-all">${MRI('calendar')} Ver toda la disponibilidad de los profes</button><span class="vf-pol">Lunes a viernes 7:00 a. m. – 9:00 p. m. · sábados 7:00 a. m. – 5:00 p. m.</span></div>`;
+        }
+      }
+      b.innerHTML = `<div class="vf">${left}<div class="vf-right" id="vf-r">${right}</div></div><button type="button" class="vf-pick" id="vf-pick">Prefiero elegir primero el profe →</button>`;
+      $$('.vf-d', b).forEach(x => x.onclick = () => { FD = x.dataset.d; if (FH && !okH(FD, FH)) FH = null; sfx('tap'); finder(); });
+      $$('[data-h]', b).forEach(x => x.onclick = () => { if (x.classList.contains('vf-al')) FD = x.dataset.d; FH = x.dataset.h; sfx('tap'); finder(); if (innerWidth < 900) { const rr = $('#vf-r', b); if (rr) rr.scrollIntoView({ behavior: 'smooth', block: 'start' }); } });
+      const fv = $('#vf-fav', b); if (fv) fv.onclick = () => { T = favX.t; D = favX.date; S = T.slots.find(y => y.id === favX.id); sfx('tap'); step(); };
+      const al = $('#vf-all', b); if (al) al.onclick = () => { ALL = true; step(); };
+      const wt = $('#vf-wait', b); if (wt) wt.onclick = () => waitAsk(m);
+      $('#vf-pick', b).onclick = () => { PICK = true; step(); };
+    }
     step();
   }
   function changeModal(g) {
