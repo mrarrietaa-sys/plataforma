@@ -653,6 +653,7 @@
   /* ---------- perfil ---------- */
   /* ---------- 🧭 v383: guía del primer día (todas las edades) — en el perfil, hasta terminar la lección 1 ---------- */
   const gK = (k) => k + '_' + (((window.MRAC && MRAC.code && MRAC.code()) || (P.get() || {}).code || '') + '').toUpperCase(); // marcas de la guía por estudiante (no por dispositivo)
+  let PG = (() => { try { return sessionStorage.getItem('mra_pg') || 'top'; } catch (e) { return 'top'; } })(); // 📄 página del perfil abierta
   const G1K = 'mra_g1done_v1';
   const g1Today = () => { const d = new Date(); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); };
   const g1Total = () => { try { return P.MODS.reduce((t, m) => t + (P.progress(m.id).done || 0), 0); } catch (e) { return 0; } };
@@ -733,9 +734,9 @@
     const teens = !staff && !kids && window.MRTEENS && MRTEENS.on(); document.body.classList.toggle('ag-teens', !!teens); // 🚀 perfil Teens (12 a 17 años)
     if (teens && a && a.ready && !P.isExpired()) { main = MRTEENS.hero(p, a, P.look().nick || p.first || '') + `<div class="tn-row one">${MRTEENS.missions()}</div>` + (MRTEENS.realLife ? MRTEENS.realLife() : ''); }
     else if (teens && newbie) main = main.replace('mra-x-plane-red.webp', 'mra-x-rocket.webp');
-    const g1ag = kids ? 'kids' : teens ? 'teens' : 'adult';
+    const g1ag = kids ? 'kids' : teens ? 'teens' : 'adult'; let g1on = false;
     if (!staff && !P.isExpired()) { const tdn = g1Total(); // 🧭 v383: guía del primer día
-      if (!tdn) { const g = firstDay(p, a, g1ag); if (g) { main = g; kidsX = ''; } }
+      if (!tdn) { const g = firstDay(p, a, g1ag); if (g) { main = g; g1on = true; } }
       else main = firstDayDone(g1ag) + main; }
     const curMod = a && a.ready && !staff ? P.progress(a.id) : null;
     const plNow = P.plan(); const plName = staff ? 'Profesor' : P.isExpired() ? 'Plan vencido' : (plNow.plan === 'premium8' && plNow.eff === 'premium' ? 'Premium · 8 clases' : { free: 'Acceso gratuito', membership: 'Plataforma', premium: 'Premium · 4 clases' }[plNow.eff] || 'Acceso gratuito');
@@ -745,7 +746,7 @@
         <div class="db-me"><button class="pt-avwrap" id="me-av" title="Personaliza tu foto">${P.avHTML('pt-av')}<i class="pt-pen">✏️</i></button>
           <div class="db-me-tx"><span class="db-greet">${greet}!</span><h2>${esc(P.look().nick || p.first)} ${esc(p.last || '')}</h2><span class="db-chip ${plNow.eff}">${MRI(plIc)} ${plName}</span>${!staff && window.MRGOAL ? MRGOAL.lineHTML() : ''}${plNow.end && plNow.paid && !P.isExpired() ? `<small class="muted">Activo hasta el ${fmtD(plNow.end, { day: 'numeric', month: 'long' })}</small>` : ''}</div></div>
         ${curMod ? `<div class="db-ring" style="--p:${pct}"><div><b>${pct}%</b><small>de tu módulo</small></div></div><small class="muted db-modtx">${esc(a.name)} · ${esc(a.lv || a.id)} · ${curMod.done} de ${trial ? 4 : a.classes} lecciones</small>${!staff && window.MRGOAL ? MRGOAL.cardHTML(pct) : ''}` : staff ? '' : `<div class="db-ring" style="--p:0"><div><b>0%</b><small>tu progreso</small></div></div><small class="muted db-modtx">Empieza con tu prueba de clasificación</small>`}
-        <nav class="db-qa">${staff ? '' : `<button class="btn w" id="pt-plans">${MRI('crown')} Mi plan</button>`}${!staff && P.plan().premium ? `<button class="btn w" data-go="#pt-live">${MRI('calendar')} Mis clases</button>` : ''}${!staff && P.plan().premium ? `<button class="btn w pt-polb">${MRI('file')} Política de reservas</button>` : ''}<button class="btn w" id="me-go2">${MRI('user')} Personalizar perfil</button>${staff ? '' : `<button class="btn w" id="pt-pass">${MRI('unlock')} Cambiar mi código</button>`}<button class="btn w" id="pt-tour">${MRI('compass')} Ver el tour</button></nav></aside>`;
+        <nav class="db-qa">${staff ? '' : `<button class="btn w" id="pt-plans">${MRI('crown')} Mi plan</button>`}${!staff && P.plan().premium ? `<button class="btn w" data-go="#pt-live">${MRI('calendar')} Mis clases</button>` : ''}${!staff && P.plan().premium ? `<button class="btn w pt-polb">${MRI('file')} Política de reservas</button>` : ''}<button class="btn w" id="me-go2">${MRI('user')} Personalizar perfil</button>${staff ? '' : `<button class="btn w" id="pt-pass">${MRI('unlock')} Cambiar mi código</button>`}<button class="btn w" id="pt-tour">${MRI('compass')} Ver el tour</button></nav><nav class="db-pgnav">${['top', 'learn', 'cls', 'me'].filter(k => k === 'top' || k === 'learn' || k === 'me' || (k === 'cls' && !staff && P.plan().premium)).map(k => `<button data-pg="${k}">${MRI({ top: 'compass', learn: 'book', cls: 'video', me: 'user' }[k])}<span>${{ top: 'Inicio', learn: 'Mis módulos', cls: 'Mis clases', me: 'Mi cuenta' }[k]}</span></button>`).join('')}</nav></aside>`;
     const prem = !staff && P.plan().premium;
     const MENU = { // 📂 todo el perfil organizado en 3 grupos
       learn: ['💻', 'Mis módulos', [['route', 'ib', '🧭', 'Mi ruta de aprendizaje', 'Módulos, lecciones y progreso'], ['games', 'ib5', '🎮', 'Zona de juegos', 'Practica jugando'], ['notes', 'ib3', '✏️', 'Mis apuntes', 'Tu cuaderno personal'], ['place', 'ib2', '📝', 'Prueba de clasificación', 'Ubica tu nivel']]],
@@ -754,29 +755,42 @@
     };
     if (!prem) delete MENU.cls;
     if (newbie) MENU.learn[2] = MENU.learn[2].filter(x => x[0] === 'place' || x[0] === 'games').reverse(); // recién llegado: primero la prueba de clasificación
+    // 📄 v390: el perfil se divide en páginas (Inicio · Módulos · Clases · Cuenta)
+    const PGI = { top: 'compass', learn: 'book', cls: 'video', me: 'user' };
+    const RIC = { games: 'game', notes: 'pen', place: 'file', book: 'calendar', next: 'clock', extra: 'plus', hist: 'book', claim: 'flag', chat: 'chat', plan: 'crown', perso: 'user', mail: 'mail', pass: 'unlock', ref: 'gift', agree: 'file', pol: 'clip', tour: 'compass' };
+    const pgRows = (k) => { if (!MENU[k]) return ''; const it = MENU[k][2].filter(x => x[0] !== 'route'); return it.length ? `<div class="card pg-rows">${it.map(([id, , , b, sm]) => `<button class="pg-row" data-act="${id}"><i>${MRI(RIC[id] || 'chev')}</i><span><b>${b}</b><small>${sm}</small></span>${MRI('chev', 'pg-ar')}</button>`).join('')}</div>` : ''; };
+    const PGN = { top: 'Inicio', learn: 'Mis módulos', cls: 'Mis clases', me: 'Mi cuenta' };
     const ddHTML = (k) => { const [ic, t, items] = MENU[k]; return `<div class="sd-dd" data-k="${k}"><button class="sd-ddb">${ic} ${t} <span class="car">▾</span></button><div class="sd-ddm">${items.map(([id, cl, i2, b, sm]) => `<button class="sd-mi" data-act="${id}"><i class="${cl}">${i2}</i><span><b>${b}</b><small>${sm}</small></span></button>`).join('')}</div></div>`; };
     app.innerHTML = `<div class="wrap db">${side}<div class="db-main">
-      <div class="sd-dds">${Object.keys(MENU).map(ddHTML).join('')}</div>
+      <section class="pg" data-pgk="top">
 
       ${birthdayBanner()}
       <div id="pt-ann"></div>
       ${P.isExpired() || (trial && !(window.MRAC && MRAC.code())) ? `<div class="pt-trialbar">${P.isExpired() ? `⏰ <div><b>Tu plan venció.</b> Todo tu contenido está bloqueado, pero tu progreso sigue guardado. Apenas renueves, se desbloquea todo. <a href="#" class="tb-up">Ver planes →</a></div>` : `🟢 <div><b>Acceso gratuito:</b> la prueba de clasificación y los <b>2 primeros temas</b> de tu módulo. <a href="#" class="tb-up">Ver planes →</a></div>`}</div>` : ''}
       ${main}
+      ${newbie ? '' : routeBar()}
+      ${g1on || !curMod || staff || !window.MRGOAL ? '' : `<div class="pg-mob">${MRGOAL.cardHTML(pct)}</div>`}
+      ${newbie ? '' : birthAsk()}
+      </section>
+      <section class="pg" data-pgk="learn"><div class="sect-title"><h2>${MRI('book')} Mis módulos</h2></div>
       ${kidsX}
       ${newbie ? '' : `
-      <div id="pt-live"></div><div id="pt-notes"></div><div id="pt-ref"></div>
-      <div class="sect-title"><h2>🧭 Mi ruta de aprendizaje</h2></div>
-      ${routeBar()}
       <div class="pt-mods-grid pt-route">${P.MODS.map(m => modCard(m)).join('')}</div>
       ${courseCard()}
-      ${birthAsk()}
-      ${P.look().pic || !(a && a.ready && P.progress(a.id).done) ? '' : `<div class="card pt-perso"><div class="pt-perso-img">${M.mascot('', 'wink')}</div><div><h2>Personaliza tu perfil</h2><p class="muted">Tómate una foto o crea <b>tu propio Mr. Arrieta</b>: vístelo, ponle sombrero y elige su fondo. ¡Haz tu plataforma más tuya!</p><button class="btn k" id="me-go">🎨 Personalizar ahora</button></div></div>`}
       ${pl ? `<div class="sect-title"><h2>📝 Mi prueba de clasificación</h2></div><div class="card pt-plres"><div><b>Resultado:</b> ${esc(P.mod(pl.module).name)} · ${esc(P.mod(pl.module).es)}<br><span class="muted">${new Date(pl.date).toLocaleDateString('es-CO')}${pl.mods ? ' · ' + [1, 2, 3, 4].map(k => `${P.mod(k).id}: ${pl.mods[k]}%`).join(' · ') : ''}</span></div>${!P.isExpired() && (pst.attempts < pst.max || (pst.round || 1) < (pst.rounds || 1)) ? '<button class="btn w sm" id="pt2">🔁 Repetir prueba</button>' : ''}</div>` : ''}
       ${staff ? `<div class="sect-title"><h2>📝 Prueba de clasificación</h2></div><div class="card pt-plres"><div>Puedes presentar o revisar la prueba de clasificación como lo verá el estudiante.</div><button class="btn w sm" id="pt2">📝 Abrir prueba</button></div>` : ''}
-      ${certs()}`}
+      ${certs()}<div id="pt-notes"></div>`}
+      ${pgRows('learn')}</section>
+      ${MENU.cls ? `<section class="pg" data-pgk="cls">${newbie ? '' : '<div id="pt-live"></div>'}${pgRows('cls')}</section>` : ''}
+      <section class="pg" data-pgk="me"><div class="sect-title"><h2>${MRI('user')} Mi cuenta</h2></div>
+      ${newbie || P.look().pic || !(a && a.ready && P.progress(a.id).done) ? '' : `<div class="card pt-perso"><div class="pt-perso-img">${M.mascot('', 'wink')}</div><div><h2>Personaliza tu perfil</h2><p class="muted">Tómate una foto o crea <b>tu propio Mr. Arrieta</b>: vístelo, ponle sombrero y elige su fondo. ¡Haz tu plataforma más tuya!</p><button class="btn k" id="me-go">🎨 Personalizar ahora</button></div></div>`}
+      ${newbie ? '' : '<div id="pt-ref"></div>'}${pgRows('me')}</section>
       </div>
       <p class="center fx-foot db-foot" style="margin-top:22px;font-size:13.5px;font-weight:600">¡Aprende inglés HABLANDO!<br><a class="foot-wa" href="https://wa.me/${esc(C.WHATSAPP)}?text=${encodeURIComponent((window.MRNE || String)('¡Hola, mrarrieta.com! Soy ' + ((p.first || '') + ' ' + (p.last || '')).trim() + '. Tengo una pregunta.'))}" target="_blank" rel="noopener">WhatsApp ${esc(C.WHATSAPP.replace(/^57/, '').replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3'))}</a></p></div>
-      <nav class="db-tabbar sd-tab"><button class="on" data-st="top">${MRI('compass')}<span>Inicio</span></button>${Object.keys(MENU).map((k) => `<button data-st="${k}"><b class="sd-ti">${MENU[k][0]}</b><span>${k === 'cls' ? 'Clases' : k === 'me' ? 'Cuenta' : 'Módulos'}</span></button>`).join('')}</nav>`;
+      <nav class="db-tabbar sd-tab"><button class="on" data-st="top">${MRI('compass')}<span>Inicio</span></button>${Object.keys(MENU).map((k) => `<button data-st="${k}">${MRI(PGI[k])}<span>${k === 'cls' ? 'Clases' : k === 'me' ? 'Cuenta' : 'Módulos'}</span></button>`).join('')}</nav>`;
+    const setPg = (k, quiet) => { const w = $('.wrap.db'); if (!w) return; if (!w.querySelector(`[data-pgk="${k}"]`)) k = 'top'; PG = k; w.dataset.pg = k; try { sessionStorage.setItem('mra_pg', k); } catch (e) { }
+      $$('.sd-tab button').forEach(x => x.classList.toggle('on', x.dataset.st === k)); $$('.db-pgnav button').forEach(x => x.classList.toggle('on', x.dataset.pg === k));
+      if (!quiet) window.scrollTo({ top: 0, behavior: 'smooth' }); };
     if (kids) MRKIDS.wire(app);
     if (teens) MRTEENS.wire(app);
     agChange();
@@ -788,13 +802,14 @@
     const plans = (e) => { if (e) e.preventDefault(); M.modal(`<div class="pt-plmodal">${planSection()}</div>`, { x: true }); };
     $$('.tb-up').forEach(x => x.onclick = plans); if ($('#pt-tour')) $('#pt-tour').onclick = () => { window.scrollTo(0, 0); portalTour(true); }; if ($('#pt-plans')) $('#pt-plans').onclick = plans;
     wireBirth(); live(); birthdayParty();
-    const goTo = (sel) => { const el = $(sel); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+    const pgOf = (el) => { const sct = el && el.closest('[data-pgk]'); return sct ? sct.dataset.pgk : null; };
+    const goTo = (sel) => { const el = $(sel); if (!el) return; const k = pgOf(el); if (k && k !== PG) setPg(k, true); setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 30); };
     $$('[data-go]').forEach(b => b.onclick = () => goTo(b.dataset.go));
     if ($('#me-go2')) $('#me-go2').onclick = () => route('me');
     // 📂 acciones de los menús (PC: desplegables · celular: panel que sube desde abajo)
     const act = (id) => { closeAll();
-      const open = (sel, click) => { const el = $(sel); if (!el) return M.toast('Esta sección aún no está disponible.'); sdShow(el); if (el.tagName === 'DETAILS') el.open = true; el.scrollIntoView({ behavior: 'smooth', block: 'start' }); if (click) setTimeout(() => { const c = $(click); c && c.click(); }, 450); };
-      ({ route: () => open('.pt-routebar') || open('.pt-route'), games: () => { location.href = 'juegos.html'; }, notes: () => open('#pt-notes'), place: () => route('placement'),
+      const open = (sel, click) => { const el = $(sel); if (!el) return M.toast('Esta sección aún no está disponible.'); const pk = pgOf(el); if (pk && pk !== PG) setPg(pk, true); sdShow(el); if (el.tagName === 'DETAILS') el.open = true; el.scrollIntoView({ behavior: 'smooth', block: 'start' }); if (click) setTimeout(() => { const c = $(click); c && c.click(); }, 450); };
+      ({ route: () => setPg('learn'), games: () => { location.href = 'juegos.html'; }, notes: () => open('#pt-notes'), place: () => route('placement'),
         book: () => { const c = $('#lv-book'); if (c && !c.disabled) c.click(); else open('.lv-vip'); }, next: () => open('.lv-next'), extra: () => { const x = $('#lv-extra'); if (x) x.click(); else open('.lv-vip'); }, hist: () => open('.lv-hist'), claim: () => open('.lv-claim'), chat: () => { const c = $('#lv-msg'); if (c) c.click(); else open('#pt-live'); },
         plan: () => plans(), perso: () => route('me'), pass: () => { const b = $('#pt-pass'); b ? b.click() : null; }, ref: () => open('#pt-ref'), pol: () => window.MRPOLICY && MRPOLICY.show(), agree: () => window.MRAGREE && MRAGREE.open(), mail: () => mailEdit(), tour: () => { window.scrollTo(0, 0); portalTour(true); } }[id] || (() => { }))(); };
     const closeAll = () => { $$('.sd-dd').forEach(d => d.classList.remove('open')); const sh = $('.sd-sheet'); if (sh) sh.remove(); };
@@ -803,11 +818,10 @@
     $$('[data-g1act]').forEach(b => b.onclick = () => act(b.dataset.g1act)); // 🧭 guía: reservar clase con profe
     $$('[data-kg]').forEach(b => b.onclick = () => M.loadAudio(['kg']).then(() => M.play(b.dataset.kg, { btn: b })));
     if (!window.__sddd) { window.__sddd = 1; document.addEventListener('click', (e) => { if (!e.target.closest('.sd-dd')) $$('.sd-dd').forEach(d => d.classList.remove('open')); }); }
-    $$('.sd-tab button').forEach(b => b.onclick = () => { $$('.sd-tab button').forEach(x => x.classList.toggle('on', x === b)); const k = b.dataset.st; closeAll();
-      if (k === 'top') return window.scrollTo({ top: 0, behavior: 'smooth' });
-      const [ic, t, items] = MENU[k]; const sh = document.createElement('div'); sh.className = 'sd-sheet';
-      sh.innerHTML = `<div class="sd-dim"></div><div class="sd-pan"><div class="sd-grab"></div><b class="sd-pt">${ic} ${t}</b>${items.map(([id, cl, i2, bb, sm]) => `<button class="sd-mi" data-act="${id}"><i class="${cl}">${i2}</i><span><b>${bb}</b><small>${sm}</small></span></button>`).join('')}</div>`;
-      document.body.appendChild(sh); sh.querySelector('.sd-dim').onclick = closeAll; sh.querySelectorAll('.sd-mi').forEach(x => x.onclick = () => act(x.dataset.act)); });
+    $$('.sd-tab button').forEach(b => b.onclick = () => { closeAll(); setPg(b.dataset.st); });
+    $$('.db-pgnav button').forEach(b => b.onclick = () => setPg(b.dataset.pg));
+    $$('.pg-row').forEach(b => b.onclick = () => act(b.dataset.act));
+    setPg(PG, true);
     $$('.pt-polb').forEach(x => x.onclick = () => window.MRPOLICY && MRPOLICY.show());
     setTimeout(policyFirst, 400);
     // bienvenida de regreso (una vez por sesión)
@@ -909,7 +923,7 @@
       { sel: '#out', mood: 'watch', t: '⏻ Salir', d: 'Con este botón cierras tu sesión. Tu progreso queda guardado en la nube.' },
       { mood: 'thumbs', t: '¡Listo! 🚀', d: '¡Vamos a tu ruta de aprendizaje!', last: true },
     ];
-    const steps = all.filter(x => !x.sel || $(x.sel));
+    const steps = all.filter(x => !x.sel || ($(x.sel) && $(x.sel).offsetParent));
     const ov = h(`<div id="tour"><div class="tour-hole"></div><div class="tour-card"></div></div>`); document.body.appendChild(ov);
     const hole = $('.tour-hole', ov), card = $('.tour-card', ov); let i = 0;
     const end = (go) => { ov.remove(); window.removeEventListener('resize', place); window.removeEventListener('scroll', place); const q = P.get();

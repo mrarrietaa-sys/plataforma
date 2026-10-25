@@ -6600,3 +6600,28 @@ body.ag-teens .g1-done-teens{background:#0b2148;color:#22e58a}body.ag-teens .g1-
 .g1-st.on .g1-n{box-shadow:none!important}
 @keyframes g1wave{0%{transform:scale(1);opacity:.75}100%{transform:scale(1.85);opacity:0}}
 @media (prefers-reduced-motion:reduce){.g1-st.on .g1-n::before,.g1-st.on .g1-n::after{animation:none}}
+/* ===== v390 · perfil en páginas: Inicio · Módulos · Clases · Cuenta ===== */
+.wrap.db .pg{display:none}
+.wrap.db:not([data-pg]) .pg[data-pgk="top"],.wrap.db[data-pg="top"] .pg[data-pgk="top"],.wrap.db[data-pg="learn"] .pg[data-pgk="learn"],.wrap.db[data-pg="cls"] .pg[data-pgk="cls"],.wrap.db[data-pg="me"] .pg[data-pgk="me"]{display:block;animation:sdIn .25s ease}
+.wrap.db .pg>.card:first-child,.wrap.db .pg>.sect-title:first-child{margin-top:0}
+.wrap.db .sd-dds{display:none!important}
+.db-pgnav{width:100%;display:flex;flex-direction:column;gap:4px;margin-top:6px;border-top:1px solid #e3e9f3;padding-top:12px}
+.db-pgnav button{display:flex;align-items:center;gap:10px;width:100%;border:0;background:none;padding:11px 12px;border-radius:12px;font:700 14.5px var(--fh,Poppins),sans-serif;color:#334155;cursor:pointer;text-align:left}
+.db-pgnav button .mri{width:18px;height:18px}.db-pgnav button:hover{background:#eef3fb}
+.db-pgnav button.on{background:#0B2A5B;color:#fff}
+.pg-rows{padding:6px 14px!important;margin-top:14px}
+.pg-row{display:flex;align-items:center;gap:12px;width:100%;border:0;background:none;padding:12px 0;border-top:1px solid #e3e9f3;cursor:pointer;text-align:left;color:#0B2A5B}
+.pg-row:first-child{border-top:0}
+.pg-row>i{width:38px;height:38px;border-radius:11px;background:#eef3fb;display:grid;place-items:center;flex:none}.pg-row>i .mri{width:18px;height:18px}
+.pg-row b{display:block;font:800 14.5px var(--fh,Poppins),sans-serif}.pg-row small{display:block;font-size:12.5px;color:#64748b}
+.pg-row .pg-ar{margin-left:auto;width:18px;height:18px;color:#94a3b8;flex:none}
+.pg-row:hover>i{background:#fde2e3;color:#E3242B}
+.pg-mob{display:none}
+@media (max-width:980px){
+  .db-pgnav{display:none}
+  .wrap.db:not([data-pg="me"]) .db-side{display:none}
+  .pg-mob{display:block;margin-top:14px}
+  .wrap.db .db-tabbar button.on{color:#E3242B}
+}
+body.ag-teens .pg-rows{background:#fff}
+@media (min-width:981px){.db-side>*{order:2}.db-side>.db-me{order:0}.db-side>.db-pgnav{order:1;margin-top:0;border-top:0;padding-top:0;border-bottom:1px solid #e3e9f3;padding-bottom:12px}}
