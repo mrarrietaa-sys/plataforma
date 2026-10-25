@@ -6697,3 +6697,7 @@ body.ag-teens .pg-rows{background:#fff}
 .vf-chip{white-space:nowrap}
 @media(max-width:899px){.vf-hrs{grid-template-columns:repeat(3,minmax(0,1fr))!important;display:grid!important;gap:7px!important}.vf-hrs .vf-chip{font-size:13px!important;padding:9px 4px!important}
   .vf-tms .vf-rv{min-height:42px;font-size:14px;padding:8px 10px}.vf-tc{gap:8px 10px}}
+/* v395 · reserva: mientras busca espacios, ventana pequeña y centrada */
+.modal.vb-modal.vb-load>.card{max-width:400px!important;text-align:center}
+.modal.vb-modal.vb-load .vb h3{font-size:18px;justify-content:center}
+.modal.vb-modal.vb-load #vb-b{padding:6px 0 4px;color:#475569}

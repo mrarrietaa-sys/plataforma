@@ -1289,10 +1289,11 @@
       else { bt.disabled = false; bt.textContent = 'Avísame'; M.toast('No se pudo guardar. Inténtalo de nuevo.'); } };
   }
   async function vipBooking() {
-    const m = M.modal(`<div class="vb"><h3>📅 Reserva tu clase individual</h3><div id="vb-b" class="center">⏳ Buscando espacios disponibles…</div></div>`, { x: true }); m.classList.add('vb-modal');
+    const m = M.modal(`<div class="vb"><h3>📅 Reserva tu clase individual</h3><div id="vb-b" class="center">⏳ Buscando espacios disponibles…</div></div>`, { x: true }); m.classList.add('vb-modal', 'vb-load'); // ⏳ mientras carga, ventana pequeña
     const r = await MRAC.call('vipOptions', { code: MRAC.code() }); const b = $('#vb-b', m); if (!b) return;
     if (!r.ok) { b.innerHTML = `<p>${r.err === 'not_premium' ? 'Las clases individuales son parte de los planes Premium.' : 'No pudimos cargar los espacios. Revisa tu conexión.'}</p>`; return; }
     if (!r.teachers.length) { b.innerHTML = `<p class="muted">Por ahora no hay espacios libres en los próximos días. Los profes publican nuevos horarios cada semana.</p><button class="btn k block" id="vb-wait0">🔔 Avísame cuando haya espacio</button>`; $('#vb-wait0', b).onclick = () => waitAsk(m); return; }
+    m.classList.remove('vb-load'); // ya hay espacios: ventana completa
     let T = null, D = null, S = null, TP = null, OT = '', ALL = false, PICK = false, FD = null, FH = null;
     const MN = (P.assigned() || {}).n || +(P.get() || {}).module || 1; const tops = TOPICS[MN] || TOPICS[1];
     const step = () => {
