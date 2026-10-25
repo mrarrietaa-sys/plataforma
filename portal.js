@@ -887,7 +887,7 @@
     const fn = esc(P.look().nick || p.first || ''); const a = P.assigned(); const pl = P.plan();
     const all = kind === 'start' ? [
       { mood: 'welcome', t: `¡Welcome, ${fn}! 👋`, d: 'Soy Mr. Arrieta, tu profe. Te muestro en 30 segundos cómo empezar en <b>mrarrieta.com</b>.' },
-      { sel: '.pt-step, .g1', mood: 'idea', t: '1️⃣ Tu primer paso', d: 'Haz tu <b>prueba de clasificación</b>: solo 10 minutos. Se adapta a tu nivel y evalúa tu Listening, Reading, Writing y Speaking. Al terminar, la plataforma te ubica en tu módulo y <b>empiezas tu ruta de inmediato</b>.' },
+      { sel: '.pt-step, .g1', mood: 'idea', t: '1️⃣ Tu guía de inicio', d: 'Aquí ves tus primeros pasos. Empieza con tu <b>prueba de clasificación</b> (unos 10 minutos) y luego haz tu <b>primera lección</b>. Cada paso se marca en verde y la guía te dice qué sigue.' },
       { sel: '.pt-trial, .pt-trialbar', mood: 'present', t: '🎁 Tu acceso gratuito', d: 'Tienes la prueba de clasificación y los <b>2 primeros temas</b> de tu módulo para que conozcas la plataforma.' },
       { sel: '#pt-plans', mood: 'pointside', t: '💳 Los planes', d: '<b>Plataforma</b>: toda la plataforma y tu ruta completa A1 → B2+.<br><b>Premium</b>: además, <b>4 u 8 clases individuales</b> al mes con profes. Toca aquí cuando quieras verlos.' },
       { sel: '.pt-avwrap', mood: 'point', t: '😎 Tu perfil', d: 'Toca tu foto para personalizarlo: tómate una foto o crea <b>tu propio Mr. Arrieta</b>.' },
@@ -1154,7 +1154,7 @@
     const startMs = (c) => new Date(c.date + 'T' + String(c.time).slice(0, 5) + ':00-05:00').getTime();
     const up = (r.premium.upcoming || []).filter((c) => c.type === 'vip' && Date.now() < startMs(c) + 50 * 60000).sort((a, b) => startMs(a) - startMs(b));
     const left0 = ((r.premium.credits || {}).vipLeft) || 0, book = () => { const b = $('#lv-book'); if (b && !b.disabled) b.click(); else { const t = $('#pt-live'); if (t) t.scrollIntoView({ behavior: 'smooth' }); } };
-    if (!up.length) { if (!left0) return; const e0 = document.createElement('div'); e0.id = 'pt-nc'; e0.className = 'card pt-nc empty';
+    if (!up.length) { if (!left0 || $('.g1')) return; // 🧭 durante la guía del primer día no se muestra (el paso 3 la invita en su momento) const e0 = document.createElement('div'); e0.id = 'pt-nc'; e0.className = 'card pt-nc empty';
       e0.innerHTML = `<div class="pt-nc-d"><b>${left0}</b><small>clase${left0 === 1 ? '' : 's'}</small></div><div class="pt-nc-t"><span class="pt-nc-l">📅 Reserva tu clase</span><h3>Aún no tienes clases reservadas</h3><p>Te ${left0 === 1 ? 'queda <b>1 clase</b>' : 'quedan <b>' + left0 + ' clases</b>'} individuales en tu plan. ¡Úsalas!</p></div><div class="pt-nc-b"><button class="btn k" data-bk>${MRI('calendar')} Reservar clase</button></div>`;
       e0.querySelector('[data-bk]').onclick = book; host.after(e0); return; }
     const c = up[0], today = P.todayISO(), isToday = c.date === today;
