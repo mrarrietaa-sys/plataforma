@@ -355,13 +355,11 @@
       ${(() => { const asg = P.assigned(); return asg && asg.n > m.n ? `<div class="pt-trial">🎓 <b>Ojo:</b> en este dispositivo ya aprobaste el examen final del ${esc(P.mod(asg.n - 1).name)}, por eso hoy tu ruta está en el <b>${esc(asg.name)} (${esc(asg.es)})</b>.</div>` : ''; })()}
       ${trial ? `<div class="pt-trial">🟢 <b>Acceso gratuito:</b> ya puedes explorar los <b>2 primeros temas</b> del ${esc((P.trialMod() || m).name)}.</div>` : ''}
       <div class="fx-notify">${cloud() ? '<div id="n0" class="pending">⏳ Enviando tu resultado a administración…</div>' : ''}<div id="n1" class="pending">⏳ Guardando resultados…</div><div id="n2" class="pending">⏳ Enviando correo con tu resultado…</div><div id="n3" class="pending">⏳ Enviando copia a administración…</div></div>
-      <div class="row" style="justify-content:center;margin-top:14px"><button class="btn k lg" id="prof">${firstUrl() ? "▶ Empezar mi primera lección" : "👤 Ir a mi perfil y empezar →"}</button>
-        <button class="btn w" id="pdf">📄 Descargar reporte PDF</button>
-        <a class="btn" style="text-decoration:none;background:#25D366;color:#fff" target="_blank" rel="noopener" href="https://wa.me/${C.WHATSAPP}?text=${waMsg}">💬 ${trial ? 'Quiero inscribirme' : 'Escribir a mrarrieta.com'}</a>
+      <div class="row" style="justify-content:center;margin-top:14px"><button class="btn k lg" id="prof">Continuar →</button>
         ${left > 0 ? `<button class="btn w" id="again">🔁 Intentar de nuevo (te queda${left > 1 ? 'n' : ''} ${left})</button>` : (ST.round || 1) < ROUNDS ? `<button class="btn w" id="again2">🔁 Usar mi segunda oportunidad (${CFG.ATTEMPTS} intentos)</button>` : cloud() ? '<button class="btn w" id="extra">🙋 Solicitar un intento adicional</button>' : ''}</div>
       <p class="muted center" style="font-size:14px;margin-top:10px">¿No te sientes a gusto con tu resultado? Puedes repetir la prueba: <b>tu ruta de aprendizaje se actualiza con el nuevo resultado</b>.</p></div>`);
     wireExit(); sfx('win'); M.confetti(3500);
-    $('#prof').onclick = () => { const u = firstUrl(); if (u) location.href = u; else ctx.route('home'); }; $('#pdf').onclick = reportPDF; 
+    $('#prof').onclick = () => { scrollTo(0, 0); ctx.route('home'); }; // 🧭 vuelve a su perfil: la guía marca el paso en verde y muestra el siguiente 
     if ($('#again')) $('#again').onclick = () => run(app, ctx);
     if ($('#again2')) $('#again2').onclick = secondChance;
     if ($('#extra')) $('#extra').onclick = locked;
