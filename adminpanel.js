@@ -240,7 +240,7 @@
       <div class="ad-form"><label>Nombre<input class="inp" name="first" value="Prueba"></label><label>Apellido<input class="inp" name="last" value="Kids"></label>
       <label class="np-birth">Fecha de nacimiento <small>(define si es Kids, Teens o Adulto)</small><input class="inp" name="birth" type="date" max="${todayISO()}" value="${bd(10)}"></label>
       <label>Cómo empieza<select class="inp" name="module"><option value="" selected>📝 Desde la prueba de clasificación (experiencia completa)</option>${[1, 2, 3, 4].map(n => `<option value="${n}">Directo al Módulo ${n} · ${MODN[n]}</option>`).join('')}</select></label>
-      <label>Plan de prueba<select class="inp" id="tp-plan"><option value="membership">🖥️ Plataforma (recomendado)</option><option value="premium8">💎 Premium · 8 clases (no reserves con profes reales)</option></select></label>
+      <label>Plan de prueba<select class="inp" id="tp-plan"><option value="premium8" selected>💎 Premium · 8 clases (experiencia completa: reservas y clase en vivo)</option><option value="premium">👑 Premium · 4 clases</option><option value="membership">🖥️ Plataforma (sin clases con profe)</option></select></label>
       <label>Código <small>(vacío = automático)</small><input class="inp" name="code" placeholder="Ej: PRUEBA-KIDS" style="text-transform:uppercase"></label></div>
       <button class="btn k block lg" id="tp-ok">Crear estudiante de prueba</button>`);
     const ln = $('[name=last]', m), b = $('[name=birth]', m);
@@ -253,7 +253,7 @@
       if (!r.ok) { $('#tp-ok', m).disabled = false; $('#tp-ok', m).textContent = 'Crear estudiante de prueba'; return toast(r.err === 'code_exists' ? '⚠️ Ese código ya existe. Escribe otro.' : 'No se pudo crear'); }
       m.remove(); if (TAB === 'students') students();
       modal(`<div class="center"><div style="font-size:44px">🧪</div><h2>Estudiante de prueba listo</h2><p>${esc(r.row.first)} ${esc(r.row.last)} · ${esc(AGEN(r.row.birth))}</p><div class="ad-code">${esc(r.row.code)}</div>
-        <p class="muted">${r.row.module ? 'Empieza directo en el Módulo ' + esc(r.row.module) + '.' : 'Empieza como un estudiante nuevo: guía del primer día y prueba de clasificación.'} Entra con este código (mejor en una ventana de incógnito para no cerrar tu sesión de administración).</p><p class="muted" style="font-size:13px">Para vivirlo otra vez desde cero después de una actualización: ábrelo en Estudiantes → ♻️ Reiniciar progreso.</p>
+        <p class="muted">${r.row.module ? 'Empieza directo en el Módulo ' + esc(r.row.module) + '.' : 'Empieza como un estudiante nuevo: guía del primer día y prueba de clasificación.'} Entra con este código (mejor en una ventana de incógnito para no cerrar tu sesión de administración).</p>${/^premium/.test(r.row.plan) ? '<p class="muted" style="font-size:13px">Puede reservar clases con los profes reales como cualquier estudiante. El profe la verá marcada como 🧪 estudiante de prueba; avísale antes para que sepa que es una prueba.</p>' : ''}<p class="muted" style="font-size:13px">Para vivirlo otra vez desde cero después de una actualización: ábrelo en Estudiantes → ♻️ Reiniciar progreso.</p>
         <a class="btn k" href="${BASE}?ingresar=1" target="_blank" rel="noopener">Abrir la plataforma</a></div>`);
     };
   }
