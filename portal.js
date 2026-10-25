@@ -1278,11 +1278,11 @@
   }
   function addDay(iso, n) { const d = new Date(String(iso) + 'T12:00:00'); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); }
   // 🔔 lista de espera: le avisamos cuando se abra un espacio (él mismo reserva desde la plataforma)
-  function waitAsk(parent) {
+  function waitAsk(parent, pre) {
     const mm = M.modal(`<h3>🔔 Te avisamos cuando haya espacio</h3><p>¿En qué momento del día te sirve? Te llegará un correo y un aviso en tu perfil apenas se abra un espacio.</p>
-      <div class="vb-bands">${[['', '🕑 Cualquier horario'], ['manana', '🌅 Mañana (7 a. m. – 12 m.)'], ['tarde', '☀️ Tarde (12 m. – 6 p. m.)'], ['noche', '🌙 Noche (6 p. m. – 9 p. m.)']].map(([k, l], i) => `<button class="vb-band${i ? '' : ' on'}" data-band="${k}">${l}</button>`).join('')}</div>
+      <div class="vb-bands">${[['', '🕑 Cualquier horario'], ['manana', '🌅 Mañana (7 a. m. – 12 m.)'], ['tarde', '☀️ Tarde (12 m. – 6 p. m.)'], ['noche', '🌙 Noche (6 p. m. – 9 p. m.)']].map(([k, l]) => `<button class="vb-band${k === (pre || '') ? ' on' : ''}" data-band="${k}">${l}</button>`).join('')}</div>
       <button class="btn k block lg" id="wt-go" style="margin-top:12px">Avísame</button>`, { x: true });
-    let band = ''; $$('[data-band]', mm).forEach(x => x.onclick = () => { band = x.dataset.band; $$('[data-band]', mm).forEach(y => y.classList.toggle('on', y === x)); });
+    let band = pre || ''; $$('[data-band]', mm).forEach(x => x.onclick = () => { band = x.dataset.band; $$('[data-band]', mm).forEach(y => y.classList.toggle('on', y === x)); });
     $('#wt-go', mm).onclick = async () => { const bt = $('#wt-go', mm); bt.disabled = true; bt.textContent = 'Guardando…';
       const r = await MRAC.call('waitJoin', { code: MRAC.code(), band }).catch(() => null);
       if (r && r.ok) { mm.querySelector('.card').innerHTML = `<div class="center"><div class="to-ic">${MRI('bell')}</div><h3>¡Listo!</h3><p>Apenas se abra un espacio te avisamos por correo y en tu perfil. Entra y resérvalo antes de que lo tome otra persona.</p><button class="btn k block lg" id="wt-ok">Entendido</button></div>`; $('#wt-ok', mm).onclick = () => { mm.remove(); if (parent) parent.remove(); }; }
@@ -1360,7 +1360,8 @@
           right = `<div class="vf-rh"><b>${esc(when[0].toUpperCase() + when.slice(1))}</b><span class="vf-ok">${MRI('check')}${FD === 'any' ? ex.length + (ex.length === 1 ? ' opción disponible' : ' opciones disponibles') : new Set(ex.map(x => x.t.id)).size + (new Set(ex.map(x => x.t.id)).size === 1 ? ' profe disponible' : ' profes disponibles')}</span></div>
             <div class="vf-tgrid">${(() => { const G = []; ex.forEach((x, i) => { let g = G.find(q => q.t.id === x.t.id); if (!g) { g = { t: x.t, L: [] }; G.push(g); } g.L.push(i); }); // 👤 una tarjeta por profe (sus horarios de esa hora juntos)
               return G.slice(0, 6).map(g => `<div class="vf-tc${r.fav && g.t.id === r.fav.teacherId ? ' best' : ''}"><span class="vf-av">${pic(g.t)}</span><div class="vf-ti">${r.fav && g.t.id === r.fav.teacherId ? '<span class="vf-badge">TU PROFE DE SIEMPRE</span>' : ''}<b>${name(g.t)}</b><small>${stars(g.t)}</small></div><div class="vf-tms">${g.L.slice(0, 4).map(i => `<button type="button" class="vf-rv" data-x="${i}">${MRI('calendar')}${FD === 'any' ? (s => s[0].toUpperCase() + s.slice(1))(fmtD(ex[i].date, { weekday: 'short', day: 'numeric' }).replace('.', '')) + ' · ' : ''}${fmtT(ex[i].time)}</button>`).join('')}</div></div>`).join(''); })()}</div>
-            <p class="vf-hint">Toca la hora para reservar.</p>`;
+            <p class="vf-hint">Toca la hora para reservar.</p>
+            <div class="vf-none"><span class="vf-ni">${MRI('bell')}</span><div><b>¿Ningún profe u hora te sirve?</b><small>Te avisamos por correo y en tu perfil apenas se abra un espacio a la hora que prefieras.</small></div><button type="button" class="vf-btnw" id="vf-wait2">Avísame</button></div>`;
           right += `<div class="vf-foot"><button type="button" class="vf-lnk" id="vf-all">${MRI('calendar')} Ver toda la disponibilidad de los profes</button><span class="vf-pol">Clase de 50 minutos · cancelación gratis hasta 12 horas antes</span></div>`;
           setTimeout(() => $$('.vf-rv', b).forEach(btn => btn.onclick = () => { const x = ex[+btn.dataset.x]; T = x.t; D = x.date; S = T.slots.find(y => y.id === x.id); sfx('tap'); step(); }), 0);
         } else {
@@ -1382,7 +1383,7 @@
       $$('[data-h]', b).forEach(x => x.onclick = () => { if (x.classList.contains('vf-al')) FD = x.dataset.d; FH = x.dataset.h; sfx('tap'); finder(); if (innerWidth < 900) { const rr = $('#vf-r', b); if (rr) rr.scrollIntoView({ behavior: 'smooth', block: 'start' }); } });
       const fv = $('#vf-fav', b); if (fv) fv.onclick = () => { T = favX.t; D = favX.date; S = T.slots.find(y => y.id === favX.id); sfx('tap'); step(); };
       const al = $('#vf-all', b); if (al) al.onclick = () => { ALL = true; step(); };
-      const wt = $('#vf-wait', b); if (wt) wt.onclick = () => waitAsk(m);
+      const wt = $('#vf-wait', b); if (wt) wt.onclick = () => waitAsk(m); const wt2 = $('#vf-wait2', b); if (wt2) wt2.onclick = () => waitAsk(m, FH ? (+FH.slice(0, 2) < 12 ? 'manana' : +FH.slice(0, 2) < 18 ? 'tarde' : 'noche') : '');
       $('#vf-pick', b).onclick = () => { PICK = true; step(); };
     }
     step();

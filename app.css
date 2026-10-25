@@ -6709,3 +6709,9 @@ body.ag-teens .pg-rows{background:#fff}
 .vf-chip.none{color:#94a3b8;background:#f8fafc;border-style:dashed}
 .vf-chip.on{background:#0B2A5B!important;border-color:#0B2A5B!important;color:#fff!important}.vf-chip.on .vf-dot{background:#4ade80;box-shadow:none}
 .vf-hrs .vf-chip{display:inline-flex;align-items:center;justify-content:center}
+/* v397 · "¿Ningún profe u hora te sirve?" → avísame */
+.vf-none{display:flex;align-items:center;gap:12px;margin-top:12px;border:1.5px dashed #c9d4e6;border-radius:14px;padding:12px;background:#f8fafc}
+.vf-ni{width:38px;height:38px;border-radius:11px;background:#eef3fb;color:#0B2A5B;display:grid;place-items:center;flex:none}.vf-ni .mri{width:18px;height:18px}
+.vf-none b{display:block;font:800 14px Poppins,sans-serif;color:#0B2A5B}.vf-none small{display:block;font-size:12.5px;color:#64748b;line-height:1.35}
+.vf-none .vf-btnw{margin-left:auto;flex:none;white-space:nowrap}
+@media(max-width:560px){.vf-none{flex-wrap:wrap}.vf-none>div{flex:1 1 200px}.vf-none .vf-btnw{width:100%;margin:4px 0 0}}
