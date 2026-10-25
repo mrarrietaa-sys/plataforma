@@ -6678,3 +6678,22 @@ body.ag-teens .pg-rows{background:#fff}
 .pl-idx{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 6px}.pl-idx a{font:700 12px Poppins,sans-serif;color:#0B2A5B;background:#fff;border:1px solid #e3e9f3;border-radius:99px;padding:5px 10px;text-decoration:none}
 .pl-resp{display:grid;grid-template-columns:auto 1fr;gap:5px 14px;font-size:14.5px;line-height:1.5}.pl-resp b{color:#64748b;font-family:Inter,sans-serif}
 .pv h3{scroll-margin-top:90px}
+/* v394 · reserva: una tarjeta por profe, tarjetas uniformes en celular y PC */
+.vf-tc{display:grid!important;grid-template-columns:54px minmax(0,1fr);align-items:center;gap:8px 12px;padding:12px!important;text-align:left!important}
+.vf-tc .vf-ti{display:flex;flex-direction:column;align-items:flex-start!important;min-width:0}
+.vf-tc .vf-ti b{font-size:15px}.vf-tc .vf-ti small{font-size:12.5px}
+.vf-tms{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}
+.vf-tms .vf-rv{margin:0!important;flex:1 1 120px;display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px;width:auto!important}
+.vf-tms .vf-rv .mri{width:16px;height:16px}
+.vf-hint{margin:8px 2px 0;font-size:12.5px;color:#64748b}
+@media(min-width:900px){
+  .vf-tgrid{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))!important}
+  .vf-tc{grid-template-columns:1fr!important;justify-items:center;text-align:center!important;align-content:start;padding:16px 14px!important}
+  .vf-tc .vf-av{width:76px!important;height:76px!important}
+  .vf-tc .vf-ti{align-items:center!important}
+  .vf-tms{flex-direction:column;width:100%;margin-top:4px}
+  .vf-tms .vf-rv{flex:none;width:100%!important}
+}
+.vf-chip{white-space:nowrap}
+@media(max-width:899px){.vf-hrs{grid-template-columns:repeat(3,minmax(0,1fr))!important;display:grid!important;gap:7px!important}.vf-hrs .vf-chip{font-size:13px!important;padding:9px 4px!important}
+  .vf-tms .vf-rv{min-height:42px;font-size:14px;padding:8px 10px}.vf-tc{gap:8px 10px}}

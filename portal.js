@@ -1341,7 +1341,7 @@
       const match = (d, h) => all.filter(x => (d === 'any' || x.date === d) && hOf(x.time) === hOf(h));
       const rank = (x) => (r.fav && x.t.id === r.fav.teacherId ? 100 : 0) + (x.t.stars || 0) * 10 + Math.min(9, (x.t.done || 0) / 20);
       const name = (t) => esc(t.name), pic = (t) => { const u = t.photo || (window.MRPROFPIC && MRPROFPIC(t.name)); return u ? `<img src="${esc(u)}" alt="">` : `<span class="vf-ini">${esc((t.name || '?').split(' ').map(x => x[0]).slice(0, 2).join(''))}</span>`; };
-      const stars = (t) => t.stars ? `<span class="vf-st">★ ${String(t.stars).replace('.', ',')}</span>` + (t.done ? ` · ${t.done} clases` : '') : t.done ? `${t.done} clases` : 'Profe nuevo en la escuela';
+      const stars = (t) => t.stars ? `<span class="vf-st">★ ${String(t.stars).replace('.', ',')}</span>` + (t.done ? ` · ${t.done} ${t.done === 1 ? 'clase' : 'clases'}` : '') : t.done ? `${t.done} ${t.done === 1 ? 'clase' : 'clases'}` : 'Profe nuevo en la escuela';
       // ⭐ mi horario de siempre (si ese mismo profe tiene libre ese día de la semana a esa hora)
       let favX = null; if (r.fav) favX = all.find(x => x.t.id === r.fav.teacherId && dow(x.date) === r.fav.dow && String(x.time).slice(0, 5) === r.fav.time);
       const DN = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
@@ -1357,7 +1357,9 @@
         const when = FD === 'any' ? `Cualquier día · ${fmtT(FH)}` : `${fmtD(FD, { weekday: 'long', day: 'numeric', month: 'long' })} · ${fmtT(FH)}`;
         if (ex.length) {
           right = `<div class="vf-rh"><b>${esc(when[0].toUpperCase() + when.slice(1))}</b><span class="vf-ok">${MRI('check')}${FD === 'any' ? ex.length + (ex.length === 1 ? ' opción disponible' : ' opciones disponibles') : new Set(ex.map(x => x.t.id)).size + (new Set(ex.map(x => x.t.id)).size === 1 ? ' profe disponible' : ' profes disponibles')}</span></div>
-            <div class="vf-tgrid">${ex.slice(0, 9).map((x, i) => `<div class="vf-tc${r.fav && x.t.id === r.fav.teacherId ? ' best' : ''}"><span class="vf-av">${pic(x.t)}</span><div class="vf-ti">${r.fav && x.t.id === r.fav.teacherId ? '<span class="vf-badge">TU PROFE DE SIEMPRE</span>' : ''}<b>${name(x.t)}</b><small>${stars(x.t)}</small>${FD === 'any' || String(x.time).slice(3, 5) !== '00' ? `<small class="vf-when">${fmtD(x.date, { weekday: 'short', day: 'numeric', month: 'short' })} · ${fmtT(x.time)}</small>` : ''}</div><button type="button" class="vf-rv" data-x="${i}">Reservar</button></div>`).join('')}</div>`;
+            <div class="vf-tgrid">${(() => { const G = []; ex.forEach((x, i) => { let g = G.find(q => q.t.id === x.t.id); if (!g) { g = { t: x.t, L: [] }; G.push(g); } g.L.push(i); }); // 👤 una tarjeta por profe (sus horarios de esa hora juntos)
+              return G.slice(0, 6).map(g => `<div class="vf-tc${r.fav && g.t.id === r.fav.teacherId ? ' best' : ''}"><span class="vf-av">${pic(g.t)}</span><div class="vf-ti">${r.fav && g.t.id === r.fav.teacherId ? '<span class="vf-badge">TU PROFE DE SIEMPRE</span>' : ''}<b>${name(g.t)}</b><small>${stars(g.t)}</small></div><div class="vf-tms">${g.L.slice(0, 4).map(i => `<button type="button" class="vf-rv" data-x="${i}">${MRI('calendar')}${FD === 'any' ? (s => s[0].toUpperCase() + s.slice(1))(fmtD(ex[i].date, { weekday: 'short', day: 'numeric' }).replace('.', '')) + ' · ' : ''}${fmtT(ex[i].time)}</button>`).join('')}</div></div>`).join(''); })()}</div>
+            <p class="vf-hint">Toca la hora para reservar.</p>`;
           right += `<div class="vf-foot"><button type="button" class="vf-lnk" id="vf-all">${MRI('calendar')} Ver toda la disponibilidad de los profes</button><span class="vf-pol">Clase de 50 minutos · cancelación gratis hasta 12 horas antes</span></div>`;
           setTimeout(() => $$('.vf-rv', b).forEach(btn => btn.onclick = () => { const x = ex[+btn.dataset.x]; T = x.t; D = x.date; S = T.slots.find(y => y.id === x.id); sfx('tap'); step(); }), 0);
         } else {
