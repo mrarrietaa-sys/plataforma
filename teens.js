@@ -17,7 +17,7 @@
   const topicsDone = () => { try { return P().MODS.reduce((t, m) => t + (window.MRKIDS ? MRKIDS.topics(m).filter(x => x.done).length : 0), 0); } catch (e) { return 0; } };
   const MISS = [
     { k: 'm1', ic: 'check', t: 'Completa 1 tema de tu ruta', goal: 1, pts: 100, v: (s) => topicsDone() - s.base.topics },
-    { k: 'm2', ic: 'video', t: 'Haz 3 clases esta semana', goal: 3, pts: 150, v: (s) => partsDone() - s.base.parts },
+    { k: 'm2', ic: 'video', t: 'Haz 3 lecciones esta semana', goal: 3, pts: 150, v: (s) => partsDone() - s.base.parts },
     { k: 'm3', ic: 'flame', t: 'Entra 4 días esta semana', goal: 4, pts: 100, v: (s) => s.days.length },
     { k: 'm4', ic: 'star', t: 'Logra 80% en el reto de la semana', goal: 1, pts: 150, v: (s) => (s.ch || 0) >= 80 ? 1 : 0 }];
   function state() {
@@ -35,14 +35,14 @@
     const s = state(); claim(s); const pr = P().progress(a.id); const rk = LS.get('mra_teen_pos') || '';
     return `<div class="card tn-hero"><span class="tn-glow"></span><span class="tn-grid"></span>
       <div class="tn-htx"><span class="tn-eye">${I('star')} Teens</span><h2>What's up, ${esc(nick)}?</h2>
-        <p>${pr.done ? `Vas en el <b>${esc(a.name)}</b>. Sigue así: cada clase te acerca a hablar con confianza.` : `Tu ruta empieza en el <b>${esc(a.name)}</b>. Una clase a la vez, a tu ritmo.`}</p>
-        <div class="tn-k"><div><b>${I('video')}${pr.done}<span>/${a.classes}</span></b><small>Clases</small></div><div><b>${I('flame')}${s.days.length}</b><small>Días esta semana</small></div><div><b>${I('globe')}${rlDone()}<span>/3</span></b><small>Frases esta semana</small></div></div>
+        <p>${pr.done ? `Vas en el <b>${esc(a.name)}</b>. Sigue así: cada lección te acerca a hablar con confianza.` : `Tu ruta empieza en el <b>${esc(a.name)}</b>. Una lección a la vez, a tu ritmo.`}</p>
+        <div class="tn-k"><div><b>${I('video')}${pr.done}<span>/${a.classes}</span></b><small>Lecciones</small></div><div><b>${I('flame')}${s.days.length}</b><small>Días esta semana</small></div><div><b>${I('globe')}${rlDone()}<span>/3</span></b><small>Frases esta semana</small></div></div>
         <div class="tn-hb"><a class="btn tn-go lg" href="${a.url}">${I('video')} ${pr.done ? 'Continuar mi ruta' : 'Empezar mi ruta'}</a><button class="btn tn-gh sm" id="pt3">¿No estás a gusto con tu nivel?</button></div></div>
       <span class="tn-art"><span class="tn-disc"></span><img class="tn-mra" src="mra-x-rocket.webp" alt="Mr. Arrieta"></span></div>`;
   }
   function missions() { // 🎯 una sola meta semanal: 3 clases (directo a lo que vino)
     const s = state(), v = Math.max(0, Math.min(3, partsDone() - s.base.parts)), ok = v >= 3;
-    return `<div class="card tn-goal${ok ? ' ok' : ''}"><i class="tn-gi">${I(ok ? 'check' : 'target')}</i><div><small>Meta de la semana</small><b>${ok ? '¡Meta cumplida!' : 'Haz 3 clases'}</b><div class="tn-bar"><span style="width:${Math.round(v / 3 * 100)}%"></span></div><span>${v} de 3 · se renueva cada lunes</span></div></div>`;
+    return `<div class="card tn-goal${ok ? ' ok' : ''}"><i class="tn-gi">${I(ok ? 'check' : 'target')}</i><div><small>Meta de la semana</small><b>${ok ? '¡Meta cumplida!' : 'Haz 3 lecciones'}</b><div class="tn-bar"><span style="width:${Math.round(v / 3 * 100)}%"></span></div><span>${v} de 3 · se renueva cada lunes</span></div></div>`;
   }
   function challenge() {
     const s = state(), best = s.ch || 0;

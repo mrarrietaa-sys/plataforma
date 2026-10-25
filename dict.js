@@ -185,7 +185,7 @@
     if (g && looksGrammar) {
       const p = M.partById(g[1]);
       if (p && p.tip) blocks.push(`<div class="dict-res"><div class="dict-tag">📘 Mini lección · ${esc(p._t.title)} · Part ${p.part}</div><div class="lesson" style="margin:8px 0 0">${p.tip}</div>
-        <button class="btn sm" data-go="${p.id}" style="margin-top:10px">Ir a esta clase →</button></div>`);
+        <button class="btn sm" data-go="${p.id}" style="margin-top:10px">Ir a esta lección →</button></div>`);
     }
 
     // 2) vocabulario de la plataforma

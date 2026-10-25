@@ -28,14 +28,14 @@
     return `<div class="card kd-hero"><span class="kd-sun"></span><span class="kd-cl c1"></span><span class="kd-cl c2"></span>
       <div class="kd-htx"><span class="kd-eye">${I('star')} Kids · Aventura</span><h2>¡Hola, ${esc(nick)}!</h2>
         <p>${pr.done ? `Hoy sigues en la estación <b>${esc(cur.name)}</b>. ¡Vamos!` : `Tu aventura empieza en <b>${esc(cur.name)}</b>. ¡Vamos!`}</p>
-        <div class="kd-chips"><span class="o">${I('medal')} ${medals} ${medals === 1 ? 'medalla' : 'medallas'}</span><span class="b">${I('flame')} ${pr.done} de ${a.classes} clases</span><span class="y">${I('star')} ${kwDone()} de 3 palabras</span></div>
+        <div class="kd-chips"><span class="o">${I('medal')} ${medals} ${medals === 1 ? 'medalla' : 'medallas'}</span><span class="b">${I('flame')} ${pr.done} de ${a.classes} lecciones</span><span class="y">${I('star')} ${kwDone()} de 3 palabras</span></div>
         <div class="kd-hb"><a class="btn kd-go lg" href="${a.url}">${I('video')} ${pr.done ? 'Continuar mi aventura' : 'Empezar mi aventura'}</a><button class="btn db-gbtn sm" id="pt3">¿No estás a gusto con tu nivel?</button></div></div>
       <img class="kd-mra" src="mra-x-balloon1.webp" alt="Mr. Arrieta"></div>`;
   }
   function chest() {
     const st = chestState(), can = totalDone() > st.base;
     if (st.opened) return `<div class="card kd-chest done"><span class="kd-ci">${I('gift')}</span><div><b>¡Cofre abierto!</b><small>Palabra de hoy: <i>${esc(st.w || '')}</i> = ${esc(st.es || '')}. Vuelve mañana por otro.</small></div></div>`;
-    return `<div class="card kd-chest${can ? ' ready' : ''}"><span class="kd-ci">${I('gift')}</span><div><b>Cofre del día</b><small>${can ? '¡Lo ganaste! Ábrelo y descubre tu sorpresa.' : 'Termina una clase hoy y ábrelo.'}</small></div><button class="btn kd-cb" id="kd-open"${can ? '' : ' disabled'}>${can ? 'Abrir' : I('unlock')}</button></div>`;
+    return `<div class="card kd-chest${can ? ' ready' : ''}"><span class="kd-ci">${I('gift')}</span><div><b>Cofre del día</b><small>${can ? '¡Lo ganaste! Ábrelo y descubre tu sorpresa.' : 'Termina una lección hoy y ábrelo.'}</small></div><button class="btn kd-cb" id="kd-open"${can ? '' : ' disabled'}>${can ? 'Abrir' : I('unlock')}</button></div>`;
   }
   function map(a) {
     const T = topics(a); if (!T.length) return '';

@@ -121,7 +121,7 @@
     return `<div class="ld-path"><a class="ld-pc2" href="adultos.html"><span class="ic a">${LPI.adult}</span><span class="tx"><b>Adultos</b><small>Desde 18 años</small></span><span class="ar">›</span></a>
       <a class="ld-pc2" href="ninos.html"><span class="ic k">${LPI.kids}</span><span class="tx"><b>Niños y jóvenes</b><small>De 9 a 17 años</small></span><span class="ar">›</span></a></div>`;
   }
-  const LP_GOALS = { v: ['plane', 'Viajar', 'Tus clases y misiones: aeropuerto, hotel y restaurantes.'], t: ['brief', 'Trabajo', 'Tus clases y misiones: entrevistas, reuniones y correos.'], e: ['grad', 'Estudios', 'Tus clases y misiones: universidad, becas y exámenes.'] };
+  const LP_GOALS = { v: ['plane', 'Viajar', 'Tus lecciones y misiones: aeropuerto, hotel y restaurantes.'], t: ['brief', 'Trabajo', 'Tus lecciones y misiones: entrevistas, reuniones y correos.'], e: ['grad', 'Estudios', 'Tus lecciones y misiones: universidad, becas y exámenes.'] };
   const LP_PH = { adultos: { t: 'Nice to meet you', es: 'Mucho gusto en conocerte', au: 'prnicetomeet' }, ninos: { t: 'I love English', es: '¡Me encanta el inglés!', au: 'priloveeng' } };
   const lpSky = (n) => { let h = ''; for (let k = 0; k < n; k++) h += `<span class="lp-star" style="left:${(k * 37) % 100}%;top:${(k * 53) % 62}%;opacity:${(.3 + (k % 5) / 8).toFixed(2)}"></span>`; return h; };
   const lpClouds = () => [[-8, 78, 260, 90], [52, 84, 320, 110], [18, 92, 380, 120], [72, 30, 160, 50]].map(([l, t, w, h], i) => `<span class="lp-cloud${i === 3 ? ' big' : ''}" style="left:${l}%;top:${t}%;width:${w}px;height:${h}px"></span>`).join('');
@@ -133,7 +133,7 @@
       <div class="lp-gift">${MRI('gift')} Pronúncialo bien y gana <b>10% en tu primer mes</b></div><div class="lp-res" id="lp-res" hidden></div></div>`;
   }
   function lpGoalBar() {
-    return `<div class="lp-gbar" id="lp-gbar"><div class="lp-ghd"><b>${LI(LP.star)} Personaliza tus clases</b><small>¿Para qué quieres el inglés?</small></div><div class="lp-gtabs">${Object.keys(LP_GOALS).map((k, i) => `<button type="button" data-goal="${k}" class="${i ? '' : 'on'}"><span class="lp-gfill"></span><span class="lp-gl">${LI(LP[LP_GOALS[k][0]])} ${LP_GOALS[k][1]}</span></button>`).join('')}</div>
+    return `<div class="lp-gbar" id="lp-gbar"><div class="lp-ghd"><b>${LI(LP.star)} Personaliza tus lecciones</b><small>¿Para qué quieres el inglés?</small></div><div class="lp-gtabs">${Object.keys(LP_GOALS).map((k, i) => `<button type="button" data-goal="${k}" class="${i ? '' : 'on'}"><span class="lp-gfill"></span><span class="lp-gl">${LI(LP[LP_GOALS[k][0]])} ${LP_GOALS[k][1]}</span></button>`).join('')}</div>
       <p class="lp-gtx" id="lp-ans">${LI(LP.ok)} <span>${LP_GOALS.v[2]}</span></p></div>`;
   }
   function heroAdult() {
@@ -155,9 +155,9 @@
   function kidsSections() {
     const it = (ic, t) => `<li><i>${LI(LP[ic])}</i>${t}</li>`;
     const ct = (ic, t, d) => `<div class="lp-ct"><span class="ic">${LI(LP[ic])}</span><b>${t}</b><small>${d}</small></div>`;
-    return `<section class="lp-papas"><div class="lp-ph"><h2>Hecho para cada edad</h2><p>Mismos niveles A1 a B2+, con temas de su mundo</p></div>
+    return `<section class="lp-papas"><div class="lp-ph">${lpSeg()}<h2>Hecho para cada edad</h2><p>Mismos niveles A1 a B2+, con temas de su mundo</p></div>
       <div class="lp-agrid"><article class="lp-ag k"><div class="lp-agi" style="background-image:url('https://images.unsplash.com/photo-1623076189461-f7706b741c04?w=640&h=420&fit=crop&crop=faces&q=80&auto=format')"><span>9 a 11 años</span></div><div class="lp-agb"><b>Kids</b><ul>${it('medal', 'Aventuras y medallas')}${it('pad', 'Juegos con voces reales')}${it('star', 'Familia, mascotas, colegio')}</ul></div></article>
-        <article class="lp-ag t"><div class="lp-agi" style="background-image:url('https://images.unsplash.com/photo-1758612214848-04e700d192ce?w=640&h=420&fit=crop&crop=faces&q=80&auto=format')"><span>12 a 17 años</span></div><div class="lp-agb"><b>Teens</b><ul>${it('star', 'Misiones, puntos y ranking')}${it('pad', 'Series, juegos, deportes')}${it('cal', 'Reservan sus clases solos')}</ul></div></article></div>
+        <article class="lp-ag t"><div class="lp-agi" style="background-image:url('https://images.unsplash.com/photo-1758612214848-04e700d192ce?w=640&h=420&fit=crop&crop=faces&q=80&auto=format')"><span>12 a 17 años</span></div><div class="lp-agb"><b>Teens</b><ul>${it('star', 'Chats, notas de voz y retos')}${it('pad', 'Series, juegos, deportes')}${it('cal', 'Reservan sus clases solos')}</ul></div></article></div>
       <div class="lp-ph2" id="lp-control"><b>Tú tienes el control</b><small>Panel de papás incluido en todos los planes</small></div>
       <div class="lp-cts">${ct('chart', 'Progreso en vivo', 'Temas, práctica y notas')}${ct('mail', 'Alerta de 7 días', 'Si no reserva o no practica')}${ct('check', 'Reservan solos', 'Kids y Teens')}${ct('shield', 'Seguro', 'Sin grabación')}</div></section>`;
   }
@@ -193,16 +193,18 @@
     const kid = PAGE === 'ninos';
     const C = [
       { k: 'free', ic: 'gift', c: 'g', name: 'Acceso gratuito', price: '$0', per: '· 3 días', hook: kid ? 'Descubre su nivel y prueba la plataforma sin pagar nada.' : 'Descubre tu nivel y prueba la plataforma sin pagar nada.', b: ['Prueba de nivel en 10 minutos', 'Habla y la plataforma lo corrige', kid ? 'Su ruta personalizada' : 'Tu ruta personalizada'], note: 'No incluye clases con profe.', btn: 'Empezar gratis' },
-      { k: 'membership', ic: 'monitor', c: 'b', name: 'Plataforma', price: f(n('membership', 59900)), per: '/mes', hook: kid ? 'Aprende a su ritmo, cuando quiera, desde el celular.' : 'Aprende a tu ritmo, cuando quieras, desde el celular.', b: ['Habla desde el día 1: te escucha y te corrige', 'Ruta completa del A1 al B2+', 'Certificado por cada módulo'], note: 'No incluye clases con profe.', btn: 'Empezar con Plataforma' },
-      { k: 'premium', ic: 'crown', c: 'y', name: 'Premium · 4 clases', price: f(n('premium', 169900)), per: '/mes', hook: kid ? 'Pierde el miedo a hablar con un profe que lo corrige en vivo.' : 'Pierde el miedo a hablar con un profe que te corrige en vivo.', b: ['4 clases 1 a 1 de 50 min al mes', 'Eliges profe, día y hora', 'Todo lo de Plataforma'], note: 'Clases no acumulables.', tag: 'Más elegido', pc: f(n('premium', 169900) / 4), btn: 'Empezar con Premium 4' },
-      { k: 'premium8', ic: 'gem', c: 'v', name: 'Premium · 8 clases', price: f(n('premium8', 289900)), per: '/mes', hook: 'Gana fluidez real: habla inglés 2 veces por semana.', b: ['8 clases 1 a 1: 2 por semana', 'El mejor precio por clase', 'Todo lo de Plataforma'], note: 'Clases no acumulables.', tag: 'Mejor precio por clase', pc: f(n('premium8', 289900) / 8), btn: 'Empezar con Premium 8' }];
-    return `<section class="lp-plans" id="ld-planes"><div class="lp-ph"><h2>Elige tu plan</h2><p>Mes a mes · sin permanencia · tarjeta o transferencia</p></div>
+      { k: 'membership', ic: 'monitor', c: 'b', name: 'Plataforma', price: f(n('membership', 59900)), per: 'COP/mes', hook: kid ? 'Aprende a su ritmo, cuando quiera, desde el celular.' : 'Aprende a tu ritmo, cuando quieras, desde el celular.', b: ['Habla desde el día 1: te escucha y te corrige', 'Ruta completa del A1 al B2+', 'Certificado por cada módulo'], note: 'No incluye clases con profe.', btn: 'Empezar con Plataforma' },
+      { k: 'premium', ic: 'crown', c: 'y', name: 'Premium · 4 clases', price: f(n('premium', 169900)), per: 'COP/mes', hook: kid ? 'Pierde el miedo a hablar con un profe que lo corrige en vivo.' : 'Pierde el miedo a hablar con un profe que te corrige en vivo.', b: ['4 clases 1 a 1 de 50 min al mes', 'Eliges profe, día y hora', 'Todo lo de Plataforma'], note: 'Clases no acumulables.', tag: 'Más elegido', pc: f(n('premium', 169900) / 4), btn: 'Empezar con Premium 4' },
+      { k: 'premium8', ic: 'gem', c: 'v', name: 'Premium · 8 clases', price: f(n('premium8', 289900)), per: 'COP/mes', hook: 'Gana fluidez real: habla inglés 2 veces por semana.', b: ['8 clases 1 a 1: 2 por semana', 'El mejor precio por clase', 'Todo lo de Plataforma'], note: 'Clases no acumulables.', tag: 'Mejor precio por clase', pc: f(n('premium8', 289900) / 8), btn: 'Empezar con Premium 8' }];
+    return `<section class="lp-plans" id="ld-planes"><div class="lp-ph">${lpSeg()}<h2>${kid ? 'Elige el plan para tu hijo(a)' : 'Elige tu plan'}</h2><p>Mes a mes · sin permanencia · tarjeta o transferencia</p></div>
       <div class="lp-pg">${C.map(p => `<a class="lp-pl c-${p.c}${p.tag ? ' hot' : ''}" ${p.k === 'free' ? `href="#" data-trial${kid ? ' data-kid' : ''}` : `href="inscripcion.html?plan=${p.k}"`}>${p.tag ? `<span class="lp-tag">${p.tag}</span>` : ''}
         <div class="lp-plh"><span class="ic">${MRI(p.ic)}</span><b>${p.name}</b></div><div class="lp-pr"><strong>${p.price}</strong><small>${p.per}</small></div>${p.pc ? `<span class="lp-ppc">Solo ${p.pc} por clase</span>` : '<span class="lp-ppc gh">COP</span>'}
         <p class="lp-hook">${p.hook}</p><ul>${p.b.map(x => `<li>${MRI('check')}<span>${x}</span></li>`).join('')}</ul><small class="lp-pn">${p.note}</small><span class="lp-pb"><span class="lg">${p.btn}</span><span class="sh">${p.k === 'free' ? 'Empezar gratis' : 'Lo quiero'}</span></span></a>`).join('')}</div>
       <p class="lp-swipe">Desliza para ver todos los planes →</p><p class="lp-pnote"><a href="politica.html">Ver condiciones</a></p></section>`;
   }
 
+  // 🏷️ etiqueta de sección: el cliente siempre sabe si está en Adultos o en Niños y jóvenes
+  const lpSeg = () => PAGE === 'ninos' ? `<span class="lp-seg k">${MRI('users')} Niños y jóvenes · 9 a 17 años</span>` : PAGE === 'adultos' ? `<span class="lp-seg a">${MRI('user')} Adultos · desde 18 años</span>` : '';
   // 👩‍🏫 profes en carrusel horizontal (desliza con el dedo o con las flechas)
   function lpProfes(panel) {
     const c = panel && panel.querySelector('.ld-cyl'); if (!c || c.dataset.lp) return; c.dataset.lp = '1'; clearInterval(cylWire.t);
@@ -339,16 +341,16 @@
     const GAN = [['check', 'r', 'Hablas desde el día 1', 'La plataforma te escucha y te corrige'], ['user', 'b', 'Clases 1 a 1 con profes reales', 'Tú eliges profe, día y hora'], ['award', 'g', 'Del A1 al B2+ con certificado', 'Una ruta clara para cada nivel'], ['clock', 'y', '100% online, a tu ritmo', 'Desde tu celular, cuando quieras']];
     const wrap = document.createElement('div'); wrap.className = 'ld';
     const PROF_ON = (window.MRPROFES || []).length;
-    const SEC_PLANES = `<section class="ld-sec" id="ld-planes"><h2>Elige tu plan</h2><p class="ld-sub">Pagos mes a mes · tarjeta o transferencia</p><div class="pv-grid n4">${['free', 'membership', 'premium', 'premium8'].map(k => `<a class="pv${PL.hot ? PL.hot(k) : ''}" ${k === 'free' ? 'href="#" data-trial' : `href="inscripcion.html?plan=${k}"`}>${PL.v2 ? PL.v2(k) : ''}</a>`).join('')}</div>${PL.trust ? PL.trust() : ''}</section>`, SEC_PROFES = PROF_ON ? `<section class="ld-sec" id="ld-profes"><h2>Conoce a tus profes</h2><p class="ld-sub">Profesionales bilingües con formación en la enseñanza del inglés</p><div class="ld-cylw"><div class="ld-pf ld-cyl">${pfGrid()}</div></div><div class="ld-cyln"><button class="ld-cyb" data-cy="-1" aria-label="Anterior">‹</button><div class="ld-cyd"></div><button class="ld-cyb" data-cy="1" aria-label="Siguiente">›</button></div></section>` : '';
+    const SEC_PLANES = `<section class="ld-sec" id="ld-planes"><h2>Elige tu plan</h2><p class="ld-sub">Pagos mes a mes · tarjeta o transferencia</p><div class="pv-grid n4">${['free', 'membership', 'premium', 'premium8'].map(k => `<a class="pv${PL.hot ? PL.hot(k) : ''}" ${k === 'free' ? 'href="#" data-trial' : `href="inscripcion.html?plan=${k}"`}>${PL.v2 ? PL.v2(k) : ''}</a>`).join('')}</div>${PL.trust ? PL.trust() : ''}</section>`, SEC_PROFES = PROF_ON ? `<section class="ld-sec" id="ld-profes">${lpSeg()}<h2>${PAGE === 'ninos' ? 'Los profes de tu hijo(a)' : 'Conoce a tus profes'}</h2><p class="ld-sub">${PAGE === 'ninos' ? 'Profesionales bilingües que también enseñan a niños y jóvenes · formación en la enseñan' : 'Profesionales bilingües con formación en la enseñan'}za del inglés</p><div class="ld-cylw"><div class="ld-pf ld-cyl">${pfGrid()}</div></div><div class="ld-cyln"><button class="ld-cyb" data-cy="-1" aria-label="Anterior">‹</button><div class="ld-cyd"></div><button class="ld-cyb" data-cy="1" aria-label="Siguiente">›</button></div></section>` : '';
     wrap.innerHTML = PAGE === 'home' ? `<section class="ld-hero"><div class="ld-copy"><h1>Aprende inglés <em>HABLANDO</em></h1>${pathCards()}<p class="ld-lead">La escuela donde <b>no eres un número</b>: <b>eliges tu profe</b>, clases <b>solo contigo</b> y practicas <b>a tu ritmo</b> con una plataforma que <b>te corrige</b>.</p>
         <div class="ld-cta"><button class="btn k lg" data-trial>${MRI('gift')} Prueba gratis 3 días</button></div><p class="ld-count-st"><b data-stc>+300</b> estudiantes ya hablan inglés con nosotros</p>
         <img class="ld-hero-mra" src="mra-x-rocket4.webp?v=2" alt="Mr. Arrieta"></div><div class="ld-login"></div></section>`
       : PAGE === 'ninos' ? heroKids() + kidsSections() + SEC_PROFES + `<section class="ld-final card lp-final-k"><div><h2>Que tu hijo(a) pruebe gratis</h2><p>3 días · sin tarjeta · sin compromiso.</p></div><button class="btn r lg" data-trial data-kid>${MRI('gift')} Crear su acceso gratis</button></section>`
       : heroAdult() + `
       <section class="ld-sec" id="ld-planes"><h2>Elige tu plan</h2><p class="ld-sub">Pagos mes a mes · tarjeta o transferencia</p><div class="pv-grid n4">${['free', 'membership', 'premium', 'premium8'].map(k => `<a class="pv${PL.hot ? PL.hot(k) : ''}" ${k === 'free' ? 'href="#" data-trial' : `href="inscripcion.html?plan=${k}"`}>${PL.v2 ? PL.v2(k) : ''}</a>`).join('')}</div>${PL.trust ? PL.trust() : ''}</section>
-      <section class="ld-sec ld-tesbox card" id="ld-testimonios"${T.length ? '' : ' hidden'}><h2>Lo que dicen nuestros estudiantes</h2><p class="ld-sub">Testimonios reales en video</p><div class="ld-tes">${tesGrid()}</div></section>
+      <section class="ld-sec ld-tesbox card" id="ld-testimonios"${T.length ? '' : ' hidden'}>${lpSeg()}<h2>Lo que dicen nuestros estudiantes</h2><p class="ld-sub">Testimonios reales en video</p><div class="ld-tes">${tesGrid()}</div></section>
       ${(window.MRPROFES || []).length ? `<section class="ld-ref" id="ld-ref"><div class="grow"><span><b class="ld-ref-k">Recomiéndanos:</b> tu amigo recibe <b>10% de descuento</b> y tú ganas <b>15%</b> en tu primer mes si luego te inscribes.</span></div><a class="btn r" href="recomienda.html">Quiero recomendar →</a></section>
-      <section class="ld-sec" id="ld-profes"><h2>Conoce a tus profes</h2><p class="ld-sub">Profesionales bilingües con formación en la enseñanza del inglés</p><div class="ld-cylw"><div class="ld-pf ld-cyl">${pfGrid()}</div></div><div class="ld-cyln"><button class="ld-cyb" data-cy="-1" aria-label="Anterior">‹</button><div class="ld-cyd"></div><button class="ld-cyb" data-cy="1" aria-label="Siguiente">›</button></div></section>` : ''}
+      <section class="ld-sec" id="ld-profes">${lpSeg()}<h2>Conoce a tus profes</h2><p class="ld-sub">Profesionales bilingües con formación en la enseñanza del inglés</p><div class="ld-cylw"><div class="ld-pf ld-cyl">${pfGrid()}</div></div><div class="ld-cyln"><button class="ld-cyb" data-cy="-1" aria-label="Anterior">‹</button><div class="ld-cyd"></div><button class="ld-cyb" data-cy="1" aria-label="Siguiente">›</button></div></section>` : ''}
       <section class="ld-sec" id="ld-ganas"><h2>¿Qué ganas con nosotros?</h2><p class="ld-sub">Todo lo que necesitas para hablar inglés con confianza</p><div class="card ld-glist">${GAN.map(([i, c, t, d]) => `<div class="ld-gi"><span class="ld-ic ${c}">${MRI(i)}</span><div><b>${t}</b><small>${d}</small></div></div>`).join('')}</div><div class="ld-note3">${MRI('calendar')}<p><b>Tú eliges cuándo tomar tus clases.</b> Reservas profe, día y hora desde tu perfil. Sin horarios fijos.</p></div></section>
       
       <section class="card ld-news" id="ld-news"><div><h2>Recibe tips y novedades</h2><p>Déjanos tu nombre y correo y te enviamos consejos para aprender inglés, novedades y promociones.</p></div>
@@ -423,6 +425,10 @@
   window.MRCOUNTUP = countUp;
   function plansClick(e) { const b = e.target.closest && e.target.closest('[data-plans]'); if (!b) return; e.preventDefault(); const mo = b.closest('.modal'); if (mo) mo.remove(); if (window.MRPLANS) MRPLANS.modal(M); }
   if (!window.__plansWired) { window.__plansWired = true; document.addEventListener('click', plansClick); }
+  // 💳 si ya tiene cuenta (sesión iniciada) y toca un plan en la página, paga ahí mismo con su cuenta: así se aplican solos sus descuentos (oferta de fin de prueba, referidos, cupones)
+  document.addEventListener('click', (e) => { try { const a = e.target.closest && e.target.closest('a[href^="inscripcion.html?plan="]'); if (!a) return; const code = window.MRAC && MRAC.code && MRAC.code(), pr = P.get();
+    if (!code || !pr || pr.type === 'staff' || !window.MRBUY) return; const k = new URLSearchParams(a.getAttribute('href').split('?')[1]).get('plan'); if (!/^(membership|premium|premium8)$/.test(k)) return;
+    e.preventDefault(); e.stopPropagation(); MRBUY.plan(k); } catch (er) { } }, true);
   // enlaces de los correos: ?pagar=CÓDIGO abre los planes y pagos · ?gratis=1 abre la prueba gratis
   // ✉️ botón "Confirmar mi correo" de los correos de bienvenida
   setTimeout(async () => { try { const q = new URLSearchParams(location.search); const vm = q.get('vm'), t = q.get('t'); if (!vm || !t) return; history.replaceState(null, '', location.pathname);
@@ -645,6 +651,38 @@
   }
 
   /* ---------- perfil ---------- */
+  /* ---------- 🧭 v383: guía del primer día (todas las edades) — en el perfil, hasta terminar la lección 1 ---------- */
+  const G1K = 'mra_g1done_v1';
+  const g1Today = () => { const d = new Date(); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); };
+  const g1Total = () => { try { return P.MODS.reduce((t, m) => t + (P.progress(m.id).done || 0), 0); } catch (e) { return 0; } };
+  const GSV = { pen: '<path d="M4 20h4L19 9l-4-4L4 16z"/>', play: '<path d="M8 5v14l11-7z"/>', ck: '<path d="M5 12.5 10 17l9-10"/>', cal: '<rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>', vol: '<path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/>' };
+  const gi = (k) => `<svg class="g1-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${GSV[k]}</svg>`;
+  function firstDay(p, a, ag) { // ag: 'kids' | 'teens' | 'adult'
+    const placed = !!p.module, url = a && a.ready ? a.url : (P.isTrial() && P.trialMod() ? P.trialMod().url : '');
+    if (placed && !url) return '';
+    const prem = !!P.plan().premium, nv = P.plan().plan === 'premium8' && P.plan().eff === 'premium' ? 8 : 4;
+    const nm = esc(P.look().nick || p.first || ''), lvl = a ? esc(a.name + (a.lv ? ' · ' + a.lv : '')) : '';
+    const n = prem ? 3 : 2, done = placed ? 1 : 0;
+    const S1 = { k: 1, st: placed ? 'ok' : 'on', b: 'Descubre tu nivel', s: placed ? 'Listo · ' + lvl : ag === 'kids' ? 'Un juego de preguntas · 10 min' : 'Prueba corta · unos 10 minutos', btn: placed ? '' : `<button class="g1-go" id="pt">${gi(ag === 'kids' ? 'play' : 'pen')}${ag === 'kids' ? '¡Vamos!' : 'Empezar'}</button>` };
+    const S2 = { k: 2, st: placed ? 'on' : 'off', b: ag === 'kids' ? 'Tu primera lección' : 'Empieza tu ruta', s: 'Lección 1 · unos 15 minutos', btn: placed ? `<a class="g1-go" href="${url}">${gi('play')}${ag === 'kids' ? '¡Empezar!' : ag === 'teens' ? 'Empezar' : 'Empezar lección 1'}</a>` : '' };
+    const S3 = prem ? { k: 3, st: placed ? 'alt' : 'off', b: 'Reserva tu clase con un profe', tag: 'EN VIVO', s: `Tienes ${nv} este mes · desde mañana`, btn: placed ? `<button class="g1-go g1-go2" data-g1act="book">${gi('cal')}Reservar</button>` : '' } : null;
+    const steps = [S1, S2].concat(S3 ? [S3] : []);
+    try { localStorage.setItem('mra_g1seen_v1', '1'); } catch (e) { }
+    const row = (x) => `<div class="g1-st ${x.st}"><span class="g1-n">${x.st === 'ok' ? gi('ck') : x.k}</span><div><b>${x.b}${x.tag ? `<em class="g1-tag">${x.tag}</em>` : ''}</b><small>${x.s}</small>${x.btn ? '<div>' + x.btn + '</div>' : ''}</div></div>`;
+    if (ag === 'teens') return `<div class="card g1 g1-tn"><div class="g1-hd"><img src="mra-x-rocket5.webp" alt="Mr. Arrieta"><div>${prem ? `<span class="g1-chip">PREMIUM · ${nv} CLASES</span>` : ''}<b>Hey, ${nm}</b><span>${placed ? 'Tu nivel: ' + lvl + '. Sigue con tu misión.' : 'Tu misión de hoy. Todo lo demás ya está abierto.'}</span></div></div>
+      <div class="g1-box"><span class="g1-lb">MISIÓN DE INICIO · ${done} DE ${n}</span><div class="g1-seg">${steps.map((x, i) => `<i class="${i < done ? 'on' : ''}"></i>`).join('')}</div>${steps.map(row).join('')}</div></div>`;
+    if (ag === 'kids') return `<div class="card g1 g1-kd"><div class="g1-hd">${placed ? `<img src="mra-celebrate.webp" alt="Mr. Arrieta"><div class="g1-bub"><b>¡Ganaste tu primera estrella!</b><span>Ya sabemos tu nivel. ¡Ahora tu primera lección!</span>` : `<img src="mra-welcome.webp" alt="Mr. Arrieta"><div class="g1-bub"><b>¡Hola, ${nm}!</b><span>Vamos a empezar tu aventura. ¡Son solo ${n} pasos!</span>`}<button class="g1-spk" data-kg="${placed ? 'kg2' : 'kg1'}">${gi('vol')}Escuchar</button></div></div>
+      <div class="g1-box"><span class="g1-lb">TU AVENTURA DE INICIO</span>${steps.map((x, i) => (i ? `<div class="g1-line${steps[i - 1].st === 'ok' ? ' ok' : ''}"></div>` : '') + row(x)).join('')}</div>
+      <div class="g1-stars">Estrellas de inicio <i>${'★'.repeat(done)}${'☆'.repeat(2 - done)}</i></div></div>`;
+    return `<div class="card g1 g1-ad"><div class="g1-hd"><img src="${placed ? 'mra-thumbs.webp' : 'mra-welcome.webp'}" alt="Mr. Arrieta"><div><span class="lbl db-red">Tu primer día</span><h2>${placed ? '¡Muy bien, ' + nm + '!' : '¡Hola, ' + nm + '!'}</h2><p>${placed ? 'Tu nivel es <b>' + lvl + '</b>. Ahora tu primera lección.' : `Solo ${n} pasos para empezar. Todo lo demás ya está abierto.`}</p></div></div>
+      <div class="g1-box">${steps.map(row).join('')}</div></div>`;
+  }
+  function firstDayDone(ag) { // el día que termina la lección 1: mensaje de cierre (luego desaparece)
+    let d = null; try { if (!localStorage.getItem('mra_g1seen_v1')) return ''; d = localStorage.getItem(G1K); if (!d) { d = g1Today(); localStorage.setItem(G1K, d); } } catch (e) { return ''; }
+    if (d !== g1Today()) return '';
+    const t = ag === 'teens' ? 'Misión de inicio completa' : ag === 'kids' ? '¡Empezaste tu aventura!' : '¡Ya empezaste tu ruta!';
+    return `<div class="g1-done g1-done-${ag}">${gi('ck')}<div><b>${t}</b><small>${ag === 'kids' ? 'Ganaste tus 2 estrellas de inicio. ¡Sigue con la próxima lección!' : 'Tu siguiente lección te espera abajo. Puedes seguir hoy mismo, sin límite por día.'}</small></div>${ag === 'kids' ? '<button class="g1-spk" data-kg="kg3">' + gi('vol') + 'Escuchar</button>' : ''}</div>`;
+  }
   function home() {
     const p = P.get(); const a = P.assigned(); const staff = p.type === 'staff', trial = P.isTrial();
     const ini = ((p.first || '?')[0] + (p.last || '')[0]).toUpperCase();
@@ -660,14 +698,14 @@
         <button class="btn k lg" id="pt">📝 ${pst.inProgress ? 'Continuar' : 'Tomar'} mi prueba de clasificación</button></div><img class="pt-step-plane" src="mra-x-plane-red.webp" alt="Mr. Arrieta"></div>`;
     } else if (a && P.isExpired()) {
       main = `<div class="card pt-mymod"><div class="pt-mymod-img" style="background-image:url('${U(a.img)}')"><span>🔒</span></div><div><span class="lbl">⏰ Plan vencido</span>
-        <h2>Tu contenido está bloqueado</h2><p>Tu plan venció el <b>${esc(new Date(P.plan().end + 'T00:00:00').toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' }))}</b>. Tus módulos, juegos y clases quedan bloqueados hasta que renueves.</p>
-        <p class="muted">Tranquilo: tu progreso está guardado. Cuando administración confirme tu renovación, todo se desbloquea solo y sigues justo donde ibas.</p>
+        <h2>Tu contenido está bloqueado</h2><p>Tu plan venció el <b>${esc(new Date(P.plan().end + 'T00:00:00').toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' }))}</b>. Tus módulos, juegos y lecciones quedan bloqueados hasta que renueves.</p>
+        <p class="muted">Tranquilo: tu progreso está guardado. Paga con <b>tarjeta</b> y se desbloquea al instante, o por <b>transferencia</b> y se activa cuando confirmemos tu pago. Sigues justo donde ibas.</p>
         <a class="btn block pt-wa" href="#" data-plans>Renovar mi plan</a></div></div>`;
     } else if (a && a.ready && !staff) {
       const pr = P.progress(a.id), tot = trial ? 4 : a.classes;
       main = `<div class="card pt-mymod db-hero"><div class="db-hero-tx"><span class="lbl db-red">${pr.done ? 'Tu siguiente paso' : 'Empieza tu ruta'}</span>
         <h2><small class="pt-here">📍 Estás aquí</small>${esc(a.name)} · ${esc(a.es)}</h2>
-        <p class="db-sub">${pr.done} de ${trial ? '4 clases de tu acceso gratuito' : tot + ' clases'} completadas${a.n > (p.module || 1) ? ' · ¡Avanzaste en tu ruta! 🎉' : ''}</p>
+        <p class="db-sub">${pr.done} de ${trial ? '4 lecciones de tu acceso gratuito' : tot + ' lecciones'} completadas${a.n > (p.module || 1) ? ' · ¡Avanzaste en tu ruta! 🎉' : ''}</p>
         <div class="db-bar"><i style="width:${pr.pct}%"></i></div>
         <div class="db-hero-b"><a class="btn db-wbtn lg" href="${a.url}">${MRI('video')} ${pr.done ? 'Continuar mi ruta' : 'Empezar mi ruta'}</a><button class="btn db-gbtn sm" id="pt3">¿No estás a gusto con tu nivel?</button></div></div>
         <img class="db-hero-mra db-plane" src="mra-x-plane-red.webp" alt="Mr. Arrieta"></div>`;
@@ -676,7 +714,7 @@
       main = `<div class="card pt-mymod">${a ? `<div class="pt-mymod-img" style="background-image:url('${U(a.img)}')"><span>${a.n}</span></div>` : ''}<div><span class="lbl">${staff ? 'Modo profe' : '🧭 Tu ruta de aprendizaje'}</span>
         <h2>${staff ? 'Todos los módulos abiertos para revisión' : `<small class="pt-here">📍 Estás aquí</small>${esc(a.name)} · ${esc(a.es)}`}</h2>
         ${a ? `<p class="muted">${pl && p.assignedBy !== 'admin' ? `Tu ruta se creó con tu prueba de clasificación (${new Date(pl.date).toLocaleDateString('es-CO')}).` : 'Tu ruta fue asignada por administración.'}${a.n > (p.module || 1) ? ' ¡Avanzaste en tu ruta al aprobar el módulo anterior! 🎉' : ''}</p>` : ''}
-        ${a && ready ? `<div class="pt-bar"><i style="width:${P.progress(a.id).pct}%"></i></div><p class="muted" style="margin:4px 0 10px">${P.progress(a.id).done} de ${trial ? '4 clases de tu acceso gratuito' : a.classes + ' clases'} completadas</p><a class="btn k lg" href="${a.url}">▶ ${P.progress(a.id).done ? 'Continuar' : 'Empezar'} mi ruta</a>` : ''}
+        ${a && ready ? `<div class="pt-bar"><i style="width:${P.progress(a.id).pct}%"></i></div><p class="muted" style="margin:4px 0 10px">${P.progress(a.id).done} de ${trial ? '4 lecciones de tu acceso gratuito' : a.classes + ' lecciones'} completadas</p><a class="btn k lg" href="${a.url}">▶ ${P.progress(a.id).done ? 'Continuar' : 'Empezar'} mi ruta</a>` : ''}
         ${a && !ready && trial && P.trialMod() ? `<p class="pt-soon">🚧 Tu ${esc(a.name)} se está terminando de construir. Mientras tanto, usa tu acceso gratuito con los 2 primeros temas del <b>${esc(P.trialMod().name)}</b>.</p><a class="btn k lg" href="${P.trialMod().url}">▶ Entrar con mi acceso gratuito</a>` : ''}
         ${a && !staff ? `<p style="margin:12px 0 0"><button class="btn w sm" id="pt3">🔁 ¿No estás a gusto con tu nivel?</button></p>` : ''}
         ${a && !ready && !trial ? `<p class="pt-soon">🚧 Tu ${esc(a.name)} se está terminando de construir. ¡Muy pronto estará listo! Mientras tanto puedes repasar los módulos anteriores.</p>` : ''}</div></div>`;
@@ -688,6 +726,10 @@
     const teens = !staff && !kids && window.MRTEENS && MRTEENS.on(); document.body.classList.toggle('ag-teens', !!teens); // 🚀 perfil Teens (12 a 17 años)
     if (teens && a && a.ready && !P.isExpired()) { main = MRTEENS.hero(p, a, P.look().nick || p.first || '') + `<div class="tn-row one">${MRTEENS.missions()}</div>` + (MRTEENS.realLife ? MRTEENS.realLife() : ''); }
     else if (teens && newbie) main = main.replace('mra-x-plane-red.webp', 'mra-x-rocket.webp');
+    const g1ag = kids ? 'kids' : teens ? 'teens' : 'adult';
+    if (!staff && !P.isExpired()) { const tdn = g1Total(); // 🧭 v383: guía del primer día
+      if (!tdn) { const g = firstDay(p, a, g1ag); if (g) { main = g; kidsX = ''; } }
+      else main = firstDayDone(g1ag) + main; }
     const curMod = a && a.ready && !staff ? P.progress(a.id) : null;
     const plNow = P.plan(); const plName = staff ? 'Profesor' : P.isExpired() ? 'Plan vencido' : (plNow.plan === 'premium8' && plNow.eff === 'premium' ? 'Premium · 8 clases' : { free: 'Acceso gratuito', membership: 'Plataforma', premium: 'Premium · 4 clases' }[plNow.eff] || 'Acceso gratuito');
     const plIc = staff ? 'user' : P.isExpired() ? 'clock' : plNow.plan === 'premium8' && plNow.eff === 'premium' ? 'gem' : ({ free: 'gift', membership: 'monitor', premium: 'crown' }[plNow.eff] || 'gift');
@@ -695,11 +737,11 @@
     const side = `<aside class="db-side card">
         <div class="db-me"><button class="pt-avwrap" id="me-av" title="Personaliza tu foto">${P.avHTML('pt-av')}<i class="pt-pen">✏️</i></button>
           <div class="db-me-tx"><span class="db-greet">${greet}!</span><h2>${esc(P.look().nick || p.first)} ${esc(p.last || '')}</h2><span class="db-chip ${plNow.eff}">${MRI(plIc)} ${plName}</span>${!staff && window.MRGOAL ? MRGOAL.lineHTML() : ''}${plNow.end && plNow.paid && !P.isExpired() ? `<small class="muted">Activo hasta el ${fmtD(plNow.end, { day: 'numeric', month: 'long' })}</small>` : ''}</div></div>
-        ${curMod ? `<div class="db-ring" style="--p:${pct}"><div><b>${pct}%</b><small>de tu módulo</small></div></div><small class="muted db-modtx">${esc(a.name)} · ${esc(a.lv || a.id)} · ${curMod.done} de ${trial ? 4 : a.classes} clases</small>${!staff && window.MRGOAL ? MRGOAL.cardHTML(pct) : ''}` : staff ? '' : `<div class="db-ring" style="--p:0"><div><b>0%</b><small>tu progreso</small></div></div><small class="muted db-modtx">Empieza con tu prueba de clasificación</small>`}
+        ${curMod ? `<div class="db-ring" style="--p:${pct}"><div><b>${pct}%</b><small>de tu módulo</small></div></div><small class="muted db-modtx">${esc(a.name)} · ${esc(a.lv || a.id)} · ${curMod.done} de ${trial ? 4 : a.classes} lecciones</small>${!staff && window.MRGOAL ? MRGOAL.cardHTML(pct) : ''}` : staff ? '' : `<div class="db-ring" style="--p:0"><div><b>0%</b><small>tu progreso</small></div></div><small class="muted db-modtx">Empieza con tu prueba de clasificación</small>`}
         <nav class="db-qa">${staff ? '' : `<button class="btn w" id="pt-plans">${MRI('crown')} Mi plan</button>`}${!staff && P.plan().premium ? `<button class="btn w" data-go="#pt-live">${MRI('calendar')} Mis clases</button>` : ''}${!staff && P.plan().premium ? `<button class="btn w pt-polb">${MRI('file')} Política de reservas</button>` : ''}<button class="btn w" id="me-go2">${MRI('user')} Personalizar perfil</button>${staff ? '' : `<button class="btn w" id="pt-pass">${MRI('unlock')} Cambiar mi código</button>`}<button class="btn w" id="pt-tour">${MRI('compass')} Ver el tour</button></nav></aside>`;
     const prem = !staff && P.plan().premium;
     const MENU = { // 📂 todo el perfil organizado en 3 grupos
-      learn: ['💻', 'Mis módulos', [['route', 'ib', '🧭', 'Mi ruta de aprendizaje', 'Módulos, clases y progreso'], ['games', 'ib5', '🎮', 'Zona de juegos', 'Practica jugando'], ['notes', 'ib3', '✏️', 'Mis apuntes', 'Tu cuaderno personal'], ['place', 'ib2', '📝', 'Prueba de clasificación', 'Ubica tu nivel']]],
+      learn: ['💻', 'Mis módulos', [['route', 'ib', '🧭', 'Mi ruta de aprendizaje', 'Módulos, lecciones y progreso'], ['games', 'ib5', '🎮', 'Zona de juegos', 'Practica jugando'], ['notes', 'ib3', '✏️', 'Mis apuntes', 'Tu cuaderno personal'], ['place', 'ib2', '📝', 'Prueba de clasificación', 'Ubica tu nivel']]],
       cls: ['🧑‍🏫', 'Mis clases', [['book', 'ib', '📅', 'Reservar clase', 'Elige profe, día y hora'], ['next', 'ib2', '🗓️', 'Mis próximas clases', 'Enlace y cancelación'], ['extra', 'ib5', '➕', 'Comprar más clases', 'Se suman a tu saldo'], ['hist', 'ib6', '📚', 'Historial y tableros', 'Lo que vio cada profe'], ['claim', 'ib3', '🚩', '¿Mi profe no se conectó?', 'Repórtalo aquí'], ['chat', 'ib4', '💬', 'Chat con mi profe', 'Escríbele en vivo']]],
       me: ['👤', 'Mi cuenta', [].concat(staff ? [] : [['plan', 'ib', '👑', 'Mi plan', 'Planes y renovación']], [['perso', 'ib5', '🎨', 'Personalizar perfil', 'Tu foto o tu Mr. Arrieta']], staff ? [] : [['mail', 'ib4', '✉️', 'Mi correo', 'Donde te llegan los avisos']], staff ? [] : [['pass', 'ib3', '🔑', 'Cambiar mi código', 'Tu clave de acceso'], ['ref', 'ib4', '🎁', 'Invitar a un amigo', 'Gana clases o días']], (!staff && P.plan().paid ? [['agree', 'ib', '📄', 'Mi acuerdo', 'Leído y aceptado · copia PDF']] : []).concat([['pol', 'ib6', '📌', 'Política', 'Reservas y cancelaciones'], ['tour', 'ib2', '🧭', 'Ver el tour', 'Cómo funciona tu perfil']]))],
     };
@@ -751,6 +793,8 @@
     const closeAll = () => { $$('.sd-dd').forEach(d => d.classList.remove('open')); const sh = $('.sd-sheet'); if (sh) sh.remove(); };
     $$('.sd-dd').forEach(d => { d.querySelector('.sd-ddb').onclick = (e) => { e.stopPropagation(); const o = d.classList.contains('open'); closeAll(); if (!o) d.classList.add('open'); }; });
     $$('.sd-mi').forEach(b => b.onclick = () => act(b.dataset.act));
+    $$('[data-g1act]').forEach(b => b.onclick = () => act(b.dataset.g1act)); // 🧭 guía: reservar clase con profe
+    $$('[data-kg]').forEach(b => b.onclick = () => M.loadAudio(['kg']).then(() => M.play(b.dataset.kg, { btn: b })));
     if (!window.__sddd) { window.__sddd = 1; document.addEventListener('click', (e) => { if (!e.target.closest('.sd-dd')) $$('.sd-dd').forEach(d => d.classList.remove('open')); }); }
     $$('.sd-tab button').forEach(b => b.onclick = () => { $$('.sd-tab button').forEach(x => x.classList.toggle('on', x === b)); const k = b.dataset.st; closeAll();
       if (k === 'top') return window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -762,7 +806,7 @@
     // bienvenida de regreso (una vez por sesión)
     try { if (P.isBirthday()) sessionStorage.setItem('mra_wb', '1'); // en su cumpleaños el saludo es la fiesta 🎂
       if (back && !sessionStorage.getItem('mra_wb')) { sessionStorage.setItem('mra_wb', '1'); const pr = a && a.ready ? P.progress(a.id) : null;
-      const wm = M.modal(`<div class="center wb">${P.pic() ? P.avHTML('pt-av big') : M.mascot('mascot bounce', 'wink')}<h2>Welcome, ${esc(P.look().nick || p.first)}! 👋</h2><p style="font-size:17px">¡Qué bueno verte de nuevo! ${P.isExpired() ? '' : pr && pr.done ? `Llevas <b>${pr.done} clase(s)</b> en tu ruta. ¡Sigamos!` : 'Hoy es un gran día para avanzar en tu ruta de aprendizaje.'}</p>
+      const wm = M.modal(`<div class="center wb">${P.pic() ? P.avHTML('pt-av big') : M.mascot('mascot bounce', 'wink')}<h2>Welcome, ${esc(P.look().nick || p.first)}! 👋</h2><p style="font-size:17px">¡Qué bueno verte de nuevo! ${P.isExpired() ? '' : pr && pr.done ? `Llevas <b>${pr.done} lección(es)</b> en tu ruta. ¡Sigamos!` : 'Hoy es un gran día para avanzar en tu ruta de aprendizaje.'}</p>
         ${P.isExpired() ? `<p style="font-size:16px">⏰ Tu plan venció y tu contenido está bloqueado. Renuévalo para seguir justo donde ibas.</p><a class="btn block lg pt-wa" href="#" data-plans>Renovar mi plan</a>` : a && a.ready && !staff ? `<a class="btn k block lg" style="text-decoration:none" href="${a.url}">▶ Continuar mi ruta</a>` : ''}<button class="btn w block" id="wbx" style="margin-top:8px">Ir a mi perfil</button></div>`, { x: true });
       $('#wbx', wm).onclick = () => wm.remove(); M.confetti && M.confetti(900); } } catch (e) { }
     if (!tourSeenK(tourKind())) setTimeout(portalTour, 900);
@@ -781,7 +825,7 @@
     const showBar = (r === 'current' || r === 'review') && m.ready;
     return `<button class="pt-mod ${r}" data-id="${m.id}"><div class="pt-mod-img" style="background-image:url('${U(m.img, 640, 360)}')"><span class="pt-mod-n">${m.n}</span><span class="pt-chip ${r}">${chip}</span></div>
       <div class="pt-mod-bd"><h3>${esc(m.name)} · ${esc(m.lv || m.id)}</h3><div class="es">${esc(m.es)}</div><p>${esc(m.desc)}</p>
-      ${showBar ? `<div class="pt-bar"><i style="width:${pr.pct}%"></i></div><small class="muted">${pr.done} de ${r === 'current' && trial ? 4 : m.classes} clases${P.passed(m.id) ? ' · 🎓 Aprobado' : ''}</small>` : ''}
+      ${showBar ? `<div class="pt-bar"><i style="width:${pr.pct}%"></i></div><small class="muted">${pr.done} de ${r === 'current' && trial ? 4 : m.classes} lecciones${P.passed(m.id) ? ' · 🎓 Aprobado' : ''}</small>` : ''}
       ${r === 'locked' ? `<small class="muted">${P.isExpired() ? '🔒 Se abre al renovar tu plan' : trial ? 'Disponible con Plataforma o Premium' : 'Se abre cuando avances en tu ruta'}</small>` : ''}</div></button>`;
   }
   function openMod(id) {
@@ -843,7 +887,7 @@
     const fn = esc(P.look().nick || p.first || ''); const a = P.assigned(); const pl = P.plan();
     const all = kind === 'start' ? [
       { mood: 'welcome', t: `¡Welcome, ${fn}! 👋`, d: 'Soy Mr. Arrieta, tu profe. Te muestro en 30 segundos cómo empezar en <b>mrarrieta.com</b>.' },
-      { sel: '.pt-step', mood: 'idea', t: '1️⃣ Tu primer paso', d: 'Haz tu <b>prueba de clasificación</b>: solo 10 minutos. Se adapta a tu nivel y evalúa tu Listening, Reading, Writing y Speaking. Al terminar, la plataforma te ubica en tu módulo y <b>empiezas tu ruta de inmediato</b>.' },
+      { sel: '.pt-step, .g1', mood: 'idea', t: '1️⃣ Tu primer paso', d: 'Haz tu <b>prueba de clasificación</b>: solo 10 minutos. Se adapta a tu nivel y evalúa tu Listening, Reading, Writing y Speaking. Al terminar, la plataforma te ubica en tu módulo y <b>empiezas tu ruta de inmediato</b>.' },
       { sel: '.pt-trial, .pt-trialbar', mood: 'present', t: '🎁 Tu acceso gratuito', d: 'Tienes la prueba de clasificación y los <b>2 primeros temas</b> de tu módulo para que conozcas la plataforma.' },
       { sel: '#pt-plans', mood: 'pointside', t: '💳 Los planes', d: '<b>Plataforma</b>: toda la plataforma y tu ruta completa A1 → B2+.<br><b>Premium</b>: además, <b>4 u 8 clases individuales</b> al mes con profes. Toca aquí cuando quieras verlos.' },
       { sel: '.pt-avwrap', mood: 'point', t: '😎 Tu perfil', d: 'Toca tu foto para personalizarlo: tómate una foto o crea <b>tu propio Mr. Arrieta</b>.' },
@@ -851,7 +895,7 @@
       { mood: 'thumbs', t: '¡Vamos! 🚀', d: 'Empieza ahora con tu prueba de clasificación.', last: true },
     ] : [
       { mood: 'welcome', t: `¡Muy bien, ${fn}! 🎉`, d: 'Ya tienes tu ruta de aprendizaje. Te muestro tu perfil en 1 minuto.' },
-      { sel: '.pt-mymod', mood: 'pointside', t: '📍 Tu ruta', d: 'Aquí ves <b>en qué módulo estás</b>, tu avance y el botón para <b>continuar tu clase</b>.' },
+      { sel: '.pt-mymod, .g1', mood: 'pointside', t: '📍 Tu ruta', d: 'Aquí ves <b>en qué módulo estás</b>, tu avance y el botón para <b>continuar tu lección</b>.' },
       { sel: '.lv-wrap', mood: 'present', t: '👩‍🏫 Clases con profes', d: 'Reserva tus <b>clases individuales</b> desde mañana y hasta 5 días adelante, nunca para el mismo día. Cancela sin penalización hasta 12 horas antes.' },
       { sel: '.pt-routebar', mood: 'present', t: '🧭 Tu camino', d: 'Tu ruta va de A1 a B2+. Cada módulo se abre cuando <b>apruebas el examen final</b> del anterior.' },
       { sel: '#pt-plans', mood: 'idea', t: '💳 Tu plan', d: pl.premium ? 'Tienes <b>Premium</b>: toda la plataforma + clases individuales con profes.' : pl.paid ? 'Tienes <b>Plataforma</b>: toda la plataforma. Si quieres clases con profes, pásate a Premium.' : 'Aquí ves los planes para <b>desbloquear toda tu ruta</b>.' },
@@ -938,7 +982,7 @@
           <div class="me-prev card"><div class="me-stage" id="stage"><img id="pv" alt="Mi Mr. Arrieta"><b class="me-stk" id="stk"></b></div>
             <button class="btn w block" id="rnd">🎲 Surprise me!<span class="me-lg"> · Sorpréndeme</span></button>
             <button class="btn k block lg" id="sv">✅ Guardar<span class="me-lg"> mi Mr. Arrieta</span></button>
-            <label class="me-chk"><input type="checkbox" id="guide" ${L.guide ? 'checked' : ''}><span>Que <b>mi Mr. Arrieta</b> me acompañe en todas mis clases</span></label></div>
+            <label class="me-chk"><input type="checkbox" id="guide" ${L.guide ? 'checked' : ''}><span>Que <b>mi Mr. Arrieta</b> me acompañe en todas mis lecciones</span></label></div>
           <div class="me-opts">
             ${acc('pose', '👤 Pose · Postura', `<div class="me-poses" data-noguide>${MRAV.POSES.map(x => `<button class="me-pose${av.pose === x ? ' on' : ''}" data-k="pose" data-v="${x}"><img src="mra-${x}.webp" alt="" loading="lazy"><small>${POSE_EN[x]}</small></button>`).join('')}</div>`, true)}
             ${acc('shirt', '👕 Shirt · Camiseta', `<div class="me-sws">${sw('shirt', MRAV.SHIRTS)}</div>`)}
@@ -958,9 +1002,9 @@
         $('#sv').onclick = async () => { const b = $('#sv'); b.disabled = true; b.textContent = 'Guardando…'; let head = ''; try { head = await MRAV.head(av); } catch (e) { }
           const guide = $('#guide').checked; P.setLook({ av: Object.assign({}, av), head, pic: head ? 'avatar' : (L.pic || ''), guide });
           MRAV.applyGuide(guide ? av : null); M.confetti(1200); done('¡Tu Mr. Arrieta quedó genial! 🎉'); b.disabled = false; b.textContent = '✅ Guardar mi Mr. Arrieta';
-          const m = M.modal(`<div class="center">${P.avHTML('pt-av big')}<h3>Looking good! 😎</h3><p>Tu Mr. Arrieta ahora es tu <b>foto de perfil</b>${guide ? ' y te acompañará en tus clases' : ''}.</p><button class="btn k block" id="ok">Ver mi perfil</button><button class="btn w block" id="st" style="margin-top:8px">Seguir personalizando</button></div>`, { x: true });
+          const m = M.modal(`<div class="center">${P.avHTML('pt-av big')}<h3>Looking good! 😎</h3><p>Tu Mr. Arrieta ahora es tu <b>foto de perfil</b>${guide ? ' y te acompañará en tus lecciones' : ''}.</p><button class="btn k block" id="ok">Ver mi perfil</button><button class="btn w block" id="st" style="margin-top:8px">Seguir personalizando</button></div>`, { x: true });
           $('#ok', m).onclick = () => { m.remove(); route('home'); }; $('#st', m).onclick = () => m.remove(); };
-        $('#guide').onchange = e => { if (L.av || P.look().av) { P.setLook({ guide: e.target.checked }); MRAV.applyGuide(e.target.checked ? (P.look().av || av) : null); M.toast(e.target.checked ? 'Tu Mr. Arrieta te acompañará en las clases 🙌' : 'Volverá el Mr. Arrieta original'); } };
+        $('#guide').onchange = e => { if (L.av || P.look().av) { P.setLook({ guide: e.target.checked }); MRAV.applyGuide(e.target.checked ? (P.look().av || av) : null); M.toast(e.target.checked ? 'Tu Mr. Arrieta te acompañará en las lecciones 🙌' : 'Volverá el Mr. Arrieta original'); } };
         paint();
       } else {
         const opt = (v, lbl, dis) => `<label class="me-radio${dis ? ' dis' : ''}"><input type="radio" name="pic" value="${v}" ${(L.pic || '') === v ? 'checked' : ''} ${dis ? 'disabled' : ''}> ${lbl}</label>`;
@@ -970,7 +1014,7 @@
           <h3>👋 Nickname · ¿Cómo quieres que te salude?</h3><input class="inp" id="nick" maxlength="20" placeholder="${esc(p.first)}" value="${esc(L.nick || '')}">
           <p class="muted pt-small">Tu nombre completo se sigue usando en certificados y reportes.</p>
           <h3>🎨 My color · Color de mi perfil</h3><div class="me-sws">${BANNERS.map(([k, en, c]) => `<button class="me-sw${(L.banner || 'w') === k ? ' on' : ''}" data-b="${k}"><i style="background:${c}"></i><small>${en}</small></button>`).join('')}</div>
-          <label class="me-chk"><input type="checkbox" id="guide2" ${L.guide ? 'checked' : ''} ${L.av ? '' : 'disabled'}><span>Que <b>mi Mr. Arrieta personalizado</b> me acompañe en todas mis clases${L.av ? '' : ' <small class="muted">(primero crea tu Mr. Arrieta)</small>'}</span></label>
+          <label class="me-chk"><input type="checkbox" id="guide2" ${L.guide ? 'checked' : ''} ${L.av ? '' : 'disabled'}><span>Que <b>mi Mr. Arrieta personalizado</b> me acompañe en todas mis lecciones${L.av ? '' : ' <small class="muted">(primero crea tu Mr. Arrieta)</small>'}</span></label>
           <button class="btn k block lg" id="svp">✅ Guardar</button></div>`;
         let ban = L.banner || 'w';
         $$('[data-b]', body).forEach(b => b.onclick = () => { ban = b.dataset.b; $$('[data-b]', body).forEach(x => x.classList.toggle('on', x === b)); sfx('tap'); });
@@ -1198,21 +1242,22 @@
       else { bt.disabled = false; bt.textContent = 'Avísame'; M.toast('No se pudo guardar. Inténtalo de nuevo.'); } };
   }
   async function vipBooking() {
-    const m = M.modal(`<div class="vb"><h3>📅 Reserva tu clase individual</h3><div id="vb-b" class="center">⏳ Buscando espacios disponibles…</div></div>`, { x: true });
+    const m = M.modal(`<div class="vb"><h3>📅 Reserva tu clase individual</h3><div id="vb-b" class="center">⏳ Buscando espacios disponibles…</div></div>`, { x: true }); m.classList.add('vb-modal');
     const r = await MRAC.call('vipOptions', { code: MRAC.code() }); const b = $('#vb-b', m); if (!b) return;
     if (!r.ok) { b.innerHTML = `<p>${r.err === 'not_premium' ? 'Las clases individuales son parte de los planes Premium.' : 'No pudimos cargar los espacios. Revisa tu conexión.'}</p>`; return; }
     if (!r.teachers.length) { b.innerHTML = `<p class="muted">Por ahora no hay espacios libres en los próximos días. Los profes publican nuevos horarios cada semana.</p><button class="btn k block" id="vb-wait0">🔔 Avísame cuando haya espacio</button>`; $('#vb-wait0', b).onclick = () => waitAsk(m); return; }
-    let T = null, D = null, S = null, TP = null, OT = '', ALL = false;
+    let T = null, D = null, S = null, TP = null, OT = '', ALL = false, PICK = false, FD = null, FH = null;
     const MN = (P.assigned() || {}).n || +(P.get() || {}).module || 1; const tops = TOPICS[MN] || TOPICS[1];
     const step = () => {
       if (!T && ALL) { // 📅 todos los horarios de todos los profes, por día
         const sl = []; r.teachers.forEach(t => t.slots.forEach(x => sl.push(Object.assign({ t }, x)))); sl.sort((a, c) => (a.date + a.time).localeCompare(c.date + c.time));
         const days = [...new Set(sl.map(x => x.date))];
-        b.innerHTML = `<button class="btn w sm" id="vb-allb">← Ver por profe</button><p class="vb-st">📅 Todos los horarios disponibles <small>(hora Colombia)</small></p><div class="vb-all">${days.map(d => `<div class="vb-day"><b>${fmtD(d, { weekday: 'long', day: 'numeric', month: 'short' })}</b><div class="vb-times">${sl.filter(x => x.date === d).map(x => `<button class="vb-h vb-ht" data-sid="${esc(x.id)}">${fmtT(x.time)}<small>${esc(String(x.t.name).split(' ')[0])}</small></button>`).join('')}</div></div>`).join('')}</div><button class="btn w sm vb-none" id="vb-wait">😕 Ningún horario me sirve</button>`;
+        b.innerHTML = `<button class="btn w sm" id="vb-allb">← Buscar por hora</button><p class="vb-st">📅 Todos los horarios disponibles <small>(hora Colombia)</small></p><div class="vb-all">${days.map(d => `<div class="vb-day"><b>${fmtD(d, { weekday: 'long', day: 'numeric', month: 'short' })}</b><div class="vb-times">${sl.filter(x => x.date === d).map(x => `<button class="vb-h vb-ht" data-sid="${esc(x.id)}">${fmtT(x.time)}<small>${esc(String(x.t.name).split(' ')[0])}</small></button>`).join('')}</div></div>`).join('')}</div><button class="btn w sm vb-none" id="vb-wait">😕 Ningún horario me sirve</button>`;
         $('#vb-allb', b).onclick = () => { ALL = false; step(); }; $('#vb-wait', b).onclick = () => waitAsk(m);
         $$('[data-sid]', b).forEach(x => x.onclick = () => { const it = sl.find(y => y.id === x.dataset.sid); T = it.t; D = it.date; S = T.slots.find(y => y.id === it.id); ALL = false; sfx('tap'); step(); }); return; }
-      if (!T) { b.innerHTML = `<button class="btn k sm vb-allbtn" id="vb-all">📅 Ver todos los horarios juntos</button><p class="vb-st">1️⃣ Elige tu profesor</p><div class="vb-teachers">${r.teachers.map(t => `<button class="vb-t" data-t="${esc(t.id)}">${(t.photo || (window.MRPROFPIC && MRPROFPIC(t.name))) ? `<span class="vb-av has"><img src="${esc(t.photo || MRPROFPIC(t.name))}" alt=""></span>` : `<span class="vb-av">${esc((t.name || '?').split(' ').map(x => x[0]).slice(0, 2).join(''))}</span>`}<div><b>${esc(t.name)}</b><small>${esc(t.bio || '')}</small><em>${t.slots.length} espacio${t.slots.length === 1 ? '' : 's'} disponible${t.slots.length === 1 ? '' : 's'}</em></div></button>`).join('')}</div><p class="muted vb-cr">Te quedan <b>${r.credits.vipLeft}</b> ${+r.credits.vipLeft === 1 ? 'clase individual' : 'clases individuales'} en tu plan. Puedes cancelar gratis hasta <b>12 horas antes</b> de la clase.</p><button class="btn w sm vb-none" id="vb-wait">😕 Ningún horario me sirve</button>`; $('#vb-all', b).onclick = () => { ALL = true; step(); }; $('#vb-wait', b).onclick = () => waitAsk(m);
-        $$('.vb-t', b).forEach(x => x.onclick = () => { T = r.teachers.find(t => t.id === x.dataset.t); sfx('tap'); step(); }); return; }
+      if (!T && !PICK) return finder();
+      if (!T) { b.innerHTML = `<button class="btn w sm" id="vb-fb">← Buscar por hora</button> <button class="btn k sm vb-allbtn" id="vb-all">📅 Ver todos los horarios juntos</button><p class="vb-st">1️⃣ Elige tu profesor</p><div class="vb-teachers">${r.teachers.map(t => `<button class="vb-t" data-t="${esc(t.id)}">${(t.photo || (window.MRPROFPIC && MRPROFPIC(t.name))) ? `<span class="vb-av has"><img src="${esc(t.photo || MRPROFPIC(t.name))}" alt=""></span>` : `<span class="vb-av">${esc((t.name || '?').split(' ').map(x => x[0]).slice(0, 2).join(''))}</span>`}<div><b>${esc(t.name)}</b><small>${esc(t.bio || '')}</small><em>${t.slots.length} espacio${t.slots.length === 1 ? '' : 's'} disponible${t.slots.length === 1 ? '' : 's'}</em></div></button>`).join('')}</div><p class="muted vb-cr">Te quedan <b>${r.credits.vipLeft}</b> ${+r.credits.vipLeft === 1 ? 'clase individual' : 'clases individuales'} en tu plan. Puedes cancelar gratis hasta <b>12 horas antes</b> de la clase.</p><button class="btn w sm vb-none" id="vb-wait">😕 Ningún horario me sirve</button>`; $('#vb-all', b).onclick = () => { ALL = true; step(); }; $('#vb-wait', b).onclick = () => waitAsk(m);
+        $$('.vb-t', b).forEach(x => x.onclick = () => { T = r.teachers.find(t => t.id === x.dataset.t); sfx('tap'); step(); }); { const fb = $('#vb-fb', b); if (fb) fb.onclick = () => { PICK = false; step(); }; } return; }
       const dates = [...new Set(T.slots.map(s => s.date))];
       if (!D) D = dates[0];
       const times = T.slots.filter(s => s.date === D);
@@ -1223,7 +1268,7 @@
         <div class="vb-topics">${tops.map((t, i) => `<button type="button" class="vb-tp${TP === i ? ' on' : ''}" data-tp="${i}"><b>${i + 1}. ${esc(t[0])}</b><small>${esc(t[1])}</small></button>`).join('')}<button type="button" class="vb-tp vb-other${TP === 'o' ? ' on' : ''}" data-tp="o"><b>✏️ Otro tema</b><small>Algo diferente</small></button></div>
         <input class="inp${TP === 'o' ? '' : ' hidden'}" id="vb-topic" maxlength="180" placeholder="Ej: entrevista de trabajo en inglés" value="${esc(OT)}">
         <button class="btn k block lg vb-ok" id="vb-ok" ${S && TP != null ? '' : 'disabled'}>${S && TP == null ? '👆 Elige el tema de tu clase' : S ? `✅ Reservar · ${fmtD(S.date, { weekday: 'short', day: 'numeric', month: 'short' })} · ${fmtT(S.time)}` : 'Elige una hora'}</button>`;
-      $('#vb-back', b).onclick = () => { T = null; D = null; S = null; step(); };
+      $('#vb-back', b).onclick = () => { T = null; D = null; S = null; step(); }; $('#vb-back', b).textContent = PICK ? '← Profes' : '← Buscar por hora';
       $$('.vb-d', b).forEach(x => x.onclick = () => { D = x.dataset.d; S = null; step(); });
       $$('.vb-h', b).forEach(x => x.onclick = () => { S = T.slots.find(s => s.id === x.dataset.s); sfx('tap'); OT = $('#vb-topic', b).value; step(); });
       $$('.vb-tp', b).forEach(x => x.onclick = () => { OT = $('#vb-topic', b).value; TP = x.dataset.tp === 'o' ? 'o' : +x.dataset.tp; sfx('tap'); step(); if (TP === 'o') $('#vb-topic', b).focus(); });
@@ -1237,6 +1282,59 @@
         else { M.toast({ taken: 'Ese espacio acaba de ser reservado. Elige otro 🙏', window: 'Las clases se reservan desde el día siguiente y hasta 5 días adelante.', no_credits: 'Ya reservaste todas tus clases de este periodo.', holiday: 'Ese día es domingo o festivo en Colombia: no hay clases. Elige otro día 🙏', too_late: 'Ese espacio ya no se puede reservar (muy pronto).' }[res.err] || 'No se pudo reservar. Inténtalo de nuevo.');
           if (res.err === 'taken') { const rr = await MRAC.call('vipOptions', { code: MRAC.code() }); if (rr.ok) { r.teachers = rr.teachers; T = r.teachers.find(t => t.id === T.id) || null; S = null; D = null; } step(); } else { ok.disabled = false; ok.textContent = 'Reintentar'; } } };
     };
+    /* 🔎 buscador por hora: el estudiante dice cuándo y la plataforma busca con quién */
+    function finder() {
+      const all = []; r.teachers.forEach(t => t.slots.forEach(x => all.push(Object.assign({ t }, x))));
+      const ISO = (d) => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+      const days = []; for (let k = 1; k <= 5; k++) { const d = new Date(); d.setDate(d.getDate() + k); const s = ISO(d); if (!(window.MRFEST ? MRFEST.isOff(s) : d.getDay() === 0)) days.push(s); }
+      const dow = (s) => new Date(s + 'T12:00:00').getDay(), endH = (s) => s && dow(s) === 6 ? 16 : 20;
+      const hrs = []; for (let hh = 7; hh <= 20; hh++) hrs.push(String(hh).padStart(2, '0') + ':00');
+      const hOf = (t) => String(t).slice(0, 2), okH = (s, h) => !s || s === 'any' ? +h.slice(0, 2) <= 20 : +h.slice(0, 2) <= endH(s);
+      if (FD && FD !== 'any' && days.indexOf(FD) < 0) FD = null;
+      const match = (d, h) => all.filter(x => (d === 'any' || x.date === d) && hOf(x.time) === hOf(h));
+      const rank = (x) => (r.fav && x.t.id === r.fav.teacherId ? 100 : 0) + (x.t.stars || 0) * 10 + Math.min(9, (x.t.done || 0) / 20);
+      const name = (t) => esc(t.name), pic = (t) => { const u = t.photo || (window.MRPROFPIC && MRPROFPIC(t.name)); return u ? `<img src="${esc(u)}" alt="">` : `<span class="vf-ini">${esc((t.name || '?').split(' ').map(x => x[0]).slice(0, 2).join(''))}</span>`; };
+      const stars = (t) => t.stars ? `<span class="vf-st">★ ${String(t.stars).replace('.', ',')}</span>` + (t.done ? ` · ${t.done} clases` : '') : t.done ? `${t.done} clases` : 'Profe nuevo en la escuela';
+      // ⭐ mi horario de siempre (si ese mismo profe tiene libre ese día de la semana a esa hora)
+      let favX = null; if (r.fav) favX = all.find(x => x.t.id === r.fav.teacherId && dow(x.date) === r.fav.dow && String(x.time).slice(0, 5) === r.fav.time);
+      const DN = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+      const grp = (lbl, ic, from, to) => { const L = hrs.filter(h => +h.slice(0, 2) >= from && +h.slice(0, 2) <= to); return L.length ? `<div class="vf-grp">${MRI(ic)}${lbl}</div><div class="vf-hrs">${L.map(h => `<button type="button" class="vf-chip${FH === h ? ' on' : ''}${okH(FD, h) ? '' : ' off'}" data-h="${h}" ${okH(FD, h) ? '' : 'disabled'}>${fmtT(h)}</button>`).join('')}</div>` : ''; };
+      const left = `<div class="vf-left">${favX ? `<div class="vf-fav"><span class="vf-fi">${MRI('repeat')}</span><div><b>¿Tu horario de siempre?</b><small>${DN[r.fav.dow][0].toUpperCase() + DN[r.fav.dow].slice(1)} · ${fmtT(favX.time)} con ${name(favX.t)}</small></div><button type="button" class="vf-go" id="vf-fav">Reservar</button></div>` : ''}
+        <div class="vf-card"><span class="vf-lb">1. ELIGE EL DÍA</span><div class="vf-days">${days.map(d => `<button type="button" class="vf-chip vf-d${FD === d ? ' on' : ''}" data-d="${d}">${fmtD(d, { weekday: 'short' }).replace('.', '')}<small>${fmtD(d, { day: 'numeric', month: 'short' }).replace('.', '')}</small></button>`).join('')}<button type="button" class="vf-chip vf-d${FD === 'any' ? ' on' : ''}" data-d="any">Cualquier<small>día</small></button></div>
+          <p class="vf-pol">Desde mañana y hasta 5 días · domingos y festivos no hay clases</p></div>
+        <div class="vf-card"><span class="vf-lb">2. ELIGE LA HORA</span>${grp('Mañana', 'clock', 7, 11)}${grp('Tarde', 'clock', 12, 16)}${grp('Noche', 'clock', 17, 20)}</div></div>`;
+      let right;
+      if (!FD || !FH) right = `<div class="vf-empty">${MRI('calendar')}<b>${!FD ? 'Elige el día' : 'Ahora elige la hora'}</b><span>Te mostramos al instante qué profes están libres.</span></div>`;
+      else {
+        const ex = match(FD, FH).sort((x, y) => rank(y) - rank(x) || (x.date + x.time).localeCompare(y.date + y.time));
+        const when = FD === 'any' ? `Cualquier día · ${fmtT(FH)}` : `${fmtD(FD, { weekday: 'long', day: 'numeric', month: 'long' })} · ${fmtT(FH)}`;
+        if (ex.length) {
+          right = `<div class="vf-rh"><b>${esc(when[0].toUpperCase() + when.slice(1))}</b><span class="vf-ok">${MRI('check')}${FD === 'any' ? ex.length + (ex.length === 1 ? ' opción disponible' : ' opciones disponibles') : new Set(ex.map(x => x.t.id)).size + (new Set(ex.map(x => x.t.id)).size === 1 ? ' profe disponible' : ' profes disponibles')}</span></div>
+            <div class="vf-tgrid">${ex.slice(0, 9).map((x, i) => `<div class="vf-tc${r.fav && x.t.id === r.fav.teacherId ? ' best' : ''}"><span class="vf-av">${pic(x.t)}</span><div class="vf-ti">${r.fav && x.t.id === r.fav.teacherId ? '<span class="vf-badge">TU PROFE DE SIEMPRE</span>' : ''}<b>${name(x.t)}</b><small>${stars(x.t)}</small>${FD === 'any' || String(x.time).slice(3, 5) !== '00' ? `<small class="vf-when">${fmtD(x.date, { weekday: 'short', day: 'numeric', month: 'short' })} · ${fmtT(x.time)}</small>` : ''}</div><button type="button" class="vf-rv" data-x="${i}">Reservar</button></div>`).join('')}</div>`;
+          right += `<div class="vf-foot"><button type="button" class="vf-lnk" id="vf-all">${MRI('calendar')} Ver toda la disponibilidad de los profes</button><span class="vf-pol">Clase de 50 minutos · cancelación gratis hasta 12 horas antes</span></div>`;
+          setTimeout(() => $$('.vf-rv', b).forEach(btn => btn.onclick = () => { const x = ex[+btn.dataset.x]; T = x.t; D = x.date; S = T.slots.find(y => y.id === x.id); sfx('tap'); step(); }), 0);
+        } else {
+          const near = []; if (FD !== 'any') hrs.forEach(h => { const n = match(FD, h); if (n.length && h !== FH && okH(FD, h)) near.push({ d: FD, h, n, dist: Math.abs(+h.slice(0, 2) - +FH.slice(0, 2)) }); });
+          near.sort((x, y) => x.dist - y.dist);
+          const other = days.filter(d => d !== FD).map(d => ({ d, h: FH, n: match(d, FH) })).filter(x => x.n.length);
+          let soon = []; if (!near.length && !other.length) { const seen = {}; all.slice().sort((x, y) => (x.date + x.time).localeCompare(y.date + y.time)).forEach(x => { const k = x.date + hOf(x.time); if (!seen[k] && soon.length < 4) { seen[k] = 1; soon.push({ d: x.date, h: hOf(x.time) + ':00', n: match(x.date, hOf(x.time) + ':00') }); } }); }
+          const tile = (o, sub) => `<button type="button" class="vf-al" data-d="${o.d}" data-h="${o.h}"><b>${FD === o.d ? fmtT(o.h) : (s => s[0].toUpperCase() + s.slice(1))(fmtD(o.d, { weekday: 'short', day: 'numeric' }).replace('.', '')) + ' · ' + fmtT(o.h)}</b><small>${sub}</small><span class="vf-pf">${[...new Set(o.n.map(x => x.t))].slice(0, 3).map(t => `<i>${pic(t)}</i>`).join('')}<em>${new Set(o.n.map(x => x.t.id)).size} ${new Set(o.n.map(x => x.t.id)).size === 1 ? 'profe' : 'profes'}</em></span></button>`;
+          right = `<div class="vf-rh"><b>${esc(when[0].toUpperCase() + when.slice(1))}</b></div><div class="vf-warn">${MRI('alert')}<span><b>A esa hora no hay profes libres.</b> ${near.length || other.length || soon.length ? 'Mira estos horarios cercanos:' : 'Por ahora no hay espacios en los próximos días.'}</span></div>
+            <div class="vf-alt2">${near.length ? `<div class="vf-ab"><span class="vf-lb">EL MISMO DÍA · ${esc(fmtD(FD, { weekday: 'long', day: 'numeric' }).toUpperCase())}</span><div class="vf-alt">${near.slice(0, 4).map(o => tile(o, (+o.h.slice(0, 2) < +FH.slice(0, 2) ? o.dist + (o.dist === 1 ? ' hora antes' : ' horas antes') : o.dist + (o.dist === 1 ? ' hora después' : ' horas después')))).join('')}</div></div>` : ''}
+            ${other.length ? `<div class="vf-ab"><span class="vf-lb">A LA MISMA HORA, OTRO DÍA</span><div class="vf-alt">${other.slice(0, 4).map(o => tile(o, 'misma hora')).join('')}</div></div>` : ''}
+            ${soon.length ? `<div class="vf-ab"><span class="vf-lb">LOS PRÓXIMOS ESPACIOS LIBRES</span><div class="vf-alt">${soon.map(o => tile(o, 'disponible')).join('')}</div></div>` : ''}</div>
+            ${near.length || other.length || soon.length ? '' : `<button class="btn k block" id="vf-wait">🔔 Avísame cuando haya espacio</button>`}
+            <div class="vf-foot"><button type="button" class="vf-btnw" id="vf-all">${MRI('calendar')} Ver toda la disponibilidad de los profes</button><span class="vf-pol">Lunes a viernes 7:00 a. m. – 9:00 p. m. · sábados 7:00 a. m. – 5:00 p. m.</span></div>`;
+        }
+      }
+      b.innerHTML = `<div class="vf">${left}<div class="vf-right" id="vf-r">${right}</div></div><button type="button" class="vf-pick" id="vf-pick">Prefiero elegir primero el profe →</button>`;
+      $$('.vf-d', b).forEach(x => x.onclick = () => { FD = x.dataset.d; if (FH && !okH(FD, FH)) FH = null; sfx('tap'); finder(); });
+      $$('[data-h]', b).forEach(x => x.onclick = () => { if (x.classList.contains('vf-al')) FD = x.dataset.d; FH = x.dataset.h; sfx('tap'); finder(); if (innerWidth < 900) { const rr = $('#vf-r', b); if (rr) rr.scrollIntoView({ behavior: 'smooth', block: 'start' }); } });
+      const fv = $('#vf-fav', b); if (fv) fv.onclick = () => { T = favX.t; D = favX.date; S = T.slots.find(y => y.id === favX.id); sfx('tap'); step(); };
+      const al = $('#vf-all', b); if (al) al.onclick = () => { ALL = true; step(); };
+      const wt = $('#vf-wait', b); if (wt) wt.onclick = () => waitAsk(m);
+      $('#vf-pick', b).onclick = () => { PICK = true; step(); };
+    }
     step();
   }
   function changeModal(g) {

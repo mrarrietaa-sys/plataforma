@@ -195,6 +195,13 @@
   /* ---------- speech recognition ---------- */
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   const canSR = !!SR;
+  // 📱 v383: medimos en silencio si el reconocimiento de voz funciona en cada tipo de celular (para decidir con datos)
+  const UA = navigator.userAgent || '';
+  const IOS = /iPhone|iPad|iPod/.test(UA) || (/Macintosh/.test(UA) && navigator.maxTouchPoints > 1);
+  const MOBILE = IOS || /Android/i.test(UA);
+  const DEVK = (IOS ? 'iOS' : /Android/i.test(UA) ? 'Android' : 'PC') + '·' + (/CriOS/.test(UA) ? 'Chrome' : /FxiOS|Firefox/.test(UA) ? 'Firefox' : /EdgiOS|Edg\//.test(UA) ? 'Edge' : /SamsungBrowser/.test(UA) ? 'Samsung' : /Chrome/.test(UA) ? 'Chrome' : /Safari/.test(UA) ? 'Safari' : 'Otro');
+  function srStat(kind, err) { try { const K = 'mra_srstat_v1', o = JSON.parse(localStorage.getItem(K) || '{}') || {}; const d = o[DEVK] = o[DEVK] || { ok: 0, em: 0, er: 0, sf: 0 }; d[kind] = (d[kind] || 0) + 1; if (kind === 'er' && err) { d.e = d.e || {}; d.e[err] = (d.e[err] || 0) + 1; } localStorage.setItem(K, JSON.stringify(o)); } catch (e) { } }
+  const NOHEAR = (e) => !e || e === 'no-speech' || e === 'timeout';
   // 🎙️ MOTOR DE VOZ (v179): junta TODO lo que el estudiante dice (no solo la primera parte), no se corta en las pausas,
   // corrige los resultados repetidos de Android y espera un silencio real antes de terminar. Se habla normal, sin gritar.
   const lc = (x) => String(x || '').toLowerCase().replace(/\s+/g, ' ').trim();
@@ -212,10 +219,10 @@
   }
   function listen(timeoutMs = 8000, opts = {}) { // opts.quick: termina apenas el estudiante deja de hablar
     return new Promise((res) => {
-      if (!SR) return res({ error: 'nosupport', alts: [] });
+      if (!SR) { srStat('er', 'nosupport'); return res({ error: 'nosupport', alts: [] }); }
       const t0 = Date.now(); let done = false, r = null, segs = [], interim = [], lastErr = '', idle = null, heardAny = false;
       timeoutMs = Math.max(timeoutMs, 9000); // nunca menos de 9 s: da tiempo a pensar y hablar con calma
-      const fin = (err) => { if (done) return; done = true; clearTimeout(idle); try { r && r.abort(); } catch (e) { } const alts = segAlts(segs, interim); res(alts.length ? { alts } : { alts: [], error: err || lastErr || 'no-speech' }); };
+      const fin = (err) => { if (done) return; done = true; clearTimeout(idle); try { r && r.abort(); } catch (e) { } const alts = segAlts(segs, interim); const e2 = err || lastErr || 'no-speech'; srStat(alts.length ? 'ok' : NOHEAR(e2) ? 'em' : 'er', e2); res(alts.length ? { alts } : { alts: [], error: e2 }); };
       const arm = () => { clearTimeout(idle); idle = setTimeout(() => fin(), opts.quick ? (segs.length ? 650 : (interim.length ? 1000 : 2600)) : (segs.length ? 1800 : 2600)); }; // espera 1,8 s de silencio real antes de terminar
       const start = () => {
         if (done) return;
@@ -240,8 +247,8 @@
     const text = () => segAlts(segs, interim)[0] || '';
     const start = () => { if (!active) return; r = new SR(); r.lang = 'en-US'; r.continuous = true; r.interimResults = true; r.maxAlternatives = 3;
       r.onresult = (e) => { window.MRAWAVE && MRAWAVE.kick(); for (let k = e.resultIndex; k < e.results.length; k++) { const rr = e.results[k], list = []; for (let i = 0; i < rr.length; i++) list.push(rr[i].transcript); if (rr.isFinal) { segMerge(segs, list); interim = []; } else interim = list; } onText && onText(text()); };
-      r.onerror = (e) => { if (/not-allowed|audio-capture|service-not-allowed|language-not-supported/.test(e.error)) { active = false; onFatal && onFatal(e.error); } };
-      r.onend = () => { if (active) setTimeout(start, 60); else if (!ended) { ended = true; onText && onText(text()); S.onend && S.onend(); } };
+      r.onerror = (e) => { if (/not-allowed|audio-capture|service-not-allowed|language-not-supported/.test(e.error)) { active = false; srStat('er', e.error); onFatal && onFatal(e.error); } };
+      r.onend = () => { if (active) setTimeout(start, 60); else if (!ended) { ended = true; srStat(text() ? 'ok' : 'em'); onText && onText(text()); S.onend && S.onend(); } };
       try { r.start(); } catch (e) { active = false; onFatal && onFatal('start'); } };
     S.stop = () => { active = false; try { r && r.stop(); } catch (e) { if (!ended) { ended = true; S.onend && S.onend(); } } };
     S.abort = () => { active = false; ended = true; try { r && r.abort(); } catch (e) { } };
@@ -276,11 +283,15 @@
     return prev[n];
   }
   // speaking score: % of target words found (order-tolerant), best over alternatives
+  // 📱 iPhone (v383): Safari reconoce peor las palabras cortas → se califica con más tolerancia (palabras pequeñas omitidas valen la mitad)
+  const FW = new Set(['a', 'an', 'the', 'is', 'are', 'am', 'to', 'of', 'do', 'does', 'it', 'in', 'on', 'at', 'and', 'i', 'my', 'your', 'he', 'she', 'we', 'you']);
   function speechScore(target, alts) {
     const tw = words(target); let best = { score: 0, heard: '', hit: [] };
+    const L1 = IOS ? 2 : 3, L2 = IOS ? 5 : 6;
     for (const alt of alts) {
-      const aw = words(alt); const pool = aw.slice(); const joined = aw.join(''); const hit = tw.map(w => { const i = pool.findIndex(x => x === w || (w.length > 3 && lev(x, w) <= 1) || (w.length > 6 && lev(x, w) <= 2)); if (i >= 0) { pool.splice(i, 1); return true; } return w.length > 3 && joined.indexOf(w) >= 0; });
-      const sc = Math.round(hit.filter(Boolean).length / tw.length * 100);
+      const aw = words(alt); const pool = aw.slice(); const joined = aw.join(''); const hit = tw.map(w => { const i = pool.findIndex(x => x === w || (w.length > L1 && lev(x, w) <= 1) || (w.length > L2 && lev(x, w) <= 2)); if (i >= 0) { pool.splice(i, 1); return true; } return w.length > L1 && joined.indexOf(w) >= 0; });
+      const got = hit.reduce((t, x, i) => t + (x ? 1 : IOS && FW.has(tw[i]) && hit.some(Boolean) ? 0.5 : 0), 0);
+      const sc = Math.min(100, Math.round(got / tw.length * 100));
       if (sc > best.score || !best.heard) best = { score: sc, heard: alt, hit };
     }
     return best;
@@ -450,10 +461,20 @@
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
   })();
   const WV = (f) => async function () { const W = window.MRAWAVE; W && W.on(); try { return await f.apply(this, arguments); } finally { W && W.off(); } };
-  const listenW = WV(listen), recordScoreW = WV(recordScore), recordVoiceW = WV(recordVoice);
+  const listenW0 = WV(listen), recordScoreW0 = WV(recordScore), recordVoiceW = WV(recordVoice);
+  // 🎧 v383: si no se escuchó nada, nunca queda bloqueado: "Intentar otra vez" o "Grábate y escúchate" (se autoevalúa)
+  const noHearUI = (target, au) => window.MRVC && MRVC.noHear ? MRVC.noHear({ target, au }) : Promise.resolve('close');
+  async function listenW() { const args = arguments; const r = await listenW0.apply(this, args);
+    if (r && !r.alts.length && NOHEAR(r.error) && window.MRVC && MRVC.lastCard) { const c = MRVC.lastCard(), t = c && c.querySelector('.vc-say'); const target = t && t.textContent.trim();
+      if (target) { const ch = await noHearUI(target, c.dataset.au || ''); if (ch === 'self') { srStat('sf'); return { alts: [target], self: true }; } if (ch === 'retry') return listenW.apply(this, args); } }
+    return r; }
+  async function recordScoreW(target) { const args = arguments; const r = await recordScoreW0.apply(this, args);
+    if (r && !r.alts.length && r.score === 0 && NOHEAR(r.error) && target) { const c = window.MRVC && MRVC.lastCard && MRVC.lastCard(); const ch = await noHearUI(String(target), (c && c.dataset.au) || '');
+      if (ch === 'self') { srStat('sf'); return Object.assign({}, r, { score: 80, heard: '', self: true }); } if (ch === 'retry') return recordScoreW.apply(this, args); }
+    return r; }
   const srSessionW = function (onText, onFatal) { const W = window.MRAWAVE; let off = !W; const o = () => { if (!off) { off = true; W.off(); } }; if (W) W.on(); const S = srSession(onText, function () { o(); return onFatal && onFatal.apply(this, arguments); }); if (!W) return S; if (!S) { o(); return S; }
     const st = S.stop, ab = S.abort; S.stop = function () { o(); return st.apply(S, arguments); }; S.abort = function () { o(); return ab.apply(S, arguments); }; return S; };
   window.M1 = { face, D, C, MOD, S, $, $$, h, esc, shuffle, sample, sleep, save, touchStreak, addSkill, addWeak, okWeak, skillPct, isUnlocked, finalUnlocked, paceDate, weakParts, reviewMode, revCount, PTS_TIP, hasAccess, progressOpen, lockReason, review, hasProfile, doneCount, totalParts, redeem, codeHash,
-    allParts, partById, trackAudio, audioUI, floatStop, recordScore: recordScoreW, letterScorer, voiceResult, floatBubble, setBubbleHidden, prevPart, nextPart, partStars, overallPct, imgURL, photo, play, playSeq, loadAudio, stop, sfx, praise, encourage, ageGroup, fbf, canSR, listen: listenW, srSession: srSessionW, recordVoice: recordVoiceW,
+    allParts, partById, trackAudio, audioUI, floatStop, recordScore: recordScoreW, letterScorer, voiceResult, floatBubble, setBubbleHidden, prevPart, nextPart, partStars, overallPct, imgURL, photo, play, playSeq, loadAudio, stop, sfx, praise, encourage, ageGroup, fbf, canSR, IOS, MOBILE, listen: listenW, srSession: srSessionW, recordVoice: recordVoiceW,
     norm, words, lev, speechScore, sheet, good, bad, toast, modal, xpFly, confetti, mascot, audioSrc };
 })();
