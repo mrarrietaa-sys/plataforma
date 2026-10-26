@@ -13,7 +13,7 @@
   const key = () => { try { return sessionStorage.getItem(KK) || ''; } catch (e) { return ''; } };
   const PLAN = { free: ['🎁', 'ACCESO GRATUITO'], membership: ['🖥️', 'PLATAFORMA'], premium: ['👑', 'PREMIUM · 4 CLASES'], premium8: ['💎', 'PREMIUM · 8 CLASES'], expired: ['⏰', 'Vencido'] };
   const MODN = { 1: 'A1', 2: 'A2', 3: 'B1', 4: 'B2+' };
-  const PRICE = { membership: 59900, premium: 349000 };
+  const PRICE = { membership: 64900, premium: 349000 };
   const money = (n) => '$' + Math.round(+n || 0).toLocaleString('es-CO');
   const fD = (iso, o) => { if (!iso) return '—'; try { return new Date(String(iso).slice(0, 10) + 'T12:00:00').toLocaleDateString('es-CO', o || { day: 'numeric', month: 'short', year: 'numeric' }); } catch (e) { return iso; } };
   const fDT = (iso) => iso ? fD(iso) + (String(iso).length > 10 ? ' · ' + String(iso).slice(11, 16) : '') : '—';
@@ -597,7 +597,7 @@
       <div class="card"><h3>🔗 Enlaces para compartir</h3><div class="ad-mini">${links.map(([n, u]) => `<div class="ad-mrow ad-link"><b>${n}</b><span>${esc(u)}</span><button class="btn w sm" data-cp="${esc(u)}">📋</button></div>`).join('')}</div></div>
       <div class="card"><h3>📣 Anuncio para todos los estudiantes</h3><p class="muted">Aparece en el perfil de cada estudiante. Déjalo vacío para ocultarlo.</p><textarea class="inp" data-k="announcement" rows="2">${esc(conf.announcement)}</textarea></div>
       <div class="card"><h3>💲 Precios de las membresías</h3><p class="muted">Valores en pesos (COP), sin puntos. Se actualizan en toda la plataforma y en la compra.</p><div class="ad-form">
-        ${[['price_membership', '🖥️ Plataforma (mes)', 59900], ['price_premium', '👑 Premium · 4 clases (mes)', 169900], ['price_premium8', '💎 Premium · 8 clases (mes)', 289900], ['price_extra', '➕ Clase adicional', 39900]].map(([k, n, d]) => `<label>${n}<input class="inp" type="number" min="0" step="100" data-k="${k}" value="${esc(conf[k] || d)}"></label>`).join('')}</div></div>
+        ${[['price_membership', '🖥️ Plataforma (mes)', 64900], ['price_premium', '👑 Premium · 4 clases (mes)', 179900], ['price_premium8', '💎 Premium · 8 clases (mes)', 299900], ['price_extra', '➕ Clase adicional', 42900]].map(([k, n, d]) => `<label>${n}<input class="inp" type="number" min="0" step="100" data-k="${k}" value="${esc(conf[k] || d)}"></label>`).join('')}</div></div>
       <button class="btn k lg" id="cf-sv">💾 Guardar ajustes</button>
       <div class="card" style="margin-top:16px"><h3>💳 Mercado Pago (pagos con tarjeta)</h3><p class="muted">Pega aquí tu <b>Access Token de producción</b> (empieza por <code>APP_USR-</code>). Con él, los pagos con tarjeta se confirman solos y el plan se habilita de inmediato. No se muestra después de guardarlo.</p><div style="display:flex;gap:8px;flex-wrap:wrap"><input class="inp" id="mp-tk" type="password" placeholder="APP_USR-…" style="flex:1 1 260px" autocomplete="off"><button class="btn k" id="mp-sv">💾 Guardar token</button></div></div>
       <div class="card" style="margin-top:16px"><h3>🔐 Cambiar clave de administración</h3><p class="muted">Mínimo 8 caracteres. No la compartas con nadie.</p><div class="ad-form"><label>Clave actual<input class="inp" type="password" id="pw-old" autocomplete="current-password"></label><label>Nueva clave<input class="inp" type="password" id="pw-new" autocomplete="new-password"></label><label>Repite la nueva clave<input class="inp" type="password" id="pw-new2" autocomplete="new-password"></label></div><button class="btn k" id="pw-sv">🔐 Cambiar clave</button></div>`;

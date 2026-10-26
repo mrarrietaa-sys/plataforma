@@ -13,13 +13,13 @@
   async function cat() { if (catOk) return; try { const r = await MRAC.call('plans', {}); if (r && r.ok) { PLS().applyCat && PLS().applyCat(r.cat); window.__mpOn = !!r.mp; catOk = true; } } catch (e) { } }
   function payBlock(id) {
     return `<div class="by-pay"><p class="by-st"><b>¿Cómo quieres pagar?</b></p>
-      <button class="btn k block lg by-paybtn" data-m="mp" id="${id}-mp">${MRI('card')}<span><b>Pagar con tarjeta</b><small>Mercado Pago · débito o crédito</small></span></button>
-      <p class="muted center" style="font-size:13px;margin:4px 0 10px">Se habilita apenas se apruebe el pago</p>
-      <button class="btn w block by-paybtn" data-m="tr" id="${id}-tr">${MRI('bank')}<span><b>Pagar por transferencia</b><small>Nequi o Llave (Breve-B)</small></span></button>
+      <button class="btn k block lg by-paybtn" data-m="mp" id="${id}-mp">${MRI('card')}<span><b>Pagar ahora</b><small>Tarjeta, PSE, Nequi o Daviplata · Mercado Pago</small></span></button>
+      <p class="muted center" style="font-size:13px;margin:4px 0 10px">Tu plan se activa solo, apenas se apruebe el pago</p>
+      ${window.__mpOn ? '' : `<button class="btn w block by-paybtn" data-m="tr" id="${id}-tr">${MRI('bank')}<span><b>Pagar por transferencia</b><small>Nequi o Llave (Breve-B)</small></span></button>
       <div class="by-tr hidden" id="${id}-trbox"><div class="by-acc"><b>Paga en cualquiera de estas cuentas:</b><div><span>NEQUI</span><b>3017810841</b></div><div><span>LLAVE (BREVE-B)</span><b>1047374279</b></div></div>
         <label class="by-file" for="${id}-file">${MRI('clip')}<span id="${id}-fn">Adjunta tu comprobante de pago</span><small>Foto o PDF</small></label><input type="file" id="${id}-file" accept="image/*,application/pdf" class="by-filein">
         <button class="btn k block lg" id="${id}-send" style="margin-top:10px">${MRI('send')} Enviar comprobante</button>
-        <p class="muted center" style="font-size:13px">Administración lo revisa y, al aprobarlo, se habilita de inmediato en tu perfil.</p></div></div>`;
+        <p class="muted center" style="font-size:13px">Administración lo revisa y, al aprobarlo, se habilita de inmediato en tu perfil.</p></div>`}</div>`; // 💳 v409: con Mercado Pago activo solo se paga por Mercado Pago (la transferencia queda de respaldo si no está configurado)
   }
   function readFile(f) { return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(f); }); }
   async function shrink(f) { // fotos grandes → JPG de máx. 1600 px (los PDF se envían tal cual)
@@ -45,7 +45,7 @@
   }
   async function plan(k, opt) {
     await cat(); const p = (PLS().PL || {})[k]; if (!p) return; const nm = (PLS().noEmo || String)(p.name);
-    const EXU = PLS().extra ? PLS().extra() : 39900; let X = /^premium/.test(k) ? Math.max(0, Math.min(10, +((opt && opt.extra) || 0))) : 0, disc = 0;
+    const EXU = PLS().extra ? PLS().extra() : 42900; let X = /^premium/.test(k) ? Math.max(0, Math.min(10, +((opt && opt.extra) || 0))) : 0, disc = 0;
     const m = M.modal(`<h3 class="by-h">${MRI('card')} ${esc(nm)}</h3>
       <table class="by-sum"><tr><td>Plan</td><td><b>${esc(nm)}</b></td></tr><tr><td>Precio</td><td><b>${esc(p.price)}</b> COP</td></tr><tr><td>Periodicidad</td><td>Mensual (se renueva solo si vuelves a pagar)</td></tr>
         <tr><td>Clases incluidas</td><td>${p.classes ? p.classes + ' clases individuales de 50 minutos por mes' : 'No incluye clases individuales'}</td></tr>${/^premium/.test(k) ? `<tr><td>Clases extra <small>(${fmt(EXU)} c/u)</small></td><td><span class="by-xst"><button type="button" data-bx="-1">−</button><b id="by-xn">${X}</b><button type="button" data-bx="1">+</button></span></td></tr>` : ''}<tr id="by-disc" class="hidden"><td>Descuento referido</td><td id="by-dv"></td></tr><tr><td><b>Total a pagar</b></td><td><b id="by-tot">${esc(p.price)} COP</b></td></tr></table>
@@ -66,7 +66,7 @@
   function firstBuy() { const q = (window.MRAP && MRAP.get()) || {}; return !q.planStart; }
   function refSaved() { try { return localStorage.getItem('mra_ref') || ''; } catch (e) { return ''; } }
   async function extra(cycleEnd) {
-    await cat(); const unit = PLS().extra ? PLS().extra() : 39900;
+    await cat(); const unit = PLS().extra ? PLS().extra() : 42900;
     const m = M.modal(`<h3 class="by-h">${MRI('plus')} Clases individuales adicionales</h3>
       <p class="muted">Cada clase dura 50 minutos y se reserva igual que las de tu plan.</p>
       <div class="by-qty"><span>Cantidad de clases</span><div class="by-step"><button type="button" id="bq-m" aria-label="Quitar una">${MRI('minus')}</button><b id="bq-n">1</b><button type="button" id="bq-p" aria-label="Agregar una">${MRI('plus')}</button></div></div>

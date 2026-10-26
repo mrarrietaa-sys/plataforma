@@ -24,13 +24,13 @@ if (!window.M1) window.M1 = {
     { id: 'free', name: 'ACCESO GRATUITO', price: '$0', per: 'COP · sin costo', tag: 'Pruébalo gratis · 3 días', icon: '🎁',
       perks: ['Descubre tu nivel en 10 minutos', 'Tu ruta personalizada', 'Habla y la plataforma te corrige'], note: 'No incluye clases individuales.' },
     Object.assign({ id: 'membership', tag: 'Aprende a tu ritmo', icon: '🖥️',
-      perks: ['Habla desde el día 1: te escucha y te corrige', 'Del A1 al B2+, a tu ritmo, 24/7', 'Certificado por cada módulo'], note: 'No incluye clases individuales.' }, pp('membership', '🖥️ PLATAFORMA', '$59.900')),
+      perks: ['Habla desde el día 1: te escucha y te corrige', 'Del A1 al B2+, a tu ritmo, 24/7', 'Certificado por cada módulo'], note: 'No incluye clases individuales.' }, pp('membership', '🖥️ PLATAFORMA', '$64.900')),
     Object.assign({ id: 'premium', tag: '+ 4 clases con profe', icon: '👑',
-      perks: ['Todo lo de Plataforma', '4 clases 1 a 1 con profe al mes', 'Tú eliges profe, día y hora', 'Clases no acumulables: úsalas en tu periodo mensual'] }, pp('premium', '👑 PREMIUM · 4 CLASES', '$169.900')),
+      perks: ['Todo lo de Plataforma', '4 clases 1 a 1 con profe al mes', 'Tú eliges profe, día y hora', 'Clases no acumulables: úsalas en tu periodo mensual'] }, pp('premium', '👑 PREMIUM · 4 CLASES', '$179.900')),
     Object.assign({ id: 'premium8', tag: '+ 8 clases con profe', icon: '💎', best: true,
-      perks: ['Todo lo de Plataforma', '8 clases 1 a 1: 2 por semana', 'Gana fluidez real, más rápido', 'Clases no acumulables: úsalas en tu periodo mensual'] }, pp('premium8', '💎 PREMIUM · 8 CLASES', '$289.900')),
+      perks: ['Todo lo de Plataforma', '8 clases 1 a 1: 2 por semana', 'Gana fluidez real, más rápido', 'Clases no acumulables: úsalas en tu periodo mensual'] }, pp('premium8', '💎 PREMIUM · 8 CLASES', '$299.900')),
   ];
-  const XP = () => { const P = window.MRPLANS; const n = P && P.extra ? P.extra() : 39900; return '$' + String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.'); };
+  const XP = () => { const P = window.MRPLANS; const n = P && P.extra ? P.extra() : 42900; return '$' + String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.'); };
   function stCount() { const el = document.querySelector('[data-stc]'); if (!el) return; const run = (N) => { const t0 = performance.now(); const fr = (t) => { const k = Math.min(1, (t - t0) / 1400); el.textContent = '+' + Math.round(N * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(fr); }; requestAnimationFrame(fr); };
     if (window.MR && MR.on) MR.call('pubStats', {}).then(r => run(r && r.students ? r.students : 300)).catch(() => run(300)); else run(300); }
   setTimeout(stCount, 400);
@@ -114,7 +114,7 @@ if (!window.M1) window.M1 = {
 
         <div class="in-summary" id="in-summary"></div>
         <button class="btn k lg block" id="in-send" type="submit">Enviar mi inscripción</button>
-        <p class="muted center in-small" id="in-paynote" hidden>Al continuar verás las formas de pago (tarjeta o transferencia). Apenas se confirme tu pago te llegan tus datos de acceso al correo.</p>
+        <p class="muted center in-small" id="in-paynote" hidden>Al continuar pagas con tarjeta, PSE, Nequi o Daviplata (Mercado Pago). Apenas se confirme tu pago te llegan tus datos de acceso al correo.</p>
         <p class="muted center in-small">¿Prefieres hablar con alguien? <a href="https://wa.me/${WA}?text=${encodeURIComponent((window.MRNE || String)('¡Hola! Quiero información sobre los planes de mrarrieta.com'))}" target="_blank" rel="noopener">Escríbenos por WhatsApp</a></p>
       </div>
     </form>`;
@@ -157,7 +157,7 @@ if (!window.M1) window.M1 = {
   function summary() {
     const p = planOf(st.plan), el = $('#in-summary'); if (!el) return;
     const PLx = window.MRPLANS || {}, n = /^premium/.test(st.plan) && (st.extraPlan || st.plan) === st.plan ? (+st.extra || 0) : 0;
-    const unit = PLx.extra ? PLx.extra() : 39900, f = PLx.fmt || ((v) => '$' + v), base = (PLx.PL && PLx.PL[st.plan]) ? PLx.PL[st.plan].n : 0;
+    const unit = PLx.extra ? PLx.extra() : 42900, f = PLx.fmt || ((v) => '$' + v), base = (PLx.PL && PLx.PL[st.plan]) ? PLx.PL[st.plan].n : 0;
     el.innerHTML = !p ? 'Aún no has elegido un plan.' : `Plan elegido: <b>${esc(p.name)}</b> · ${esc(p.price)} ${esc(p.per || '')}` + (n && base ? `<br>+ <b>${n} clase${n === 1 ? '' : 's'} extra</b> (${f(n * unit)}) · <b>Valor total: ${f(base + n * unit)} COP</b>` : '');
   }
 
