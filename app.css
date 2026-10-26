@@ -6716,3 +6716,7 @@ body.ag-teens .pg-rows{background:#fff}
 .vf-none .vf-btnw{margin-left:auto;flex:none;white-space:nowrap}
 @media(max-width:560px){.vf-none{flex-wrap:wrap}.vf-none>div{flex:1 1 200px}.vf-none .vf-btnw{width:100%;margin:4px 0 0}}
 .vf-left .vf-none{margin-top:12px;flex-wrap:wrap}.vf-left .vf-none>div{flex:1 1 180px}
+.vf-none .vf-btnw{justify-content:center;text-align:center}
+@media(max-width:560px){.vf-none{text-align:left}.vf-none .vf-btnw{background:#0B2A5B;color:#fff;border-color:#0B2A5B}}
+.vf-none .vf-btnw{background:#0B2A5B!important;color:#fff!important;border-color:#0B2A5B!important}.vf-none .vf-btnw:hover{background:#1B4A9B!important}
+.vf-none .vf-btnw{background:#0B2A5B!important;color:#fff!important;border-color:#0B2A5B!important}
