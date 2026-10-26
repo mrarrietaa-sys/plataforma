@@ -517,7 +517,8 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
       const back = new Promise(res => { navBack = () => res('__back'); navJump = () => res('__jump'); });
       let r;
-      const runIt = () => Promise.race([(STEP[s.k] || ((st2, pp) => A[s.k](st2, pp)))(stage, p), back]);
+      const AGS = M.ageGroup() !== 'adult' && window.MRAGE2 && MRAGE2[s.k]; // 👧🧑‍🎤 v406: Kids y Teens viven el repaso y la explicación a su manera
+      const runIt = () => Promise.race([(AGS ? (st2, pp) => Promise.resolve(MRAGE2[s.k](st2, pp)).then(r => r === null ? (STEP[s.k] || ((a2, b2) => A[s.k](a2, b2)))(st2, pp) : r) : (STEP[s.k] || ((st2, pp) => A[s.k](st2, pp))))(stage, p), back]);
       try {
         if (revisit && snaps[i]) { // volvió atrás: mostrar lo que respondió para que pueda corregir
           const ch = await Promise.race([showSnap(stage, i, s), back]);

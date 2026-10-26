@@ -28,11 +28,11 @@
   }
 
   /* ================= 1. LEARN (Explanation) ================= */
-  async function learn(stage, p) {
+  async function learn(stage, p, o = {}) { // o: { noTip, title, ins } (Kids/Teens ya vieron la regla en su cómic / historias)
     const isPl = !!p.plurals;
     // escuchar + grabar la voz del estudiante repitiendo + calificación con voz (o autoevaluación si el navegador no reconoce voz)
     const canRec = M.canSR || !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder);
-    const body = head(stage, { lbl: 'Explanation', title: 'Listen and repeat', ins: canRec
+    const body = head(stage, { lbl: 'Explanation', title: o.title || 'Listen and repeat', ins: o.ins ? o.ins : canRec
       ? `Toca cada tarjeta para <b>escuchar</b> la pronunciación. Luego toca <b>🎙️ Repetir</b> y dila en voz alta: ${M.canSR ? 'te digo si la dijiste bien.' : 'grábate y compárate con el modelo.'} Usa <b>“Escuchar todo”</b> para oírlas seguidas.`
       : 'Toca cada tarjeta para escuchar la pronunciación y <b>repítela en voz alta</b>. Usa <b>“Escuchar todo”</b> para oírlas seguidas.' });
     const tools = h(`<div class="row ce-ltools"><button class="btn sm k" id="all">▶ Escuchar todo</button><span class="ce-lcnt" id="cnt"></span>${canRec ? '<span class="ce-lcnt ce-lok" id="cnt2"></span>' : ''}</div>`);
@@ -75,8 +75,8 @@
       for (; k < cards.length; k++) { if (!b._run || !b.isConnected) break; b._i = k; const c = cards[k]; c.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); await c.onclick(); if (!b._run) break; await sleep(450); }
       hideF(); const done = k >= cards.length; b._i = done ? 0 : b._i; b._run = false; b.textContent = done ? '▶ Escuchar todo' : '▶ Continuar'; };
     // mini lesson + tips
-    if (p.tip) body.appendChild(h(`<div class="lesson lesson-mra">${M.mascot('lesson-img', 'idea')}<div><h3>📘 Mini lección de Mr. Arrieta</h3>${p.tip}</div></div>`));
-    if (p.tips && p.tips.length) { const tb = h(`<div class="lesson" style="background:#fff"><h3>🗣️ Tips de pronunciación del profe</h3></div>`); p.tips.forEach(t => tb.appendChild(h(`<div class="tipbox"><span>💡</span><span>${t}</span></div>`))); body.appendChild(tb); }
+    if (p.tip && !o.noTip) body.appendChild(h(`<div class="lesson lesson-mra">${M.mascot('lesson-img', 'idea')}<div><h3>📘 Mini lección de Mr. Arrieta</h3>${p.tip}</div></div>`));
+    if (p.tips && p.tips.length && !o.noTip) { const tb = h(`<div class="lesson" style="background:#fff"><h3>🗣️ Tips de pronunciación del profe</h3></div>`); p.tips.forEach(t => tb.appendChild(h(`<div class="tipbox"><span>💡</span><span>${t}</span></div>`))); body.appendChild(tb); }
     // 🎙️ obligatorio: repetir con su voz al menos 3 palabras antes de continuar (no aplica en modo profe)
     const need = canRec && !(window.MRTEACH && MRTEACH.on()) ? Math.min(3, n) : 0;
     await waitNext(stage, 'Ya practiqué, ¡continuar!', () => {
