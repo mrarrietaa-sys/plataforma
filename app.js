@@ -401,13 +401,14 @@
     st.push({ sec: 'Explanation', k: 'learn' });
     if (p.keyq) st.push({ sec: 'Listen & practice', k: 'keyq' });
     const acts = (C.PLAN || PLAN)[p.id] || p.acts;
-    acts.filter(a => !['learn', 'speak', 'speakWords'].includes(a)).forEach(a => st.push({ sec: 'Practice', k: a }));
+    const AGG = M.ageGroup() !== 'adult' && window.MRAGE2 ? MRAGE2.gamesFor(p) : []; // 👧🧑‍🎤 v407: juegos propios de su edad (mismas palabras de la lección)
+    (AGG.length ? AGG : acts.filter(a => !['learn', 'speak', 'speakWords'].includes(a))).forEach(a => st.push({ sec: 'Practice', k: a }));
     const sp = acts.find(a => a === 'speak' || a === 'speakWords') || (p.sentences ? 'speak' : 'speakWords');
     if (M.ageGroup() === 'kids' && (p.sentences || []).filter(s => s.img && s.au).length >= 3) st.push({ sec: 'Practice', k: 'kidsTap' }); // 👆 escucha y toca la foto
     if (!p.letters) st.push({ sec: 'Oral task', k: sp });
     else st.push({ sec: 'Oral task', k: 'speakLetters' });
     if (missionFor(p)) st.push({ sec: 'Mission', k: 'mission' }); // 🎯 misión según el objetivo del estudiante
-    if (songFor(p)) st.push({ sec: 'Music', k: 'music' });
+    if (songFor(p) || (M.ageGroup() !== 'adult' && window.MRAGE2 && MRAGE2.musicFor(p))) st.push({ sec: 'Music', k: 'music' });
     if (p.hw) st.push({ sec: 'Homework', k: 'hw' });
     return st;
   }

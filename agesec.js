@@ -179,5 +179,215 @@
     sfx(c === F.length ? 'win' : 'ok'); await A().waitNext(stage, 'Continuar');
   }
 
-  window.MRAGE2 = { review, learn };
+  /* =================== ESCUCHA Y PRACTICA (preguntas clave) =================== */
+  const RS = async (tgt, ms) => { try { return await M().recordScore(tgt, ms); } catch (e) { return null; } };
+  const judge = (r, tgt, blank) => { if (!r) return false; if (r.self) return true; if (r.score == null) return false; const w = (r.heard || (r.alts || [])[0] || '').trim().split(/\s+/).filter(Boolean).length; return blank ? w >= 2 && r.score >= 40 : r.score >= 55; };
+  async function keyq(stage, p) {
+    const Q = (p.keyq || []).filter(k => k && k.q && k.a); if (!Q.length) return null;
+    return ag() === 'teens' ? voiceNotes(stage, Q) : interview(stage, Q);
+  }
+  // 👧 Entrevista con Mr. Arrieta
+  async function interview(stage, Q) {
+    let c = 0; const POSE = ['wink', 'point', 'present', 'idea', 'smile'];
+    for (let i = 0; i < Q.length; i++) {
+      if (!stage.isConnected) break; const k = Q[i], tgt = k.a.split(' / ')[0], blank = tgt.includes('___');
+      const body = frame(stage, 'Listen & practice', 'Entrevista con Mr. Arrieta', 'Escucha su pregunta y respóndele en voz alta.');
+      body.innerHTML = `<div class="as-cnt">PREGUNTA ${i + 1} DE ${Q.length}</div><div class="as-iv"><img class="as-ivm" src="mra-${POSE[i % POSE.length]}.webp" alt="Mr. Arrieta"><div class="as-ivb"><b>${esc(k.q)}</b><small>${esc(k.es || '')}</small><button type="button" class="as-bw sm" id="as-ql">${SV(I.vol)}Escuchar</button></div></div>
+        <div class="as-ivh" id="as-h"></div><div class="as-tb"><button type="button" class="as-bw" id="as-hint">${SV(I.bulb)}Pista</button><button type="button" class="as-bk" id="as-mic">${SV(I.mic)}¡Responde!</button></div><div class="as-tr" id="as-tr"></div>
+        <div class="as-stars">Estrellas ${Q.map((_, j) => `<i class="${j < c ? 'on' : ''}">${SV(I.star)}</i>`).join('')}</div>`;
+      await sleep(200); if (k.qau) play(k.qau);
+      const ok = await new Promise(done => { let tries = 0;
+        body.querySelector('#as-ql').onclick = () => k.qau && play(k.qau);
+        body.querySelector('#as-hint').onclick = () => { const w = tgt.replace(/___/g, '…').split(/\s+/); body.querySelector('#as-h').innerHTML = `Empieza así: <b>${esc(w.slice(0, 2).join(' '))}…</b>${blank ? '<small>Completa con tu información.</small>' : ''}`; };
+        body.querySelector('#as-mic').onclick = async (e) => { const bt = e.currentTarget; bt.disabled = true; const tr = body.querySelector('#as-tr'); tr.textContent = 'Te escucho…';
+          const r = await RS(tgt.replace(/___/g, ''), Math.max(4000, tgt.split(' ').length * 900 + 2200)); bt.disabled = false; tries++;
+          if (judge(r, tgt, blank)) { sfx('ok'); try { M().praise(); } catch (er) { } tr.innerHTML = `<b class="as-ok">${SV(I.ck)}¡Muy bien!</b>${r && r.heard ? ` <small>Escuché: “${esc(r.heard)}”</small>` : ''}`; setTimeout(() => done(true), 1300); return; }
+          sfx('bad'); tr.innerHTML = `Casi. ${tries >= 2 ? `Así se dice: <b>${esc(tgt)}</b>` : 'Intenta otra vez, despacio.'}${tries >= 2 ? '<button type="button" class="as-lnk" id="as-nx">Siguiente</button>' : ''}`;
+          if (tries >= 2) { if (k.aau) play(k.aau); body.querySelector('#as-nx').onclick = () => done(false); } };
+      });
+      if (ok) c++;
+    }
+    const body = frame(stage, 'Listen & practice', '¡Entrevista terminada!', '');
+    body.innerHTML = `<div class="as-tre"><img src="mra-celebrate.webp" alt="Mr. Arrieta" style="height:150px"><div class="as-tw">${c} de ${Q.length}</div><div class="as-te">respuestas correctas</div><div class="as-stars" style="justify-content:center">${Q.map((_, j) => `<i class="${j < c ? 'on' : ''}">${SV(I.star)}</i>`).join('')}</div></div>`; sfx('win');
+    await A().waitNext(stage, 'Continuar'); return A().result(c, Q.length, 'speaking');
+  }
+  // 🧑‍🎤 Notas de voz
+  async function voiceNotes(stage, Q) {
+    let c = 0, streak = 0, best = 0; const NM = ['Sofi', 'Leo', 'Vale', 'Mateo'][Math.floor(Math.random() * 4)];
+    const body = frame(stage, 'Listen & practice', 'Voice notes', `${NM} te manda notas de voz. Escúchalas y responde con tu voz.`);
+    body.innerHTML = `<div class="as-chat"><div class="as-chh"><span class="as-av">${NM[0]}</span><div><b>${NM}</b><small>en línea</small></div><span class="as-chs" id="as-sk">Racha 0</span></div><div class="as-chb" id="as-cb"></div><div class="as-chi"><span id="as-ci">Escucha la nota de voz…</span><button type="button" class="as-mic" id="as-mic" disabled>${SV(I.mic)}</button></div></div><div class="as-tr" id="as-tr"></div>`;
+    const cb = body.querySelector('#as-cb'), mic = body.querySelector('#as-mic'), ci = body.querySelector('#as-ci'), tr = body.querySelector('#as-tr');
+    const bars = () => Array.from({ length: 18 }, (_, k) => `<i style="height:${[6, 10, 16, 9, 14, 7, 12, 18, 9, 6, 12, 15, 8, 5, 10, 14, 7, 11][k]}px"></i>`).join('');
+    for (let i = 0; i < Q.length; i++) {
+      if (!stage.isConnected) break; const k = Q[i], tgt = k.a.split(' / ')[0], blank = tgt.includes('___');
+      const vn = H(`<div class="as-vn in"><button type="button" class="as-vp">${SV('<path d="M8 5v14l11-7z"/>')}</button><span class="as-vw">${bars()}</span><small>0:0${Math.min(9, 2 + k.q.split(' ').length)}</small><div class="as-vt">${esc(k.q)}<em>${esc(k.es || '')}</em></div></div>`);
+      cb.appendChild(vn); cb.scrollTop = cb.scrollHeight; vn.querySelector('.as-vp').onclick = () => k.qau && play(k.qau); sfx('tap'); await sleep(250); if (k.qau) await play(k.qau);
+      ci.textContent = blank ? 'Responde con tu información' : 'Toca el micrófono y responde'; mic.disabled = false;
+      const ok = await new Promise(done => { let tries = 0;
+        mic.onclick = async () => { mic.disabled = true; mic.classList.add('rec'); ci.textContent = 'Grabando nota de voz…';
+          const r = await RS(tgt.replace(/___/g, ''), Math.max(4000, tgt.split(' ').length * 900 + 2200)); mic.classList.remove('rec'); tries++;
+          const good = judge(r, tgt, blank); const said = (r && (r.heard || (r.alts || [])[0])) || '';
+          const out = H(`<div class="as-vn out ${good ? '' : 'bad'}"><span class="as-vw">${bars()}</span><small>0:0${Math.min(9, 2 + tgt.split(' ').length)}</small>${said ? `<div class="as-vt">${esc(said)}</div>` : ''}<span class="as-tick">${good ? '✓✓' : '!'}</span></div>`); cb.appendChild(out); cb.scrollTop = cb.scrollHeight;
+          if (good) { sfx('ok'); tr.innerHTML = ''; setTimeout(() => done(true), 900); return; }
+          sfx('bad'); mic.disabled = false; ci.textContent = 'Intenta otra vez';
+          tr.innerHTML = tries >= 2 ? `<div class="as-fbk no">${SV(I.bulb)}<span>Puedes decir: <b>${esc(tgt)}</b></span></div><button type="button" class="as-gt" id="as-nx">Siguiente nota${SV(I.r)}</button>` : `<span class="as-hint">Casi. Habla con tu voz normal, cerca del celular.</span>`;
+          if (tries >= 2) { if (k.aau) play(k.aau); body.querySelector('#as-nx').onclick = () => { tr.innerHTML = ''; done(false); }; } };
+      });
+      mic.disabled = true; if (ok) { c++; streak++; best = Math.max(best, streak); } else streak = 0; body.querySelector('#as-sk').textContent = 'Racha ' + streak;
+    }
+    tr.innerHTML = `<div class="as-kpi"><div><b>${c}/${Q.length}</b><small>respondidas</small></div><div><b>x${best}</b><small>mejor racha</small></div><div><b>${Math.round(c / Q.length * 100)}%</b><small>acierto</small></div></div>`; sfx('win');
+    await A().waitNext(stage, 'Continuar'); return A().result(c, Q.length, 'speaking');
+  }
+
+  /* =================== JUEGOS =================== */
+  const vocab = (p) => uniq(p.vocab || []).filter(v => v.au && v.es);
+  function gamesFor(p) { const V = vocab(p); if (V.length < 4) return []; const S = (p.sentences || []).filter(x => x.en && x.en.split(' ').length >= 3);
+    if (ag() === 'teens') return ['tgQuiz'].concat(S.length >= 3 ? ['tgChat'] : []).concat(['tgMatch']);
+    return ['kgPop', 'kgBasket'].concat(V.filter(v => v.img).length >= 4 ? ['kgAlbum'] : []); }
+  // 👧 Revienta el globo
+  async function kgPop(stage, p) {
+    const V = vocab(p), R = shuffle(V).slice(0, Math.min(6, V.length)); let c = 0; const missed = []; const COL = ['#fb7185', '#38bdf8', '#f59e0b', '#4ade80', '#a78bfa'];
+    for (let i = 0; i < R.length; i++) {
+      if (!stage.isConnected) break; const it = R[i]; const opts = shuffle([it].concat(shuffle(V.filter(x => x.en !== it.en)).slice(0, 3)));
+      const body = frame(stage, 'Practice', 'Revienta el globo', 'Escucha la palabra y revienta el globo correcto.');
+      body.innerHTML = `<div class="as-cnt">${i + 1} DE ${R.length}</div><button type="button" class="as-bw" id="as-ag" style="align-self:center">${SV(I.vol)}Escuchar otra vez</button><div class="as-sky">${opts.map((o, k) => `<button type="button" class="as-bal" data-k="${k}" style="--c:${COL[k % 5]};--d:${(k * .4).toFixed(1)}s"><span>${esc(o.en)}</span></button>`).join('')}</div><div class="as-stars">Globos ${R.map((_, j) => `<i class="${j < c ? 'on' : ''}">${SV(I.star)}</i>`).join('')}</div>`;
+      body.querySelector('#as-ag').onclick = () => play(it.au); await sleep(250); play(it.au);
+      const ok = await new Promise(done => { let miss = false; body.querySelectorAll('.as-bal').forEach(b => b.onclick = async () => { const o = opts[+b.dataset.k]; if (o === it) { b.classList.add('pop'); sfx('ok'); await sleep(600); done(!miss); } else { miss = true; b.classList.add('shake'); sfx('bad'); setTimeout(() => b.classList.remove('shake'), 500); } }); });
+      weak(it, ok); if (ok) c++; else missed.push(it);
+    }
+    await A().waitNext(stage, `¡${c} de ${R.length}! Continuar`); return A().result(c, R.length, 'listening', missed);
+  }
+  // 👧 La canasta de Mr. Arrieta
+  async function kgBasket(stage, p) {
+    const V = vocab(p).filter(v => v.img), R = shuffle(V.length >= 4 ? V : vocab(p)).slice(0, Math.min(5, V.length || 5)); let c = 0; const missed = [];
+    for (let i = 0; i < R.length; i++) {
+      if (!stage.isConnected) break; const it = R[i]; const opts = shuffle([it].concat(shuffle(vocab(p).filter(x => x.en !== it.en)).slice(0, 3)));
+      const body = frame(stage, 'Practice', 'La canasta de Mr. Arrieta', 'Mr. Arrieta te pide algo. Toca la foto correcta para ponerla en su canasta.');
+      body.innerHTML = `<div class="as-kbar"><img class="as-mr" src="mra-present.webp" alt="Mr. Arrieta"><div class="as-say">Please, give me <b>“${esc(it.en)}”</b>!<button type="button" class="as-lnk" id="as-ag">${SV(I.vol)}</button></div></div>
+        <div class="as-pics">${opts.map((o, k) => `<button type="button" class="as-pic" data-k="${k}">${M().photo(o.img)}<span>${esc(o.es)}</span></button>`).join('')}</div><div class="as-cnt">CANASTA ${c} DE ${R.length}</div>`;
+      body.querySelector('#as-ag').onclick = () => play(it.au); await sleep(250); play(it.au);
+      const ok = await new Promise(done => { let miss = false; body.querySelectorAll('.as-pic').forEach(b => b.onclick = async () => { const o = opts[+b.dataset.k]; if (o === it) { b.classList.add('ok'); sfx('ok'); body.querySelector('.as-mr').src = 'mra-thumbs.webp'; await sleep(800); done(!miss); } else { miss = true; b.classList.add('shake'); sfx('bad'); setTimeout(() => b.classList.remove('shake'), 500); } }); });
+      weak(it, ok); if (ok) c++; else missed.push(it);
+    }
+    await A().waitNext(stage, `¡Canasta llena! Continuar`); return A().result(c, R.length, 'listening', missed);
+  }
+  // 👧 Álbum de stickers (parejas)
+  async function kgAlbum(stage, p) {
+    const V = shuffle(vocab(p).filter(v => v.img)).slice(0, 4); const cards = shuffle(V.flatMap((v, k) => [{ k, t: 'p', v }, { k, t: 'w', v }]));
+    const body = frame(stage, 'Practice', 'Álbum de stickers', 'Encuentra las parejas: la foto y su palabra.'); let open = [], found = 0, moves = 0;
+    body.innerHTML = `<div class="as-alb">${cards.map((x, i) => `<button type="button" class="as-ac" data-i="${i}"><span class="as-acb">${SV(I.star)}</span><span class="as-acf">${x.t === 'p' ? M().photo(x.v.img) : `<b>${esc(x.v.en)}</b>`}</span></button>`).join('')}</div><div class="as-cnt" id="as-mv">PAREJAS 0 DE ${V.length}</div>`;
+    await new Promise(done => body.querySelectorAll('.as-ac').forEach(b => b.onclick = async () => {
+      if (b.classList.contains('on') || open.length >= 2) return; b.classList.add('on'); open.push(b); const x = cards[+b.dataset.i]; if (x.t === 'w') play(x.v.au);
+      if (open.length === 2) { moves++; const [a, b2] = open.map(e => cards[+e.dataset.i]); await sleep(700);
+        if (a.k === b2.k) { open.forEach(e => e.classList.add('ok')); found++; sfx('ok'); body.querySelector('#as-mv').textContent = `PAREJAS ${found} DE ${V.length}`; if (found === V.length) done(); }
+        else { open.forEach(e => e.classList.remove('on')); sfx('bad'); } open = []; } }));
+    const c = Math.max(0, V.length - Math.max(0, moves - V.length - 2)); sfx('win');
+    await A().waitNext(stage, `¡Álbum completo en ${moves} intentos! Continuar`); return A().result(Math.min(V.length, c), V.length, 'reading');
+  }
+  // 🧑‍🎤 Speed quiz
+  async function tgQuiz(stage, p) {
+    const V = vocab(p), R = shuffle(V).slice(0, Math.min(8, V.length)), SEC = 8; let c = 0, combo = 0, best = 0; const missed = [];
+    const KB = 'mra_tg_best_v1'; let rec = 0; try { rec = +localStorage.getItem(KB) || 0; } catch (e) { }
+    for (let i = 0; i < R.length; i++) {
+      if (!stage.isConnected) break; const it = R[i]; const opts = shuffle([it].concat(shuffle(V.filter(x => x.es !== it.es)).slice(0, 3)));
+      const body = frame(stage, 'Practice', 'Speed quiz', '¿Qué significa? Responde antes de que se acabe el tiempo.');
+      body.innerHTML = `<div class="as-sbar">${R.map((_, k) => `<i class="${k < i ? 'on' : k === i ? 'cur' : ''}"></i>`).join('')}</div><div class="as-qh"><span>COMBO <b>x${combo}</b></span><span>TU RÉCORD <b>x${Math.max(rec, best)}</b></span></div>
+        <div class="as-qw"><div class="as-en">${esc(it.en)}</div><div class="as-tm"><i id="as-tm"></i></div></div><div class="as-qo">${opts.map((o, k) => `<button type="button" class="as-opt" data-k="${k}">${esc(o.es)}</button>`).join('')}</div>`;
+      play(it.au); const t0 = Date.now(); const tm = body.querySelector('#as-tm');
+      const ok = await new Promise(done => { let over = false; const iv = setInterval(() => { const f = 1 - (Date.now() - t0) / (SEC * 1000); tm.style.width = Math.max(0, f * 100) + '%'; if (f <= 0 && !over) { over = true; clearInterval(iv); body.querySelectorAll('.as-opt').forEach((b, k) => { b.disabled = true; if (opts[k] === it) b.classList.add('ok'); }); sfx('bad'); setTimeout(() => done(false), 900); } }, 80);
+        body.querySelectorAll('.as-opt').forEach(b => b.onclick = () => { if (over) return; over = true; clearInterval(iv); const o = opts[+b.dataset.k]; body.querySelectorAll('.as-opt').forEach((x, k) => { x.disabled = true; if (opts[k] === it) x.classList.add('ok'); }); if (o === it) { sfx('ok'); setTimeout(() => done(true), 500); } else { b.classList.add('bad'); sfx('bad'); setTimeout(() => done(false), 900); } }); });
+      weak(it, ok); if (ok) { c++; combo++; best = Math.max(best, combo); } else { combo = 0; missed.push(it); }
+    }
+    if (best > rec) try { localStorage.setItem(KB, String(best)); } catch (e) { }
+    const body = frame(stage, 'Practice', 'Speed quiz', ''); body.innerHTML = `<div class="as-kpi"><div><b>${c}/${R.length}</b><small>correctas</small></div><div><b>x${best}</b><small>mejor combo</small></div><div><b>x${Math.max(rec, best)}</b><small>tu récord</small></div></div>${best > rec && rec ? '<p class="as-hint">¡Nuevo récord personal!</p>' : ''}`; sfx('win');
+    await A().waitNext(stage, 'Continuar'); return A().result(c, R.length, 'reading', missed);
+  }
+  // 🧑‍🎤 Ordena el mensaje
+  async function tgChat(stage, p) {
+    const S = shuffle((p.sentences || []).filter(x => x.en && x.en.split(' ').length >= 3)).slice(0, 3); let c = 0; const missed = [];
+    for (let i = 0; i < S.length; i++) {
+      if (!stage.isConnected) break; const it = S[i]; const words = it.en.replace(/\s+/g, ' ').trim().split(' '); let pick = [];
+      const body = frame(stage, 'Practice', 'Fix the message', 'El mensaje llegó desordenado. Toca las palabras en orden y envíalo.');
+      body.innerHTML = `<div class="as-sbar">${S.map((_, k) => `<i class="${k < i ? 'on' : k === i ? 'cur' : ''}"></i>`).join('')}</div><div class="as-chat"><div class="as-chb"><div class="as-vn in"><div class="as-vt">${esc(it.es)}<em>¿Cómo lo dirías en inglés?</em></div></div><div class="as-vn out" id="as-msg"><div class="as-vt" id="as-mt">&nbsp;</div></div></div></div>
+        <div class="as-wch">${shuffle(words.map((w, k) => ({ w, k }))).map(x => `<button type="button" class="as-wc" data-k="${x.k}">${esc(x.w)}</button>`).join('')}</div><div class="as-nav"><button type="button" class="as-bw" id="as-undo">${SV(I.l)}Borrar</button><button type="button" class="as-gt" id="as-send">Enviar${SV(I.r)}</button></div>`;
+      const mt = body.querySelector('#as-mt'); const draw = () => { mt.textContent = pick.map(k => words[k]).join(' ') || ' '; body.querySelectorAll('.as-wc').forEach(b => b.classList.toggle('used', pick.includes(+b.dataset.k))); };
+      const ok = await new Promise(done => { let tries = 0;
+        body.querySelectorAll('.as-wc').forEach(b => b.onclick = () => { const k = +b.dataset.k; if (pick.includes(k)) return; pick.push(k); sfx('tap'); draw(); });
+        body.querySelector('#as-undo').onclick = () => { pick.pop(); draw(); };
+        body.querySelector('#as-send').onclick = async () => { const got = pick.map(k => words[k]).join(' '); if (pick.length < words.length) return; tries++;
+          if (got === words.join(' ')) { body.querySelector('#as-msg').classList.add('sent'); sfx('ok'); if (it.au) await play(it.au); done(tries === 1); }
+          else { sfx('bad'); body.querySelector('#as-msg').classList.add('bad'); setTimeout(() => body.querySelector('#as-msg').classList.remove('bad'), 600); if (tries >= 2) { pick = words.map((_, k) => k); draw(); if (it.au) await play(it.au); setTimeout(() => done(false), 600); } else { pick = []; draw(); } } }; });
+      if (ok) c++; else missed.push({ en: it.en, au: it.au });
+    }
+    await A().waitNext(stage, `${c} de ${S.length} mensajes perfectos · Continuar`); return A().result(c, S.length, 'writing', missed);
+  }
+  // 🧑‍🎤 Match contra reloj
+  async function tgMatch(stage, p) {
+    const V = shuffle(vocab(p)).slice(0, 5), SEC = 45; let sel = null, found = 0, errs = 0;
+    const body = frame(stage, 'Practice', 'Match rush', `Une cada palabra con su significado antes de ${SEC} segundos.`);
+    const L = V.map((v, k) => ({ k, t: v.en })), R = shuffle(V.map((v, k) => ({ k, t: v.es })));
+    body.innerHTML = `<div class="as-qh"><span>PAREJAS <b id="as-f">0/${V.length}</b></span><span>TIEMPO <b id="as-s">${SEC}</b>s</span></div><div class="as-tm"><i id="as-tm"></i></div><div class="as-mt"><div>${L.map(x => `<button type="button" class="as-opt" data-s="l" data-k="${x.k}">${esc(x.t)}</button>`).join('')}</div><div>${R.map(x => `<button type="button" class="as-opt" data-s="r" data-k="${x.k}">${esc(x.t)}</button>`).join('')}</div></div>`;
+    const t0 = Date.now();
+    await new Promise(done => { const iv = setInterval(() => { const left = SEC - (Date.now() - t0) / 1000; body.querySelector('#as-s').textContent = Math.max(0, Math.ceil(left)); body.querySelector('#as-tm').style.width = Math.max(0, left / SEC * 100) + '%'; if (left <= 0) { clearInterval(iv); done(); } }, 200);
+      body.querySelectorAll('.as-opt').forEach(b => b.onclick = () => { if (b.classList.contains('ok')) return;
+        if (!sel || sel.dataset.s === b.dataset.s) { if (sel) sel.classList.remove('sel'); sel = b; b.classList.add('sel'); if (b.dataset.s === 'l') play(V[+b.dataset.k].au); return; }
+        if (sel.dataset.k === b.dataset.k) { sel.classList.remove('sel'); sel.classList.add('ok'); b.classList.add('ok'); found++; sfx('ok'); body.querySelector('#as-f').textContent = `${found}/${V.length}`; if (found === V.length) { clearInterval(iv); setTimeout(done, 400); } }
+        else { errs++; sfx('bad'); b.classList.add('shake'); setTimeout(() => b.classList.remove('shake'), 500); sel.classList.remove('sel'); } sel = null; }); });
+    const secs = Math.round((Date.now() - t0) / 1000);
+    await A().waitNext(stage, found === V.length ? `¡Todas en ${secs} s! Continuar` : `${found} de ${V.length} · Continuar`); return A().result(found, V.length, 'reading');
+  }
+
+  /* =================== TAREA ORAL =================== */
+  async function speak(stage, p) {
+    const S = shuffle((p.sentences || []).filter(x => x.en && x.au)).slice(0, 3); if (S.length < 2) return null; let c = 0;
+    const teens = ag() === 'teens';
+    for (let i = 0; i < S.length; i++) {
+      if (!stage.isConnected) break; const it = S[i];
+      const body = frame(stage, 'Oral task', teens ? 'Voice-over del reel' : 'Misión del explorador', teens ? 'Ponle tu voz a este reel: di la frase con buena pronunciación.' : 'Mira la foto y dile a Mr. Arrieta qué ves.');
+      body.innerHTML = teens
+        ? `<div class="as-sbar">${S.map((_, k) => `<i class="${k < i ? 'on' : k === i ? 'cur' : ''}"></i>`).join('')}</div><div class="as-reel">${it.img ? M().photo(it.img) : ''}<div class="as-rc"><b>${esc(it.en)}</b><small>${esc(it.es || '')}</small></div></div><div class="as-tb"><button type="button" class="as-bw" id="as-ls">${SV(I.vol)}Modelo</button><button type="button" class="as-gt" id="as-mic">${SV(I.mic)}Grabar</button></div><div class="as-tr" id="as-tr"></div>`
+        : `<div class="as-cnt">MISIÓN ${i + 1} DE ${S.length}</div><div class="as-tph" style="width:min(300px,90%)">${it.img ? M().photo(it.img) : ''}</div><div class="as-kbar"><img class="as-mr" src="mra-think.webp" alt="Mr. Arrieta"><div class="as-say">What do you see? <small style="display:block;font-weight:600">¿Qué ves en la foto?</small></div></div><div class="as-ivh" id="as-h"></div><div class="as-tb"><button type="button" class="as-bw" id="as-help">${SV(I.bulb)}Ayuda</button><button type="button" class="as-bk" id="as-mic">${SV(I.mic)}¡Dilo!</button></div><div class="as-tr" id="as-tr"></div>`;
+      const hp = body.querySelector('#as-help'); if (hp) hp.onclick = () => { body.querySelector('#as-h').innerHTML = `Puedes decir: <b>${esc(it.en)}</b><small>${esc(it.es || '')}</small>`; play(it.au); };
+      const ls = body.querySelector('#as-ls'); if (ls) ls.onclick = () => play(it.au); if (teens) { await sleep(200); play(it.au); }
+      const ok = await new Promise(done => { let tries = 0; body.querySelector('#as-mic').onclick = async (e) => { const bt = e.currentTarget; bt.disabled = true; const tr = body.querySelector('#as-tr'); tr.textContent = teens ? 'Grabando…' : 'Te escucho…';
+        const r = await RS(it.en, Math.max(4000, it.en.split(' ').length * 900 + 2200)); bt.disabled = false; tries++;
+        if (judge(r, it.en, false)) { sfx('ok'); try { M().praise(); } catch (er) { } tr.innerHTML = `<b class="as-ok">${SV(I.ck)}${teens ? 'Voice-over listo' : '¡Misión cumplida!'}</b>${r && r.score != null ? ` <small>${r.score}%</small>` : ''}`; setTimeout(() => done(true), 1200); return; }
+        sfx('bad'); tr.innerHTML = `${r && r.heard ? `Escuché: “${esc(r.heard)}”. ` : ''}${tries >= 2 ? `Así se dice: <b>${esc(it.en)}</b><button type="button" class="as-lnk" id="as-nx">Siguiente</button>` : 'Escucha el modelo e inténtalo otra vez.'}`;
+        if (tries >= 2) { play(it.au); body.querySelector('#as-nx').onclick = () => done(false); } }; });
+      if (ok) c++;
+    }
+    await A().waitNext(stage, `${c} de ${S.length} · Continuar`); return A().result(c, S.length, 'speaking');
+  }
+
+  /* =================== MÚSICA =================== */
+  function musicFor(p) { const D = window.MRMUSIC && MRMUSIC[ag()]; return D && D[p.id] && (+((M().MOD || {}).n) || 1) === 1 ? D[p.id] : null; }
+  async function music(stage, p) {
+    const sg = musicFor(p); if (!sg) return null; const teens = ag() === 'teens';
+    const body = frame(stage, 'Music', teens ? 'Catch the phrase' : 'Atrapa la palabra', teens ? 'Dale play. Cuando escuches una frase, tócala. Cada acierto sube tu combo.' : 'Dale play a la canción. Cuando escuches una palabra, ¡tócala!');
+    const tiles = shuffle((sg.w || []).map(t => ({ t, ok: true })).concat((sg.d || []).map(t => ({ t, ok: false }))));
+    const COL = ['#f59e0b', '#38bdf8', '#fb7185', '#4ade80', '#a78bfa', '#f97316'];
+    body.innerHTML = `<div class="as-vid"><iframe src="https://www.youtube-nocookie.com/embed/${esc(sg.yt)}?rel=0&playsinline=1&modestbranding=1" title="${esc(sg.title)}" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div><div class="as-vcap">${esc(sg.title)} · ${esc(sg.ch)}</div>
+      ${teens ? '<div class="as-qh"><span>COMBO <b id="as-cb">x0</b></span><span>MEJOR COMBO <b id="as-bc">x0</b></span></div>' : ''}<div class="as-tiles ${teens ? 'tn' : 'kd'}">${tiles.map((x, k) => `<button type="button" class="as-tile" data-k="${k}" style="--c:${COL[k % 6]}">${esc(x.t)}</button>`).join('')}</div><p class="as-hint">${teens ? 'Si fallas, el combo vuelve a cero. Sin ranking: solo tu mejor marca.' : 'Si tocas una que no suena, no pasa nada: ¡sigue escuchando!'}</p>`;
+    let got = 0, combo = 0, best = 0; const need = tiles.filter(x => x.ok).length;
+    await new Promise(done => { body.querySelectorAll('.as-tile').forEach(b => b.onclick = () => { const x = tiles[+b.dataset.k]; if (b.classList.contains('ok')) return;
+      if (x.ok) { b.classList.add('ok'); got++; combo++; best = Math.max(best, combo); sfx('ok'); } else { combo = 0; b.classList.add('shake'); sfx('bad'); setTimeout(() => b.classList.remove('shake'), 500); }
+      if (teens) { body.querySelector('#as-cb').textContent = 'x' + combo; body.querySelector('#as-bc').textContent = 'x' + best; } });
+      A().waitNext(stage, teens ? 'Terminé la canción' : '¡Terminé la canción!').then(done); });
+    const Q = (sg.q || []).slice(0, 3); let c = 0;
+    for (let i = 0; i < Q.length; i++) {
+      if (!stage.isConnected) break; const [q, opts, a] = Q[i]; const b2 = frame(stage, 'Music', teens ? 'What did you see?' : '¿Qué viste?', `Pregunta ${i + 1} de ${Q.length}`);
+      b2.innerHTML = `<div class="${teens ? 'as-poll' : 'as-tre'}"><h3 style="margin:0 0 10px">${esc(q)}</h3><div class="as-qo">${opts.map((o, k) => `<button type="button" class="as-opt ${teens ? '' : 'kd'}" data-k="${k}">${esc(o)}</button>`).join('')}</div></div>`;
+      const ok = await new Promise(done => b2.querySelectorAll('.as-opt').forEach(b => b.onclick = () => { b2.querySelectorAll('.as-opt').forEach((x, k) => { x.disabled = true; if (k === a) x.classList.add('ok'); }); const r = +b.dataset.k === a; if (!r) b.classList.add('bad'); sfx(r ? 'ok' : 'bad'); setTimeout(() => done(r), 900); }));
+      if (ok) c++;
+    }
+    const b3 = frame(stage, 'Music', teens ? 'Track completed' : '¡Canción completada!', '');
+    const tn = (p.id || '').match(/t(\d+)/); const T = tn ? tn[1] : '';
+    b3.innerHTML = teens ? `<div class="as-badge">${SV('<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>')}<b>MUSIC</b><small>TOPIC ${T}</small></div><div class="as-kpi"><div><b>${got}/${need}</b><small>frases</small></div><div><b>x${best}</b><small>mejor combo</small></div><div><b>${c}/${Q.length}</b><small>preguntas</small></div></div>`
+      : `<div class="as-tre"><div class="as-stamp2">${SV('<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>')}<b>MÚSICA</b><small>TEMA ${T}</small></div><div class="as-tw">¡Sello ganado!</div><div class="as-te">Atrapaste ${got} de ${need} palabras · ${c} de ${Q.length} respuestas</div></div>`;
+    try { const K = 'mra_mstamp_v1', o = JSON.parse(localStorage.getItem(K) || '{}'); o[p.id] = 1; localStorage.setItem(K, JSON.stringify(o)); } catch (e) { }
+    sfx('win'); try { M().confetti(1200); } catch (e) { }
+    await A().waitNext(stage, 'Continuar'); return A().result(c, Math.max(1, Q.length), 'listening');
+  }
+
+  window.MRAGE2 = { review, learn, keyq, speak, speakWords: speak, music, gamesFor, musicFor, kgPop, kgBasket, kgAlbum, tgQuiz, tgChat, tgMatch };
 })();
