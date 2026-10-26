@@ -28,7 +28,7 @@
   function route(r) { curRoute = r || 'home'; M.stop && M.stop(); window.scrollTo(0, 0); topbar(); const p = PAGE !== 'home' ? null : P.get();
     if (p) { const hd = document.querySelector('.lp-dock.home'); if (hd) { hd.remove(); document.body.classList.remove('home-app'); document.documentElement.classList.remove('home-lock'); } }
     if (!p) return login();
-    if (!p.first || (p.cloud && p.type === 'student' && !p.birth)) return nameStep(); // nombre + fecha de nacimiento obligatorios
+    if (!p.first && !(p.cloud && p.type === 'student')) return nameStep(); // v410: los datos (nombre, fecha de nacimiento, correo) ya se piden al inscribirse; solo se preguntan si de verdad faltan en un acceso sin nube
     if (r === 'placement') return placement();
     if (r === 'me' || r === 'me-photo' || r === 'me-av' || r === 'me-plat') return personalize(r === 'me' ? 'av' : r.slice(3));
     return home();
