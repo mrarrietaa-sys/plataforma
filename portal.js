@@ -733,6 +733,7 @@
         <div class="db-bar"><i style="width:${pr.pct}%"></i></div>
         <div class="db-hero-b"><a class="btn db-wbtn lg" href="${a.url}">${MRI('video')} ${pr.done ? 'Continuar mi ruta' : 'Empezar mi ruta'}</a><button class="btn db-gbtn sm" id="pt3">¿No estás a gusto con tu nivel?</button></div></div>
         <img class="db-hero-mra db-plane" src="mra-x-plane-red.webp" alt="Mr. Arrieta"></div>`;
+      if (window.MRTEENS && MRTEENS.realLife) main += MRTEENS.realLife(); // v417: retos de la vida real para adultos
     } else if (a) {
       const ready = a && a.ready;
       main = `<div class="card pt-mymod">${a ? `<div class="pt-mymod-img" style="background-image:url('${U(a.img)}')"><span>${a.n}</span></div>` : ''}<div><span class="lbl">${staff ? 'Modo profe' : '🧭 Tu ruta de aprendizaje'}</span>
@@ -799,7 +800,7 @@
       ${pgRows('learn')}</section>
       ${MENU.cls ? `<section class="pg" data-pgk="cls">${newbie ? '' : '<div id="pt-live"></div>'}${pgRows('cls')}</section>` : ''}
       <section class="pg" data-pgk="me"><div class="sect-title"><h2>${MRI('user')} Mi cuenta</h2></div>
-      ${newbie || P.look().pic || !(a && a.ready && P.progress(a.id).done) ? '' : `<div class="card pt-perso"><div class="pt-perso-img">${M.mascot('', 'wink')}</div><div><h2>Personaliza tu perfil</h2><p class="muted">Tómate una foto o crea <b>tu propio Mr. Arrieta</b>: vístelo, ponle sombrero y elige su fondo. ¡Haz tu plataforma más tuya!</p><button class="btn k" id="me-go">🎨 Personalizar ahora</button></div></div>`}
+      
       ${newbie ? '' : '<div id="pt-ref"></div>'}${pgRows('me')}</section>
       </div>
       <p class="center fx-foot db-foot" style="margin-top:22px;font-size:13.5px;font-weight:600">¡Aprende inglés HABLANDO!<br><a class="foot-wa" href="https://wa.me/${esc(C.WHATSAPP)}?text=${encodeURIComponent((window.MRNE || String)('¡Hola, mrarrieta.com! Soy ' + ((p.first || '') + ' ' + (p.last || '')).trim() + '. Tengo una pregunta.'))}" target="_blank" rel="noopener">WhatsApp ${esc(C.WHATSAPP.replace(/^57/, '').replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3'))}</a></p></div>
@@ -809,6 +810,7 @@
       if (!quiet) window.scrollTo({ top: 0, behavior: 'smooth' }); };
     if (kids) MRKIDS.wire(app);
     if (teens) MRTEENS.wire(app);
+    else if (!kids && window.MRTEENS && MRTEENS.rlWire && app.querySelector('.rl')) MRTEENS.rlWire(app);
     agChange();
     if ($('#pt')) $('#pt').onclick = () => route('placement');
     if (!staff && window.MRGOAL) { // 🎯 objetivo personal: elegir o cambiar

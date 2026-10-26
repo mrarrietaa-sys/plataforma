@@ -3,7 +3,7 @@
    resultados, progreso, examen final, desbloqueo
    ===================================================================== */
 (function () {
-  const PL = (q) => (q && q._t && q._t.parts && q._t.parts.length === 1) ? 'Lesson' : 'Part ' + (q ? q.part : '');
+  const PL = (q) => (q && q._t && q._t.parts && q._t.parts.length === 1) ? 'Lesson' : 'Lesson ' + (q ? q.part : ''); // v417: Lesson 1 / Lesson 2
   const M = window.M1, A = window.M1A;
   const { D, C, S, $, $$, h, esc, shuffle, sample, sleep, photo, play, stop, sfx, sheet, good, bad, save } = M;
   const app = $('#app');
@@ -25,7 +25,7 @@
     tb.classList.add('tb-age');
     tb.innerHTML = `<div class="brand" id="go-home"><span class="logo-pill"><img class="logo" src="mra-brand.png" alt="mrarrieta.com"></span></div><div class="sp"></div>
       <div class="tba-r"><a class="tba-b" href="index.html" aria-label="Volver a mi perfil">${SVB}</a><button class="tba-pts" id="pts-b" title="${esc(M.PTS_TIP)}">${MRI('star')}<b>${S.xp}</b></button><button class="tba-b" id="chat-tb" aria-label="Chat con mi profe">${MRI('chat')}</button><a class="tba-av" href="index.html" aria-label="Mi perfil">${esc(ini)}</a><button class="tba-b" id="menu-b" aria-label="Menú">${SVM}</button></div>`;
-    $('#go-home', tb).onclick = () => { stop(); route('home'); }; $('#menu-b', tb).onclick = menu; $('#chat-tb', tb).onclick = openChat; $('#pts-b', tb).onclick = () => M.toast(M.PTS_TIP); chatFab();
+    $('#go-home', tb).onclick = () => { stop(); route('home'); }; $('#menu-b', tb).onclick = menu; $('#chat-tb', tb).onclick = openChat; $('#pts-b', tb).onclick = () => M.toast(M.PTS_TIP); chatFab(); hwBadge();
   }
   function topbar() {
     const tb = $('#topbar'); tb.classList.remove('tb-age'); if (AGE_ON() && window.MRI) return ageTopbar(tb);
@@ -34,19 +34,20 @@
       <span class="pill hide-s" title="Días seguidos estudiando">🔥 ${S.streak.n || 0}</span>
       <button class="iconbtn chat-ic" id="chat-tb" title="Chat con mi profe" aria-label="Chat con mi profe"><svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><path fill="#fff" d="M16 3C8.8 3 3 8.6 3 15.6c0 2.5.8 4.9 2.1 6.9L3.6 28l5.7-1.5c2 1.1 4.3 1.7 6.7 1.7 7.2 0 13-5.6 13-12.6S23.2 3 16 3zm6.3 17.6c-.3.8-1.6 1.5-2.2 1.6-.6.1-1.3.1-2.1-.1-.5-.2-1.1-.4-1.9-.7-3.3-1.4-5.5-4.7-5.6-4.9-.2-.2-1.3-1.8-1.3-3.4s.8-2.4 1.1-2.7c.3-.3.6-.4.8-.4h.6c.2 0 .5-.1.7.6.3.7.9 2.3 1 2.5.1.2.1.4 0 .6-.1.2-.2.4-.3.6l-.5.6c-.2.2-.3.4-.1.7.2.3.9 1.5 2 2.4 1.4 1.2 2.5 1.6 2.9 1.8.4.2.6.1.8-.1.2-.2.9-1 1.1-1.4.2-.4.5-.3.8-.2.3.1 2 .9 2.3 1.1.3.2.6.3.7.4.1.3.1 1-.2 1.8z"/></svg><i class="fbadge hidden" id="chat-n"></i></button>${S.dictHidden ? '<button class="iconbtn" id="dict-b" title="Diccionario">🔎</button>' : ''}${window.MRAP && MRAP.get() ? (MRAP.pic() ? `<a class="tb-avbtn" id="prof-b" href="index.html" title="Mi perfil">${MRAP.avHTML('tb-av')}</a>` : '<a class="iconbtn" id="prof-b" href="index.html" title="Mi perfil">👤</a>') : ''}<button class="iconbtn" id="menu-b" title="Menú">☰</button>`;
     $('#go-home', tb).onclick = () => { stop(); route('home'); };
-    $('#menu-b', tb).onclick = menu;
+    $('#menu-b', tb).onclick = menu; hwBadge();
     const db = $('#dict-b', tb); if (db) db.onclick = () => window.M1DICT && M1DICT.open();
     const ct = $('#chat-tb', tb); if (ct) ct.onclick = openChat;
     const pb = $('#pts-b', tb); if (pb) pb.onclick = () => M.toast('⚡ ' + M.PTS_TIP);
     chatFab();
   }
   function menu() {
-    const m = M.modal(`<div class="mhead"><h3>☰ Menú</h3><button class="mclose" data-a="close" title="Cerrar">✕</button></div><div class="menu-stats"><span class="pill y">⚡ ${S.xp} puntos</span><span class="pill">🔥 ${S.streak.n || 0} días</span></div><p class="muted ce-ptsline">${esc(M.PTS_TIP)}</p><div style="display:grid;gap:10px;margin-top:10px">
+    const m = M.modal(`<div class="mhead"><h3>☰ Menú</h3><button class="mclose" data-a="close" title="Cerrar">✕</button></div><div class="menu-stats"><span class="pill y">⚡ ${S.xp} puntos</span><span class="pill">🔥 ${S.streak.n || 0} días</span></div><p class="muted ce-ptsline">${esc(M.PTS_TIP)}</p><div class="mnu-g" style="display:grid;gap:10px;margin-top:10px">
       ${window.MRAP && MRAP.get() ? '<a class="btn w block" style="text-decoration:none" href="index.html">👤 Mi perfil y mis módulos</a><a class="btn w block" style="text-decoration:none;margin-top:8px" href="juegos.html">🎮 Zona de juegos</a>' : ''}
       <button class="btn w block" data-a="home">🏠 Inicio</button>
       <button class="btn w block" data-a="progress">📊 Mi progreso</button>
       <button class="btn w block" data-a="chat">💬 Chat con mi profe</button>
       ${M.hasProfile() ? '' : '<button class="btn w block" data-a="unlock">🔑 Tengo un código de acceso</button>'}
+      ${pendingHW().length ? `<button class="btn k block" data-a="hwl">📋 Mis tareas pendientes (${pendingHW().length})</button>` : ''}
       <button class="btn w block" data-a="remind">🔔 Recordatorio diario</button>
       <button class="btn w block" data-a="dict">${S.dictHidden ? '📌 Mostrar botón flotante del diccionario' : '🙈 Quitar botón flotante del diccionario'}</button>
       <button class="btn w block" data-a="tour">🧭 Ver el tour guiado</button>
@@ -56,7 +57,7 @@
       <button class="btn w block" data-a="sound">${S.sound ? '🔔 Sonidos: activados' : '🔕 Sonidos: desactivados'}</button>
       <button class="btn k block" data-a="close">Cerrar</button></div>`);
     $$('button', m).forEach(b => b.onclick = () => { const a = b.dataset.a; m.remove();
-      if (a === 'ann') MRANN.show(); else if (a === 'chat') openChat(); else if (a === 'home' || a === 'progress') route(a); else if (a === 'unlock') unlockModal(); else if (a === 'remind') reminderModal(); else if (a === 'name') onboarding(true); else if (a === 'chath') { M.setBubbleHidden('chatHidden', !S.chatHidden); } else if (a === 'dict') { window.M1DICT && M1DICT.setHidden(!S.dictHidden); } else if (a === 'tour') { route('home'); setTimeout(tour, 400); } else if (a === 'unreview') { S.review = false; save(); M.toast('Modo revisión desactivado'); route('home'); } else if (a === 'sound') { S.sound = !S.sound; save(); M.toast(S.sound ? 'Sonidos activados 🔔' : 'Sonidos desactivados 🔕'); } });
+      if (a === 'hwl') hwList(); else if (a === 'ann') MRANN.show(); else if (a === 'chat') openChat(); else if (a === 'home' || a === 'progress') route(a); else if (a === 'unlock') unlockModal(); else if (a === 'remind') reminderModal(); else if (a === 'name') onboarding(true); else if (a === 'chath') { M.setBubbleHidden('chatHidden', !S.chatHidden); } else if (a === 'dict') { window.M1DICT && M1DICT.setHidden(!S.dictHidden); } else if (a === 'tour') { route('home'); setTimeout(tour, 400); } else if (a === 'unreview') { S.review = false; save(); M.toast('Modo revisión desactivado'); route('home'); } else if (a === 'sound') { S.sound = !S.sound; save(); M.toast(S.sound ? 'Sonidos activados 🔔' : 'Sonidos desactivados 🔕'); } });
   }
 
   /* ---------------- router ---------------- */
@@ -221,7 +222,6 @@
     if (!(window.MRSRV && MRSRV.check({ mod: M.MOD.id, done: doneN, total: totP, review: rev }))) dailyReminder();
   }
   function home() {
-    if (AGE_ON() && window.MRI) return ageHome();
     const pct = M.overallPct(); const nu = nextUp(); const first = (window.MRAP && MRAP.look().nick) || S.name.split(' ')[0];
     const doneN = M.allParts().filter(p => S.parts[p.id] && S.parts[p.id].done).length;
     const rev = M.reviewMode(), revN = M.revCount(), totP = M.totalParts();
@@ -238,7 +238,7 @@
         </div>
       </section>
       ${rev ? `<div class="card ce-revcard">${M.mascot('mascot', 'thumbs')}<div class="grow"><span class="lbl">🔁 Modo repaso</span><h3>¡Ya superaste el ${esc(M.MOD.es)}! ✅</h3><p class="muted">Todas sus lecciones cuentan como completadas. Repasa cuando quieras para refrescar lo que aprendiste: aquí no se bloquea nada.</p><button class="btn k" id="rev-go">🔁 ${revN ? 'Seguir repasando' : 'Empezar a repasar'}: ${esc(revNext._t.title)} · ${PL(revNext)} →</button></div></div>` : ''}
-      ${pendingBlock()}<div id="hwfb"></div>
+      <div id="hwfb"></div>
       <div class="sect-title"><h2>📚 Temas del ${M.MOD.es}</h2><div class="row"><button class="btn sm w" id="prog">📊 Mi progreso</button>${M.hasProfile() ? '' : '<button class="btn sm" id="code">🔑 Código de acceso</button>'}</div></div>
       <div class="grid" id="tgrid"></div>
       <div class="sect-title"><h2>🏆 Final Test</h2></div>
@@ -290,6 +290,10 @@
 
   /* ---------------- tareas pendientes + recordatorio diario ---------------- */
   function pendingHW() { return M.allParts().filter(p => p.hw && S.parts[p.id] && S.parts[p.id].done && !(S.hw[p.id] && S.hw[p.id].score != null)); }
+  // 📋 v417: las tareas pendientes ya no ocupan la página de la ruta: viven en el menú (con un aviso en el botón)
+  function hwList() { const pend = pendingHW(); const m = M.modal(`<h3>Mis tareas pendientes (${pend.length})</h3><p class="muted">Hacer tu tarea es lo que más te ayuda a recordar lo que aprendiste. ¡Solo te toma 5 minutos!</p><div class="pend-list">${pend.map(p => `<button class="partbtn" data-hw="${p.id}"><span class="t">${esc(p._t.title)} · ${PL(p)}<small>${esc(p.hw.es)}</small></span><span class="btn sm k" style="pointer-events:none">Hacer tarea →</span></button>`).join('')}</div>`, { x: true });
+    $$('[data-hw]', m).forEach(b => b.onclick = () => { m.remove(); route('hw', b.dataset.hw); }); }
+  function hwBadge() { try { const b = $('#menu-b'); const n = pendingHW().length; if (b && n && !b.querySelector('.hwb')) { b.style.position = 'relative'; b.insertAdjacentHTML('beforeend', `<i class="hwb">${n}</i>`); } } catch (e) { } }
   function pendingBlock() {
     const pend = pendingHW();
     if (!pend.length) return `<div class="card remind-card"><div class="grow"><b>🔔 ¿Quieres que te recuerde practicar todos los días?</b><div class="muted" style="font-size:14px">Agrega un recordatorio diario a tu celular en 10 segundos.</div></div><button class="btn sm" id="rem-b">Activar recordatorio</button></div>`;
@@ -475,9 +479,9 @@
   function interlude(next) {
     return new Promise(res => {
       const k = SEC_SC[next] || FREE[sceneN++ % FREE.length], sc = SCENES[k];
-      const ov = h(`<div class="itl itl-${sc.a}" role="status">${sc.a === 'stage' ? '<div class="itl-lights"></div><span class="itl-notes">🎵 🎶 🎵</span>' : ''}${sc.a === 'up' || sc.a === 'fly' ? '<span class="itl-stars">✨ ⭐ ✨ ⭐</span>' : ''}
+      const ov = h(`<div class="itl itl-${sc.a}" role="status">${sc.a === 'stage' ? '<div class="itl-lights"></div>' : ''}
         <div class="itl-actor itl-k-${k}"><b class="itl-say">${esc(sc.say)}</b><img class="itl-img" src="mra-x-${k}.webp?v=6" alt="Mr. Arrieta"></div>
-        <div class="itl-next"><small>NEXT</small><b>${SEC_IC[next] || '➡️'} ${esc(next.toUpperCase())}</b><i>Toca para continuar</i></div></div>`);
+        <div class="itl-next"><small>NEXT</small><b>${window.MRI ? MRI(SEC_ICO[next] || 'star') : ''} ${esc(next.toUpperCase())}</b><i>Toca para continuar</i></div></div>`);
       document.body.appendChild(ov); try { sfx('win'); } catch (e) { }
       try { if (M.ageGroup() !== 'adult') { const sayIt = () => { if (!done && window.AUD && window.AUD['itl_' + k]) play('itl_' + k); }; setTimeout(() => { if (window.AUD && window.AUD['itl_' + k]) sayIt(); else M.fbf().then(sayIt); }, 380); } } catch (e) { }
       let done = false; const end = () => { if (done) return; done = true; ov.classList.add('out'); setTimeout(() => { ov.remove(); res(); }, 250); };
@@ -1253,11 +1257,11 @@
   }
   function wellDone(AG, stars, pts) {
     const I = n => window.MRI ? MRI(n) : '', nm = esc((S.name || '').split(' ')[0]);
-    const o = h(`<div class="wd-ov ${AG}"><div class="wd-card"><b class="wd-l">${AG === 'kids' ? 'LECCIÓN COMPLETADA' : 'LESSON COMPLETE'}</b><h2>Well done!</h2><div class="wd-s">${AG === 'kids' ? '¡Lo lograste' + (nm ? ', ' + nm : '') + '!' : 'Great job' + (nm ? ', ' + nm : '')}</div>
-      <img class="wd-m" src="mra-${AG === 'kids' ? 'celebrate' : 'thumbs'}.webp" alt="Mr. Arrieta"><div class="wd-p"><span>${I('star')}${stars} estrella${stars === 1 ? '' : 's'}</span><span>+${pts} puntos</span></div><button type="button" class="wd-b">Ver mis resultados</button></div></div>`);
+    const o = h(`<div class="wd-ov ${AG}"><div class="wd-card"><b class="wd-l">${AG === 'kids' ? 'LECCIÓN COMPLETADA' : AG === 'adult' ? 'LECCIÓN COMPLETADA' : 'LESSON COMPLETE'}</b><h2>Well done!</h2><div class="wd-s">${AG === 'kids' ? '¡Lo lograste' + (nm ? ', ' + nm : '') + '!' : AG === 'adult' ? 'Excelente trabajo' + (nm ? ', ' + nm : '') + '.' : 'Great job' + (nm ? ', ' + nm : '')}</div>
+      <img class="wd-m" src="mra-${AG === 'kids' ? 'celebrate' : AG === 'adult' ? 'present' : 'thumbs'}.webp" alt="Mr. Arrieta"><div class="wd-p"><span>${I('star')}${stars} estrella${stars === 1 ? '' : 's'}</span><span>+${pts} puntos</span></div><button type="button" class="wd-b">Ver mis resultados</button></div></div>`);
     document.body.appendChild(o); requestAnimationFrame(() => o.classList.add('on'));
-    M.confetti(3800, { flat: true, z: 10001, cols: AG === 'kids' ? ['#E3242B', '#0B2A5B', '#f5b301', '#22c55e', '#3b82f6'] : ['#E3242B', '#ffffff', '#f5b301', '#60a5fa'] });
-    try { const id = 'b93b9f5f0f'; M.fbf().then(() => play(window.AUD && window.AUD['fb_' + id] ? 'fb_' + id : id)); } catch (e) { }
+    M.confetti(3800, { flat: true, z: 10001, cols: AG === 'adult' ? ['#E3242B', '#0B2A5B', '#cbd5e1', '#1B4A9B'] : AG === 'kids' ? ['#E3242B', '#0B2A5B', '#f5b301', '#22c55e', '#3b82f6'] : ['#E3242B', '#ffffff', '#f5b301', '#60a5fa'] });
+    try { const id = 'b93b9f5f0f'; if (AG === 'adult') play(id); else M.fbf().then(() => play(window.AUD && window.AUD['fb_' + id] ? 'fb_' + id : id)); } catch (e) { }
     const close = () => { o.classList.remove('on'); setTimeout(() => o.remove(), 250); }; $('.wd-b', o).onclick = close; o.onclick = (e) => { if (e.target === o) close(); };
   }
   function results(p, run) {
@@ -1293,11 +1297,11 @@
         ${nx ? `<button class="btn k lg" id="next">Siguiente lección: ${esc(nx._t.title)} · ${PL(nx)} →</button>` : `<button class="btn k lg" id="fin">🏆 Examen final →</button>`}
       </div></div></div>`;
     $$('.weak button', app).forEach(b => b.onclick = () => play(missed[+b.dataset.i].au, { btn: b }));
-    if (AG !== 'adult') wellDone(AG, stars, run.xp + bonus); // 🎉 v415: "Well done!" con confeti al terminar (kids y teens)
+    wellDone(AG, stars, run.xp + bonus); // v417: también adultos // 🎉 v415: "Well done!" con confeti al terminar (kids y teens)
     $('#again').onclick = () => route('class', p.id); if ($('#home').tagName === 'BUTTON') $('#home').onclick = () => route('home');
     if ($('#next')) $('#next').onclick = () => M.isUnlocked(nx.topic) ? route('class', nx.id) : (route('home'), lockGate(nx.topic));
     if ($('#fin')) $('#fin').onclick = () => M.finalUnlocked() ? route('final') : (route('home'), finalLockedModal());
-    sfx('win'); if (AG === 'adult') { M.confetti(stars === 3 ? 3500 : 2000); M.praise(); }
+    sfx('win');
     checkBadges();
   }
 
