@@ -16,8 +16,19 @@
   };
 
   /* ---------------- top bar ---------------- */
+  const AGE_ON = () => M.ageGroup() !== 'adult' && !!(window.MRAP && MRAP.get && MRAP.get()) && !(MRAP.isStaff && MRAP.isStaff());
+  const SVB = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>';
+  const SVL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>';
+  const SVM = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>';
+  function ageTopbar(tb) { // 👧🧑‍🎤 v415: mismo encabezado del perfil (blanco, íconos de línea, sin emojis)
+    const pf = MRAP.get() || {}, ini = ((pf.first || 'E')[0] + ((pf.last || '')[0] || '')).toUpperCase();
+    tb.classList.add('tb-age');
+    tb.innerHTML = `<div class="brand" id="go-home"><span class="logo-pill"><img class="logo" src="mra-brand.png" alt="mrarrieta.com"></span></div><div class="sp"></div>
+      <div class="tba-r"><a class="tba-b" href="index.html" aria-label="Volver a mi perfil">${SVB}</a><button class="tba-pts" id="pts-b" title="${esc(M.PTS_TIP)}">${MRI('star')}<b>${S.xp}</b></button><button class="tba-b" id="chat-tb" aria-label="Chat con mi profe">${MRI('chat')}</button><a class="tba-av" href="index.html" aria-label="Mi perfil">${esc(ini)}</a><button class="tba-b" id="menu-b" aria-label="Menú">${SVM}</button></div>`;
+    $('#go-home', tb).onclick = () => { stop(); route('home'); }; $('#menu-b', tb).onclick = menu; $('#chat-tb', tb).onclick = openChat; $('#pts-b', tb).onclick = () => M.toast(M.PTS_TIP); chatFab();
+  }
   function topbar() {
-    const tb = $('#topbar');
+    const tb = $('#topbar'); tb.classList.remove('tb-age'); if (AGE_ON() && window.MRI) return ageTopbar(tb);
     tb.innerHTML = `<div class="brand" id="go-home"><span class="logo-pill"><img class="logo" src="mra-brand.png" alt="mrarrieta.com"></span></div><div class="sp"></div><span class="tb-tag">${M.MOD.es.toUpperCase()} · ${M.MOD.id === 'B2' ? 'B1' : M.MOD.id}</span>
       <button class="pill y ce-pts" id="pts-b" title="${esc(M.PTS_TIP)}" aria-label="${S.xp} puntos. ${esc(M.PTS_TIP)}">⚡ ${S.xp} <span class="ce-ptw">puntos</span></button>
       <span class="pill hide-s" title="Días seguidos estudiando">🔥 ${S.streak.n || 0}</span>
@@ -175,7 +186,42 @@
   /* ---------------- home ---------------- */
   function greeting() { const hr = new Date().getHours(); return hr < 12 ? 'Good morning' : hr < 18 ? 'Good afternoon' : 'Good evening'; }
   function nextUp() { return M.allParts().find(p => !(S.parts[p.id] && S.parts[p.id].done) && M.isUnlocked(p.topic)) || null; }
+  function ageHome() { // 👧🧑‍🎤 v415: ruta compacta, homogénea con el perfil kids / teens
+    const AG = M.ageGroup(), kids = AG === 'kids', pct = M.overallPct(), totP = M.totalParts(), rev = M.reviewMode();
+    const doneN = M.allParts().filter(p => S.parts[p.id] && S.parts[p.id].done).length, nu = nextUp();
+    const curId = (M.allParts().find(x => M.isUnlocked(x.topic) && S.parts[x.id] && !S.parts[x.id].done && S.parts[x.id].step) || nu || {}).id;
+    const SK = [['listening', 'headphones', 'LISTEN'], ['reading', 'book', 'READ'], ['speaking', 'mic', 'SPEAK'], ['writing', 'pen', 'WRITE']];
+    const G = kids ? ['#f59e0b,#ef4444', '#3b82f6,#6366f1', '#10b981,#0ea5e9', '#ec4899,#f97316', '#8b5cf6,#3b82f6', '#14b8a6,#22c55e', '#f43f5e,#f59e0b'] : ['#0B2A5B,#E3242B', '#1e3a8a,#0ea5e9', '#312e81,#7c3aed', '#0f766e,#0B2A5B', '#9f1239,#0B2A5B', '#1d4ed8,#0B2A5B', '#334155,#E3242B'];
+    const cur = nu ? nu._t : D.topics[0];
+    const tp = D.topics.map((t, i) => { const un = rev || M.isUnlocked(t.n); const dn = t.parts.filter(p => rev || (S.parts[p.id] && S.parts[p.id].done)).length;
+      const th = `<div class="ar-th"><div class="ar-tn" style="--g:linear-gradient(135deg,${G[i % G.length]})${t.cover ? `;--img:url('${M.imgURL(t.cover, 160, 160)}')` : ''}"><span>${t.n}</span></div><div class="ar-tt"><b>${esc(t.title)}</b><small>${esc(t.es)}</small></div>${!un ? `<span class="ar-ok lk">${SVL}</span>` : dn ? `<span class="ar-ok">${MRI('check')}${dn}/${t.parts.length}</span>` : ''}</div>`;
+      if (!un) return `<div class="ar-tp lk" data-lk="${t.n}" role="button" tabindex="0">${th}</div>`;
+      return `<div class="ar-tp">${th}<div class="ar-ls">${t.parts.map(p => { const d = rev || (S.parts[p.id] && S.parts[p.id].done), st = M.partStars(p.id), c = p.id === curId && !d;
+        return `<button class="ar-l${d ? ' d' : ''}${c ? ' c' : ''}" data-p="${p.id}"><span class="ar-ic">${MRI(d ? 'check' : 'play')}</span><span class="ar-lx"><b>LECCIÓN ${p.part}</b><small>${esc(p.title)}</small></span>${st ? `<span class="ar-st">${[1, 2, 3].map(k => `<i class="${k <= st ? 'on' : ''}">★</i>`).join('')}</span>` : ''}</button>`; }).join('')}</div></div>`; }).join('');
+    const pg = (k) => `href="index.html" data-pgo="${k}"`;
+    app.innerHTML = `<div class="ar ${AG}"><nav class="ar-side"><a ${pg('top')}>${MRI('compass')}<span>Inicio</span></a><a class="on" ${pg('learn')}>${MRI('book')}<span>Módulos</span></a>${MRAP.plan && MRAP.plan().premium ? `<a ${pg('cls')}>${MRI('video')}<span>Clases</span></a>` : ''}<a ${pg('me')}>${MRI('user')}<span>Cuenta</span></a></nav>
+      <div class="ar-main"><section class="ar-hero ${AG}"><div class="ar-hx"><a class="ar-bk" href="index.html">${SVB}Mi perfil</a><h1>${esc(M.MOD.es)} · ${kids ? 'Mi aventura' : esc(M.MOD.levelEs || M.MOD.id)}</h1><small>${rev ? 'Superado · modo repaso' : `${doneN} de ${totP} lecciones`}${!rev && cur ? ` · ${kids ? 'Estación' : 'Tema'}: ${esc(cur.es)}` : ''}</small>
+        <div class="ar-sk">${SK.map(([k, ic, nm]) => `<div>${MRI(ic)}<span>${nm}</span><i style="--w:${M.skillPct(k)}%"></i></div>`).join('')}</div>
+        ${nu && !rev ? `<button class="ar-go" id="cont">${MRI('play')}${S.parts[nu.id] && S.parts[nu.id].step ? 'Continuar' : 'Empezar'}: ${esc(nu.title)}</button>` : ''}${!nu && MRAP.isTrial() ? '<button class="ar-go" id="buy3">' + MRI('unlock') + 'Desbloquear toda mi ruta</button>' : ''}</div>
+        <div class="ar-hr"><img src="${kids ? 'mra-x-balloon1.webp' : 'mra-x-rocket.webp'}" alt="Mr. Arrieta" class="ar-mra"><div class="ar-rg" style="--p:${rev ? 100 : pct}"><b>${rev ? 100 : pct}%</b></div></div></section>
+        ${pendingBlock().replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}]/gu, '')}<div id="hwfb"></div>
+        <div class="ar-sec"><h2>${kids ? 'Estaciones' : 'Temas'} del ${esc(M.MOD.es)}</h2><button class="ar-pr" id="prog">${MRI('target')}Mi progreso</button></div>
+        <div class="ar-grid">${tp}</div>
+        <div class="ar-ft"><span class="ar-fti">${MRI('award')}</span><div><b>Final Test</b><small>${S.final && S.final.passed ? 'Aprobado · ' + (S.final.best / 10).toFixed(1) + ' / 10' : M.finalUnlocked() ? '24 preguntas · 30 minutos · 2 intentos' : `Se abre al terminar las ${totP} lecciones`}</small></div><button class="ar-ftb" id="final-b">${M.finalUnlocked() ? 'Presentar' : SVL + ' ' + M.doneCount() + '/' + totP}</button>${S.final && S.final.passed ? `<button class="ar-ftb" id="cert-b">${MRI('grad')}Certificado</button>` : ''}</div>
+      </div><nav class="ar-tab"><a ${pg('top')}>${MRI('compass')}<span>Inicio</span></a><a class="on" ${pg('learn')}>${MRI('book')}<span>Módulos</span></a>${MRAP.plan && MRAP.plan().premium ? `<a ${pg('cls')}>${MRI('video')}<span>Clases</span></a>` : ''}<a ${pg('me')}>${MRI('user')}<span>Cuenta</span></a></nav></div>`;
+    $$('[data-pgo]', app).forEach(a => a.onclick = () => { try { sessionStorage.setItem('mra_pg', a.dataset.pgo); } catch (e) { } });
+    $$('.ar-l', app).forEach(b => b.onclick = () => route('class', b.dataset.p));
+    $$('.ar-tp.lk', app).forEach(b => b.onclick = () => lockGate(+b.dataset.lk));
+    if ($('#cont')) $('#cont').onclick = () => route('class', nu.id); if ($('#buy3')) $('#buy3').onclick = trialModal;
+    $('#prog').onclick = () => route('progress'); $('#final-b').onclick = () => M.finalUnlocked() ? route('final') : finalLockedModal(); if ($('#cert-b')) $('#cert-b').onclick = () => route('cert');
+    $$('[data-hw]', app).forEach(b => b.onclick = () => route('hw', b.dataset.hw));
+    const pt = $('#pend-t', app); if (pt) pt.onclick = () => { const l = $('#pend-l', app); const open = l.classList.toggle('hidden') === false; pt.textContent = `${open ? 'Ocultar' : 'Ver'} mis tareas pendientes (${pendingHW().length})`; sfx('tap'); };
+    if ($('#rem-b')) $('#rem-b').onclick = reminderModal;
+    if (window.MRTEACH && MRTEACH.on()) return;
+    if (!(window.MRSRV && MRSRV.check({ mod: M.MOD.id, done: doneN, total: totP, review: rev }))) dailyReminder();
+  }
   function home() {
+    if (AGE_ON() && window.MRI) return ageHome();
     const pct = M.overallPct(); const nu = nextUp(); const first = (window.MRAP && MRAP.look().nick) || S.name.split(' ')[0];
     const doneN = M.allParts().filter(p => S.parts[p.id] && S.parts[p.id].done).length;
     const rev = M.reviewMode(), revN = M.revCount(), totP = M.totalParts();
@@ -700,8 +746,9 @@
           const alt = h(`<div class="${M.canSR ? 'hidden' : ''}"><input class="inp" placeholder="Escribe tu respuesta en inglés…" style="font-size:18px"></div>`); body.appendChild(alt);
           const bar = h(`<div class="actionbar">${M.canSR ? '<button class="btn w" id="ty">⌨️ Prefiero escribir</button>' : ''}<button class="btn w" id="sk">Saltar</button><button class="btn k lg" id="ok">Enviar ✓</button></div>`); body.appendChild(bar);
           setTimeout(() => play(q.au), 400);
-          const accept = async (txt) => { const n = M.words(txt).length; if (n >= 2) { sfx('ok'); M.praise(); const tm = vnDone ? vnDone() : ''; await sheet({ ok: true, title: good(), msg: `Te escuché: “${esc(txt)}”${tm}`, tip: 'Intenta responder con oraciones completas, por ejemplo: <i>I\'m fine, thank you.</i>' }); res(true); } else { st.innerHTML = '❌ Te escuché muy poco. Responde con al menos 2 palabras y toca 🎤 otra vez.'; sfx('bad'); setTimeout(M.encourage, 250); } };
-          mic.onclick = async () => { stop(); mic.classList.add('rec'); st.textContent = '🎧 Te escucho…'; const r = await M.listen(8000); mic.classList.remove('rec');
+          const minW = (q.ex && M.words(q.ex).length <= 3) || /letter|name|number|old|colou?r|favorite|favourite|from|live/i.test(q.q || '') ? 1 : 2; // respuestas cortas válidas (una letra, un nombre…)
+          const accept = async (txt) => { const n = M.words(txt).length; if (n >= minW) { sfx('ok'); M.praise(); const tm = vnDone ? vnDone() : ''; await sheet({ ok: true, title: good(), msg: `Te escuché: “${esc(txt)}”${tm}`, tip: 'Intenta responder con oraciones completas, por ejemplo: <i>I\'m fine, thank you.</i>' }); res(true); } else { st.innerHTML = 'Te escuché muy poco. Responde con una frase corta y toca el micrófono otra vez.'; sfx('bad'); setTimeout(M.encourage, 250); } };
+          mic.onclick = async () => { stop(); mic.classList.add('rec'); st.textContent = '🎧 Te escucho…'; const r = await M.listen(8000, { quick: true }); mic.classList.remove('rec');
             if (!r.alts.length) { st.textContent = r.error === 'not-allowed' ? 'Permite el micrófono 🎤 o escribe tu respuesta.' : 'No te escuché 🙉 Intenta otra vez.'; if (r.error === 'not-allowed') alt.classList.remove('hidden'); return; } accept(r.alts[0]); };
           if ($('#ty', bar)) $('#ty', bar).onclick = () => { alt.classList.remove('hidden'); $('input', alt).focus(); };
           $('#sk', bar).onclick = () => res(null);
@@ -752,6 +799,7 @@
     },
 
     review: async (stage, p) => {
+      if (window.MRAGE2) { const rr = await MRAGE2.review(stage, p); if (rr) { stage.classList.remove('as-stage', 'as-adult'); return rr; } } // v415: swipe sobrio también para adultos
       const pv = M.prevPart(p); const pool = pv.vocab.filter((v, i, a) => a.findIndex(x => x.en === v.en) === i);
       const usePh = pool.filter(x => x.img && !x.img.startsWith('#')).length >= pool.length * .6;
       const items = sample(pool, Math.min(4, pool.length));
@@ -1203,6 +1251,15 @@
     }
     return '';
   }
+  function wellDone(AG, stars, pts) {
+    const I = n => window.MRI ? MRI(n) : '', nm = esc((S.name || '').split(' ')[0]);
+    const o = h(`<div class="wd-ov ${AG}"><div class="wd-card"><b class="wd-l">${AG === 'kids' ? 'LECCIÓN COMPLETADA' : 'LESSON COMPLETE'}</b><h2>Well done!</h2><div class="wd-s">${AG === 'kids' ? '¡Lo lograste' + (nm ? ', ' + nm : '') + '!' : 'Great job' + (nm ? ', ' + nm : '')}</div>
+      <img class="wd-m" src="mra-${AG === 'kids' ? 'celebrate' : 'thumbs'}.webp" alt="Mr. Arrieta"><div class="wd-p"><span>${I('star')}${stars} estrella${stars === 1 ? '' : 's'}</span><span>+${pts} puntos</span></div><button type="button" class="wd-b">Ver mis resultados</button></div></div>`);
+    document.body.appendChild(o); requestAnimationFrame(() => o.classList.add('on'));
+    M.confetti(3800, { flat: true, z: 10001, cols: AG === 'kids' ? ['#E3242B', '#0B2A5B', '#f5b301', '#22c55e', '#3b82f6'] : ['#E3242B', '#ffffff', '#f5b301', '#60a5fa'] });
+    try { const id = 'b93b9f5f0f'; M.fbf().then(() => play(window.AUD && window.AUD['fb_' + id] ? 'fb_' + id : id)); } catch (e) { }
+    const close = () => { o.classList.remove('on'); setTimeout(() => o.remove(), 250); }; $('.wd-b', o).onclick = close; o.onclick = (e) => { if (e.target === o) close(); };
+  }
   function results(p, run) {
     run.res = Object.values(run.res || {});
     const c = run.res.reduce((a, r) => a + r.c, 0), t = run.res.reduce((a, r) => a + r.t, 0);
@@ -1236,10 +1293,11 @@
         ${nx ? `<button class="btn k lg" id="next">Siguiente lección: ${esc(nx._t.title)} · ${PL(nx)} →</button>` : `<button class="btn k lg" id="fin">🏆 Examen final →</button>`}
       </div></div></div>`;
     $$('.weak button', app).forEach(b => b.onclick = () => play(missed[+b.dataset.i].au, { btn: b }));
+    if (AG !== 'adult') wellDone(AG, stars, run.xp + bonus); // 🎉 v415: "Well done!" con confeti al terminar (kids y teens)
     $('#again').onclick = () => route('class', p.id); if ($('#home').tagName === 'BUTTON') $('#home').onclick = () => route('home');
     if ($('#next')) $('#next').onclick = () => M.isUnlocked(nx.topic) ? route('class', nx.id) : (route('home'), lockGate(nx.topic));
     if ($('#fin')) $('#fin').onclick = () => M.finalUnlocked() ? route('final') : (route('home'), finalLockedModal());
-    sfx('win'); M.confetti(stars === 3 ? 3500 : 2000); M.praise();
+    sfx('win'); if (AG === 'adult') { M.confetti(stars === 3 ? 3500 : 2000); M.praise(); }
     checkBadges();
   }
 

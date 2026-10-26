@@ -28,7 +28,7 @@
   async function review(stage, p) {
     const pv = M().prevPart(p); if (!pv) return null;
     const pool = uniq(pv.vocab || []).filter(x => x.au); if (pool.length < 3) return null;
-    return ag() === 'teens' ? swipe(stage, pv, pool) : chests(stage, pv, pool);
+    return ag() === 'kids' ? chests(stage, pv, pool) : swipe(stage, pv, pool); // v415: adultos también tienen el swipe (versión sobria)
   }
   // 👧 Cofre de recuerdos
   async function chests(stage, pv, pool) {
@@ -70,7 +70,7 @@
   async function swipe(stage, pv, pool) {
     const items = shuffle(pool).slice(0, Math.min(6, pool.length)).map(it => { const tr = Math.random() < .5; const o = tr ? it : shuffle(pool.filter(x => x.en !== it.en && x.es && x.es !== it.es))[0] || it; return { it, shown: o.es, truth: tr || o === it }; });
     let i = 0, c = 0, streak = 0, best = 0; const missed = [];
-    const body = frame(stage, 'Review', 'Recap', `Repaso de <b>${esc(pv._t ? pv._t.title : 'la lección pasada')}</b>. ¿La traducción es correcta? Desliza a la derecha si sí, a la izquierda si no.`);
+    const body = frame(stage, 'Review', ag() === 'adult' ? 'Repaso rápido' : 'Recap', `Repaso de <b>${esc(pv._t ? pv._t.title : 'la lección pasada')}</b>. ¿La traducción es correcta? Desliza a la derecha si sí, a la izquierda si no.`);
     body.innerHTML = `<div class="as-sbar">${items.map(() => '<i></i>').join('')}</div><div class="as-deck" id="as-deck"></div>
       <div class="as-sw"><button type="button" class="as-no" id="as-n">${SV(I.x)}<span>No</span></button><button type="button" class="as-yes" id="as-y">${SV(I.ck)}<span>Sí</span></button></div><p class="as-hint">En PC también puedes usar las flechas ← →</p>`;
     const deck = body.querySelector('#as-deck');
@@ -78,7 +78,7 @@
       let busy = false, card = null;
       const show = () => {
         body.querySelectorAll('.as-sbar i').forEach((x, k) => { x.className = k < i ? 'on' : k === i ? 'cur' : ''; });
-        const q = items[i]; deck.innerHTML = `<div class="as-card as-b2"></div><div class="as-card as-b1"></div><div class="as-card as-top"><span class="as-cl">CARD ${i + 1} DE ${items.length}</span><div class="as-en">${esc(q.it.en)}</div><div class="as-eq">=</div><div class="as-es">${esc(q.shown)}</div><button type="button" class="as-pl">${SV(I.vol)}Escuchar</button><span class="as-stamp"></span></div>`;
+        const q = items[i]; deck.innerHTML = `<div class="as-card as-b2"></div><div class="as-card as-b1"></div><div class="as-card as-top"><span class="as-cl">${ag() === 'adult' ? 'TARJETA' : 'CARD'} ${i + 1} DE ${items.length}</span><div class="as-en">${esc(q.it.en)}</div><div class="as-eq">=</div><div class="as-es">${esc(q.shown)}</div><button type="button" class="as-pl">${SV(I.vol)}Escuchar</button><span class="as-stamp"></span></div>`;
         card = deck.querySelector('.as-top'); card.querySelector('.as-pl').onclick = (e) => { e.stopPropagation(); play(q.it.au); }; setTimeout(() => play(q.it.au), 250); drag(card);
       };
       const answer = async (yes) => {
@@ -108,9 +108,9 @@
   async function learn(stage, p) {
     const P = paras(p), F = (p.fill || []).filter(f => f && f.s && f.a && f.o && /_{2,}/.test(f.s));
     if (P.length) { if (ag() === 'teens') await stories(stage, p, P); else await comic(stage, p, P); }
-    if (F.length) { if (ag() === 'teens') await poll(stage, F.slice(0, 3)); else await stickers(stage, F.slice(0, 4)); }
-    stage.classList.remove('as-stage', 'dk');
-    return A().learn(stage, p, { noTip: true, title: ag() === 'teens' ? 'Say it like a native' : 'Repite con Mr. Arrieta', ins: ag() === 'teens' ? 'Escucha cada palabra y dila con tu voz. Necesitas al menos 3 bien dichas para seguir.' : 'Toca cada foto para escucharla y luego toca <b>Repetir</b> y dila en voz alta. ¡Necesitas 3!' });
+    let sc = null; if (F.length) sc = ag() === 'teens' ? await poll(stage, F.slice(0, 3)) : await stickers(stage, F.slice(0, 4));
+    stage.classList.remove('as-stage', 'dk'); // v415: sin "Listen and repeat" repetido (las palabras ya se practicaron en el calentamiento y se dicen en la tarea oral)
+    return sc && sc.n ? A().result(sc.c, sc.n, 'reading') : A().result(1, 1, 'reading');
   }
   // 👧 Cómic de Mr. Arrieta
   async function comic(stage, p, P) {
@@ -139,7 +139,7 @@
     };
     let fin; await new Promise(r => { fin = r; draw(); });
     body.querySelector('.as-say').innerHTML = c === F.length ? '¡Todos los stickers perfectos!' : `¡Bien hecho! ${c} de ${F.length} a la primera.`; body.querySelector('.as-mr').src = 'mra-celebrate.webp'; sfx('win');
-    await A().waitNext(stage, 'Continuar');
+    await A().waitNext(stage, 'Continuar'); return { c, n: F.length };
   }
   // 🧑‍🎤 Historias (stories)
   async function stories(stage, p, P) {
@@ -175,13 +175,13 @@
       };
       draw();
     });
-    body.innerHTML = `<div class="as-kpi"><div><b>${c}/${F.length}</b><small>correctas</small></div><div><b>${streak}</b><small>racha final</small></div><div><b>${c === F.length ? '100%' : Math.round(c / F.length * 100) + '%'}</b><small>acierto</small></div></div><p class="as-hint">Ahora practica las palabras con tu voz.</p>`;
-    sfx(c === F.length ? 'win' : 'ok'); await A().waitNext(stage, 'Continuar');
+    body.innerHTML = `<div class="as-kpi"><div><b>${c}/${F.length}</b><small>correctas</small></div><div><b>${streak}</b><small>racha final</small></div><div><b>${c === F.length ? '100%' : Math.round(c / F.length * 100) + '%'}</b><small>acierto</small></div></div>`;
+    sfx(c === F.length ? 'win' : 'ok'); await A().waitNext(stage, 'Continuar'); return { c, n: F.length };
   }
 
   /* =================== ESCUCHA Y PRACTICA (preguntas clave) =================== */
   const RS = async (tgt, ms) => { try { return await M().recordScore(tgt, ms); } catch (e) { return null; } };
-  const judge = (r, tgt, blank) => { if (!r) return false; if (r.self) return true; if (r.score == null) return false; const w = (r.heard || (r.alts || [])[0] || '').trim().split(/\s+/).filter(Boolean).length; return blank ? w >= 2 && r.score >= 40 : r.score >= 55; };
+  const judge = (r, tgt, blank) => { if (!r) return false; if (r.self) return true; if (r.score == null) return false; const w = (r.heard || (r.alts || [])[0] || '').trim().split(/\s+/).filter(Boolean).length; return blank ? w >= 1 : r.score >= 55; }; // respuestas personales (nombre, letra, edad…): basta con que responda
   async function keyq(stage, p) {
     const Q = (p.keyq || []).filter(k => k && k.q && k.a); if (!Q.length) return null;
     return ag() === 'teens' ? voiceNotes(stage, Q) : interview(stage, Q);
@@ -240,19 +240,24 @@
   }
 
   /* =================== JUEGOS =================== */
+  // v415: palabras "obvias" (letras: G = Letra G) → no se juega a traducir, se juega a escuchar
+  const trivial = (V) => V.filter(v => v.en.trim().length <= 2 || String(v.es).toLowerCase().includes(v.en.trim().toLowerCase())).length >= V.length / 2;
   const vocab = (p) => uniq(p.vocab || []).filter(v => v.au && v.es);
   function gamesFor(p) { const V = vocab(p); if (V.length < 4) return []; const S = (p.sentences || []).filter(x => x.en && x.en.split(' ').length >= 3);
-    if (ag() === 'teens') return ['tgQuiz'].concat(S.length >= 3 ? ['tgChat'] : []).concat(['tgMatch']);
+    if (ag() === 'teens') return trivial(V) ? ['tgEar'].concat(S.length >= 3 ? ['tgChat'] : []) : ['tgQuiz'].concat(S.length >= 3 ? ['tgChat'] : []).concat(['tgMatch']);
     return ['kgPop', 'kgBasket'].concat(V.filter(v => v.img).length >= 4 ? ['kgAlbum'] : []); }
+  // globo de látex (brillo, nudo y cuerda curva) · v415
+  const BAL = '<svg class="as-bsv" viewBox="0 0 100 140" aria-hidden="true"><defs><radialGradient id="asgl" cx=".33" cy=".28" r=".75"><stop offset="0" stop-color="#fff" stop-opacity=".8"/><stop offset=".22" stop-color="#fff" stop-opacity=".15"/><stop offset=".6" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".22"/></radialGradient></defs><path d="M50 4C24 4 8 24 8 48c0 27 22 50 38 56h8c16-6 38-29 38-56C92 24 76 4 50 4z" fill="currentColor"/><path d="M50 4C24 4 8 24 8 48c0 27 22 50 38 56h8c16-6 38-29 38-56C92 24 76 4 50 4z" fill="url(#asgl)"/><ellipse cx="32" cy="28" rx="9" ry="14" transform="rotate(-25 32 28)" fill="#fff" opacity=".5"/><path d="M45 104l5 7 5-7z" fill="currentColor"/><path d="M50 111c-6 8 6 14 0 22" stroke="#7b8aa3" stroke-width="1.6" fill="none"/></svg>';
+  const burst = (b) => { try { const r = b.getBoundingClientRect(), c = getComputedStyle(b).getPropertyValue('--c'); for (let k = 0; k < 14; k++) { const e = document.createElement('i'); e.className = 'as-bp'; const a = k / 14 * Math.PI * 2, d = 40 + Math.random() * 40; e.style.cssText = `left:${r.left + r.width / 2}px;top:${r.top + r.height * .35}px;background:${c};--tx:${Math.cos(a) * d}px;--ty:${Math.sin(a) * d}px;--rt:${Math.random() * 360}deg`; document.body.appendChild(e); setTimeout(() => e.remove(), 650); } } catch (e) { } };
   // 👧 Revienta el globo
   async function kgPop(stage, p) {
-    const V = vocab(p), R = shuffle(V).slice(0, Math.min(6, V.length)); let c = 0; const missed = []; const COL = ['#fb7185', '#38bdf8', '#f59e0b', '#4ade80', '#a78bfa'];
+    const V = vocab(p), R = shuffle(V).slice(0, Math.min(6, V.length)); let c = 0; const missed = []; const COL = ['#E3242B', '#1d4ed8', '#f59e0b', '#16a34a', '#7c3aed'];
     for (let i = 0; i < R.length; i++) {
       if (!stage.isConnected) break; const it = R[i]; const opts = shuffle([it].concat(shuffle(V.filter(x => x.en !== it.en)).slice(0, 3)));
       const body = frame(stage, 'Practice', 'Revienta el globo', 'Escucha la palabra y revienta el globo correcto.');
-      body.innerHTML = `<div class="as-cnt">${i + 1} DE ${R.length}</div><button type="button" class="as-bw" id="as-ag" style="align-self:center">${SV(I.vol)}Escuchar otra vez</button><div class="as-sky">${opts.map((o, k) => `<button type="button" class="as-bal" data-k="${k}" style="--c:${COL[k % 5]};--d:${(k * .4).toFixed(1)}s"><span>${esc(o.en)}</span></button>`).join('')}</div><div class="as-stars">Globos ${R.map((_, j) => `<i class="${j < c ? 'on' : ''}">${SV(I.star)}</i>`).join('')}</div>`;
+      body.innerHTML = `<div class="as-cnt">${i + 1} DE ${R.length}</div><button type="button" class="as-bw" id="as-ag" style="align-self:center">${SV(I.vol)}Escuchar otra vez</button><div class="as-sky">${opts.map((o, k) => `<button type="button" class="as-bal" data-k="${k}" style="--c:${COL[k % 5]};--d:${(k * .4).toFixed(1)}s">${BAL}<span>${esc(o.en)}</span></button>`).join('')}</div><div class="as-stars">Globos ${R.map((_, j) => `<i class="${j < c ? 'on' : ''}">${SV(I.star)}</i>`).join('')}</div>`;
       body.querySelector('#as-ag').onclick = () => play(it.au); await sleep(250); play(it.au);
-      const ok = await new Promise(done => { let miss = false; body.querySelectorAll('.as-bal').forEach(b => b.onclick = async () => { const o = opts[+b.dataset.k]; if (o === it) { b.classList.add('pop'); sfx('ok'); await sleep(600); done(!miss); } else { miss = true; b.classList.add('shake'); sfx('bad'); setTimeout(() => b.classList.remove('shake'), 500); } }); });
+      const ok = await new Promise(done => { let miss = false; body.querySelectorAll('.as-bal').forEach(b => b.onclick = async () => { const o = opts[+b.dataset.k]; if (o === it) { burst(b); b.classList.add('pop'); sfx('ok'); await sleep(600); done(!miss); } else { miss = true; b.classList.add('shake'); sfx('bad'); setTimeout(() => b.classList.remove('shake'), 500); } }); });
       weak(it, ok); if (ok) c++; else missed.push(it);
     }
     await A().waitNext(stage, `¡${c} de ${R.length}! Continuar`); return A().result(c, R.length, 'listening', missed);
@@ -274,8 +279,8 @@
   // 👧 Álbum de stickers (parejas)
   async function kgAlbum(stage, p) {
     const V = shuffle(vocab(p).filter(v => v.img)).slice(0, 4); const cards = shuffle(V.flatMap((v, k) => [{ k, t: 'p', v }, { k, t: 'w', v }]));
-    const body = frame(stage, 'Practice', 'Álbum de stickers', 'Encuentra las parejas: la foto y su palabra.'); let open = [], found = 0, moves = 0;
-    body.innerHTML = `<div class="as-alb">${cards.map((x, i) => `<button type="button" class="as-ac" data-i="${i}"><span class="as-acb">${SV(I.star)}</span><span class="as-acf">${x.t === 'p' ? M().photo(x.v.img) : `<b>${esc(x.v.en)}</b>`}</span></button>`).join('')}</div><div class="as-cnt" id="as-mv">PAREJAS 0 DE ${V.length}</div>`;
+    const body = frame(stage, 'Practice', 'Álbum de stickers', 'Encuentra las parejas: la foto (con su pista en español) y su palabra en inglés.'); let open = [], found = 0, moves = 0;
+    body.innerHTML = `<div class="as-alb">${cards.map((x, i) => `<button type="button" class="as-ac" data-i="${i}"><span class="as-acb">${SV(I.star)}</span><span class="as-acf">${x.t === 'p' ? M().photo(x.v.img) + `<em class="as-cap">${esc(x.v.es)}</em>` : `<b>${esc(x.v.en)}</b>`}</span></button>`).join('')}</div><div class="as-cnt" id="as-mv">PAREJAS 0 DE ${V.length}</div>`;
     await new Promise(done => body.querySelectorAll('.as-ac').forEach(b => b.onclick = async () => {
       if (b.classList.contains('on') || open.length >= 2) return; b.classList.add('on'); open.push(b); const x = cards[+b.dataset.i]; if (x.t === 'w') play(x.v.au);
       if (open.length === 2) { moves++; const [a, b2] = open.map(e => cards[+e.dataset.i]); await sleep(700);
@@ -321,6 +326,23 @@
     }
     await A().waitNext(stage, `${c} de ${S.length} mensajes perfectos · Continuar`); return A().result(c, S.length, 'writing', missed);
   }
+  // 🧑‍🎤 Ear training: escucha y elige (para letras y palabras muy parecidas)
+  async function tgEar(stage, p) {
+    const V = vocab(p), R = shuffle(V).slice(0, Math.min(8, V.length)), SEC = 8; let c = 0, combo = 0, best = 0; const missed = [];
+    for (let i = 0; i < R.length; i++) {
+      if (!stage.isConnected) break; const it = R[i]; const opts = shuffle([it].concat(shuffle(V.filter(x => x.en !== it.en)).slice(0, 3)));
+      const body = frame(stage, 'Practice', 'Ear training', '¿Cuál escuchaste? Responde antes de que se acabe el tiempo.');
+      body.innerHTML = `<div class="as-sbar">${R.map((_, k) => `<i class="${k < i ? 'on' : k === i ? 'cur' : ''}"></i>`).join('')}</div><div class="as-qh"><span>COMBO <b>x${combo}</b></span><span>${i + 1} DE ${R.length}</span></div>
+        <div class="as-qw"><button type="button" class="as-bw" id="as-ag" style="margin:0 auto">${SV(I.vol)}Escuchar otra vez</button><div class="as-tm"><i id="as-tm"></i></div></div><div class="as-qo as-qo4">${opts.map((o, k) => `<button type="button" class="as-opt as-big" data-k="${k}">${esc(o.en)}</button>`).join('')}</div>`;
+      body.querySelector('#as-ag').onclick = () => play(it.au); await play(it.au); const t0 = Date.now(); const tm = body.querySelector('#as-tm');
+      const ok = await new Promise(done => { let over = false; const end = (b, good) => { over = true; clearInterval(iv); body.querySelectorAll('.as-opt').forEach((x, k) => { x.disabled = true; if (opts[k] === it) x.classList.add('ok'); }); if (b && !good) b.classList.add('bad'); sfx(good ? 'ok' : 'bad'); setTimeout(() => done(good), good ? 500 : 1000); };
+        const iv = setInterval(() => { const f = 1 - (Date.now() - t0) / (SEC * 1000); tm.style.width = Math.max(0, f * 100) + '%'; if (f <= 0 && !over) end(null, false); }, 80);
+        body.querySelectorAll('.as-opt').forEach(b => b.onclick = () => { if (!over) end(b, opts[+b.dataset.k] === it); }); });
+      weak(it, ok); if (ok) { c++; combo++; best = Math.max(best, combo); } else { combo = 0; missed.push(it); }
+    }
+    const body = frame(stage, 'Practice', 'Ear training', ''); body.innerHTML = `<div class="as-kpi"><div><b>${c}/${R.length}</b><small>correctas</small></div><div><b>x${best}</b><small>mejor combo</small></div><div><b>${Math.round(c / R.length * 100)}%</b><small>acierto</small></div></div>`; sfx('win');
+    await A().waitNext(stage, 'Continuar'); return A().result(c, R.length, 'listening', missed);
+  }
   // 🧑‍🎤 Match contra reloj
   async function tgMatch(stage, p) {
     const V = shuffle(vocab(p)).slice(0, 5), SEC = 45; let sel = null, found = 0, errs = 0;
@@ -339,8 +361,10 @@
 
   /* =================== TAREA ORAL =================== */
   async function speak(stage, p) {
-    const S = shuffle((p.sentences || []).filter(x => x.en && x.au)).slice(0, 3); if (S.length < 2) return null; let c = 0;
     const teens = ag() === 'teens';
+    // v415 kids: la foto SIEMPRE corresponde a lo que se dice → se usan las palabras de la lección con su propia foto
+    const KV = teens ? [] : shuffle(vocab(p).filter(v => v.img && v.au && !/^#/.test(v.img) && v.en.trim().length > 2)).slice(0, 3);
+    const S = KV.length >= 3 ? KV : shuffle((p.sentences || []).filter(x => x.en && x.au)).slice(0, 3); if (S.length < 2) return null; let c = 0;
     for (let i = 0; i < S.length; i++) {
       if (!stage.isConnected) break; const it = S[i];
       const body = frame(stage, 'Oral task', teens ? 'Voice-over del reel' : 'Misión del explorador', teens ? 'Ponle tu voz a este reel: di la frase con buena pronunciación.' : 'Mira la foto y dile a Mr. Arrieta qué ves.');
@@ -389,5 +413,5 @@
     await A().waitNext(stage, 'Continuar'); return A().result(c, Math.max(1, Q.length), 'listening');
   }
 
-  window.MRAGE2 = { review, learn, keyq, speak, speakWords: speak, music, gamesFor, musicFor, kgPop, kgBasket, kgAlbum, tgQuiz, tgChat, tgMatch };
+  window.MRAGE2 = { review, learn, keyq, speak, speakWords: speak, music, gamesFor, musicFor, kgPop, kgBasket, kgAlbum, tgQuiz, tgChat, tgMatch, tgEar };
 })();

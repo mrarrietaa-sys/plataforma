@@ -137,6 +137,11 @@
     window.addEventListener('m1-audio-stop', hide);
     return hide;
   }
+  // 🔇 v415: la plataforma NUNCA se escucha a sí misma: se registra todo audio que suene (Audio, <audio>, voz del navegador)
+  const ALLA = new Set(); let audEnd = 0;
+  try { const P0 = HTMLMediaElement.prototype.play; HTMLMediaElement.prototype.play = function () { const a = this; if (!a.__mraT) { a.__mraT = 1; const off = () => { ALLA.delete(a); audEnd = Date.now(); }; a.addEventListener('pause', off); a.addEventListener('ended', off); a.addEventListener('error', off); a.addEventListener('playing', () => ALLA.add(a)); } ALLA.add(a); return P0.apply(this, arguments); }; } catch (e) { }
+  function audBusy() { let on = !!(window.speechSynthesis && speechSynthesis.speaking); ALLA.forEach(a => { if (a.paused || a.ended || a.muted || !a.isConnected && a.volume === 0) ALLA.delete(a); else on = true; }); if (cur && !cur.paused) on = true; return on; }
+  function audQuiet() { return !audBusy() && Date.now() - audEnd > 450; }
   function trackAudio(a) { ext.add(a); ['play', 'playing', 'pause'].forEach(ev => a.addEventListener(ev, audioUI)); a.addEventListener('ended', () => { ext.delete(a); audioUI(); }); audioUI(); return a; }
   function play(au, opts = {}) {
     halt();
@@ -220,18 +225,20 @@
   function listen(timeoutMs = 8000, opts = {}) { // opts.quick: termina apenas el estudiante deja de hablar
     return new Promise((res) => {
       if (!SR) { srStat('er', 'nosupport'); return res({ error: 'nosupport', alts: [] }); }
+      if (audBusy()) { try { stop(); } catch (e) { } return setTimeout(() => listen(timeoutMs, opts).then(res), 500); } // primero se calla la plataforma
       const t0 = Date.now(); let done = false, r = null, segs = [], interim = [], lastErr = '', idle = null, heardAny = false;
       timeoutMs = Math.max(timeoutMs, 9000); // nunca menos de 9 s: da tiempo a pensar y hablar con calma
       const fin = (err) => { if (done) return; done = true; clearTimeout(idle); try { r && r.abort(); } catch (e) { } const alts = segAlts(segs, interim); const e2 = err || lastErr || 'no-speech'; srStat(alts.length ? 'ok' : NOHEAR(e2) ? 'em' : 'er', e2); res(alts.length ? { alts } : { alts: [], error: e2 }); };
-      const arm = () => { clearTimeout(idle); idle = setTimeout(() => fin(), opts.quick ? (segs.length ? 650 : (interim.length ? 1000 : 2600)) : (segs.length ? 1800 : 2600)); }; // espera 1,8 s de silencio real antes de terminar
+      const arm = () => { clearTimeout(idle); idle = setTimeout(() => fin(), opts.quick ? (segs.length ? 900 : (interim.length ? 1300 : 2600)) : (segs.length ? 1800 : 2600)); };
+      const hit = () => { if (!opts.target) return; try { const sc = (opts.scorer || ((a) => speechScore(opts.target, a)))(segAlts(segs, interim)).score; if (sc >= 90) { clearTimeout(idle); idle = setTimeout(() => fin(), segs.length ? 250 : 600); } } catch (e) { } }; // dijo la frase completa → se cierra ya // espera 1,8 s de silencio real antes de terminar
       const start = () => {
         if (done) return;
         r = new SR(); r.lang = 'en-US'; r.interimResults = true; r.maxAlternatives = 5; r.continuous = true;
-        r.onresult = (e) => { heardAny = true; window.MRAWAVE && MRAWAVE.kick();
+        r.onresult = (e) => { if (!audQuiet()) { segs = []; interim = []; return; } heardAny = true; window.MRAWAVE && MRAWAVE.kick();
           for (let k = e.resultIndex; k < e.results.length; k++) { const rr = e.results[k], list = []; for (let i = 0; i < rr.length; i++) list.push(rr[i].transcript);
             if (rr.isFinal) { segMerge(segs, list); interim = []; } else interim = list; }
-          arm(); };
-        r.onspeechstart = () => { heardAny = true; window.MRAWAVE && MRAWAVE.kick(); arm(); };
+          arm(); hit(); };
+        r.onspeechstart = () => { if (!audQuiet()) return; heardAny = true; window.MRAWAVE && MRAWAVE.kick(); arm(); };
         r.onerror = (e) => { lastErr = e.error; if (e.error === 'not-allowed' || e.error === 'service-not-allowed' || e.error === 'audio-capture') fin(e.error); };
         r.onend = () => { if (done) return; if (Date.now() - t0 < timeoutMs - 500) { setTimeout(() => { try { start(); } catch (e) { fin('start'); } }, 60); } else fin(); }; // el navegador cortó en una pausa: sigue escuchando
         try { r.start(); } catch (e) { fin('start'); }
@@ -242,11 +249,11 @@
   }
   // sesión larga "toca para grabar / toca para detener" (prueba de clasificación, exámenes): no pierde nada en las pausas
   function srSession(onText, onFatal) {
-    const S = { onend: null }; if (!SR) return null;
+    const S = { onend: null }; if (!SR) return null; if (audBusy()) try { stop(); } catch (e) { }
     let active = true, segs = [], interim = [], r = null, ended = false;
     const text = () => segAlts(segs, interim)[0] || '';
     const start = () => { if (!active) return; r = new SR(); r.lang = 'en-US'; r.continuous = true; r.interimResults = true; r.maxAlternatives = 3;
-      r.onresult = (e) => { window.MRAWAVE && MRAWAVE.kick(); for (let k = e.resultIndex; k < e.results.length; k++) { const rr = e.results[k], list = []; for (let i = 0; i < rr.length; i++) list.push(rr[i].transcript); if (rr.isFinal) { segMerge(segs, list); interim = []; } else interim = list; } onText && onText(text()); };
+      r.onresult = (e) => { if (!audQuiet()) return; window.MRAWAVE && MRAWAVE.kick(); for (let k = e.resultIndex; k < e.results.length; k++) { const rr = e.results[k], list = []; for (let i = 0; i < rr.length; i++) list.push(rr[i].transcript); if (rr.isFinal) { segMerge(segs, list); interim = []; } else interim = list; } onText && onText(text()); };
       r.onerror = (e) => { if (/not-allowed|audio-capture|service-not-allowed|language-not-supported/.test(e.error)) { active = false; srStat('er', e.error); onFatal && onFatal(e.error); } };
       r.onend = () => { if (active) setTimeout(start, 60); else if (!ended) { ended = true; srStat(text() ? 'ok' : 'em'); onText && onText(text()); S.onend && S.onend(); } };
       try { r.start(); } catch (e) { active = false; onFatal && onFatal('start'); } };
@@ -301,15 +308,16 @@
   // devuelve { url, alts, score }  (score = null si el navegador no puede evaluar)
   async function recordScore(target, ms, onTick, scorer) {
     if (!scorer && /^\s*[A-Za-z]\s*$/.test(String(target || ''))) scorer = letterScorer(String(target).trim()); // letras sueltas (A, B, C…)
+    if (audBusy()) { try { stop(); } catch (e) { } await sleep(500); } // 🔇 nunca graba mientras suena la plataforma
     let rec = null, stream = null; const chunks = [];
     try { if ((typeof SR !== 'undefined' && SR) && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) throw 0; // en celular el micrófono no se puede compartir: se prioriza el reconocimiento de voz
       stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } }); window.MRAWAVE && MRAWAVE.stream(stream); rec = new MediaRecorder(stream); rec.ondataavailable = e => chunks.push(e.data); rec.start(); }
     catch (e) { if (!SR) throw e; }
     const t0 = Date.now(); const iv = setInterval(() => onTick && onTick(Math.min(1, (Date.now() - t0) / ms)), 100);
     let r = { alts: [] };
-    if (SR) { r = await listen(ms); if (Date.now() - t0 < 1200 && !r.alts.length) await sleep(Math.max(0, ms - (Date.now() - t0))); }
+    if (SR) { r = await listen(ms, { quick: true, target: String(target || '').trim() || null, scorer }); if (Date.now() - t0 < 1200 && !r.alts.length) await sleep(Math.min(3000, Math.max(0, ms - (Date.now() - t0)))); }
     else await sleep(ms);
-    await sleep(250); clearInterval(iv);
+    clearInterval(iv); onTick && onTick(1);
     let url = null;
     if (rec) { const p = new Promise(x => rec.onstop = x); try { rec.stop(); } catch (e) { } await p; stream.getTracks().forEach(t => t.stop()); url = URL.createObjectURL(new Blob(chunks, { type: rec.mimeType || 'audio/webm' })); }
     let score = null, heard = '';
@@ -419,15 +427,15 @@
     if (!S.ptsTip) { S.ptsTip = 1; save(); setTimeout(() => toast('⚡ ' + PTS_TIP), 1300); }
   }
   const PTS_TIP = 'Los puntos ⚡ se ganan al completar actividades, tareas y retos.';
-  function confetti(ms = 2500) {
+  function confetti(ms = 2500, o = {}) {
     const cv = h('<canvas id="confetti"></canvas>'); document.body.appendChild(cv); const ctx = cv.getContext('2d');
     cv.width = innerWidth; cv.height = innerHeight;
-    const cols = ['#E3242B', '#0B2A5B', '#ffffff', '#1D5FD1', '#E3242B'];
+    const cols = o.cols || ['#E3242B', '#0B2A5B', '#ffffff', '#1D5FD1', '#E3242B']; if (o.z) cv.style.zIndex = o.z;
     const P = Array.from({ length: 160 }, () => ({ x: Math.random() * cv.width, y: -20 - Math.random() * cv.height * .5, r: 4 + Math.random() * 6, c: cols[Math.floor(Math.random() * cols.length)], vx: -2 + Math.random() * 4, vy: 2 + Math.random() * 4, a: Math.random() * 6, va: -.2 + Math.random() * .4 }));
     const t0 = performance.now();
     (function fr(t) {
       ctx.clearRect(0, 0, cv.width, cv.height);
-      P.forEach(p => { p.x += p.vx; p.y += p.vy; p.a += p.va; ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.a); ctx.fillStyle = p.c; ctx.strokeStyle = '#111'; ctx.lineWidth = 1; ctx.fillRect(-p.r, -p.r / 2, p.r * 2, p.r); ctx.strokeRect(-p.r, -p.r / 2, p.r * 2, p.r); ctx.restore(); });
+      P.forEach(p => { p.x += p.vx; p.y += p.vy; p.a += p.va; ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.a); ctx.fillStyle = p.c; ctx.strokeStyle = '#111'; ctx.lineWidth = 1; ctx.fillRect(-p.r, -p.r / 2, p.r * 2, p.r); if (!o.flat) ctx.strokeRect(-p.r, -p.r / 2, p.r * 2, p.r); ctx.restore(); });
       if (t - t0 < ms) requestAnimationFrame(fr); else cv.remove();
     })(t0);
   }
@@ -476,5 +484,5 @@
     const st = S.stop, ab = S.abort; S.stop = function () { o(); return st.apply(S, arguments); }; S.abort = function () { o(); return ab.apply(S, arguments); }; return S; };
   window.M1 = { face, D, C, MOD, S, $, $$, h, esc, shuffle, sample, sleep, save, touchStreak, addSkill, addWeak, okWeak, skillPct, isUnlocked, finalUnlocked, paceDate, weakParts, reviewMode, revCount, PTS_TIP, hasAccess, progressOpen, lockReason, review, hasProfile, doneCount, totalParts, redeem, codeHash,
     allParts, partById, trackAudio, audioUI, floatStop, recordScore: recordScoreW, letterScorer, voiceResult, floatBubble, setBubbleHidden, prevPart, nextPart, partStars, overallPct, imgURL, photo, play, playSeq, loadAudio, stop, sfx, praise, encourage, ageGroup, fbf, canSR, IOS, MOBILE, listen: listenW, srSession: srSessionW, recordVoice: recordVoiceW,
-    norm, words, lev, speechScore, sheet, good, bad, toast, modal, xpFly, confetti, mascot, audioSrc };
+    norm, words, lev, speechScore, audBusy, sheet, good, bad, toast, modal, xpFly, confetti, mascot, audioSrc };
 })();

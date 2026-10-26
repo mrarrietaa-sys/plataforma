@@ -437,7 +437,8 @@
   setTimeout(() => { try { const q = new URLSearchParams(location.search); const pc = (q.get('pagar') || '').trim().toUpperCase(); const gr = q.get('gratis');
     if (pc || gr) history.replaceState(null, '', location.pathname);
     const pk = q.get('plan');
-    if (pc) { if (window.MRAC && MRAC.code && MRAC.code() && MRAC.code().toUpperCase() === pc) { if (window.MRPLANS) MRPLANS.modal(M); } else { trialOver(pc, true); if (pk && window.MRBUY && /^(membership|premium|premium8)$/.test(pk)) setTimeout(() => { document.querySelectorAll('.modal').forEach(m => m.remove()); MRBUY.plan(pk, { extra: +q.get('extra') || 0 }); }, 300); } }
+    if (pc && /^PG-/.test(pc) && !pk) offerPage(pc);
+    else if (pc) { if (window.MRAC && MRAC.code && MRAC.code() && MRAC.code().toUpperCase() === pc) { if (window.MRPLANS) MRPLANS.modal(M); } else { trialOver(pc, true); if (pk && window.MRBUY && /^(membership|premium|premium8)$/.test(pk)) setTimeout(() => { document.querySelectorAll('.modal').forEach(m => m.remove()); MRBUY.plan(pk, { extra: +q.get('extra') || 0 }); }, 300); } }
     else if (gr && $('.ld')) trialForm(); } catch (er) { } }, 1600);
   // ⭐ opiniones públicas de los profes en la página de entrada
   const nrm = (t) => String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/^(mr|mrs|ms|teacher)\.?\s+/, '').trim();
@@ -638,6 +639,20 @@
       route('home'); };
   }
   // el acceso gratuito (3 días) terminó → invitación a inscribirse
+  // 🎁 v415: botón "Usar mi 10% ahora" del correo → página de la oferta con su nombre, cuenta regresiva y precios ya descontados
+  async function offerPage(tok) {
+    const r = window.MRAC ? await MRAC.call('offerInfo', { code: tok }).catch(() => null) : null;
+    if (!r || !r.ok || !r.pct) return trialOver(tok, !r || !r.ok);
+    window.__buyCode = tok; const PLx = (window.MRPLANS && MRPLANS.PL) || {}, fmt = (window.MRPLANS && MRPLANS.fmt) || String, nm = esc(r.first || '');
+    const rows = [['membership', 'Plataforma', 'Lecciones ilimitadas', 'monitor'], ['premium', 'Premium · 4', '+ 4 clases en vivo al mes', 'crown'], ['premium8', 'Premium · 8', '+ 8 clases en vivo al mes', 'gem']].filter(x => PLx[x[0]]);
+    const m = M.modal(`<div class="of-c"><span class="of-bd">${MRI('gift')}${r.pct}% SOLO HOY</span><h3>${nm ? nm + ', sigue' : 'Sigue'} aprendiendo</h3><p>Tu progreso está guardado. Elige tu plan: el descuento se aplica solo.</p><div class="of-tm" id="of-tm"></div></div>
+      <div class="of-pl">${rows.map(([k, t, d, ic], i) => { const n = PLx[k].n, dn = Math.round(n * (100 - r.pct) / 100 / 100) * 100; return `<button type="button" class="of-r${i === 1 ? ' best' : ''}" data-k="${k}"><span class="of-ic">${MRI(ic)}</span><span class="of-t"><b>${t}</b><small>${d}</small></span><span class="of-p"><s>${fmt(n)}</s><b>${fmt(dn)} COP</b></span></button>`; }).join('')}</div>
+      <p class="of-f">Un toque → Mercado Pago (tarjeta, PSE, Nequi o Daviplata) → tu plan se activa al instante.</p>`, { x: true }); m.classList.add('of-m');
+    const off = (r.now || Date.now()) - Date.now(), tm = m.querySelector('#of-tm');
+    const tick = () => { if (!tm.isConnected) return clearInterval(iv); const left = Math.max(0, r.end - (Date.now() + off)); const H = Math.floor(left / 36e5), Mi = Math.floor(left % 36e5 / 6e4), Se = Math.floor(left % 6e4 / 1e3); tm.innerHTML = [[H, 'horas'], [Mi, 'min'], [Se, 'seg']].map(([v, l]) => `<div><b>${String(v).padStart(2, '0')}</b><small>${l}</small></div>`).join(''); if (!left) { clearInterval(iv); m.remove(); trialOver(tok, true); } };
+    const iv = setInterval(tick, 1000); tick();
+    m.querySelectorAll('.of-r').forEach(b => b.onclick = () => { m.remove(); window.MRBUY && MRBUY.plan(b.dataset.k); });
+  }
   function trialOver(code, generic) {
     window.__buyCode = code || ''; // permite pagar desde aquí aunque el acceso gratuito haya terminado
     const PL = window.MRPLANS;
