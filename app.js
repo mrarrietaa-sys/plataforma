@@ -289,7 +289,7 @@
   }
 
   /* ---------------- tareas pendientes + recordatorio diario ---------------- */
-  function pendingHW() { return M.allParts().filter(p => p.hw && S.parts[p.id] && S.parts[p.id].done && !(S.hw[p.id] && S.hw[p.id].score != null)); }
+  function pendingHW() { return []; } // v434: la escritura se hace dentro de la lección; ya no hay tareas pendientes (ni avisos, ni correos)
   // 📋 v417: las tareas pendientes ya no ocupan la página de la ruta: viven en el menú (con un aviso en el botón)
   function hwList() { const pend = pendingHW(); const m = M.modal(`<h3>Mis tareas pendientes (${pend.length})</h3><p class="muted">Hacer tu tarea es lo que más te ayuda a recordar lo que aprendiste. ¡Solo te toma 5 minutos!</p><div class="pend-list">${pend.map(p => `<button class="partbtn" data-hw="${p.id}"><span class="t">${esc(p._t.title)} · ${PL(p)}<small>${esc(p.hw.es)}</small></span><span class="btn sm k" style="pointer-events:none">Hacer tarea →</span></button>`).join('')}</div>`, { x: true });
     $$('[data-hw]', m).forEach(b => b.onclick = () => { m.remove(); route('hw', b.dataset.hw); }); }
@@ -441,9 +441,9 @@
     t14p1: ['learn', 'fill', 'countRoom', 'catchWord', 'unscramble', 'typeSentence', 'speak'], t14p2: ['learn', 'fill', 'memoryRoom', 'dialogue', 'raceGame', 'spinWheel', 'speak'],
   };
 
-  // 🧪 v423: VISTA PREVIA de la lección corta (9 pasos). Se activa con ?nueva=1 y se apaga con ?nueva=0 (solo en ese navegador)
-  try { const q = new URLSearchParams(location.search).get('nueva'); if (q === '1') localStorage.setItem('mra_v9', '1'); if (q === '0') localStorage.removeItem('mra_v9'); } catch (e) { }
-  const V9 = () => { try { return localStorage.getItem('mra_v9') === '1' && M.ageGroup() === 'adult'; } catch (e) { return false; } };
+  // v434: lección corta (10–13 min) para TODAS las edades
+  try { localStorage.removeItem('mra_v9'); } catch (e) { }
+  const V9 = () => true;
   function buildSteps9(p) { // orden aprobado: Goal → Speaking (repaso) → Explanation → Practice → Reading → Mission → Music → Writing
     window.__V9 = true;
     const st = [{ sec: 'Goal', k: 'goal' }];
@@ -451,10 +451,11 @@
     st.push({ sec: 'Explanation', k: 'learn' });
     if (p.keyq) st.push({ sec: 'Practice', k: 'keyq' });
     const acts = (C.PLAN || PLAN)[p.id] || p.acts;
-    const g = acts.find(a => !['learn', 'speak', 'speakWords'].includes(a)); if (g) st.push({ sec: 'Practice', k: g });
+    const AGG = M.ageGroup() !== 'adult' && window.MRAGE2 ? MRAGE2.gamesFor(p) : []; // Kids/Teens: su juego propio de la edad
+    const g = AGG[0] || acts.find(a => !['learn', 'speak', 'speakWords'].includes(a)); if (g) st.push({ sec: 'Practice', k: g });
     if (p.reading) st.push({ sec: 'Reading', k: 'reading' });
     if (missionFor(p)) st.push({ sec: 'Mission', k: 'mission' });
-    if (songFor(p)) st.push({ sec: 'Music', k: 'music' });
+    if (songFor(p) || (M.ageGroup() !== 'adult' && window.MRAGE2 && MRAGE2.musicFor(p))) st.push({ sec: 'Music', k: 'music' });
     if (p.hw) st.push({ sec: 'Writing', k: 'hw' });
     return st;
   }
