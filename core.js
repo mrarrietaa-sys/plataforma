@@ -380,6 +380,13 @@
   ];
   const intentOf = (q) => INTENTS.find(x => x.q.test(String(q || '')));
   function freeJudge(q, tgt, alts) {
+    { // v439: deletreo de una palabra concreta ("How do you spell "Wilson"?") → las letras tienen que ser exactas, en orden
+      const m = String(q || '').match(/\bspell\s+["“'‘]?([A-Za-z]{2,})["”'’]?/i);
+      if (m && /^(your|my|his|her|their)$/i.test(m[1])) { const t = String((alts || [])[0] || '').toLowerCase().replace(/double\s*(u|you)/g, ' w ').replace(/[-,.]/g, ' ').split(/\s+/).filter(Boolean); const L = t.filter(x => asLetter(x)).length; if (L >= 2) return { ok: true, heard: (alts || [])[0] || '', fix: null, rep: false, off: false }; } // su propio nombre: basta con que deletree
+      if (m && !/^(your|my|his|her|their|it|that|this|the)$/i.test(m[1])) { const W = m[1].toLowerCase(); let best = '', heard0 = (alts && alts[0]) || '';
+        for (const alt of (alts || [])) { const t = String(alt).toLowerCase().replace(/double\s*(u|you)/g, ' w ').replace(/[-,.]/g, ' ').split(/\s+/).filter(Boolean); const L = t.map(x => asLetter(x) || (x.length > 1 && x === W ? x : '')).join(''); if (L === W) return { ok: true, heard: alt, fix: null, rep: false, off: false }; if (L.length > best.length) { best = L; heard0 = alt; } }
+        return { ok: false, heard: heard0, fix: W.toUpperCase().split('').join('-'), rep: false, off: false, spell: true }; }
+    }
     const heard = (alts && alts[0]) || ''; const ws = words(heard); let fix = grammarFix(heard);
     const yn = /^\s*(are|is|am|do|does|did|can|could|was|were|have|has|will|would|should)\b/i.test(q || '');
     const cw = (x) => words(x).filter(w => w.length > 2 && !FW.has(w) && !['yes', 'yeah', 'not', 'fine', 'thank', 'thanks', 'okay'].includes(w));

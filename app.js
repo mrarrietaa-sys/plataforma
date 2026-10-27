@@ -889,7 +889,7 @@
             okk = fj.ok;
             const hd = $e('.ms-heard'); hd.hidden = false; hd.className = 'ms-heard ' + (okk ? 'good' : 'bad'); hd.innerHTML = `<small>Escuché</small>“${esc(r.alts[0])}”${okk && fj.fix ? `<em class="vk-fix" style="color:#92400e">Mejor dilo así: <b>${esc(fj.fix)}</b></em>` : ''}`;
             if (okk) { sfx('ok'); M.praise(); el.classList.add('done'); mic.hidden = true; $e('.ms-msg').innerHTML = '<b>¡Misión cumplida!</b>'; setTimeout(done, fj.fix ? 3400 : 2200); }
-            else { sfx('bad'); $e('.ms-msg').textContent = fj.rep ? 'Repetiste la pregunta. Ahora respóndela con tus palabras.' : fj.off ? 'Tu respuesta no corresponde a la pregunta. Escúchala otra vez y responde sobre eso, con tus palabras.' : 'Responde con una frase completa, con tus propias palabras.'; if (tries >= 3) setTimeout(done, 2500); }
+            else { sfx('bad'); $e('.ms-msg').textContent = fj.spell ? 'Las letras no coinciden. Se deletrea: ' + fj.fix + '.' : fj.rep ? 'Repetiste la pregunta. Ahora respóndela con tus palabras.' : fj.off ? 'Tu respuesta no corresponde a la pregunta. Escúchala otra vez y responde sobre eso, con tus palabras.' : 'Responde con una frase completa, con tus propias palabras.'; if (tries >= 3) setTimeout(done, 2500); }
           };
         });
         if (okk) c++;
@@ -952,7 +952,7 @@
             const fj = M.freeJudge(k.q, tgt.replace(/___/g, ''), rr.alts); const sc = { heard: fj.heard }; const ok = fj.ok; // v420: respuesta libre + corrección de gramática
             const fb = $v('.vk-fb'); fb.hidden = false; fb.className = 'vk-fb ' + (ok ? 'good' : 'bad'); fb.innerHTML = `<small>Escuché</small>“${esc(sc.heard || rr.alts[0])}”${ok && fj.fix ? `<em class="vk-fix">Mejor dilo así: <b>${esc(fj.fix)}</b></em>` : ''}`;
             if (ok) { sfx('ok'); M.praise(); vc.classList.add('ok'); $v('.vk-msg').textContent = late ? '¡Bien dicho!' : '¡Excelente!'; setTimeout(() => finish(true), fj.fix ? 3200 : 1500); }
-            else { sfx('bad'); setTimeout(M.encourage, 250); $v('.vk-msg').textContent = fj.rep ? 'Repetiste la pregunta. Ahora respóndela con tus palabras.' : fj.off ? 'Tu respuesta no corresponde a la pregunta. Escúchala otra vez y responde sobre eso, con tus palabras.' : 'Responde con una frase completa, con tus propias palabras.'; $v('.vk-next').hidden = false; }
+            else { sfx('bad'); setTimeout(M.encourage, 250); $v('.vk-msg').textContent = fj.spell ? 'Las letras no coinciden. Se deletrea: ' + fj.fix + '.' : fj.rep ? 'Repetiste la pregunta. Ahora respóndela con tus palabras.' : fj.off ? 'Tu respuesta no corresponde a la pregunta. Escúchala otra vez y responde sobre eso, con tus palabras.' : 'Responde con una frase completa, con tus propias palabras.'; $v('.vk-next').hidden = false; }
           };
         });
         if (r.ok) { c++; if (!r.late) { streak++; pts += (r.hinted ? 50 : 100) * Math.min(3, streak); } else streak = 0; } else streak = 0;
