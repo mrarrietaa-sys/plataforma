@@ -720,7 +720,7 @@
         const nSteps = buildSteps9(p).length, mins = Math.max(8, Math.min(14, nSteps + 4));
         stage.innerHTML = `<div class="g9"><div class="g9-h"><img src="mra-present.webp" alt="Mr. Arrieta"><div class="g9-b"><span class="g9-l">TOPIC ${p.topic} · ${esc(PL(p).toUpperCase())}</span><b>${esc(g.en)}</b><small>${esc(g.es)}</small><button type="button" class="g9-au">${window.MRI ? MRI('vol') : ''}Escuchar</button></div></div>
           ${can.length ? `<div class="g9-t">AL TERMINAR PODRÁS DECIR</div><div class="g9-c">${can.map(x => `<span>${window.MRI ? MRI('check') : ''}${esc(x)}</span>`).join('')}</div>` : ''}
-          <div class="g9-m">${window.MRI ? MRI('clock') : ''}Unos ${mins} minutos · ${nSteps} pasos · Speaking, Listening, Reading y Writing</div>
+          <div class="g9-m">${window.MRI ? MRI('clock') : ''}Duración: ${mins} min</div>
           ${prev && !(S.parts[prev.id] && S.parts[prev.id].done) ? `<p class="hint" style="margin-top:6px">Te recomendamos completar primero: ${esc(prev._t.title)} · ${PL(prev)}</p>` : ''}</div>`;
         const say = () => { stop(); if (window.AUD && window.AUD['g9_' + p.id]) play('g9_' + p.id, { btn: $('.g9-au', stage) }); };
         $('.g9-au', stage).onclick = say; M.loadAudio(['goal9_' + (+M.MOD.n || 1)]).then(() => setTimeout(say, 300)).catch(() => { });
