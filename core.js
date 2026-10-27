@@ -140,8 +140,8 @@
   // 🔇 v415: la plataforma NUNCA se escucha a sí misma: se registra todo audio que suene (Audio, <audio>, voz del navegador)
   const ALLA = new Set(); let audEnd = 0;
   try { const P0 = HTMLMediaElement.prototype.play; HTMLMediaElement.prototype.play = function () { const a = this; if (!a.__mraT) { a.__mraT = 1; const off = () => { ALLA.delete(a); audEnd = Date.now(); }; a.addEventListener('pause', off); a.addEventListener('ended', off); a.addEventListener('error', off); a.addEventListener('playing', () => ALLA.add(a)); } ALLA.add(a); return P0.apply(this, arguments); }; } catch (e) { }
-  function audBusy() { let on = !!(window.speechSynthesis && speechSynthesis.speaking); ALLA.forEach(a => { if (a.paused || a.ended || a.muted || !a.isConnected && a.volume === 0) ALLA.delete(a); else on = true; }); if (cur && !cur.paused) on = true; return on; }
-  function audQuiet() { return !audBusy() && Date.now() - audEnd > 450; }
+  function audBusy() { let on = !!(window.speechSynthesis && speechSynthesis.speaking); const live = (a) => !a.paused && !a.ended && !a.muted && a.volume > 0 && a.readyState > 2 && !a.error; ALLA.forEach(a => { if (!live(a)) { if (a.paused || a.ended || a.error) ALLA.delete(a); } else on = true; }); if (cur && live(cur)) on = true; return on; } // v421: solo cuenta el audio que de verdad está sonando
+  function audQuiet() { return !audBusy() && Date.now() - audEnd > 300; }
   function trackAudio(a) { ext.add(a); ['play', 'playing', 'pause'].forEach(ev => a.addEventListener(ev, audioUI)); a.addEventListener('ended', () => { ext.delete(a); audioUI(); }); audioUI(); return a; }
   function play(au, opts = {}) {
     halt();
@@ -229,8 +229,8 @@
       const t0 = Date.now(); let done = false, r = null, segs = [], interim = [], lastErr = '', idle = null, heardAny = false;
       timeoutMs = Math.max(timeoutMs, 9000); // nunca menos de 9 s: da tiempo a pensar y hablar con calma
       const fin = (err) => { if (done) return; done = true; clearTimeout(idle); try { r && r.abort(); } catch (e) { } const alts = segAlts(segs, interim); const e2 = err || lastErr || 'no-speech'; srStat(alts.length ? 'ok' : NOHEAR(e2) ? 'em' : 'er', e2); res(alts.length ? { alts } : { alts: [], error: e2 }); };
-      const arm = () => { clearTimeout(idle); idle = setTimeout(() => fin(), opts.quick ? (segs.length ? 900 : (interim.length ? 1300 : 2600)) : (segs.length ? 1800 : 2600)); };
-      const hit = () => { if (!opts.target) return; try { const sc = (opts.scorer || ((a) => speechScore(opts.target, a)))(segAlts(segs, interim)).score; if (sc >= 90) { clearTimeout(idle); idle = setTimeout(() => fin(), segs.length ? 250 : 600); } } catch (e) { } }; // dijo la frase completa → se cierra ya // espera 1,8 s de silencio real antes de terminar
+      const arm = () => { clearTimeout(idle); idle = setTimeout(() => fin(), opts.quick ? (segs.length ? 1300 : (interim.length ? 1700 : 3200)) : (segs.length ? 1800 : 3200)); }; // v421: espera a que el estudiante termine de hablar antes de calificar
+      const hit = () => { return; if (!opts.target) return; try { const sc = (opts.scorer || ((a) => speechScore(opts.target, a)))(segAlts(segs, interim)).score; if (sc >= 90) { clearTimeout(idle); idle = setTimeout(() => fin(), segs.length ? 250 : 600); } } catch (e) { } }; // dijo la frase completa → se cierra ya // espera 1,8 s de silencio real antes de terminar
       const start = () => {
         if (done) return;
         r = new SR(); r.lang = 'en-US'; r.interimResults = true; r.maxAlternatives = 5; r.continuous = true;
@@ -331,7 +331,7 @@
     return { url, alts: r.alts, score, heard, error: r.error };
   }
   // deletreo: convierte lo que dijo el estudiante (ej. "jay oh h n") en letras y lo compara
-  const LETTER_WORDS = { a: 'a', ay: 'a', hey: 'a', eh: 'a', b: 'b', be: 'b', bee: 'b', c: 'c', see: 'c', sea: 'c', si: 'c', d: 'd', dee: 'd', de: 'd', e: 'e', ee: 'e', f: 'f', ef: 'f', eff: 'f', g: 'g', gee: 'g', ji: 'g', h: 'h', age: 'h', aitch: 'h', etch: 'h', i: 'i', eye: 'i', aye: 'i', j: 'j', jay: 'j', k: 'k', kay: 'k', okay: 'k', ok: 'k', l: 'l', el: 'l', elle: 'l', ell: 'l', m: 'm', em: 'm', n: 'n', en: 'n', and: 'n', o: 'o', oh: 'o', owe: 'o', p: 'p', pee: 'p', pea: 'p', q: 'q', cue: 'q', queue: 'q', r: 'r', are: 'r', our: 'r', ar: 'r', s: 's', es: 's', ess: 's', yes: 's', ass: 's', as: 's', t: 't', tea: 't', tee: 't', ti: 't', tv: 't', u: 'u', you: 'u', ew: 'u', yu: 'u', v: 'v', vee: 'v', w: 'w', x: 'x', ex: 'x', y: 'y', why: 'y', z: 'z', zee: 'z', zed: 'z', eight: 'a', hay: 'a', bea: 'b', bi: 'b', cee: 'c', she: 'c', dean: 'd', thee: 'd', e: 'e', eve: 'e', if: 'f', jee: 'g', gi: 'g', ach: 'h', eh: 'a', jae: 'j', jey: 'j', ajay: 'j', gay: 'j', jade: 'j', cay: 'k', key: 'k', que: 'k', cake: 'k', al: 'l', hell: 'l', elf: 'l', l: 'l', am: 'm', emm: 'm', in: 'n', end: 'n', o: 'o', pe: 'p', pay: 'p', kew: 'q', cute: 'q', art: 'r', or: 'r', est: 's', tee: 't', tea: 't', yo: 'u', ve: 'v', we: 'v', double: 'w', axe: 'x', ax: 'x', wye: 'y', wai: 'y', zi: 'z', see: 'c', sea: 'c' }; // v420: más formas en que el reconocedor escribe las letras
+  const LETTER_WORDS = { a: 'a', ay: 'a', hey: 'a', eh: 'a', b: 'b', be: 'b', bee: 'b', c: 'c', see: 'c', sea: 'c', si: 'c', d: 'd', dee: 'd', de: 'd', e: 'e', ee: 'e', f: 'f', ef: 'f', eff: 'f', g: 'g', gee: 'g', ji: 'g', h: 'h', age: 'h', aitch: 'h', etch: 'h', i: 'i', eye: 'i', aye: 'i', j: 'j', jay: 'j', k: 'k', kay: 'k', okay: 'k', ok: 'k', l: 'l', el: 'l', elle: 'l', ell: 'l', m: 'm', em: 'm', n: 'n', en: 'n', and: 'n', o: 'o', oh: 'o', owe: 'o', p: 'p', pee: 'p', pea: 'p', q: 'q', cue: 'q', queue: 'q', r: 'r', are: 'r', our: 'r', ar: 'r', s: 's', es: 's', ess: 's', yes: 's', ass: 's', as: 's', t: 't', tea: 't', tee: 't', ti: 't', tv: 't', u: 'u', you: 'u', ew: 'u', yu: 'u', v: 'v', vee: 'v', w: 'w', x: 'x', ex: 'x', y: 'y', why: 'y', z: 'z', zee: 'z', zed: 'z', eight: 'a', hay: 'a', bea: 'b', bi: 'b', cee: 'c', she: 'c', dean: 'd', thee: 'd', e: 'e', eve: 'e', if: 'f', jee: 'g', gi: 'g', ach: 'h', eh: 'a', jae: 'j', jey: 'j', ajay: 'j', gay: 'j', jade: 'j', cay: 'k', key: 'k', que: 'k', cake: 'k', al: 'l', hell: 'l', elf: 'l', l: 'l', am: 'm', emm: 'm', in: 'n', end: 'n', o: 'o', pe: 'p', pay: 'p', kew: 'q', cute: 'q', art: 'r', or: 'r', est: 's', tee: 't', tea: 't', yo: 'u', ve: 'v', we: 'v', double: 'w', axe: 'x', ax: 'x', wye: 'y', wai: 'y', zi: 'z', see: 'c', sea: 'c', the: 'd', dee: 'd', di: 'd', bee: 'b', be: 'b', b: 'b', beat: 'b', each: 'h', itch: 'h', ache: 'h', hi: 'i', high: 'i', jean: 'g', gee: 'g', jeep: 'g', g: 'g', all: 'l', ill: 'l', ale: 'l', yell: 'l', cell: 'l', jay: 'j', day: 'd', bay: 'b', pea: 'p', peak: 'p', tease: 't', team: 't', you: 'u', ewe: 'u', vee: 'v', via: 'v', ex: 'x', why: 'y', zee: 'z', zed: 'z', an: 'n', and: 'n', em: 'm', im: 'm', oh: 'o', owe: 'o', are: 'r', our: 'r', ok: 'k', okay: 'k', kay: 'k', cue: 'q', q: 'q', yes: 's', ass: 's', is: 's' }; // v421: más formas en que el celular escribe cada letra // v420: más formas en que el reconocedor escribe las letras
   // v420: convierte lo que escuchó el reconocedor en una letra (ej. "ajay" → j, "the letter K" → k, "okay" → k)
   function asLetter(tok) { tok = String(tok || '').toLowerCase(); if (tok === '8') return 'a'; tok = tok.replace(/[^a-z]/g, ''); if (!tok) return ''; if (tok.length === 1) return tok; if (LETTER_WORDS[tok]) return LETTER_WORDS[tok]; const t2 = tok.replace(/^(a|e|the|uh)/, ''); if (t2 && (t2.length === 1 || LETTER_WORDS[t2])) return t2.length === 1 ? t2 : LETTER_WORDS[t2]; return ''; }
   function letterScorer(word) {
@@ -352,20 +352,41 @@
   function grammarFix(txt) {
     let t = String(txt || '').trim().replace(/\s+/g, ' '); if (!t) return null; const orig = t;
     t = t.replace(/\b(he|she|it|they|we|you|i|that)['’]?(s|re|m)\s*$/i, (m) => { const k = m.toLowerCase().replace('’', "'").replace(/^(he|she|it|that)s$/, "$1's").replace(/^(they|we|you)re$/, "$1're").replace(/^im$/, "i'm"); return FULLC[k] || m; }); // "yes he's" → "yes he is"
-    const AG = [[/\b(he|she|it)\s+(are|am)\b/gi, '$1 is'], [/\b(they|we|you)\s+(is|am)\b/gi, '$1 are'], [/\bi\s+(is|are)\b/gi, 'I am'], [/\b(he|she|it)\s+have\b/gi, '$1 has'], [/\bi\s+has\b/gi, 'I have'], [/\b(they|we|you)\s+has\b/gi, '$1 have'], [/\b(he|she|it)\s+don'?t\b/gi, "$1 doesn't"], [/\ba\s+([aeiou]\w+)/gi, 'an $1'], [/\ban\s+([bcdfgjklmnpqrstvwxyz]\w+)/gi, 'a $1'], [/\bi\s+(\w)/g, 'I $1']];
+    const AG = [[/\b(he|she|it)\s+(are|am)\b/gi, '$1 is'], [/\b(they|we|you)\s+(is|am)\b/gi, '$1 are'], [/\bi\s+(is|are)\b/gi, 'I am'], [/\b(he|she|it)\s+have\b/gi, '$1 has'], [/\bi\s+has\b/gi, 'I have'], [/\b(they|we|you)\s+has\b/gi, '$1 have'], [/\b(he|she|it)\s+don'?t\b/gi, "$1 doesn't"], [/\ba\s+([aeiou]\w+)/gi, 'an $1'], [/\ban\s+([bcdfgjklmnpqrstvwxyz]\w+)/gi, 'a $1'], [/\bi\s+(\w)/g, 'I $1'], [/\b(i|you|we|they|he|she)\s+(have|has)\s+(\w+)\s+years(\s+old)?\b/gi, (m, a, b, n) => (a.toLowerCase() === 'i' ? 'I am' : /^(he|she)$/i.test(a) ? a + ' is' : a + ' are') + ' ' + n + ' years old']];
     AG.forEach(([re, to]) => { t = t.replace(re, to); });
     t = t.replace(/^\w/, c => c.toUpperCase()).replace(/^(yes|no)\s+/i, (m, w) => w[0].toUpperCase() + w.slice(1).toLowerCase() + ', ').replace(/\bi\b/g, 'I');
     if (!/[.!?]$/.test(t)) t += '.';
     const n = (x) => x.toLowerCase().replace(/[^a-z' ]/g, '').replace(/\s+/g, ' ').trim();
     return n(t) !== n(orig) ? t : null;
   }
+  // v432: la respuesta es libre, PERO tiene que corresponder a la pregunta (de quién se habla y de qué se habla).
+  // Nunca se califica "el contenido" (lo que el estudiante quiera decir); solo que responda la pregunta + gramática y pronunciación.
+  const SUBJ = { you: ['i', 'my', 'me', 'we', 'our'], your: ['i', 'my', 'me', 'we', 'our'], he: ['he', 'his', 'him'], his: ['he', 'his', 'him'], she: ['she', 'her'], her: ['she', 'her'], they: ['they', 'their', 'them'], their: ['they', 'their', 'them'], it: ['it', 'its'], we: ['we', 'our', 'us'] };
+  const qSubj = (q) => { const w = words(q); for (const x of w) if (SUBJ[x]) return x; return null; };
   function freeJudge(q, tgt, alts) {
-    const heard = (alts && alts[0]) || ''; const ws = words(heard); const fix = grammarFix(heard);
+    const heard = (alts && alts[0]) || ''; const ws = words(heard); let fix = grammarFix(heard);
     const yn = /^\s*(are|is|am|do|does|did|can|could|was|were|have|has|will|would|should)\b/i.test(q || '');
-    let ok = false;
-    if (yn) ok = ws.length >= 2 && /^(yes|no|yeah|yep|nope|of|sure|not)\b/.test(ws[0] || '') || ws.length >= 3;
-    else { const sc = tgt ? speechScore(tgt, alts).score : 0; const cw = (x) => words(x).filter(w => w.length > 2 && !FW.has(w)); const pool = new Set(cw((q || '') + ' ' + (tgt || ''))); ok = sc >= 55 || (ws.length >= 2 && cw(heard).some(w => pool.has(w))) || ws.length >= 4; }
-    return { ok, heard, fix };
+    const cw = (x) => words(x).filter(w => w.length > 2 && !FW.has(w) && !['yes', 'yeah', 'not', 'fine', 'thank', 'thanks', 'okay'].includes(w));
+    const sj = qSubj(q || ''), want = sj ? SUBJ[sj] : null, hasS = want ? ws.some(w => want.includes(w)) : true;
+    const otherS = ws.some(w => Object.values(SUBJ).flat().includes(w) && !(want || []).includes(w));
+    let ok = false, off = false;
+    if (yn) {
+      const startYN = /^(yes|no|yeah|yep|nope|sure|of)$/.test(ws[0] || '');
+      ok = startYN && (ws.length === 1 || hasS || !otherS); // "Yes" / "Yes, she is" / "No, she isn't"
+      if (startYN && !ok) { ok = true; const su = ({ you: 'I', your: 'I', his: 'he', her: 'she', their: 'they' }[sj] || sj), v0 = (String(q).match(/^\s*(\w+)/) || ['', 'is'])[1].toLowerCase(), sg = ['he', 'she', 'it'].includes(su);
+        const be = ['are', 'is', 'am'].includes(v0) ? (su === 'I' ? 'am' : sg ? 'is' : 'are') : ['do', 'does'].includes(v0) ? (sg ? 'does' : 'do') : ['was', 'were'].includes(v0) ? (su === 'I' || sg ? 'was' : 'were') : v0;
+        fix = ws[0] === 'no' ? (be === 'am' ? "No, I'm not." : 'No, ' + su + ' ' + be + "n't.") : 'Yes, ' + su + ' ' + be + '.'; } // respondió sí/no pero con otra persona: solo se corrige
+      if (!startYN) { const pool = new Set(cw((q || '') + ' ' + (tgt || ''))); ok = hasS && cw(heard).some(w => pool.has(w)); off = !ok; }
+    } else {
+      const sc = tgt ? speechScore(tgt, alts).score : 0; const pool = new Set(cw((q || '') + ' ' + (tgt || '')));
+      const share = cw(heard).some(w => pool.has(w));
+      ok = sc >= 55 || (share && (hasS || ws.length <= 3)) || (hasS && !otherS && ws.length >= 3 && share);
+      if (!ok && ws.length && ws.length <= 2) { const toks = String(heard).trim().split(/\s+/); if (toks.every(t => /^[A-Z]/.test(t)) && !toks.some(t => Object.values(SUBJ).flat().includes(t.toLowerCase()))) ok = true; } // respuesta corta con un nombre propio (ej. "Brazil", "John")
+      if (!ok && ws.length) off = true; // no corresponde a la pregunta (ej. "Where is she from?" → "I'm fine, thank you")
+    }
+    // si solo repitió la pregunta, no cuenta: tiene que responderla
+    let rep = false; if (ok && q && words(q).length >= 3 && speechScore(q, alts).score >= 80 && (!tgt || speechScore(tgt, alts).score < 60)) { ok = false; rep = true; off = false; }
+    return { ok, heard, fix: ok ? fix : null, rep, off };
   }
   // tarjeta de resultado de voz: SIEMPRE dice si estuvo bien o mal y deja intentar otra vez
   function voiceResult(box, { score, heard, url, model, onRetry, pass = 70 }) {
