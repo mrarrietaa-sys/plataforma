@@ -16,7 +16,7 @@
   const uniq = (L, k = 'en') => L.filter((v, i, a) => v && v[k] && a.findIndex(x => x[k] === v[k]) === i);
   const noEmoji = s => String(s || '').replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{200D}]/gu, '').replace(/\s{2,}/g, ' ').trim();
   const clean = s => noEmoji(String(s || '').replace(/<(?!\/?(b|i|br|u)\b)[^>]*>/gi, ''));
-  const paras = (p) => { const t = String(p.tip || ''); let L = t.split(/<\/p>/i).map(x => clean(x.replace(/<p[^>]*>/gi, ''))).filter(x => x.replace(/<[^>]+>/g, '').trim().length > 2); if (!L.length && t) L = [clean(t)]; return L; };
+  const paras = (p) => { const t = String(p.tip || ''); let L = t.split(/<\/p>/i).map(x => clean(x.replace(/<p[^>]*>/gi, ''))).filter(x => x.replace(/<[^>]+>/g, '').trim().length > 2); if (!L.length && t) L = [clean(t)]; for (let j = 0; j < L.length - 1; j++) if (/:\s*$/.test(L[j].replace(/<[^>]+>/g, '').trim())) { L[j] += '<br>' + L[j + 1]; L.splice(j + 1, 1); } return L; };
   const H = (s) => { const d = document.createElement('div'); d.innerHTML = s.trim(); return d.firstElementChild; };
   const sleep = ms => new Promise(r => setTimeout(r, ms));
   const play = (au) => { try { return M().play(au); } catch (e) { return Promise.resolve(); } };
@@ -399,7 +399,7 @@
     let got = 0, combo = 0, best = 0; const need = tiles.filter(x => x.ok).length;
     await new Promise(done => { body.querySelectorAll('.as-tile').forEach(b => b.onclick = () => { const x = tiles[+b.dataset.k]; if (b.classList.contains('ok')) return;
       const fb = body.querySelector('#as-mf');
-      if (x.ok) { b.classList.add('ok'); b.insertAdjacentHTML('afterbegin', SV(I.ck)); got++; combo++; best = Math.max(best, combo); sfx('ok'); fb.className = 'as-mfb ok'; fb.innerHTML = `${SV(I.ck)}<span>¡Bien! <b>${esc(x.t)}</b> sí suena en la canción.</span>`; body.querySelector('#as-mg').textContent = `${got} de ${need}`; }
+      if (x.ok) { b.classList.add('ok'); b.insertAdjacentHTML('afterbegin', SV(I.ck)); got++; combo++; best = Math.max(best, combo); sfx('ok'); fb.className = 'as-mfb ok'; fb.innerHTML = `${SV(I.ck)}<span>¡Bien! <b>${esc(x.t)}</b> sí suena en la canción.</span>`; body.querySelector('#as-mg').textContent = `${got} de ${need}`; if (got === need) { setTimeout(() => { try { M().confetti(2600); sfx('win'); } catch (e) { } }, 250); } }
       else { if (b.classList.contains('no')) return; combo = 0; b.classList.add('shake', 'no'); b.insertAdjacentHTML('afterbegin', SV(I.x)); sfx('bad'); fb.className = 'as-mfb no'; fb.innerHTML = `${SV(I.x)}<span><b>${esc(x.t)}</b> no suena en esta canción. ¡Sigue escuchando!</span>`; setTimeout(() => b.classList.remove('shake'), 500); }
       if (teens) { body.querySelector('#as-cb').textContent = 'x' + combo; body.querySelector('#as-bc').textContent = 'x' + best; } });
       A().waitNext(stage, teens ? 'Terminé la canción' : '¡Terminé la canción!').then(done); });
@@ -484,13 +484,14 @@
     return g9End(stage, c, P.length, 'reading', [...missed].map(k => P[k]), `¡${found} de ${P.length} parejas! Continuar`);
   };
 
+  const STAR9 = '<svg class="g9-ss" viewBox="0 0 100 96" aria-hidden="true"><defs><linearGradient id="g9sg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe680"/><stop offset=".55" stop-color="#fbbf24"/><stop offset="1" stop-color="#f59e0b"/></linearGradient></defs><path d="M50 3l13.6 28.6 31.4 4-23 21.8 5.9 31.1L50 73.3 22.1 88.5 28 57.4 5 35.6l31.4-4z" fill="url(#g9sg)" stroke="#e08a00" stroke-width="3" stroke-linejoin="round"/><path d="M36 30l6-12" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".7"/></svg>';
   // ⭐ Kids · Estrellas que caen: escucha y atrapa la estrella correcta
   G9.g9Stars = async function (stage, p) {
     const V = vocab(p); if (V.length < 3) return null; const R = shuffle(V).slice(0, 4); let c = 0, combo = 0; const missed = [];
     for (let i = 0; i < R.length; i++) {
       if (!stage.isConnected) break; const it = R[i]; const opts = shuffle([it].concat(shuffle(V.filter(x => x.en !== it.en)).slice(0, 2)));
       const body = frame(stage, 'Practice', 'Estrellas que caen', 'Escucha a Mr. Arrieta y atrapa la estrella correcta antes de que caiga.');
-      body.innerHTML = `<div class="g9 g9-k">${g9Top('Atrapa la estrella', `${SV(I.star)} ${c}`)}<button type="button" class="g9-au" id="g9a">${SV(I.vol)}Escuchar otra vez</button><div class="g9-sky">${opts.map((o, k) => `<button type="button" class="g9-star" data-k="${k}" style="left:${[6, 37, 68][k]}%;--d:${(k * .5).toFixed(1)}s;--t:${(7 + k * .4).toFixed(1)}s"><span>${esc(o.en)}</span></button>`).join('')}</div><div class="g9-fb" id="g9f"></div></div>`;
+      body.innerHTML = `<div class="g9 g9-k">${g9Top('Atrapa la estrella', `${SV(I.star)} ${c}`)}<button type="button" class="g9-au" id="g9a">${SV(I.vol)}Escuchar otra vez</button><div class="g9-sky">${opts.map((o, k) => `<button type="button" class="g9-star" data-k="${k}" style="left:${[3, 36, 69][k]}%;--d:${(k * .5).toFixed(1)}s;--t:${(7 + k * .4).toFixed(1)}s">${STAR9}<span class="${o.en.length > 8 ? 'sm' : ''}">${esc(o.en)}</span></button>`).join('')}</div><div class="g9-fb" id="g9f"></div></div>`;
       body.querySelector('.g9-tm').style.visibility = 'hidden';
       body.querySelector('#g9a').onclick = () => play(it.au); await sleep(300); play(it.au);
       const ok = await new Promise(done => { let miss = false, fin = false; const fb = body.querySelector('#g9f');

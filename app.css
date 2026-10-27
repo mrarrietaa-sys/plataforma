@@ -7227,9 +7227,14 @@ body.ag-teens .pg-rows{background:#fff}
 /* kids · estrellas */
 .g9-k .g9-pill{background:#fff;color:#0b3a66;box-shadow:0 2px 6px rgba(0,0,0,.08)}
 .g9-sky{position:relative;height:330px;border-radius:20px;overflow:hidden;background:linear-gradient(180deg,#bfe6ff,#fff5d6)}
-.g9-star{--c:#f5b301;position:absolute;top:-60px;width:28%;background:#fff;border:3px solid #f5b301;border-radius:18px;padding:12px 6px;font:800 15px Poppins,sans-serif;color:#0b3a66;cursor:pointer;box-shadow:0 8px 16px rgba(0,0,0,.12);animation:g9fall var(--t) linear var(--d) forwards}
-.g9-star span{display:block;line-height:1.15}.g9-star.hit{border-color:#16a34a;background:#dcfce7;transform:scale(1.15)}.g9-star.lost{opacity:.3}
-@keyframes g9fall{from{top:-60px}to{top:280px}}
+.g9-star{--c:#f5b301;position:absolute;top:-130px;width:30%;max-width:130px;aspect-ratio:1/0.96;background:none;border:0;padding:0;cursor:pointer;filter:drop-shadow(0 8px 10px rgba(180,110,0,.35));animation:g9fall var(--t) linear var(--d) forwards}
+.g9-ss{position:absolute;inset:0;width:100%;height:100%;animation:g9tw 1.6s ease-in-out infinite alternate}
+.g9-star span{position:absolute;left:50%;top:56%;transform:translate(-50%,-50%);background:#fff;color:#0b3a66;font:800 13px Poppins,sans-serif;padding:3px 8px;border-radius:99px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+.g9-star span.sm{font-size:11px;padding:3px 6px}
+.g9-star.hit{filter:drop-shadow(0 0 16px rgba(34,197,94,.8))}.g9-star.hit .g9-ss path:first-child{fill:#4ade80;stroke:#16a34a}.g9-star.hit{animation-play-state:paused;transform:scale(1.2)}
+.g9-star.lost{opacity:.3}
+@keyframes g9tw{from{transform:rotate(-6deg)}to{transform:rotate(6deg)}}
+@keyframes g9fall{from{top:-130px}to{top:250px}}
 .g9-mr{position:absolute;right:4px;bottom:0;height:120px;pointer-events:none}
 /* kids · monstruo */
 .g9-req{align-self:center;background:#fff;border-radius:16px;padding:10px 14px;font:700 15px Poppins,sans-serif;color:#0b3a66;box-shadow:0 6px 14px rgba(0,0,0,.08);display:flex;align-items:center;gap:8px}.g9-req b{color:#E3242B}

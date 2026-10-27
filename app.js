@@ -717,7 +717,7 @@
     goal: async (stage, p) => {
       const prev = M.prevPart(p);
       if (V9()) { // 🎯 Goal dinámico: Mr. Arrieta dice el objetivo con audio
-        const g = p.goal || { en: p.title, es: p.es }; const can = ((p.sentences || []).length ? p.sentences : (p.vocab || [])).map(x => x.en).filter((x, i, a) => x && a.indexOf(x) === i).slice(0, 3);
+        const g = p.goal || { en: p.title, es: p.es }; const can = ((p.keyq || []).length ? p.keyq.map(k => ({ en: k.q })) : (p.vocab || [])).map(x => x.en).filter((x, i, a) => x && a.indexOf(x) === i).slice(0, 3);
         const nSteps = buildSteps9(p).length, mins = Math.max(8, Math.min(14, nSteps + 4));
         stage.innerHTML = `<div class="g9"><div class="g9-h"><img src="mra-present.webp" alt="Mr. Arrieta"><div class="g9-b"><span class="g9-l">TOPIC ${p.topic} · ${esc(PL(p).toUpperCase())}</span><b>${esc(g.en)}</b><small>${esc(g.es)}</small><button type="button" class="g9-au">${window.MRI ? MRI('vol') : ''}Escuchar</button></div></div>
           ${can.length ? `<div class="g9-t">AL TERMINAR PODRÁS DECIR</div><div class="g9-c">${can.map(x => `<span>${window.MRI ? MRI('check') : ''}${esc(x)}</span>`).join('')}</div>` : ''}

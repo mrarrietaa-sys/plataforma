@@ -112,3 +112,33 @@ window.MRHW9 = {
 '4-t20p1': ['Propón una idea para fortalecer la democracia en 2 frases.', 'Granted, democracy faces challenges. I believe schools should teach young people to vote.', []],
 '4-t21p1': ['Da tu opinión sobre la exploración espacial en 2 frases.', 'In my view, space exploration is real progress. Had we not invested in it, we would not have GPS.', []],
 };
+/* v438 · TRAZABILIDAD: lo que la lección enseña en la Explicación es lo único que se practica en sus juegos y lo que se repasa en la lección siguiente.
+   Promedio ~8 tarjetas. Conjuntos completos que la lección promete (letras, días, meses) se enseñan enteros. */
+window.MRTAUGHT = {
+'1-t1p1': ['Hello', 'Hi', 'Good morning', 'Good afternoon', 'Good evening', 'Good night', 'Goodbye', 'See you later'],
+'1-t1p2': ["What's your name?", 'My name is Laura.', 'Nice to meet you.', 'How are you?', "I'm fine, thank you.", 'Thank you', "You're welcome", 'Excuse me'],
+'1-t3p1': ['Colombia', 'The United States', 'Mexico', 'Spain', 'Brazil', 'Canada', 'England', 'Japan'],
+'1-t3p2': ['Colombian', 'American', 'Mexican', 'Spanish', 'Brazilian', 'Canadian', 'English', 'Japanese'],
+'1-t4p1': ['0', '1', '5', '10', '13', '14', '15', '20', '30', '40', '50', '100'],
+'1-t4p2': ['red', 'blue', 'yellow', 'green', 'orange', 'pink', 'black', 'white'],
+'1-t5p2': ['a book', 'an apple', 'a car', 'an egg', 'a house', 'an umbrella', 'a dog', 'an hour'],
+'1-t6p1': ['doctor', 'nurse', 'teacher', 'engineer', 'chef', 'police officer', 'waiter', 'mechanic'],
+'1-t7p1': ['mother', 'father', 'sister', 'brother', 'grandmother', 'grandfather', 'son', 'daughter'],
+'1-t7p2': ['dog', 'cat', 'bird', 'fish', 'horse', 'cow', 'lion', 'elephant'],
+'1-t8p1': ['bread', 'rice', 'eggs', 'chicken', 'fish', 'coffee', 'water', 'pizza'],
+'1-t8p2': ['apple', 'banana', 'orange', 'strawberry', 'mango', 'carrot', 'tomato', 'potato'],
+'1-t10p2': ['shirt', 'T-shirt', 'pants', 'jeans', 'dress', 'shoes', 'jacket', 'coat'],
+'1-t11p1': ['pen', 'pencil', 'eraser', 'ruler', 'notebook', 'book', 'backpack', 'scissors'],
+'1-t11p2': ['living room', 'bedroom', 'kitchen', 'bathroom', 'garage', 'garden', 'sofa', 'bed'],
+'1-t12p1': ['books', 'cars', 'boxes', 'buses', 'watches', 'dishes', 'babies', 'cities'],
+'1-t12p2': ['men', 'women', 'children', 'people', 'feet', 'teeth', 'mice', 'fish'],
+};
+(function () { try {
+  const n = (window.M1 && M1.MOD && +M1.MOD.n) || 1, D = window.M1DATA; if (!D || !D.topics) return;
+  const FULL = /^(t2p1|t2p2|t9p1|t9p2|t10p1)$/; // conjuntos completos del Módulo 1
+  D.topics.forEach(t => (t.parts || []).forEach(p => { const V = p.vocab || []; if (!V.length) return; p._vocabAll = V;
+    const sel = window.MRTAUGHT[n + '-' + p.id];
+    if (sel) { const out = sel.map(en => V.find(v => v.en === en)).filter(Boolean); if (out.length >= Math.min(6, sel.length)) p.vocab = out; }
+    else if (V.length > 8 && !(n === 1 && FULL.test(p.id))) p.vocab = V.slice(0, 8);
+  }));
+} catch (e) { } })();

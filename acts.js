@@ -29,7 +29,7 @@
 
   /* ================= 1. LEARN (Explanation) ================= */
   async function learn(stage, p, o = {}) {
-    if (window.__V9 && p.vocab && p.vocab.length > 5) p = Object.assign({}, p, { vocab: p.vocab.slice(0, 5) }); // lección corta: 5 tarjetas // o: { noTip, title, ins } (Kids/Teens ya vieron la regla en su cómic / historias)
+    if (window.__V9 && p.vocab && p.vocab.length > 13) p = Object.assign({}, p, { vocab: p.vocab.slice(0, 13) }); // v438: las tarjetas ya vienen recortadas (hw9.js · trazabilidad) // o: { noTip, title, ins } (Kids/Teens ya vieron la regla en su cómic / historias)
     const isPl = !!p.plurals;
     // escuchar + grabar la voz del estudiante repitiendo + calificación con voz (o autoevaluación si el navegador no reconoce voz)
     const canRec = M.canSR || !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder);
@@ -79,6 +79,7 @@
     // v428: mini lección ARRIBA y dinámica (diapositivas con Mr. Arrieta), luego se practican las palabras
     if (!o.noTip && (p.tip || (p.tips && p.tips.length))) {
       const P = String(p.tip || '').split(/<\/p>/i).map(x => x.replace(/<p[^>]*>/gi, '').trim()).filter(x => x.replace(/<[^>]+>/g, '').trim().length > 2);
+      for (let j = 0; j < P.length - 1; j++) if (/:\s*$/.test(P[j].replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').trim())) { P[j] = P[j] + '<br>' + P[j + 1]; P.splice(j + 1, 1); } // v438: «…estos pares:» va junto con su ejemplo
       const SL = P.map(t => ({ k: 'LA REGLA', t })).concat((p.tips || []).map(t => ({ k: 'TIP DEL PROFE', t })));
       const POSE = ['idea', 'point', 'present', 'wink', 'smile', 'thumbs']; let si = 0;
       const ml = h(`<div class="ml9"><div class="ml9-h"><b>Mini lección de Mr. Arrieta</b><span class="ml9-n"></span></div><div class="ml9-b"><img class="ml9-m" alt="Mr. Arrieta"><div class="ml9-c"><small class="ml9-k"></small><div class="ml9-t"></div></div></div><div class="ml9-f"><span class="ml9-d">${SL.map(() => '<i></i>').join('')}</span><div><button type="button" class="btn w sm ml9-p">Atrás</button><button type="button" class="btn k sm ml9-x">Siguiente</button></div></div></div>`);
