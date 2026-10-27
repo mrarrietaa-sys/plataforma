@@ -184,7 +184,7 @@
     const looksGrammar = /cuando|como (se )?usa|diferencia|regla|explica|gramatica|uso de|when do|how do i use|\bo\b/.test(sq) || term.split(' ').length >= 2 || /^(there|this|that|these|those|a|an|am|is|are)\b/.test(term);
     if (g && looksGrammar) {
       const p = M.partById(g[1]);
-      if (p && p.tip) blocks.push(`<div class="dict-res"><div class="dict-tag">📘 Mini lección · ${esc(p._t.title)} · Part ${p.part}</div><div class="lesson" style="margin:8px 0 0">${p.tip}</div>
+      if (p && p.tip) blocks.push(`<div class="dict-res"><div class="dict-tag">📘 Mini lección · ${esc(p._t.title)} · Lesson ${p.part}</div><div class="lesson" style="margin:8px 0 0">${p.tip}</div>
         <button class="btn sm" data-go="${p.id}" style="margin-top:10px">Ir a esta lección →</button></div>`);
     }
 

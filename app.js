@@ -377,7 +377,7 @@
   function progressModal(n) {
     const prev = D.topics.find(t => t.n < n && !t.parts.every(x => S.parts[x.id] && S.parts[x.id].done)) || D.topics.find(t => t.n === n - 1);
     const m = M.modal(`<div class="center">${M.mascot('mascot', 'pointside')}</div><h3 class="center">🔒 Este tema aún no está abierto</h3>
-      <p class="center" style="font-size:17px">Primero termina <b>Topic ${prev.n} · ${esc(prev.title)}</b><br>(Part 1 y Part 2). ¡Así aprendes paso a paso! 💪</p>
+      <p class="center" style="font-size:17px">Primero termina <b>Topic ${prev.n} · ${esc(prev.title)}</b><br>(Lesson 1 y Lesson 2). ¡Así aprendes paso a paso! 💪</p>
       <button class="btn k block lg" id="gp">▶ Ir al Topic ${prev.n}</button><button class="btn w block" style="margin-top:8px" id="cl">Cerrar</button>`, { x: true });
     $('#cl', m).onclick = () => m.remove();
     $('#gp', m).onclick = () => { m.remove(); const p = prev.parts.find(x => !(S.parts[x.id] && S.parts[x.id].done)) || prev.parts[0]; if (M.isUnlocked(prev.n)) route('class', p.id); else lockGate(prev.n); };
@@ -1376,7 +1376,7 @@
       <div class="sect-title"><h2>🔁 Palabras para repasar</h2>${weak.length ? '<button class="btn sm k" id="pw">🎯 Practicar ahora</button>' : ''}</div>
       <div class="card">${weak.length ? `<div class="weak">${weak.map(([w, v], i) => `<span>${esc(w)} ${v.au ? `<button class="aud sm" data-i="${i}">🔊</button>` : ''}</span>`).join('')}</div>` : '<p class="muted" style="margin:0">¡Aún no hay palabras difíciles! Aquí aparecerán las palabras en las que te equivoques, para que las repases.</p>'}</div>
       <div class="sect-title"><h2>📚 Temas</h2></div>
-      <div class="tlist">${D.topics.map(t => `<div class="trow"><span class="n">${t.n}</span><b>${esc(t.title)}${M.isUnlocked(t.n) ? '' : ' 🔒'}</b>${t.parts.map(p => `<span class="stars ${p.part === 2 ? 'hs' : ''}" title="${PL(p)}">P${p.part} ${[1, 2, 3].map(i => `<span class="${i <= M.partStars(p.id) ? '' : 'off'}">⭐</span>`).join('')}</span>`).join('')}</div>`).join('')}</div>
+      <div class="tlist">${D.topics.map(t => `<div class="trow"><span class="n">${t.n}</span><b>${esc(t.title)}${M.isUnlocked(t.n) ? '' : ' 🔒'}</b>${t.parts.map(p => `<span class="stars ${p.part === 2 ? 'hs' : ''}" title="${PL(p)}">L${p.part} ${[1, 2, 3].map(i => `<span class="${i <= M.partStars(p.id) ? '' : 'off'}">⭐</span>`).join('')}</span>`).join('')}</div>`).join('')}</div>
       <div class="sect-title"><h2>⚙️ Datos</h2></div>
       <div class="card"><p class="muted" style="margin-top:0">Tu progreso se guarda en este dispositivo y navegador. Puedes descargar una copia de respaldo o restaurarla en otro dispositivo.</p>
         <div class="row"><button class="btn sm w" id="exp">⬇️ Descargar respaldo</button><label class="btn sm w" style="cursor:pointer">⬆️ Restaurar respaldo<input type="file" accept=".json" id="imp" hidden></label><button class="btn sm w" id="rst" style="color:var(--bad)">🗑️ Reiniciar progreso</button></div></div>
