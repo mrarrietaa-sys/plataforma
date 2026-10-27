@@ -441,7 +441,25 @@
     t14p1: ['learn', 'fill', 'countRoom', 'catchWord', 'unscramble', 'typeSentence', 'speak'], t14p2: ['learn', 'fill', 'memoryRoom', 'dialogue', 'raceGame', 'spinWheel', 'speak'],
   };
 
+  // 🧪 v423: VISTA PREVIA de la lección corta (9 pasos). Se activa con ?nueva=1 y se apaga con ?nueva=0 (solo en ese navegador)
+  try { const q = new URLSearchParams(location.search).get('nueva'); if (q === '1') localStorage.setItem('mra_v9', '1'); if (q === '0') localStorage.removeItem('mra_v9'); } catch (e) { }
+  const V9 = () => { try { return localStorage.getItem('mra_v9') === '1' && M.ageGroup() === 'adult'; } catch (e) { return false; } };
+  function buildSteps9(p) {
+    window.__V9 = true; // ejercicios cortos (máx. 5 preguntas)
+    const st = [{ sec: 'Goal', k: 'goal' }];
+    st.push({ sec: 'Explanation', k: 'learn' });
+    if (p.reading) st.push({ sec: 'Reading', k: 'reading' });
+    if (p.keyq) st.push({ sec: 'Listen & practice', k: 'keyq' });
+    const acts = (C.PLAN || PLAN)[p.id] || p.acts;
+    const g = acts.find(a => !['learn', 'speak', 'speakWords'].includes(a)); if (g) { p._g9 = g; st.push({ sec: 'Practice', k: 'game9' }); } // un juego que mezcla palabras de hoy y de la lección anterior (repaso incluido)
+    const sp = acts.find(a => a === 'speak' || a === 'speakWords') || (p.sentences ? 'speak' : 'speakWords');
+    st.push({ sec: 'Oral task', k: p.letters ? 'speakLetters' : sp });
+    if (songFor(p)) st.push({ sec: 'Music', k: 'music' });
+    if (p.hw) st.push({ sec: 'Writing', k: 'hw' });
+    return st;
+  }
   function buildSteps(p) {
+    window.__V9 = false; if (V9()) return buildSteps9(p);
     const st = [];
     st.push({ sec: 'Goal', k: 'goal' });
     if (p.vocab && p.vocab.length) st.push({ sec: 'Speaking', k: 'warmGame' });
@@ -469,7 +487,7 @@
   // 🎯 misión del tema según el objetivo (solo en la última parte del tema y si el estudiante eligió objetivo)
   function missionFor(p) { try { const g = window.MRGOAL && MRGOAL.get(); if (!g || !window.MRMISSIONS) return null; const x = MRMISSIONS[(+M.MOD.n || 1) + '-' + p.topic]; const L = x && x[g.k]; if (!L) return null; const arr = Array.isArray(L) ? L : [L]; const k = Math.max(0, (+p.part || 1) - 1) * 2; const two = arr.slice(k, k + 2); return two.length ? { k: g.k, list: two } : null; } catch (e) { return null; } }
   const SEC_IC = { Goal: '🎯', Mission: '🚀', Speaking: '🗣️', Reading: '📖', Review: '🔁', Explanation: '💡', 'Listen & practice': '🎧', Practice: '🎮', 'Oral task': '🎤', Music: '🎵', Homework: '📝' };
-  const SEC_ICO = { Goal: 'target', Mission: 'rocket', Speaking: 'chat', Reading: 'book', Review: 'repeat', Explanation: 'bulb', 'Listen & practice': 'headphones', Practice: 'game', 'Oral task': 'mic', Music: 'music', Homework: 'pen' };
+  const SEC_ICO = { Writing: 'pen', Goal: 'target', Mission: 'rocket', Speaking: 'chat', Reading: 'book', Review: 'repeat', Explanation: 'bulb', 'Listen & practice': 'headphones', Practice: 'game', 'Oral task': 'mic', Music: 'music', Homework: 'pen' };
   const SEC_MRI = s => window.MRI ? MRI(SEC_ICO[s] || 'star') + MRI('check', 'ok') : '';
   const SEC_SC = { Reading: 'balloon2', Homework: 'laptop', Music: 'guitar', Review: 'plane-blue' };
   const FREE = ['rocket', 'balloon1', 'plane-red', 'rocket3', 'balloon3', 'plane-blue', 'drums', 'plane-yellow', 'balloon2', 'surf', 'rocket5', 'plane-green', 'hero'];
@@ -771,7 +789,7 @@
     },
 
     reading: async (stage, p) => {
-      const r = p.reading;
+      let r = p.reading;
       const AG = M.ageGroup();
       const body = A.head(stage, { lbl: 'Reading', title: AG === 'adult' ? `📖 ${r.title}` : r.title, ins: AG === 'teens' ? 'Lee el chat mientras lo escuchas. Luego responde <b>TRUE</b> o <b>FALSE</b>.' : AG === 'kids' ? 'Escucha el cuento y toca cada viñeta para oírla otra vez. Luego responde <b>YES</b> o <b>NO</b>.' : 'Escucha y lee al mismo tiempo. Luego responde <b>YES</b> o <b>NO</b>.' });
       const sents = splitSents(r.text);
@@ -796,6 +814,7 @@
       rp.onclick = () => { if (rp.classList.contains('playing')) stop(); else karaoke(); };
       readAloud(box, $('#rv', box), $('#rvr', box));
       body.appendChild(h(`<h3 style="margin-top:18px">${AG === 'teens' ? 'True or false?' : 'Answer YES or NO'}</h3>`));
+      if (window.__V9 && r.q.length > 2) r = Object.assign({}, r, { q: r.q.slice(0, 2) });
       const qs = r.q.map((q, i) => { const e = h(`<div class="yn"><p>${i + 1}) ${esc(q.s)}</p><div class="b"><button data-v="yes">${AG === 'teens' ? 'TRUE' : 'YES'}</button><button data-v="no">${AG === 'teens' ? 'FALSE' : 'NO'}</button></div></div>`); $$('button', e).forEach(b => b.onclick = () => { $$('button', e).forEach(x => x.classList.remove('sel')); b.classList.add('sel'); e._v = b.dataset.v; sfx('tap'); }); body.appendChild(e); return e; });
       const bar = h(`<div class="actionbar"><button class="btn k lg">Comprobar ✓</button></div>`); body.appendChild(bar);
       const c = await new Promise(res => { $('button', bar).onclick = async () => {
@@ -914,7 +933,7 @@
             const fj = M.freeJudge(k.q, tgt.replace(/___/g, ''), rr.alts); const sc = { heard: fj.heard }; const ok = fj.ok; // v420: respuesta libre + corrección de gramática
             const fb = $v('.vk-fb'); fb.hidden = false; fb.className = 'vk-fb ' + (ok ? 'good' : 'bad'); fb.innerHTML = `<small>Escuché</small>“${esc(sc.heard || rr.alts[0])}”${ok && fj.fix ? `<em class="vk-fix">Mejor dilo así: <b>${esc(fj.fix)}</b></em>` : ''}`;
             if (ok) { sfx('ok'); M.praise(); vc.classList.add('ok'); $v('.vk-msg').textContent = late ? '¡Bien dicho!' : '¡Excelente!'; setTimeout(() => finish(true), fj.fix ? 3200 : 1500); }
-            else { sfx('bad'); setTimeout(M.encourage, 250); $v('.vk-msg').textContent = 'Responde con una frase completa, con tus propias palabras.'; $v('.vk-next').hidden = false; }
+            else { sfx('bad'); setTimeout(M.encourage, 250); $v('.vk-msg').textContent = fj.rep ? 'Repetiste la pregunta. Ahora respóndela con tus palabras.' : 'Responde con una frase completa, con tus propias palabras.'; $v('.vk-next').hidden = false; }
           };
         });
         if (r.ok) { c++; if (!r.late) { streak++; pts += (r.hinted ? 50 : 100) * Math.min(3, streak); } else streak = 0; } else streak = 0;
@@ -960,6 +979,7 @@
     music: async (stage, p) => playLearn(stage, p),
 
     hw: async (stage, p) => homework(stage, p),
+    game9: async (stage, p) => { const pv = M.prevPart(p); const old = pv ? sample((pv.vocab || []).filter(v => v && v.en && !(p.vocab || []).some(x => x.en === v.en)), 2) : []; const fn = STEP[p._g9] || A[p._g9]; return fn(stage, Object.assign({}, p, { vocab: (p.vocab || []).concat(old) })); },
     kidsTap: async (stage, p) => {
       const pool = (p.sentences || []).filter(s => s.img && s.au), rounds = shuffle(pool.slice()).slice(0, Math.min(3, pool.length)); let c = 0; const missed = [];
       for (let n = 0; n < rounds.length; n++) {
@@ -1067,6 +1087,7 @@
       await A.waitNext(stage, 'Ya la escuché, ¡a jugar! 🎮');
       const sc = g.stop(); if (sc && sc.t) { t += sc.t; c += sc.c; }
     }
+    if (V9()) return A.result(c, Math.max(t, 1), 'listening', missed); // lección corta: solo el video con su juego
     // 3) Listen & choose / order (frases inspiradas en la canción)
     const lc = sample(sg.lc.filter(x => x.type === 'blank'), 3);
     for (let n = 0; n < lc.length; n++) {
@@ -1156,9 +1177,9 @@
 
   /* ---------- HOMEWORK (writing with automatic feedback) ---------- */
   async function homework(stage, p) {
-    const hw = p.hw; const saved = (S.hw[p.id] || {}).text || '';
+    const hw = V9() ? Object.assign({}, p.hw, { n: 2, es: String(p.hw.es || '').replace(/\b\d+\b/, '2') }) : p.hw; /* lección corta: solo 2 frases, en el momento */ const saved = (S.hw[p.id] || {}).text || '';
     const AG = M.ageGroup(); if (AG === 'teens') stage.classList.add('dk');
-    const body = A.head(stage, { lbl: 'Homework', title: AG === 'teens' ? 'Nuevo post' : AG === 'kids' ? 'Tu tarea' : '✍️ Writing task', ins: esc(hw.es) });
+    const body = A.head(stage, { lbl: V9() ? 'Writing' : 'Homework', title: V9() ? 'Escribe 2 frases' : AG === 'teens' ? 'Nuevo post' : AG === 'kids' ? 'Tu tarea' : '✍️ Writing task', ins: esc(hw.es) });
     if (AG === 'kids') { const kt = h(`<div class="khw">${[['pen', '1', 'Escríbelo aquí', 'Abajo, en inglés'], ['mic', '2', 'Dilo en voz alta', 'Toca y practica']].map(([ic, n, t, s]) => `<div class="khw-t${n === '2' ? ' khw-say' : ''}"><span>${window.MRI ? MRI(ic) : ''}</span><b>${n}. ${t}</b><small>${s}</small></div>`).join('')}</div>`); body.appendChild(kt);
       const ks = $('.khw-say', kt); if (!M.canSR) ks.style.display = 'none'; else ks.onclick = async () => { const txt = ($('textarea.hw', body) || {}).value || ''; if (txt.trim().length < 5) { M.toast('Primero escribe tu tarea y luego dila en voz alta 😉'); return; } stop(); ks.classList.add('rec'); $('small', ks).textContent = '¡Te estoy escuchando!'; const r = await M.listen(12000); ks.classList.remove('rec'); const sc = r.alts && r.alts.length ? M.speechScore(txt, r.alts).score : 0; $('small', ks).textContent = sc >= 60 ? '¡Muy bien dicho! ⭐' : r.alts && r.alts.length ? '¡Casi! Inténtalo otra vez' : 'No te escuché, toca otra vez'; if (sc >= 60) { sfx('ok'); M.praise(); } else M.encourage(); }; }
     body.appendChild(h(`<p><span class="hint">Mínimo ${hw.n} ${/palabras|frutas|objetos|plural/.test(hw.es) && !/oraci/.test(hw.es) ? 'elementos' : 'oraciones'}</span> ${hw.kw.length ? `<span class="hint">Usa: ${hw.kw.map(esc).join(', ')}</span>` : ''}</p>`));
@@ -1176,8 +1197,8 @@
     const bar = h(`<div class="actionbar"></div>`); body.appendChild(bar);
     return await new Promise(res => {
       const idle = () => {
-        bar.innerHTML = `<button class="btn w" id="skip">Hacerla después</button><button class="btn k lg" id="chk">${AG === 'teens' ? 'Publicar ✓' : 'Revisar mi tarea ✓'}</button>`;
-        $('#skip', bar).onclick = () => { S.hw[p.id] = { text: ta.value, at: Date.now() }; save(); res(null); };
+        bar.innerHTML = `${V9() ? '' : '<button class="btn w" id="skip">Hacerla después</button>'}<button class="btn k lg" id="chk">${V9() ? 'Revisar ✓' : AG === 'teens' ? 'Publicar ✓' : 'Revisar mi tarea ✓'}</button>`;
+        if ($('#skip', bar)) $('#skip', bar).onclick = () => { S.hw[p.id] = { text: ta.value, at: Date.now() }; save(); res(null); };
         $('#chk', bar).onclick = check;
       };
       const check = () => {

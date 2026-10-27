@@ -28,7 +28,8 @@
   }
 
   /* ================= 1. LEARN (Explanation) ================= */
-  async function learn(stage, p, o = {}) { // o: { noTip, title, ins } (Kids/Teens ya vieron la regla en su cómic / historias)
+  async function learn(stage, p, o = {}) {
+    if (window.__V9 && p.vocab && p.vocab.length > 6) p = Object.assign({}, p, { vocab: p.vocab.slice(0, 6) }); // lección corta: 6 tarjetas // o: { noTip, title, ins } (Kids/Teens ya vieron la regla en su cómic / historias)
     const isPl = !!p.plurals;
     // escuchar + grabar la voz del estudiante repitiendo + calificación con voz (o autoevaluación si el navegador no reconoce voz)
     const canRec = M.canSR || !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder);
@@ -98,6 +99,7 @@
 
   /* ---------- generic question loop ---------- */
   async function qloop(stage, meta, items, renderQ) {
+    if (window.__V9 && items.length > 5) items = items.slice(0, 5); // lección corta: máximo 5 preguntas
     let c = 0; const missed = [];
     for (let i = 0; i < items.length; i++) {
       if (!stage.isConnected) break;
@@ -593,7 +595,7 @@
   }
   async function speak(stage, p, opts = {}) {
     const src = opts.items || (p.sentences && !opts.words ? p.sentences : p.vocab);
-    const items = sample(onePerKey(src), Math.min(opts.n || 4, src.length));
+    const items = sample(onePerKey(src), Math.min(window.__V9 ? 3 : (opts.n || 4), src.length));
     let c = 0, t = 0; const missed = [];
     for (let i = 0; i < items.length; i++) {
       const body = head(stage, { lbl: 'Oral task', title: 'Listen, then repeat', ins: 'Escucha el modelo 🔊 y repite en voz alta 🎤. La plataforma evalúa tu pronunciación.', count: `${i + 1} / ${items.length}` });
