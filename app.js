@@ -1197,7 +1197,7 @@
 
   /* ---------- HOMEWORK (writing with automatic feedback) ---------- */
   async function homework(stage, p) {
-    const hw = V9() ? Object.assign({}, p.hw, { n: 2, es: String(p.hw.es || '').replace(/\b\d+\b/, '2') }) : p.hw; /* lección corta: solo 2 frases, en el momento */ const saved = (S.hw[p.id] || {}).text || '';
+    const h9 = window.MRHW9 && MRHW9[(+M.MOD.n || 1) + '-' + p.id]; const hw = V9() ? Object.assign({}, p.hw, { n: 2 }, h9 ? { es: h9[0], model: h9[1], kw: h9[2] } : { es: String(p.hw.es || '').replace(/\b\d+\b/, '2') }) : p.hw; /* lección corta: solo 2 frases, en el momento */ const saved = (S.hw[p.id] || {}).text || '';
     const AG = M.ageGroup(); if (AG === 'teens') stage.classList.add('dk');
     const body = A.head(stage, { lbl: V9() ? 'Writing' : 'Homework', title: V9() ? 'Escribe 2 frases' : AG === 'teens' ? 'Nuevo post' : AG === 'kids' ? 'Tu tarea' : '✍️ Writing task', ins: esc(hw.es) });
     if (AG === 'kids') { const kt = h(`<div class="khw">${[['pen', '1', 'Escríbelo aquí', 'Abajo, en inglés'], ['mic', '2', 'Dilo en voz alta', 'Toca y practica']].map(([ic, n, t, s]) => `<div class="khw-t${n === '2' ? ' khw-say' : ''}"><span>${window.MRI ? MRI(ic) : ''}</span><b>${n}. ${t}</b><small>${s}</small></div>`).join('')}</div>`); body.appendChild(kt);
@@ -1223,7 +1223,7 @@
       };
       const check = () => {
         const txt = ta.value.trim(); if (txt.length < 5) { ta.focus(); M.toast('Escribe tu tarea primero ✍️'); return; }
-        { const wd = (x) => M.words(x).filter(w => w.length > 2); const a = wd(txt), m = wd(hw.model || ''); if (m.length >= 4) { const ms = new Set(m), same = a.filter(w => ms.has(w)).length; if (a.length && same / Math.max(a.length, m.length) >= .7) { out.innerHTML = `<li class="no"><span>❌</span><span><b>Esto es igual al ejemplo.</b> Escribe sobre ti con tus propias palabras: tu país, tus personas y tus ideas.</span></li>`; sfx('bad'); ta.focus(); return; } } } // v420: no vale copiar el ejemplo
+        { const wd = (x) => M.words(x).filter(w => w.length > 2); const a = wd(txt), m = wd(hw.model || ''); if (m.length >= 4) { const ms = new Set(m), same = a.filter(w => ms.has(w)).length; if (a.length && same / Math.max(a.length, m.length) >= (m.length < 10 ? 1 : .7)) { out.innerHTML = `<li class="no"><span>❌</span><span><b>Esto es igual al ejemplo.</b> Escribe sobre ti con tus propias palabras: tu país, tus personas y tus ideas.</span></li>`; sfx('bad'); ta.focus(); return; } } } // v420: no vale copiar el ejemplo
         const fb = checkWriting(txt, hw); out.innerHTML = '';
         fb.items.forEach(f => out.appendChild(h(`<li class="${f.cls}"><span>${f.cls === 'ok' ? '✅' : f.cls === 'no' ? '❌' : '💡'}</span><span>${f.msg}</span></li>`)));
         const prevSent = S.hw[p.id] && S.hw[p.id].sent;
@@ -1264,7 +1264,7 @@
     const items = []; let ok = 0, total = 0;
     const add = (pass, msgOk, msgNo) => { total++; if (pass) { ok++; items.push({ cls: 'ok', msg: msgOk }); } else items.push({ cls: 'no', msg: msgNo }); };
     const sentences = txt.split(/(?<=[.!?])\s+|\n+/).map(s => s.trim()).filter(Boolean);
-    const isList = !/oraci/.test(hw.es);
+    const isList = /palabras|frutas|objetos|plural/.test(hw.es) && !/oraci/.test(hw.es);
     const count = isList ? Math.max(sentences.length, txt.split(/[,\n]+/).filter(s => s.trim()).length) : sentences.length;
     add(count >= hw.n, `Cantidad: escribiste ${count} ${isList ? 'elementos' : 'oraciones'}. ¡Bien!`, `Escribiste ${count} ${isList ? 'elementos' : 'oraciones'}; se piden al menos <b>${hw.n}</b>.`);
     const low = txt.toLowerCase();
