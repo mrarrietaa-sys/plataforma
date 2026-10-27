@@ -51,7 +51,8 @@
         ${st.map(s => `<a class="kd-stn ${s.s}" href="${s.s === 'l' ? '#' : a.url}" style="left:${s.x}%;top:${s.y}%"${s.s === 'l' ? ' data-locked' : ''}><i>${I(s.s === 'd' ? 'check' : s.s === 'c' ? 'star' : 'unlock')}</i><small>${esc(s.t.name)}</small></a>`).join('')}
         <span class="kd-stn ${passed ? 'd' : 'l'} fin" style="left:${fin.x}%;top:${fin.y}%"><i>${I('award')}</i><small>Examen final</small></span></div>`;
   }
-  function medals(a) {
+  function medals(a) { return ''; } // v437: sección «Mis medallas» quitada en Kids (pedido de John)
+  function medals_old(a) {
     const T = topics(a), got = T.filter(t => t.done);
     const W = kwAll(); const all = W.slice(-3).reverse().map(w => `<span class="kd-md m3"><i>${I('star')}</i>${esc(w[0])}</span>`).concat(got.slice(-5).map((t, i) => `<span class="kd-md m${i % 3}"><i>${I('medal')}</i>${esc(t.name)}</span>`));
     const next = T.find(t => !t.done); if (next && all.length < 7) all.push(`<span class="kd-md lk"><i>${I('unlock')}</i>${esc(next.name)}</span>`);

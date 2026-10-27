@@ -78,7 +78,7 @@
       let busy = false, card = null;
       const show = () => {
         body.querySelectorAll('.as-sbar i').forEach((x, k) => { x.className = k < i ? 'on' : k === i ? 'cur' : ''; });
-        const q = items[i]; deck.innerHTML = `<div class="as-card as-b2"></div><div class="as-card as-b1"></div>${ag() === 'adult' ? `<div class="as-card as-top fc9"><div class="fc9-ph">${q.it.img ? M().photo(q.it.img) : ''}<em>TARJETA ${i + 1} DE ${items.length}</em><button type="button" class="as-pl fc9-pl" aria-label="Escuchar">${SV(I.vol)}</button></div><div class="fc9-bd"><div class="as-en">${esc(q.it.en)}</div><small>¿Significa…?</small><div class="as-es">${esc(q.shown)}</div></div><span class="as-stamp"></span></div>` : `<div class="as-card as-top"><span class="as-cl">${ag() === 'adult' ? 'TARJETA' : 'CARD'} ${i + 1} DE ${items.length}</span><div class="as-en">${esc(q.it.en)}</div><div class="as-eq">=</div><div class="as-es">${esc(q.shown)}</div><button type="button" class="as-pl">${SV(I.vol)}Escuchar</button><span class="as-stamp"></span></div>`}`;
+        const q = items[i]; deck.innerHTML = `<div class="as-card as-b2"></div><div class="as-card as-b1"></div>${ag() !== 'kids' && q.it.img ? `<div class="as-card as-top fc9"><div class="fc9-ph">${q.it.img ? M().photo(q.it.img) : ''}<em>TARJETA ${i + 1} DE ${items.length}</em><button type="button" class="as-pl fc9-pl" aria-label="Escuchar">${SV(I.vol)}</button></div><div class="fc9-bd"><div class="as-en">${esc(q.it.en)}</div><small>¿Significa…?</small><div class="as-es">${esc(q.shown)}</div></div><span class="as-stamp"></span></div>` : `<div class="as-card as-top"><span class="as-cl">${ag() === 'adult' ? 'TARJETA' : 'CARD'} ${i + 1} DE ${items.length}</span><div class="as-en">${esc(q.it.en)}</div><div class="as-eq">=</div><div class="as-es">${esc(q.shown)}</div><button type="button" class="as-pl">${SV(I.vol)}Escuchar</button><span class="as-stamp"></span></div>`}`;
         card = deck.querySelector('.as-top'); card.querySelector('.as-pl').onclick = (e) => { e.stopPropagation(); play(q.it.au); }; setTimeout(() => play(q.it.au), 250); drag(card);
       };
       const answer = async (yes) => {
@@ -408,6 +408,7 @@
       rb.innerHTML = `<div class="as-mres ${all ? 'ok' : 'mid'}"><span class="as-mri">${SV(all ? I.ck : I.star)}</span><b>${got} de ${need}</b><small>${teens ? 'frases atrapadas' : 'palabras atrapadas'}</small>${miss.length ? `<div class="as-mmiss">Te faltaron: ${miss.map(t => `<i>${esc(t)}</i>`).join('')}</div>` : '<div class="as-mmiss">¡Las atrapaste todas!</div>'}</div>`;
       sfx(all ? 'win' : 'ok'); if (all) { try { M().praise(); } catch (e) { } } else { try { M().encourage(); } catch (e) { } }
       await A().waitNext(stage, 'Continuar'); }
+    if (window.__V9) { try { const K = 'mra_mstamp_v1', o = JSON.parse(localStorage.getItem(K) || '{}'); o[p.id] = 1; localStorage.setItem(K, JSON.stringify(o)); } catch (e) { } return A().result(got, Math.max(1, need), 'listening'); } // lección corta: después de la canción sigue Writing
     const Q = (sg.q || []).slice(0, 3); let c = 0;
     for (let i = 0; i < Q.length; i++) {
       if (!stage.isConnected) break; const [q, opts, a] = Q[i]; const b2 = frame(stage, 'Music', teens ? 'What did you see?' : '¿Qué viste?', `Pregunta ${i + 1} de ${Q.length}`);
@@ -504,7 +505,7 @@
 
   // 👾 Kids · Alimenta al monstruo: arrastra (o toca) la foto correcta
   G9.g9Monster = async function (stage, p) {
-    const V = vocab(p).filter(v => v.img && !/^#/.test(v.img)); if (V.length < 3) return G9.g9Stars(stage, p);
+    const V = vocab(p).filter(v => v.img && !/^#/.test(v.img)); if (V.length < 3 || trivial(vocab(p))) return G9.g9Stars(stage, p); // letras: la foto no es la letra → estrellas
     const R = shuffle(V).slice(0, 4); let c = 0; const missed = [];
     for (let i = 0; i < R.length; i++) {
       if (!stage.isConnected) break; const it = R[i]; const opts = shuffle([it].concat(shuffle(V.filter(x => x.en !== it.en)).slice(0, 2)));
@@ -515,13 +516,19 @@
       const mon = body.querySelector('#g9m'), fb = body.querySelector('#g9f');
       body.querySelector('#g9a').onclick = () => play(it.au); await sleep(300); play(it.au);
       const ok = await new Promise(done => { let miss = false, fin = false;
-        const choose = async (b) => { if (fin) return; const o = opts[+b.dataset.k];
-          if (o === it) { fin = true; b.classList.add('eaten'); mon.classList.add('eat'); sfx('ok'); fb.innerHTML = `<span class="g9-yes">${SV(I.ck)}¡Ñam ñam! Yummy!</span>`; await sleep(1300); done(!miss); }
+        const swallow = async (b, dx = 0, dy = 0) => { // la foto vuela a la boca, se encoge y el monstruo se la traga
+          const m = mon.querySelector('.m').getBoundingClientRect(), r = b.getBoundingClientRect(); const ox = r.left + r.width / 2 - dx, oy = r.top + r.height / 2 - dy;
+          const tx = m.left + m.width / 2 - ox, ty = m.top + m.height / 2 - oy; mon.classList.add('open');
+          b.style.zIndex = 6; b.style.transition = 'transform .55s cubic-bezier(.5,-0.2,.7,1), opacity .2s .45s'; requestAnimationFrame(() => { b.style.transform = `translate(${tx}px,${ty}px) scale(.12) rotate(-25deg)`; b.style.opacity = '0'; });
+          await sleep(560); b.style.visibility = 'hidden'; mon.classList.remove('open'); mon.classList.add('eat'); try { sfx('flip'); } catch (e) { } };
+        const choose = async (b, dx, dy) => { if (fin) return; const o = opts[+b.dataset.k];
+          if (o === it) { fin = true; await swallow(b, dx, dy); sfx('ok'); fb.innerHTML = `<span class="g9-yes">${SV(I.ck)}¡Ñam ñam! Yummy!</span>`; await sleep(1100); done(!miss); }
           else { miss = true; mon.classList.add('no'); b.classList.add('shake'); sfx('bad'); fb.innerHTML = `<span class="g9-no">No, thanks! Escucha otra vez.</span>`; setTimeout(() => { mon.classList.remove('no'); b.classList.remove('shake'); }, 600); play(it.au); } };
         body.querySelectorAll('.g9-fd').forEach(b => { let sx, sy, drag = false;
           b.onpointerdown = e => { if (fin) return; sx = e.clientX; sy = e.clientY; drag = false; try { b.setPointerCapture(e.pointerId); } catch (er) { } };
           b.onpointermove = e => { if (sx == null) return; const dx = e.clientX - sx, dy = e.clientY - sy; if (Math.abs(dx) + Math.abs(dy) > 8) { drag = true; b.classList.add('drag'); b.style.transform = `translate(${dx}px,${dy}px) rotate(-5deg)`; const r = mon.getBoundingClientRect(); mon.classList.toggle('open', e.clientX > r.left && e.clientX < r.right && e.clientY > r.top && e.clientY < r.bottom + 30); } };
-          b.onpointerup = e => { if (sx == null) return; sx = null; b.classList.remove('drag'); b.style.transform = ''; const over = mon.classList.contains('open'); mon.classList.remove('open'); if (!drag || over) choose(b); else sfx('tap'); };
+          b.onpointerup = e => { if (sx == null) return; const dx = e.clientX - sx, dy = e.clientY - sy; sx = null; b.classList.remove('drag'); const over = mon.classList.contains('open'); mon.classList.remove('open');
+            if (drag && over && opts[+b.dataset.k] === it) { choose(b, dx, dy); return; } b.style.transform = ''; if (!drag || over) choose(b, 0, 0); else sfx('tap'); };
           b.onpointercancel = () => { sx = null; b.classList.remove('drag'); b.style.transform = ''; mon.classList.remove('open'); }; }); });
       weak(it, ok); if (ok) c++; else missed.push(it);
     }

@@ -363,6 +363,22 @@
   // Nunca se califica "el contenido" (lo que el estudiante quiera decir); solo que responda la pregunta + gramática y pronunciación.
   const SUBJ = { you: ['i', 'my', 'me', 'we', 'our'], your: ['i', 'my', 'me', 'we', 'our'], he: ['he', 'his', 'him'], his: ['he', 'his', 'him'], she: ['she', 'her'], her: ['she', 'her'], they: ['they', 'their', 'them'], their: ['they', 'their', 'them'], it: ['it', 'its'], we: ['we', 'our', 'us'] };
   const qSubj = (q) => { const w = words(q); for (const x of w) if (SUBJ[x]) return x; return null; };
+  // v437: tipo de pregunta → qué clase de respuesta la responde (la respuesta sigue siendo libre)
+  const STATE = ['fine', 'good', 'great', 'well', 'okay', 'ok', 'bad', 'tired', 'happy', 'sad', 'sick', 'excellent', 'wonderful', 'amazing', 'awesome', 'terrible', 'alright', 'busy', 'hungry', 'sleepy', 'stressed', 'relaxed', 'nervous', 'excited', 'perfect', 'super', 'cool', 'fantastic', 'so-so', 'better', 'worse', 'bored', 'angry', 'cold', 'hot', 'thirsty', 'ill', 'exhausted', 'fabulous', 'awful', 'pretty', 'doing'];
+  const NUMW9 = /\b(\d+|zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred)\b/;
+  const isState = ws => ws.some(w => STATE.includes(w)) || /\bnot (bad|so good|great)\b/.test(ws.join(' '));
+  const capTok = (heard) => String(heard).split(/\s+/).filter(t => /^[A-Z][a-z]/.test(t) && !/^(I|I'm|Yes|No|My|He|She|It|We|They|You|The|A|An|Hi|Hello|Good|Thank|Thanks|Okay|Ok|Very|Not|In|From|And)$/.test(t.replace(/[^A-Za-z']/g, '')));
+  const INTENTS = [
+    { k: 'how', q: /\bhow\s+(are|r)\s+(you|u)\b|how'?s it going|how is it going|how do you feel|how are things|how'?s everything|how have you been/i, a: (ws) => isState(ws) && !ws.includes('from') && !ws.includes('name') },
+    { k: 'name', q: /\b(what'?s|what is|what are) (your|his|her|their) names?\b|\bwho are you\b|\byour name\b/i, a: (ws, h) => ws.includes('name') || ws.includes('call') || (capTok(h).length > 0 && !ws.includes('from')) || (/^(i'?m|i am|it'?s|he'?s|she'?s)$/.test(ws[0] || '') && ws.length >= 2 && !isState(ws) && !ws.includes('from')) },
+    { k: 'age', q: /\bhow old\b/i, a: (ws) => NUMW9.test(ws.join(' ')) || ws.includes('years') },
+    { k: 'time', q: /\bwhat time\b|\bwhen (is|does|do)\b.*\b(start|begin|open|close|finish|leave)\b/i, a: (ws) => NUMW9.test(ws.join(' ')) || ws.some(w => ['oclock', "o'clock", 'half', 'quarter', 'noon', 'midnight', 'am', 'pm', 'morning', 'afternoon', 'evening', 'night'].includes(w)) },
+    { k: 'from', q: /\bwhere\b.*\bfrom\b|\bnationalit|\bwhat country\b/i, a: (ws, h) => ws.includes('from') || capTok(h).length > 0 || ws.some(w => /(ian|ese|ish|can|ch|ean|ic|i)$/.test(w) && w.length > 4 && !STATE.includes(w)) },
+    { k: 'live', q: /\bwhere\b.*\blive\b/i, a: (ws, h) => ws.includes('live') || ws.includes('in') || capTok(h).length > 0 },
+    { k: 'job', q: /\bwhat (do|does) (you|he|she|they|your \w+) do\b|\b(job|occupation|profession)\b|\bwhere do you work\b/i, a: (ws) => ws.some(w => ['work', 'works', 'study', 'studies', 'student', 'job', 'retired', 'unemployed', 'teach', 'sell'].includes(w)) || /\b(a|an)\s+\w{3,}/.test(ws.join(' ')) },
+    { k: 'pref', q: /\bfavorite\b|\bwhat (do|does) (you|he|she|they) (like|love|prefer|want|need|eat|drink|play|watch)\b/i, a: (ws) => ws.filter(w => w.length > 2 && !FW.has(w) && !STATE.includes(w) && !['thank', 'thanks', 'name', 'from', 'yes', 'not'].includes(w)).length > 0 },
+  ];
+  const intentOf = (q) => INTENTS.find(x => x.q.test(String(q || '')));
   function freeJudge(q, tgt, alts) {
     const heard = (alts && alts[0]) || ''; const ws = words(heard); let fix = grammarFix(heard);
     const yn = /^\s*(are|is|am|do|does|did|can|could|was|were|have|has|will|would|should)\b/i.test(q || '');
@@ -377,10 +393,15 @@
         const be = ['are', 'is', 'am'].includes(v0) ? (su === 'I' ? 'am' : sg ? 'is' : 'are') : ['do', 'does'].includes(v0) ? (sg ? 'does' : 'do') : ['was', 'were'].includes(v0) ? (su === 'I' || sg ? 'was' : 'were') : v0;
         fix = ws[0] === 'no' ? (be === 'am' ? "No, I'm not." : 'No, ' + su + ' ' + be + "n't.") : 'Yes, ' + su + ' ' + be + '.'; } // respondió sí/no pero con otra persona: solo se corrige
       if (!startYN) { const pool = new Set(cw((q || '') + ' ' + (tgt || ''))); ok = hasS && cw(heard).some(w => pool.has(w)); off = !ok; }
+    } else if (intentOf(q) && ws.length) {
+      const it = intentOf(q); ok = it.a(ws, heard) && (hasS || !otherS || it.k === 'how' && !otherS); off = !ok;
     } else {
       const sc = tgt ? speechScore(tgt, alts).score : 0; const pool = new Set(cw((q || '') + ' ' + (tgt || '')));
       const share = cw(heard).some(w => pool.has(w));
       ok = sc >= 55 || (share && (hasS || ws.length <= 3)) || (hasS && !otherS && ws.length >= 3 && share);
+      // misma estructura que el modelo con su propia información (ej. "I'm Colombian" → "I am Peruvian"; "She's from Italy" → "She is from Brazil")
+      if (!ok && tgt && hasS && !otherS) { const tw = words(String(tgt).replace(/_+/g, ' ')), qw = new Set(words(q || '')); const frame = tw.filter(w => FW.has(w) || qw.has(w) || ['from', 'years', 'old', 'is', 'am', 'are', 'name', 'like', 'have', 'live', 'work'].includes(w)); const FILL = ['fine', 'good', 'okay', 'ok', 'great', 'thanks', 'thank', 'well', 'bad', 'so', 'very', 'hello', 'hi', 'yes', 'no']; const extra = ws.filter(w => !frame.includes(w) && w.length > 1 && !FILL.includes(w));
+        if (frame.length && frame.every(w => ws.includes(w)) && extra.length) ok = true; }
       if (!ok && ws.length && ws.length <= 2) { const toks = String(heard).trim().split(/\s+/); if (toks.every(t => /^[A-Z]/.test(t)) && !toks.some(t => Object.values(SUBJ).flat().includes(t.toLowerCase()))) ok = true; } // respuesta corta con un nombre propio (ej. "Brazil", "John")
       if (!ok && ws.length) off = true; // no corresponde a la pregunta (ej. "Where is she from?" → "I'm fine, thank you")
     }

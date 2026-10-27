@@ -7262,3 +7262,15 @@ body.ag-teens .pg-rows{background:#fff}
 .g9-ctl{display:flex;gap:12px;justify-content:center;align-items:center}
 .g9-mic{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:99px;background:#E3242B;color:#fff;padding:13px 22px;font:800 15px Poppins,sans-serif;cursor:pointer;box-shadow:0 0 0 8px rgba(227,36,43,.2)}.g9-mic svg{width:20px;height:20px}
 .g9-mic.rec{animation:g9pulse 1s infinite}.g9-mic:disabled{opacity:.6}@keyframes g9pulse{50%{box-shadow:0 0 0 14px rgba(227,36,43,.12)}}
+/* v437 · Recap de Teens con foto (premium) */
+.as-teens .as-deck{max-width:440px;margin-left:auto;margin-right:auto;width:100%}
+.as-teens .fc9{background:linear-gradient(170deg,#12306b 0%,#0b1d42 70%)!important;border:1px solid rgba(34,229,138,.35)!important;box-shadow:0 22px 44px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.08)!important}
+.as-teens .fc9-ph{height:150px}
+.as-teens .fc9-ph:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,29,66,0) 45%,rgba(11,29,66,.85))}
+.as-teens .fc9-ph em{background:rgba(11,29,66,.75);color:#22e58a;backdrop-filter:blur(6px);border:1px solid rgba(34,229,138,.35)}
+.as-teens .fc9-pl{position:absolute;right:14px;bottom:-21px;width:44px;height:44px;border-radius:50%;background:#22e58a!important;border:0!important;color:#0b1d42!important;padding:0!important;display:grid!important;place-items:center;box-shadow:0 8px 18px rgba(34,229,138,.35);z-index:3}
+.as-teens .fc9-bd{padding:18px 16px 16px}
+.as-teens .fc9 .as-en{color:#fff;font:800 clamp(24px,5.5vw,30px) Poppins,sans-serif}
+.as-teens .fc9-bd small{color:#93c5fd;letter-spacing:.04em}
+.as-teens .fc9 .as-es{background:rgba(34,229,138,.12);border:1px solid rgba(34,229,138,.3);border-radius:12px;padding:7px 18px;color:#22e58a;font-weight:800}
+.as-teens .as-deck{height:340px}.as-teens .as-card{height:320px}
