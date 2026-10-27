@@ -502,9 +502,10 @@
     return new Promise(res => {
       const k = SEC_SC[next] || FREE[sceneN++ % FREE.length], sc0 = SCENES[k];
       const band = perf == null ? null : perf >= .8 ? 'hi' : perf >= .5 ? 'mid' : 'lo'; const fbx = band ? ITL_FB[band][Math.floor(Math.random() * ITL_FB[band].length)] : null;
-      const sc = fbx ? Object.assign({}, sc0, { say: fbx[0] }) : sc0;
+      const sad = band === 'lo' ? 'mra-sad' + (1 + Math.floor(Math.random() * 3)) + '.webp' : null; // v443: Mr. Arrieta triste cuando la sección salió mal
+      const sc = fbx ? Object.assign({}, sad ? { a: 'pop' } : sc0, { say: fbx[0] }) : sc0;
       const ov = h(`<div class="itl itl-${sc.a}" role="status">${sc.a === 'stage' ? '<div class="itl-lights"></div>' : ''}
-        <div class="itl-actor itl-k-${k}"><b class="itl-say">${esc(sc.say)}</b><img class="itl-img" src="mra-x-${k}.webp?v=7" alt="Mr. Arrieta"></div>
+        <div class="itl-actor ${sad ? 'itl-k-sad' : 'itl-k-' + k}"><b class="itl-say">${esc(sc.say)}</b><img class="itl-img" src="${sad || 'mra-x-' + k + '.webp?v=7'}" alt="Mr. Arrieta"></div>
         <div class="itl-next"><small>NEXT</small><b>${window.MRI ? MRI(SEC_ICO[next] || 'star') : ''} ${esc(next.toUpperCase())}</b><i>Toca para continuar</i></div></div>`);
       document.body.appendChild(ov); try { sfx('win'); } catch (e) { }
       if (fbx) { try { const id = fbx[1]; if (M.ageGroup() === 'adult') setTimeout(() => !done && play(id), 380); else M.fbf().then(() => setTimeout(() => !done && play(window.AUD && window.AUD['fb_' + id] ? 'fb_' + id : id), 380)); } catch (e) { } } else
@@ -713,6 +714,30 @@
     }
     txt.innerHTML = ''; txt.appendChild(grid);
   }
+  // v443: aviso de micrófono (2 consejos): sale en las 3 primeras lecciones y si la plataforma no lo escucha 2 veces seguidas
+  const MICK = 'mra_mic9';
+  const micSt = () => { try { return JSON.parse(localStorage.getItem(MICK) || '{}'); } catch (e) { return {}; } };
+  const micSave = (o) => { try { localStorage.setItem(MICK, JSON.stringify(o)); } catch (e) { } };
+  let micOpen = false, micAgain = false;
+  function micTips(force) {
+    const st = micSt(); if (st.off || micOpen || (!force && (st.n || 0) >= 3) || (force && micAgain) || !M.canSR) return Promise.resolve();
+    if (force) micAgain = true; else { st.n = (st.n || 0) + 1; micSave(st); }
+    micOpen = true; const AG = M.ageGroup();
+    const T = AG === 'kids' ? { img: 'mra-wink', h: '¡Mr. Arrieta te quiere oír!', sub: 'Antes de jugar, haz esto:', t1: 'Busca un lugar tranquilo', d1: 'Sin TV ni música. ¡Shhh!', t2: 'Habla cerquita del teléfono', d2: 'Con tu voz normal, ni gritando ni muy bajito.', go: '¡Listo, a jugar!' }
+      : AG === 'teens' ? { img: 'mra-point', h: 'Pro tip antes de hablar', sub: 'Así tu voz se reconoce mejor.', t1: 'Cero ruido', d1: 'Busca un lugar tranquilo, sin música ni gente hablando.', t2: 'Teléfono cerca', d2: 'A un palmo de tu boca. Habla claro, con voz normal.', go: 'Got it, ¡vamos!' }
+      : { img: 'mra-idea', h: 'Para que te escuche bien', sub: force ? 'No te escuché bien. Revisa esto:' : 'En esta lección vas a hablar en inglés.', t1: 'Busca un lugar sin ruido', d1: 'Sin TV, música ni personas hablando cerca.', t2: 'Acerca el teléfono a tu boca', d2: 'A un palmo de distancia, y habla con voz normal y clara.', go: force ? 'Entendido' : '¡Entendido, empezar!' };
+    const I1 = '<svg viewBox="0 0 24 24"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M22 9l-6 6M16 9l6 6"/></svg>', I2 = '<svg viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M11 18h2"/><path d="M3 9c1 1 1 5 0 6M20.5 8c1.5 2 1.5 6 0 8"/></svg>';
+    return new Promise(res => {
+      const ov = h(`<div class="mic9 mic9-${AG}" role="dialog" aria-modal="true"><div class="mic9-md"><img class="mic9-mr" src="${T.img}.webp" alt="Mr. Arrieta"><h2>${esc(T.h)}</h2><div class="mic9-sub">${esc(T.sub)}</div>
+        <div class="mic9-tip"><span class="mic9-ic">${I1}</span><div><span class="mic9-n">1</span><b>${esc(T.t1)}</b><small>${esc(T.d1)}</small></div></div>
+        <div class="mic9-tip"><span class="mic9-ic">${I2}</span><div><span class="mic9-n">2</span><b>${esc(T.t2)}</b><small>${esc(T.d2)}</small></div></div>
+        <button type="button" class="mic9-go">${esc(T.go)}</button><label class="mic9-chk"><input type="checkbox"> No volver a mostrar</label></div></div>`);
+      document.body.appendChild(ov); requestAnimationFrame(() => ov.classList.add('in'));
+      $('.mic9-go', ov).onclick = () => { if ($('.mic9-chk input', ov).checked) { const s2 = micSt(); s2.off = 1; micSave(s2); } sfx('tap'); ov.classList.remove('in'); setTimeout(() => { ov.remove(); micOpen = false; res(); }, 200); };
+    });
+  }
+  window.addEventListener('mra-nohear2', () => micTips(true));
+  window.M1ITL = (n, perf) => interlude(n, perf); // (pruebas)
   const STEP = {
     goal: async (stage, p) => {
       const prev = M.prevPart(p);
@@ -725,7 +750,7 @@
           ${prev && !(S.parts[prev.id] && S.parts[prev.id].done) ? `<p class="hint" style="margin-top:6px">Te recomendamos completar primero: ${esc(prev._t.title)} · ${PL(prev)}</p>` : ''}</div>`;
         const say = () => { stop(); if (window.AUD && window.AUD['g9_' + p.id]) play('g9_' + p.id, { btn: $('.g9-au', stage) }); };
         $('.g9-au', stage).onclick = say; M.loadAudio(['goal9_' + (+M.MOD.n || 1)]).then(() => setTimeout(say, 300)).catch(() => { });
-        await A.waitNext(stage, '¡Empezar!'); sfx('win'); return null;
+        await A.waitNext(stage, '¡Empezar!'); sfx('win'); await micTips(false); return null;
       }
       stage.innerHTML = `<div class="center">
         <span class="lbl">Topic ${p.topic} · ${PL(p)}</span>

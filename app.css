@@ -7279,3 +7279,19 @@ body.ag-teens .pg-rows{background:#fff}
 .as-teens .fc9-bd small{color:#93c5fd;letter-spacing:.04em}
 .as-teens .fc9 .as-es{background:rgba(34,229,138,.12);border:1px solid rgba(34,229,138,.3);border-radius:12px;padding:7px 18px;color:#22e58a;font-weight:800}
 .as-teens .as-deck{height:340px}.as-teens .as-card{height:320px}
+/* v443 · Mr. Arrieta triste en la transición */
+.itl-actor.itl-k-sad{width:min(70vw,330px)}.itl-k-sad .itl-img{max-height:46vh;width:auto;max-width:100%;margin:0 auto;display:block}
+/* v443 · aviso de micrófono */
+.mic9{position:fixed;inset:0;z-index:9999;background:rgba(11,29,66,.55);display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;transition:opacity .2s}
+.mic9.in{opacity:1}
+.mic9-md{background:#fff;border-radius:22px;padding:18px 16px 16px;width:100%;max-width:380px;box-shadow:0 24px 50px rgba(0,0,0,.3);text-align:center;position:relative;margin-top:60px;transform:translateY(14px);transition:transform .25s}
+.mic9.in .mic9-md{transform:none}
+.mic9-mr{height:118px;margin-top:-72px;display:block;margin-left:auto;margin-right:auto}
+.mic9-md h2{margin:4px 0 2px;font:800 19px Poppins,sans-serif;color:#0B2A5B}.mic9-sub{color:#64748b;font-size:13px;margin-bottom:12px}
+.mic9-tip{display:flex;gap:11px;align-items:center;text-align:left;border:1.5px solid #e3e9f3;border-radius:14px;padding:10px 11px;margin-bottom:9px}
+.mic9-ic{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;flex:none;background:#fff0f0;color:#E3242B}.mic9-ic svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.mic9-tip b{display:block;font:700 14px Poppins,sans-serif;color:#0B2A5B}.mic9-tip small{color:#64748b;font-size:12px;line-height:1.35}.mic9-n{font:800 11px Poppins,sans-serif;color:#E3242B}
+.mic9-go{display:block;width:100%;border:0;background:#0B2A5B;color:#fff;font:800 15px Poppins,sans-serif;padding:13px;border-radius:13px;margin-top:6px;cursor:pointer}
+.mic9-chk{display:flex;gap:7px;justify-content:center;align-items:center;font-size:12px;color:#64748b;margin-top:10px;cursor:pointer}
+.mic9-kids .mic9-md{border:3px solid #f5b301}.mic9-kids .mic9-ic{background:#fff4d6;color:#d97706}.mic9-kids .mic9-go{background:#f59e0b}.mic9-kids .mic9-tip{border-color:#fde3a7;background:#fffdf5}.mic9-kids .mic9-n{color:#d97706}
+.mic9-teens .mic9-md{background:#0f2552;border:1px solid rgba(34,229,138,.4)}.mic9-teens h2,.mic9-teens .mic9-tip b{color:#fff}.mic9-teens .mic9-sub,.mic9-teens .mic9-tip small,.mic9-teens .mic9-chk{color:#9fb6dd}.mic9-teens .mic9-tip{border-color:rgba(255,255,255,.12);background:rgba(255,255,255,.04)}.mic9-teens .mic9-ic{background:rgba(34,229,138,.14);color:#22e58a}.mic9-teens .mic9-go{background:#22e58a;color:#0b1d42}.mic9-teens .mic9-n{color:#22e58a}

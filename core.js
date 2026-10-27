@@ -588,7 +588,9 @@
     if (r && !r.alts.length && NOHEAR(r.error) && window.MRVC && MRVC.lastCard) { const c = MRVC.lastCard(), t = c && c.querySelector('.vc-say'); const target = t && t.textContent.trim();
       if (target) { const ch = await noHearUI(target, c.dataset.au || ''); if (ch === 'self') { srStat('sf'); return { alts: [target], self: true }; } if (ch === 'retry') return listenW.apply(this, args); } }
     return r; }
+  let noHearRun = 0;
   async function recordScoreW(target) { const args = arguments; const r = await recordScoreW0.apply(this, args);
+    try { if (r && !r.alts.length && r.score === 0 && NOHEAR(r.error)) { if (++noHearRun >= 2) { noHearRun = 0; window.dispatchEvent(new Event('mra-nohear2')); } } else if (r && r.alts && r.alts.length) noHearRun = 0; } catch (e) { } // v443: 2 veces sin oírlo → aviso de micrófono
     if (r && !r.alts.length && r.score === 0 && NOHEAR(r.error) && target) { const c = window.MRVC && MRVC.lastCard && MRVC.lastCard(); const ch = await noHearUI(String(target), (c && c.dataset.au) || '');
       if (ch === 'self') { srStat('sf'); return Object.assign({}, r, { score: 80, heard: '', self: true }); } if (ch === 'retry') return recordScoreW.apply(this, args); }
     return r; }
