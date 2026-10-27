@@ -447,11 +447,12 @@
   function buildSteps9(p) {
     window.__V9 = true; // ejercicios cortos (máx. 5 preguntas)
     const st = [{ sec: 'Goal', k: 'goal' }];
+    if (M.prevPart(p)) st.push({ sec: 'Review', k: 'review' }); // repaso muy corto: 3 tarjetas
     st.push({ sec: 'Explanation', k: 'learn' });
     if (p.reading) st.push({ sec: 'Reading', k: 'reading' });
     if (p.keyq) st.push({ sec: 'Listen & practice', k: 'keyq' });
     const acts = (C.PLAN || PLAN)[p.id] || p.acts;
-    const g = acts.find(a => !['learn', 'speak', 'speakWords'].includes(a)); if (g) { p._g9 = g; st.push({ sec: 'Practice', k: 'game9' }); } // un juego que mezcla palabras de hoy y de la lección anterior (repaso incluido)
+    const g = acts.find(a => !['learn', 'speak', 'speakWords'].includes(a)); if (g) st.push({ sec: 'Practice', k: g }); // un juego que mezcla palabras de hoy y de la lección anterior (repaso incluido)
     const sp = acts.find(a => a === 'speak' || a === 'speakWords') || (p.sentences ? 'speak' : 'speakWords');
     st.push({ sec: 'Oral task', k: p.letters ? 'speakLetters' : sp });
     if (songFor(p)) st.push({ sec: 'Music', k: 'music' });
@@ -504,7 +505,7 @@
       const sc = fbx ? Object.assign({}, sc0, { say: fbx[0] }) : sc0;
       const ov = h(`<div class="itl itl-${sc.a}" role="status">${sc.a === 'stage' ? '<div class="itl-lights"></div>' : ''}
         <div class="itl-actor itl-k-${k}"><b class="itl-say">${esc(sc.say)}</b><img class="itl-img" src="mra-x-${k}.webp?v=7" alt="Mr. Arrieta"></div>
-        <div class="itl-next"><small>NEXT</small><b>${window.MRI ? MRI(SEC_ICO[next] || 'star') : ''} ${esc(next.toUpperCase())}</b><i>Toca para continuar</i></div>${fbx ? `<div class="itl-sub ${band}">${esc(fbx[2])}</div>` : ''}</div>`);
+        <div class="itl-next"><small>NEXT</small><b>${window.MRI ? MRI(SEC_ICO[next] || 'star') : ''} ${esc(next.toUpperCase())}</b><i>Toca para continuar</i></div></div>`);
       document.body.appendChild(ov); try { sfx('win'); } catch (e) { }
       if (fbx) { try { const id = fbx[1]; if (M.ageGroup() === 'adult') setTimeout(() => !done && play(id), 380); else M.fbf().then(() => setTimeout(() => !done && play(window.AUD && window.AUD['fb_' + id] ? 'fb_' + id : id), 380)); } catch (e) { } } else
       try { if (M.ageGroup() !== 'adult') { const sayIt = () => { if (!done && window.AUD && window.AUD['itl_' + k]) play('itl_' + k); }; setTimeout(() => { if (window.AUD && window.AUD['itl_' + k]) sayIt(); else M.fbf().then(sayIt); }, 380); } } catch (e) { }
