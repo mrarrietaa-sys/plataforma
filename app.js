@@ -452,7 +452,7 @@
     if (p.keyq) st.push({ sec: 'Practice', k: 'keyq' });
     const acts = (C.PLAN || PLAN)[p.id] || p.acts;
     const AGG = M.ageGroup() !== 'adult' && window.MRAGE2 ? MRAGE2.gamesFor(p) : []; // Kids/Teens: su juego propio de la edad
-    const g = AGG[0] || acts.find(a => !['learn', 'speak', 'speakWords'].includes(a)); if (g) st.push({ sec: 'Practice', k: g });
+    const g = (window.MRAGE2 && MRAGE2.game9For && MRAGE2.game9For(p)) || AGG[0] || acts.find(a => !['learn', 'speak', 'speakWords'].includes(a)); if (g) st.push({ sec: 'Practice', k: g }); // v435: juego corto y divertido de su edad
     if (p.reading) st.push({ sec: 'Reading', k: 'reading' });
     if (missionFor(p)) st.push({ sec: 'Mission', k: 'mission' });
     if (songFor(p) || (M.ageGroup() !== 'adult' && window.MRAGE2 && MRAGE2.musicFor(p))) st.push({ sec: 'Music', k: 'music' });
@@ -1032,6 +1032,7 @@
   // practice activities map
   ['learn', 'listenChoose', 'pickWord', 'typeWord', 'typeLetter', 'typeNumber', 'phone', 'spellName', 'typeSentence', 'fill', 'unscramble', 'memory', 'sort', 'crossword', 'speed', 'spell', 'plural', 'dialogue', 'speak', 'speakWords', 'wordSearch', 'hangman', 'bubblePop', 'matchLines', 'quizShow', 'oddOneOut', 'catchWord', 'spinWheel', 'raceGame', 'sayPop', 'clockGreet', 'chatReply', 'simonLetters', 'plateGame', 'passport', 'airport', 'bingo', 'colorMix', 'slotBe', 'whackAn', 'riddleJob', 'elevator', 'familyTree', 'animalSounds', 'restaurant', 'market', 'dayFlip', 'specialDates', 'weatherTV', 'suitcase', 'flashlight', 'housePlan', 'pluralMachine', 'magicMirror', 'nearFar', 'theseRush', 'countRoom', 'memoryRoom']
     .forEach(k => { STEP[k] = (stage, p) => A[k](stage, p); });
+  ['g9Chat', 'g9Pairs', 'g9Stars', 'g9Monster', 'g9Swipe', 'g9Beat'].forEach(k => { STEP[k] = async (stage, p) => { const r = window.MRAGE2 && MRAGE2[k] ? await MRAGE2[k](stage, p) : null; if (r !== null) return r; const alt = ((C.PLAN || PLAN)[p.id] || p.acts || []).find(a => !['learn', 'speak', 'speakWords'].includes(a)); return alt ? (STEP[alt] || A[alt])(stage, p) : null; }; });
 
   /* ---------- MUSIC · PLAY & LEARN (una canción A1 por lección) ---------- */
   /* ---------- juegos durante la canción: BINGO (A1/A2) y BURBUJAS (B2/B2+) ---------- */
