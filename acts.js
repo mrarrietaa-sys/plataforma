@@ -76,8 +76,18 @@
       for (; k < cards.length; k++) { if (!b._run || !b.isConnected) break; b._i = k; const c = cards[k]; c.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); await c.onclick(); if (!b._run) break; await sleep(450); }
       hideF(); const done = k >= cards.length; b._i = done ? 0 : b._i; b._run = false; b.textContent = done ? '▶ Escuchar todo' : '▶ Continuar'; };
     // mini lesson + tips
-    if (p.tip && !o.noTip) body.appendChild(h(`<div class="lesson lesson-mra">${M.mascot('lesson-img', 'idea')}<div><h3>📘 Mini lección de Mr. Arrieta</h3>${p.tip}</div></div>`));
-    if (p.tips && p.tips.length && !o.noTip) { const tb = h(`<div class="lesson" style="background:#fff"><h3>🗣️ Tips de pronunciación del profe</h3></div>`); p.tips.forEach(t => tb.appendChild(h(`<div class="tipbox"><span>💡</span><span>${t}</span></div>`))); body.appendChild(tb); }
+    // v428: mini lección ARRIBA y dinámica (diapositivas con Mr. Arrieta), luego se practican las palabras
+    if (!o.noTip && (p.tip || (p.tips && p.tips.length))) {
+      const P = String(p.tip || '').split(/<\/p>/i).map(x => x.replace(/<p[^>]*>/gi, '').trim()).filter(x => x.replace(/<[^>]+>/g, '').trim().length > 2);
+      const SL = P.map(t => ({ k: 'LA REGLA', t })).concat((p.tips || []).map(t => ({ k: 'TIP DEL PROFE', t })));
+      const POSE = ['idea', 'point', 'present', 'wink', 'smile', 'thumbs']; let si = 0;
+      const ml = h(`<div class="ml9"><div class="ml9-h"><b>Mini lección de Mr. Arrieta</b><span class="ml9-n"></span></div><div class="ml9-b"><img class="ml9-m" alt="Mr. Arrieta"><div class="ml9-c"><small class="ml9-k"></small><div class="ml9-t"></div></div></div><div class="ml9-f"><span class="ml9-d">${SL.map(() => '<i></i>').join('')}</span><div><button type="button" class="btn w sm ml9-p">Atrás</button><button type="button" class="btn k sm ml9-x">Siguiente</button></div></div></div>`);
+      const draw = () => { const x = SL[si]; $('.ml9-n', ml).textContent = `${si + 1} de ${SL.length}`; $('.ml9-k', ml).textContent = x.k; const t = $('.ml9-t', ml); t.innerHTML = x.t; t.classList.remove('in'); void t.offsetWidth; t.classList.add('in');
+        $('.ml9-m', ml).src = 'mra-' + POSE[si % POSE.length] + '.webp'; $$('.ml9-d i', ml).forEach((d, j) => d.className = j < si ? 'ok' : j === si ? 'on' : ''); $('.ml9-p', ml).disabled = !si; $('.ml9-x', ml).textContent = si < SL.length - 1 ? 'Siguiente' : '¡Entendido! A practicar'; };
+      $('.ml9-p', ml).onclick = () => { if (si) { si--; draw(); } };
+      $('.ml9-x', ml).onclick = () => { sfx('tap'); if (si < SL.length - 1) { si++; draw(); } else { ml.classList.add('done'); tools.scrollIntoView({ behavior: 'smooth', block: 'start' }); } };
+      body.insertBefore(ml, tools); draw();
+    }
     // 🎙️ obligatorio: repetir con su voz al menos 3 palabras antes de continuar (no aplica en modo profe)
     const need = canRec && !(window.MRTEACH && MRTEACH.on()) ? Math.min(3, n) : 0;
     await waitNext(stage, 'Ya practiqué, ¡continuar!', () => {

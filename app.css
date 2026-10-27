@@ -7138,3 +7138,20 @@ body.ag-teens .pg-rows{background:#fff}
 .as-fbk.fx{background:#fef3c7;border:1px solid #fde68a;color:#92400e}.as-teens .as-fbk.fx{background:rgba(245,179,1,.14);border-color:rgba(245,179,1,.4);color:#fcd34d}
 .vk-fix{display:block;margin-top:5px;font-style:normal;font-size:12.5px;color:#fcd34d}
 .as-teens .as-mcnt{color:#8ea6cf}.as-teens .as-mcnt b{color:#22e58a}
+/* v428 · cuadros de tips y consejos: borde fino con color (premium), en todas las clases y edades */
+.tipbox{border:1px solid #dbe4f1!important;border-left:4px solid #E3242B!important;background:#f8fafd!important;border-radius:12px!important;box-shadow:0 2px 8px rgba(11,42,91,.05)}
+.as-teens .tipbox,.dk .tipbox{background:#0b2148!important;border-color:#16376e!important;border-left-color:#22e58a!important}
+.as-kids .tipbox{background:#fffdf7!important;border-color:#fde3b4!important;border-left-color:#f59e0b!important}
+.warm-es .ex,.fx-info,.tp-preview{border:1px solid #dbe4f1!important;border-left:4px solid #E3242B!important;border-radius:12px!important}
+/* v428 · mini lección dinámica (adultos) */
+.ml9{border:1px solid #dbe4f1;border-left:4px solid #E3242B;border-radius:16px;background:linear-gradient(160deg,#fff,#f4f7fc);padding:14px 16px;margin:4px 0 14px;box-shadow:0 6px 18px rgba(11,42,91,.07)}
+.ml9-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.ml9-h b{font:800 15px Poppins,sans-serif;color:#0B2A5B}.ml9-n{font:700 12px Poppins,sans-serif;color:#64748b}
+.ml9-b{display:flex;gap:14px;align-items:center;min-height:150px}
+.ml9-m{height:clamp(110px,26vw,150px);flex:none;animation:mraFloat 3.4s ease-in-out infinite}
+.ml9-c{flex:1;min-width:0}.ml9-k{display:block;font:800 10.5px Poppins,sans-serif;letter-spacing:.12em;color:#E3242B;margin-bottom:4px}
+.ml9-t{font:600 clamp(15px,3.8vw,18px)/1.5 Inter,sans-serif;color:#0B2A5B}.ml9-t b{color:#E3242B}.ml9-t i{color:#1B4A9B}
+.ml9-t.in{animation:ml9In .35s ease}@keyframes ml9In{from{opacity:0;transform:translateX(14px)}}
+.ml9-f{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap}
+.ml9-d{display:flex;gap:5px}.ml9-d i{width:18px;height:5px;border-radius:5px;background:#e2e8f0}.ml9-d i.on{background:#E3242B}.ml9-d i.ok{background:#0B2A5B}
+.ml9-f div{display:flex;gap:6px}.ml9.done{opacity:.85}
+@media(max-width:520px){.ml9-b{flex-direction:column;text-align:center}}

@@ -32,7 +32,7 @@
   }
   // 👧 Cofre de recuerdos
   async function chests(stage, pv, pool) {
-    const items = shuffle(pool).slice(0, Math.min(6, pool.length)); let cur = 0, c = 0; const missed = [], res = [];
+    const items = shuffle(pool).slice(0, Math.min(window.__V9 ? 3 : 6, pool.length)); let cur = 0, c = 0; const missed = [], res = [];
     const body = frame(stage, 'Review', 'Cofre de recuerdos', `Abre cada cofre: hay una palabra de <b>${esc(pv._t ? pv._t.title : 'la lección pasada')}</b>.`);
     body.innerHTML = `<div class="as-chests">${items.map((_, i) => `<button type="button" class="as-ch" data-i="${i}" disabled>${SV(I.chest)}<span>?</span></button>`).join('')}</div>
       <div class="as-kbar"><img class="as-mr" src="mra-wink.webp" alt="Mr. Arrieta"><div class="as-say" id="as-say">¡Toca el cofre que brilla!</div></div><div class="as-stars" id="as-st"></div><div id="as-open"></div>`;
@@ -68,7 +68,7 @@
   }
   // 🧑‍🎤 Swipe
   async function swipe(stage, pv, pool) {
-    const items = shuffle(pool).slice(0, Math.min(6, pool.length)).map(it => { const tr = Math.random() < .5; const o = tr ? it : shuffle(pool.filter(x => x.en !== it.en && x.es && x.es !== it.es))[0] || it; return { it, shown: o.es, truth: tr || o === it }; });
+    const items = shuffle(pool).slice(0, Math.min(window.__V9 ? 3 : 6, pool.length)).map(it => { const tr = Math.random() < .5; const o = tr ? it : shuffle(pool.filter(x => x.en !== it.en && x.es && x.es !== it.es))[0] || it; return { it, shown: o.es, truth: tr || o === it }; });
     let i = 0, c = 0, streak = 0, best = 0; const missed = [];
     const body = frame(stage, 'Review', ag() === 'adult' ? 'Repaso rápido' : 'Recap', `Repaso de <b>${esc(pv._t ? pv._t.title : 'la lección pasada')}</b>. ¿La traducción es correcta? Desliza a la derecha si sí, a la izquierda si no.`);
     body.innerHTML = `<div class="as-sbar">${items.map(() => '<i></i>').join('')}</div><div class="as-deck" id="as-deck"></div>
@@ -206,7 +206,7 @@
           const r = await RS(tgt.replace(/___/g, ''), Math.max(4000, tgt.split(' ').length * 900 + 2200)); bt.disabled = false; tries++;
           const fj = FJ(r, k, tgt);
           if (fj.ok) { sfx('ok'); try { M().praise(); } catch (er) { } tr.innerHTML = `<b class="as-ok">${SV(I.ck)}¡Muy bien!</b>${fj.heard ? ` <small>Escuché: “${esc(fj.heard)}”</small>` : ''}${fixHTML(fj)}`; setTimeout(() => done(true), fj.fix ? 3200 : 1300); return; }
-          sfx('bad'); tr.innerHTML = `${fj.heard ? 'Responde con una frase completa, con tus propias palabras.' : 'No te escuché bien. Intenta otra vez, despacio.'}${tries >= 2 ? '<button type="button" class="as-lnk" id="as-nx">Siguiente</button>' : ''}`;
+          sfx('bad'); tr.innerHTML = `${fj.rep ? 'Repetiste la pregunta. Ahora <b>respóndela</b> con tus palabras.' : fj.heard ? 'Responde con una frase completa, con tus propias palabras.' : 'No te escuché bien. Intenta otra vez, despacio.'}${tries >= 2 ? '<button type="button" class="as-lnk" id="as-nx">Siguiente</button>' : ''}`;
           if (tries >= 2) { body.querySelector('#as-nx').onclick = () => done(false); } };
       });
       if (ok) c++;
@@ -234,7 +234,7 @@
           const out = H(`<div class="as-vn out ${good ? '' : 'bad'}"><span class="as-vw">${bars()}</span><small>0:0${Math.min(9, 2 + tgt.split(' ').length)}</small>${said ? `<div class="as-vt">${esc(said)}</div>` : ''}<span class="as-tick">${good ? '✓✓' : '!'}</span></div>`); cb.appendChild(out); cb.scrollTop = cb.scrollHeight;
           if (good) { sfx('ok'); tr.innerHTML = fixHTML(fj); setTimeout(() => { tr.innerHTML = ''; done(true); }, fj.fix ? 3200 : 900); return; }
           sfx('bad'); mic.disabled = false; ci.textContent = 'Intenta otra vez';
-          tr.innerHTML = tries >= 2 ? `<span class="as-hint">Responde con una frase completa, con tus propias palabras.</span><button type="button" class="as-gt" id="as-nx">Siguiente nota${SV(I.r)}</button>` : `<span class="as-hint">${said ? 'Responde con una frase completa, con tus propias palabras.' : 'No te escuché bien. Habla con tu voz normal, cerca del celular.'}</span>`;
+          tr.innerHTML = tries >= 2 ? `<span class="as-hint">Responde con una frase completa, con tus propias palabras.</span><button type="button" class="as-gt" id="as-nx">Siguiente nota${SV(I.r)}</button>` : `<span class="as-hint">${fj.rep ? 'Repetiste la pregunta. Ahora respóndela con tus palabras.' : said ? 'Responde con una frase completa, con tus propias palabras.' : 'No te escuché bien. Habla con tu voz normal, cerca del celular.'}</span>`;
           if (tries >= 2) { body.querySelector('#as-nx').onclick = () => { tr.innerHTML = ''; done(false); }; } };
       });
       mic.disabled = true; if (ok) { c++; streak++; best = Math.max(best, streak); } else streak = 0; body.querySelector('#as-sk').textContent = 'Racha ' + streak;
