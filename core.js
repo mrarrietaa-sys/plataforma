@@ -275,14 +275,15 @@
   }
 
   /* ---------- text comparison ---------- */
-  const CONTR = { "i'm": 'i am', "you're": 'you are', "he's": 'he is', "she's": 'she is', "it's": 'it is', "we're": 'we are', "they're": 'they are', "what's": 'what is', "that's": 'that is', "there's": 'there is', "isn't": 'is not', "aren't": 'are not', "don't": 'do not', "doesn't": 'does not', "i'll": 'i will', "can't": 'can not', "where's": 'where is', "how's": 'how is', "let's": 'let us' };
+  const CONTR = { "i'm": 'i am', "you're": 'you are', "he's": 'he is', "she's": 'she is', "it's": 'it is', "we're": 'we are', "they're": 'they are', "what's": 'what is', "that's": 'that is', "there's": 'there is', "isn't": 'is not', "aren't": 'are not', "don't": 'do not', "doesn't": 'does not', "i'll": 'i will', "can't": 'can not', "where's": 'where is', "how's": 'how is', "let's": 'let us', "i've": 'i have', "you've": 'you have', "we've": 'we have', "they've": 'they have', "i'd": 'i would', "you'd": 'you would', "he'll": 'he will', "she'll": 'she will', "we'll": 'we will', "they'll": 'they will', "it'll": 'it will', "you'll": 'you will', "won't": 'will not', "didn't": 'did not', "wasn't": 'was not', "weren't": 'were not', "haven't": 'have not', "hasn't": 'has not', "couldn't": 'could not', "shouldn't": 'should not', "wouldn't": 'would not', cannot: 'can not', mister: 'mr', "who's": 'who is', "here's": 'here is', "he'd": 'he would', "she'd": 'she would', "we'd": 'we would', okay: 'ok', dont: 'do not', doesnt: 'does not', cant: 'can not', isnt: 'is not', arent: 'are not', didnt: 'did not', wont: 'will not', im: 'i am', youre: 'you are', theyre: 'they are', whats: 'what is', thats: 'that is', lets: 'let us' };
   const NUMW = { zero: 0, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12, thirteen: 13, fourteen: 14, fifteen: 15, sixteen: 16, seventeen: 17, eighteen: 18, nineteen: 19, twenty: 20, thirty: 30, forty: 40, fifty: 50, sixty: 60, seventy: 70, eighty: 80, ninety: 90, hundred: 100 };
   function norm(s, expand = true) {
-    s = String(s).toLowerCase().replace(/[’`´]/g, "'").replace(/[^a-z0-9'\s-]/g, ' ').replace(/-/g, ' ');
+    s = String(s).toLowerCase().replace(/\b([ap])\.\s?m\b\.?/g, '$1m').replace(/(\d),(?=\d{3}\b)/g, '$1').replace(/[’`´]/g, "'").replace(/[^a-z0-9'\s-]/g, ' ').replace(/\b([a-z]{1,3})-([a-z]{1,6})\b/g, (m, a, b) => (NUMW[a] != null || NUMW[b] != null) ? a + ' ' + b : a + b).replace(/-/g, ' ');
     if (expand) s = s.split(/\s+/).map(w => CONTR[w] || w).join(' ');
     return s.replace(/\s+/g, ' ').trim();
   }
-  function words(s) { return norm(s).split(' ').filter(Boolean).map(w => (w in NUMW ? String(NUMW[w]) : w)); }
+  function words(s) { const a = norm(s).split(' ').filter(Boolean).map(w => (w in NUMW ? String(NUMW[w]) : w)); const out = [];
+    for (let i = 0; i < a.length; i++) { const t = +a[i], u = +a[i + 1]; if (/^\d+$/.test(a[i]) && t >= 20 && t <= 90 && t % 10 === 0 && /^\d$/.test(a[i + 1] || '') && u > 0) { out.push(String(t + u)); i++; } else out.push(a[i]); } return out; }
   function lev(a, b) {
     const m = a.length, n = b.length; if (!m) return n; if (!n) return m;
     let prev = Array.from({ length: n + 1 }, (_, i) => i);
@@ -292,11 +293,22 @@
   // speaking score: % of target words found (order-tolerant), best over alternatives
   // 📱 iPhone (v383): Safari reconoce peor las palabras cortas → se califica con más tolerancia (palabras pequeñas omitidas valen la mitad)
   const FW = new Set(['a', 'an', 'the', 'is', 'are', 'am', 'to', 'of', 'do', 'does', 'it', 'in', 'on', 'at', 'and', 'i', 'my', 'your', 'he', 'she', 'we', 'you']);
-  function speechScore(target, alts) {
+  // v441: misma palabra = igual, o mismo comienzo con una terminación corta (book/books, watch/watches, work/worked, favorite/favourite); el 0 también es "oh"
+  const same9 = (x, w) => { if (x === w) return true; if (w === '0' && (x === 'oh' || x === 'o' || x === 'zero')) return true; if (x.length < 3 || w.length < 3) return false;
+    const [a, b] = x.length <= w.length ? [x, w] : [w, x]; if (b.startsWith(a) && ((a.length >= 4 && b.length - a.length <= 2) || b === a + 's' || b === a + 'es')) return true;
+    if (a.length >= 6 && b.length - a.length <= 1 && lev(a, b) <= 1 && a[0] === b[0] && a.slice(-2) === b.slice(-2) && a.slice(0, 3) === b.slice(0, 3)) return true; // favorite/favourite, color/colour
+    return false; };
+  const POSS = ['my', 'your', 'his', 'her', 'our', 'their', 'its'];
+  const LEADC = /^(i'm|you're|he's|she's|it's|we're|they're|let's|what's|where's|there's|that's|who's|here's|how's|i'll|i've|i'd|he'll|she'll|we'll|they'll|you'll|it'll|we've|you've|they've|he'd|she'd|we'd|you'd|it is|he is|she is|there is|there are|i am|we are|they are|you are|that is)\b/i;
+  function speechScore(target, alts, _j) {
+    if (!_j && /[a-z]-[a-z]/i.test(String(target))) { const A = speechScore0(target, alts), B = speechScore(String(target).replace(/([a-z])-([a-z])/gi, '$1$2'), alts, 1); return B.score > A.score ? B : A; }
+    return speechScore0(target, alts);
+  }
+  function speechScore0(target, alts) {
     const tw = words(target); let best = { score: 0, heard: '', hit: [] };
     const L1 = IOS ? 2 : 3, L2 = IOS ? 5 : 6;
     for (const alt of alts) {
-      const aw = words(alt); const pool = aw.slice(); const joined = aw.join(''); const hit = tw.map(w => { const i = pool.findIndex(x => x === w || (w.length > L1 && lev(x, w) <= 1) || (w.length > L2 && lev(x, w) <= 2)); if (i >= 0) { pool.splice(i, 1); return true; } return w.length > L1 && joined.indexOf(w) >= 0; });
+      const aw = words(alt); const pool = aw.slice(); const joined = aw.join(''); const hit = tw.map(w => { const i = pool.findIndex(x => same9(x, w)); if (i >= 0) { pool.splice(i, 1); return true; } return w.length > L1 && joined.indexOf(w) >= 0 && !aw.some(x => x !== w && x.length >= 3 && x.length >= w.length && lev(x, w) <= 1 && !same9(x, w)); });
       const got = hit.reduce((t, x, i) => t + (x ? 1 : IOS && FW.has(tw[i]) && hit.some(Boolean) ? 0.5 : 0), 0);
       const sc = Math.min(100, Math.round(got / tw.length * 100));
       let sc2 = sc;
@@ -304,6 +316,16 @@
       if (tw.length <= 5) { const CW = tw.map((w, i) => [w, i]).filter(([w]) => !FW.has(w) && w !== 'is' && w !== 'it'); const ltr = (w) => /^[a-z]$/.test(w);
         if (CW.length) { const got2 = CW.filter(([w, i]) => hit[i] || (ltr(w) && aw.some(x => asLetter(x) === w))).length; if (got2 === CW.length) sc2 = Math.max(sc2, 90); else sc2 = Math.min(sc2, 50); } // falta la palabra clave (ej. dijo hat en vez de cat): no pasa
         else if (tw.some(ltr) && aw.some(x => tw.includes(asLetter(x)))) sc2 = Math.max(sc2, 90); }
+      { // v441: si falta una palabra importante, no pasa (aunque haya dicho casi toda la frase)
+        const CWi = tw.map((w, i) => i).filter(i => !FW.has(tw[i]) && tw[i].length > 2 && !['is', 'it', 'not', 'are', 'was', 'have', 'has', 'will', 'can', 'would', 'please', 'very', 'really', 'so', 'just', 'also', 'too', 'yes', 'no', 'oh', 'ok', 'his', 'her', 'our', 'their', 'its', 'him', 'them', 'they', 'with', 'for', 'from', 'this', 'that', 'there'].includes(tw[i]));
+        const miss = CWi.filter(i => !hit[i]).length; if (CWi.length && (CWi.length <= 5 ? miss >= 1 : miss >= 2)) sc2 = Math.min(sc2, 50);
+        if (LEADC.test(String(target).trim()) && tw.length >= 2 && !(hit[0] || hit[1])) sc2 = Math.min(sc2, 50);
+        if (tw.includes('not') !== aw.includes('not') && !(tw.includes('not') && aw.some(w => ['no', 'never', 'nt'].includes(w)))) sc2 = Math.min(sc2, 50); // "I don't agree" ≠ "I agree"
+        if (tw.length <= 4 && tw.filter((w, i) => !hit[i]).length >= 2) sc2 = Math.min(sc2, 50);
+        if (tw.length <= 3 && tw.some((w, i) => !hit[i] && !['a', 'an', 'the'].includes(w) && !/^[a-z]$/.test(w))) sc2 = Math.min(sc2, 50); // frases de 2-3 palabras: todas cuentan // "Neither do I" ≠ "me neither"
+        if (tw.length <= 4 && aw.length >= tw.length * 2 + 3) sc2 = Math.min(sc2, 50); // dijo otra frase larga que contiene la palabra // dijo "very happy" en vez de "She's very happy"
+        const tp = tw.filter(w => POSS.includes(w)); if (tp.length && tp.some(w => !aw.includes(w)) && aw.some(w => POSS.includes(w) && !tw.includes(w))) sc2 = Math.min(sc2, 50); // "my turn" ≠ "your turn"
+      }
       if (sc2 > best.score || !best.heard) best = { score: sc2, heard: alt, hit };
     }
     return best;
@@ -338,7 +360,7 @@
     const W = word.toLowerCase().replace(/[^a-z]/g, '');
     return (alts) => { let best = { score: 0, heard: alts[0] || '' };
       for (const alt of alts) {
-        const t = alt.toLowerCase().replace(/double\s*(u|you)/g, ' w ').replace(/\b(the\s+)?letter\b/g, ' ').replace(/\b(it'?s|it\s+is|is)\b/g, ' ').replace(/[^a-z\s]/g, ' ').split(/\s+/).filter(Boolean);
+        const t = alt.toLowerCase().replace(/\b8\b/g, ' a ').replace(/double\s*(u|you)/g, ' w ').replace(/\b(the\s+)?letter\b/g, ' ').replace(/\b(it'?s|it\s+is|is)\b/g, ' ').replace(/[^a-z\s]/g, ' ').split(/\s+/).filter(Boolean);
         if (W.length === 1 && t.some(x => asLetter(x) === W)) { best = { score: 100, heard: alt }; break; } // una sola letra: basta con que la diga
         const asLetters = t.map(x => asLetter(x) || x).join('');
         const cand = [asLetters, t.join('')];
@@ -371,37 +393,49 @@
   const INTENTS = [
     { k: 'how', q: /\bhow\s+(are|r)\s+(you|u)\b|how'?s it going|how is it going|how do you feel|how are things|how'?s everything|how have you been/i, a: (ws) => isState(ws) && !ws.includes('from') && !ws.includes('name') },
     { k: 'name', q: /\b(what'?s|what is|what are) (your|his|her|their) names?\b|\bwho are you\b|\byour name\b/i, a: (ws, h) => ws.includes('name') || ws.includes('call') || (capTok(h).length > 0 && !ws.includes('from')) || (/^(i'?m|i am|it'?s|he'?s|she'?s)$/.test(ws[0] || '') && ws.length >= 2 && !isState(ws) && !ws.includes('from')) },
+    { k: 'phone', q: /\b(phone|telephone|cell|mobile) number\b|\bnumber\b.*\bphone\b/i, a: (ws) => ws.filter(w => /^\d+$/.test(w) || w === 'oh' || w === 'o').length >= 3 },
+    { k: 'doing', q: /\bwhat (are|were|was|is|am) (you|he|she|they|we|i|your \w+) doing\b/i, a: (ws) => ws.some(w => /\w{2,}ing$/.test(w) && !['thing', 'nothing', 'something', 'king', 'ring', 'spring', 'sing', 'evening', 'morning'].includes(w)) || ws.includes('nothing') },
     { k: 'age', q: /\bhow old\b/i, a: (ws) => NUMW9.test(ws.join(' ')) || ws.includes('years') },
     { k: 'time', q: /\bwhat time\b|\bwhen (is|does|do)\b.*\b(start|begin|open|close|finish|leave)\b/i, a: (ws) => NUMW9.test(ws.join(' ')) || ws.some(w => ['oclock', "o'clock", 'half', 'quarter', 'noon', 'midnight', 'am', 'pm', 'morning', 'afternoon', 'evening', 'night'].includes(w)) },
     { k: 'from', q: /\bwhere\b.*\bfrom\b|\bnationalit|\bwhat country\b/i, a: (ws, h) => ws.includes('from') || capTok(h).length > 0 || ws.some(w => /(ian|ese|ish|can|ch|ean|ic|i)$/.test(w) && w.length > 4 && !STATE.includes(w)) },
     { k: 'live', q: /\bwhere\b.*\blive\b/i, a: (ws, h) => ws.includes('live') || ws.includes('in') || capTok(h).length > 0 },
-    { k: 'job', q: /\bwhat (do|does) (you|he|she|they|your \w+) do\b|\b(job|occupation|profession)\b|\bwhere do you work\b/i, a: (ws) => ws.some(w => ['work', 'works', 'study', 'studies', 'student', 'job', 'retired', 'unemployed', 'teach', 'sell'].includes(w)) || /\b(a|an)\s+\w{3,}/.test(ws.join(' ')) },
+    { k: 'job', q: /\bwhat (do|does) (you|he|she|they|your \w+) do\s*(\?|$|for a living|for work)|\bwhat'?s (your|his|her) (job|occupation|profession)\b|\bwhat is (your|his|her) (job|occupation|profession)\b|\bwhere do you work\b/i, a: (ws) => ws.some(w => ['work', 'works', 'study', 'studies', 'student', 'job', 'retired', 'unemployed', 'teach', 'sell'].includes(w)) || /\b(a|an)\s+\w{3,}/.test(ws.join(' ')) },
     { k: 'pref', q: /\bfavorite\b|\bwhat (do|does) (you|he|she|they) (like|love|prefer|want|need|eat|drink|play|watch)\b/i, a: (ws) => ws.filter(w => w.length > 2 && !FW.has(w) && !STATE.includes(w) && !['thank', 'thanks', 'name', 'from', 'yes', 'not'].includes(w)).length > 0 },
   ];
   const intentOf = (q) => INTENTS.find(x => x.q.test(String(q || '')));
   function freeJudge(q, tgt, alts) {
     { // v439: deletreo de una palabra concreta ("How do you spell "Wilson"?") → las letras tienen que ser exactas, en orden
       const m = String(q || '').match(/\bspell\s+["“'‘]?([A-Za-z]{2,})["”'’]?/i);
-      if (m && /^(your|my|his|her|their)$/i.test(m[1])) { const t = String((alts || [])[0] || '').toLowerCase().replace(/double\s*(u|you)/g, ' w ').replace(/[-,.]/g, ' ').split(/\s+/).filter(Boolean); const L = t.filter(x => asLetter(x)).length; if (L >= 2) return { ok: true, heard: (alts || [])[0] || '', fix: null, rep: false, off: false }; } // su propio nombre: basta con que deletree
+      if (m && /^(your|my|his|her|their)$/i.test(m[1])) { const t = String((alts || [])[0] || '').toLowerCase().replace(/double\s*(u|you)/g, ' w ').replace(/[-,.]/g, ' ').split(/\s+/).filter(Boolean); const L = t.filter(x => x.length === 1 || ['jay', 'kay', 'bee', 'cee', 'dee', 'gee', 'pee', 'tee', 'vee', 'zee', 'zed', 'oh', 'ex', 'el', 'em', 'en', 'es', 'ar', 'wye', 'aitch', 'cue'].includes(x)).length; if (L >= 2 && L >= t.length / 2) return { ok: true, heard: (alts || [])[0] || '', fix: null, rep: false, off: false }; } // su propio nombre: basta con que deletree
       if (m && !/^(your|my|his|her|their|it|that|this|the)$/i.test(m[1])) { const W = m[1].toLowerCase(); let best = '', heard0 = (alts && alts[0]) || '';
         for (const alt of (alts || [])) { const t = String(alt).toLowerCase().replace(/double\s*(u|you)/g, ' w ').replace(/[-,.]/g, ' ').split(/\s+/).filter(Boolean); const L = t.map(x => asLetter(x) || (x.length > 1 && x === W ? x : '')).join(''); if (L === W) return { ok: true, heard: alt, fix: null, rep: false, off: false }; if (L.length > best.length) { best = L; heard0 = alt; } }
         return { ok: false, heard: heard0, fix: W.toUpperCase().split('').join('-'), rep: false, off: false, spell: true }; }
     }
     const heard = (alts && alts[0]) || ''; const ws = words(heard); let fix = grammarFix(heard);
-    const yn = /^\s*(are|is|am|do|does|did|can|could|was|were|have|has|will|would|should)\b/i.test(q || '');
+    const qLast = String(q || '').trim().split(/(?<=[.!?])\s+/).filter(x => /\?\s*$/.test(x)).pop() || String(q || ''); const yn = /^\s*(are|is|am|do|does|did|can|could|was|were|have|has|will|would|should)\b/i.test(qLast) && !/\byour\s+name\b/i.test(qLast);
     const cw = (x) => words(x).filter(w => w.length > 2 && !FW.has(w) && !['yes', 'yeah', 'not', 'fine', 'thank', 'thanks', 'okay'].includes(w));
-    const sj = qSubj(q || ''), want = sj ? SUBJ[sj] : null, hasS = want ? ws.some(w => want.includes(w)) : true;
-    const otherS = ws.some(w => Object.values(SUBJ).flat().includes(w) && !(want || []).includes(w));
+    const sj = qSubj(q || ''), yourN = sj === 'your' && /\byour\s+(mother|father|mom|dad|sister|brother|wife|husband|son|daughter|friend|boss|team|client|teacher|car|house|family|parents|cat|dog|pet|city|country|company)\b/i.test(q || ''), want = sj ? (yourN ? SUBJ.your.concat(['he', 'his', 'him', 'she', 'her', 'it', 'its', 'they', 'their']) : SUBJ[sj]) : null, hasS = want ? ws.some(w => want.includes(w)) : true;
+    const NEU = (sj === 'you' || sj === 'your' || !sj) ? ['it', 'its', 'they', 'their', 'them'] : []; const otherS = ws.some(w => Object.values(SUBJ).flat().includes(w) && !(want || []).includes(w) && !NEU.includes(w));
     let ok = false, off = false;
+    if (tgt && !/_{2,}/.test(tgt) && ws.length >= 2 && speechScore(tgt, alts).score >= 75) return { ok: true, heard, fix: grammarFix(heard), rep: false, off: false }; // v440: dijo la respuesta modelo
+    const it0 = intentOf(q), stateOnly = isState(ws) && ws.filter(w => w.length > 2 && !FW.has(w) && !STATE.includes(w) && !['thank', 'thanks', 'very', 'much', 'and', 'you', 'not', 'im', 'today', 'really', 'so'].includes(w)).length === 0;
+    const nameSig = /\b(my|his|her) name is\b|\bmy name\b/.test(ws.join(' ')) && !/\bname\b/i.test(q || '');
+    if (ws.length && ((stateOnly && (!it0 || it0.k !== 'how') && !(/\bhow (are|r|is it|do you feel|have you)\b|\b(feel|okay|ok|tired)\b/i.test(q || '') || (yn && /\b(want|need|help|would you like|okay|ok|alright)\b/i.test(qLast)))) || (nameSig && !/\b(who|meet|introduce)\b|^\s*(hi|hello|hey)[,!.]?\s+i'?m\b/i.test(q || '')))) return { ok: false, heard, fix: null, rep: false, off: true }; // v439: respuesta de OTRA pregunta ("I'm fine", "My name is…")
+    { const om = String(q || '').match(/\b([\w'-]+)\s+or\s+([\w'-]+)/i); if (yn && om) { const A = [om[1], om[2]].map(x => x.toLowerCase()); if (ws.some(w => A.includes(w))) return { ok: true, heard, fix: grammarFix(heard), rep: false, off: false }; } } // "Is it G or J?" → "It's G"
     if (yn) {
       const startYN = /^(yes|no|yeah|yep|nope|sure|of)$/.test(ws[0] || '');
       ok = startYN && (ws.length === 1 || hasS || !otherS); // "Yes" / "Yes, she is" / "No, she isn't"
       if (startYN && !ok) { ok = true; const su = ({ you: 'I', your: 'I', his: 'he', her: 'she', their: 'they' }[sj] || sj), v0 = (String(q).match(/^\s*(\w+)/) || ['', 'is'])[1].toLowerCase(), sg = ['he', 'she', 'it'].includes(su);
         const be = ['are', 'is', 'am'].includes(v0) ? (su === 'I' ? 'am' : sg ? 'is' : 'are') : ['do', 'does'].includes(v0) ? (sg ? 'does' : 'do') : ['was', 'were'].includes(v0) ? (su === 'I' || sg ? 'was' : 'were') : v0;
         fix = ws[0] === 'no' ? (be === 'am' ? "No, I'm not." : 'No, ' + su + ' ' + be + "n't.") : 'Yes, ' + su + ' ' + be + '.'; } // respondió sí/no pero con otra persona: solo se corrige
-      if (!startYN) { const pool = new Set(cw((q || '') + ' ' + (tgt || ''))); ok = hasS && cw(heard).some(w => pool.has(w)); off = !ok; }
+      if (!startYN) { const pool = new Set(cw((q || '') + ' ' + (tgt || ''))); ok = hasS && cw(heard).some(w => pool.has(w));
+        if (!ok && /^(not|never|maybe|probably|perhaps|sometimes|somewhat|neither|either|absolutely|definitely|certainly|actually|well|unless|if|sorry|it|apps|only|really|kind|sort|of)$/.test(ws[0] || '') && ws.length >= 2 && !otherS) ok = true; // "Not yet…", "If I were you…", "It can."
+        if (!ok && ws.length >= 4 && !otherS) ok = true; // respuesta completa y libre
+        off = !ok; }
     } else if (intentOf(q) && ws.length) {
-      const it = intentOf(q); ok = it.a(ws, heard) && (hasS || !otherS || it.k === 'how' && !otherS); off = !ok;
+      const it = intentOf(q); ok = it.a(ws, heard) && (hasS || !otherS || it.k === 'how' && !otherS);
+      if (!ok && tgt && !/_{2,}/.test(tgt) && !otherS) { const pool = new Set(cw((q || '') + ' ' + (tgt || ''))); const shareN = cw(heard).filter(w => pool.has(w)).length; if (shareN >= 2 || speechScore(tgt, alts).score >= 60) ok = true; }
+      off = !ok;
     } else {
       const sc = tgt ? speechScore(tgt, alts).score : 0; const pool = new Set(cw((q || '') + ' ' + (tgt || '')));
       const share = cw(heard).some(w => pool.has(w));
