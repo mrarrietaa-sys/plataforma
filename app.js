@@ -868,7 +868,7 @@
           <button type="button" class="ms-mic"></button>
           <div class="ms-msg">Responde con tus palabras. ¡No tiene que ser perfecto!</div>
           <div class="ms-heard" hidden></div>
-          <button type="button" class="ms-hint">💡 Escuchar una respuesta modelo</button>
+          <button type="button" class="ms-hint">¿No sabes cómo empezar? Ver un ejemplo</button>
           <div class="ms-model" hidden><small>Una respuesta modelo</small><div><button type="button" class="ms-play2" aria-label="Escuchar respuesta">🔊</button><b>${esc(x.a)}</b></div></div></div>`);
         body.appendChild(el); const $e = (q) => el.querySelector(q); const mic = $e('.ms-mic');
         const lab = (t) => { mic.innerHTML = `<span class="ms-mi">🎙️</span><span class="ms-mt">${t}</span>`; }; lab('Toca y responde');
@@ -884,11 +884,11 @@
             mic.disabled = true; stop(); el.classList.add('rec'); lab('Te escucho…');
             const r = await M.listen(10000, { quick: true }); el.classList.remove('rec'); mic.disabled = false; lab('Intentar otra vez');
             if (!r.alts || !r.alts.length) { $e('.ms-msg').textContent = 'No te escuché 🙉 Acércate un poco al micrófono e intenta otra vez.'; return; }
-            tries++; const sc = M.speechScore(x.a, r.alts), nw = M.words(r.alts[0]).length;
-            okk = nw >= 3 && (sc.score >= 35 || nw >= 5);
-            const hd = $e('.ms-heard'); hd.hidden = false; hd.className = 'ms-heard ' + (okk ? 'good' : 'bad'); hd.innerHTML = `<small>Escuché</small>“${esc(r.alts[0])}”`;
-            if (okk) { sfx('ok'); M.praise(); el.classList.add('done'); mic.hidden = true; $e('.ms-msg').innerHTML = '✅ <b>¡Misión cumplida!</b>'; setTimeout(done, 2200); }
-            else { sfx('bad'); $e('.ms-msg').textContent = nw < 3 ? 'Responde con una frase completa (3 palabras o más).' : 'Casi. Inténtalo otra vez; si quieres, escucha la respuesta modelo.'; if (tries >= 3) setTimeout(done, 2500); }
+            tries++; const fj = M.freeJudge(x.q, x.a, r.alts), nw = M.words(r.alts[0]).length; // v430: respuesta libre: solo se corrige gramática y pronunciación
+            okk = fj.ok;
+            const hd = $e('.ms-heard'); hd.hidden = false; hd.className = 'ms-heard ' + (okk ? 'good' : 'bad'); hd.innerHTML = `<small>Escuché</small>“${esc(r.alts[0])}”${okk && fj.fix ? `<em class="vk-fix" style="color:#92400e">Mejor dilo así: <b>${esc(fj.fix)}</b></em>` : ''}`;
+            if (okk) { sfx('ok'); M.praise(); el.classList.add('done'); mic.hidden = true; $e('.ms-msg').innerHTML = '<b>¡Misión cumplida!</b>'; setTimeout(done, fj.fix ? 3400 : 2200); }
+            else { sfx('bad'); $e('.ms-msg').textContent = fj.rep ? 'Repetiste la pregunta. Ahora respóndela con tus palabras.' : 'Responde con una frase completa, con tus propias palabras.'; if (tries >= 3) setTimeout(done, 2500); }
           };
         });
         if (okk) c++;
@@ -900,6 +900,12 @@
 
     // 📹 KEY QUESTIONS en videollamada con Mr. Arrieta (un personaje por módulo). Mismas preguntas, audios y corrección de voz.
     keyq: async (stage, p) => {
+      // guía para preguntas de sí/no: le muestra al estudiante las dos formas de responder (él escoge)
+      function ynGuide(q) { const m = String(q || '').match(/^\s*(are|is|am|do|does|can|was|were)\s+(you|he|she|it|they|we|i)\b/i); if (!m) return null; const v = m[1].toLowerCase(), s0 = m[2].toLowerCase();
+        const sub = { you: 'I', i: 'you', he: 'he', she: 'she', it: 'it', they: 'they', we: 'we' }[s0]; const sg = ['he', 'she', 'it'].includes(sub);
+        const be = ['are', 'is', 'am'].includes(v) ? (sub === 'I' ? 'am' : sg ? 'is' : 'are') : ['do', 'does'].includes(v) ? (sg ? 'does' : 'do') : ['was', 'were'].includes(v) ? (sub === 'I' || sg ? 'was' : 'were') : v;
+        const neg = { is: "isn't", are: "aren't", do: "don't", does: "doesn't", can: "can't", was: "wasn't", were: "weren't" }[be];
+        return ['Yes, ' + sub + ' ' + be + '.', be === 'am' ? "No, I'm not." : 'No, ' + sub + ' ' + neg + '.']; }
       const MN = +M.MOD.n || 1, PIC = { 1: 'mra-wink', 2: 'mra-celebrate', 3: 'mra-wow', 4: 'mra-point' }[MN] || 'mra-wink', SECS = { 1: 15, 2: 12, 3: 10, 4: 10 }[MN] || 12;
       const Q = p.keyq, N = Q.length; let c = 0, pts = 0, streak = 0;
       const body = A.head(stage, { lbl: 'Listen & practice', title: 'Key questions', ins: 'Mr. Arrieta te hace una videollamada. Escucha la pregunta y <b>responde en voz alta</b>, con tu voz normal.' });
@@ -923,6 +929,7 @@
         if (!stage.isConnected) break;
         const k = Q[i], tgt = k.a.split(' / ')[0], blank = k.a.includes('___');
         $v('.vk-n').textContent = `Pregunta ${i + 1}/${N}`; vc.querySelectorAll('.vk-dots i').forEach((d, j) => d.className = j < i ? 'on' : j === i ? 'cur' : ''); $v('.vk-qt').textContent = k.q; $v('.vk-qes').textContent = k.es || '';
+        { const gd = ynGuide(k.q); let gEl = $v('.vk-guide'); if (!gEl) { gEl = h('<div class="vk-guide"></div>'); $v('.vk-q').appendChild(gEl); } gEl.innerHTML = gd ? `Responde como quieras: <b>${esc(gd[0])}</b> o <b>${esc(gd[1])}</b>` : 'Responde con tus propias palabras, en una frase.'; }
         $v('.vk-ans').hidden = true; $v('.vk-next').hidden = true; $v('.vk-fb').hidden = true; $v('.vk-msg').textContent = 'Escucha la pregunta…';
         vc.classList.remove('ok', 'late'); const img = $v('.vk-screen img'); img.classList.remove('talk'); void img.offsetWidth; img.classList.add('talk');
         await play(k.qau); if (!stage.isConnected) break;
