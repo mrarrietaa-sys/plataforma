@@ -472,11 +472,11 @@
     const body = frame(stage, 'Practice', 'Parejas relámpago', 'Une cada palabra con su significado. Al tocar la palabra en inglés, la escuchas.');
     body.innerHTML = `<div class="g9 g9-a">${g9Top('¡Contra reloj!', `<span class="g9-sec">0:${SEC}</span>`)}<div class="g9-pairs"><div>${L.map((x, k) => `<button type="button" class="g9-pc" data-s="L" data-k="${P.indexOf(x)}">${esc(x.en)}</button>`).join('')}</div><div>${Rr.map(x => `<button type="button" class="g9-pc es" data-s="R" data-k="${P.indexOf(x)}">${esc(x.es)}</button>`).join('')}</div></div><div class="g9-fb" id="g9f"></div></div>`;
     const fb = body.querySelector('#g9f');
-    await new Promise(done => { let sel = null, fin = false; const T = g9Timer(body.querySelector('.g9-tm'), SEC, () => { if (fin) return; fin = true; body.querySelectorAll('.g9-pc:not(.dn)').forEach(b => { b.disabled = true; missed.add(+b.dataset.k); }); fb.innerHTML = `<span class="g9-no">¡Se acabó el tiempo!</span>`; setTimeout(done, 1200); });
-      body.querySelectorAll('.g9-pc').forEach(b => b.onclick = () => { if (fin || b.classList.contains('dn')) return; const k = +b.dataset.k;
+    await new Promise(done => { let sel = null, fin = false; const T = g9Timer(body.querySelector('.g9-tm'), SEC, () => { if (fin) return; fin = true; body.querySelectorAll('.g9-pc:not(.g9ok)').forEach(b => { b.disabled = true; missed.add(+b.dataset.k); }); fb.innerHTML = `<span class="g9-no">¡Se acabó el tiempo!</span>`; setTimeout(done, 1200); });
+      body.querySelectorAll('.g9-pc').forEach(b => b.onclick = () => { if (fin || b.classList.contains('g9ok')) return; const k = +b.dataset.k;
         if (b.dataset.s === 'L') try { M().play(P[k].au); } catch (e) { }
         if (!sel || sel.dataset.s === b.dataset.s) { if (sel) sel.classList.remove('on'); sel = b; b.classList.add('on'); sfx('tap'); return; }
-        if (+sel.dataset.k === k) { [sel, b].forEach(x => { x.classList.remove('on'); x.classList.add('dn'); }); found++; combo++; best = Math.max(best, combo); sfx('ok'); fb.innerHTML = comboHTML(combo) || `<span class="g9-yes">${SV(I.ck)}¡Bien!</span>`;
+        if (+sel.dataset.k === k) { [sel, b].forEach(x => { x.classList.remove('on'); x.classList.add('g9ok'); }); found++; combo++; best = Math.max(best, combo); sfx('ok'); fb.innerHTML = comboHTML(combo) || `<span class="g9-yes">${SV(I.ck)}¡Bien!</span>`;
           if (found === P.length) { fin = true; T.stop(); const s = Math.round(T.left()); fb.innerHTML = `<span class="g9-yes">${SV(I.ck)}¡Todas! Te sobraron ${s} segundos.</span>`; setTimeout(done, 1300); } }
         else { errs++; combo = 0; missed.add(k); missed.add(+sel.dataset.k); [sel, b].forEach(x => { x.classList.add('bad', 'shake'); setTimeout(() => x.classList.remove('bad', 'shake', 'on'), 450); }); sfx('bad'); fb.innerHTML = `<span class="g9-no">No es pareja. ¡Rápido, otra vez!</span>`; }
         sel = null; }); });

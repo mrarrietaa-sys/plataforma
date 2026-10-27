@@ -7223,7 +7223,7 @@ body.ag-teens .pg-rows{background:#fff}
 .g9-pairs{display:grid;grid-template-columns:1fr 1fr;gap:10px}.g9-pairs>div{display:flex;flex-direction:column;gap:8px}
 .g9-pc{background:#fff;border:1.5px solid #e3e9f3;border-radius:13px;padding:13px 8px;font:700 14px Inter,sans-serif;color:#0B2A5B;cursor:pointer;transition:.15s}.g9-pc.es{font-weight:600;color:#334155}
 .g9-pc.on{border-color:#E3242B;background:#fff5f5;transform:scale(1.03)}.g9-pc.bad{border-color:#E3242B;background:#fee2e2}
-.g9-pc.dn{border-color:#16a34a;background:#f0fdf4;color:#16a34a;opacity:.55;transform:scale(.96);cursor:default}
+.g9-pc.g9ok{border-color:#16a34a;background:#f0fdf4;color:#16a34a;opacity:.55;transform:scale(.96);cursor:default}
 /* kids · estrellas */
 .g9-k .g9-pill{background:#fff;color:#0b3a66;box-shadow:0 2px 6px rgba(0,0,0,.08)}
 .g9-sky{position:relative;height:330px;border-radius:20px;overflow:hidden;background:linear-gradient(180deg,#bfe6ff,#fff5d6)}
