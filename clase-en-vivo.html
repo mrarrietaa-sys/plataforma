@@ -2,11 +2,11 @@
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>Clase en vivo · mrarrieta.com</title>
 <script src="https://unpkg.com/@daily-co/daily-js@0.92.2/dist/daily.js"></script>
-<script src="clase-topics.js?v=418"></script>
-<script src="config.js?v=418"></script>
-<script src="goals.js?v=418"></script>
-<script src="goalsdata.js?v=418"></script>
-<script src="missions.js?v=418"></script>
+<script src="clase-topics.js?v=420"></script>
+<script src="config.js?v=420"></script>
+<script src="goals.js?v=420"></script>
+<script src="goalsdata.js?v=420"></script>
+<script src="missions.js?v=420"></script>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--n:#0B2A5B;--n2:#1e4a8f;--r:#E3242B;--y:#FFC21A;--g:#16a34a;--bd:#e3e9f3;--mu:#5b6577;--bg:#eef2f8}
@@ -120,7 +120,7 @@ body.only-s #vbox{position:sticky;top:0;z-index:20;background:var(--bg);padding-
 <script>
 (function(){
 const CLOUD=(window.M1CONFIG&&M1CONFIG.CLOUD_URL)||'https://script.google.com/macros/s/AKfycbzGXtwZH_eBIPz01faL6e8cMydhW-0u2H4UtzdHQYCr8CqMG62Tdp1dNDZ4MY4khE0N/exec';
-const CV='418',SESSION_MIN=60,CLASS_MIN=50;let SNAME='Carlos',TNAME='Mrs. Jennifer';
+const CV='420',SESSION_MIN=60,CLASS_MIN=50;let SNAME='Carlos',TNAME='Mrs. Jennifer';
 const QP=new URLSearchParams(location.search),CID=(QP.get('c')||'').replace(/[^\w]/g,''),DEMO=QP.get('demo')==='1',PLATFORM=!!CID;let INFO=null,VTOKEN='',GATE=PLATFORM,TAUTH=null,SAVED=0,MARKED=0;
 const base=()=>PLATFORM&&INFO?INFO.startMs:st.started;if(DEMO)SNAME='tu estudiante';
 const TOPICS_M1=[['The Greetings','Los saludos'],['The Alphabet','El abecedario'],['The Nationalities','Las nacionalidades'],['Numbers and Colors','Números y colores'],['Verb To Be and A / An','Verbo to be y a / an'],['Jobs and Occupations','Trabajos y ocupaciones'],['Family and Animals','Familia y animales'],['The Food vs. The Fruit and Vegetables','Comida, frutas y verduras'],['Weekdays and Months of the Year','Días y meses del año'],['The Weather Forecast and the Clothes','El clima y la ropa'],['School Supplies and Parts of the House','Útiles escolares y partes de la casa'],['The Singular and the Plural Nouns','Sustantivos singulares y plurales'],['Demonstrative Pronouns','Pronombres demostrativos'],['There is and There are','There is y there are']];
@@ -345,7 +345,7 @@ function renderT(){const l=L(),top=$('#m-top'),body=$('#m-body');
    ${PLATFORM&&INFO&&INFO.goal&&window.MRGOAL?`<div class="tip n gl-live"><b>🧭 Objetivo de ${esc(SNAME)}: ${MRGOAL.chip(INFO.goal)}</b>${(()=>{const w=MRGOAL.why(st.mod,st.topic,INFO.goal);return w?`<small>Para su objetivo: ${esc(w.t)}</small>`:''})()}<div class="gl-qs">${MRGOAL.questions(INFO.goal,st.topic).map((q,i)=>`<div>💬 ${esc(q)}</div>`).join('')}</div>${l.steps.some(x=>x.sec==='Misión')?`<small style="display:block;margin-top:8px;color:#E3242B;font-weight:700">🚀 Al final: una Misión de su objetivo (situación real) ya incluida en los pasos.</small>`:''}</div>`:''}
    <div class="tip n"><b>Clase de ${CLASS_MIN} minutos · ${l.steps.length} pasos · Speaking, Listening, Reading y Writing.</b><small>En cada paso verás arriba qué hacer, el botón de audio (suena en los dos equipos), la respuesta esperada y el tiempo sugerido.</small></div>
    ${DEMO?'':`<div class="st ${st.ready?'':'w'}">${I('phone')} ${st.ready?esc(SNAME)+' ya entró y ve la pantalla de bienvenida':'Esperando a que '+esc(SNAME)+' entre'+(PLATFORM?'…':' con el código '+room+'…')}</div>`}
-   <div class="nav" style="grid-template-columns:1fr"><button class="btn go" id="t-start">${I('play')} Empezar clase (${CLASS_MIN} min)</button></div></div>`);
+   <div class="nav" style="display:flex;justify-content:center"><button class="btn go" id="t-start" style="width:auto;flex:none;padding:12px 28px">${I('play')} Empezar clase (${CLASS_MIN} min)</button></div></div>`);
   $('#t-start').onclick=()=>{const t=Date.now()+3900;send({started:t,i:0,res:[],ok:0,rep:0,pts:0,fb:'',fin:null,hl:-1,sh:-1});countdown(3900);};return;}
  if(st.fin){const s=summary(),used=Math.round((st.fin.end-st.started)/60000);body.innerHTML=animKey('fin',`<div class="sumH"><div class="big">${I(s.p>=70?'trophy':'heart')}</div><h2>Resumen de la clase</h2><p>${esc(l.title)} · ${used} min</p></div>
    <div class="sum"><div><b>${s.ok}/${s.N}</b><span>bien</span></div><div><b>${st.rep}</b><span>veces repitió</span></div><div><b>${st.pts}</b><span>puntos</span></div></div>

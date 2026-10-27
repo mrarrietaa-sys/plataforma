@@ -475,14 +475,20 @@
   const FREE = ['rocket', 'balloon1', 'plane-red', 'rocket3', 'balloon3', 'plane-blue', 'drums', 'plane-yellow', 'balloon2', 'surf', 'rocket5', 'plane-green', 'hero'];
   const ITL_ON = true;
   let sceneN = Math.floor(Math.random() * FREE.length);
-  const preloadScenes = () => Object.keys(SCENES).forEach(k => { const i = new Image(); i.src = 'mra-x-' + k + '.webp?v=6'; });
-  function interlude(next) {
+  const preloadScenes = () => Object.keys(SCENES).forEach(k => { const i = new Image(); i.src = 'mra-x-' + k + '.webp?v=7'; });
+  // v420: Mr. Arrieta dice algo acorde a cómo le fue en la sección (nunca "Great job!" si se equivocó)
+  const ITL_FB = { hi: [['Great job!', 'a88a2d51d2', '¡Lo hiciste muy bien!'], ['Excellent!', '54f1859c38', '¡Excelente trabajo!'], ['Awesome!', '98561b5346', '¡Increíble!'], ['Well done!', 'b93b9f5f0f', '¡Muy bien hecho!']],
+    mid: [['Nice work!', 'aa2b15da71', 'Vas bien. Al final repasa lo que fallaste.']], lo: [['Not quite. You can do it!', '8b4c184411', 'No pasa nada: equivocarse es parte de aprender. ¡Sigue!']] };
+  function interlude(next, perf) {
     return new Promise(res => {
-      const k = SEC_SC[next] || FREE[sceneN++ % FREE.length], sc = SCENES[k];
+      const k = SEC_SC[next] || FREE[sceneN++ % FREE.length], sc0 = SCENES[k];
+      const band = perf == null ? null : perf >= .8 ? 'hi' : perf >= .5 ? 'mid' : 'lo'; const fbx = band ? ITL_FB[band][Math.floor(Math.random() * ITL_FB[band].length)] : null;
+      const sc = fbx ? Object.assign({}, sc0, { say: fbx[0] }) : sc0;
       const ov = h(`<div class="itl itl-${sc.a}" role="status">${sc.a === 'stage' ? '<div class="itl-lights"></div>' : ''}
-        <div class="itl-actor itl-k-${k}"><b class="itl-say">${esc(sc.say)}</b><img class="itl-img" src="mra-x-${k}.webp?v=6" alt="Mr. Arrieta"></div>
-        <div class="itl-next"><small>NEXT</small><b>${window.MRI ? MRI(SEC_ICO[next] || 'star') : ''} ${esc(next.toUpperCase())}</b><i>Toca para continuar</i></div></div>`);
+        <div class="itl-actor itl-k-${k}"><b class="itl-say">${esc(sc.say)}</b><img class="itl-img" src="mra-x-${k}.webp?v=7" alt="Mr. Arrieta"></div>
+        <div class="itl-next"><small>NEXT</small><b>${window.MRI ? MRI(SEC_ICO[next] || 'star') : ''} ${esc(next.toUpperCase())}</b><i>Toca para continuar</i></div>${fbx ? `<div class="itl-sub ${band}">${esc(fbx[2])}</div>` : ''}</div>`);
       document.body.appendChild(ov); try { sfx('win'); } catch (e) { }
+      if (fbx) { try { const id = fbx[1]; if (M.ageGroup() === 'adult') setTimeout(() => !done && play(id), 380); else M.fbf().then(() => setTimeout(() => !done && play(window.AUD && window.AUD['fb_' + id] ? 'fb_' + id : id), 380)); } catch (e) { } } else
       try { if (M.ageGroup() !== 'adult') { const sayIt = () => { if (!done && window.AUD && window.AUD['itl_' + k]) play('itl_' + k); }; setTimeout(() => { if (window.AUD && window.AUD['itl_' + k]) sayIt(); else M.fbf().then(sayIt); }, 380); } } catch (e) { }
       let done = false; const end = () => { if (done) return; done = true; ov.classList.add('out'); setTimeout(() => { ov.remove(); res(); }, 250); };
       ov.onclick = end; setTimeout(end, 2600);
@@ -595,7 +601,7 @@
       snaps[i] = snapHTML(stage); revisit = false;
       save();
       i++;
-      if (ITL_ON && i < steps.length && steps[i].sec !== s.sec && app.contains(player)) await interlude(steps[i].sec);
+      if (ITL_ON && i < steps.length && steps[i].sec !== s.sec && app.contains(player)) { const RS = run.res.filter(x => x && x.sec === s.sec && x.t); const rc = RS.reduce((a, x) => a + x.c, 0), rt = RS.reduce((a, x) => a + x.t, 0); await interlude(steps[i].sec, rt ? rc / rt : null); } // v420: el mensaje depende de cómo le fue
     }
     $('.prog i', app).style.width = '100%'; cleanup();
     results(p, run);
@@ -867,42 +873,48 @@
       const MN = +M.MOD.n || 1, PIC = { 1: 'mra-wink', 2: 'mra-celebrate', 3: 'mra-wow', 4: 'mra-point' }[MN] || 'mra-wink', SECS = { 1: 15, 2: 12, 3: 10, 4: 10 }[MN] || 12;
       const Q = p.keyq, N = Q.length; let c = 0, pts = 0, streak = 0;
       const body = A.head(stage, { lbl: 'Listen & practice', title: 'Key questions', ins: 'Mr. Arrieta te hace una videollamada. Escucha la pregunta y <b>responde en voz alta</b>, con tu voz normal.' });
-      const vc = h(`<div class="vk"><div class="vk-top"><span class="vk-live">● EN VIVO</span><div class="vk-sc"><span class="vk-n">Pregunta 1/${N}</span><span>★ <b class="vk-p">0</b></span><span class="vk-st" hidden>🔥 x<b>1</b></span></div></div>
-        <div class="vk-q"><b class="vk-qt"></b><small class="vk-qes"></small></div>
-        <div class="vk-screen"><img src="${PIC}.webp?v=2" alt="Mr. Arrieta" draggable="false"><span class="vk-name">Mr. Arrieta</span><div class="vk-self"><span>🙂</span><small>Tú</small></div><div class="vk-fb" hidden></div></div>
-        <div class="vk-bot"><div class="vk-timer"><b>${SECS}</b></div>
-          <div class="vk-btns"><button type="button" class="vk-b vk-rep" title="Escuchar otra vez" aria-label="Escuchar la pregunta otra vez">${window.MRI ? MRI('send') : '🔊'}</button><button type="button" class="vk-b vk-mic" aria-label="Responder">🎙️</button><button type="button" class="vk-b vk-hint" title="Pista" aria-label="Ver una pista">💡</button></div>
-          <div class="vc vc-strip vc-${M.ageGroup()}"><div class="vc-wv">${Array.from({ length: 26 }, (_, i) => `<i style="height:${[8, 14, 20, 12, 18, 10, 16, 22, 12, 8, 15, 19, 11][i % 13] * .6}px"></i>`).join('')}</div></div>
+      const PF = (window.MRAP && MRAP.get && MRAP.get()) || {}; const INI = (((PF.first || S.name || 'T')[0] || 'T') + ((PF.last || '')[0] || '')).toUpperCase();
+      const IC = (n, d) => window.MRI ? MRI(n) : d;
+      // 📹 v420: videollamada premium (estudio azul, subtítulo, tu recuadro con tus iniciales, anillo de tiempo en el micrófono)
+      const vc = h(`<div class="vk vk2"><div class="vk-screen"><img src="${PIC}.webp?v=2" alt="Mr. Arrieta" draggable="false">
+          <div class="vk-top"><span class="vk-live"><i></i>EN VIVO · <b class="vk-clk">00:00</b></span><div class="vk-sc"><span class="vk-dots">${Array.from({ length: N }, () => '<i></i>').join('')}</span><span class="vk-n" hidden>Pregunta 1/${N}</span><span class="vk-pt">★ <b class="vk-p">0</b></span><span class="vk-st" hidden>x<b>1</b></span></div></div>
+          <span class="vk-name">${IC('mic', '')}Mr. Arrieta</span><div class="vk-self"><span class="vk-av">${esc(INI)}</span><span class="vk-lv"><i></i><i></i><i></i><i></i><i></i></span><small>Tú</small></div>
+          <div class="vk-q"><b class="vk-qt"></b><small class="vk-qes"></small></div><div class="vk-fb" hidden></div></div>
+        <div class="vk-bot"><div class="vk-btns"><div class="vk-cb"><button type="button" class="vk-b vk-rep" aria-label="Escuchar la pregunta otra vez">${IC('vol', '')}</button><small>Repetir</small></div>
+          <div class="vk-cb vk-cbm"><div class="vk-timer"><button type="button" class="vk-b vk-mic" aria-label="Responder">${IC('mic', '')}</button><b hidden>${SECS}</b></div><small>Responder</small></div>
+          <div class="vk-cb"><button type="button" class="vk-b vk-hint" aria-label="Ver una pista">${IC('bulb', '')}</button><small>Pista</small></div></div>
+          <div class="vc vc-strip vc-${M.ageGroup()}" hidden><div class="vc-wv"></div></div>
           <div class="vk-msg">Toca el micrófono y responde</div><div class="vk-ans" hidden></div><button type="button" class="btn k sm vk-next" hidden>Siguiente pregunta →</button></div></div>`);
+      { const t0 = Date.now(); const ck = setInterval(() => { if (!vc.isConnected) return clearInterval(ck); const e = Math.floor((Date.now() - t0) / 1000); const c2 = vc.querySelector('.vk-clk'); if (c2) c2.textContent = String(Math.floor(e / 60)).padStart(2, '0') + ':' + String(e % 60).padStart(2, '0'); }, 1000); }
       body.appendChild(vc);
-      const $v = (sel) => vc.querySelector(sel); $v('.vk-rep').innerHTML = '🔊';
+      const $v = (sel) => vc.querySelector(sel);
       const setT = (t, frac) => { $v('.vk-timer b').textContent = Math.max(0, Math.ceil(t)); $v('.vk-timer').style.setProperty('--f', Math.max(0, frac)); };
       for (let i = 0; i < N; i++) {
         if (!stage.isConnected) break;
         const k = Q[i], tgt = k.a.split(' / ')[0], blank = k.a.includes('___');
-        $v('.vk-n').textContent = `Pregunta ${i + 1}/${N}`; $v('.vk-qt').textContent = k.q; $v('.vk-qes').textContent = k.es || '';
+        $v('.vk-n').textContent = `Pregunta ${i + 1}/${N}`; vc.querySelectorAll('.vk-dots i').forEach((d, j) => d.className = j < i ? 'on' : j === i ? 'cur' : ''); $v('.vk-qt').textContent = k.q; $v('.vk-qes').textContent = k.es || '';
         $v('.vk-ans').hidden = true; $v('.vk-next').hidden = true; $v('.vk-fb').hidden = true; $v('.vk-msg').textContent = 'Escucha la pregunta…';
         vc.classList.remove('ok', 'late'); const img = $v('.vk-screen img'); img.classList.remove('talk'); void img.offsetWidth; img.classList.add('talk');
         await play(k.qau); if (!stage.isConnected) break;
         const r = await new Promise((done) => {
           let left = SECS, timer = null, busy = false, over = false, late = false, hinted = false;
           const showAns = (why) => { $v('.vk-ans').innerHTML = `<small>${why}</small><b>${esc(tgt).replace(/___/g, '<u>___</u>')}</b>${blank ? '<em>Completa el ___ con tu información</em>' : ''}`; $v('.vk-ans').hidden = false; };
-          const tick = () => { if (busy || over) return; left -= 0.1; setT(left, left / SECS); if (left <= 0) { clearInterval(timer); late = true; vc.classList.add('late'); $v('.vk-msg').textContent = 'Take your time! Escucha la respuesta e inténtalo (sin puntos).'; showAns('Respuesta modelo'); if (k.aau) play(k.aau); $v('.vk-next').hidden = false; } };
+          const tick = () => { if (busy || over) return; left -= 0.1; setT(left, left / SECS); if (left <= 0) { clearInterval(timer); late = true; vc.classList.add('late'); $v('.vk-msg').textContent = 'Take your time! Responde con tus propias palabras (sin puntos).'; $v('.vk-next').hidden = false; } };
           setT(left, 1); timer = setInterval(tick, 100); $v('.vk-msg').textContent = blank ? 'Responde con tu información personal' : 'Toca el micrófono y responde';
           const finish = (ok) => { if (over) return; over = true; clearInterval(timer); done({ ok, late, hinted }); };
           $v('.vk-rep').onclick = () => { stop(); play(k.qau); };
-          $v('.vk-hint').onclick = () => { if (hinted) return; hinted = true; const w = tgt.replace(/___/g, '').trim().split(/\s+/); $v('.vk-msg').innerHTML = `💡 Empieza así: <b>${esc(w.slice(0, Math.min(2, w.length)).join(' '))}…</b>`; };
+          $v('.vk-hint').onclick = () => { if (hinted) return; hinted = true; const w = tgt.replace(/___/g, '').trim().split(/\s+/); $v('.vk-msg').innerHTML = `Empieza así: <b>${esc(w.slice(0, Math.min(2, w.length)).join(' '))}…</b>`; };
           $v('.vk-next').onclick = () => finish(false);
           $v('.vk-mic').onclick = async () => {
             if (busy || over) return;
-            if (!M.canSR) { showAns('Dila en voz alta'); if (k.aau) play(k.aau); $v('.vk-msg').textContent = 'Tu navegador no reconoce voz: repite en voz alta 🗣️'; setTimeout(() => finish(true), 2600); return; }
-            busy = true; stop(); vc.classList.add('rec'); $v('.vk-msg').textContent = '🎧 Te escucho… habla con tu voz normal';
+            if (!M.canSR) { showAns('Dila en voz alta'); if (k.aau) play(k.aau); $v('.vk-msg').textContent = 'Tu navegador no reconoce voz: repite en voz alta'; setTimeout(() => finish(true), 2600); return; }
+            busy = true; stop(); vc.classList.add('rec'); $v('.vk-msg').textContent = 'Te escucho… habla con tu voz normal';
             const rr = await M.listen(9000, { quick: true }); vc.classList.remove('rec'); busy = false; if (over) return;
-            if (!rr.alts || !rr.alts.length) { $v('.vk-msg').textContent = rr.error === 'not-allowed' ? 'Permite el micrófono en tu navegador para responder 🎙️' : 'No te escuché 🙉 Acércate un poco al micrófono e intenta otra vez.'; return; }
-            const sc = M.speechScore(tgt.replace(/___/g, ''), rr.alts); const ok = blank ? M.words(rr.alts[0]).length >= 2 && sc.score >= 45 : sc.score >= 55;
-            const fb = $v('.vk-fb'); fb.hidden = false; fb.className = 'vk-fb ' + (ok ? 'good' : 'bad'); fb.innerHTML = `<small>Escuché</small>“${esc(sc.heard || rr.alts[0])}”`;
-            if (ok) { sfx('ok'); M.praise(); vc.classList.add('ok'); $v('.vk-msg').textContent = late ? '✅ ¡Bien dicho!' : '✅ ¡Excelente!'; setTimeout(() => finish(true), 1500); }
-            else { sfx('bad'); setTimeout(M.encourage, 250); $v('.vk-msg').textContent = 'Casi. Inténtalo otra vez o escucha la respuesta.'; const va = $v('.vk-ans'); if (va.hidden || !va.querySelector('b')) { va.innerHTML = `<button type="button" class="vk-hear">🔊 Escuchar la respuesta</button>`; va.hidden = false; va.querySelector('.vk-hear').onclick = () => { showAns('Así se dice'); if (k.aau) play(k.aau); }; } }
+            if (!rr.alts || !rr.alts.length) { $v('.vk-msg').textContent = rr.error === 'not-allowed' ? 'Permite el micrófono en tu navegador para responder' : 'No te escuché. Acércate un poco al micrófono e intenta otra vez.'; return; }
+            const fj = M.freeJudge(k.q, tgt.replace(/___/g, ''), rr.alts); const sc = { heard: fj.heard }; const ok = fj.ok; // v420: respuesta libre + corrección de gramática
+            const fb = $v('.vk-fb'); fb.hidden = false; fb.className = 'vk-fb ' + (ok ? 'good' : 'bad'); fb.innerHTML = `<small>Escuché</small>“${esc(sc.heard || rr.alts[0])}”${ok && fj.fix ? `<em class="vk-fix">Mejor dilo así: <b>${esc(fj.fix)}</b></em>` : ''}`;
+            if (ok) { sfx('ok'); M.praise(); vc.classList.add('ok'); $v('.vk-msg').textContent = late ? '¡Bien dicho!' : '¡Excelente!'; setTimeout(() => finish(true), fj.fix ? 3200 : 1500); }
+            else { sfx('bad'); setTimeout(M.encourage, 250); $v('.vk-msg').textContent = 'Responde con una frase completa, con tus propias palabras.'; $v('.vk-next').hidden = false; }
           };
         });
         if (r.ok) { c++; if (!r.late) { streak++; pts += (r.hinted ? 50 : 100) * Math.min(3, streak); } else streak = 0; } else streak = 0;
@@ -1153,7 +1165,10 @@
     const ta = h(`<textarea class="hw${AG === 'teens' ? ' tpost' : ''}" placeholder="${AG === 'teens' ? 'Escribe tu post en inglés…' : 'Escribe aquí en inglés…'}">${esc(saved)}</textarea>`); body.appendChild(ta);
     if (AG === 'teens' && hw.kw.length) { const chips = h(`<div class="tp-kw">${hw.kw.map(k => `<em data-k="${esc(k.toLowerCase())}">${esc(k)}</em>`).join('')}</div>`); body.appendChild(chips);
       const upd = () => { const t = ' ' + ta.value.toLowerCase().replace(/[^a-z0-9' ]/g, ' ') + ' '; $$('em', chips).forEach(e => e.classList.toggle('done', t.includes(' ' + e.dataset.k + ' '))); }; ta.addEventListener('input', upd); upd(); }
-    const ex = h(`<details style="margin-top:10px"><summary style="cursor:pointer;font-weight:700">👀 Ver un ejemplo</summary><div class="tipbox" style="margin-top:8px">${esc(hw.model)}</div></details>`); body.appendChild(ex);
+    // ✍️ v420: la tarea la escribe el estudiante: no se puede pegar texto ni copiar el ejemplo (el ejemplo se ve como imagen de guía, no se selecciona)
+    ['paste', 'drop'].forEach(ev => ta.addEventListener(ev, e => { e.preventDefault(); M.toast('Escríbela tú mismo: así aprendes de verdad.'); }));
+    const ex = h(`<details style="margin-top:10px"><summary style="cursor:pointer;font-weight:700">Ver un ejemplo</summary><div class="tipbox hw-ex" style="margin-top:8px">${esc(hw.model)}</div><small class="muted">Es solo una guía: escribe sobre ti con tus propias palabras.</small></details>`); body.appendChild(ex);
+    const exEl = $('.hw-ex', ex); ['copy', 'cut', 'contextmenu', 'selectstart', 'dragstart'].forEach(ev => exEl.addEventListener(ev, e => e.preventDefault()));
     const out = h(`<ul class="checks"></ul>`); body.appendChild(out);
     const sent = h(`<div class="ce-hwsent hidden"></div>`); body.appendChild(sent);
     const fbBox = h(`<div class="ce-hwfb hidden"></div>`); body.appendChild(fbBox);
@@ -1167,6 +1182,7 @@
       };
       const check = () => {
         const txt = ta.value.trim(); if (txt.length < 5) { ta.focus(); M.toast('Escribe tu tarea primero ✍️'); return; }
+        { const wd = (x) => M.words(x).filter(w => w.length > 2); const a = wd(txt), m = wd(hw.model || ''); if (m.length >= 4) { const ms = new Set(m), same = a.filter(w => ms.has(w)).length; if (a.length && same / Math.max(a.length, m.length) >= .7) { out.innerHTML = `<li class="no"><span>❌</span><span><b>Esto es igual al ejemplo.</b> Escribe sobre ti con tus propias palabras: tu país, tus personas y tus ideas.</span></li>`; sfx('bad'); ta.focus(); return; } } } // v420: no vale copiar el ejemplo
         const fb = checkWriting(txt, hw); out.innerHTML = '';
         fb.items.forEach(f => out.appendChild(h(`<li class="${f.cls}"><span>${f.cls === 'ok' ? '✅' : f.cls === 'no' ? '❌' : '💡'}</span><span>${f.msg}</span></li>`)));
         const prevSent = S.hw[p.id] && S.hw[p.id].sent;
@@ -1281,7 +1297,7 @@
     const head = AG === 'kids' ? '¡Misión cumplida!' : pct >= 90 ? '¡Lección perfecta! 🏆' : pct >= 70 ? '¡Muy buen trabajo! 💪' : '¡Lección completada! 👏';
     const advice = pct >= 90 ? `¡Lo hiciste increíble, ${esc(S.name.split(' ')[0])}! Ya dominas este tema. Sigue con la próxima lección.` : pct >= 70 ? 'Vas muy bien. Repasa las palabras que te costaron y pasa a la siguiente lección.' : 'Te recomendamos repetir esta lección mañana: la repetición es la clave para aprender. ¡Tú puedes!';
     app.innerHTML = `<div class="player"><div class="card">
-      <div class="center">${M.mascot('mascot bounce', pct >= 90 ? 'celebrate' : pct >= 70 ? 'thumbs' : 'smile')}<h2 style="font-size:30px">${head}</h2><p class="muted">${esc(p._t.title)} · ${PL(p)}: ${esc(p.title)}</p>${revM ? `<p class="ce-revchip">🔁 Repasando: ${M.revCount()} de ${M.totalParts()} lecciones</p>` : ''}</div>
+      <div class="center"><h2 style="font-size:30px">${head}</h2><p class="muted">${esc(p._t.title)} · ${PL(p)}: ${esc(p.title)}</p>${revM ? `<p class="ce-revchip">🔁 Repasando: ${M.revCount()} de ${M.totalParts()} lecciones</p>` : ''}</div>
       <div class="res-stars">${[1, 2, 3].map(i => `<span style="${i <= stars ? '' : 'opacity:.2;filter:grayscale(1)'}">⭐</span>`).join('')}</div>
       <div class="stats"><div class="stat"><b>${pct}%</b><small>Precisión</small></div><div class="stat"><b>+${run.xp + bonus}</b><small>Puntos ganados ⚡</small></div><div class="stat"><b>${c}/${t}</b><small>Respuestas</small></div></div>
       ${ageClose(p, nx, AG, run.xp + bonus)}

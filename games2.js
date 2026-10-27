@@ -58,7 +58,8 @@
       const wh = $('.sw-wheel', wrap); wh.style.transition = 'transform 3.2s cubic-bezier(.17,.67,.21,1)'; wh.style.transform = `rotate(${angle}deg)`; sfx('tap');
       await sleep(3300); sfx('win');
       const it = seg[idx];
-      const card = h(`<div class="sw-card"><small>Número ${idx + 1}</small><div class="sw-es">${esc(it.es)}</div><p class="muted" style="margin:4px 0 10px">¿Cómo se dice en inglés?</p></div>`); body.appendChild(card);
+      const card = h(`<div class="sw-card"><small>Número ${idx + 1}</small><div class="sw-es">${esc(it.es)}</div><p class="muted" style="margin:4px 0 6px">¿Cómo se dice en inglés?</p><button type="button" class="btn w sm sw-hear">${window.MRI ? MRI('vol') : ''} Escuchar pista</button></div>`); body.appendChild(card);
+      $('.sw-hear', card).onclick = (e) => { stop(); play(it.au, { btn: e.currentTarget }); }; // v420: pista de audio para guiarse
       const ok = await new Promise(res => {
         const mic = h(`<button class="mic">🎤</button>`); const st = h(`<p class="center" style="font-weight:700;margin:4px 0">${M.canSR ? 'Toca el micrófono y dila en inglés' : 'Escribe la palabra en inglés'}</p>`);
         const inp = h(`<div class="${M.canSR ? 'hidden' : ''}" style="max-width:420px;margin:0 auto"><input class="inp" placeholder="Escribe en inglés…" autocomplete="off" autocapitalize="off"></div>`);
@@ -66,11 +67,11 @@
         if (window.MRVC && M.canSR) { card.append(MRVC.card({ target: mic, label: 'TOCA EL MICRÓFONO Y DILA EN INGLÉS', mascot: false }), mic, st, inp); st.textContent = ''; } else card.append(mic, st, inp); body.appendChild(bar);
         let hints = 0;
         const finish = (good, heard) => { mic.disabled = true; $$('button', bar).forEach(b => b.disabled = true); res({ good, heard }); };
-        mic.onclick = async () => { stop(); mic.classList.add('rec'); st.textContent = '🎧 Te escucho…'; const r = await M.listen(6000); mic.classList.remove('rec');
-          if (!r.alts.length) { st.textContent = 'No te escuché 🙉 Intenta otra vez o escríbela.'; return; }
-          const sc = M.speechScore(it.en, r.alts); if (sc.score >= 70) { M.praise(); finish(true, sc.heard); } else { st.innerHTML = `❌ Escuché “${esc(sc.heard)}”. Intenta otra vez (usa 💡 Pista).`; sfx('bad'); setTimeout(M.encourage, 250); } };
+        mic.onclick = async () => { stop(); mic.classList.add('rec'); st.textContent = '🎧 Te escucho…'; const r = await M.listen(6000, { quick: true }); mic.classList.remove('rec');
+          if (!r.alts.length) { st.textContent = 'No te escuché. Intenta otra vez, toca «Escuchar pista» o escríbela.'; return; }
+          const sc = /^[A-Za-z]$/.test(it.en.trim()) ? M.letterScorer(it.en.trim())(r.alts) : M.speechScore(it.en, r.alts); if (sc.score >= 70) { M.praise(); finish(true, sc.heard); } else { st.innerHTML = `❌ Escuché “${esc(sc.heard)}”. Intenta otra vez (usa 💡 Pista).`; sfx('bad'); setTimeout(M.encourage, 250); } };
         if ($('#ty', bar)) $('#ty', bar).onclick = () => { inp.classList.remove('hidden'); $('input', inp).focus(); };
-        $('#sh', bar).onclick = () => { hints++; if (hints === 1) st.innerHTML = `💡 Empieza por <b>${esc(it.en[0].toUpperCase())}</b> y tiene ${it.en.replace(/[^A-Za-z]/g, '').length} letras`; else { st.innerHTML = '💡 Escucha cómo suena 🔊'; play(it.au); } };
+        $('#sh', bar).onclick = () => { hints++; st.innerHTML = it.en.trim().length > 1 ? `Empieza por <b>${esc(it.en[0].toUpperCase())}</b> y tiene ${it.en.replace(/[^A-Za-z]/g, '').length} letras. Escucha cómo suena.` : 'Escucha cómo suena y repítela.'; stop(); play(it.au); };
         $('#sk', bar).onclick = () => { const v = $('input', inp).value.trim(); if (v) finish(M.norm(v) === M.norm(it.en), v); else if (M.canSR) mic.click(); };
         $('input', inp).onkeydown = e => { if (e.key === 'Enter') $('#sk', bar).click(); };
       });

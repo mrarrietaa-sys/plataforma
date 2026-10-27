@@ -200,7 +200,7 @@
       <div class="lp-pg">${C.map(p => `<a class="lp-pl c-${p.c}${p.tag ? ' hot' : ''}" ${p.k === 'free' ? `href="#" data-trial${kid ? ' data-kid' : ''}` : `href="inscripcion.html?plan=${p.k}"`}>${p.tag ? `<span class="lp-tag">${p.tag}</span>` : ''}
         <div class="lp-plh"><span class="ic">${MRI(p.ic)}</span><b>${p.name}</b></div><div class="lp-pr"><strong>${p.price}</strong><small>${p.per}</small></div>${p.pc ? `<span class="lp-ppc">Solo ${p.pc} por clase</span>` : '<span class="lp-ppc gh">COP</span>'}
         <p class="lp-hook">${p.hook}</p><ul>${p.b.map(x => `<li>${MRI('check')}<span>${x}</span></li>`).join('')}</ul><small class="lp-pn">${p.note}</small><span class="lp-pb"><span class="lg">${p.btn}</span><span class="sh">${p.k === 'free' ? 'Empezar gratis' : 'Lo quiero'}</span></span></a>`).join('')}</div>
-      <p class="lp-swipe">Desliza para ver todos los planes →</p><p class="lp-pnote"><a href="politica.html">Ver condiciones</a></p></section>`;
+      <p class="lp-swipe">Desliza para ver todos los planes →</p><p class="lp-pnote"><a href="politica.html" data-cond>Ver condiciones</a></p></section>`;
   }
 
   // 🏷️ etiqueta de sección: el cliente siempre sabe si está en Adultos o en Niños y jóvenes

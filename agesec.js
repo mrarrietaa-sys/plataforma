@@ -182,6 +182,9 @@
   /* =================== ESCUCHA Y PRACTICA (preguntas clave) =================== */
   const RS = async (tgt, ms) => { try { return await M().recordScore(tgt, ms); } catch (e) { return null; } };
   const judge = (r, tgt, blank) => { if (!r) return false; if (r.self) return true; if (r.score == null) return false; const w = (r.heard || (r.alts || [])[0] || '').trim().split(/\s+/).filter(Boolean).length; return blank ? w >= 1 : r.score >= 55; }; // respuestas personales (nombre, letra, edad…): basta con que responda
+  // v420: respuesta libre: se acepta lo que diga; solo se corrige gramática/pronunciación
+  const FJ = (r, k, tgt) => { if (!r) return { ok: false, heard: '' }; if (r.self) return { ok: true, heard: '' }; return M().freeJudge(k.q, tgt.replace(/___/g, ''), r.alts || []); };
+  const fixHTML = (f) => f && f.fix ? `<div class="as-fbk fx">${SV(I.bulb)}<span>Mejor dilo así: <b>${esc(f.fix)}</b></span></div>` : '';
   async function keyq(stage, p) {
     const Q = (p.keyq || []).filter(k => k && k.q && k.a); if (!Q.length) return null;
     return ag() === 'teens' ? voiceNotes(stage, Q) : interview(stage, Q);
@@ -198,12 +201,13 @@
       await sleep(200); if (k.qau) play(k.qau);
       const ok = await new Promise(done => { let tries = 0;
         body.querySelector('#as-ql').onclick = () => k.qau && play(k.qau);
-        body.querySelector('#as-hint').onclick = () => { const w = tgt.replace(/___/g, '…').split(/\s+/); body.querySelector('#as-h').innerHTML = `Empieza así: <b>${esc(w.slice(0, 2).join(' '))}…</b>${blank ? '<small>Completa con tu información.</small>' : ''}`; };
+        body.querySelector('#as-hint').onclick = () => { body.querySelector('#as-h').innerHTML = `Responde con tus propias palabras. Ej. de cómo empezar: <b>${/^\s*(are|is|am|do|does|can|was|were)\b/i.test(k.q) ? 'Yes, … / No, …' : esc(tgt.replace(/___/g, '…').split(/\s+/).slice(0, 2).join(' ')) + '…'}</b>`; };
         body.querySelector('#as-mic').onclick = async (e) => { const bt = e.currentTarget; bt.disabled = true; const tr = body.querySelector('#as-tr'); tr.textContent = 'Te escucho…';
           const r = await RS(tgt.replace(/___/g, ''), Math.max(4000, tgt.split(' ').length * 900 + 2200)); bt.disabled = false; tries++;
-          if (judge(r, tgt, blank)) { sfx('ok'); try { M().praise(); } catch (er) { } tr.innerHTML = `<b class="as-ok">${SV(I.ck)}¡Muy bien!</b>${r && r.heard ? ` <small>Escuché: “${esc(r.heard)}”</small>` : ''}`; setTimeout(() => done(true), 1300); return; }
-          sfx('bad'); tr.innerHTML = `Casi. ${tries >= 2 ? `Así se dice: <b>${esc(tgt)}</b>` : 'Intenta otra vez, despacio.'}${tries >= 2 ? '<button type="button" class="as-lnk" id="as-nx">Siguiente</button>' : ''}`;
-          if (tries >= 2) { if (k.aau) play(k.aau); body.querySelector('#as-nx').onclick = () => done(false); } };
+          const fj = FJ(r, k, tgt);
+          if (fj.ok) { sfx('ok'); try { M().praise(); } catch (er) { } tr.innerHTML = `<b class="as-ok">${SV(I.ck)}¡Muy bien!</b>${fj.heard ? ` <small>Escuché: “${esc(fj.heard)}”</small>` : ''}${fixHTML(fj)}`; setTimeout(() => done(true), fj.fix ? 3200 : 1300); return; }
+          sfx('bad'); tr.innerHTML = `${fj.heard ? 'Responde con una frase completa, con tus propias palabras.' : 'No te escuché bien. Intenta otra vez, despacio.'}${tries >= 2 ? '<button type="button" class="as-lnk" id="as-nx">Siguiente</button>' : ''}`;
+          if (tries >= 2) { body.querySelector('#as-nx').onclick = () => done(false); } };
       });
       if (ok) c++;
     }
@@ -226,12 +230,12 @@
       const ok = await new Promise(done => { let tries = 0;
         mic.onclick = async () => { mic.disabled = true; mic.classList.add('rec'); ci.textContent = 'Grabando nota de voz…';
           const r = await RS(tgt.replace(/___/g, ''), Math.max(4000, tgt.split(' ').length * 900 + 2200)); mic.classList.remove('rec'); tries++;
-          const good = judge(r, tgt, blank); const said = (r && (r.heard || (r.alts || [])[0])) || '';
+          const fj = FJ(r, k, tgt), good = fj.ok; const said = fj.heard || '';
           const out = H(`<div class="as-vn out ${good ? '' : 'bad'}"><span class="as-vw">${bars()}</span><small>0:0${Math.min(9, 2 + tgt.split(' ').length)}</small>${said ? `<div class="as-vt">${esc(said)}</div>` : ''}<span class="as-tick">${good ? '✓✓' : '!'}</span></div>`); cb.appendChild(out); cb.scrollTop = cb.scrollHeight;
-          if (good) { sfx('ok'); tr.innerHTML = ''; setTimeout(() => done(true), 900); return; }
+          if (good) { sfx('ok'); tr.innerHTML = fixHTML(fj); setTimeout(() => { tr.innerHTML = ''; done(true); }, fj.fix ? 3200 : 900); return; }
           sfx('bad'); mic.disabled = false; ci.textContent = 'Intenta otra vez';
-          tr.innerHTML = tries >= 2 ? `<div class="as-fbk no">${SV(I.bulb)}<span>Puedes decir: <b>${esc(tgt)}</b></span></div><button type="button" class="as-gt" id="as-nx">Siguiente nota${SV(I.r)}</button>` : `<span class="as-hint">Casi. Habla con tu voz normal, cerca del celular.</span>`;
-          if (tries >= 2) { if (k.aau) play(k.aau); body.querySelector('#as-nx').onclick = () => { tr.innerHTML = ''; done(false); }; } };
+          tr.innerHTML = tries >= 2 ? `<span class="as-hint">Responde con una frase completa, con tus propias palabras.</span><button type="button" class="as-gt" id="as-nx">Siguiente nota${SV(I.r)}</button>` : `<span class="as-hint">${said ? 'Responde con una frase completa, con tus propias palabras.' : 'No te escuché bien. Habla con tu voz normal, cerca del celular.'}</span>`;
+          if (tries >= 2) { body.querySelector('#as-nx').onclick = () => { tr.innerHTML = ''; done(false); }; } };
       });
       mic.disabled = true; if (ok) { c++; streak++; best = Math.max(best, streak); } else streak = 0; body.querySelector('#as-sk').textContent = 'Racha ' + streak;
     }
