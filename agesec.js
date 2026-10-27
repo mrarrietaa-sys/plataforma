@@ -78,7 +78,7 @@
       let busy = false, card = null;
       const show = () => {
         body.querySelectorAll('.as-sbar i').forEach((x, k) => { x.className = k < i ? 'on' : k === i ? 'cur' : ''; });
-        const q = items[i]; deck.innerHTML = `<div class="as-card as-b2"></div><div class="as-card as-b1"></div><div class="as-card as-top"><span class="as-cl">${ag() === 'adult' ? 'TARJETA' : 'CARD'} ${i + 1} DE ${items.length}</span><div class="as-en">${esc(q.it.en)}</div><div class="as-eq">=</div><div class="as-es">${esc(q.shown)}</div><button type="button" class="as-pl">${SV(I.vol)}Escuchar</button><span class="as-stamp"></span></div>`;
+        const q = items[i]; deck.innerHTML = `<div class="as-card as-b2"></div><div class="as-card as-b1"></div>${ag() === 'adult' ? `<div class="as-card as-top fc9"><div class="fc9-ph">${q.it.img ? M().photo(q.it.img) : ''}<em>TARJETA ${i + 1} DE ${items.length}</em><button type="button" class="as-pl fc9-pl" aria-label="Escuchar">${SV(I.vol)}</button></div><div class="fc9-bd"><div class="as-en">${esc(q.it.en)}</div><small>¿Significa…?</small><div class="as-es">${esc(q.shown)}</div></div><span class="as-stamp"></span></div>` : `<div class="as-card as-top"><span class="as-cl">${ag() === 'adult' ? 'TARJETA' : 'CARD'} ${i + 1} DE ${items.length}</span><div class="as-en">${esc(q.it.en)}</div><div class="as-eq">=</div><div class="as-es">${esc(q.shown)}</div><button type="button" class="as-pl">${SV(I.vol)}Escuchar</button><span class="as-stamp"></span></div>`}`;
         card = deck.querySelector('.as-top'); card.querySelector('.as-pl').onclick = (e) => { e.stopPropagation(); play(q.it.au); }; setTimeout(() => play(q.it.au), 250); drag(card);
       };
       const answer = async (yes) => {

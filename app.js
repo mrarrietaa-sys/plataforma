@@ -444,17 +444,16 @@
   // 🧪 v423: VISTA PREVIA de la lección corta (9 pasos). Se activa con ?nueva=1 y se apaga con ?nueva=0 (solo en ese navegador)
   try { const q = new URLSearchParams(location.search).get('nueva'); if (q === '1') localStorage.setItem('mra_v9', '1'); if (q === '0') localStorage.removeItem('mra_v9'); } catch (e) { }
   const V9 = () => { try { return localStorage.getItem('mra_v9') === '1' && M.ageGroup() === 'adult'; } catch (e) { return false; } };
-  function buildSteps9(p) {
-    window.__V9 = true; // ejercicios cortos (máx. 5 preguntas)
+  function buildSteps9(p) { // orden aprobado: Goal → Speaking (repaso) → Explanation → Practice → Reading → Mission → Music → Writing
+    window.__V9 = true;
     const st = [{ sec: 'Goal', k: 'goal' }];
-    if (M.prevPart(p)) st.push({ sec: 'Review', k: 'review' }); // repaso muy corto: 3 tarjetas
+    if (M.prevPart(p)) st.push({ sec: 'Speaking', k: 'review' });
     st.push({ sec: 'Explanation', k: 'learn' });
-    if (p.reading) st.push({ sec: 'Reading', k: 'reading' });
-    if (p.keyq) st.push({ sec: 'Listen & practice', k: 'keyq' });
+    if (p.keyq) st.push({ sec: 'Practice', k: 'keyq' });
     const acts = (C.PLAN || PLAN)[p.id] || p.acts;
-    const g = acts.find(a => !['learn', 'speak', 'speakWords'].includes(a)); if (g) st.push({ sec: 'Practice', k: g }); // un juego que mezcla palabras de hoy y de la lección anterior (repaso incluido)
-    const sp = acts.find(a => a === 'speak' || a === 'speakWords') || (p.sentences ? 'speak' : 'speakWords');
-    st.push({ sec: 'Oral task', k: p.letters ? 'speakLetters' : sp });
+    const g = acts.find(a => !['learn', 'speak', 'speakWords'].includes(a)); if (g) st.push({ sec: 'Practice', k: g });
+    if (p.reading) st.push({ sec: 'Reading', k: 'reading' });
+    if (missionFor(p)) st.push({ sec: 'Mission', k: 'mission' });
     if (songFor(p)) st.push({ sec: 'Music', k: 'music' });
     if (p.hw) st.push({ sec: 'Writing', k: 'hw' });
     return st;
@@ -716,6 +715,17 @@
   const STEP = {
     goal: async (stage, p) => {
       const prev = M.prevPart(p);
+      if (V9()) { // 🎯 Goal dinámico: Mr. Arrieta dice el objetivo con audio
+        const g = p.goal || { en: p.title, es: p.es }; const can = ((p.sentences || []).length ? p.sentences : (p.vocab || [])).map(x => x.en).filter((x, i, a) => x && a.indexOf(x) === i).slice(0, 3);
+        const nSteps = buildSteps9(p).length, mins = Math.max(8, Math.min(14, nSteps + 4));
+        stage.innerHTML = `<div class="g9"><div class="g9-h"><img src="mra-present.webp" alt="Mr. Arrieta"><div class="g9-b"><span class="g9-l">TOPIC ${p.topic} · ${esc(PL(p).toUpperCase())}</span><b>${esc(g.en)}</b><small>${esc(g.es)}</small><button type="button" class="g9-au">${window.MRI ? MRI('vol') : ''}Escuchar</button></div></div>
+          ${can.length ? `<div class="g9-t">AL TERMINAR PODRÁS DECIR</div><div class="g9-c">${can.map(x => `<span>${window.MRI ? MRI('check') : ''}${esc(x)}</span>`).join('')}</div>` : ''}
+          <div class="g9-m">${window.MRI ? MRI('clock') : ''}Unos ${mins} minutos · ${nSteps} pasos · Speaking, Listening, Reading y Writing</div>
+          ${prev && !(S.parts[prev.id] && S.parts[prev.id].done) ? `<p class="hint" style="margin-top:6px">Te recomendamos completar primero: ${esc(prev._t.title)} · ${PL(prev)}</p>` : ''}</div>`;
+        const say = () => { stop(); if (window.AUD && window.AUD['g9_' + p.id]) play('g9_' + p.id, { btn: $('.g9-au', stage) }); };
+        $('.g9-au', stage).onclick = say; M.loadAudio(['goal9_' + (+M.MOD.n || 1)]).then(() => setTimeout(say, 300)).catch(() => { });
+        await A.waitNext(stage, '¡Empezar!'); sfx('win'); return null;
+      }
       stage.innerHTML = `<div class="center">
         <span class="lbl">Topic ${p.topic} · ${PL(p)}</span>
         <h2 style="font-size:28px;margin-top:12px">${esc(p._t.title)}</h2>
@@ -815,7 +825,7 @@
       rp.onclick = () => { if (rp.classList.contains('playing')) stop(); else karaoke(); };
       readAloud(box, $('#rv', box), $('#rvr', box));
       body.appendChild(h(`<h3 style="margin-top:18px">${AG === 'teens' ? 'True or false?' : 'Answer YES or NO'}</h3>`));
-      if (window.__V9 && r.q.length > 2) r = Object.assign({}, r, { q: r.q.slice(0, 2) });
+      if (window.__V9 && r.q.length > 3) r = Object.assign({}, r, { q: r.q.slice(0, 3) });
       const qs = r.q.map((q, i) => { const e = h(`<div class="yn"><p>${i + 1}) ${esc(q.s)}</p><div class="b"><button data-v="yes">${AG === 'teens' ? 'TRUE' : 'YES'}</button><button data-v="no">${AG === 'teens' ? 'FALSE' : 'NO'}</button></div></div>`); $$('button', e).forEach(b => b.onclick = () => { $$('button', e).forEach(x => x.classList.remove('sel')); b.classList.add('sel'); e._v = b.dataset.v; sfx('tap'); }); body.appendChild(e); return e; });
       const bar = h(`<div class="actionbar"><button class="btn k lg">Comprobar ✓</button></div>`); body.appendChild(bar);
       const c = await new Promise(res => { $('button', bar).onclick = async () => {

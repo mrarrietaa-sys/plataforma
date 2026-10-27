@@ -7155,3 +7155,30 @@ body.ag-teens .pg-rows{background:#fff}
 .ml9-d{display:flex;gap:5px}.ml9-d i{width:18px;height:5px;border-radius:5px;background:#e2e8f0}.ml9-d i.on{background:#E3242B}.ml9-d i.ok{background:#0B2A5B}
 .ml9-f div{display:flex;gap:6px}.ml9.done{opacity:.85}
 @media(max-width:520px){.ml9-b{flex-direction:column;text-align:center}}
+/* v429 · Goal dinámico (lección corta) */
+.g9{display:flex;flex-direction:column;gap:10px;padding:4px 2px}
+.g9-h{display:flex;gap:12px;align-items:center}
+.g9-h img{height:clamp(130px,30vw,180px);flex:none;animation:mraFloat 3.4s ease-in-out infinite}
+.g9-b{position:relative;flex:1;background:#0B2A5B;color:#fff;border-radius:18px;padding:14px 16px;animation:g9In .5s ease}
+.g9-b:before{content:"";position:absolute;left:-9px;top:40%;border:9px solid transparent;border-right-color:#0B2A5B;border-left:0}
+@keyframes g9In{from{opacity:0;transform:translateX(16px) scale(.97)}}
+.g9-l{display:block;font:800 10.5px Poppins,sans-serif;letter-spacing:.12em;color:#ff8a8f;margin-bottom:4px}
+.g9-b b{display:block;font:800 clamp(16px,4.2vw,20px)/1.3 Poppins,sans-serif}.g9-b small{display:block;opacity:.8;font-size:13px;margin-top:4px}
+.g9-au{margin-top:9px;display:inline-flex;gap:6px;align-items:center;background:rgba(255,255,255,.15);color:#fff;border:0;border-radius:99px;padding:6px 12px;font:700 12px Poppins,sans-serif;cursor:pointer}.g9-au svg{width:15px;height:15px}.g9-au.playing{background:#E3242B}
+.g9-t{font:800 11px Poppins,sans-serif;letter-spacing:.1em;color:#E3242B;margin-top:4px}
+.g9-c{display:flex;flex-wrap:wrap;gap:7px}.g9-c span{display:inline-flex;gap:6px;align-items:center;background:#eef3fb;border-radius:99px;padding:7px 12px;font:700 13px Poppins,sans-serif;color:#0B2A5B;animation:g9In .5s ease backwards}.g9-c span:nth-child(2){animation-delay:.15s}.g9-c span:nth-child(3){animation-delay:.3s}.g9-c svg{width:14px;height:14px;color:#16a34a}
+.g9-m{display:flex;gap:8px;align-items:center;background:#f8fafd;border:1px solid #e3e9f3;border-radius:12px;padding:9px 12px;font-size:12.5px;color:#334155}.g9-m svg{width:16px;height:16px;color:#E3242B;flex:none}
+@media(max-width:520px){.g9-h{flex-direction:column}.g9-b:before{left:50%;top:-9px;transform:translateX(-50%);border:9px solid transparent;border-bottom-color:#0B2A5B;border-top:0}}
+/* v429 · cartas del repaso (adultos) con foto y audio */
+.as-adult .as-deck{height:360px}
+.as-adult .as-card{height:340px}
+.fc9{padding:0!important;overflow:hidden;justify-content:flex-start!important;gap:0!important}
+.fc9-ph{position:relative;width:100%;height:150px;background:linear-gradient(135deg,#1d6fe0,#0B2A5B);flex:none}
+.fc9-ph .ph{margin:0;width:100%;height:100%;border-radius:0}.fc9-ph .ph img{width:100%;height:100%;object-fit:cover}
+.fc9-ph em{position:absolute;top:10px;left:10px;font:800 10px Poppins,sans-serif;letter-spacing:.1em;background:rgba(255,255,255,.92);color:#E3242B;padding:4px 9px;border-radius:99px;font-style:normal;z-index:2}
+.as-adult .fc9-pl{position:absolute;right:12px;bottom:-20px;width:42px;height:42px;border-radius:50%;background:#E3242B!important;border:0!important;color:#fff!important;padding:0!important;display:grid!important;place-items:center;box-shadow:0 6px 14px rgba(227,36,43,.4);z-index:2;margin:0!important}
+.fc9-pl .as-i{width:18px;height:18px}
+.fc9-bd{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:14px;text-align:center}
+.fc9-bd small{color:#64748b;font-size:12px}
+.as-adult .fc9 .as-es{background:#eef3fb;border-radius:12px;padding:6px 16px;color:#0B2A5B}
+.as-adult .as-no{border-color:#fecaca!important;color:#E3242B!important}.as-adult .as-yes{background:#16a34a!important;border-color:#16a34a!important}

@@ -29,7 +29,7 @@
 
   /* ================= 1. LEARN (Explanation) ================= */
   async function learn(stage, p, o = {}) {
-    if (window.__V9 && p.vocab && p.vocab.length > 6) p = Object.assign({}, p, { vocab: p.vocab.slice(0, 6) }); // lección corta: 6 tarjetas // o: { noTip, title, ins } (Kids/Teens ya vieron la regla en su cómic / historias)
+    if (window.__V9 && p.vocab && p.vocab.length > 5) p = Object.assign({}, p, { vocab: p.vocab.slice(0, 5) }); // lección corta: 5 tarjetas // o: { noTip, title, ins } (Kids/Teens ya vieron la regla en su cómic / historias)
     const isPl = !!p.plurals;
     // escuchar + grabar la voz del estudiante repitiendo + calificación con voz (o autoevaluación si el navegador no reconoce voz)
     const canRec = M.canSR || !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder);
@@ -109,7 +109,7 @@
 
   /* ---------- generic question loop ---------- */
   async function qloop(stage, meta, items, renderQ) {
-    if (window.__V9 && items.length > 5) items = items.slice(0, 5); // lección corta: máximo 5 preguntas
+    if (window.__V9 && items.length > 3) items = items.slice(0, 3); // lección corta: máximo 3 preguntas
     let c = 0; const missed = [];
     for (let i = 0; i < items.length; i++) {
       if (!stage.isConnected) break;
