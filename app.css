@@ -7359,3 +7359,5 @@ body.ag-teens .pg-rows{background:#fff}
 .g9-mq.lq3{grid-template-columns:repeat(3,1fr)}.g9-mq.lq3 button{font-size:24px;padding:12px 0;text-align:center}
 .g9-ab{display:flex;flex-direction:column;gap:12px;text-align:center}.g9-ab small{color:#9fb6dd;font:700 12px Poppins,sans-serif}
 .vc-pill.inl{position:relative;left:auto!important;top:auto!important;margin:8px auto;width:max-content;max-width:100%;z-index:1}
+/* v454: en celular el Diccionario (Mr. Arrieta) se acomoda en el borde derecho, pequeño, para no tapar la lectura */
+@media(max-width:899px){#dict-fab:not(.drag){left:auto!important;right:0!important;top:auto!important;bottom:120px!important;padding:2px 3px 2px 2px!important;border-radius:999px 0 0 999px!important;border-right:0!important}#dict-fab img{height:36px!important;width:31px!important}}
