@@ -388,7 +388,7 @@
   }
 
   /* =================== MÚSICA =================== */
-  function musicFor(p) { const D = window.MRMUSIC && MRMUSIC[ag()]; return D && D[p.id] && (+((M().MOD || {}).n) || 1) === 1 ? D[p.id] : null; }
+  function musicFor(p) { const n = +((M().MOD || {}).n) || 1, S = n === 1 ? window.MRMUSIC : n === 2 ? window.MRMUSIC2 : null, D = S && S[ag()]; return D && D[p.id] ? D[p.id] : null; } // v446: Módulo 2 también
   async function music(stage, p) {
     const sg = musicFor(p); if (!sg) return null; const teens = ag() === 'teens';
     const body = frame(stage, 'Music', teens ? 'Catch the phrase' : 'Atrapa la palabra', teens ? 'Dale play. Cuando escuches una frase, tócala. Cada acierto sube tu combo.' : 'Dale play a la canción. Cuando escuches una palabra, ¡tócala!');
