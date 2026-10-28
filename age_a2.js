@@ -10,5 +10,7 @@ window.M1AGE_ES=Object.assign(window.M1AGE_ES||{},{"a20caa9532c":{"t":"Mi día d
   D.topics.forEach(function (tp) { tp.parts.forEach(function (pt) { var o = O[pt.id]; if (!o) return;
     if (o.reading) { var r = Object.assign({}, o.reading); var v = (pt.vocab || []).find(function (x) { return x.en === r.vimg && x.img; }); r.img = v ? v.img : (pt.reading && pt.reading.img); delete r.vimg; pt.reading = r; }
     if (o.keyq) pt.keyq = o.keyq;
+    (pt.vocab || []).forEach(function (v, i) { if (v && v.en === 'Where do you work?') pt.vocab[i] = Object.assign({}, v, { en: 'Where do you study?', es: '¿Dónde estudias?', au: 'a207f51022b' }); });
+    if (pt.fill) pt.fill = pt.fill.filter(function (f) { return !/\byou work\b|\bboss\b|\bat work\b/i.test((f && (f.full || f.s)) || ''); });
   }); });
 } catch (e) { } })();
