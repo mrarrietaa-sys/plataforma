@@ -7356,3 +7356,5 @@ body.ag-teens .pg-rows{background:#fff}
 .g9-hint{font:800 18px monospace;letter-spacing:.12em;color:#E3242B}
 .g9-big{align-self:center;display:inline-flex;flex-direction:column;align-items:center;gap:4px;width:92px;height:92px;justify-content:center;border-radius:50%;border:0;background:#E3242B;color:#fff;font:800 12px Poppins,sans-serif;cursor:pointer;box-shadow:0 10px 22px rgba(227,36,43,.3)}.g9-big svg{width:30px;height:30px}
 .g9-rev{min-height:20px;font:700 14px Poppins,sans-serif;color:#15803d}
+.g9-mq.lq3{grid-template-columns:repeat(3,1fr)}.g9-mq.lq3 button{font-size:24px;padding:12px 0;text-align:center}
+.g9-ab{display:flex;flex-direction:column;gap:12px;text-align:center}.g9-ab small{color:#9fb6dd;font:700 12px Poppins,sans-serif}

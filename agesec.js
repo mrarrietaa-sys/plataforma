@@ -841,7 +841,7 @@
     body.querySelector('.g9-tm').style.visibility = 'hidden'; const q = body.querySelector('#g9q'), fb = body.querySelector('#g9f'); let cur = null; body.querySelector('#g9a').onclick = () => cur && play(cur.au);
     for (let i = 0; i < R.length; i++) { if (!stage.isConnected) break; const { v, W, k } = R[i]; cur = v; const w = W[k], j = 1 + Math.floor(Math.random() * (w.replace(/[.,!?]$/, '').length - 1)), L = w[j].toLowerCase();
       const o = shuffle([L].concat(shuffle('aeioubcdlmnprst'.split('').filter(x => x !== L)).slice(0, 2))), a = o.indexOf(L);
-      q.innerHTML = `<b>${W.map((x, n) => n === k ? esc(x.slice(0, j)) + '<span class="g9-lq">?</span>' + esc(x.slice(j + 1)) : esc(x)).join(' ')}</b><small>${esc(v.es)}</small>${optsHTML(o, 'kd lt')}`; fb.innerHTML = ''; await sleep(250); play(v.au);
+      q.innerHTML = `<b>${W.map((x, n) => n === k ? esc(x.slice(0, j)) + '<span class="g9-lq">?</span>' + esc(x.slice(j + 1)) : esc(x)).join(' ')}</b><small>${esc(v.es)}</small>${optsHTML(o, 'kd lq3')}`; fb.innerHTML = ''; await sleep(250); play(v.au);
       const ok = await mcq9(q, fb, o, a, { yes: '¡La encontraste!' }); q.querySelector('.g9-lq').textContent = L; q.querySelector('.g9-lq').classList.add('in'); if (ok) c++; else missed.push(v); weak(v, ok); await sleep(400); body.querySelector('#g9n').textContent = `${c} / ${R.length}`; }
     return g9End(stage, c, R.length, 'listening', missed, `¡${c} de ${R.length} letras encontradas! Continuar`);
   };
