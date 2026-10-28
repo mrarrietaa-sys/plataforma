@@ -494,7 +494,7 @@
     for (let i = 0; i < R.length; i++) {
       if (!stage.isConnected) break; const it = R[i]; const opts = shuffle([it].concat(shuffle(V.filter(x => x.en !== it.en)).slice(0, 2)));
       const body = frame(stage, 'Practice', 'Estrellas que caen', 'Escucha a Mr. Arrieta y atrapa la estrella correcta antes de que caiga.');
-      body.innerHTML = `<div class="g9 g9-k">${g9Top('Atrapa la estrella', `${SV(I.star)} ${c}`)}<button type="button" class="g9-au" id="g9a">${SV(I.vol)}Escuchar otra vez</button><div class="g9-sky">${opts.map((o, k) => `<button type="button" class="g9-star" data-k="${k}" style="left:${[3, 36, 69][k]}%;--d:${(k * .5).toFixed(1)}s;--t:${(7 + k * .4).toFixed(1)}s">${STAR9}<span class="${o.en.length > 8 ? 'sm' : ''}">${esc(o.en)}</span></button>`).join('')}</div><div class="g9-fb" id="g9f"></div></div>`;
+      body.innerHTML = `<div class="g9 g9-k">${g9Top('Atrapa la estrella', `${SV(I.star)} ${c}`)}<button type="button" class="g9-au" id="g9a">${SV(I.vol)}Escuchar otra vez</button><div class="g9-sky">${opts.map((o, k) => `<button type="button" class="g9-star" data-k="${k}" style="left:${[3, 36, 69][k]}%;--d:${(k * .5).toFixed(1)}s;--t:${(7 + k * .4).toFixed(1)}s">${STAR9}<span class="${o.en.length > 16 ? 'xs' : o.en.length > 8 ? 'sm' : ''}">${esc(o.en)}</span></button>`).join('')}</div><div class="g9-fb" id="g9f"></div></div>`;
       body.querySelector('.g9-tm').style.visibility = 'hidden';
       body.querySelector('#g9a').onclick = () => play(it.au); await sleep(300); play(it.au);
       const ok = await new Promise(done => { let miss = false, fin = false; const fb = body.querySelector('#g9f');
@@ -509,12 +509,12 @@
 
   // 👾 Kids · Alimenta al monstruo: arrastra (o toca) la foto correcta
   G9.g9Monster = async function (stage, p) {
-    const V = vocab(p).filter(v => v.img && !/^#/.test(v.img)); if (V.length < 3 || trivial(vocab(p))) return G9.g9Stars(stage, p); // letras: la foto no es la letra → estrellas
+    const V = vocab(p).filter(v => v.img && !/^#/.test(v.img) && !/[.!?,]$/.test(v.en.trim()) && v.en.trim().split(/\s+/).length <= 2); if (V.length < 3 || trivial(vocab(p))) return G9.g9Stars(stage, p); // letras: la foto no es la letra → estrellas
     const R = shuffle(V).slice(0, 4); let c = 0; const missed = [];
     for (let i = 0; i < R.length; i++) {
       if (!stage.isConnected) break; const it = R[i]; const opts = shuffle([it].concat(shuffle(V.filter(x => x.en !== it.en)).slice(0, 2)));
       const body = frame(stage, 'Practice', 'Alimenta al monstruo', 'El monstruo te pide algo en inglés. Arrastra la foto correcta a su boca (o tócala).');
-      body.innerHTML = `<div class="g9 g9-k">${g9Top('Monstruo hambriento', `${i + 1} / ${R.length}`)}<div class="g9-req">I want <b>${esc(it.en)}</b>, please!<button type="button" class="g9-mini" id="g9a" aria-label="Escuchar">${SV(I.vol)}</button></div>
+      body.innerHTML = `<div class="g9 g9-k">${g9Top('Monstruo hambriento', `${i + 1} / ${R.length}`)}<div class="g9-req"><small>Dale al monstruo:</small> <b>${esc(it.en)}</b><button type="button" class="g9-mini" id="g9a" aria-label="Escuchar">${SV(I.vol)}</button></div>
         <div class="g9-mon" id="g9m"><i class="e l"></i><i class="e r"></i><i class="m"></i></div><div class="g9-food">${opts.map((o, k) => `<button type="button" class="g9-fd" data-k="${k}">${M().photo(o.img)}<span>${esc(o.es)}</span></button>`).join('')}</div><div class="g9-fb" id="g9f"></div></div>`;
       body.querySelector('.g9-tm').style.visibility = 'hidden';
       const mon = body.querySelector('#g9m'), fb = body.querySelector('#g9f');

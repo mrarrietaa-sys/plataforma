@@ -1222,7 +1222,7 @@
 
   /* ---------- HOMEWORK (writing with automatic feedback) ---------- */
   async function homework(stage, p) {
-    const h9 = window.MRHW9 && MRHW9[(+M.MOD.n || 1) + '-' + p.id]; const hw = V9() ? Object.assign({}, p.hw, { n: 2 }, h9 ? { es: h9[0], model: h9[1], kw: h9[2] } : { es: String(p.hw.es || '').replace(/\b\d+\b/, '2') }) : p.hw; /* lección corta: solo 2 frases, en el momento */ const saved = (S.hw[p.id] || {}).text || '';
+    const k9 = (+M.MOD.n || 1) + '-' + p.id, yA9 = (function () { try { return M.ageGroup(); } catch (e) { return ''; } })(); const h9 = (/kids|teens/.test(yA9) && window.MRHW9Y && MRHW9Y[k9]) || (window.MRHW9 && MRHW9[k9]); const hw = V9() ? Object.assign({}, p.hw, { n: 2 }, h9 ? { es: h9[0], model: h9[1], kw: h9[2] } : { es: String(p.hw.es || '').replace(/\b\d+\b/, '2') }) : p.hw; /* lección corta: solo 2 frases, en el momento */ const saved = (S.hw[p.id] || {}).text || '';
     const AG = M.ageGroup(); if (AG === 'teens') stage.classList.add('dk');
     const body = A.head(stage, { lbl: V9() ? 'Writing' : 'Homework', title: V9() ? 'Escribe 2 frases' : AG === 'teens' ? 'Nuevo post' : AG === 'kids' ? 'Tu tarea' : '✍️ Writing task', ins: esc(hw.es) });
     if (AG === 'kids') { const kt = h(`<div class="khw">${[['pen', '1', 'Escríbelo aquí', 'Abajo, en inglés'], ['mic', '2', 'Dilo en voz alta', 'Toca y practica']].map(([ic, n, t, s]) => `<div class="khw-t${n === '2' ? ' khw-say' : ''}"><span>${window.MRI ? MRI(ic) : ''}</span><b>${n}. ${t}</b><small>${s}</small></div>`).join('')}</div>`); body.appendChild(kt);

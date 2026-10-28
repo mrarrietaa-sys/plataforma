@@ -159,3 +159,40 @@ window.MRTAUGHT = {
     else if (V.length > 8 && !(n === 1 && FULL.test(p.id))) p.vocab = V.slice(0, 8);
   }));
 } catch (e) { } })();
+/* v447 · Writing para Kids y Teens: sin trabajo, jefe, carro ni café (los niños no trabajan) */
+window.MRHW9Y = {
+'1-t4p2': ['Escribe 2 cosas que tienes con su color.', 'I have a red bike. My backpack is blue.', []],
+'1-t5p1': ['Escribe una frase con am y una con is.', 'I am a student. My mother is a nurse.', ['am', 'is']],
+'1-t5p2': ['Escribe una frase negativa y una pregunta.', "I'm not a teacher. Are you a student?", ['not']],
+'1-t6p1': ['Escribe qué quieres ser cuando seas grande y la profesión de un familiar.', "I want to be a doctor. My father is a mechanic.", []],
+'1-t6p2': ['Escribe dónde estudias y dónde trabaja un familiar.', "I'm a student. My mother works in a hospital.", ['work']],
+'1-t9p1': ['Escribe qué haces 2 días de la semana.', 'On Monday I go to school. On Sunday I play soccer.', ['on']],
+'1-t12p2': ['Escribe 2 frases con people, children, men o women.', 'There are four people in my family. There are thirty children in my class.', []],
+'1-t13p1': ['Escribe una frase con This is y una con That is.', 'This is my pencil. That is my bike.', ['this', 'that']],
+'2-t1p2': ['Escribe qué haces en la mañana y en la noche.', 'In the morning I go to school. At night I watch TV.', []],
+'2-t2p1': ['Escribe una frase de tu rutina y una de la rutina de otra persona.', 'I take a shower at six. My sister goes to school by bus.', []],
+'2-t8p1': ['Escribe un hábito con always y uno con never.', 'I always eat breakfast. I never go to bed late.', ['always', 'never']],
+'3-t1p2': ['Escribe un plan con going to y una cita con presente continuo.', "I'm going to read more. I'm playing soccer with my friends on Monday.", ['going to']],
+'3-t2p2': ["Escribe una frase con 's y una pregunta con whose.", "My brother's bike is red. Whose phone is this?", ['whose']],
+'3-t3p2': ['Escribe 2 frases sobre a friend of mine.', "A friend of mine lives in Denver. Her school is big, and so is mine.", ['friend of mine']],
+'3-t4p2': ['Escribe una frase en pasado y una con for o since.', "I started school in 2018. I've studied English since 2022.", []],
+'3-t5p2': ['Cuenta un viaje inolvidable en 2 frases con un conector.', 'We were driving to Orlando when our car stopped. Then a man helped us.', []],
+'3-t6p1': ['Escribe 2 planes de la próxima semana con on, at o until.', "On Monday at nine I have a math test. I'll study until six.", []],
+'3-t10p1': ['Escribe una frase con too y una con enough.', "It was too cold to swim. We didn't have enough time.", ['too', 'enough']],
+'3-t11p1': ['Escribe 2 cosas de tu cocina con some o any.', "There is some milk. There isn't any juice.", []],
+'3-t12p1': ['Escribe una frase con a few y una con a little.', 'I have a few friends at school. I have a little time on Sunday.', []],
+'3-t13p1': ['Escribe un reto que superaste con although o despite.', 'Although I was nervous, I sang in front of my class. Despite the rain, we played the game.', []],
+'3-t13p2': ['Da tu opinión sobre estudiar desde casa en 2 frases con un conector.', 'Studying from home saves time. On the other hand, it can be lonely.', []],
+'4-t2p1': ['Escribe qué harías si no tuvieras límites de dinero.', "If money weren't a problem, I would travel around the world. I might buy a big house for my family.", ['would']],
+'4-t3p2': ['Escribe algo que deberías o no deberías haber hecho.', "I should have studied more for the test. I shouldn't have eaten so much candy.", ['should have']],
+'4-t5p2': ['Compara 2 opciones con both… and o neither… nor.', 'Both games are fun. Neither the bike nor the skateboard is new.', []],
+'4-t7p1': ['Escribe 2 definiciones con who o which.', 'A teacher is a person who helps students learn. A charger is a device which gives power.', []],
+'4-t9p1': ['Reporta lo que te dijo alguien con said y told.', 'My teacher said the test was easy. She told me I did a great job.', []],
+'4-t10p1': ['Escribe 2 preguntas indirectas para un hotel.', 'Could you tell me where the pool is? Do you know what time breakfast starts?', []],
+'4-t12p1': ['Escribe 2 servicios que mandas a hacer (have + objeto + participio).', 'I have my hair cut every month. I had my bike fixed last week.', []],
+'4-t12p2': ['Cuenta una mala experiencia con got + objeto + participio.', 'I got my phone stolen at the park. Then I got my game account hacked.', []],
+'4-t13p1': ["Escribe qué estarás haciendo mañana a 2 horas distintas.", "At 8 I'll be having breakfast. At 10 I'll be taking a math test.", ["i'll be"]],
+'4-t14p1': ['Escribe 2 frases con will have been + -ing.', "By June, I'll have been studying at this school for five years. By December, I'll have been learning English for a year.", []],
+'4-t15p1': ['Da tu opinión sobre la inteligencia artificial y la escuela en 2 frases.', 'It could be argued that AI helps students learn faster. On balance, I think it is an opportunity.', []],
+'4-t16p1': ['Escribe un beneficio y una desventaja de la globalización.', 'Proponents argue that globalization connects people. Critics contend that it hurts small businesses.', []]
+};
