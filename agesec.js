@@ -598,8 +598,309 @@
     }
     return g9End(stage, c, S.length, 'speaking', [], `${c} de ${S.length} en el ritmo · Continuar`);
   };
+  /* =================== v448 · JUEGOS PROPIOS DEL MÓDULO 2 (Kids y Teens): distintos a los del Módulo 1 =================== */
+  const words9 = s => String(s || '').trim().split(/\s+/).filter(Boolean);
+  const ADULT9 = /\b(work|works|worked|working|job|office|boss|meeting|coffee|beer|wine|salary|company|client|clients|colleague|husband|wife|bank|hotel|drive|drives|car|deadline|mortgage|raise|lottery|quit|resign|interview|contract|invoice|tax|taxes|loan|budget|employee|employees|manager|business|report|presentation|presentations|meetings|promotion|hired|fired|landlord|rent)\b/i; // los niños no trabajan
+  const young9 = () => /kids|teens/.test(ag());
+  const okS9 = s => !(young9() && ADULT9.test(s.en || ''));
+  const sents9 = (p, lo, hi) => uniq((p.sentences || []).concat(p.vocab || []).filter(s => s.en && s.au && s.es && okS9(s) && words9(s.en).length >= lo && words9(s.en).length <= hi));
+  // 🚂 Kids · Tren de palabras: escucha la frase y sube las palabras al tren en orden
+  G9.g9Train = async function (stage, p) {
+    const S = shuffle(sents9(p, 3, 7)).sort((a, b) => /[.!?]$/.test(b.en) - /[.!?]$/.test(a.en)).slice(0, 3); if (S.length < 2) return null; let c = 0; const missed = [];
+    for (let i = 0; i < S.length; i++) {
+      if (!stage.isConnected) break; const it = S[i], W = words9(it.en), tiles = shuffle(W.map((w, k) => ({ w, k })));
+      const body = frame(stage, 'Practice', 'Tren de palabras', 'Escucha a Mr. Arrieta y sube las palabras al tren en el orden correcto.');
+      body.innerHTML = `<div class="g9 g9-k">${g9Top('Tren de palabras', `${i + 1} / ${S.length}`)}<button type="button" class="g9-au" id="g9a">${SV(I.vol)}Escuchar otra vez</button><div class="g9-es">${esc(it.es)}</div>
+        <div class="g9-rail"><div class="g9-train" id="g9t"><span class="g9-loco"><i class="w1"></i><i class="w2"></i></span>${W.map((w, k) => `<span class="g9-wg" data-k="${k}"><b></b><i class="w1"></i><i class="w2"></i></span>`).join('')}</div></div>
+        <div class="g9-tiles">${tiles.map((t, k) => `<button type="button" class="g9-tl" data-k="${k}">${esc(t.w)}</button>`).join('')}</div><div class="g9-fb" id="g9f"></div></div>`;
+      body.querySelector('.g9-tm').style.visibility = 'hidden';
+      body.querySelector('#g9a').onclick = () => play(it.au); await sleep(300); play(it.au);
+      const errs = await new Promise(done => { let pos = 0, e = 0; const fb = body.querySelector('#g9f'), wg = body.querySelectorAll('.g9-wg');
+        body.querySelectorAll('.g9-tl').forEach(b => b.onclick = async () => { if (b.disabled) return; const t = tiles[+b.dataset.k];
+          if (t.w.toLowerCase() === W[pos].toLowerCase()) { b.disabled = true; b.classList.add('used'); const g = wg[pos]; g.querySelector('b').textContent = W[pos]; g.classList.add('on'); pos++; sfx('tap');
+            if (pos === W.length) { sfx('ok'); fb.innerHTML = e <= 1 ? `<span class="g9-yes">${SV(I.ck)}¡Choo choo! ¡Perfecto!</span>` : `<span class="g9-mid">¡Lo lograste!</span>`; await sleep(500); body.querySelector('#g9t').classList.add('go'); await play(it.au); await sleep(700); done(e); } }
+          else { e++; b.classList.add('shake', 'bad'); sfx('bad'); fb.innerHTML = `<span class="g9-no">Esa no va ahí. ¡Escucha otra vez!</span>`; setTimeout(() => b.classList.remove('shake', 'bad'), 450); } }); });
+      const ok = errs <= 1; weak(it, ok); if (ok) c++; else missed.push(it);
+    }
+    return g9End(stage, c, S.length, 'listening', missed, `¡${c} de ${S.length} trenes perfectos! Continuar`);
+  };
+  // 🃏 Kids · Memoria: voltea 2 cartas y encuentra la pareja (inglés ↔ español)
+  G9.g9Memory = async function (stage, p) {
+    let P = vocab(p).filter(v => okS9(v) && v.en.length < 24 && v.es.length < 26); if (P.length < 4) P = sents9(p, 1, 4).filter(s => s.en.length < 24); if (P.length < 4) return null;
+    P = shuffle(P).slice(0, 4); const C = shuffle(P.flatMap((v, k) => [{ k, t: v.en, en: true }, { k, t: v.es, en: false }])); let found = 0, moves = 0; const missed = new Set();
+    const body = frame(stage, 'Practice', 'Memoria', 'Voltea dos cartas y encuentra cada palabra en inglés con su significado.');
+    body.innerHTML = `<div class="g9 g9-k">${g9Top('Memoria', `<span id="g9n">0 / 4 parejas</span>`)}<div class="g9-mem">${C.map((x, i) => `<button type="button" class="g9-mc ${x.en ? 'en' : 'es'}" data-i="${i}"><span class="bk">${SV(I.star)}</span><span class="fr">${esc(x.t)}</span></button>`).join('')}</div><div class="g9-fb" id="g9f"></div></div>`;
+    body.querySelector('.g9-tm').style.visibility = 'hidden';
+    await new Promise(done => { let a = null, lock = false; const fb = body.querySelector('#g9f');
+      body.querySelectorAll('.g9-mc').forEach(b => b.onclick = async () => { if (lock || b.classList.contains('up')) return; const x = C[+b.dataset.i]; b.classList.add('up'); if (x.en) play(P[x.k].au); else sfx('flip');
+        if (!a) { a = b; return; } const y = C[+a.dataset.i]; moves++; lock = true;
+        if (y.k === x.k) { [a, b].forEach(z => z.classList.add('ok')); found++; burst(b); sfx('ok'); body.querySelector('#g9n').textContent = `${found} / 4 parejas`; fb.innerHTML = `<span class="g9-yes">${SV(I.ck)}¡Pareja! <b>${esc(P[x.k].en)}</b> = ${esc(P[x.k].es)}</span>`; a = null; lock = false; if (found === 4) { await sleep(1200); done(); } }
+        else { missed.add(x.k); missed.add(y.k); fb.innerHTML = `<span class="g9-no">No son pareja. ¡Recuerda dónde están!</span>`; await sleep(1000); [a, b].forEach(z => z.classList.remove('up')); a = null; lock = false; } }); });
+    const c = Math.max(0, 4 - Math.max(0, moves - 6) / 2 | 0); P.forEach((v, k) => weak(v, !missed.has(k)));
+    return g9End(stage, Math.min(4, c), 4, 'reading', [...missed].map(k => P[k]), `¡4 parejas en ${moves} intentos! Continuar`);
+  };
+  // ⚡ Teens · Gap rush: completa la frase antes de que se acabe el tiempo
+  const FAM9 = [['is', 'are', 'am'], ['was', 'were', 'is'], ['do', 'does', 'did'], ["don't", "doesn't", "didn't"], ['has', 'have', 'had'], ['in', 'on', 'at'], ['always', 'never', 'sometimes'], ['usually', 'rarely', 'often'], ['can', 'must', 'should'], ["can't", "mustn't", "shouldn't"], ['myself', 'yourself', 'himself', 'herself', 'themselves'], ['up', 'down', 'off', 'on', 'out'], ['past', 'at', 'on'], ['went', 'go', 'goes'], ['ate', 'eat', 'eats'], ['saw', 'see', 'sees'], ['bought', 'buy', 'buys'], ['had', 'have', 'has']];
+  const gap9 = (s, V) => { const W = words9(s.en), VT = ' ' + V.map(v => v.en.toLowerCase()).join(' ') + ' '; const F = shuffle(FAM9).sort((a, b) => b.some(w => VT.includes(' ' + w)) - a.some(w => VT.includes(' ' + w))); for (const fam of F) for (let k = 1; k < W.length; k++) { const w = W[k].replace(/[.,!?]$/, ''); if (fam.includes(w.toLowerCase())) return { k, a: w, opts: shuffle([w].concat(shuffle(fam.filter(x => x !== w.toLowerCase())).slice(0, 2))) }; }
+    for (let k = 0; k < W.length; k++) { const m = W[k].replace(/[.,!?]$/, '').match(/^(I|You|We|They|He|She|It|you|we|they|he|she|it)'(m|re|s)$/); if (m && W.length > 2) { const a = m[0]; return { k, a, opts: shuffle(['m', 're', 's'].map(x => m[1] + "'" + x)) }; } }
+    const vp = V.filter(v => /\s/.test(v.en.trim()) && words9(v.en).length <= 4 && !/[.!?]$/.test(v.en.trim())); for (const v of shuffle(vp)) { const P = words9(v.en.toLowerCase()), k = W.findIndex((w, i) => P.every((x, j) => (W[i + j] || '').replace(/[.,!?]$/, '').toLowerCase() === x)); if (k >= 0 && P.length < W.length) { const o = shuffle(vp.filter(x => x.en.toLowerCase() !== v.en.toLowerCase())).slice(0, 2).map(x => x.en); if (o.length === 2) { const a = W.slice(k, k + P.length).join(' ').replace(/[.,!?]$/, ''); return { k, n: P.length, a, opts: shuffle([a].concat(o)) }; } } }
+    const vw = V.filter(v => !/\s/.test(v.en.trim())); for (const v of shuffle(vw)) { const k = W.findIndex((w, i) => i > 0 && w.replace(/[.,!?]$/, '').toLowerCase() === v.en.toLowerCase()); if (k > 0) { const o = shuffle(vw.filter(x => x.en !== v.en)).slice(0, 2).map(x => x.en); if (o.length === 2) return { k, a: W[k].replace(/[.,!?]$/, ''), opts: shuffle([W[k].replace(/[.,!?]$/, '')].concat(o)) }; } } return null; };
+  G9.g9Gap = async function (stage, p) {
+    const V = vocab(p), R = shuffle(uniq((p.sentences || []).concat(V.filter(v => words9(v.en).length >= 4))).filter(s => s.en && s.au && s.es && okS9(s) && words9(s.en).length >= 4 && !/^(yes|no)\b/i.test(s.en) && s.en.length < 70)).map(s => ({ s, g: gap9(s, V) })).filter(x => x.g).slice(0, 5);
+    if (R.length < 3) return null; const SEC = 9; let c = 0, combo = 0; const missed = [];
+    const body = frame(stage, 'Practice', 'Gap rush', 'Elige la palabra que completa la frase. ¡Tienes pocos segundos!');
+    body.innerHTML = `<div class="g9 g9-t">${g9Top('Gap rush', `<span id="g9cb">0 / ${R.length}</span>`)}<div class="g9-gap" id="g9g"></div><div class="g9-fb" id="g9f"></div></div>`;
+    const box = body.querySelector('#g9g'), fb = body.querySelector('#g9f'), tm = body.querySelector('.g9-tm');
+    for (let i = 0; i < R.length; i++) {
+      if (!stage.isConnected) break; const { s, g } = R[i], W = words9(s.en), tail = (W[g.k + (g.n || 1) - 1].match(/[.,!?]$/) || [''])[0];
+      box.innerHTML = `<small>${i + 1} / ${R.length}</small><b>${W.slice(0, g.k).map(esc).join(' ')} <span class="g9-blank">____</span>${esc(tail)} ${W.slice(g.k + (g.n || 1)).map(esc).join(' ')}</b><em class="g9-ges">${esc(s.es)}</em><div class="g9-go">${g.opts.map((o, k) => `<button type="button" data-k="${k}">${esc(o)}</button>`).join('')}</div>`; fb.innerHTML = '';
+      const ok = await new Promise(done => { let fin = false; const T = g9Timer(tm, SEC, () => { if (fin) return; fin = true; fb.innerHTML = `<span class="g9-no">¡Tiempo! Era <b>${esc(g.a)}</b>.</span>`; done(false); });
+        box.querySelectorAll('.g9-go button').forEach(b => b.onclick = () => { if (fin) return; fin = true; T.stop(); const r = g.opts[+b.dataset.k] === g.a; box.querySelectorAll('.g9-go button').forEach(x => { x.disabled = true; if (g.opts[+x.dataset.k] === g.a) x.classList.add('ok'); }); if (!r) b.classList.add('bad');
+          box.querySelector('.g9-blank').textContent = g.a; box.querySelector('.g9-blank').classList.add('in'); sfx(r ? 'ok' : 'bad'); combo = r ? combo + 1 : 0; fb.innerHTML = r ? (comboHTML(combo) || `<span class="g9-yes">${SV(I.ck)}Nice!</span>`) : `<span class="g9-no">Era <b>${esc(g.a)}</b>.</span>`; done(r); }); });
+      await play(s.au); await sleep(500); if (ok) c++; else missed.push(s); weak(s, ok); body.querySelector('#g9cb').textContent = `${c} / ${R.length}`;
+    }
+    return g9End(stage, c, R.length, 'reading', missed, `${c} de ${R.length} completadas · Continuar`);
+  };
+  // 🔤 Teens · Spelling rush: escucha la palabra y ármala con las letras
+  G9.g9Spell = async function (stage, p) {
+    const V = shuffle(vocab(p).filter(v => okS9(v) && /^[a-z]{3,10}$/i.test(v.en.trim()))).slice(0, 4); if (V.length < 3) return null; const SEC = 15; let c = 0, combo = 0; const missed = [];
+    const body = frame(stage, 'Practice', 'Spelling rush', 'Escucha la palabra y ármala tocando las letras en orden. ¡Contra reloj!');
+    body.innerHTML = `<div class="g9 g9-t">${g9Top('Spelling rush', `<span id="g9cb">0 / ${V.length}</span>`)}<button type="button" class="g9-au" id="g9a">${SV(I.vol)}Escuchar otra vez</button><div class="g9-sp" id="g9s"></div><div class="g9-fb" id="g9f"></div></div>`;
+    const box = body.querySelector('#g9s'), fb = body.querySelector('#g9f'), tm = body.querySelector('.g9-tm'); let cur = null; body.querySelector('#g9a').onclick = () => cur && play(cur.au);
+    for (let i = 0; i < V.length; i++) {
+      if (!stage.isConnected) break; const it = V[i]; cur = it; const L = it.en.trim().toLowerCase().split(''); let T9 = shuffle(L.map((ch, k) => ({ ch, k }))); if (T9.map(x => x.ch).join('') === L.join('')) T9 = T9.reverse();
+      box.innerHTML = `<small>${esc(it.es)}</small><div class="g9-slots">${L.map(() => '<i></i>').join('')}</div><div class="g9-lt">${T9.map((x, k) => `<button type="button" data-k="${k}">${esc(x.ch)}</button>`).join('')}</div>`; fb.innerHTML = '';
+      await sleep(250); play(it.au);
+      const ok = await new Promise(done => { let fin = false, pos = 0, e = 0; const sl = box.querySelectorAll('.g9-slots i'); const T = g9Timer(tm, SEC, () => { if (fin) return; fin = true; fb.innerHTML = `<span class="g9-no">¡Tiempo! Era <b>${esc(it.en)}</b>.</span>`; play(it.au); setTimeout(() => done(false), 1300); });
+        box.querySelectorAll('.g9-lt button').forEach(b => b.onclick = () => { if (fin || b.disabled) return; const x = T9[+b.dataset.k];
+          if (x.ch === L[pos]) { b.disabled = true; sl[pos].textContent = x.ch; sl[pos].classList.add('on'); pos++; sfx('tap');
+            if (pos === L.length) { fin = true; T.stop(); const r = e <= 1; combo = r ? combo + 1 : 0; sfx('ok'); box.querySelector('.g9-slots').classList.add('done'); fb.innerHTML = r ? (comboHTML(combo) || `<span class="g9-yes">${SV(I.ck)}Perfect!</span>`) : `<span class="g9-mid">¡Lo armaste!</span>`; setTimeout(() => done(r), 900); } }
+          else { e++; b.classList.add('shake', 'bad'); sfx('bad'); setTimeout(() => b.classList.remove('shake', 'bad'), 400); } }); });
+      weak(it, ok); if (ok) c++; else missed.push(it); body.querySelector('#g9cb').textContent = `${c} / ${V.length}`;
+    }
+    return g9End(stage, c, V.length, 'listening', missed, `${c} de ${V.length} palabras perfectas · Continuar`);
+  };
+  // 🔎 Adultos · Detective de errores: toca la palabra que está mal
+  const V3 = { works: 'work', lives: 'live', likes: 'like', has: 'have', goes: 'go', wants: 'want', speaks: 'speak', plays: 'play', watches: 'watch', eats: 'eat', drinks: 'drink', gets: 'get', takes: 'take', studies: 'study', reads: 'read', cooks: 'cook', wakes: 'wake', runs: 'run', does: 'do', needs: 'need', loves: 'love', looks: 'look' };
+  const PST = { go: 'went', eat: 'ate', see: 'saw', buy: 'bought', have: 'had', take: 'took', come: 'came', make: 'made', get: 'got', play: 'played', watch: 'watched', drink: 'drank', do: 'did', sleep: 'slept', visit: 'visited', cook: 'cooked' };
+  const REFL = ['myself', 'yourself', 'himself', 'herself', 'itself', 'ourselves', 'themselves'];
+  const HUNT9 = [[/\b(He|She|It|he|she|it) (works|lives|likes|has|goes|wants|speaks|plays|watches|eats|drinks|gets|takes|studies|reads|cooks|wakes|runs|does|needs|loves|looks)\b/, (m, a, v) => a + ' ' + V3[v]],
+    [/\b(didn't|Did you|did you|Did he|did he|Did she|did she) (go|eat|see|buy|have|take|come|make|get|play|watch|drink|do|sleep|visit|cook)\b/, (m, a, v) => a + ' ' + PST[v]],
+    [/\b(can|must|should|can't|mustn't|shouldn't) (go|eat|see|buy|take|come|make|get|play|watch|drink|sleep|swim|speak|cook|wear|use|stay|drive|run|read|leave|rest|call)\b/, (m, a, v) => a + ' ' + v + (/(ch|sh|o)$/.test(v) ? 'es' : 's')],
+    [new RegExp('\\b(' + REFL.join('|') + ')\\b'), (m, r) => shuffle(REFL.filter(x => x !== r))[0]], [/\ba ([bcdfgjklmnpqrstvwxyz]\w+)/, 'an $1']];
+  HUNT9.push([/\b(I|You|We|They|you|we|they) (have|get|go|work|live|like|want|eat|drink|take|play|watch|wake|study|need|love|start|finish|leave)\b/, (m, a, v) => a + ' ' + ({ have: 'has', go: 'goes', watch: 'watches', study: 'studies', finish: 'finishes' }[v] || v + 's')]);
+  const breakH = s => { for (const [re, to] of shuffle(HUNT9.concat(BREAK))) { if (re.test(s)) { const w = s.replace(re, to); if (w !== s) return w; } } return null; };
+  G9.g9Hunt = async function (stage, p) {
+    const S = uniq((p.sentences || []).concat(p.vocab || [], (p.keyq || []).map(k => ({ en: k.a, es: '', au: k.aau })))).filter(x => x.en && x.au && words9(x.en).length >= 3 && x.en.length < 70);
+    const R = shuffle(S.map(x => { const w = breakH(x.en); if (!w) return null; const A = words9(x.en), B = words9(w); if (A.length !== B.length) return null; const d = B.findIndex((t, k) => t !== A[k]); return d < 0 ? null : { x, B, d, fix: A[d] }; }).filter(Boolean)).slice(0, 4);
+    if (R.length < 3) return null; const SEC = 12; let c = 0, combo = 0; const missed = [];
+    const body = frame(stage, 'Practice', 'Detective de errores', 'Cada frase tiene un error. Tócalo antes de que se acabe el tiempo.');
+    body.innerHTML = `<div class="g9 g9-a">${g9Top('Detective de errores', `<span id="g9cb">0 / ${R.length}</span>`)}<div class="g9-hunt" id="g9h"></div><div class="g9-fb" id="g9f"></div></div>`;
+    const box = body.querySelector('#g9h'), fb = body.querySelector('#g9f'), tm = body.querySelector('.g9-tm');
+    for (let i = 0; i < R.length; i++) {
+      if (!stage.isConnected) break; const q = R[i];
+      box.innerHTML = `<small>Frase ${i + 1} de ${R.length} · ¿Dónde está el error?</small><div class="g9-hw">${q.B.map((t, k) => `<button type="button" data-k="${k}">${esc(t)}</button>`).join('')}</div>`; fb.innerHTML = '';
+      const ok = await new Promise(done => { let fin = false, miss = false; const end = r => { fin = true; T.stop(); const b = box.querySelector(`[data-k="${q.d}"]`); b.classList.add('fix'); b.innerHTML = `<s>${esc(q.B[q.d])}</s> ${esc(q.fix)}`; box.querySelectorAll('button').forEach(x => x.disabled = true); done(r); };
+        const T = g9Timer(tm, SEC, () => { if (fin) return; fb.innerHTML = `<span class="g9-no">¡Tiempo! Mira la corrección.</span>`; end(false); });
+        box.querySelectorAll('button').forEach(b => b.onclick = () => { if (fin) return; if (+b.dataset.k === q.d) { sfx('ok'); combo = miss ? 0 : combo + 1; fb.innerHTML = miss ? `<span class="g9-mid">¡Encontrado!</span>` : (comboHTML(combo) || `<span class="g9-yes">${SV(I.ck)}¡Bien visto!</span>`); end(!miss); }
+          else { miss = true; combo = 0; b.classList.add('shake', 'bad'); sfx('bad'); fb.innerHTML = `<span class="g9-no">Esa palabra está bien. Sigue buscando.</span>`; setTimeout(() => b.classList.remove('shake'), 450); } }); });
+      await play(q.x.au); await sleep(500); if (ok) c++; else missed.push(q.x); weak(q.x, ok); body.querySelector('#g9cb').textContent = `${c} / ${R.length}`;
+    }
+    return g9End(stage, c, R.length, 'reading', missed, `${c} de ${R.length} errores cazados · Continuar`);
+  };
+  // ✍️ Adultos · Dictado relámpago: escucha y escribe la palabra que falta
+  const nk9 = s => String(s || '').toLowerCase().replace(/[’`]/g, "'").replace(/[^a-z0-9' ]/g, '').trim();
+  G9.g9Dict = async function (stage, p) {
+    const V = vocab(p); const R = shuffle(uniq((p.sentences || []).concat(V.filter(v => words9(v.en).length >= 4))).filter(s => s.en && s.au && words9(s.en).length >= 4 && !/^(yes|no)\b/i.test(s.en) && s.en.length < 70)).map(s => ({ s, g: gap9(s, V) })).filter(x => x.g).slice(0, 4);
+    if (R.length < 3) return null; let c = 0; const missed = [];
+    const body = frame(stage, 'Practice', 'Dictado relámpago', 'Escucha la frase y escribe la palabra que falta.');
+    body.innerHTML = `<div class="g9 g9-a">${g9Top('Dictado relámpago', `<span id="g9cb">0 / ${R.length}</span>`)}<button type="button" class="g9-au" id="g9a">${SV(I.vol)}Escuchar otra vez</button><div class="g9-dic" id="g9d"></div><div class="g9-fb" id="g9f"></div></div>`;
+    body.querySelector('.g9-tm').style.visibility = 'hidden'; const box = body.querySelector('#g9d'), fb = body.querySelector('#g9f'); let cur = null; body.querySelector('#g9a').onclick = () => cur && play(cur.au);
+    for (let i = 0; i < R.length; i++) {
+      if (!stage.isConnected) break; const { s, g } = R[i], W = words9(s.en), tail = (W[g.k + (g.n || 1) - 1].match(/[.,!?]$/) || [''])[0]; cur = s;
+      box.innerHTML = `<small>${i + 1} / ${R.length}</small><b>${W.slice(0, g.k).map(esc).join(' ')} <input type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Palabra que falta" style="width:${Math.max(4, g.a.length + 1)}ch">${esc(tail)} ${W.slice(g.k + (g.n || 1)).map(esc).join(' ')}</b><button type="button" class="g9-chk">Comprobar</button>`; fb.innerHTML = '';
+      const inp = box.querySelector('input'); await sleep(250); play(s.au); try { inp.focus(); } catch (e) { }
+      const ok = await new Promise(done => { let tries = 0; const go = () => { const v = nk9(inp.value); if (!v) return; if (v === nk9(g.a)) { inp.classList.add('ok'); inp.disabled = true; sfx('ok'); fb.innerHTML = `<span class="g9-yes">${SV(I.ck)}${tries ? '¡Ahora sí!' : '¡Perfecto!'}</span>`; setTimeout(() => done(!tries), 900); return; }
+          tries++; sfx('bad'); inp.classList.add('shake'); setTimeout(() => inp.classList.remove('shake'), 450);
+          if (tries >= 2) { inp.value = g.a; inp.disabled = true; inp.classList.add('fix'); fb.innerHTML = `<span class="g9-no">Era <b>${esc(g.a)}</b>.</span>`; play(s.au); setTimeout(() => done(false), 1600); } else fb.innerHTML = `<span class="g9-no">Casi. Escucha otra vez e inténtalo.</span>`; };
+        box.querySelector('.g9-chk').onclick = go; inp.onkeydown = e => { if (e.key === 'Enter') go(); }; });
+      if (ok) c++; else missed.push(s); weak(s, ok); body.querySelector('#g9cb').textContent = `${c} / ${R.length}`;
+    }
+    return g9End(stage, c, R.length, 'writing', missed, `${c} de ${R.length} al primer intento · Continuar`);
+  };
+  // si a una lección le faltan datos para su juego, prueba el otro juego del módulo y luego el del Módulo 1
+  { const B9 = Object.assign({}, G9); [['g9Train', 'g9Memory', 'g9Stars'], ['g9Memory', 'g9Train', 'g9Stars'], ['g9Gap', 'g9Spell', 'g9Swipe'], ['g9Spell', 'g9Gap', 'g9Swipe'], ['g9Hunt', 'g9Dict', 'g9Chat'], ['g9Dict', 'g9Hunt', 'g9Pairs']].forEach(([k, ...alt]) => { G9[k] = async (st, p) => { let r = await B9[k](st, p); for (const a of alt) { if (r !== null) break; r = await B9[a](st, p); } return r; }; }); }
+  /* =================== v449 · JUEGOS PROPIOS DE LOS MÓDULOS 3 Y 4 (todas las edades) =================== */
+  const others9 = (p, n) => { let A = []; try { A = M().allParts().filter(x => x.id !== p.id && x.topic !== p.topic); } catch (e) { } return shuffle(uniq(A.flatMap(x => vocab(x)).filter(v => okS9(v) && v.en.length < 30))).slice(0, n); };
+  // pregunta de opción múltiple reutilizable: devuelve true/false
+  const mcq9 = (box, fb, opts, ai, o = {}) => new Promise(done => { let fin = false, used = false; const T = o.tm ? g9Timer(o.tm, o.sec, () => { if (fin) return; fin = true; mark(-1); fb.innerHTML = `<span class="g9-no">¡Tiempo! Era <b>${esc(opts[ai])}</b>.</span>`; setTimeout(() => done(false), 1200); }) : null;
+    const bs = [...box.querySelectorAll('[data-o]')]; const mark = k => bs.forEach(x => { x.disabled = true; if (+x.dataset.o === ai) x.classList.add('ok'); else if (+x.dataset.o === k) x.classList.add('bad'); });
+    if (o.fifty) o.fifty.onclick = () => { if (fin || used) return; used = true; o.fifty.disabled = true; shuffle(bs.filter(x => +x.dataset.o !== ai)).slice(0, Math.max(0, bs.length - 2)).forEach(x => { x.disabled = true; x.classList.add('gone'); }); o.onFifty && o.onFifty(); };
+    bs.forEach(b => b.onclick = () => { if (fin) return; fin = true; T && T.stop(); const k = +b.dataset.o, r = k === ai; mark(k); sfx(r ? 'ok' : 'bad'); if (r) burst(b); fb.innerHTML = r ? `<span class="g9-yes">${SV(I.ck)}${o.yes || '¡Bien!'}</span>` : `<span class="g9-no">Era <b>${esc(opts[ai])}</b>.</span>`; setTimeout(() => done(r), r ? 800 : 1400); }); });
+  const optsHTML = (opts, cls) => `<div class="g9-mq ${cls || ''}">${opts.map((t, k) => `<button type="button" data-o="${k}">${esc(t)}</button>`).join('')}</div>`;
+  const pickOpts = (it, pool, key, n) => { const sn = x => /[.!?]$/.test(String(x.en || '').trim()), L = String(it[key]).length; const cand = shuffle(pool.filter(x => x[key] && x[key] !== it[key])).sort((a, b) => ((sn(a) !== sn(it)) * 100 + Math.abs(a[key].length - L)) - ((sn(b) !== sn(it)) * 100 + Math.abs(b[key].length - L))).map(x => x[key]).filter((v, i, a) => a.indexOf(v) === i); const o = shuffle([it[key]].concat(shuffle(cand.slice(0, n + 1)).slice(0, n - 1))); return { o, a: o.indexOf(it[key]) }; };
+
+  // ⛰️ Kids M3 · Sube la montaña: escucha y elige el significado; cada acierto es un paso hacia la cima
+  G9.g9Climb = async function (stage, p) {
+    const V = vocab(p).filter(v => okS9(v) && v.es.length < 40); if (V.length < 4) return null; const R = shuffle(V).slice(0, 5); let c = 0; const missed = [];
+    const body = frame(stage, 'Practice', 'Sube la montaña', 'Escucha a Mr. Arrieta y elige lo que significa. Cada acierto te sube un paso.');
+    body.innerHTML = `<div class="g9 g9-k">${g9Top('Sube la montaña', `<span id="g9n">0 / ${R.length}</span>`)}<div class="g9-mt"><svg viewBox="0 0 300 120" aria-hidden="true"><path d="M0 120 L120 20 L170 60 L210 30 L300 120Z" fill="#c7e6c1"/><path d="M120 20 L105 33 L135 33Z M210 30 L200 40 L220 40Z" fill="#fff"/></svg><i class="g9-fl"></i><b class="g9-me" id="g9me"></b></div><button type="button" class="g9-au" id="g9a">${SV(I.vol)}Escuchar otra vez</button><div id="g9q"></div><div class="g9-fb" id="g9f"></div></div>`;
+    body.querySelector('.g9-tm').style.visibility = 'hidden'; const q = body.querySelector('#g9q'), fb = body.querySelector('#g9f'), me = body.querySelector('#g9me'); let cur = null; body.querySelector('#g9a').onclick = () => cur && play(cur.au);
+    const pos = n => { const t = n / R.length; me.style.left = (8 + t * 34) + '%'; me.style.bottom = (6 + t * 66) + '%'; }; pos(0);
+    for (let i = 0; i < R.length; i++) { if (!stage.isConnected) break; const it = R[i]; cur = it; const { o, a } = pickOpts(it, V, 'es', 3);
+      q.innerHTML = optsHTML(o, 'kd'); fb.innerHTML = ''; await sleep(250); play(it.au);
+      const ok = await mcq9(q, fb, o, a, { yes: '¡Un paso más!' }); if (ok) { c++; pos(c); } else missed.push(it); weak(it, ok); body.querySelector('#g9n').textContent = `${c} / ${R.length}`; }
+    if (c === R.length) body.querySelector('.g9-mt').classList.add('top');
+    return g9End(stage, c, R.length, 'listening', missed, c === R.length ? '¡Llegaste a la cima! Continuar' : `¡Subiste ${c} de ${R.length} pasos! Continuar`);
+  };
+  // 🧩 Kids M3 · Rompecabezas: une el comienzo y el final de cada frase
+  const halves9 = s => { const W = words9(s.en); if (W.length < 4) return null; let k = W.findIndex((w, i) => i >= 2 && i <= W.length - 2 && /,$/.test(W[i - 1])); if (k < 0) k = Math.ceil(W.length / 2); return [W.slice(0, k).join(' '), W.slice(k).join(' ')]; };
+  G9.g9Puzzle = async function (stage, p) {
+    let S = shuffle(sents9(p, 4, 11).filter(s => /[.!?]$/.test(s.en) && !/…|\.\.\./.test(s.en))).slice(0, 3).map(s => ({ s, h: halves9(s) })).filter(x => x.h); if (S.length < 3) return null;
+    const L = shuffle(S.map((x, k) => k)), R2 = shuffle(S.map((x, k) => k)); let found = 0, errs = 0; const missed = new Set();
+    const body = frame(stage, 'Practice', 'Rompecabezas', 'Toca un comienzo y luego su final para armar cada frase.');
+    body.innerHTML = `<div class="g9 g9-k">${g9Top('Rompecabezas', `<span id="g9n">0 / 3</span>`)}<div class="g9-pz"><div>${L.map(k => `<button type="button" class="g9-pp a" data-k="${k}">${esc(S[k].h[0])}</button>`).join('')}</div><div>${R2.map(k => `<button type="button" class="g9-pp b" data-k="${k}">${esc(S[k].h[1])}</button>`).join('')}</div></div><div class="g9-done" id="g9d"></div><div class="g9-fb" id="g9f"></div></div>`;
+    body.querySelector('.g9-tm').style.visibility = 'hidden'; const fb = body.querySelector('#g9f');
+    await new Promise(done => { let sel = null; body.querySelectorAll('.g9-pp').forEach(b => b.onclick = () => { if (b.disabled) return;
+      if (!sel || sel.classList.contains('a') === b.classList.contains('a')) { if (sel) sel.classList.remove('on'); sel = b; b.classList.add('on'); sfx('tap'); return; }
+      const k = +b.dataset.k; if (+sel.dataset.k === k) { [sel, b].forEach(x => { x.disabled = true; x.classList.remove('on'); x.classList.add('g9ok'); }); found++; burst(b); sfx('ok'); play(S[k].s.au); body.querySelector('#g9d').insertAdjacentHTML('beforeend', `<p>${SV(I.ck)}${esc(S[k].s.en)}</p>`); body.querySelector('#g9n').textContent = `${found} / 3`; fb.innerHTML = `<span class="g9-yes">¡Encaja!</span>`; if (found === 3) setTimeout(done, 1800); }
+      else { errs++; missed.add(k); missed.add(+sel.dataset.k); [sel, b].forEach(x => { x.classList.add('shake', 'bad'); setTimeout(() => x.classList.remove('shake', 'bad', 'on'), 450); }); sfx('bad'); fb.innerHTML = `<span class="g9-no">Esas piezas no encajan.</span>`; } sel = null; }); });
+    S.forEach((x, k) => weak(x.s, !missed.has(k))); const c = 3 - missed.size / 2 | 0;
+    return g9End(stage, Math.max(0, Math.min(3, 3 - Math.ceil(errs / 2))), 3, 'reading', [...missed].map(k => S[k].s), `¡3 frases armadas con ${errs} error${errs === 1 ? '' : 'es'}! Continuar`);
+  };
+  // 🕵️ Teens M3 · El intruso: 3 palabras son de esta lección y 1 no. ¡Encuéntrala!
+  G9.g9Odd = async function (stage, p) {
+    const V = vocab(p).filter(v => okS9(v) && v.en.length < 30), O = others9(p, 6); const TT = String((p._t && p._t.title) || p.title || '').replace(/\s*\(.*$/, ''); if (V.length < 3 || O.length < 4) return null; const N = 4, SEC = 10; let c = 0, combo = 0; const missed = [];
+    const body = frame(stage, 'Practice', 'El intruso', 'Tres expresiones son de esta lección y una no. Toca al intruso antes de que se acabe el tiempo.');
+    body.innerHTML = `<div class="g9 g9-t">${g9Top('El intruso', `<span id="g9n">0 / ${N}</span>`)}<div class="g9-gap" id="g9q"></div><div class="g9-fb" id="g9f"></div></div>`;
+    const q = body.querySelector('#g9q'), fb = body.querySelector('#g9f'), tm = body.querySelector('.g9-tm');
+    for (let i = 0; i < N; i++) { if (!stage.isConnected) break; const intr = O[i], o = shuffle(shuffle(V).slice(0, 3).map(v => v.en).concat(intr.en)), a = o.indexOf(intr.en);
+      q.innerHTML = `<small>Ronda ${i + 1} de ${N}</small><b class="sm">¿Cuál NO es de esta lección?</b>${TT ? `<em class="g9-ges">Tema: ${esc(TT)}</em>` : ''}${optsHTML(o, 'col')}`; fb.innerHTML = '';
+      const ok = await mcq9(q, fb, o, a, { tm, sec: SEC, yes: '¡Lo atrapaste!' }); combo = ok ? combo + 1 : 0; if (ok) { c++; const cb = comboHTML(combo); if (cb) fb.innerHTML += cb; } else missed.push(intr); body.querySelector('#g9n').textContent = `${c} / ${N}`; }
+    return g9End(stage, c, N, 'reading', [], `${c} de ${N} intrusos atrapados · Continuar`);
+  };
+  // 🌐 Teens M3 · Traductor express: elige la traducción correcta al inglés
+  G9.g9Trans = async function (stage, p) {
+    const S = shuffle(uniq((p.sentences || []).concat(vocab(p))).filter(s => s.en && s.es && s.au && okS9(s) && words9(s.en).length >= 3 && s.en.length < 80)).map(s => { const b = [breakH(s.en), breakIt(s.en)].filter(x => x && x !== s.en); return b.length ? { s, w: b } : null; }).filter(Boolean).slice(0, 4);
+    if (S.length < 3) return null; const SEC = 12; let c = 0, combo = 0; const missed = [], V = vocab(p);
+    const body = frame(stage, 'Practice', 'Traductor express', 'Lee la frase en español y elige la traducción correcta al inglés. ¡Rápido!');
+    body.innerHTML = `<div class="g9 g9-t">${g9Top('Traductor express', `<span id="g9n">0 / ${S.length}</span>`)}<div class="g9-gap" id="g9q"></div><div class="g9-fb" id="g9f"></div></div>`;
+    const q = body.querySelector('#g9q'), fb = body.querySelector('#g9f'), tm = body.querySelector('.g9-tm');
+    for (let i = 0; i < S.length; i++) { if (!stage.isConnected) break; const { s, w } = S[i]; let d = [...new Set(w)]; if (d.length < 2) { const x = shuffle(V.filter(v => v.en !== s.en && words9(v.en).length >= 3))[0]; if (x) d.push(x.en); } const o = shuffle([s.en].concat(d.slice(0, 2))), a = o.indexOf(s.en);
+      q.innerHTML = `<small>${i + 1} / ${S.length}</small><b class="sm">${esc(s.es)}</b>${optsHTML(o, 'col')}`; fb.innerHTML = '';
+      const ok = await mcq9(q, fb, o, a, { tm, sec: SEC, yes: 'Nice!' }); combo = ok ? combo + 1 : 0; if (ok) { c++; const cb = comboHTML(combo); if (cb) fb.innerHTML += cb; } else missed.push(s); weak(s, ok); await play(s.au); body.querySelector('#g9n').textContent = `${c} / ${S.length}`; }
+    return g9End(stage, c, S.length, 'reading', missed, `${c} de ${S.length} traducciones · Continuar`);
+  };
+  // ✅ Adultos M3 · Termina la frase: elige el final correcto
+  G9.g9Ending = async function (stage, p) {
+    const S = shuffle(uniq((p.sentences || []).concat(vocab(p))).filter(s => s.en && s.au && /[.!?]$/.test(s.en) && !/…|\.\.\./.test(s.en) && words9(s.en).length >= 5 && s.en.length < 90)).map(s => ({ s, h: halves9(s) })).filter(x => x.h);
+    if (S.length < 4) return null; const R = S.slice(0, 4); let c = 0; const missed = [];
+    const body = frame(stage, 'Practice', 'Termina la frase', 'Lee el comienzo y elige el final que tiene sentido y está bien escrito.');
+    body.innerHTML = `<div class="g9 g9-a">${g9Top('Termina la frase', `<span id="g9n">0 / ${R.length}</span>`)}<div class="g9-hunt" id="g9q"></div><div class="g9-fb" id="g9f"></div></div>`;
+    body.querySelector('.g9-tm').style.visibility = 'hidden'; const q = body.querySelector('#g9q'), fb = body.querySelector('#g9f');
+    for (let i = 0; i < R.length; i++) { if (!stage.isConnected) break; const { s, h } = R[i]; const o = shuffle([h[1]].concat(shuffle(S.filter(x => x.s !== s).map(x => x.h[1])).slice(0, 2))), a = o.indexOf(h[1]);
+      q.innerHTML = `<small>Frase ${i + 1} de ${R.length}</small><b class="g9-st1">${esc(h[0])} …</b>${optsHTML(o, 'col lt')}`; fb.innerHTML = '';
+      const ok = await mcq9(q, fb, o, a, { yes: '¡Exacto!' }); if (ok) c++; else missed.push(s); weak(s, ok); await play(s.au); body.querySelector('#g9n').textContent = `${c} / ${R.length}`; }
+    return g9End(stage, c, R.length, 'reading', missed, `${c} de ${R.length} frases completas · Continuar`);
+  };
+  // 🧱 Adultos M3 · Bloques: ordena los bloques de la frase contra reloj
+  const chunks9 = s => { const W = words9(s.en); if (W.length < 6) return null; const n = W.length >= 10 ? 4 : 3, sz = Math.ceil(W.length / n), C = []; for (let i = 0; i < W.length; i += sz) C.push(W.slice(i, i + sz).join(' ')); return C.length >= 3 ? C : null; };
+  G9.g9Chunks = async function (stage, p) {
+    const R = shuffle(uniq((p.sentences || []).concat(vocab(p))).filter(s => s.en && s.au && s.es && !/…|\.\.\.|\//.test(s.en) && s.en.length < 100)).map(s => ({ s, C: chunks9(s) })).filter(x => x.C).slice(0, 3);
+    if (R.length < 2) return null; const SEC = 20; let c = 0; const missed = [];
+    const body = frame(stage, 'Practice', 'Bloques', 'Toca los bloques en orden para armar la frase. ¡Contra reloj!');
+    body.innerHTML = `<div class="g9 g9-a">${g9Top('Bloques', `<span id="g9n">0 / ${R.length}</span>`)}<div class="g9-hunt" id="g9q"></div><div class="g9-fb" id="g9f"></div></div>`;
+    const q = body.querySelector('#g9q'), fb = body.querySelector('#g9f'), tm = body.querySelector('.g9-tm');
+    for (let i = 0; i < R.length; i++) { if (!stage.isConnected) break; const { s, C } = R[i]; let T9 = shuffle(C.map((t, k) => ({ t, k }))); if (T9.every((x, k) => x.k === k)) T9 = T9.reverse();
+      q.innerHTML = `<small>${i + 1} / ${R.length} · ${esc(s.es)}</small><div class="g9-built" id="g9b"></div><div class="g9-hw ch">${T9.map((x, k) => `<button type="button" data-k="${k}">${esc(x.t)}</button>`).join('')}</div>`; fb.innerHTML = '';
+      const ok = await new Promise(done => { let fin = false, pos = 0, e = 0; const T = g9Timer(tm, SEC, () => { if (fin) return; fin = true; q.querySelector('#g9b').textContent = s.en; fb.innerHTML = `<span class="g9-no">¡Tiempo! Así era.</span>`; setTimeout(() => done(false), 1500); });
+        q.querySelectorAll('.g9-hw button').forEach(b => b.onclick = () => { if (fin || b.disabled) return; const x = T9[+b.dataset.k]; if (x.k === pos) { b.disabled = true; b.classList.add('fix'); q.querySelector('#g9b').insertAdjacentHTML('beforeend', `<span>${esc(x.t)}</span>`); pos++; sfx('tap'); if (pos === C.length) { fin = true; T.stop(); sfx('ok'); fb.innerHTML = e <= 1 ? `<span class="g9-yes">${SV(I.ck)}¡Perfecto! Te sobraron ${Math.round(T.left())} s.</span>` : `<span class="g9-mid">¡Armada!</span>`; setTimeout(() => done(e <= 1), 1000); } }
+          else { e++; b.classList.add('shake', 'bad'); sfx('bad'); setTimeout(() => b.classList.remove('shake', 'bad'), 400); } }); });
+      if (ok) c++; else missed.push(s); weak(s, ok); await play(s.au); body.querySelector('#g9n').textContent = `${c} / ${R.length}`; }
+    return g9End(stage, c, R.length, 'reading', missed, `${c} de ${R.length} frases armadas · Continuar`);
+  };
+  // 🎡 Kids M4 · Ruleta: gira la ruleta, escucha la palabra y elige su significado
+  G9.g9Wheel = async function (stage, p) {
+    const V = shuffle(vocab(p).filter(v => okS9(v) && v.es.length < 40)).slice(0, 6); if (V.length < 4) return null; const N = 4; let c = 0, rot = 0; const missed = [], col = ['#E3242B', '#f59e0b', '#22c55e', '#38a5f0', '#a855f7', '#0B2A5B'];
+    const seg = 360 / V.length, grad = V.map((v, k) => `${col[k % 6]} ${k * seg}deg ${(k + 1) * seg}deg`).join(',');
+    const body = frame(stage, 'Practice', 'La ruleta', 'Gira la ruleta, escucha la palabra y elige lo que significa.');
+    body.innerHTML = `<div class="g9 g9-k">${g9Top('La ruleta', `<span id="g9n">0 / ${N}</span>`)}<div class="g9-wh"><i class="g9-ptr"></i><div class="g9-wd" id="g9w" style="background:conic-gradient(${grad})">${V.map((v, k) => `<span style="transform:rotate(${k * seg + seg / 2}deg)"><b>${k + 1}</b></span>`).join('')}</div><button type="button" class="g9-spin" id="g9s">¡Girar!</button></div><div id="g9q"></div><div class="g9-fb" id="g9f"></div></div>`;
+    body.querySelector('.g9-tm').style.visibility = 'hidden'; const q = body.querySelector('#g9q'), fb = body.querySelector('#g9f'), wd = body.querySelector('#g9w'), sp = body.querySelector('#g9s'); const order = shuffle(V.map((v, k) => k)).slice(0, N);
+    for (let i = 0; i < N; i++) { if (!stage.isConnected) break; const k = order[i], it = V[k]; q.innerHTML = ''; fb.innerHTML = `<span class="g9-mid">Toca «¡Girar!»</span>`; sp.disabled = false;
+      await new Promise(r => sp.onclick = () => { sp.disabled = true; sfx('flip'); rot += 1440 + (360 - (k * seg + seg / 2)) - (rot % 360); wd.style.transform = `rotate(${rot}deg)`; setTimeout(r, 2300); });
+      const { o, a } = pickOpts(it, V, 'es', 3); q.innerHTML = `<div class="g9-wq">${SV(I.vol)}<b>${esc(it.en)}</b></div>${optsHTML(o, 'kd')}`; q.querySelector('.g9-wq').onclick = () => play(it.au); fb.innerHTML = ''; await play(it.au);
+      const ok = await mcq9(q, fb, o, a, { yes: '¡Súper!' }); if (ok) c++; else missed.push(it); weak(it, ok); body.querySelector('#g9n').textContent = `${c} / ${N}`; }
+    return g9End(stage, c, N, 'listening', missed, `¡${c} de ${N} en la ruleta! Continuar`);
+  };
+  // 🔡 Kids M4 · La letra perdida: falta una letra, ¿cuál es?
+  G9.g9Letter = async function (stage, p) {
+    const R = shuffle(vocab(p).filter(v => okS9(v)).map(v => { const W = words9(v.en), k = W.findIndex(w => /^[a-z]{4,}$/i.test(w.replace(/[.,!?]$/, ''))); return k < 0 ? null : { v, W, k }; }).filter(Boolean)).slice(0, 4);
+    if (R.length < 3) return null; let c = 0; const missed = [];
+    const body = frame(stage, 'Practice', 'La letra perdida', 'A una palabra se le perdió una letra. Escucha y elige la letra que falta.');
+    body.innerHTML = `<div class="g9 g9-k">${g9Top('La letra perdida', `<span id="g9n">0 / ${R.length}</span>`)}<button type="button" class="g9-au" id="g9a">${SV(I.vol)}Escuchar otra vez</button><div class="g9-lw" id="g9q"></div><div class="g9-fb" id="g9f"></div></div>`;
+    body.querySelector('.g9-tm').style.visibility = 'hidden'; const q = body.querySelector('#g9q'), fb = body.querySelector('#g9f'); let cur = null; body.querySelector('#g9a').onclick = () => cur && play(cur.au);
+    for (let i = 0; i < R.length; i++) { if (!stage.isConnected) break; const { v, W, k } = R[i]; cur = v; const w = W[k], j = 1 + Math.floor(Math.random() * (w.replace(/[.,!?]$/, '').length - 1)), L = w[j].toLowerCase();
+      const o = shuffle([L].concat(shuffle('aeioubcdlmnprst'.split('').filter(x => x !== L)).slice(0, 2))), a = o.indexOf(L);
+      q.innerHTML = `<b>${W.map((x, n) => n === k ? esc(x.slice(0, j)) + '<span class="g9-lq">?</span>' + esc(x.slice(j + 1)) : esc(x)).join(' ')}</b><small>${esc(v.es)}</small>${optsHTML(o, 'kd lt')}`; fb.innerHTML = ''; await sleep(250); play(v.au);
+      const ok = await mcq9(q, fb, o, a, { yes: '¡La encontraste!' }); q.querySelector('.g9-lq').textContent = L; q.querySelector('.g9-lq').classList.add('in'); if (ok) c++; else missed.push(v); weak(v, ok); await sleep(400); body.querySelector('#g9n').textContent = `${c} / ${R.length}`; }
+    return g9End(stage, c, R.length, 'listening', missed, `¡${c} de ${R.length} letras encontradas! Continuar`);
+  };
+  // 🏆 Teens M4 · Quiz show: 5 niveles, un comodín 50:50
+  G9.g9Show = async function (stage, p) {
+    const P = uniq((p.sentences || []).concat(vocab(p))).filter(s => s.en && s.es && okS9(s) && s.en.length < 90); if (P.length < 5) return null; const R = shuffle(P).slice(0, 5); let c = 0; const missed = [], LV = [100, 250, 500, 1000, 2000];
+    const body = frame(stage, 'Practice', 'Quiz show', '5 niveles. Elige el significado correcto. Tienes un comodín 50:50.');
+    body.innerHTML = `<div class="g9 g9-t">${g9Top('Quiz show', `<span id="g9n">0 pts</span>`)}<div class="g9-lad">${LV.map((x, k) => `<i data-l="${k}">${x}</i>`).join('')}</div><div class="g9-gap" id="g9q"></div><button type="button" class="g9-50" id="g950">50:50</button><div class="g9-fb" id="g9f"></div></div>`;
+    const q = body.querySelector('#g9q'), fb = body.querySelector('#g9f'), tm = body.querySelector('.g9-tm'), f50 = body.querySelector('#g950'); let pts = 0;
+    for (let i = 0; i < R.length; i++) { if (!stage.isConnected) break; const it = R[i]; body.querySelectorAll('.g9-lad i').forEach((x, k) => x.classList.toggle('on', k === i)); const { o, a } = pickOpts(it, P, 'es', 4);
+      q.innerHTML = `<small>Nivel ${i + 1} · ${LV[i]} pts</small><b class="sm">${esc(it.en)}</b>${optsHTML(o, 'col')}`; fb.innerHTML = ''; if (it.au) play(it.au);
+      const ok = await mcq9(q, fb, o, a, { tm, sec: 15, fifty: f50.disabled ? null : f50, yes: `+${LV[i]} pts` }); if (ok) { c++; pts += LV[i]; body.querySelector(`.g9-lad i[data-l="${i}"]`).classList.add('won'); } else missed.push(it); weak(it, ok); body.querySelector('#g9n').textContent = `${pts} pts`; }
+    return g9End(stage, c, R.length, 'reading', missed, `${pts} puntos · ${c} de ${R.length} · Continuar`);
+  };
+  // ⚖️ Teens M4 · ¿Cuál está bien?: dos versiones, solo una es correcta
+  G9.g9AB = async function (stage, p) {
+    const R = shuffle(uniq((p.sentences || []).concat(vocab(p))).filter(s => s.en && s.au && okS9(s) && words9(s.en).length >= 3 && s.en.length < 80)).map(s => { const w = breakH(s.en); return w && w !== s.en ? { s, w } : null; }).filter(Boolean).slice(0, 5);
+    if (R.length < 3) return null; const SEC = 8; let c = 0, combo = 0; const missed = [];
+    const body = frame(stage, 'Practice', '¿Cuál está bien?', 'Dos versiones de la misma frase. Toca la que está bien escrita. ¡Rápido!');
+    body.innerHTML = `<div class="g9 g9-t">${g9Top('¿Cuál está bien?', `<span id="g9n">0 / ${R.length}</span>`)}<div class="g9-ab" id="g9q"></div><div class="g9-fb" id="g9f"></div></div>`;
+    const q = body.querySelector('#g9q'), fb = body.querySelector('#g9f'), tm = body.querySelector('.g9-tm');
+    for (let i = 0; i < R.length; i++) { if (!stage.isConnected) break; const { s, w } = R[i], o = shuffle([s.en, w]), a = o.indexOf(s.en);
+      q.innerHTML = `<small>${i + 1} / ${R.length}</small>${optsHTML(o, 'col ab')}`; fb.innerHTML = '';
+      const ok = await mcq9(q, fb, o, a, { tm, sec: SEC, yes: 'Correct!' }); combo = ok ? combo + 1 : 0; if (ok) { c++; const cb = comboHTML(combo); if (cb) fb.innerHTML += cb; } else missed.push(s); weak(s, ok); await play(s.au); body.querySelector('#g9n').textContent = `${c} / ${R.length}`; }
+    return g9End(stage, c, R.length, 'reading', missed, `${c} de ${R.length} correctas · Continuar`);
+  };
+  // 🔐 Adultos M4 · Palabra secreta: lee el significado y escribe la expresión en inglés (con pista)
+  G9.g9Secret = async function (stage, p) {
+    const R = shuffle(vocab(p).filter(v => words9(v.en).length <= 3 && v.en.length <= 22 && !/[\/()]/.test(v.en))).slice(0, 4); if (R.length < 3) return null; let c = 0; const missed = [];
+    const body = frame(stage, 'Practice', 'Palabra secreta', 'Lee el significado y escribe la expresión en inglés. Te damos la primera letra de cada palabra.');
+    body.innerHTML = `<div class="g9 g9-a">${g9Top('Palabra secreta', `<span id="g9n">0 / ${R.length}</span>`)}<div class="g9-dic" id="g9q"></div><div class="g9-fb" id="g9f"></div></div>`;
+    body.querySelector('.g9-tm').style.visibility = 'hidden'; const q = body.querySelector('#g9q'), fb = body.querySelector('#g9f');
+    for (let i = 0; i < R.length; i++) { if (!stage.isConnected) break; const it = R[i], ans = it.en.trim().replace(/[.!?]$/, ''), hint = words9(ans).map(w => w[0] + w.slice(1).replace(/[a-z]/gi, '_')).join('  ');
+      q.innerHTML = `<small>${i + 1} / ${R.length}</small><b>${esc(it.es)}</b><div class="g9-hint">${esc(hint)}</div><input type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Respuesta en inglés" style="width:100%;max-width:320px"><button type="button" class="g9-chk">Comprobar</button>`; fb.innerHTML = '';
+      const inp = q.querySelector('input'); try { inp.focus(); } catch (e) { }
+      const ok = await new Promise(done => { let tries = 0; const go = () => { const v = nk9(inp.value); if (!v) return; if (v === nk9(ans) || (function () { try { return M().speechScore(ans, inp.value); } catch (e) { return 0; } })() >= 90) { inp.classList.add('ok'); inp.disabled = true; sfx('ok'); fb.innerHTML = `<span class="g9-yes">${SV(I.ck)}${tries ? '¡Ahora sí!' : '¡Perfecto!'}</span>`; play(it.au); setTimeout(() => done(!tries), 1100); return; }
+          tries++; sfx('bad'); inp.classList.add('shake'); setTimeout(() => inp.classList.remove('shake'), 450); if (tries >= 2) { inp.value = ans; inp.disabled = true; inp.classList.add('fix'); fb.innerHTML = `<span class="g9-no">Era <b>${esc(ans)}</b>.</span>`; play(it.au); setTimeout(() => done(false), 1800); } else fb.innerHTML = `<span class="g9-no">Casi. Revisa la pista e inténtalo otra vez.</span>`; };
+        q.querySelector('.g9-chk').onclick = go; inp.onkeydown = e => { if (e.key === 'Enter') go(); }; });
+      if (ok) c++; else missed.push(it); weak(it, ok); body.querySelector('#g9n').textContent = `${c} / ${R.length}`; }
+    return g9End(stage, c, R.length, 'writing', missed, `${c} de ${R.length} al primer intento · Continuar`);
+  };
+  // 🎧 Adultos M4 · Intérprete: escucha (sin texto) y elige lo que significa
+  G9.g9Interp = async function (stage, p) {
+    const P = uniq((p.sentences || []).concat(vocab(p))).filter(s => s.en && s.es && s.au && words9(s.en).length >= 3); if (P.length < 4) return null; const R = shuffle(P).slice(0, 4); let c = 0; const missed = [];
+    const body = frame(stage, 'Practice', 'Intérprete', 'Escucha la frase (sin leerla) y elige lo que significa.');
+    body.innerHTML = `<div class="g9 g9-a">${g9Top('Intérprete', `<span id="g9n">0 / ${R.length}</span>`)}<div class="g9-hunt" id="g9q"></div><div class="g9-fb" id="g9f"></div></div>`;
+    body.querySelector('.g9-tm').style.visibility = 'hidden'; const q = body.querySelector('#g9q'), fb = body.querySelector('#g9f');
+    for (let i = 0; i < R.length; i++) { if (!stage.isConnected) break; const it = R[i]; const { o, a } = pickOpts(it, P, 'es', 3);
+      q.innerHTML = `<small>${i + 1} / ${R.length}</small><button type="button" class="g9-big" id="g9a">${SV(I.vol)}<span>Escuchar</span></button>${optsHTML(o, 'col lt')}<div class="g9-rev" id="g9r"></div>`; fb.innerHTML = ''; q.querySelector('#g9a').onclick = () => play(it.au); await sleep(250); await play(it.au);
+      const ok = await mcq9(q, fb, o, a, { yes: '¡Bien entendido!' }); q.querySelector('#g9r').textContent = it.en; if (ok) c++; else missed.push(it); weak(it, ok); await sleep(900); body.querySelector('#g9n').textContent = `${c} / ${R.length}`; }
+    return g9End(stage, c, R.length, 'listening', missed, `${c} de ${R.length} bien interpretadas · Continuar`);
+  };
+  { const B9 = Object.assign({}, G9); [['g9Climb', 'g9Puzzle', 'g9Stars'], ['g9Puzzle', 'g9Climb', 'g9Stars'], ['g9Odd', 'g9Trans', 'g9Swipe'], ['g9Trans', 'g9Odd', 'g9Swipe'], ['g9Ending', 'g9Chunks', 'g9Chat'], ['g9Chunks', 'g9Ending', 'g9Pairs'],
+    ['g9Wheel', 'g9Letter', 'g9Stars'], ['g9Letter', 'g9Wheel', 'g9Stars'], ['g9Show', 'g9AB', 'g9Swipe'], ['g9AB', 'g9Show', 'g9Swipe'], ['g9Secret', 'g9Interp', 'g9Chat'], ['g9Interp', 'g9Secret', 'g9Pairs']].forEach(([k, ...alt]) => { G9[k] = async (st, p) => { let r = await B9[k](st, p); for (const a of alt) { if (r !== null) break; r = await B9[a](st, p); } return r; }; }); }
   // rotación: cada lección trae 1 juego corto de su edad (alterna por lección)
-  function game9For(p) { const n = (+p.topic || 0) + (+p.part || 0), a = ag(); const pick = (x, y) => n % 2 ? x : y;
+  function game9For(p) { const n = (+p.topic || 0) + (+p.part || 0), a = ag(); const pick = (x, y) => n % 2 ? x : y; let md = 1; try { md = +M().MOD.n || 1; } catch (e) { }
+    if (md === 2) { if (a === 'kids') return pick('g9Train', 'g9Memory'); if (a === 'teens') return pick('g9Gap', 'g9Spell'); return pick('g9Hunt', 'g9Dict'); } /* v448: el Módulo 2 tiene sus propios juegos */
+    if (md === 3) { if (a === 'kids') return pick('g9Climb', 'g9Puzzle'); if (a === 'teens') return pick('g9Odd', 'g9Trans'); return pick('g9Ending', 'g9Chunks'); } /* v449: Módulo 3 */
+    if (md >= 4) { if (a === 'kids') return pick('g9Wheel', 'g9Letter'); if (a === 'teens') return pick('g9Show', 'g9AB'); return pick('g9Secret', 'g9Interp'); } /* v449: Módulo 4 */
     if (a === 'kids') return pick('g9Stars', 'g9Monster'); if (a === 'teens') return pick('g9Swipe', 'g9Beat'); return pick('g9Chat', 'g9Pairs'); }
   window.MRAGE2 = { review, learn, keyq, speak, speakWords: speak, music, gamesFor, musicFor, kgPop, kgBasket, kgAlbum, tgQuiz, tgChat, tgMatch, tgEar, game9For, ...G9 };
 })();
