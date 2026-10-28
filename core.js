@@ -373,8 +373,8 @@
   const FULLC = { "he's": 'he is', "she's": 'she is', "it's": 'it is', "they're": 'they are', "we're": 'we are', "you're": 'you are', "i'm": 'I am', "that's": 'that is' };
   function grammarFix(txt) {
     let t = String(txt || '').trim().replace(/\s+/g, ' '); if (!t) return null; const orig = t;
-    t = t.replace(/\b(he|she|it|they|we|you|i|that)['’]?(s|re|m)\s*$/i, (m) => { const k = m.toLowerCase().replace('’', "'").replace(/^(he|she|it|that)s$/, "$1's").replace(/^(they|we|you)re$/, "$1're").replace(/^im$/, "i'm"); return FULLC[k] || m; }); // "yes he's" → "yes he is"
-    const AG = [[/\b(he|she|it)\s+(are|am)\b/gi, '$1 is'], [/\b(they|we|you)\s+(is|am)\b/gi, '$1 are'], [/\bi\s+(is|are)\b/gi, 'I am'], [/\b(he|she|it)\s+have\b/gi, '$1 has'], [/\bi\s+has\b/gi, 'I have'], [/\b(they|we|you)\s+has\b/gi, '$1 have'], [/\b(he|she|it)\s+don'?t\b/gi, "$1 doesn't"], [/\ba\s+([aeiou]\w+)/gi, 'an $1'], [/\ban\s+([bcdfgjklmnpqrstvwxyz]\w+)/gi, 'a $1'], [/\bi\s+(\w)/g, 'I $1'], [/\b(i|you|we|they|he|she)\s+(have|has)\s+(\w+)\s+years(\s+old)?\b/gi, (m, a, b, n) => (a.toLowerCase() === 'i' ? 'I am' : /^(he|she)$/i.test(a) ? a + ' is' : a + ' are') + ' ' + n + ' years old']];
+    t = t.replace(/\b(he|she|it|they|we|you|i|that)['’](s|re|m)\s*$/i, (m) => { const k = m.toLowerCase().replace('’', "'").replace(/^(he|she|it|that)s$/, "$1's").replace(/^(they|we|you)re$/, "$1're").replace(/^im$/, "i'm"); return FULLC[k] || m; }); // "yes he's" → "yes he is"
+    const AG = [[/\b(he|she|it)\s+(are|am)\b/gi, '$1 is'], [/\b(they|we|you)\s+(is|am)\b/gi, '$1 are'], [/\bi\s+(is|are)\b/gi, 'I am'], [/\b(he|she|it)\s+have\b/gi, '$1 has'], [/\bi\s+has\b/gi, 'I have'], [/\b(they|we|you)\s+has\b/gi, '$1 have'], [/\b(he|she|it)\s+don'?t\b/gi, "$1 doesn't"], [/(^|[^\w-])a\s+([aeiou]\w+)/gi, (m, p, w) => /^(uni|use|usu|uti|eu|one|once|ur|ut)/i.test(w) || /^[A-Z]{2,}$/.test(w) ? m : p + 'an ' + w], [/(^|[^\w-])an\s+([bcdfgjklmnpqrstvwxyz]\w+)/gi, (m, p, w) => /^(hour|honest|hono|heir|herb)/i.test(w) || /^[A-Z]{2,}$/.test(w) ? m : p + 'a ' + w], [/\bi\s+(\w)/g, 'I $1'], [/\b(i|you|we|they|he|she)\s+(have|has)\s+(\w+)\s+years(\s+old)?\b/gi, (m, a, b, n) => (a.toLowerCase() === 'i' ? 'I am' : /^(he|she)$/i.test(a) ? a + ' is' : a + ' are') + ' ' + n + ' years old']];
     AG.forEach(([re, to]) => { t = t.replace(re, to); });
     t = t.replace(/^\w/, c => c.toUpperCase()).replace(/^(yes|no)\s+/i, (m, w) => w[0].toUpperCase() + w.slice(1).toLowerCase() + ', ').replace(/\bi\b/g, 'I');
     if (!/[.!?]$/.test(t)) t += '.';
@@ -403,27 +403,74 @@
     { k: 'pref', q: /\bfavorite\b|\bwhat (do|does) (you|he|she|they) (like|love|prefer|want|need|eat|drink|play|watch)\b/i, a: (ws) => ws.filter(w => w.length > 2 && !FW.has(w) && !STATE.includes(w) && !['thank', 'thanks', 'name', 'from', 'yes', 'not'].includes(w)).length > 0 },
   ];
   const intentOf = (q) => INTENTS.find(x => x.q.test(String(q || '')));
+  // v444: "What's your favorite animal/color/food…?" → la respuesta tiene que nombrar algo de esa categoría
+  const FRU9 = 'apple banana orange strawberry strawberries grape grapes pineapple mango watermelon pear peach cherry cherries lemon kiwi papaya melon coconut lime blueberry plum avocado guava passionfruit fruit';
+  const VEG9 = 'carrot tomato potato corn lettuce broccoli onion cucumber pepper spinach cabbage beans peas garlic celery pumpkin vegetables vegetable';
+  const CAT9 = {
+    animal: 'dog cat bird fish horse cow pig chicken lion elephant monkey rabbit tiger bear giraffe zebra snake duck sheep goat mouse mice dolphin whale shark penguin panda wolf fox frog turtle butterfly bee owl eagle parrot hamster camel kangaroo koala deer squirrel cheetah leopard crocodile alligator hippo hippopotamus rhino octopus spider ant puppy kitten pony donkey bat seal jaguar llama sloth cats dogs',
+    pet: 'dog cat bird fish rabbit hamster turtle parrot puppy kitten mouse snake pony',
+    color: 'red blue yellow green orange purple pink brown black white gray grey gold silver violet beige turquoise navy', colour: 'red blue yellow green orange purple pink brown black white gray grey gold silver violet beige turquoise navy',
+    food: 'pizza pasta rice chicken meat fish beef pork salad soup bread cheese egg eggs burger burgers hamburger hamburgers hotdog sandwich sandwiches taco tacos sushi steak fries potatoes arepa arepas empanada empanadas beans lasagna spaghetti noodles ice cream cake chocolate seafood shrimp cereal pancakes bandeja ajiaco sancocho tamales ' + FRU9 + ' ' + VEG9,
+    dish: 'pizza pasta rice chicken meat fish salad soup burger hamburger sandwich tacos sushi steak arepa arepas empanadas lasagna spaghetti noodles seafood bandeja ajiaco sancocho tamales',
+    meal: 'breakfast lunch dinner brunch snack', fruit: FRU9, vegetable: VEG9,
+    drink: 'water coffee tea juice milk soda lemonade beer wine coke chocolate smoothie milkshake',
+    day: 'monday tuesday wednesday thursday friday saturday sunday weekend', month: 'january february march april may june july august september october november december',
+    season: 'spring summer fall autumn winter', room: 'kitchen bedroom bathroom living dining garage garden office room balcony patio',
+    sport: 'soccer football basketball baseball tennis volleyball swimming running cycling golf boxing hockey skating surfing yoga',
+    subject: 'math maths english science history art music geography spanish biology chemistry physics pe computer'
+  };
+  function favCheck(q, ws) { const Q = String(q || ''); let m = Q.match(/\bfavou?rite\s+([a-z]+)/i);
+    if (!m) { const k = /\bwhat colou?r\b/i.test(Q) ? 'color' : /\bwhat (animal|pet)s?\b/i.test(Q) ? 'animal' : /\b(have|eat|want) for (breakfast|lunch|dinner)\b|\bwhat do you (usually )?eat\b/i.test(Q) ? 'food' : /\bwhat day\b/i.test(Q) && !/\btoday\b/i.test(Q) ? null : /\bwhat month\b/i.test(Q) ? 'month' : /\bwhat sport\b/i.test(Q) ? 'sport' : /\bwhat (do|would) you (like to )?drink\b/i.test(Q) ? 'drink' : null; if (k) m = [k, k]; }
+    if (!m) return null; const L = CAT9[m[1].toLowerCase()]; if (!L) return null; const set = new Set(L.split(' '));
+    return ws.some(w => set.has(w) || set.has(w.replace(/(es|s)$/, '')) || (m[1].toLowerCase() === 'number' && /^\d+$/.test(w))); }
+
+  // v444: respuesta corta a una pregunta de sí/no → el auxiliar y el sujeto tienen que corresponder ("Is she…?" → "No, she isn't", nunca "No, she doesn't")
+  const BE9 = ['am', 'is', 'are', 'was', 'were'], DO9 = ['do', 'does', 'did'], MD9 = ['can', 'could', 'will', 'would', 'should', 'have', 'has', 'had', 'must', 'may', 'might', 'shall'];
+  const PRO9 = ['i', 'you', 'he', 'she', 'it', 'we', 'they', 'there'];
+  const fam9 = a => BE9.includes(a) ? 'be' : DO9.includes(a) ? 'do' : MD9.includes(a) ? a : null;
+  const NEG9 = { am: "'m not", is: "isn't", are: "aren't", was: "wasn't", were: "weren't", do: "don't", does: "doesn't", did: "didn't", can: "can't", could: "couldn't", will: "won't", would: "wouldn't", should: "shouldn't", have: "haven't", has: "hasn't", had: "hadn't", must: "mustn't", may: 'may not', might: "mightn't", shall: "shan't" };
+  const FEM9 = /^(sister|mother|mom|wife|daughter|girlfriend|aunt|grandmother|grandma|niece|she|her|woman|girl|lady|teacher)$/, MAS9 = /^(brother|father|dad|husband|son|boyfriend|uncle|grandfather|grandpa|nephew|man|boy|boss)$/;
+  function ynCheck(qLast, ws) {
+    const qw = words(qLast); const qa = qw[0]; if (!fam9(qa)) return null;
+    let qs = qw[1], allow, def;
+    if (/\byou and\b|\band you\b|^both\b/.test(qw.slice(1, 7).join(' '))) { allow = ['we']; def = 'we'; } else if (qs === 'you') { allow = ['i', 'we']; def = 'I'; } else if (qs === 'i') { allow = ['you']; def = 'you'; } else if (qs === 'we') { allow = ['we', 'you']; def = 'we'; }
+    else if (['he', 'she', 'it', 'they', 'there'].includes(qs)) { allow = [qs]; def = qs; } else if (qs === 'this' || qs === 'that') { allow = ['it', 'he', 'she', 'this', 'that']; def = 'it'; } else if (qs === 'these' || qs === 'those') { allow = ['they']; def = 'they'; }
+    else { const n = qs === 'your' || qs === 'the' || qs === 'his' || qs === 'her' || qs === 'my' || qs === 'a' ? qw[2] || '' : qs || ''; const pl = ['are', 'were'].includes(qa) || (DO9.includes(qa) && qa === 'do'); allow = pl ? ['they'] : ['is', 'was', 'does', 'has'].includes(qa) ? ['he', 'she', 'it'] : ['he', 'she', 'it', 'they']; def = pl ? 'they' : FEM9.test(n) ? 'she' : MAS9.test(n) ? 'he' : 'it'; }
+    const yes = /^(yes|yeah|yep|sure)$/.test(ws[0]), no = /^(no|nope)$/.test(ws[0]); if (!yes && !no) return null;
+    const as = ws[1], aa = ws[2]; if (!as || !PRO9.includes(as) || !aa) return null;
+    const short = ws.length === 3 || (ws.length === 4 && ws[3] === 'not'); if (!fam9(aa) || !short) return null;
+    const subj = allow.includes(as) ? as : def.toLowerCase(), sg = ['he', 'she', 'it', 'this', 'that'].includes(subj) || (subj === 'there' && ['is', 'was'].includes(qa));
+    let good = qa; const fq = fam9(qa);
+    if (fq === 'be') good = ['was', 'were'].includes(qa) ? (subj === 'i' || sg ? 'was' : 'were') : subj === 'i' ? 'am' : sg ? 'is' : 'are';
+    else if (fq === 'do') good = qa === 'did' ? 'did' : sg ? 'does' : 'do';
+    else if (qa === 'have' || qa === 'has') good = sg ? 'has' : 'have';
+    const S = subj === 'i' ? 'I' : subj; const fx = yes ? `Yes, ${S} ${good}.` : (good === 'am' ? "No, I'm not." : `No, ${S} ${NEG9[good]}.`);
+    const neg = ws.slice(2).includes('not'), okAux = aa === good || (fq !== 'be' && fq !== 'do' && fam9(aa) === fam9(good) && ((aa === 'can' && good === 'could') || (aa === 'could' && good === 'can') || (aa === 'will' && good === 'would') || (aa === 'would' && good === 'will')));
+    const bad = !allow.includes(as) || !okAux || (yes && neg) || (no && !neg && ws.length <= 3);
+    return { bad, fix: fx };
+  }
   function freeJudge(q, tgt, alts) {
     { // v439: deletreo de una palabra concreta ("How do you spell "Wilson"?") → las letras tienen que ser exactas, en orden
-      const m = String(q || '').match(/\bspell\s+["“'‘]?([A-Za-z]{2,})["”'’]?/i);
+      const m = /^(yes|no|yeah|nope|sure)\b/i.test(String((alts || [])[0] || '').trim()) && /^\s*(can|could|will|would|do|does)\b/i.test(String(q || '')) ? null : String(q || '').match(/\bspell\s+["“'‘]?([A-Za-z]{2,})["”'’]?/i);
       if (m && /^(your|my|his|her|their)$/i.test(m[1])) { const t = String((alts || [])[0] || '').toLowerCase().replace(/double\s*(u|you)/g, ' w ').replace(/[-,.]/g, ' ').split(/\s+/).filter(Boolean); const L = t.filter(x => x.length === 1 || ['jay', 'kay', 'bee', 'cee', 'dee', 'gee', 'pee', 'tee', 'vee', 'zee', 'zed', 'oh', 'ex', 'el', 'em', 'en', 'es', 'ar', 'wye', 'aitch', 'cue'].includes(x)).length; if (L >= 2 && L >= t.length / 2) return { ok: true, heard: (alts || [])[0] || '', fix: null, rep: false, off: false }; } // su propio nombre: basta con que deletree
       if (m && !/^(your|my|his|her|their|it|that|this|the)$/i.test(m[1])) { const W = m[1].toLowerCase(); let best = '', heard0 = (alts && alts[0]) || '';
         for (const alt of (alts || [])) { const t = String(alt).toLowerCase().replace(/double\s*(u|you)/g, ' w ').replace(/[-,.]/g, ' ').split(/\s+/).filter(Boolean); const L = t.map(x => asLetter(x) || (x.length > 1 && x === W ? x : '')).join(''); if (L === W) return { ok: true, heard: alt, fix: null, rep: false, off: false }; if (L.length > best.length) { best = L; heard0 = alt; } }
         return { ok: false, heard: heard0, fix: W.toUpperCase().split('').join('-'), rep: false, off: false, spell: true }; }
     }
     const heard = (alts && alts[0]) || ''; const ws = words(heard); let fix = grammarFix(heard);
-    const qLast = String(q || '').trim().split(/(?<=[.!?])\s+/).filter(x => /\?\s*$/.test(x)).pop() || String(q || ''); const yn = /^\s*(are|is|am|do|does|did|can|could|was|were|have|has|will|would|should)\b/i.test(qLast) && !/\byour\s+name\b/i.test(qLast);
+    const qLast = String(q || '').trim().split(/(?<=[.!?])\s+/).filter(x => /\?\s*$/.test(x)).pop() || String(q || ''); const yn = /^\s*(are|is|am|do|does|did|can|could|was|were|have|has|will|would|should)\b/i.test(qLast);
     const cw = (x) => words(x).filter(w => w.length > 2 && !FW.has(w) && !['yes', 'yeah', 'not', 'fine', 'thank', 'thanks', 'okay'].includes(w));
     const sj = qSubj(q || ''), yourN = sj === 'your' && /\byour\s+(mother|father|mom|dad|sister|brother|wife|husband|son|daughter|friend|boss|team|client|teacher|car|house|family|parents|cat|dog|pet|city|country|company)\b/i.test(q || ''), want = sj ? (yourN ? SUBJ.your.concat(['he', 'his', 'him', 'she', 'her', 'it', 'its', 'they', 'their']) : SUBJ[sj]) : null, hasS = want ? ws.some(w => want.includes(w)) : true;
     const NEU = (sj === 'you' || sj === 'your' || !sj) ? ['it', 'its', 'they', 'their', 'them'] : []; const otherS = ws.some(w => Object.values(SUBJ).flat().includes(w) && !(want || []).includes(w) && !NEU.includes(w));
     let ok = false, off = false;
-    if (tgt && !/_{2,}/.test(tgt) && ws.length >= 2 && speechScore(tgt, alts).score >= 75) return { ok: true, heard, fix: grammarFix(heard), rep: false, off: false }; // v440: dijo la respuesta modelo
+    if (tgt && !/_{2,}/.test(tgt) && ws.length >= 2 && speechScore(tgt, alts).score >= 75) { const gf = grammarFix(heard); if (yn) { const yc = ynCheck(qLast, ws); if (yc && yc.bad) return { ok: false, heard, fix: yc.fix, rep: false, off: false, gram: true }; } return gf ? { ok: false, heard, fix: gf, rep: false, off: false, gram: true } : { ok: true, heard, fix: null, rep: false, off: false }; } // v440: dijo la respuesta modelo
     const it0 = intentOf(q), stateOnly = isState(ws) && ws.filter(w => w.length > 2 && !FW.has(w) && !STATE.includes(w) && !['thank', 'thanks', 'very', 'much', 'and', 'you', 'not', 'im', 'today', 'really', 'so'].includes(w)).length === 0;
     const nameSig = /\b(my|his|her) name is\b|\bmy name\b/.test(ws.join(' ')) && !/\bname\b/i.test(q || '');
     if (ws.length && ((stateOnly && (!it0 || it0.k !== 'how') && !(/\bhow (are|r|is it|do you feel|have you)\b|\b(feel|okay|ok|tired)\b/i.test(q || '') || (yn && /\b(want|need|help|would you like|okay|ok|alright)\b/i.test(qLast)))) || (nameSig && !/\b(who|meet|introduce)\b|^\s*(hi|hello|hey)[,!.]?\s+i'?m\b/i.test(q || '')))) return { ok: false, heard, fix: null, rep: false, off: true }; // v439: respuesta de OTRA pregunta ("I'm fine", "My name is…")
-    { const om = String(q || '').match(/\b([\w'-]+)\s+or\s+([\w'-]+)/i); if (yn && om) { const A = [om[1], om[2]].map(x => x.toLowerCase()); if (ws.some(w => A.includes(w))) return { ok: true, heard, fix: grammarFix(heard), rep: false, off: false }; } } // "Is it G or J?" → "It's G"
+    { const om = String(q || '').match(/\b([\w'-]+)\s+or\s+([\w'-]+)/i); if (yn && om) { const A = [om[1], om[2]].map(x => x.toLowerCase()); if (ws.some(w => A.includes(w))) { const gf = grammarFix(heard); return gf ? { ok: false, heard, fix: gf, rep: false, off: false, gram: true } : { ok: true, heard, fix: null, rep: false, off: false }; } } } // "Is it G or J?" → "It's G"
     if (yn) {
       const startYN = /^(yes|no|yeah|yep|nope|sure|of)$/.test(ws[0] || '');
+      if (startYN) { const yc = ynCheck(qLast, ws); if (yc && yc.bad) return { ok: false, heard, fix: yc.fix, rep: false, off: false, gram: true }; if (yc) return { ok: true, heard, fix: null, rep: false, off: false }; }
       ok = startYN && (ws.length === 1 || hasS || !otherS); // "Yes" / "Yes, she is" / "No, she isn't"
       if (startYN && !ok) { ok = true; const su = ({ you: 'I', your: 'I', his: 'he', her: 'she', their: 'they' }[sj] || sj), v0 = (String(q).match(/^\s*(\w+)/) || ['', 'is'])[1].toLowerCase(), sg = ['he', 'she', 'it'].includes(su);
         const be = ['are', 'is', 'am'].includes(v0) ? (su === 'I' ? 'am' : sg ? 'is' : 'are') : ['do', 'does'].includes(v0) ? (sg ? 'does' : 'do') : ['was', 'were'].includes(v0) ? (su === 'I' || sg ? 'was' : 'were') : v0;
@@ -432,6 +479,7 @@
         if (!ok && /^(not|never|maybe|probably|perhaps|sometimes|somewhat|neither|either|absolutely|definitely|certainly|actually|well|unless|if|sorry|it|apps|only|really|kind|sort|of)$/.test(ws[0] || '') && ws.length >= 2 && !otherS) ok = true; // "Not yet…", "If I were you…", "It can."
         if (!ok && ws.length >= 4 && !otherS) ok = true; // respuesta completa y libre
         off = !ok; }
+    } else if (favCheck(q, ws) !== null && ws.length) { ok = favCheck(q, ws) && !otherS; off = !ok;
     } else if (intentOf(q) && ws.length) {
       const it = intentOf(q); ok = it.a(ws, heard) && (hasS || !otherS || it.k === 'how' && !otherS);
       if (!ok && tgt && !/_{2,}/.test(tgt) && !otherS) { const pool = new Set(cw((q || '') + ' ' + (tgt || ''))); const shareN = cw(heard).filter(w => pool.has(w)).length; if (shareN >= 2 || speechScore(tgt, alts).score >= 60) ok = true; }
@@ -448,6 +496,7 @@
     }
     // si solo repitió la pregunta, no cuenta: tiene que responderla
     let rep = false; if (ok && q && words(q).length >= 3 && speechScore(q, alts).score >= 80 && (!tgt || speechScore(tgt, alts).score < 60)) { ok = false; rep = true; off = false; }
+    if (ok && fix) return { ok: false, heard, fix, rep: false, off: false, gram: true }; // v444: gramática mala → no pasa, se muestra cómo se dice
     return { ok, heard, fix: ok ? fix : null, rep, off };
   }
   // tarjeta de resultado de voz: SIEMPRE dice si estuvo bien o mal y deja intentar otra vez

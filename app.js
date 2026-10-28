@@ -545,7 +545,7 @@
     app.innerHTML = `<div class="wrap center ld-load"><img class="ld-load-mra" src="mra-x-${({ kids: 'rocket4', teens: 'rocket5' })[M.ageGroup()] || 'rocket3'}.webp?v=2" alt="Mr. Arrieta"><h2 class="ld-ready">Are you ready?</h2><div class="ld-count"></div><p class="ld-load-t muted"></p></div>`;
     // 🚀 conteo 1, 2, 3 mientras carga; en el 3 Mr. Arrieta sale volando y dice GO!
     const lt = $('.ld-load-t', app), cd = $('.ld-count', app), rk = $('.ld-load-mra', app); let loaded = false;
-    const pv = M.prevPart(p); const loadP = M.loadAudio(['common', ...[].concat(M.MOD.games || []), M.MOD.audio + p.topic].concat(pv ? [M.MOD.audio + pv.topic] : []).concat(missionFor(p) ? ['gm' + (+M.MOD.n || 1) + 't' + p.topic] : []).concat(window.M1AGE_ON && (+M.MOD.n || 1) === 1 ? [(window.M1AGE_ON === 'kids' ? 'ka' : 'ta') + p.topic].concat(pv ? [(window.M1AGE_ON === 'kids' ? 'ka' : 'ta') + pv.topic] : []) : [])).then(() => { loaded = true; }, () => { loaded = true; });
+    const pv = M.prevPart(p); const loadP = M.loadAudio(['common', 'keyq9_' + (+M.MOD.n || 1), ...[].concat(M.MOD.games || []), M.MOD.audio + p.topic].concat(pv ? [M.MOD.audio + pv.topic] : []).concat(missionFor(p) ? ['gm' + (+M.MOD.n || 1) + 't' + p.topic] : []).concat(window.M1AGE_ON && (+M.MOD.n || 1) === 1 ? [(window.M1AGE_ON === 'kids' ? 'ka' : 'ta') + p.topic].concat(pv ? [(window.M1AGE_ON === 'kids' ? 'ka' : 'ta') + pv.topic] : []) : [])).then(() => { loaded = true; }, () => { loaded = true; });
     const pop = (t) => { cd.textContent = t; cd.classList.remove('pop'); void cd.offsetWidth; cd.classList.add('pop'); };
     for (const t of ['1', '2', '3']) { pop(t); try { sfx('tap'); } catch (e) { } await new Promise(r => setTimeout(r, 750)); }
     if (!loaded) { lt.textContent = 'Preparando tu lección…'; await loadP; lt.textContent = ''; }
@@ -745,7 +745,7 @@
         const g = p.goal || { en: p.title, es: p.es }; const can = ((p.keyq || []).length ? p.keyq.map(k => ({ en: k.q })) : (p.vocab || [])).map(x => x.en).filter((x, i, a) => x && a.indexOf(x) === i).slice(0, 3);
         const nSteps = buildSteps9(p).length, mins = Math.max(8, Math.min(14, nSteps + 4));
         stage.innerHTML = `<div class="g9"><div class="g9-h"><img src="mra-present.webp" alt="Mr. Arrieta"><div class="g9-b"><span class="g9-l">TOPIC ${p.topic} · ${esc(PL(p).toUpperCase())}</span><b>${esc(g.en)}</b><small>${esc(g.es)}</small><button type="button" class="g9-au">${window.MRI ? MRI('vol') : ''}Escuchar</button></div></div>
-          ${can.length ? `<div class="g9-t">AL TERMINAR PODRÁS DECIR</div><div class="g9-c">${can.map(x => `<span>${window.MRI ? MRI('check') : ''}${esc(x)}</span>`).join('')}</div>` : ''}
+          
           <div class="g9-m">${window.MRI ? MRI('clock') : ''}Duración: ${mins} min</div>
           ${prev && !(S.parts[prev.id] && S.parts[prev.id].done) ? `<p class="hint" style="margin-top:6px">Te recomendamos completar primero: ${esc(prev._t.title)} · ${PL(prev)}</p>` : ''}</div>`;
         const say = () => { stop(); if (window.AUD && window.AUD['g9_' + p.id]) play('g9_' + p.id, { btn: $('.g9-au', stage) }); };
@@ -914,7 +914,7 @@
             okk = fj.ok;
             const hd = $e('.ms-heard'); hd.hidden = false; hd.className = 'ms-heard ' + (okk ? 'good' : 'bad'); hd.innerHTML = `<small>Escuché</small>“${esc(r.alts[0])}”${okk && fj.fix ? `<em class="vk-fix" style="color:#92400e">Mejor dilo así: <b>${esc(fj.fix)}</b></em>` : ''}`;
             if (okk) { sfx('ok'); M.praise(); el.classList.add('done'); mic.hidden = true; $e('.ms-msg').innerHTML = '<b>¡Misión cumplida!</b>'; setTimeout(done, fj.fix ? 3400 : 2200); }
-            else { sfx('bad'); $e('.ms-msg').textContent = fj.spell ? 'Las letras no coinciden. Se deletrea: ' + fj.fix + '.' : fj.rep ? 'Repetiste la pregunta. Ahora respóndela con tus palabras.' : fj.off ? 'Tu respuesta no corresponde a la pregunta. Escúchala otra vez y responde sobre eso, con tus palabras.' : 'Responde con una frase completa, con tus propias palabras.'; if (tries >= 3) setTimeout(done, 2500); }
+            else { sfx('bad'); $e('.ms-msg').textContent = fj.gram ? 'Casi. Se dice: “' + fj.fix + '”. Inténtalo otra vez.' : fj.spell ? 'Las letras no coinciden. Se deletrea: ' + fj.fix + '.' : fj.rep ? 'Repetiste la pregunta. Ahora respóndela con tus palabras.' : fj.off ? 'Tu respuesta no corresponde a la pregunta. Escúchala otra vez y responde sobre eso, con tus palabras.' : 'Responde con una frase completa, con tus propias palabras.'; if (tries >= 3) setTimeout(done, 2500); }
           };
         });
         if (okk) c++;
@@ -977,7 +977,7 @@
             const fj = M.freeJudge(k.q, tgt.replace(/___/g, ''), rr.alts); const sc = { heard: fj.heard }; const ok = fj.ok; // v420: respuesta libre + corrección de gramática
             const fb = $v('.vk-fb'); fb.hidden = false; fb.className = 'vk-fb ' + (ok ? 'good' : 'bad'); fb.innerHTML = `<small>Escuché</small>“${esc(sc.heard || rr.alts[0])}”${ok && fj.fix ? `<em class="vk-fix">Mejor dilo así: <b>${esc(fj.fix)}</b></em>` : ''}`;
             if (ok) { sfx('ok'); M.praise(); vc.classList.add('ok'); $v('.vk-msg').textContent = late ? '¡Bien dicho!' : '¡Excelente!'; setTimeout(() => finish(true), fj.fix ? 3200 : 1500); }
-            else { sfx('bad'); setTimeout(M.encourage, 250); $v('.vk-msg').textContent = fj.spell ? 'Las letras no coinciden. Se deletrea: ' + fj.fix + '.' : fj.rep ? 'Repetiste la pregunta. Ahora respóndela con tus palabras.' : fj.off ? 'Tu respuesta no corresponde a la pregunta. Escúchala otra vez y responde sobre eso, con tus palabras.' : 'Responde con una frase completa, con tus propias palabras.'; $v('.vk-next').hidden = false; }
+            else { sfx('bad'); setTimeout(M.encourage, 250); $v('.vk-msg').textContent = fj.gram ? 'Casi. Se dice: “' + fj.fix + '”. Inténtalo otra vez.' : fj.spell ? 'Las letras no coinciden. Se deletrea: ' + fj.fix + '.' : fj.rep ? 'Repetiste la pregunta. Ahora respóndela con tus palabras.' : fj.off ? 'Tu respuesta no corresponde a la pregunta. Escúchala otra vez y responde sobre eso, con tus palabras.' : 'Responde con una frase completa, con tus propias palabras.'; $v('.vk-next').hidden = false; }
           };
         });
         if (r.ok) { c++; if (!r.late) { streak++; pts += (r.hinted ? 50 : 100) * Math.min(3, streak); } else streak = 0; } else streak = 0;
