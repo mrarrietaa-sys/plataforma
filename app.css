@@ -7361,3 +7361,13 @@ body.ag-teens .pg-rows{background:#fff}
 .vc-pill.inl{position:relative;left:auto!important;top:auto!important;margin:8px auto;width:max-content;max-width:100%;z-index:1}
 /* v454: en celular el Diccionario (Mr. Arrieta) se acomoda en el borde derecho, pequeño, para no tapar la lectura */
 @media(max-width:899px){#dict-fab:not(.drag){left:auto!important;right:0!important;top:auto!important;bottom:120px!important;padding:2px 3px 2px 2px!important;border-radius:999px 0 0 999px!important;border-right:0!important}#dict-fab img{height:36px!important;width:31px!important}}
+/* v455: sin desplazamiento lateral en celular; energía al acertar/fallar */
+html,body{overflow-x:clip}.vk{overflow:hidden}
+.stage.fx9-ok{animation:fx9ok .55s ease-out}.stage.fx9-bad{animation:fx9bad .45s ease-in-out}.stage.fx9-win{animation:fx9win .7s ease-out}
+@keyframes fx9ok{0%{box-shadow:0 0 0 0 rgba(34,197,94,0)}30%{box-shadow:0 0 0 6px rgba(34,197,94,.55),0 0 38px rgba(34,197,94,.45)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
+@keyframes fx9bad{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+@keyframes fx9win{0%{transform:scale(1)}35%{transform:scale(1.025)}100%{transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){.stage.fx9-ok,.stage.fx9-bad,.stage.fx9-win{animation:none}}
+/* v455: barra superior en celulares angostos: nada se monta ni se corta */
+@media(max-width:400px){.tba-r a.tba-b{display:none}.tba-r{gap:4px}.tba-pts{padding:0 8px;font-size:12.5px}.topbar .logo{max-width:118px;height:auto}}
+@media(max-width:350px){.tba-pts svg{display:none}}

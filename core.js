@@ -173,6 +173,7 @@
   // little UI sound effects (WebAudio, no files)
   let actx = null;
   function sfx(type) {
+    try { fx9(type); } catch (e) { } /* v455: vibración y destello en cada acierto/error (más energía) */
     if (!S.sound) return;
     try {
       actx = actx || new (window.AudioContext || window.webkitAudioContext)();
@@ -374,7 +375,7 @@
   function grammarFix(txt) {
     let t = String(txt || '').trim().replace(/\s+/g, ' '); if (!t) return null; const orig = t;
     t = t.replace(/\b(he|she|it|they|we|you|i|that)['’](s|re|m)\s*$/i, (m) => { const k = m.toLowerCase().replace('’', "'").replace(/^(he|she|it|that)s$/, "$1's").replace(/^(they|we|you)re$/, "$1're").replace(/^im$/, "i'm"); return FULLC[k] || m; }); // "yes he's" → "yes he is"
-    const AG = [[/\b(he|she|it)\s+(are|am)\b/gi, '$1 is'], [/\b(they|we|you)\s+(is|am)\b/gi, '$1 are'], [/\bi\s+(is|are)\b/gi, 'I am'], [/\b(he|she|it)\s+have\b/gi, '$1 has'], [/\bi\s+has\b/gi, 'I have'], [/\b(they|we|you)\s+has\b/gi, '$1 have'], [/\b(he|she|it)\s+don'?t\b/gi, "$1 doesn't"], [/(^|[^\w-])a\s+([aeiou]\w+)/gi, (m, p, w) => /^(uni|use|usu|uti|eu|one|once|ur|ut)/i.test(w) || /^[A-Z]{2,}$/.test(w) ? m : p + 'an ' + w], [/(^|[^\w-])an\s+([bcdfgjklmnpqrstvwxyz]\w+)/gi, (m, p, w) => /^(hour|honest|hono|heir|herb)/i.test(w) || /^[A-Z]{2,}$/.test(w) ? m : p + 'a ' + w], [/\bi\s+(\w)/g, 'I $1'], [/\b(i|you|we|they|he|she)\s+(have|has)\s+(\w+)\s+years(\s+old)?\b/gi, (m, a, b, n) => (a.toLowerCase() === 'i' ? 'I am' : /^(he|she)$/i.test(a) ? a + ' is' : a + ' are') + ' ' + n + ' years old']];
+    const AG = [[/\b(he|she|it)\s+(are|am)\b/gi, '$1 is'], [/\b(they|we|you)\s+(is|am)\b/gi, '$1 are'], [/\bi\s+(is|are)\b/gi, 'I am'], [/\b(he|she|it)\s+have\b/gi, '$1 has'], [/\bi\s+has\b/gi, 'I have'], [/\b(they|we|you)\s+has\b/gi, '$1 have'], [/\b(he|she|it)\s+don'?t\b/gi, "$1 doesn't"], [/(^|[^\w-])a\s+([aeiou]\w+)/gi, (m, p, w) => /^(uni|use|usu|uti|eu|one|once|ur|ut)/i.test(w) || /^[A-Z]{2,}$/.test(w) || /^(is|isn't|was|are|and|or|as|in|at|of|on|ok|okay)$/i.test(w) ? m : p + 'an ' + w], [/(^|[^\w-])an\s+([bcdfgjklmnpqrstvwxyz]\w+)/gi, (m, p, w) => /^(hour|honest|hono|heir|herb)/i.test(w) || /^[A-Z]{2,}$/.test(w) ? m : p + 'a ' + w], [/\bi\s+(\w)/g, 'I $1'], [/\b(i|you|we|they|he|she)\s+(have|has)\s+(\w+)\s+years(\s+old)?\b/gi, (m, a, b, n) => (a.toLowerCase() === 'i' ? 'I am' : /^(he|she)$/i.test(a) ? a + ' is' : a + ' are') + ' ' + n + ' years old']];
     AG.forEach(([re, to]) => { t = t.replace(re, to); });
     t = t.replace(/^\w/, c => c.toUpperCase()).replace(/^(yes|no)\s+/i, (m, w) => w[0].toUpperCase() + w.slice(1).toLowerCase() + ', ').replace(/\bi\b/g, 'I');
     if (!/[.!?]$/.test(t)) t += '.';
@@ -435,7 +436,7 @@
     let qs = qw[1], allow, def;
     if (/\byou and\b|\band you\b|^both\b/.test(qw.slice(1, 7).join(' '))) { allow = ['we']; def = 'we'; } else if (qs === 'you') { allow = ['i', 'we']; def = 'I'; } else if (qs === 'i') { allow = ['you']; def = 'you'; } else if (qs === 'we') { allow = ['we', 'you']; def = 'we'; }
     else if (['he', 'she', 'it', 'they', 'there'].includes(qs)) { allow = [qs]; def = qs; } else if (qs === 'this' || qs === 'that') { allow = ['it', 'he', 'she', 'this', 'that']; def = 'it'; } else if (qs === 'these' || qs === 'those') { allow = ['they']; def = 'they'; }
-    else { const n = qs === 'your' || qs === 'the' || qs === 'his' || qs === 'her' || qs === 'my' || qs === 'a' ? qw[2] || '' : qs || ''; const pl = ['are', 'were'].includes(qa) || (DO9.includes(qa) && qa === 'do'); allow = pl ? ['they'] : ['is', 'was', 'does', 'has'].includes(qa) ? ['he', 'she', 'it'] : ['he', 'she', 'it', 'they']; def = pl ? 'they' : FEM9.test(n) ? 'she' : MAS9.test(n) ? 'he' : 'it'; }
+    else { const n = qs === 'your' || qs === 'the' || qs === 'his' || qs === 'her' || qs === 'my' || qs === 'a' ? qw[2] || '' : qs || ''; const pl = ['are', 'were'].includes(qa) || (DO9.includes(qa) && qa === 'do'); allow = pl ? ['they'] : ['is', 'was', 'does', 'has'].includes(qa) ? (/^(class|team|family|group|band|school|club|crew|staff)$/.test(n) ? ['it', 'they'] : ['he', 'she', 'it']) : ['he', 'she', 'it', 'they']; def = pl ? 'they' : FEM9.test(n) ? 'she' : MAS9.test(n) ? 'he' : 'it'; }
     const yes = /^(yes|yeah|yep|sure)$/.test(ws[0]), no = /^(no|nope)$/.test(ws[0]); if (!yes && !no) return null;
     const as = ws[1], aa = ws[2]; if (!as || !PRO9.includes(as) || !aa) return null;
     const short = ws.length === 3 || (ws.length === 4 && ws[3] === 'not'); if (!fam9(aa) || !short) return null;
@@ -458,7 +459,7 @@
         return { ok: false, heard: heard0, fix: W.toUpperCase().split('').join('-'), rep: false, off: false, spell: true }; }
     }
     const heard = (alts && alts[0]) || ''; const ws = words(heard); let fix = grammarFix(heard);
-    const qLast = String(q || '').trim().split(/(?<=[.!?])\s+/).filter(x => /\?\s*$/.test(x)).pop() || String(q || ''); const yn = /^\s*(are|is|am|do|does|did|can|could|was|were|have|has|will|would|should)\b/i.test(qLast);
+    const qLast = String(q || '').trim().split(/(?<=[.!?])\s+(?=[A-Z¿"“'])/).filter(x => /\?\s*$/.test(x)).pop() || String(q || ''); const yn = /^\s*(are|is|am|do|does|did|can|could|was|were|have|has|will|would|should)\b/i.test(qLast);
     const cw = (x) => words(x).filter(w => w.length > 2 && !FW.has(w) && !['yes', 'yeah', 'not', 'fine', 'thank', 'thanks', 'okay'].includes(w));
     const sj = qSubj(q || ''), yourN = sj === 'your' && /\byour\s+(mother|father|mom|dad|sister|brother|wife|husband|son|daughter|friend|boss|team|client|teacher|car|house|family|parents|cat|dog|pet|city|country|company)\b/i.test(q || ''), want = sj ? (yourN ? SUBJ.your.concat(['he', 'his', 'him', 'she', 'her', 'it', 'its', 'they', 'their']) : SUBJ[sj]) : null, hasS = want ? ws.some(w => want.includes(w)) : true;
     const NEU = (sj === 'you' || sj === 'your' || !sj) ? ['it', 'its', 'they', 'their', 'them'] : []; const otherS = ws.some(w => Object.values(SUBJ).flat().includes(w) && !(want || []).includes(w) && !NEU.includes(w));
@@ -466,8 +467,9 @@
     if (tgt && !/_{2,}/.test(tgt) && ws.length >= 2 && speechScore(tgt, alts).score >= 75) { const gf = grammarFix(heard); if (yn) { const yc = ynCheck(qLast, ws); if (yc && yc.bad) return { ok: false, heard, fix: yc.fix, rep: false, off: false, gram: true }; } return gf ? { ok: false, heard, fix: gf, rep: false, off: false, gram: true } : { ok: true, heard, fix: null, rep: false, off: false }; } // v440: dijo la respuesta modelo
     const it0 = intentOf(q), stateOnly = isState(ws) && ws.filter(w => w.length > 2 && !FW.has(w) && !STATE.includes(w) && !['thank', 'thanks', 'very', 'much', 'and', 'you', 'not', 'im', 'today', 'really', 'so'].includes(w)).length === 0;
     const nameSig = /\b(my|his|her) name is\b|\bmy name\b/.test(ws.join(' ')) && !/\bname\b/i.test(q || '');
-    if (ws.length && ((stateOnly && (!it0 || it0.k !== 'how') && !(/\bhow (are|r|is it|do you feel|have you)\b|\b(feel|okay|ok|tired)\b/i.test(q || '') || (yn && /\b(want|need|help|would you like|okay|ok|alright)\b/i.test(qLast)))) || (nameSig && !/\b(who|meet|introduce)\b|^\s*(hi|hello|hey)[,!.]?\s+i'?m\b/i.test(q || '')))) return { ok: false, heard, fix: null, rep: false, off: true }; // v439: respuesta de OTRA pregunta ("I'm fine", "My name is…")
+    if (ws.length && ((stateOnly && (!it0 || it0.k !== 'how') && !(/\bhow (are|r|is it|do you feel|have you)\b|\b(feel|okay|ok|tired)\b/i.test(q || '') || (yn && /\b(want|need|help|would you like|okay|ok|alright)\b/i.test(qLast)))) || (nameSig && !/\bwho are you\b|\bwho is it\b|\bmeet|\bintroduce|introduce yourself|about yourself|what do you say|^\s*(hi|hello|hey)[,!.]?\s+i'?m\b/i.test(q || '')))) return { ok: false, heard, fix: null, rep: false, off: true }; // v439: respuesta de OTRA pregunta ("I'm fine", "My name is…")
     { const om = String(q || '').match(/\b([\w'-]+)\s+or\s+([\w'-]+)/i); if (yn && om) { const A = [om[1], om[2]].map(x => x.toLowerCase()); if (ws.some(w => A.includes(w))) { const gf = grammarFix(heard); return gf ? { ok: false, heard, fix: gf, rep: false, off: false, gram: true } : { ok: true, heard, fix: null, rep: false, off: false }; } } } // "Is it G or J?" → "It's G"
+    if (!yn) { const cm = qLast.match(/,?\s*((?:[\w'-]+\s+){0,4}[\w'-]+)\s+or\s+((?:[\w'-]+\s+){0,4}[\w'-]+)\s*\?\s*$/i); if (cm) { const opt = new Set(cw(cm[1] + ' ' + cm[2]).concat(words(cm[1] + ' ' + cm[2]).filter(w => w.length === 1))); const said = words(heard).some(w => opt.has(w) || [...opt].some(o => o.length > 4 && (w.startsWith(o.slice(0, 5)) || o.startsWith(w.slice(0, 5)))) ); if (opt.size && !said && !/\b(both|neither|none|either|depends|not sure|don'?t know)\b/i.test(heard)) return { ok: false, heard, fix: null, rep: false, off: true }; } } // v455: "Which do you prefer, X or Y?" → tiene que elegir una opción
     if (yn) {
       const startYN = /^(yes|no|yeah|yep|nope|sure|of)$/.test(ws[0] || '');
       if (startYN) { const yc = ynCheck(qLast, ws); if (yc && yc.bad) return { ok: false, heard, fix: yc.fix, rep: false, off: false, gram: true }; if (yc) return { ok: true, heard, fix: null, rep: false, off: false }; }
@@ -588,6 +590,14 @@
     if (!S.ptsTip) { S.ptsTip = 1; save(); setTimeout(() => toast('⚡ ' + PTS_TIP), 1300); }
   }
   const PTS_TIP = 'Los puntos ⚡ se ganan al completar actividades, tareas y retos.';
+  const VIB = { ok: [35], bad: [70, 50, 70], win: [40, 60, 40, 60, 160], tap: [12], flip: [18] };
+  let fxT = 0;
+  function fx9(type) {
+    if (S.vib !== false && navigator.vibrate && VIB[type]) { try { navigator.vibrate(VIB[type]); } catch (e) { } }
+    if (type !== 'ok' && type !== 'bad' && type !== 'win') return; const now = Date.now(); if (now - fxT < 250) return; fxT = now;
+    const st = document.querySelector('.stage'); if (!st) return; const c = type === 'bad' ? 'fx9-bad' : type === 'win' ? 'fx9-win' : 'fx9-ok';
+    st.classList.remove('fx9-ok', 'fx9-bad', 'fx9-win'); void st.offsetWidth; st.classList.add(c); setTimeout(() => st.classList.remove(c), 700);
+  }
   function confetti(ms = 2500, o = {}) {
     const cv = h('<canvas id="confetti"></canvas>'); document.body.appendChild(cv); const ctx = cv.getContext('2d');
     cv.width = innerWidth; cv.height = innerHeight;
