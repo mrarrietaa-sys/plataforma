@@ -598,8 +598,141 @@
     }
     return g9End(stage, c, S.length, 'speaking', [], `${c} de ${S.length} en el ritmo · Continuar`);
   };
+  /* =================== v448 · JUEGOS PROPIOS DEL MÓDULO 2 (Kids y Teens): distintos a los del Módulo 1 =================== */
+  const words9 = s => String(s || '').trim().split(/\s+/).filter(Boolean);
+  const ADULT9 = /\b(work|works|worked|working|job|office|boss|meeting|coffee|beer|wine|salary|company|client|colleague|husband|wife|bank|hotel|drive|drives|car)\b/i; // los niños no trabajan
+  const young9 = () => /kids|teens/.test(ag());
+  const okS9 = s => !(young9() && ADULT9.test(s.en || ''));
+  const sents9 = (p, lo, hi) => uniq((p.sentences || []).concat(p.vocab || []).filter(s => s.en && s.au && s.es && okS9(s) && words9(s.en).length >= lo && words9(s.en).length <= hi));
+  // 🚂 Kids · Tren de palabras: escucha la frase y sube las palabras al tren en orden
+  G9.g9Train = async function (stage, p) {
+    const S = shuffle(sents9(p, 3, 7)).sort((a, b) => /[.!?]$/.test(b.en) - /[.!?]$/.test(a.en)).slice(0, 3); if (S.length < 2) return null; let c = 0; const missed = [];
+    for (let i = 0; i < S.length; i++) {
+      if (!stage.isConnected) break; const it = S[i], W = words9(it.en), tiles = shuffle(W.map((w, k) => ({ w, k })));
+      const body = frame(stage, 'Practice', 'Tren de palabras', 'Escucha a Mr. Arrieta y sube las palabras al tren en el orden correcto.');
+      body.innerHTML = `<div class="g9 g9-k">${g9Top('Tren de palabras', `${i + 1} / ${S.length}`)}<button type="button" class="g9-au" id="g9a">${SV(I.vol)}Escuchar otra vez</button><div class="g9-es">${esc(it.es)}</div>
+        <div class="g9-rail"><div class="g9-train" id="g9t"><span class="g9-loco"><i class="w1"></i><i class="w2"></i></span>${W.map((w, k) => `<span class="g9-wg" data-k="${k}"><b></b><i class="w1"></i><i class="w2"></i></span>`).join('')}</div></div>
+        <div class="g9-tiles">${tiles.map((t, k) => `<button type="button" class="g9-tl" data-k="${k}">${esc(t.w)}</button>`).join('')}</div><div class="g9-fb" id="g9f"></div></div>`;
+      body.querySelector('.g9-tm').style.visibility = 'hidden';
+      body.querySelector('#g9a').onclick = () => play(it.au); await sleep(300); play(it.au);
+      const errs = await new Promise(done => { let pos = 0, e = 0; const fb = body.querySelector('#g9f'), wg = body.querySelectorAll('.g9-wg');
+        body.querySelectorAll('.g9-tl').forEach(b => b.onclick = async () => { if (b.disabled) return; const t = tiles[+b.dataset.k];
+          if (t.w.toLowerCase() === W[pos].toLowerCase()) { b.disabled = true; b.classList.add('used'); const g = wg[pos]; g.querySelector('b').textContent = W[pos]; g.classList.add('on'); pos++; sfx('tap');
+            if (pos === W.length) { sfx('ok'); fb.innerHTML = e <= 1 ? `<span class="g9-yes">${SV(I.ck)}¡Choo choo! ¡Perfecto!</span>` : `<span class="g9-mid">¡Lo lograste!</span>`; await sleep(500); body.querySelector('#g9t').classList.add('go'); await play(it.au); await sleep(700); done(e); } }
+          else { e++; b.classList.add('shake', 'bad'); sfx('bad'); fb.innerHTML = `<span class="g9-no">Esa no va ahí. ¡Escucha otra vez!</span>`; setTimeout(() => b.classList.remove('shake', 'bad'), 450); } }); });
+      const ok = errs <= 1; weak(it, ok); if (ok) c++; else missed.push(it);
+    }
+    return g9End(stage, c, S.length, 'listening', missed, `¡${c} de ${S.length} trenes perfectos! Continuar`);
+  };
+  // 🃏 Kids · Memoria: voltea 2 cartas y encuentra la pareja (inglés ↔ español)
+  G9.g9Memory = async function (stage, p) {
+    let P = vocab(p).filter(v => okS9(v) && v.en.length < 24 && v.es.length < 26); if (P.length < 4) P = sents9(p, 1, 4).filter(s => s.en.length < 24); if (P.length < 4) return null;
+    P = shuffle(P).slice(0, 4); const C = shuffle(P.flatMap((v, k) => [{ k, t: v.en, en: true }, { k, t: v.es, en: false }])); let found = 0, moves = 0; const missed = new Set();
+    const body = frame(stage, 'Practice', 'Memoria', 'Voltea dos cartas y encuentra cada palabra en inglés con su significado.');
+    body.innerHTML = `<div class="g9 g9-k">${g9Top('Memoria', `<span id="g9n">0 / 4 parejas</span>`)}<div class="g9-mem">${C.map((x, i) => `<button type="button" class="g9-mc ${x.en ? 'en' : 'es'}" data-i="${i}"><span class="bk">${SV(I.star)}</span><span class="fr">${esc(x.t)}</span></button>`).join('')}</div><div class="g9-fb" id="g9f"></div></div>`;
+    body.querySelector('.g9-tm').style.visibility = 'hidden';
+    await new Promise(done => { let a = null, lock = false; const fb = body.querySelector('#g9f');
+      body.querySelectorAll('.g9-mc').forEach(b => b.onclick = async () => { if (lock || b.classList.contains('up')) return; const x = C[+b.dataset.i]; b.classList.add('up'); if (x.en) play(P[x.k].au); else sfx('flip');
+        if (!a) { a = b; return; } const y = C[+a.dataset.i]; moves++; lock = true;
+        if (y.k === x.k) { [a, b].forEach(z => z.classList.add('ok')); found++; burst(b); sfx('ok'); body.querySelector('#g9n').textContent = `${found} / 4 parejas`; fb.innerHTML = `<span class="g9-yes">${SV(I.ck)}¡Pareja! <b>${esc(P[x.k].en)}</b> = ${esc(P[x.k].es)}</span>`; a = null; lock = false; if (found === 4) { await sleep(1200); done(); } }
+        else { missed.add(x.k); missed.add(y.k); fb.innerHTML = `<span class="g9-no">No son pareja. ¡Recuerda dónde están!</span>`; await sleep(1000); [a, b].forEach(z => z.classList.remove('up')); a = null; lock = false; } }); });
+    const c = Math.max(0, 4 - Math.max(0, moves - 6) / 2 | 0); P.forEach((v, k) => weak(v, !missed.has(k)));
+    return g9End(stage, Math.min(4, c), 4, 'reading', [...missed].map(k => P[k]), `¡4 parejas en ${moves} intentos! Continuar`);
+  };
+  // ⚡ Teens · Gap rush: completa la frase antes de que se acabe el tiempo
+  const FAM9 = [['is', 'are', 'am'], ['was', 'were', 'is'], ['do', 'does', 'did'], ["don't", "doesn't", "didn't"], ['has', 'have', 'had'], ['in', 'on', 'at'], ['always', 'never', 'sometimes'], ['usually', 'rarely', 'often'], ['can', 'must', 'should'], ["can't", "mustn't", "shouldn't"], ['myself', 'yourself', 'himself', 'herself', 'themselves'], ['up', 'down', 'off', 'on', 'out'], ['past', 'at', 'on'], ['went', 'go', 'goes'], ['ate', 'eat', 'eats'], ['saw', 'see', 'sees'], ['bought', 'buy', 'buys'], ['had', 'have', 'has']];
+  const gap9 = (s, V) => { const W = words9(s.en), VT = ' ' + V.map(v => v.en.toLowerCase()).join(' ') + ' '; const F = shuffle(FAM9).sort((a, b) => b.some(w => VT.includes(' ' + w)) - a.some(w => VT.includes(' ' + w))); for (const fam of F) for (let k = 1; k < W.length; k++) { const w = W[k].replace(/[.,!?]$/, ''); if (fam.includes(w.toLowerCase())) return { k, a: w, opts: shuffle([w].concat(shuffle(fam.filter(x => x !== w.toLowerCase())).slice(0, 2))) }; }
+    for (let k = 0; k < W.length; k++) { const m = W[k].replace(/[.,!?]$/, '').match(/^(I|You|We|They|He|She|It|you|we|they|he|she|it)'(m|re|s)$/); if (m && W.length > 2) { const a = m[0]; return { k, a, opts: shuffle(['m', 're', 's'].map(x => m[1] + "'" + x)) }; } }
+    const vp = V.filter(v => /\s/.test(v.en.trim()) && words9(v.en).length <= 4 && !/[.!?]$/.test(v.en.trim())); for (const v of shuffle(vp)) { const P = words9(v.en.toLowerCase()), k = W.findIndex((w, i) => P.every((x, j) => (W[i + j] || '').replace(/[.,!?]$/, '').toLowerCase() === x)); if (k >= 0 && P.length < W.length) { const o = shuffle(vp.filter(x => x.en.toLowerCase() !== v.en.toLowerCase())).slice(0, 2).map(x => x.en); if (o.length === 2) { const a = W.slice(k, k + P.length).join(' ').replace(/[.,!?]$/, ''); return { k, n: P.length, a, opts: shuffle([a].concat(o)) }; } } }
+    const vw = V.filter(v => !/\s/.test(v.en.trim())); for (const v of shuffle(vw)) { const k = W.findIndex((w, i) => i > 0 && w.replace(/[.,!?]$/, '').toLowerCase() === v.en.toLowerCase()); if (k > 0) { const o = shuffle(vw.filter(x => x.en !== v.en)).slice(0, 2).map(x => x.en); if (o.length === 2) return { k, a: W[k].replace(/[.,!?]$/, ''), opts: shuffle([W[k].replace(/[.,!?]$/, '')].concat(o)) }; } } return null; };
+  G9.g9Gap = async function (stage, p) {
+    const V = vocab(p), R = shuffle(uniq((p.sentences || []).concat(V.filter(v => words9(v.en).length >= 4))).filter(s => s.en && s.au && s.es && okS9(s) && words9(s.en).length >= 4 && !/^(yes|no)\b/i.test(s.en) && s.en.length < 70)).map(s => ({ s, g: gap9(s, V) })).filter(x => x.g).slice(0, 5);
+    if (R.length < 3) return null; const SEC = 9; let c = 0, combo = 0; const missed = [];
+    const body = frame(stage, 'Practice', 'Gap rush', 'Elige la palabra que completa la frase. ¡Tienes pocos segundos!');
+    body.innerHTML = `<div class="g9 g9-t">${g9Top('Gap rush', `<span id="g9cb">0 / ${R.length}</span>`)}<div class="g9-gap" id="g9g"></div><div class="g9-fb" id="g9f"></div></div>`;
+    const box = body.querySelector('#g9g'), fb = body.querySelector('#g9f'), tm = body.querySelector('.g9-tm');
+    for (let i = 0; i < R.length; i++) {
+      if (!stage.isConnected) break; const { s, g } = R[i], W = words9(s.en), tail = (W[g.k + (g.n || 1) - 1].match(/[.,!?]$/) || [''])[0];
+      box.innerHTML = `<small>${i + 1} / ${R.length}</small><b>${W.slice(0, g.k).map(esc).join(' ')} <span class="g9-blank">____</span>${esc(tail)} ${W.slice(g.k + (g.n || 1)).map(esc).join(' ')}</b><em class="g9-ges">${esc(s.es)}</em><div class="g9-go">${g.opts.map((o, k) => `<button type="button" data-k="${k}">${esc(o)}</button>`).join('')}</div>`; fb.innerHTML = '';
+      const ok = await new Promise(done => { let fin = false; const T = g9Timer(tm, SEC, () => { if (fin) return; fin = true; fb.innerHTML = `<span class="g9-no">¡Tiempo! Era <b>${esc(g.a)}</b>.</span>`; done(false); });
+        box.querySelectorAll('.g9-go button').forEach(b => b.onclick = () => { if (fin) return; fin = true; T.stop(); const r = g.opts[+b.dataset.k] === g.a; box.querySelectorAll('.g9-go button').forEach(x => { x.disabled = true; if (g.opts[+x.dataset.k] === g.a) x.classList.add('ok'); }); if (!r) b.classList.add('bad');
+          box.querySelector('.g9-blank').textContent = g.a; box.querySelector('.g9-blank').classList.add('in'); sfx(r ? 'ok' : 'bad'); combo = r ? combo + 1 : 0; fb.innerHTML = r ? (comboHTML(combo) || `<span class="g9-yes">${SV(I.ck)}Nice!</span>`) : `<span class="g9-no">Era <b>${esc(g.a)}</b>.</span>`; done(r); }); });
+      await play(s.au); await sleep(500); if (ok) c++; else missed.push(s); weak(s, ok); body.querySelector('#g9cb').textContent = `${c} / ${R.length}`;
+    }
+    return g9End(stage, c, R.length, 'reading', missed, `${c} de ${R.length} completadas · Continuar`);
+  };
+  // 🔤 Teens · Spelling rush: escucha la palabra y ármala con las letras
+  G9.g9Spell = async function (stage, p) {
+    const V = shuffle(vocab(p).filter(v => okS9(v) && /^[a-z]{3,10}$/i.test(v.en.trim()))).slice(0, 4); if (V.length < 3) return null; const SEC = 15; let c = 0, combo = 0; const missed = [];
+    const body = frame(stage, 'Practice', 'Spelling rush', 'Escucha la palabra y ármala tocando las letras en orden. ¡Contra reloj!');
+    body.innerHTML = `<div class="g9 g9-t">${g9Top('Spelling rush', `<span id="g9cb">0 / ${V.length}</span>`)}<button type="button" class="g9-au" id="g9a">${SV(I.vol)}Escuchar otra vez</button><div class="g9-sp" id="g9s"></div><div class="g9-fb" id="g9f"></div></div>`;
+    const box = body.querySelector('#g9s'), fb = body.querySelector('#g9f'), tm = body.querySelector('.g9-tm'); let cur = null; body.querySelector('#g9a').onclick = () => cur && play(cur.au);
+    for (let i = 0; i < V.length; i++) {
+      if (!stage.isConnected) break; const it = V[i]; cur = it; const L = it.en.trim().toLowerCase().split(''); let T9 = shuffle(L.map((ch, k) => ({ ch, k }))); if (T9.map(x => x.ch).join('') === L.join('')) T9 = T9.reverse();
+      box.innerHTML = `<small>${esc(it.es)}</small><div class="g9-slots">${L.map(() => '<i></i>').join('')}</div><div class="g9-lt">${T9.map((x, k) => `<button type="button" data-k="${k}">${esc(x.ch)}</button>`).join('')}</div>`; fb.innerHTML = '';
+      await sleep(250); play(it.au);
+      const ok = await new Promise(done => { let fin = false, pos = 0, e = 0; const sl = box.querySelectorAll('.g9-slots i'); const T = g9Timer(tm, SEC, () => { if (fin) return; fin = true; fb.innerHTML = `<span class="g9-no">¡Tiempo! Era <b>${esc(it.en)}</b>.</span>`; play(it.au); setTimeout(() => done(false), 1300); });
+        box.querySelectorAll('.g9-lt button').forEach(b => b.onclick = () => { if (fin || b.disabled) return; const x = T9[+b.dataset.k];
+          if (x.ch === L[pos]) { b.disabled = true; sl[pos].textContent = x.ch; sl[pos].classList.add('on'); pos++; sfx('tap');
+            if (pos === L.length) { fin = true; T.stop(); const r = e <= 1; combo = r ? combo + 1 : 0; sfx('ok'); box.querySelector('.g9-slots').classList.add('done'); fb.innerHTML = r ? (comboHTML(combo) || `<span class="g9-yes">${SV(I.ck)}Perfect!</span>`) : `<span class="g9-mid">¡Lo armaste!</span>`; setTimeout(() => done(r), 900); } }
+          else { e++; b.classList.add('shake', 'bad'); sfx('bad'); setTimeout(() => b.classList.remove('shake', 'bad'), 400); } }); });
+      weak(it, ok); if (ok) c++; else missed.push(it); body.querySelector('#g9cb').textContent = `${c} / ${V.length}`;
+    }
+    return g9End(stage, c, V.length, 'listening', missed, `${c} de ${V.length} palabras perfectas · Continuar`);
+  };
+  // 🔎 Adultos · Detective de errores: toca la palabra que está mal
+  const V3 = { works: 'work', lives: 'live', likes: 'like', has: 'have', goes: 'go', wants: 'want', speaks: 'speak', plays: 'play', watches: 'watch', eats: 'eat', drinks: 'drink', gets: 'get', takes: 'take', studies: 'study', reads: 'read', cooks: 'cook', wakes: 'wake', runs: 'run', does: 'do', needs: 'need', loves: 'love', looks: 'look' };
+  const PST = { go: 'went', eat: 'ate', see: 'saw', buy: 'bought', have: 'had', take: 'took', come: 'came', make: 'made', get: 'got', play: 'played', watch: 'watched', drink: 'drank', do: 'did', sleep: 'slept', visit: 'visited', cook: 'cooked' };
+  const REFL = ['myself', 'yourself', 'himself', 'herself', 'itself', 'ourselves', 'themselves'];
+  const HUNT9 = [[/\b(He|She|It|he|she|it) (works|lives|likes|has|goes|wants|speaks|plays|watches|eats|drinks|gets|takes|studies|reads|cooks|wakes|runs|does|needs|loves|looks)\b/, (m, a, v) => a + ' ' + V3[v]],
+    [/\b(didn't|Did you|did you|Did he|did he|Did she|did she) (go|eat|see|buy|have|take|come|make|get|play|watch|drink|do|sleep|visit|cook)\b/, (m, a, v) => a + ' ' + PST[v]],
+    [/\b(can|must|should|can't|mustn't|shouldn't) (go|eat|see|buy|take|come|make|get|play|watch|drink|sleep|swim|speak|cook|wear|use|stay|drive|run|read|leave|rest|call)\b/, (m, a, v) => a + ' ' + v + (/(ch|sh|o)$/.test(v) ? 'es' : 's')],
+    [new RegExp('\\b(' + REFL.join('|') + ')\\b'), (m, r) => shuffle(REFL.filter(x => x !== r))[0]], [/\ba ([bcdfgjklmnpqrstvwxyz]\w+)/, 'an $1']];
+  HUNT9.push([/\b(I|You|We|They|you|we|they) (have|get|go|work|live|like|want|eat|drink|take|play|watch|wake|study|need|love|start|finish|leave)\b/, (m, a, v) => a + ' ' + ({ have: 'has', go: 'goes', watch: 'watches', study: 'studies', finish: 'finishes' }[v] || v + 's')]);
+  const breakH = s => { for (const [re, to] of shuffle(HUNT9.concat(BREAK))) { if (re.test(s)) { const w = s.replace(re, to); if (w !== s) return w; } } return null; };
+  G9.g9Hunt = async function (stage, p) {
+    const S = uniq((p.sentences || []).concat(p.vocab || [], (p.keyq || []).map(k => ({ en: k.a, es: '', au: k.aau })))).filter(x => x.en && x.au && words9(x.en).length >= 3 && x.en.length < 70);
+    const R = shuffle(S.map(x => { const w = breakH(x.en); if (!w) return null; const A = words9(x.en), B = words9(w); if (A.length !== B.length) return null; const d = B.findIndex((t, k) => t !== A[k]); return d < 0 ? null : { x, B, d, fix: A[d] }; }).filter(Boolean)).slice(0, 4);
+    if (R.length < 3) return null; const SEC = 12; let c = 0, combo = 0; const missed = [];
+    const body = frame(stage, 'Practice', 'Detective de errores', 'Cada frase tiene un error. Tócalo antes de que se acabe el tiempo.');
+    body.innerHTML = `<div class="g9 g9-a">${g9Top('Detective de errores', `<span id="g9cb">0 / ${R.length}</span>`)}<div class="g9-hunt" id="g9h"></div><div class="g9-fb" id="g9f"></div></div>`;
+    const box = body.querySelector('#g9h'), fb = body.querySelector('#g9f'), tm = body.querySelector('.g9-tm');
+    for (let i = 0; i < R.length; i++) {
+      if (!stage.isConnected) break; const q = R[i];
+      box.innerHTML = `<small>Frase ${i + 1} de ${R.length} · ¿Dónde está el error?</small><div class="g9-hw">${q.B.map((t, k) => `<button type="button" data-k="${k}">${esc(t)}</button>`).join('')}</div>`; fb.innerHTML = '';
+      const ok = await new Promise(done => { let fin = false, miss = false; const end = r => { fin = true; T.stop(); const b = box.querySelector(`[data-k="${q.d}"]`); b.classList.add('fix'); b.innerHTML = `<s>${esc(q.B[q.d])}</s> ${esc(q.fix)}`; box.querySelectorAll('button').forEach(x => x.disabled = true); done(r); };
+        const T = g9Timer(tm, SEC, () => { if (fin) return; fb.innerHTML = `<span class="g9-no">¡Tiempo! Mira la corrección.</span>`; end(false); });
+        box.querySelectorAll('button').forEach(b => b.onclick = () => { if (fin) return; if (+b.dataset.k === q.d) { sfx('ok'); combo = miss ? 0 : combo + 1; fb.innerHTML = miss ? `<span class="g9-mid">¡Encontrado!</span>` : (comboHTML(combo) || `<span class="g9-yes">${SV(I.ck)}¡Bien visto!</span>`); end(!miss); }
+          else { miss = true; combo = 0; b.classList.add('shake', 'bad'); sfx('bad'); fb.innerHTML = `<span class="g9-no">Esa palabra está bien. Sigue buscando.</span>`; setTimeout(() => b.classList.remove('shake'), 450); } }); });
+      await play(q.x.au); await sleep(500); if (ok) c++; else missed.push(q.x); weak(q.x, ok); body.querySelector('#g9cb').textContent = `${c} / ${R.length}`;
+    }
+    return g9End(stage, c, R.length, 'reading', missed, `${c} de ${R.length} errores cazados · Continuar`);
+  };
+  // ✍️ Adultos · Dictado relámpago: escucha y escribe la palabra que falta
+  const nk9 = s => String(s || '').toLowerCase().replace(/[’`]/g, "'").replace(/[^a-z0-9' ]/g, '').trim();
+  G9.g9Dict = async function (stage, p) {
+    const V = vocab(p); const R = shuffle(uniq((p.sentences || []).concat(V.filter(v => words9(v.en).length >= 4))).filter(s => s.en && s.au && words9(s.en).length >= 4 && !/^(yes|no)\b/i.test(s.en) && s.en.length < 70)).map(s => ({ s, g: gap9(s, V) })).filter(x => x.g).slice(0, 4);
+    if (R.length < 3) return null; let c = 0; const missed = [];
+    const body = frame(stage, 'Practice', 'Dictado relámpago', 'Escucha la frase y escribe la palabra que falta.');
+    body.innerHTML = `<div class="g9 g9-a">${g9Top('Dictado relámpago', `<span id="g9cb">0 / ${R.length}</span>`)}<button type="button" class="g9-au" id="g9a">${SV(I.vol)}Escuchar otra vez</button><div class="g9-dic" id="g9d"></div><div class="g9-fb" id="g9f"></div></div>`;
+    body.querySelector('.g9-tm').style.visibility = 'hidden'; const box = body.querySelector('#g9d'), fb = body.querySelector('#g9f'); let cur = null; body.querySelector('#g9a').onclick = () => cur && play(cur.au);
+    for (let i = 0; i < R.length; i++) {
+      if (!stage.isConnected) break; const { s, g } = R[i], W = words9(s.en), tail = (W[g.k + (g.n || 1) - 1].match(/[.,!?]$/) || [''])[0]; cur = s;
+      box.innerHTML = `<small>${i + 1} / ${R.length}</small><b>${W.slice(0, g.k).map(esc).join(' ')} <input type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Palabra que falta" style="width:${Math.max(4, g.a.length + 1)}ch">${esc(tail)} ${W.slice(g.k + (g.n || 1)).map(esc).join(' ')}</b><button type="button" class="g9-chk">Comprobar</button>`; fb.innerHTML = '';
+      const inp = box.querySelector('input'); await sleep(250); play(s.au); try { inp.focus(); } catch (e) { }
+      const ok = await new Promise(done => { let tries = 0; const go = () => { const v = nk9(inp.value); if (!v) return; if (v === nk9(g.a)) { inp.classList.add('ok'); inp.disabled = true; sfx('ok'); fb.innerHTML = `<span class="g9-yes">${SV(I.ck)}${tries ? '¡Ahora sí!' : '¡Perfecto!'}</span>`; setTimeout(() => done(!tries), 900); return; }
+          tries++; sfx('bad'); inp.classList.add('shake'); setTimeout(() => inp.classList.remove('shake'), 450);
+          if (tries >= 2) { inp.value = g.a; inp.disabled = true; inp.classList.add('fix'); fb.innerHTML = `<span class="g9-no">Era <b>${esc(g.a)}</b>.</span>`; play(s.au); setTimeout(() => done(false), 1600); } else fb.innerHTML = `<span class="g9-no">Casi. Escucha otra vez e inténtalo.</span>`; };
+        box.querySelector('.g9-chk').onclick = go; inp.onkeydown = e => { if (e.key === 'Enter') go(); }; });
+      if (ok) c++; else missed.push(s); weak(s, ok); body.querySelector('#g9cb').textContent = `${c} / ${R.length}`;
+    }
+    return g9End(stage, c, R.length, 'writing', missed, `${c} de ${R.length} al primer intento · Continuar`);
+  };
+  // si a una lección le faltan datos para su juego, prueba el otro juego del módulo y luego el del Módulo 1
+  { const B9 = Object.assign({}, G9); [['g9Train', 'g9Memory', 'g9Stars'], ['g9Memory', 'g9Train', 'g9Stars'], ['g9Gap', 'g9Spell', 'g9Swipe'], ['g9Spell', 'g9Gap', 'g9Swipe'], ['g9Hunt', 'g9Dict', 'g9Chat'], ['g9Dict', 'g9Hunt', 'g9Pairs']].forEach(([k, ...alt]) => { G9[k] = async (st, p) => { let r = await B9[k](st, p); for (const a of alt) { if (r !== null) break; r = await B9[a](st, p); } return r; }; }); }
   // rotación: cada lección trae 1 juego corto de su edad (alterna por lección)
-  function game9For(p) { const n = (+p.topic || 0) + (+p.part || 0), a = ag(); const pick = (x, y) => n % 2 ? x : y;
+  function game9For(p) { const n = (+p.topic || 0) + (+p.part || 0), a = ag(); const pick = (x, y) => n % 2 ? x : y; let md = 1; try { md = +M().MOD.n || 1; } catch (e) { }
+    if (md === 2) { if (a === 'kids') return pick('g9Train', 'g9Memory'); if (a === 'teens') return pick('g9Gap', 'g9Spell'); return pick('g9Hunt', 'g9Dict'); } /* v448: el Módulo 2 tiene sus propios juegos */
     if (a === 'kids') return pick('g9Stars', 'g9Monster'); if (a === 'teens') return pick('g9Swipe', 'g9Beat'); return pick('g9Chat', 'g9Pairs'); }
   window.MRAGE2 = { review, learn, keyq, speak, speakWords: speak, music, gamesFor, musicFor, kgPop, kgBasket, kgAlbum, tgQuiz, tgChat, tgMatch, tgEar, game9For, ...G9 };
 })();
