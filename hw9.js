@@ -132,6 +132,23 @@ window.MRTAUGHT = {
 '1-t11p2': ['living room', 'bedroom', 'kitchen', 'bathroom', 'garage', 'garden', 'sofa', 'bed'],
 '1-t12p1': ['books', 'cars', 'boxes', 'buses', 'watches', 'dishes', 'babies', 'cities'],
 '1-t12p2': ['men', 'women', 'children', 'people', 'feet', 'teeth', 'mice', 'fish'],
+'2-t1p1': ["What time is it?", "It's three o'clock.", "It's half past four.", "It's quarter past six.", "It's quarter to nine.", "It's ten past eleven.", "It's noon.", "It's midnight."],
+'2-t1p2': ['in the morning', 'in the afternoon', 'in the evening', 'at night', 'early', 'late', 'on time', 'schedule'],
+'2-t2p1': ['wake up', 'get up', 'take a shower', 'brush my teeth', 'have breakfast', 'go to work', 'cook dinner', 'go to bed'],
+'2-t2p2': ["I don't drink coffee.", "She doesn't work on Sundays.", 'Do you speak English?', 'Does he live here?', 'Yes, I do.', "No, I don't.", 'Yes, she does.', "No, he doesn't."],
+'2-t3p1': ['head', 'hair', 'eyes', 'ears', 'nose', 'mouth', 'arm', 'hand'],
+'2-t3p2': ['back', 'stomach', 'leg', 'I have a headache.', 'I have a stomachache.', 'I have a sore throat.', 'I have a fever.', 'My back hurts.'],
+'2-t4p1': ['long hair', 'short hair', 'curly hair', 'straight hair', 'blond hair', 'dark hair', 'beard', 'blue eyes'],
+'2-t4p2': ['tall', 'short', 'medium height', 'slim', 'strong', 'young', 'middle-aged', 'elderly'],
+'2-t5p1': ['friendly', 'shy', 'funny', 'serious', 'kind', 'lazy', 'hard-working', 'honest'],
+'2-t5p2': ['rude', 'impatient', 'quiet', 'talkative', 'selfish', 'confident', 'very', 'a bit'],
+'2-t6p1': ['was', 'were', 'yesterday', 'last night', 'worked', 'played', 'watched', 'studied'],
+'2-t6p2': ['went', 'had', 'ate', 'saw', 'bought', 'made', 'took', 'came'],
+'2-t7p1': ["I'm working.", "She's cooking.", "He's sleeping.", "They're playing soccer.", "We're studying English.", "It's raining.", "He's driving.", "I'm reading a book."],
+'2-t7p2': ['I was watching TV.', 'She was sleeping.', 'They were having dinner.', 'It was raining.', 'when', 'while', 'The phone rang.', 'What were you doing at 8 p.m.?'],
+'2-t8p1': ['always', 'usually', 'often', 'sometimes', 'rarely', 'never', 'I always drink coffee in the morning.', 'She never eats fast food.'],
+'2-t11p1': ['wake up', 'get up', 'put on', 'take off', 'turn on', 'turn off', 'look for', 'give up'],
+'2-t11p2': ['look after', 'find out', 'call back', 'come back', 'get on', 'get off', 'fill in', 'run out of'],
 };
 (function () { try {
   const n = (window.M1 && M1.MOD && +M1.MOD.n) || 1, D = window.M1DATA; if (!D || !D.topics) return;
