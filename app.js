@@ -542,7 +542,7 @@
     const p = M.partById(id);
     if (!M.isUnlocked(p.topic)) { route('home'); return lockGate(p.topic); }
     const revM = M.reviewMode(); if (revM) { S.rev = S.rev || {}; if (!S.rev[id]) { S.rev[id] = { s: Date.now() }; save(); } }
-    app.innerHTML = `<div class="wrap center ld-load"><img class="ld-load-mra" src="mra-x-${({ kids: 'rocket4', teens: 'rocket5' })[M.ageGroup()] || 'rocket3'}.webp?v=2" alt="Mr. Arrieta"><h2 class="ld-ready">Are you ready?</h2><div class="ld-count"></div><p class="ld-load-t muted"></p></div>`;
+    app.innerHTML = `<div class="wrap center ld-load"><img class="ld-load-mra" src="mra-x-${({ kids: 'rocket4', teens: 'rocket5' })[M.ageGroup()] || 'rocket3'}.webp?v=2" alt="Mr. Arrieta"><h2 class="ld-ready">Are you ready?</h2><div class="ld-count"></div><p class="ld-load-t muted"></p></div>`; try { sessionStorage.setItem('mra_logo', '1'); } catch (e) { } if (M.brand) M.brand('logo'); /* v456: sonido de marca al empezar cada lección */
     // 🚀 conteo 1, 2, 3 mientras carga; en el 3 Mr. Arrieta sale volando y dice GO!
     const lt = $('.ld-load-t', app), cd = $('.ld-count', app), rk = $('.ld-load-mra', app); let loaded = false;
     const pv = M.prevPart(p); const loadP = M.loadAudio(['common', 'keyq9_' + (+M.MOD.n || 1), 'kq10_' + (+M.MOD.n || 1) + '_' + p.topic, ...(pv && pv.topic !== p.topic ? ['kq10_' + (+M.MOD.n || 1) + '_' + pv.topic] : []), ...(window.M2AGE_ON ? ['a2' + window.M2AGE_ON[0]] : []), ...(window.MYAGE_ON && (+M.MOD.n || 1) >= 3 ? ['y' + M.MOD.n + window.MYAGE_ON[0] + p.topic].concat(pv ? ['y' + M.MOD.n + window.MYAGE_ON[0] + pv.topic] : []) : []), ...[].concat(M.MOD.games || []), M.MOD.audio + p.topic].concat(pv ? [M.MOD.audio + pv.topic] : []).concat(missionFor(p) ? ['gm' + (+M.MOD.n || 1) + 't' + p.topic] : []).concat(window.M1AGE_ON && (+M.MOD.n || 1) === 1 ? [(window.M1AGE_ON === 'kids' ? 'ka' : 'ta') + p.topic].concat(pv ? [(window.M1AGE_ON === 'kids' ? 'ka' : 'ta') + pv.topic] : []) : [])).then(() => { loaded = true; }, () => { loaded = true; });
@@ -881,46 +881,61 @@
     },
 
     // 🚀 MISIÓN según el objetivo: situación real + pregunta en audio + respuesta en voz alta con corrección
-    mission: async (stage, p) => {
+    mission: async (stage, p) => { // v456: misión combinada · elige tu puerta + conversación con un personaje + candados (escape room)
       const X = missionFor(p); if (!X) return null;
-      const GN = { v: ['plane', 'Viajar', 'r'], t: ['briefcase', 'Trabajo', 'b'], e: ['grad', 'Estudios', 'g'] }[X.k] || ['target', '', 'r'];
-      let c = 0; const N = X.list.length;
+      const GN = { v: ['plane', 'Viajar', 'r'], t: ['briefcase', 'Trabajo', 'b'], e: ['grad', 'Estudios', 'g'] }[X.k] || ['target', 'Tu objetivo', 'r'];
+      const LOCK = '<svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>', OPEN = '<svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 7.5-2"/></svg>';
+      let list = X.list.slice(); const N = list.length; let c = 0;
+      // 1) Elige tu historia: dos puertas, cada una con una situación real
+      if (N > 1) {
+        const b0 = A.head(stage, { lbl: 'Mission', title: 'Elige tu puerta', ins: 'Detrás de cada puerta hay una situación real. Ábrela <b>hablando</b> en inglés.' });
+        const d = h(`<div class="ms9-doors">${list.map((x, i) => `<button type="button" class="ms9-door" data-i="${i}">${x.img ? photo('u:' + x.img) : ''}<span class="ms9-dn">Puerta ${i + 1}</span><small>${esc(x.sit)}</small></button>`).join('')}</div>`);
+        b0.appendChild(d);
+        const pick = await new Promise(r => d.querySelectorAll('.ms9-door').forEach(b => b.onclick = () => { sfx('tap'); b.classList.add('on'); setTimeout(() => r(+b.dataset.i), 450); }));
+        if (pick) list = [list[pick]].concat(list.filter((x, i) => i !== pick));
+      }
       for (let mi = 0; mi < N; mi++) {
-        if (!stage.isConnected) break; const x = X.list[mi];
-        const body = A.head(stage, { lbl: 'Mission', title: 'Tu misión', ins: 'Una situación real de <b>tu objetivo</b>. Escucha y responde en voz alta, con tu voz normal.', count: `${mi + 1} / ${N}` });
-        const el = h(`<div class="ms"><div class="ms-top"><span class="ms-badge ${GN[2]}">${window.MRI ? MRI(GN[0]) : ''}Misión · ${esc(GN[1])}</span><span class="ms-xp">Misión ${mi + 1} de ${N}</span></div>
+        if (!stage.isConnected) break; const x = list[mi];
+        const body = A.head(stage, { lbl: 'Mission', title: mi === 0 ? 'Abre la puerta' : 'Último candado', ins: '' });
+        const el = h(`<div class="ms ms9"><div class="ms-top"><span class="ms-badge ${GN[2]}">${window.MRI ? MRI(GN[0]) : ''}Misión · ${esc(GN[1])}</span><span class="ms9-locks">${list.map((y, k) => `<i class="${k < mi ? 'open' : ''}">${k < mi ? OPEN : LOCK}</i>`).join('')}</span></div>
           ${x.img ? `<div class="ms-ph">${photo('u:' + x.img)}<div class="ms-sit"><small>La situación</small>${esc(x.sit)}</div></div>` : `<div class="ms-sit"><small>La situación</small>${esc(x.sit)}</div>`}
-          <div class="ms-q"><button type="button" class="ms-play" aria-label="Escuchar">🔊</button><div><b>${esc(x.q)}</b><small>${esc(x.es)}</small></div></div>
+          <div class="ms-q"><button type="button" class="ms-play" aria-label="Escuchar">${window.MRI ? MRI('vol') : '🔊'}</button><div><b>${esc(x.q)}</b><small>${esc(x.es)}</small></div></div>
           <button type="button" class="ms-mic"></button>
-          <div class="ms-msg">Responde con tus palabras. ¡No tiene que ser perfecto!</div>
+          <div class="ms-msg">Responde con tus palabras para abrir el candado.</div>
           <div class="ms-heard" hidden></div>
           <button type="button" class="ms-hint">¿No sabes cómo empezar? Ver un ejemplo</button>
-          <div class="ms-model" hidden><small>Una respuesta modelo</small><div><button type="button" class="ms-play2" aria-label="Escuchar respuesta">🔊</button><b>${esc(x.a)}</b></div></div></div>`);
+          <div class="ms-model" hidden><small>Una respuesta modelo</small><div><button type="button" class="ms-play2" aria-label="Escuchar respuesta">${window.MRI ? MRI('vol') : '🔊'}</button><b>${esc(x.a)}</b></div></div></div>`);
         body.appendChild(el); const $e = (q) => el.querySelector(q); const mic = $e('.ms-mic');
         const lab = (t) => { mic.innerHTML = `<span class="ms-mi">🎙️</span><span class="ms-mt">${t}</span>`; }; lab('Toca y responde');
         if (window.MRVC && M.canSR) { el.classList.add('has-vc'); mic.after(MRVC.card({ target: mic, label: 'TOCA EL MICRÓFONO Y RESPONDE', say: x.q, es: x.es, au: x.qau, mascot: false })); }
         $e('.ms-play').onclick = () => { stop(); play(x.qau); }; $e('.ms-play2').onclick = () => { stop(); play(x.aau); };
         $e('.ms-hint').onclick = () => { $e('.ms-model').hidden = false; $e('.ms-hint').hidden = true; stop(); play(x.aau); };
         setTimeout(() => play(x.qau), 400);
-        let tries = 0, okk = false;
+        let okk = false;
         await new Promise((done) => {
+          let skip = null;
           mic.onclick = async () => {
             if (mic.disabled) return;
-            if (!M.canSR) { $e('.ms-msg').textContent = 'Di la respuesta en voz alta 🗣️'; okk = true; return setTimeout(done, 2200); }
+            if (!M.canSR) { $e('.ms-msg').textContent = 'Di la respuesta en voz alta'; okk = true; return setTimeout(done, 2200); }
             mic.disabled = true; stop(); el.classList.add('rec'); lab('Te escucho…');
             const r = await M.listen(10000, { quick: true }); el.classList.remove('rec'); mic.disabled = false; lab('Intentar otra vez');
-            if (!r.alts || !r.alts.length) { $e('.ms-msg').textContent = 'No te escuché 🙉 Acércate un poco al micrófono e intenta otra vez.'; return; }
-            tries++; const fj = M.freeJudge(x.q, x.a, r.alts), nw = M.words(r.alts[0]).length; // v430: respuesta libre: solo se corrige gramática y pronunciación
-            okk = fj.ok;
-            const hd = $e('.ms-heard'); hd.hidden = false; hd.className = 'ms-heard ' + (okk ? 'good' : 'bad'); hd.innerHTML = `<small>Escuché</small>“${esc(r.alts[0])}”${okk && fj.fix ? `<em class="vk-fix" style="color:#92400e">Mejor dilo así: <b>${esc(fj.fix)}</b></em>` : ''}`;
-            if (okk) { sfx('ok'); M.praise(); el.classList.add('done'); mic.hidden = true; $e('.ms-msg').innerHTML = '<b>¡Misión cumplida!</b>'; setTimeout(done, fj.fix ? 3400 : 2200); }
-            else { sfx('bad'); $e('.ms-msg').textContent = fj.gram ? 'Casi. Se dice: “' + fj.fix + '”. Inténtalo otra vez.' : fj.spell ? 'Las letras no coinciden. Se deletrea: ' + fj.fix + '.' : fj.rep ? 'Repetiste la pregunta. Ahora respóndela con tus palabras.' : fj.off ? 'Tu respuesta no corresponde a la pregunta. Escúchala otra vez y responde sobre eso, con tus palabras.' : 'Responde con una frase completa, con tus propias palabras.'; if (tries >= 3) setTimeout(done, 2500); }
+            if (!r.alts || !r.alts.length) { $e('.ms-msg').textContent = 'No te escuché. Acércate un poco al micrófono e intenta otra vez.'; return; }
+            const fj = M.freeJudge(x.q, x.a, r.alts); okk = fj.ok;
+            const hd = $e('.ms-heard'); hd.hidden = false; hd.className = 'ms-heard ' + (okk ? 'good' : 'bad'); hd.innerHTML = `<small>Escuché</small>“${esc(r.alts[0])}”${fj.fix ? `<em class="vk-fix">${okk ? 'Mejor dilo así' : 'Se dice'}: <b>${esc(fj.fix)}</b></em>` : ''}`;
+            if (okk) { sfx('ok'); M.praise(); el.classList.add('done'); mic.hidden = true; const lk = el.querySelectorAll('.ms9-locks i')[mi]; if (lk) { lk.classList.add('open', 'pop'); lk.innerHTML = OPEN; } $e('.ms-msg').innerHTML = mi < N - 1 ? '<b>¡Candado abierto!</b>' : '<b>¡Abriste la puerta!</b>'; setTimeout(done, fj.fix ? 3400 : 2200); }
+            else { sfx('bad'); setTimeout(M.encourage, 250); $e('.ms-msg').textContent = fj.gram ? 'Casi. Se dice: “' + fj.fix + '”. Inténtalo otra vez.' : fj.rep ? 'Repetiste la pregunta. Ahora respóndela con tus palabras.' : fj.off ? 'Tu respuesta no corresponde a la pregunta. Escúchala otra vez y responde sobre eso, con tus palabras.' : 'Casi. Inténtalo otra vez.';
+              if (!skip) { skip = h('<button type="button" class="btn w sm ms9-skip">Seguir sin abrir</button>'); el.appendChild(skip); skip.onclick = () => { okk = false; done(); }; } }
           };
         });
         if (okk) c++;
         if (mi < N - 1) await sleep(300);
       }
-      await A.waitNext(stage, 'Continuar');
+      if (stage.isConnected) {
+        const all = c === N; const b2 = A.head(stage, { lbl: 'Mission', title: all ? '¡Misión cumplida!' : 'Misión terminada', ins: '' });
+        b2.appendChild(h(`<div class="ms9-end ${all ? 'win' : ''}"><div class="ms9-bigdoor">${all ? OPEN : LOCK}</div><p>Abriste <b>${c} de ${N}</b> candados</p></div>`));
+        if (all) { sfx('win'); try { M.confetti(1400); } catch (e) { } } else sfx('ok');
+        await A.waitNext(stage, 'Continuar');
+      }
       return A.result(c, N, 'speaking');
     },
 
@@ -941,7 +956,7 @@
       const vc = h(`<div class="vk vk2"><div class="vk-screen"><img src="${PIC}.webp?v=2" alt="Mr. Arrieta" draggable="false">
           <div class="vk-top"><span class="vk-live"><i></i>EN VIVO · <b class="vk-clk">00:00</b></span><div class="vk-sc"><span class="vk-dots">${Array.from({ length: N }, () => '<i></i>').join('')}</span><span class="vk-n" hidden>Pregunta 1/${N}</span><span class="vk-pt">★ <b class="vk-p">0</b></span><span class="vk-st" hidden>x<b>1</b></span></div></div>
           <span class="vk-name">${IC('mic', '')}Mr. Arrieta</span><div class="vk-self"><span class="vk-av">${esc(INI)}</span><span class="vk-lv"><i></i><i></i><i></i><i></i><i></i></span><small>Tú</small></div>
-          <div class="vk-q"><b class="vk-qt"></b><small class="vk-qes"></small></div><div class="vk-fb" hidden></div></div>
+          <i class="vk-ring"></i></div><div class="vk-card"><div class="vk-q"><button type="button" class="vk-qa" aria-label="Escuchar la pregunta">${IC('vol', '')}</button><div><b class="vk-qt"></b><small class="vk-qes"></small></div></div><div class="vk-fb" hidden></div></div>
         <div class="vk-bot"><div class="vk-btns"><div class="vk-cb"><button type="button" class="vk-b vk-rep" aria-label="Escuchar la pregunta otra vez">${IC('vol', '')}</button><small>Repetir</small></div>
           <div class="vk-cb vk-cbm"><div class="vk-timer"><button type="button" class="vk-b vk-mic" aria-label="Responder">${IC('mic', '')}</button><b hidden>${SECS}</b></div><small>Responder</small></div>
           <div class="vk-cb"><button type="button" class="vk-b vk-hint" aria-label="Ver una pista">${IC('bulb', '')}</button><small>Pista</small></div></div>
@@ -957,7 +972,7 @@
         $v('.vk-n').textContent = `Pregunta ${i + 1}/${N}`; vc.querySelectorAll('.vk-dots i').forEach((d, j) => d.className = j < i ? 'on' : j === i ? 'cur' : ''); $v('.vk-qt').textContent = k.q; $v('.vk-qes').textContent = k.es || '';
         { const gd = ynGuide(k.q); let gEl = $v('.vk-guide'); if (!gEl) { gEl = h('<div class="vk-guide"></div>'); $v('.vk-q').appendChild(gEl); } gEl.innerHTML = gd ? `Responde como quieras: <b>${esc(gd[0])}</b> o <b>${esc(gd[1])}</b>` : 'Responde con tus propias palabras, en una frase.'; }
         $v('.vk-ans').hidden = true; $v('.vk-next').hidden = true; $v('.vk-fb').hidden = true; $v('.vk-msg').textContent = 'Escucha la pregunta…';
-        vc.classList.remove('ok', 'late'); const img = $v('.vk-screen img'); img.classList.remove('talk'); void img.offsetWidth; img.classList.add('talk');
+        vc.classList.remove('ok', 'late', 'bad'); const img = $v('.vk-screen img'); img.src = PIC + '.webp?v=2'; img.classList.remove('talk'); void img.offsetWidth; img.classList.add('talk');
         await play(k.qau); if (!stage.isConnected) break;
         const r = await new Promise((done) => {
           let left = SECS, timer = null, busy = false, over = false, late = false, hinted = false;
@@ -965,7 +980,7 @@
           const tick = () => { if (busy || over) return; left -= 0.1; setT(left, left / SECS); if (left <= 0) { clearInterval(timer); late = true; vc.classList.add('late'); $v('.vk-msg').textContent = 'Take your time! Responde con tus propias palabras (sin puntos).'; $v('.vk-next').hidden = false; } };
           setT(left, 1); timer = setInterval(tick, 100); $v('.vk-msg').textContent = blank ? 'Responde con tu información personal' : 'Toca el micrófono y responde';
           const finish = (ok) => { if (over) return; over = true; clearInterval(timer); done({ ok, late, hinted }); };
-          $v('.vk-rep').onclick = () => { stop(); play(k.qau); };
+          $v('.vk-rep').onclick = () => { stop(); play(k.qau); }; $v('.vk-qa').onclick = () => { stop(); play(k.qau); };
           $v('.vk-hint').onclick = () => { if (hinted) return; hinted = true; const w = tgt.replace(/___/g, '').trim().split(/\s+/); $v('.vk-msg').innerHTML = `Empieza así: <b>${esc(w.slice(0, Math.min(2, w.length)).join(' '))}…</b>`; };
           $v('.vk-next').onclick = () => finish(false);
           $v('.vk-mic').onclick = async () => {
@@ -975,7 +990,9 @@
             const rr = await M.listen(9000, { quick: true }); vc.classList.remove('rec'); busy = false; if (over) return;
             if (!rr.alts || !rr.alts.length) { $v('.vk-msg').textContent = rr.error === 'not-allowed' ? 'Permite el micrófono en tu navegador para responder' : 'No te escuché. Acércate un poco al micrófono e intenta otra vez.'; return; }
             const fj = M.freeJudge(k.q, tgt.replace(/___/g, ''), rr.alts); const sc = { heard: fj.heard }; const ok = fj.ok; // v420: respuesta libre + corrección de gramática
-            const fb = $v('.vk-fb'); fb.hidden = false; fb.className = 'vk-fb ' + (ok ? 'good' : 'bad'); fb.innerHTML = `<small>Escuché</small>“${esc(sc.heard || rr.alts[0])}”${ok && fj.fix ? `<em class="vk-fix">Mejor dilo así: <b>${esc(fj.fix)}</b></em>` : ''}`;
+            const fb = $v('.vk-fb'); fb.hidden = false; fb.className = 'vk-fb ' + (ok ? 'good' : 'bad'); fb.innerHTML = `<span class="vk-fi">${ok ? '<svg viewBox="0 0 24 24"><path d="M5 12.5 10 17l9-10"/></svg>' : '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5v.5"/></svg>'}</span><div><b class="vk-fh">${ok ? (late ? '¡Bien dicho!' : '¡Excelente!') : 'Casi… inténtalo otra vez'}</b><small>Escuché: “${esc(sc.heard || rr.alts[0])}”</small>${fj.fix ? `<em class="vk-fix">${ok ? 'Mejor dilo así' : 'Se dice'}: <b>${esc(fj.fix)}</b></em>` : ''}</div>`;
+            { const im = $v('.vk-screen img'); im.src = (ok ? 'mra-thumbs' : 'mra-think') + '.webp?v=2'; } /* v456: Mr. Arrieta reacciona (un solo personaje en pantalla) */
+            if (!ok) vc.classList.add('bad');
             if (ok) { sfx('ok'); M.praise(); vc.classList.add('ok'); $v('.vk-msg').textContent = late ? '¡Bien dicho!' : '¡Excelente!'; setTimeout(() => finish(true), fj.fix ? 3200 : 1500); }
             else { sfx('bad'); setTimeout(M.encourage, 250); $v('.vk-msg').textContent = fj.gram ? 'Casi. Se dice: “' + fj.fix + '”. Inténtalo otra vez.' : fj.spell ? 'Las letras no coinciden. Se deletrea: ' + fj.fix + '.' : fj.rep ? 'Repetiste la pregunta. Ahora respóndela con tus palabras.' : fj.off ? 'Tu respuesta no corresponde a la pregunta. Escúchala otra vez y responde sobre eso, con tus palabras.' : 'Responde con una frase completa, con tus propias palabras.'; $v('.vk-next').hidden = false; }
           };
@@ -1114,9 +1131,9 @@
     const msg = $('.yt-msg', host);
     const showLink = () => { msg.innerHTML = `<a class="btn w sm" href="https://www.youtube.com/watch?v=${esc(ids[0])}" target="_blank" rel="noopener" style="text-decoration:none">▶ Ver la canción en YouTube</a>`; msg.classList.remove('hidden'); };
     loadYT().then(() => {
-      if (!(window.YT && YT.Player)) { $('.ytwrap', host).innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${esc(ids[0])}?rel=0&playsinline=1&hl=en" allow="autoplay; encrypted-media" allowfullscreen></iframe>`; showLink(); return; }
-      const player = new YT.Player($('.ytp', host), { videoId: ids[0], width: '100%', height: '100%', playerVars: { rel: 0, modestbranding: 1, playsinline: 1, hl: 'en', enablejsapi: 1 },
-        events: { onStateChange: (e) => host.dispatchEvent(new CustomEvent('ytstate', { detail: e.data })), onReady: () => { }, onError: () => { k++; if (k < ids.length) player.loadVideoById(ids[k]); else { $('.ytwrap', host).classList.add('hidden'); showLink(); } } } });
+      if (!(window.YT && YT.Player)) { $('.ytwrap', host).innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${esc(ids[0])}?rel=0&playsinline=1&hl=en${window.MRCLIP ? `&start=${MRCLIP(sg)[0]}&end=${MRCLIP(sg)[1]}` : ''}" allow="autoplay; encrypted-media" allowfullscreen></iframe>`; showLink(); return; }
+      const player = new YT.Player($('.ytp', host), { videoId: ids[0], width: '100%', height: '100%', playerVars: Object.assign({ rel: 0, modestbranding: 1, playsinline: 1, hl: 'en', enablejsapi: 1 }, window.MRCLIP ? { start: MRCLIP(sg)[0], end: MRCLIP(sg)[1] } : {}),
+        events: { onStateChange: (e) => host.dispatchEvent(new CustomEvent('ytstate', { detail: e.data })), onReady: () => { }, onError: () => { k++; if (k < ids.length) player.loadVideoById(window.MRCLIP ? { videoId: ids[k], startSeconds: MRCLIP(sg)[0], endSeconds: MRCLIP(sg)[1] } : ids[k]); else { $('.ytwrap', host).classList.add('hidden'); showLink(); } } } });
     });
   }
   async function playLearn(stage, p) {
@@ -1384,7 +1401,7 @@
     $('#again').onclick = () => route('class', p.id); if ($('#home').tagName === 'BUTTON') $('#home').onclick = () => route('home');
     if ($('#next')) $('#next').onclick = () => M.isUnlocked(nx.topic) ? route('class', nx.id) : (route('home'), lockGate(nx.topic));
     if ($('#fin')) $('#fin').onclick = () => M.finalUnlocked() ? route('final') : (route('home'), finalLockedModal());
-    sfx('win');
+    if (!M.brand || !M.brand('fin')) sfx('win'); /* v456: sonido de marca al terminar la lección */
     checkBadges();
   }
 

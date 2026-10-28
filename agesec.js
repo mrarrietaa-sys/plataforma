@@ -388,13 +388,17 @@
   }
 
   /* =================== MÚSICA =================== */
+  // v456: solo un pedazo de ~75 s de la canción (el coro), para no tener que ver el video completo
+  const KIDCH = /super simple|dream english|kids|learning station|have fun|jack hartmann|singsing|engames|hooray|kidstv|rockin|wormhole|sesame|cocomelon/i;
+  function clip9(sg) { const st = sg && sg.s != null ? +sg.s : (KIDCH.test((sg && (sg.ch || sg.artist)) || '') ? 0 : 30); return [st, st + 75]; }
+  window.MRCLIP = clip9;
   function musicFor(p) { const n = +((M().MOD || {}).n) || 1, S = n === 1 ? window.MRMUSIC : n === 2 ? window.MRMUSIC2 : n === 3 ? window.MRMUSIC3 : n === 4 ? window.MRMUSIC4 : null, D = S && S[ag()]; return D && D[p.id] ? D[p.id] : null; } // v446: Módulo 2 también
   async function music(stage, p) {
     const sg = musicFor(p); if (!sg) return null; const teens = ag() === 'teens';
-    const body = frame(stage, 'Music', teens ? 'Catch the phrase' : 'Atrapa la palabra', teens ? 'Dale play. Cuando escuches una frase, tócala. Cada acierto sube tu combo.' : 'Dale play a la canción. Cuando escuches una palabra, ¡tócala!');
+    const body = frame(stage, 'Music', teens ? 'Catch the phrase' : 'Atrapa la palabra', teens ? 'Dale play: es solo un minuto de la canción. Cuando escuches una frase, tócala. Cada acierto sube tu combo.' : 'Dale play: es solo un minuto de la canción. Cuando escuches una palabra, ¡tócala!');
     const tiles = shuffle((sg.w || []).map(t => ({ t, ok: true })).concat((sg.d || []).map(t => ({ t, ok: false }))));
     const COL = ['#f59e0b', '#38bdf8', '#fb7185', '#4ade80', '#a78bfa', '#f97316'];
-    body.innerHTML = `<div class="as-vid"><iframe src="https://www.youtube-nocookie.com/embed/${esc(sg.yt)}?rel=0&playsinline=1&modestbranding=1" title="${esc(sg.title)}" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div><div class="as-vcap">${esc(sg.title)} · ${esc(sg.ch)}</div>
+    body.innerHTML = `<div class="as-vid"><iframe src="https://www.youtube-nocookie.com/embed/${esc(sg.yt)}?rel=0&playsinline=1&modestbranding=1&start=${clip9(sg)[0]}&end=${clip9(sg)[1]}" title="${esc(sg.title)}" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div><div class="as-vcap">${esc(sg.title)} · ${esc(sg.ch)}</div>
       ${teens ? '<div class="as-qh"><span>COMBO <b id="as-cb">x0</b></span><span>MEJOR COMBO <b id="as-bc">x0</b></span></div>' : ''}<div class="as-mcnt">${teens ? 'Atrapadas' : 'Palabras atrapadas'} <b id="as-mg">0 de ${(sg.w || []).length}</b></div><div class="as-tiles as-tu ${teens ? 'tn' : 'kd'}">${tiles.map((x, k) => `<button type="button" class="as-tile" data-k="${k}"><span>${esc(x.t)}</span></button>`).join('')}</div><div class="as-mfb" id="as-mf">${teens ? 'Toca una frase cuando la escuches.' : 'Toca una palabra cuando la escuches.'}</div>`;
     let got = 0, combo = 0, best = 0; const need = tiles.filter(x => x.ok).length;
     await new Promise(done => { body.querySelectorAll('.as-tile').forEach(b => b.onclick = () => { const x = tiles[+b.dataset.k]; if (b.classList.contains('ok')) return;

@@ -175,6 +175,7 @@
   function sfx(type) {
     try { fx9(type); } catch (e) { } /* v455: vibración y destello en cada acierto/error (más energía) */
     if (!S.sound) return;
+    if (type === 'ok' && window.MRSONIC && brand('ok')) return; // v456: el acierto suena con las 2 notas del sonido de marca
     try {
       actx = actx || new (window.AudioContext || window.webkitAudioContext)();
       const notes = { ok: [[660, 0], [880, .09]], bad: [[220, 0], [180, .12]], tap: [[520, 0]], win: [[523, 0], [659, .12], [784, .24], [1046, .36]], flip: [[400, 0]] }[type] || [[440, 0]];
@@ -187,6 +188,15 @@
       });
     } catch (e) { }
   }
+  // 🎵 v456 · sonido de marca de Mr. Arrieta: logo (entrar / empezar lección), fin (lección terminada), ok (acierto)
+  const SBUF = {}; let sReady = null;
+  function sDecode() { if (sReady) return sReady; try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return Promise.resolve(); }
+    sReady = Promise.all(Object.keys(window.MRSONIC || {}).map(k => { const bin = atob(window.MRSONIC[k]), u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return new Promise(r => { try { actx.decodeAudioData(u.buffer, b => { SBUF[k] = b; r(); }, () => r()); } catch (e) { r(); } }); })); return sReady; }
+  function brand(k) { if (!S.sound || !window.MRSONIC) return false; try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); if (actx.state === 'suspended') actx.resume(); } catch (e) { return false; }
+    const go = () => { const b = SBUF[k]; if (!b) return; const src = actx.createBufferSource(), g = actx.createGain(); g.gain.value = k === 'ok' ? .55 : .7; src.buffer = b; src.connect(g).connect(actx.destination); src.start(); };
+    if (SBUF[k]) go(); else sDecode().then(go); return true; }
+  // al entrar a la plataforma: suena una vez por sesión, con el primer toque (los navegadores no dejan sonar antes)
+  document.addEventListener('pointerdown', function first() { document.removeEventListener('pointerdown', first, true); try { sDecode(); if (sessionStorage.getItem('mra_logo')) return; sessionStorage.setItem('mra_logo', '1'); if (!document.querySelector('.ld-load')) setTimeout(() => brand('logo'), 60); } catch (e) { } }, true);
   // 👧 Kids y Teens (9 a 17 años): la voz que felicita y anima es de mujer; adultos: voz de hombre
   function ageGroup() { try { const p = window.MRAP && MRAP.get && MRAP.get(); const b = p && p.birth; if (!/^\d{4}-\d{2}-\d{2}/.test(b || '')) return p && (p.ag === 'kids' || p.ag === 'teens') ? p.ag : 'adult'; const t = new Date(), y = +b.slice(0, 4), m = +b.slice(5, 7), d = +b.slice(8, 10); let a = t.getFullYear() - y; if (t.getMonth() + 1 < m || (t.getMonth() + 1 === m && t.getDate() < d)) a--; return a < 12 ? 'kids' : a < 18 ? 'teens' : 'adult'; } catch (e) { return 'adult'; } }
   const femFB = () => ageGroup() !== 'adult';
@@ -656,6 +666,6 @@
   const srSessionW = function (onText, onFatal) { const W = window.MRAWAVE; let off = !W; const o = () => { if (!off) { off = true; W.off(); } }; if (W) W.on(); const S = srSession(onText, function () { o(); return onFatal && onFatal.apply(this, arguments); }); if (!W) return S; if (!S) { o(); return S; }
     const st = S.stop, ab = S.abort; S.stop = function () { o(); return st.apply(S, arguments); }; S.abort = function () { o(); return ab.apply(S, arguments); }; return S; };
   window.M1 = { face, D, C, MOD, S, $, $$, h, esc, shuffle, sample, sleep, save, touchStreak, addSkill, addWeak, okWeak, skillPct, isUnlocked, finalUnlocked, paceDate, weakParts, reviewMode, revCount, PTS_TIP, hasAccess, progressOpen, lockReason, review, hasProfile, doneCount, totalParts, redeem, codeHash,
-    allParts, partById, trackAudio, audioUI, floatStop, recordScore: recordScoreW, letterScorer, voiceResult, floatBubble, setBubbleHidden, prevPart, nextPart, partStars, overallPct, imgURL, photo, play, playSeq, loadAudio, stop, sfx, praise, encourage, ageGroup, fbf, canSR, IOS, MOBILE, listen: listenW, srSession: srSessionW, recordVoice: recordVoiceW,
+    allParts, partById, trackAudio, audioUI, floatStop, recordScore: recordScoreW, letterScorer, voiceResult, floatBubble, setBubbleHidden, prevPart, nextPart, partStars, overallPct, imgURL, photo, play, playSeq, loadAudio, stop, sfx, praise, encourage, ageGroup, brand, fbf, canSR, IOS, MOBILE, listen: listenW, srSession: srSessionW, recordVoice: recordVoiceW,
     norm, words, lev, speechScore, audBusy, freeJudge, grammarFix, sheet, good, bad, toast, modal, xpFly, confetti, mascot, audioSrc };
 })();
