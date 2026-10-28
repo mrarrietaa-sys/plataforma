@@ -545,7 +545,7 @@
     app.innerHTML = `<div class="wrap center ld-load"><img class="ld-load-mra" src="mra-x-${({ kids: 'rocket4', teens: 'rocket5' })[M.ageGroup()] || 'rocket3'}.webp?v=2" alt="Mr. Arrieta"><h2 class="ld-ready">Are you ready?</h2><div class="ld-count"></div><p class="ld-load-t muted"></p></div>`;
     // 🚀 conteo 1, 2, 3 mientras carga; en el 3 Mr. Arrieta sale volando y dice GO!
     const lt = $('.ld-load-t', app), cd = $('.ld-count', app), rk = $('.ld-load-mra', app); let loaded = false;
-    const pv = M.prevPart(p); const loadP = M.loadAudio(['common', 'keyq9_' + (+M.MOD.n || 1), ...(window.M2AGE_ON ? ['a2' + window.M2AGE_ON[0]] : []), ...[].concat(M.MOD.games || []), M.MOD.audio + p.topic].concat(pv ? [M.MOD.audio + pv.topic] : []).concat(missionFor(p) ? ['gm' + (+M.MOD.n || 1) + 't' + p.topic] : []).concat(window.M1AGE_ON && (+M.MOD.n || 1) === 1 ? [(window.M1AGE_ON === 'kids' ? 'ka' : 'ta') + p.topic].concat(pv ? [(window.M1AGE_ON === 'kids' ? 'ka' : 'ta') + pv.topic] : []) : [])).then(() => { loaded = true; }, () => { loaded = true; });
+    const pv = M.prevPart(p); const loadP = M.loadAudio(['common', 'keyq9_' + (+M.MOD.n || 1), ...(window.M2AGE_ON ? ['a2' + window.M2AGE_ON[0]] : []), ...(window.MYAGE_ON && (+M.MOD.n || 1) >= 3 ? ['y' + M.MOD.n + window.MYAGE_ON[0] + p.topic].concat(pv ? ['y' + M.MOD.n + window.MYAGE_ON[0] + pv.topic] : []) : []), ...[].concat(M.MOD.games || []), M.MOD.audio + p.topic].concat(pv ? [M.MOD.audio + pv.topic] : []).concat(missionFor(p) ? ['gm' + (+M.MOD.n || 1) + 't' + p.topic] : []).concat(window.M1AGE_ON && (+M.MOD.n || 1) === 1 ? [(window.M1AGE_ON === 'kids' ? 'ka' : 'ta') + p.topic].concat(pv ? [(window.M1AGE_ON === 'kids' ? 'ka' : 'ta') + pv.topic] : []) : [])).then(() => { loaded = true; }, () => { loaded = true; });
     const pop = (t) => { cd.textContent = t; cd.classList.remove('pop'); void cd.offsetWidth; cd.classList.add('pop'); };
     for (const t of ['1', '2', '3']) { pop(t); try { sfx('tap'); } catch (e) { } await new Promise(r => setTimeout(r, 750)); }
     if (!loaded) { lt.textContent = 'Preparando tu lección…'; await loadP; lt.textContent = ''; }
@@ -1101,7 +1101,8 @@
     area.querySelector('.bb-wait').onclick = () => setPlay(true);
     return { stop() { alive = false; clearInterval(iv); area.querySelectorAll('.bb').forEach(b => b.remove()); return good + bad ? { c: Math.max(0, Math.round(3 * good / (good + bad * 2))), t: 3 } : null; } };
   }
-  function songFor(p) { const SG = window.M1SONGS; if (!SG) return null; const id = SG.map[p.id]; return id ? SG.songs[id] : null; }
+  const YBLOCK = /^(b2hotelcal|b2empirestate|moneymoney|littleless|m4a_ifiwereaboy|m4a_wheniwasyourman|m4d_waiting|m4a_wherehaveyoubeen|m4d_getlucky|bohemian|bornthisway|m4c_nine2five|m4c_anotherbrick|m4c_brick)$/; /* v451: canciones no aptas para menores (Kids/Teens) en los Módulos 3 y 4 */
+  function songFor(p) { const SG = window.M1SONGS; if (!SG) return null; const id = SG.map[p.id]; if (id && window.MYAGE_ON && YBLOCK.test(id)) return null; return id ? SG.songs[id] : null; }
   // video con respaldo: si YouTube no permite verlo aquí, prueba automáticamente el siguiente video
   let ytApi = null;
   function loadYT() { if (window.YT && YT.Player) return Promise.resolve(); if (ytApi) return ytApi;
