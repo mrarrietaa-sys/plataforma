@@ -221,57 +221,53 @@
     if (window.MRTEACH && MRTEACH.on()) return;
     if (!(window.MRSRV && MRSRV.check({ mod: M.MOD.id, done: doneN, total: totP, review: rev }))) dailyReminder();
   }
-  function home() {
+  function home() { /* v458 · Diseño 2 «Continúa y explora»: tarjeta de continuar + temas con foto (todas las edades) */
     const pct = M.overallPct(); const nu = nextUp(); const first = (window.MRAP && MRAP.look().nick) || S.name.split(' ')[0];
     const doneN = M.allParts().filter(p => S.parts[p.id] && S.parts[p.id].done).length;
     const rev = M.reviewMode(), revN = M.revCount(), totP = M.totalParts();
     const revNext = rev ? (M.allParts().find(p => !(S.rev && S.rev[p.id])) || M.allParts()[0]) : null;
-    app.innerHTML = `<div class="wrap">
-      <section class="hero solo">
-        <div class="card hello">
-          ${window.MRAP && MRAP.get() ? '<a class="mod-back" href="index.html">← Mi perfil<span class="mb-x"> · Mi ruta de aprendizaje</span></a>' : ''}<span class="lbl">${esc(M.MOD.es)} · ${esc(M.MOD.levelEs || M.MOD.id)}</span>${window.MRAP && MRAP.get() ? (MRAP.isTrial() ? ` <span class="rolechip trial">${MRAP.plan && MRAP.plan().expired ? '⏰ Plan vencido' : '🟢 Acceso gratuito'}</span>` : MRAP.role(C.MODULE_ID || 'A1') === 'review' && !MRAP.isStaff() ? ' <span class="rolechip rev">🔁 Modo repaso</span>' : MRAP.isStaff() ? ' <span class="rolechip rev">👨‍🏫 Profe</span>' : ' <span class="rolechip cur">🧭 Tu ruta de aprendizaje</span>') : ''}
-          <h1 style="margin-top:10px">${greeting()}, <span class="nmw"><span class="nm">${esc(first)}!</span></span></h1>
-          <div class="ringbox"><div class="ring" style="--p:${rev ? 100 : pct}"><b>${rev ? 100 : pct}%</b></div>
-            <div><div class="rb-t" style="font-weight:800;font-size:18px">Tu progreso del ${M.MOD.es}</div>${rev ? `<div class="muted">✅ Superado · ${totP} de ${totP} lecciones · 🔥 ${S.streak.n || 0} día(s) seguidos</div>${revN ? `<div class="ce-revprog"><b>🔁 Repasando: ${revN} de ${totP} lecciones</b><div class="ce-revbar"><i style="width:${Math.round(revN / totP * 100)}%"></i></div></div>` : ''}` : `<div class="muted">${doneN} de ${M.MOD.classes} lecciones completadas · 🔥 ${S.streak.n || 0} día(s) seguidos</div>`}
-            ${!nu && window.MRAP && MRAP.isTrial() ? `<button class="btn k" style="margin-top:12px" id="buy3">🔓 Desbloquear toda mi ruta</button>` : ''}</div></div>
-          <div class="skills">${SKILLS.map(([k, ic, nm]) => `<div class="skill"><div class="ic">${ic}</div><div class="nm">${nm}</div><div class="bar"><i style="width:${M.skillPct(k)}%"></i></div><small class="muted">${S.skills[k][1] ? M.skillPct(k) + '%' : '—'}</small></div>`).join('')}</div>
-        </div>
-      </section>
-      ${rev ? `<div class="card ce-revcard">${M.mascot('mascot', 'thumbs')}<div class="grow"><span class="lbl">🔁 Modo repaso</span><h3>¡Ya superaste el ${esc(M.MOD.es)}! ✅</h3><p class="muted">Todas sus lecciones cuentan como completadas. Repasa cuando quieras para refrescar lo que aprendiste: aquí no se bloquea nada.</p><button class="btn k" id="rev-go">🔁 ${revN ? 'Seguir repasando' : 'Empezar a repasar'}: ${esc(revNext._t.title)} · ${PL(revNext)} →</button></div></div>` : ''}
+    const I = n => window.MRI ? MRI(n) : '';
+    const curId = (M.allParts().find(x => M.isUnlocked(x.topic) && S.parts[x.id] && !S.parts[x.id].done && S.parts[x.id].step) || nu || {}).id;
+    const curP = curId ? M.partById(curId) : null;
+    const G = ['#7fa6d6,#2f5d99', '#f3c9a8,#c9714f', '#c9e3c4,#4f9152', '#f6dc9b,#cf9226', '#d9cdef,#7a5fb8', '#f2c4cf,#bb5571'];
+    const bg = (t, w, hh) => `background-image:${t.cover ? `url('${M.imgURL(t.cover, w, hh)}'),` : ''}linear-gradient(135deg,${G[(t.n - 1) % G.length]})`;
+    const chip = window.MRAP && MRAP.get() ? (MRAP.isTrial() ? `<span class="t2-chip tr">${MRAP.plan && MRAP.plan().expired ? 'Plan vencido' : 'Acceso gratuito'}</span>` : MRAP.role(C.MODULE_ID || 'A1') === 'review' && !MRAP.isStaff() ? '<span class="t2-chip">Modo repaso</span>' : MRAP.isStaff() ? '<span class="t2-chip">Profe</span>' : '') : '';
+    const arr = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+    let cont = '';
+    const cp = rev ? revNext : (curP || nu);
+    if (cp) { const t = cp._t, td = t.parts.filter(x => S.parts[x.id] && S.parts[x.id].done).length;
+      cont = `<section class="t2-cont"><div class="t2-ci" style="${bg(t, 720, 420)}"></div><div class="t2-cx"><span class="t2-k">${rev ? 'Modo repaso · ' + revN + ' de ' + totP + ' repasadas' : (S.parts[cp.id] && S.parts[cp.id].step) || doneN ? 'Continúa donde quedaste' : 'Empieza tu ruta'}</span><h2>${esc(t.title)}</h2><p>${PL(cp)} · ${esc(cp.title)}</p><div class="t2-cb"><i style="width:${rev ? Math.round(revN / totP * 100) : Math.round(td / t.parts.length * 100)}%"></i></div><button class="t2-go" id="${rev ? 'rev-go' : 'cont'}">${rev ? (revN ? 'Seguir repasando' : 'Empezar a repasar') : (S.parts[cp.id] && S.parts[cp.id].step) ? 'Continuar' : 'Empezar'}${arr}</button></div></section>`; }
+    else if (window.MRAP && MRAP.isTrial()) cont = `<section class="t2-cont t2-end"><div class="t2-cx"><span class="t2-k">Acceso gratuito</span><h2>Desbloquea toda tu ruta</h2><p>Sigue aprendiendo con todas las lecciones del ${esc(M.MOD.es)}.</p><button class="t2-go" id="buy3">${I('unlock')}Desbloquear${arr}</button></div></section>`;
+    else cont = `<section class="t2-cont t2-end"><div class="t2-cx"><span class="t2-k">${totP} de ${totP} lecciones</span><h2>¡Terminaste las lecciones!</h2><p>${S.final && S.final.passed ? 'Ya aprobaste el Final Test.' : 'Ya puedes presentar el Final Test.'}</p><button class="t2-go" id="tofinal">${I('award')}Final Test${arr}</button></div></section>`;
+    app.innerHTML = `<div class="wrap t2">
+      <div class="t2-head">${window.MRAP && MRAP.get() ? `<a class="t2-back" href="index.html">${SVB}Mi perfil</a>` : ''}<div class="t2-hx"><div><span class="t2-k">${esc(M.MOD.es)} · ${esc(M.MOD.levelEs || M.MOD.id)}</span>${chip}<h1>${greeting()}, ${esc(first)}</h1></div>
+        <div class="t2-stats ringbox"><div><b>${rev ? 100 : pct}%</b><span>avance</span></div><div><b>${rev ? totP : doneN}/${totP}</b><span>lecciones</span></div><div><b>${S.streak.n || 0}</b><span>días seguidos</span></div></div></div></div>
+      ${cont}
       <div id="hwfb"></div>
-      <div class="sect-title"><h2>📚 Temas del ${M.MOD.es}</h2><div class="row"><button class="btn sm w" id="prog">📊 Mi progreso</button>${M.hasProfile() ? '' : '<button class="btn sm" id="code">🔑 Código de acceso</button>'}</div></div>
-      <div class="grid" id="tgrid"></div>
-      <div class="sect-title"><h2>🏆 Final Test</h2></div>
-      <div class="card final">${M.mascot('mascot', 'point')}<div><h3>Well done! Get ready for the test.</h3><p style="margin:6px 0 0;color:#ddd">24 preguntas de los ${M.MOD.topics} temas (Listening, Reading, Writing y Speaking) · 30 minutos · 2 intentos. Si apruebas con ${(C.PASS_SCORE / 10).toFixed(1)}/10 o más, obtienes tu certificado 🎓</p>${M.finalUnlocked() ? '' : `<p style="margin:8px 0 0;color:#fff;font-weight:800">🔒 Se abre cuando termines las ${M.totalParts()} lecciones del módulo.</p>`}
-        ${S.final ? `<p style="margin:8px 0 0;color:#fff;font-weight:800">Tu mejor resultado: ${(S.final.best / 10).toFixed(1)} / 10 ${S.final.passed ? '✅ Aprobado' : ''}</p>` : ''}${S.final && S.final.passed ? `<button class="btn sm" id="cert-b" style="margin-top:8px">🎓 Ver mi certificado</button>` : ''}
-        <button class="btn lg" id="final-b">${M.finalUnlocked() ? 'FINAL TEST →' : `🔒 ${M.doneCount()}/${M.totalParts()} lecciones`}</button></div>
-      <p class="center fx-foot" style="margin-top:22px;font-size:13.5px;color:#fff;grid-column:1/-1;font-weight:600">¡Aprende inglés HABLANDO!<br><a class="foot-wa" href="https://wa.me/${esc(C.WHATSAPP)}?text=${encodeURIComponent((window.MRNE || String)('¡Hola, mrarrieta.com! Soy ' + (S.name || 'estudiante') + '. Tengo una pregunta.'))}" target="_blank" rel="noopener">WhatsApp ${esc(C.WHATSAPP.replace(/^57/, '').replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3'))}</a></p>
+      <div class="t2-sec"><h2>Temas del ${esc(M.MOD.es)}</h2><div class="t2-tabs" role="tablist"><button class="on" data-f="all">Todos</button><button data-f="cur">En curso</button><button data-f="done">Completados</button></div><div class="t2-acts"><button class="t2-pr" id="prog">${I('target')}Mi progreso</button>${M.hasProfile() ? '' : `<button class="t2-pr" id="code">${I('unlock')}Código de acceso</button>`}</div></div>
+      <div class="t2-grid" id="tgrid"></div><p class="t2-empty hidden"></p>
+      <div class="t2-ft"><span class="t2-fti">${I('award')}</span><div class="t2-ftx"><b>Final Test</b><small>${S.final && S.final.passed ? 'Aprobado · ' + (S.final.best / 10).toFixed(1) + ' / 10' : M.finalUnlocked() ? `24 preguntas · 30 minutos · 2 intentos · apruebas con ${(C.PASS_SCORE / 10).toFixed(1)}` : `Se abre al terminar las ${totP} lecciones`}</small></div>${S.final && S.final.passed ? `<button class="t2-ftb w" id="cert-b">${I('grad')}Certificado</button>` : ''}<button class="t2-ftb" id="final-b">${M.finalUnlocked() ? 'Presentar' : SVL + ' ' + M.doneCount() + '/' + totP}</button></div>
+      <p class="center fx-foot" style="margin-top:22px;font-size:13.5px;grid-column:1/-1;font-weight:600">¡Aprende inglés HABLANDO!<br><a class="foot-wa" href="https://wa.me/${esc(C.WHATSAPP)}?text=${encodeURIComponent((window.MRNE || String)('¡Hola, mrarrieta.com! Soy ' + (S.name || 'estudiante') + '. Tengo una pregunta.'))}" target="_blank" rel="noopener">WhatsApp ${esc(C.WHATSAPP.replace(/^57/, '').replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3'))}</a></p>
     </div>`;
     const g = $('#tgrid');
-    const nuP = nextUp(); const curId = (M.allParts().find(x => M.isUnlocked(x.topic) && S.parts[x.id] && !S.parts[x.id].done && S.parts[x.id].step) || nuP || {}).id;
+    const ok = '<svg class="t2-s ok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg>', pend = '<svg class="t2-s" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>';
     D.topics.forEach(t => {
-      const un = M.isUnlocked(t.n); const done = rev || t.parts.every(p => S.parts[p.id] && S.parts[p.id].done);
-      // las etiquetas van en su propia línea, debajo del título (nunca encima del texto ni de las estrellas)
-      const card = h(`<div class="topic"><div class="cov" style="background-image:url('${M.imgURL(t.cover, 640, 360)}')"><span class="num">${t.n}</span>${done ? `<span class="cov-done">${rev ? '✅ SUPERADO' : '✓ COMPLETO'}</span>` : ''}</div>
-        <div class="bd"><h3>${esc(t.title)}</h3><div class="es">${esc(t.es)}</div></div></div>`);
+      const un = rev || M.isUnlocked(t.n); const dn = t.parts.filter(p => rev || (S.parts[p.id] && S.parts[p.id].done)).length, tp = Math.round(dn / t.parts.length * 100);
+      const st8 = dn === t.parts.length ? 'done' : (dn || t.parts.some(p => p.id === curId)) && un ? 'cur' : 'new';
+      const card = h(`<div class="t2c${un ? '' : ' lk'}" data-st="${st8}"><div class="t2-pic" style="${bg(t, 640, 300)}"><span class="t2-n">${t.n}</span>${un ? `<span class="t2-ring" style="--p:${tp}"><b>${tp}%</b></span>` : `<span class="t2-ring lk">${SVL}</span>`}<div class="t2-pt"><h3>${esc(t.title)}</h3><small>${esc(t.es)}</small></div></div><div class="t2-ls"></div></div>`);
       t.parts.forEach(p => {
-        const st = M.partStars(p.id); const pd = S.parts[p.id];
-        const b = h(`<button class="partbtn"><span class="t">${PL(p).toUpperCase()}<small>${esc(p.title)}</small></span><span class="stars">${[1, 2, 3].map(i => `<span class="${i <= st ? '' : 'off'}">⭐</span>`).join('')}</span></button>`);
-        const tags = [];
-        if (rev) { const rv = S.rev && S.rev[p.id]; b.classList.add('pdone', 'ce-prev');
-          tags.push('<b class="ce-tag ce-t-rev">✅ Superado</b>', rv && rv.d ? '<b class="ce-tag ce-t-rv">🔁 Repasada</b>' : rv ? '<b class="ce-tag ce-t-cur">▶ Repasando</b>' : '<b class="ce-tag ce-t-rv">🔁 Repasar</b>'); }
-        else {
-          if (pd && pd.done) { b.classList.add('pdone'); tags.push('<b class="ce-tag ce-t-done donetag">✓ COMPLETADA</b>'); }
-          if (p.id === curId) { b.classList.add('cur'); tags.push('<b class="ce-tag ce-t-cur curtag">▶ EN CURSO</b>'); }
-        }
-        if (tags.length) $('.t', b).appendChild(h(`<span class="ce-tags">${tags.join('')}</span>`));
-        b.onclick = () => route('class', p.id); $('.bd', card).appendChild(b);
+        const pd = S.parts[p.id], d = rev || (pd && pd.done), stars = M.partStars(p.id), c = !rev && p.id === curId && !d;
+        let right = '';
+        if (rev) { const rv = S.rev && S.rev[p.id]; right = rv && rv.d ? `<em class="t2-tag">Repasada</em>${ok}` : rv ? '<span class="t2-now">REPASANDO</span>' : pend; }
+        else right = c ? '<span class="t2-now">AHORA</span>' : d ? `${stars ? `<span class="t2-st">${[1, 2, 3].map(i => `<i class="${i <= stars ? 'on' : ''}">★</i>`).join('')}</span>` : ''}${ok}` : pend;
+        const b = h(`<button class="t2-l${c ? ' now' : ''}${d ? ' d' : ''}"><i class="t2-li">${p.part}</i><span class="t2-lt">${esc(p.title)}</span><span class="t2-r">${right}</span></button>`);
+        b.onclick = () => un ? route('class', p.id) : lockGate(t.n); $('.t2-ls', card).appendChild(b);
       });
-      if (!un) { const why = M.lockReason(t.n);
-        const lk = h(`<div class="lock" role="button" tabindex="0"><div class="lk">🔒</div><button class="btn sm">🔒 Bloqueado</button></div>`);
-        lk.onclick = () => lockGate(t.n); card.appendChild(lk); }
+      if (!un) { $('.t2-pic', card).onclick = () => lockGate(t.n); card.setAttribute('role', 'button'); }
       g.appendChild(card);
     });
+    const emp = $('.t2-empty', app);
+    $$('.t2-tabs button', app).forEach(bt => bt.onclick = () => { $$('.t2-tabs button', app).forEach(x => x.classList.toggle('on', x === bt)); const f = bt.dataset.f; let n = 0; $$('.t2c', g).forEach(cd => { const sh = f === 'all' || cd.dataset.st === f; cd.style.display = sh ? '' : 'none'; if (sh) n++; }); emp.textContent = f === 'done' ? 'Todavía no has completado un tema. ¡Vas por buen camino!' : 'No tienes temas en curso ahora.'; emp.classList.toggle('hidden', !!n); sfx('tap'); });
     if ($('#cont')) $('#cont').onclick = () => route('class', nu.id);
     if ($('#rev-go')) $('#rev-go').onclick = () => route('class', revNext.id);
     hwFbBlock();
@@ -1240,6 +1236,7 @@
 
   /* ---------- HOMEWORK (writing with automatic feedback) ---------- */
   async function homework(stage, p) {
+    { const W10 = window.MRWR10 && MRWR10[(+M.MOD.n || 1) + '-' + p.id]; if (W10) { const ag = M.ageGroup(); const it = W10[ag] || W10.adult; if (it) return await writing10(stage, p, it, ag); } } /* v458: writing corto que rota (chat · corrige · termina la frase) */
     const k9 = (+M.MOD.n || 1) + '-' + p.id, yA9 = (function () { try { return M.ageGroup(); } catch (e) { return ''; } })(); const h9 = (/kids|teens/.test(yA9) && window.MRHW9Y && MRHW9Y[k9]) || (window.MRHW9 && MRHW9[k9]); const hw = V9() ? Object.assign({}, p.hw, { n: 2 }, h9 ? { es: h9[0], model: h9[1], kw: h9[2] } : { es: String(p.hw.es || '').replace(/\b\d+\b/, '2') }) : p.hw; /* lección corta: solo 2 frases, en el momento */ const saved = (S.hw[p.id] || {}).text || '';
     const AG = M.ageGroup(); if (AG === 'teens') stage.classList.add('dk');
     const body = A.head(stage, { lbl: V9() ? 'Writing' : 'Homework', title: V9() ? 'Escribe 2 frases' : AG === 'teens' ? 'Nuevo post' : AG === 'kids' ? 'Tu tarea' : '✍️ Writing task', ins: esc(hw.es) }); { const ik = stage.querySelector('.ins'); if (ik) ik.classList.add('ins-keep'); } /* v457: el enunciado de la escritura sí se muestra */
@@ -1292,6 +1289,77 @@
         };
       };
       idle();
+    });
+  }
+  /* ---------- v458 · WRITING CORTO: 3 formatos que se turnan por lección, contenido por edad ---------- */
+  async function writing10(stage, p, it, AG) {
+    const I = n => window.MRI ? MRI(n) : '';
+    const nz = x => String(x || '').toLowerCase().replace(/[’‘`´]/g, "'").replace(/[^a-z0-9' -]+/g, ' ').replace(/\s+/g, ' ').trim();
+    const cap = x => { x = String(x || '').trim().replace(/\s+/g, ' '); x = x.replace(/(^|\s)i(?=\s|'|’|$)/g, '$1I'); return x ? x[0].toUpperCase() + x.slice(1) : x; };
+    const end = x => /[.!?]["”]?$/.test(x) ? x : x + '.';
+    const esLike = x => (nz(x).match(/\b(el|la|los|las|que|con|para|una|por|pero|muy|tengo|soy|estoy|mi|y)\b/g) || []).length >= 2;
+    const title = it.f === 'c' ? 'Responde a ' + esc(it.who) : it.f === 'x' ? 'Esta frase tiene 1 error. Escríbela bien.' : 'Completa con tus palabras';
+    const body = A.head(stage, { lbl: it.f === 'x' ? 'Writing · contra reloj' : 'Writing', title });
+    stage.classList.add('wr10');
+    let top = '';
+    if (it.f === 'c') top = `<div class="wr-chat"><div class="wr-who"><span class="wr-av">${esc(String(it.who || 'F')[0])}</span>${esc(it.who)}</div><div class="wr-bub">${esc(it.q)}</div><div class="wr-me hidden"></div></div>`;
+    else if (it.f === 'x') { const b = esc(it.bad), e = esc(it.err), i = b.indexOf(e); top = `<div class="wr-bad">${i >= 0 ? b.slice(0, i) + '<u>' + e + '</u>' + b.slice(i + e.length) : b}</div><div class="wr-timer"><div class="wr-tl"><i></i></div><b>0:00</b></div>`; }
+    else top = `<div class="wr-start">${esc(it.s)} <em class="wr-blank">&nbsp;</em></div><div class="wr-chips">${(it.ch || []).map(c => `<b>${esc(c)}</b>`).join('')}</div>`;
+    body.appendChild(h(`<div class="wr-top">${top}</div>`));
+    const ta = h(`<textarea class="wr-in" rows="2" autocomplete="off" autocapitalize="sentences" spellcheck="false" placeholder="${it.f === 'c' ? 'Escribe tu respuesta en inglés…' : it.f === 'x' ? 'Escribe la frase correcta…' : 'Termina la frase en inglés…'}"></textarea>`);
+    body.appendChild(ta);
+    ['paste', 'drop'].forEach(ev => ta.addEventListener(ev, e => { e.preventDefault(); M.toast('Escríbela tú mismo: así aprendes de verdad.'); }));
+    const fbBox = h(`<div class="wr-fb hidden"></div>`); body.appendChild(fbBox);
+    const bar = h(`<div class="actionbar wr-bar"><button class="btn k lg" id="wrgo">Enviar</button></div>`); body.appendChild(bar);
+    const go = $('#wrgo', bar);
+    setTimeout(() => { try { ta.focus({ preventScroll: true }); } catch (e) { } }, 350);
+    ta.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); go.click(); } });
+    return await new Promise(res => {
+      let done = false, tries = 0, tmr = null;
+      const show = (kind, head, msg, ex) => {
+        const img = kind === 'ok' ? 'mra-thumbs' : 'mra-think';
+        fbBox.className = 'wr-fb ' + kind; fbBox.innerHTML = `<img src="${img}.webp?v=2" alt=""><div><h4>${I(kind === 'ok' ? 'check' : 'bulb')}<span>${head}</span></h4>${msg ? `<p>${msg}</p>` : ''}${ex ? `<div class="wr-ex">${ex}</div>` : ''}</div>`;
+        fbBox.classList.remove('hidden');
+        try { fbBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) { }
+      };
+      const finish = (c, txt) => {
+        done = true; if (tmr) clearInterval(tmr); ta.readOnly = true; ta.classList.add('ro');
+        S.hw[p.id] = { text: txt, at: Date.now(), score: Math.round(c / 2 * 100) }; save();
+        try { if (window.MRAC && MRAC.code && MRAC.code() && txt) MRAC.homework({ module: M.MOD.id, part: p.id, title: `${M.MOD.es} · ${p._t.title} · ${PL(p)}: ${p.title}`, text: txt, score: Math.round(c / 2 * 100) }).catch(() => { }); } catch (e) { }
+        bar.innerHTML = '<button class="btn k lg" id="wrnx">Continuar</button>';
+        $('#wrnx', bar).onclick = () => { stop(); res(A.result(c, 2, 'writing')); };
+      };
+      const verdict = (c, txt, head, msg, ex) => { if (c === 2) { sfx('ok'); M.praise(); show('ok', head, msg, ex); } else { sfx('bad'); M.encourage(); show(c ? 'fix' : 'no', head, msg, ex); } finish(c, txt); };
+      if (it.f === 'x') {
+        const T = AG === 'kids' ? 60 : AG === 'teens' ? 45 : 30; let left = T; const tl = $('.wr-tl i', body), tb = $('.wr-timer b', body);
+        const paint = () => { tl.style.width = (left / T * 100) + '%'; tb.textContent = '0:' + String(left).padStart(2, '0'); $('.wr-timer', body).classList.toggle('low', left <= 8); };
+        paint(); tmr = setInterval(() => { if (done) return; left--; paint(); if (left <= 0) { clearInterval(tmr); const txt = ta.value.trim(); if (txt.length >= 3) check(true); else verdict(0, txt, 'Se acabó el tiempo', 'No pasa nada. Así se escribe:', esc(it.ok[0])); } }, 1000);
+      }
+      const check = (auto) => {
+        if (done) return; const txt = ta.value.trim();
+        if (!auto && M.words(txt).length < (it.f === 'f' ? 1 : 2)) { ta.focus(); M.toast(it.f === 'f' ? 'Escribe cómo termina la frase' : 'Escribe una frase completa'); return; }
+        if (!auto && esLike(txt) && tries < 1) { tries++; ta.focus(); show('no', 'Escríbelo en inglés', 'Usa las palabras de la lección.', ''); sfx('bad'); return; }
+        if (it.f === 'x') {
+          const n = nz(txt), oks = it.ok.map(nz), nc = x => String(x || '').replace(/[’‘`´]/g, "'").replace(/[^A-Za-z0-9' -]+/g, ' ').replace(/\s+/g, ' ').trim(), caseIt = oks.includes(nz(it.bad));
+          if (it.ok.map(nc).includes(nc(txt))) return verdict(2, txt, '¡Bien visto! +10', esc(it.why), '');
+          if (oks.includes(n)) return caseIt && nc(txt) === nc(it.bad) ? verdict(0, txt, 'El error sigue ahí', esc(it.why), esc(it.ok[0])) : verdict(1, txt, '¡Casi! +5', 'Revisa las mayúsculas:', esc(it.ok[0]));
+          const best = oks.reduce((b, o) => Math.min(b, M.lev(n, o)), 99), stillErr = nz(it.bad) === n ? !caseIt || nc(txt) === nc(it.bad) : caseIt ? new RegExp('(^|\\s)' + nc(it.err).replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(\\s|$)').test(nc(txt)) : new RegExp('(^|\\s)' + nz(it.err).replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(\\s|$)').test(n);
+          if (!stillErr && best <= Math.max(3, Math.round(oks[0].length * .12))) return verdict(1, txt, '¡Casi! +5', 'Corregiste el error. Revisa cómo se escribe:', esc(it.ok[0]));
+          return verdict(0, txt, stillErr ? 'El error sigue ahí' : 'Revisa la frase', esc(it.why), esc(it.ok[0]));
+        }
+        if (it.f === 'c') {
+          const fj = M.freeJudge(it.q, it.m, [txt]); const me = $('.wr-me', body); me.textContent = end(cap(txt)); me.classList.remove('hidden');
+          if (fj.ok) return verdict(2, txt, '¡Perfecto! +10', 'Respuesta clara y bien escrita.', '');
+          if (fj.fix) return verdict(1, txt, '¡Casi! +5', 'Se entiende. Mejor así:', esc(end(cap(fj.fix))));
+          if (tries < 1) { tries++; me.classList.add('hidden'); show('no', 'Intenta otra vez', 'Lee bien el mensaje y responde con una frase.', ''); sfx('bad'); M.encourage(); ta.focus(); return; }
+          return verdict(0, txt, 'Sigue practicando', 'Una respuesta posible:', esc(it.m));
+        }
+        const full = end(String(it.s).trim() + ' ' + txt.replace(/^\s*\.\.\.\s*/, '')); const gf = M.grammarFix(full);
+        $('.wr-start', body).innerHTML = esc(full); $('.wr-chips', body).style.display = 'none';
+        if (!gf) return verdict(2, txt, '¡Muy bien! +10', 'Tu frase está correcta y suena natural.', '');
+        return verdict(1, txt, '¡Casi! +5', 'Mejor así:', esc(end(cap(gf))));
+      };
+      go.onclick = () => check(false);
     });
   }
   // tareas con revisión del profe: solo estudiantes Premium con sesión en la nube
