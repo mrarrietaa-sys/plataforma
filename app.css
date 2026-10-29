@@ -7609,3 +7609,10 @@ body.ag-teens .ml10{--ac:#16a874;--acs:#e3f8ef}body.ag-kids .ml10{--ac:#e08a00;-
 body.ag-kids .ml10-x{background:#f59e0b}body.ag-teens .ml10-x{background:#E3242B}
 .ml10.done{opacity:.85}
 .mv-say>div{flex:1;min-width:0}.mv-hear{display:flex;flex-direction:column;align-items:center;gap:2px;border:0;background:rgba(255,255,255,.14);color:#fff;border-radius:12px;padding:8px 10px;cursor:pointer;flex:none;font:700 11px Inter,system-ui,sans-serif}.mv-hear .mri{width:20px;height:20px}.mv-say.done .mv-hear{background:rgba(255,255,255,.22)}
+.vk2 .vk-guide.vk-read .vk-res{display:block;font-size:13px;font-weight:500;color:#8a7a52;margin-top:2px}
+/* v466 · Kids/Teens: tarjeta para leer la respuesta (con traducción) */
+.as-read{position:relative;background:#fff8e6;border:1px dashed #e9b949;border-radius:12px;padding:9px 12px;margin:10px 0;color:#5c4300;text-align:left}
+.as-read small{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#a07c1c}.as-read b{display:block;font-size:17px;color:#3d2c00;line-height:1.3}.as-read u{text-decoration:none;border-bottom:2px solid #E3242B;padding:0 6px}
+.as-read .as-rdes{display:block;font-size:13px;font-weight:500;color:#8a7a52;margin-top:2px}.as-read em{display:block;font-style:normal;font-size:12.5px;color:#7a6020;margin-top:3px}
+.as-read.ch{margin:4px 0 4px auto;max-width:88%;padding-right:46px}.as-rdp{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:50%;border:0;background:#fff;display:grid;place-items:center;cursor:pointer}.as-rdp svg{width:16px;height:16px}
+.as-rd{display:flex}
