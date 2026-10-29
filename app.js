@@ -921,10 +921,10 @@
           const el = h(`<div class="mv mv-pick"><div class="mv-k">${I(GN[0])}<span>${esc(x.sit)}</span></div>
             <div class="mv-in">${av(x)}<div class="mv-bq"><b>${esc(x.q)}</b><small>${esc(x.es)}</small><button type="button" class="mv-pl" aria-label="Escuchar">${I('vol')}</button></div></div>
             <div class="mv-opts">${opts.map((o, i) => `<button type="button" class="mv-o" data-i="${i}"><i></i><span>${esc(o)}</span></button>`).join('')}</div>
-            <div class="mv-say" hidden><button type="button" class="mv-mic">${MIC}</button><div><b>¡Correcto! Ahora dilo</b><small class="mv-st">Toca el micrófono y dilo en voz alta.</small></div></div>
+            <div class="mv-say" hidden><button type="button" class="mv-mic">${MIC}</button><div><b>¡Correcto! Ahora dilo</b><small class="mv-st">Toca el micrófono y dilo en voz alta.</small></div><button type="button" class="mv-hear" aria-label="Escuchar la respuesta">${I('vol')}<span>Escuchar</span></button></div>
             <div class="mv-heard" hidden></div><div class="mv-acts"></div></div>`);
           body.appendChild(el); const $e = q => el.querySelector(q);
-          $e('.mv-pl').onclick = () => { stop(); play(x.qau); }; setTimeout(() => play(x.qau), 350);
+          $e('.mv-pl').onclick = () => { stop(); play(x.qau); }; setTimeout(() => play(x.qau), 350); $e('.mv-hear').onclick = () => { stop(); play(x.aau); }; /* v464: el estudiante puede escuchar la respuesta cuando quiera */
           let okk = false;
           await new Promise(done => {
             el.querySelectorAll('.mv-o').forEach(b => b.onclick = () => {
