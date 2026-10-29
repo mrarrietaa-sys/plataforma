@@ -766,7 +766,7 @@
               if (last) { x.lineWidth = H / rows * 1.3; x.lineCap = 'round'; x.beginPath(); x.moveTo(last[0], last[1]); x.lineTo(xx, yy); x.stroke(); } last = [xx, yy]; if (k < 1) requestAnimationFrame(step); else reveal(); };
             requestAnimationFrame(step); };
           cv.addEventListener('pointerdown', (e) => { e.preventDefault(); const b = cv.getBoundingClientRect(); x.beginPath(); x.arc(e.clientX - b.left, e.clientY - b.top, 26, 0, 7); x.fill(); helper(); });
-          setTimeout(helper, 1000);
+          /* v462: raspar es obligatorio — se espera a que el estudiante toque y la plataforma le ayuda a terminar */
         } catch (e) { reveal(); }
         await new Promise(res => { go.onclick = () => { stop(); res(); }; });
         sfx('win'); await micTips(false); return null;
