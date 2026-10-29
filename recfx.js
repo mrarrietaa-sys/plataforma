@@ -45,7 +45,8 @@
   }
   function buildPill() {
     const g = ag(); pill = document.createElement('div'); pill.className = 'vc-pill vc-' + g; pill.setAttribute('aria-hidden', 'true');
-    pill.innerHTML = `<div class="vc-wv">${bars(g === 'kids' ? 12 : 22, g)}</div><span class="vc-ptm">0:00</span>`; const row = anchor && document.body.contains(anchor) && anchor.offsetParent ? anchor.parentElement : null; /* v453: la onda va en su propio espacio debajo del botón: nunca tapa el texto */
+    pill.innerHTML = `<div class="vc-wv">${bars(g === 'kids' ? 12 : 22, g)}</div><span class="vc-ptm">0:00</span>`; let row = anchor && document.body.contains(anchor) && anchor.offsetParent ? anchor.parentElement : null; /* v457: sube hasta un bloque cuyo contenedor no sea una fila (así nunca deforma una fila de botones) */
+    while (row && row.parentElement && row.parentElement !== document.body) { const cs = getComputedStyle(row.parentElement); const isRow = (cs.display.indexOf('flex') >= 0 && !/column/.test(cs.flexDirection)) || (cs.display.indexOf('grid') >= 0 && cs.gridTemplateColumns.split(' ').length > 1); if (!isRow) break; row = row.parentElement; } /* v453: la onda va en su propio espacio debajo del botón: nunca tapa el texto */
     if (row && row.parentElement && row !== document.body) { pill.classList.add('inl'); row.insertAdjacentElement('afterend', pill); } else { document.body.appendChild(pill); placePill(); }
     requestAnimationFrame(() => pill && pill.classList.add('in'));
   }
