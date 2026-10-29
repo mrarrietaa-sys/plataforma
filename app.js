@@ -737,16 +737,39 @@
   const STEP = {
     goal: async (stage, p) => {
       const prev = M.prevPart(p);
-      if (V9()) { // 🎯 Goal dinámico: Mr. Arrieta dice el objetivo con audio
-        const g = p.goal || { en: p.title, es: p.es }; const can = ((p.keyq || []).length ? p.keyq.map(k => ({ en: k.q })) : (p.vocab || [])).map(x => x.en).filter((x, i, a) => x && a.indexOf(x) === i).slice(0, 3);
-        const nSteps = buildSteps9(p).length, mins = Math.max(8, Math.min(14, nSteps + 4));
-        stage.innerHTML = `<div class="g9"><div class="g9-h"><img src="mra-present.webp" alt="Mr. Arrieta"><div class="g9-b"><span class="g9-l">TOPIC ${p.topic} · ${esc(PL(p).toUpperCase())}</span><b>${esc(g.en)}</b><small>${esc(g.es)}</small><button type="button" class="g9-au">${window.MRI ? MRI('vol') : ''}Escuchar</button></div></div>
-          
-          <div class="g9-m">${window.MRI ? MRI('clock') : ''}Duración: ${mins} min</div>
-          ${prev && !(S.parts[prev.id] && S.parts[prev.id].done) ? `<p class="hint" style="margin-top:6px">Te recomendamos completar primero: ${esc(prev._t.title)} · ${PL(prev)}</p>` : ''}</div>`;
-        const say = () => { stop(); if (window.AUD && window.AUD['g9_' + p.id]) play('g9_' + p.id, { btn: $('.g9-au', stage) }); };
-        $('.g9-au', stage).onclick = say; M.loadAudio(['goal9_' + (+M.MOD.n || 1)]).then(() => setTimeout(say, 300)).catch(() => { });
-        await A.waitNext(stage, '¡Empezar!'); sfx('win'); await micTips(false); return null;
+      if (V9()) { // v461 · «Raspa y descubre»: goal corto («Hoy vas a poder…») + 2 frases; se revela en menos de 2 s
+        const AGg = M.ageGroup(), GL = window.MRGL10 && MRGL10[(+M.MOD.n || 1) + '-' + p.id], G0 = GL && (GL[AGg] || GL.adult);
+        const g = p.goal || { en: p.title, es: p.es };
+        const can = G0 ? G0.can : g.es, PH = G0 ? G0.p : [];
+        const VOL = window.MRI ? MRI('vol') : '';
+        stage.innerHTML = `<div class="gs ${AGg}"><span class="gs-k">Topic ${p.topic} · ${esc(p._t.title)} · ${esc(PL(p))}</span>
+          <div class="gs-card"><div class="gs-in"><span class="gs-l">Hoy vas a poder</span><div class="gs-can">${esc(can)}</div>${PH.length ? `<div class="gs-ps">${PH.map((x, i) => `<button type="button" class="gs-p" data-i="${i}"><b>${esc(x[0])}</b><span>${VOL}</span></button>`).join('')}</div>` : ''}</div>
+          <canvas class="gs-cv"></canvas><div class="gs-hint"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11V5a1.5 1.5 0 0 1 3 0v5m0-1a1.5 1.5 0 0 1 3 0v2m0-1a1.5 1.5 0 0 1 3 0v4a6 6 0 0 1-6 6h-1a6 6 0 0 1-5-2.7L3.6 14a1.5 1.5 0 0 1 2.4-1.8L9 15"/></svg><span>Raspa</span></div></div>
+          ${prev && !(S.parts[prev.id] && S.parts[prev.id].done) ? `<p class="gs-prev">Te recomendamos completar primero: ${esc(prev._t.title)} · ${PL(prev)}</p>` : ''}
+          <button type="button" class="gs-go" disabled>Empezar</button></div>`;
+        const card = $('.gs-card', stage), cv = $('.gs-cv', stage), hint = $('.gs-hint', stage), go = $('.gs-go', stage);
+        const playP = (i) => { const x = PH[i]; if (x && x[1]) { stop(); play(x[1]); } };
+        $$('.gs-p', stage).forEach(b => b.onclick = () => playP(+b.dataset.i));
+        M.loadAudio(['gl' + (+M.MOD.n || 1) + '_' + p.topic]).catch(() => { });
+        let doneF = false;
+        const reveal = () => { if (doneF) return; doneF = true; cv.style.opacity = 0; hint.style.opacity = 0; setTimeout(() => cv.remove(), 450); card.classList.add('on'); go.disabled = false; try { if (!M.brand || !M.brand('ok')) sfx('ok'); } catch (e) { } try { if (S.vib !== false && navigator.vibrate) navigator.vibrate(30); } catch (e) { } setTimeout(() => playP(0), 650); };
+        try {
+          const r = card.getBoundingClientRect(), dpr = window.devicePixelRatio || 1; cv.width = Math.max(1, r.width * dpr); cv.height = Math.max(1, r.height * dpr); const x = cv.getContext('2d'); x.scale(dpr, dpr);
+          const C1 = { kids: ['#f59e0b', '#E3242B'], teens: ['#0b1a3a', '#1f7a5a'] }[AGg] || ['#0B2A5B', '#1d4ed8'];
+          const gr = x.createLinearGradient(0, 0, r.width, r.height); gr.addColorStop(0, C1[0]); gr.addColorStop(1, C1[1]); x.fillStyle = gr; x.fillRect(0, 0, r.width, r.height);
+          x.strokeStyle = 'rgba(255,255,255,.08)'; x.lineWidth = 10; for (let i = -r.height; i < r.width; i += 26) { x.beginPath(); x.moveTo(i, 0); x.lineTo(i + r.height, r.height); x.stroke(); }
+          x.fillStyle = 'rgba(255,255,255,.12)'; x.font = '800 15px Poppins, sans-serif'; for (let yy = 24; yy < r.height; yy += 46) for (let xx = (yy / 46 % 2) * 60 - 20; xx < r.width; xx += 120) x.fillText('mrarrieta', xx, yy);
+          x.globalCompositeOperation = 'destination-out';
+          let auto = false;
+          const helper = () => { if (auto || doneF) return; auto = true; hint.style.opacity = 0; const W = r.width, H = r.height, t0 = performance.now(), T = 800; let last = null;
+            const step = (now) => { if (doneF || !cv.isConnected) return; const k = Math.min(1, (now - t0) / T), rows = 4, pr = k * rows, row = Math.floor(Math.min(pr, rows - .001)), f = pr - row, yy = (row + .5) * H / rows, xx = row % 2 ? W * (1 - f) : W * f;
+              if (last) { x.lineWidth = H / rows * 1.3; x.lineCap = 'round'; x.beginPath(); x.moveTo(last[0], last[1]); x.lineTo(xx, yy); x.stroke(); } last = [xx, yy]; if (k < 1) requestAnimationFrame(step); else reveal(); };
+            requestAnimationFrame(step); };
+          cv.addEventListener('pointerdown', (e) => { e.preventDefault(); const b = cv.getBoundingClientRect(); x.beginPath(); x.arc(e.clientX - b.left, e.clientY - b.top, 26, 0, 7); x.fill(); helper(); });
+          setTimeout(helper, 1000);
+        } catch (e) { reveal(); }
+        await new Promise(res => { go.onclick = () => { stop(); res(); }; });
+        sfx('win'); await micTips(false); return null;
       }
       stage.innerHTML = `<div class="center">
         <span class="lbl">Topic ${p.topic} · ${PL(p)}</span>
