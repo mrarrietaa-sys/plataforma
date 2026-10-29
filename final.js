@@ -117,7 +117,7 @@
       <div class="row" style="justify-content:center"><button class="btn k lg" id="c">Continuar donde quedé</button><button class="btn w" id="r">Empezar de nuevo</button></div>
       <p class="muted" style="font-size:13px;margin-top:10px">Las grabaciones de Speaking no se pueden recuperar al recargar: tendrás que grabarlas otra vez.</p></div>`);
     wireExit();
-    $('#c').onclick = async () => { await M.loadAudio([MOD.examAudio || 'exam', MA_GROUP].filter(Boolean)); first = p.first || first; last = p.last || last; temail = p.temail || temail; answers = (p.answers && p.answers.length === N) ? p.answers.map(a => a && a.section === 'speaking' && !a.url ? null : a) : new Array(N).fill(null);
+    $('#c').onclick = async () => { await M.loadAudio([MOD.examAudio || 'exam', MA_GROUP].filter(Boolean)); first = p.first || first; last = p.last || last; temail = ''; /* v466: el resultado nunca se envía por correo al estudiante */ answers = (p.answers && p.answers.length === N) ? p.answers.map(a => a && a.section === 'speaking' && !a.url ? null : a) : new Array(N).fill(null);
       answers = answers.map((a, i) => a && ITEMS[i].section === 'speaking' ? null : a);
       startedAt = p.startedAt || Date.now(); startTimer(); go(p.cur || 0, true); };
     $('#r').onclick = () => { if (p.startedAt) { ST.attempts++; } ST.prog = null; persist(); run(app, ctx); };
@@ -357,7 +357,7 @@
     const ok = await loadScript('https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js', () => !!window.emailjs);
     if (ok) { try { emailjs.init({ publicKey: CFG.EMAILJS_PUBLIC_KEY }); } catch (e) { } }
     const send = async (to) => { if (!ok) return false; try { await (window.MRMAILX ? emailjs.send(CFG.EMAILJS_SERVICE_ID, window.MRMAIL_TEMPLATE, Object.assign({ to_email: to }, window.MRMAILX(params))) : emailjs.send(CFG.EMAILJS_SERVICE_ID, CFG.EMAILJS_TEMPLATE_ID, Object.assign({ to_email: to }, params))); return true; } catch (e) { return false; } };
-    if (r.temail) { setN('n2', await send(r.temail), ''); const e2 = $('#n2'); if (e2) e2.textContent = e2.className === 'ok' ? `✓ Correo enviado al profesor (${r.temail}).` : '✗ No se pudo enviar el correo al profesor. Usa “Copiar resumen”.'; } else { const e2 = $('#n2'); if (e2) e2.remove(); } /* v460: sin profe fijo */
+    if (false && r.temail) { setN('n2', await send(r.temail), ''); const e2 = $('#n2'); if (e2) e2.textContent = e2.className === 'ok' ? `✓ Correo enviado al profesor (${r.temail}).` : '✗ No se pudo enviar el correo al profesor. Usa “Copiar resumen”.'; } else { const e2 = $('#n2'); if (e2) e2.remove(); } /* v460: sin profe fijo */
     setN('n3', await send(CFG.ADMIN_EMAIL), ''); const e3 = $('#n3'); if (e3) e3.textContent = e3.className === 'ok' ? '✓ Copia enviada a administración.' : '✗ No se pudo enviar la copia a administración.';
   }
   function summaryText(r) { return `📋 Examen final — ${MOD.es} (${MOD.id === 'B2' ? 'B1' : MOD.id}) · mrarrieta.com\n👤 ${r.name}\n📅 ${r.date.toLocaleString()}\n🔁 ${r.attemptLabel}\n🎧 Listening: ${r.per.listening.score.toFixed(1)}\n📖 Reading: ${r.per.reading.score.toFixed(1)}\n✍️ Writing: ${r.per.writing.score.toFixed(1)}\n🎤 Speaking: ${r.per.speaking.score.toFixed(1)}\n⭐ Nota final: ${r.fin.toFixed(1)} / 10 — ${r.passed ? 'APROBADO' : 'NO APROBADO'}\n💬 ${comment(r.per, r.b)}`; }
