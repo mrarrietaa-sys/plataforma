@@ -877,59 +877,93 @@
     },
 
     // 🚀 MISIÓN según el objetivo: situación real + pregunta en audio + respuesta en voz alta con corrección
-    mission: async (stage, p) => { // v456: misión combinada · elige tu puerta + conversación con un personaje + candados (escape room)
+    mission: async (stage, p) => { // v459: Módulo 1 o Kids → «Elige y dilo» · resto → «Notas de voz» (sin puertas ni candados)
       const X = missionFor(p); if (!X) return null;
-      const GN = { v: ['plane', 'Viajar', 'r'], t: ['briefcase', 'Trabajo', 'b'], e: ['grad', 'Estudios', 'g'] }[X.k] || ['target', 'Tu objetivo', 'r'];
-      const LOCK = '<svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>', OPEN = '<svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 7.5-2"/></svg>';
-      let list = X.list.slice(); const N = list.length; let c = 0;
-      // 1) Elige tu historia: dos puertas, cada una con una situación real
-      if (N > 1) {
-        const b0 = A.head(stage, { lbl: 'Mission', title: 'Elige tu puerta', ins: 'Detrás de cada puerta hay una situación real. Ábrela <b>hablando</b> en inglés.' });
-        const d = h(`<div class="ms9-doors">${list.map((x, i) => `<button type="button" class="ms9-door" data-i="${i}">${x.img ? photo('u:' + x.img) : ''}<span class="ms9-dn">Puerta ${i + 1}</span><small>${esc(x.sit)}</small></button>`).join('')}</div>`);
-        b0.appendChild(d);
-        const pick = await new Promise(r => d.querySelectorAll('.ms9-door').forEach(b => b.onclick = () => { sfx('tap'); b.classList.add('on'); setTimeout(() => r(+b.dataset.i), 450); }));
-        if (pick) list = [list[pick]].concat(list.filter((x, i) => i !== pick));
-      }
-      for (let mi = 0; mi < N; mi++) {
-        if (!stage.isConnected) break; const x = list[mi];
-        const body = A.head(stage, { lbl: 'Mission', title: mi === 0 ? 'Abre la puerta' : 'Último candado', ins: '' });
-        const el = h(`<div class="ms ms9"><div class="ms-top"><span class="ms-badge ${GN[2]}">${window.MRI ? MRI(GN[0]) : ''}Misión · ${esc(GN[1])}</span><span class="ms9-locks">${list.map((y, k) => `<i class="${k < mi ? 'open' : ''}">${k < mi ? OPEN : LOCK}</i>`).join('')}</span></div>
-          ${x.img ? `<div class="ms-ph">${photo('u:' + x.img)}<div class="ms-sit"><small>La situación</small>${esc(x.sit)}</div></div>` : `<div class="ms-sit"><small>La situación</small>${esc(x.sit)}</div>`}
-          <div class="ms-q"><button type="button" class="ms-play" aria-label="Escuchar">${window.MRI ? MRI('vol') : '🔊'}</button><div><b>${esc(x.q)}</b><small>${esc(x.es)}</small></div></div>
-          <button type="button" class="ms-mic"></button>
-          <div class="ms-msg">Responde con tus palabras para abrir el candado.</div>
-          <div class="ms-heard" hidden></div>
-          <button type="button" class="ms-hint">¿No sabes cómo empezar? Ver un ejemplo</button>
-          <div class="ms-model" hidden><small>Una respuesta modelo</small><div><button type="button" class="ms-play2" aria-label="Escuchar respuesta">${window.MRI ? MRI('vol') : '🔊'}</button><b>${esc(x.a)}</b></div></div></div>`);
-        body.appendChild(el); const $e = (q) => el.querySelector(q); const mic = $e('.ms-mic');
-        const lab = (t) => { mic.innerHTML = `<span class="ms-mi">🎙️</span><span class="ms-mt">${t}</span>`; }; lab('Toca y responde');
-        if (window.MRVC && M.canSR) { el.classList.add('has-vc'); mic.after(MRVC.card({ target: mic, label: 'TOCA EL MICRÓFONO Y RESPONDE', say: x.q, es: x.es, au: x.qau, mascot: false })); }
-        $e('.ms-play').onclick = () => { stop(); play(x.qau); }; $e('.ms-play2').onclick = () => { stop(); play(x.aau); };
-        $e('.ms-hint').onclick = () => { $e('.ms-model').hidden = false; $e('.ms-hint').hidden = true; stop(); play(x.aau); };
-        setTimeout(() => play(x.qau), 400);
-        let okk = false;
-        await new Promise((done) => {
-          let skip = null;
-          mic.onclick = async () => {
-            if (mic.disabled) return;
-            if (!M.canSR) { $e('.ms-msg').textContent = 'Di la respuesta en voz alta'; okk = true; return setTimeout(done, 2200); }
-            mic.disabled = true; stop(); el.classList.add('rec'); lab('Te escucho…');
-            const r = await M.listen(10000, { quick: true }); el.classList.remove('rec'); mic.disabled = false; lab('Intentar otra vez');
-            if (!r.alts || !r.alts.length) { $e('.ms-msg').textContent = 'No te escuché. Acércate un poco al micrófono e intenta otra vez.'; return; }
-            const fj = M.freeJudge(x.q, x.a, r.alts); okk = fj.ok;
-            const hd = $e('.ms-heard'); hd.hidden = false; hd.className = 'ms-heard ' + (okk ? 'good' : 'bad'); hd.innerHTML = `<small>Escuché</small>“${esc(r.alts[0])}”${fj.fix ? `<em class="vk-fix">${okk ? 'Mejor dilo así' : 'Se dice'}: <b>${esc(fj.fix)}</b></em>` : ''}`;
-            if (okk) { sfx('ok'); M.praise(); el.classList.add('done'); mic.hidden = true; const lk = el.querySelectorAll('.ms9-locks i')[mi]; if (lk) { lk.classList.add('open', 'pop'); lk.innerHTML = OPEN; } $e('.ms-msg').innerHTML = mi < N - 1 ? '<b>¡Candado abierto!</b>' : '<b>¡Abriste la puerta!</b>'; setTimeout(done, fj.fix ? 3400 : 2200); }
-            else { sfx('bad'); setTimeout(M.encourage, 250); $e('.ms-msg').textContent = fj.gram ? 'Casi. Se dice: “' + fj.fix + '”. Inténtalo otra vez.' : fj.rep ? 'Repetiste la pregunta. Ahora respóndela con tus palabras.' : fj.off ? 'Tu respuesta no corresponde a la pregunta. Escúchala otra vez y responde sobre eso, con tus palabras.' : 'Casi. Inténtalo otra vez.';
-              if (!skip) { skip = h('<button type="button" class="btn w sm ms9-skip">Seguir sin abrir</button>'); el.appendChild(skip); skip.onclick = () => { okk = false; done(); }; } }
-          };
-        });
-        if (okk) c++;
-        if (mi < N - 1) await sleep(300);
+      const I = n => window.MRI ? MRI(n) : '';
+      const GN = { v: ['plane', 'Viajar'], t: ['briefcase', 'Trabajo'], e: ['grad', 'Estudios'] }[X.k] || ['target', 'Tu objetivo'];
+      const list = X.list.slice(), N = list.length; let c = 0;
+      const MIC = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>';
+      const PLAY = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4l13 8-13 8z"/></svg>';
+      const av = (x) => `<span class="mv-av">${x.img ? photo('u:' + x.img) : ''}</span>`;
+      const pick3 = (M.MOD.n == 1 || M.ageGroup() === 'kids');
+      const listen1 = async () => { if (!M.canSR) return { alts: [] }; return await M.listen(10000, { quick: true }); };
+      const msgFor = (fj) => fj.gram ? 'Casi. Se dice: “' + esc(fj.fix) + '”.' : fj.rep ? 'Repetiste la pregunta. Ahora respóndela con tus palabras.' : fj.off ? 'Tu respuesta no corresponde a la pregunta. Escúchala otra vez y responde sobre eso.' : 'Casi. Inténtalo otra vez.';
+      if (pick3) {
+        /* ---- «Elige y dilo»: entiende primero (elige entre 3) y luego habla ---- */
+        const pool = []; Object.keys(window.MRMISSIONS || {}).forEach(k => { if (k.split('-')[0] === String(+M.MOD.n || 1) && k !== (+M.MOD.n || 1) + '-' + p.topic) Object.values(MRMISSIONS[k]).forEach(L => (Array.isArray(L) ? L : [L]).forEach(y => { if (y && y.a && pool.indexOf(y.a) < 0) pool.push(y.a); })); });
+        for (let mi = 0; mi < N; mi++) {
+          if (!stage.isConnected) break; const x = list[mi];
+          const wrong = sample(pool.filter(a => { if (a === x.a || M.words(a)[0] === M.words(x.a)[0]) return false; try { return !M.freeJudge(x.q, x.a, [a]).ok; } catch (e) { return true; } }), 2); const opts = shuffle([x.a, ...wrong]);
+          const body = A.head(stage, { lbl: 'Mission', title: '¿Qué le respondes?', count: `${mi + 1} / ${N}` }); stage.classList.add('mv-stage');
+          const el = h(`<div class="mv mv-pick"><div class="mv-k">${I(GN[0])}<span>${esc(x.sit)}</span></div>
+            <div class="mv-in">${av(x)}<div class="mv-bq"><b>${esc(x.q)}</b><small>${esc(x.es)}</small><button type="button" class="mv-pl" aria-label="Escuchar">${I('vol')}</button></div></div>
+            <div class="mv-opts">${opts.map((o, i) => `<button type="button" class="mv-o" data-i="${i}"><i></i><span>${esc(o)}</span></button>`).join('')}</div>
+            <div class="mv-say" hidden><button type="button" class="mv-mic">${MIC}</button><div><b>¡Correcto! Ahora dilo</b><small class="mv-st">Toca el micrófono y dilo en voz alta.</small></div></div>
+            <div class="mv-heard" hidden></div><div class="mv-acts"></div></div>`);
+          body.appendChild(el); const $e = q => el.querySelector(q);
+          $e('.mv-pl').onclick = () => { stop(); play(x.qau); }; setTimeout(() => play(x.qau), 350);
+          let okk = false;
+          await new Promise(done => {
+            el.querySelectorAll('.mv-o').forEach(b => b.onclick = () => {
+              if (el.classList.contains('chosen')) return; const o = opts[+b.dataset.i];
+              if (o !== x.a) { b.classList.add('bad'); sfx('bad'); setTimeout(M.encourage, 200); setTimeout(() => b.classList.remove('bad'), 650); return; }
+              el.classList.add('chosen'); b.classList.add('on'); sfx('ok'); el.querySelectorAll('.mv-o').forEach(z => { if (z !== b) z.classList.add('off'); });
+              const say = $e('.mv-say'); say.hidden = false; stop(); setTimeout(() => play(x.aau), 300);
+              if (!M.canSR) { $e('.mv-st').textContent = 'Dilo en voz alta.'; okk = true; return setTimeout(done, 2600); }
+              let fails = 0; const mic = $e('.mv-mic');
+              mic.onclick = async () => {
+                if (mic.disabled) return; mic.disabled = true; stop(); el.classList.add('rec'); $e('.mv-st').textContent = 'Te escucho…';
+                const r = await listen1(); el.classList.remove('rec'); mic.disabled = false;
+                if (!r.alts || !r.alts.length) { $e('.mv-st').textContent = 'No te escuché. Acércate al micrófono e intenta otra vez.'; return; }
+                const sc = M.speechScore(x.a, r.alts).score, fj = M.freeJudge(x.q, x.a, r.alts); okk = sc >= 60 || fj.ok;
+                const hd = $e('.mv-heard'); hd.hidden = false; hd.className = 'mv-heard ' + (okk ? 'good' : 'bad'); hd.innerHTML = `<small>Escuché</small>“${esc(r.alts[0])}”`;
+                if (okk) { sfx('ok'); M.praise(); say.classList.add('done'); $e('.mv-st').textContent = '¡Muy bien dicho!'; mic.hidden = true; setTimeout(done, 2000); }
+                else { fails++; sfx('bad'); setTimeout(M.encourage, 250); $e('.mv-st').textContent = 'Casi. Escúchala y dilo otra vez.'; setTimeout(() => play(x.aau), 900);
+                  if (fails >= 2 && !$e('.mv-skip')) { const sk = h('<button type="button" class="btn w sm mv-skip">Seguir</button>'); $e('.mv-acts').appendChild(sk); sk.onclick = () => { okk = false; done(); }; } }
+              };
+            });
+          });
+          if (okk) c++; if (mi < N - 1) await sleep(300);
+        }
+      } else {
+        /* ---- «Notas de voz»: el personaje manda notas de voz y el estudiante responde hablando ---- */
+        const x0 = list[0];
+        const body = A.head(stage, { lbl: 'Mission', title: 'Responde las notas de voz', count: `${N} mensajes` }); stage.classList.add('mv-stage');
+        const el = h(`<div class="mv mv-chat"><div class="mv-hd">${av(x0)}<div><b>Mensajes de voz</b><small>${I(GN[0])}${esc(GN[1])}</small></div></div><div class="mv-log"></div>
+          <div class="mv-bar"><button type="button" class="mv-hint">Ver un ejemplo</button><span class="mv-st">Escucha el mensaje…</span><button type="button" class="mv-mic" disabled>${MIC}</button></div><div class="mv-acts"></div></div>`);
+        body.appendChild(el); const $e = q => el.querySelector(q), log = $e('.mv-log'), mic = $e('.mv-mic'), st = $e('.mv-st'), hint = $e('.mv-hint');
+        const add = (html) => { const n = h(html); log.appendChild(n); try { n.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) { } return n; };
+        for (let mi = 0; mi < N; mi++) {
+          if (!stage.isConnected) break; const x = list[mi];
+          add(`<div class="mv-sit">${esc(x.sit)}</div>`);
+          const typing = add('<div class="mv-vn mv-typ"><i></i><i></i><i></i></div>'); await sleep(900); typing.remove();
+          const vn = add(`<div class="mv-vn"><div class="mv-pr"><button type="button" class="mv-pp" aria-label="Escuchar">${PLAY}</button><span class="mv-wv"></span></div><b>${esc(x.q)}</b><small>${esc(x.es)}</small></div>`);
+          const pp = vn.querySelector('.mv-pp'); const playQ = () => { stop(); vn.classList.add('playing'); play(x.qau); setTimeout(() => vn.classList.remove('playing'), 2200); }; pp.onclick = playQ; playQ();
+          mic.disabled = false; st.textContent = 'Toca el micrófono y responde'; hint.hidden = false;
+          hint.onclick = () => { hint.hidden = true; const ex = add(`<div class="mv-ex"><small>Una respuesta posible</small><span>${esc(x.a)}</span><button type="button" class="mv-pl" aria-label="Escuchar">${I('vol')}</button></div>`); ex.querySelector('.mv-pl').onclick = () => { stop(); play(x.aau); }; stop(); play(x.aau); };
+          let okk = false;
+          await new Promise(done => {
+            let fails = 0;
+            mic.onclick = async () => {
+              if (mic.disabled) return;
+              if (!M.canSR) { add(`<div class="mv-me">${esc(x.a)}<i>Dilo en voz alta</i></div>`); okk = true; mic.disabled = true; return setTimeout(done, 2200); }
+              mic.disabled = true; stop(); el.classList.add('rec'); st.textContent = 'Te escucho…';
+              const r = await listen1(); el.classList.remove('rec'); mic.disabled = false;
+              if (!r.alts || !r.alts.length) { st.textContent = 'No te escuché. Acércate al micrófono e intenta otra vez.'; return; }
+              const fj = M.freeJudge(x.q, x.a, r.alts); okk = fj.ok;
+              add(`<div class="mv-me ${okk ? '' : 'bad'}">${esc(r.alts[0])}<i>${okk ? (fj.fix ? 'Mejor dilo así: ' + esc(fj.fix) : 'Bien dicho') : msgFor(fj)}</i></div>`);
+              if (okk) { sfx('ok'); M.praise(); mic.disabled = true; hint.hidden = true; st.textContent = mi < N - 1 ? '¡Bien! Llega otro mensaje…' : '¡Conversación completada!'; setTimeout(done, fj.fix ? 2600 : 1500); }
+              else { fails++; sfx('bad'); setTimeout(M.encourage, 250); st.textContent = 'Intenta otra vez'; if (fails >= 2 && !$e('.mv-skip')) { const sk = h('<button type="button" class="btn w sm mv-skip">Seguir</button>'); $e('.mv-acts').appendChild(sk); sk.onclick = () => { sk.remove(); okk = false; mic.disabled = true; done(); }; } }
+            };
+          });
+          if (okk) c++;
+        }
+        mic.disabled = true;
       }
       if (stage.isConnected) {
-        const all = c === N; const b2 = A.head(stage, { lbl: 'Mission', title: all ? '¡Misión cumplida!' : 'Misión terminada', ins: '' });
-        b2.appendChild(h(`<div class="ms9-end ${all ? 'win' : ''}"><div class="ms9-bigdoor">${all ? OPEN : LOCK}</div><p>Abriste <b>${c} de ${N}</b> candados</p></div>`));
-        if (all) { sfx('win'); try { M.confetti(1400); } catch (e) { } } else sfx('ok');
+        const all = c === N; const b2 = A.head(stage, { lbl: 'Mission', title: all ? '¡Misión cumplida!' : 'Misión terminada' });
+        b2.appendChild(h(`<div class="mv-end ${all ? 'win' : ''}"><span class="mv-ei">${I(all ? 'award' : 'chat')}</span><p>Respondiste bien <b>${c} de ${N}</b></p><small>${esc(GN[1])} · ${esc(list.map(x => x.sit).join(' · '))}</small></div>`));
+        if (all) { sfx('win'); try { M.confetti(1200); } catch (e) { } } else sfx('ok');
         await A.waitNext(stage, 'Continuar');
       }
       return A.result(c, N, 'speaking');
