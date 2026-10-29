@@ -769,7 +769,7 @@
           /* v462: raspar es obligatorio — se espera a que el estudiante toque y la plataforma le ayuda a terminar */
         } catch (e) { reveal(); }
         await new Promise(res => { go.onclick = () => { stop(); res(); }; });
-        sfx('win'); await micTips(false); return null;
+        await micTips(false); return null;
       }
       stage.innerHTML = `<div class="center">
         <span class="lbl">Topic ${p.topic} · ${PL(p)}</span>

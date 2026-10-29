@@ -66,7 +66,7 @@
     go: () => tone(880, 0, .35, 'square', .06),
     count: () => tone(440, 0, .18, 'square', .05),
   };
-  function fx(n, a) { if (!S.sound) return; try { FX[n] && FX[n](a); } catch (e) { } }
+  function fx(n, a) { if (!S.sound) return; try { /* v465: un solo sonido (Mr. Arrieta) */ const B = { ok: 'ok', combo: 'ok', coin: 'ok', pop: 'ok', win: 'fin', level: 'logo' }[n]; if (B && M.brand) M.brand(B); } catch (e) { } void FX; }
   function voice(line) {
     if (!S.sound) return; let k = AD.voice[line]; if (!k) return;
     if (M.ageGroup && M.ageGroup() !== 'adult' && window.AUD && window.AUD['fb_' + k]) k = 'fb_' + k; // 👧 Kids y Teens: voz de mujer

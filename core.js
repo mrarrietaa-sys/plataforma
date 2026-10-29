@@ -175,7 +175,8 @@
   function sfx(type) {
     try { fx9(type); } catch (e) { } /* v455: vibración y destello en cada acierto/error (más energía) */
     if (!S.sound) return;
-    if (type === 'ok' && window.MRSONIC && brand('ok')) return; // v456: el acierto suena con las 2 notas del sonido de marca
+    /* v465 · un solo sonido en toda la plataforma: el de Mr. Arrieta. Acierto = 2 notas · final = logo final · error, toques y tarjetas = sin sonido (vibra y habla la voz) */
+    if (type === 'ok') { brand('ok'); return; } if (type === 'win') { brand('fin'); return; } return;
     try {
       actx = actx || new (window.AudioContext || window.webkitAudioContext)();
       const notes = { ok: [[660, 0], [880, .09]], bad: [[220, 0], [180, .12]], tap: [[520, 0]], win: [[523, 0], [659, .12], [784, .24], [1046, .36]], flip: [[400, 0]] }[type] || [[440, 0]];
