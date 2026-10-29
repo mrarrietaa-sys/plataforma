@@ -7616,3 +7616,11 @@ body.ag-kids .ml10-x{background:#f59e0b}body.ag-teens .ml10-x{background:#E3242B
 .as-read .as-rdes{display:block;font-size:13px;font-weight:500;color:#8a7a52;margin-top:2px}.as-read em{display:block;font-style:normal;font-size:12.5px;color:#7a6020;margin-top:3px}
 .as-read.ch{margin:4px 0 4px auto;max-width:88%;padding-right:46px}.as-rdp{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:50%;border:0;background:#fff;display:grid;place-items:center;cursor:pointer}.as-rdp svg{width:16px;height:16px}
 .as-rd{display:flex}
+/* v469 · pregunta y respuesta centradas (todas las edades), sin desbordarse */
+.vk2 .vk-q{display:block!important;text-align:center!important;overflow:hidden}
+.vk2 .vk-q .vk-qa{position:absolute;top:10px;left:10px;width:34px;height:34px}
+.vk2 .vk-q>div:not(.vk-guide){padding:0 36px;min-width:0}
+.vk2 .vk-q b,.vk2 .vk-q small{overflow-wrap:anywhere}
+.vk2 .vk-guide.vk-read{width:100%;box-sizing:border-box;text-align:center;margin:10px 0 0}
+.as-read{text-align:center}.as-read.ch{padding-left:46px}
+.as-ivb{text-align:center}.as-ivb .as-bw{margin-left:auto;margin-right:auto}
