@@ -183,7 +183,7 @@
   const RS = async (tgt, ms) => { try { return await M().recordScore(tgt, ms); } catch (e) { return null; } };
   const judge = (r, tgt, blank) => { if (!r) return false; if (r.self) return true; if (r.score == null) return false; const w = (r.heard || (r.alts || [])[0] || '').trim().split(/\s+/).filter(Boolean).length; return blank ? w >= 1 : r.score >= 55; }; // respuestas personales (nombre, letra, edad…): basta con que responda
   // v420: respuesta libre: se acepta lo que diga; solo se corrige gramática/pronunciación
-  const FJ = (r, k, tgt) => { if (!r) return { ok: false, heard: '' }; if (r.self) return { ok: true, heard: '' }; return M().freeJudge(k.q, tgt.replace(/___/g, ''), r.alts || []); };
+  const FJ = (r, k, tgt) => { if (!r) return { ok: false, heard: '' }; if (r.self) return { ok: true, heard: '' }; return M().readJudge ? M().readJudge(k.q, tgt, r.alts || []) : M().freeJudge(k.q, tgt.replace(/___/g, ''), r.alts || []); };
   const fixHTML = (f) => f && f.fix ? `<div class="as-fbk fx">${SV(I.bulb)}<span>Mejor dilo así: <b>${esc(f.fix)}</b></span></div>` : '';
   async function keyq(stage, p) {
     const Q = (p.keyq || []).filter(k => k && k.q && k.a); if (!Q.length) return null;

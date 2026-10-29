@@ -541,7 +541,7 @@
     app.innerHTML = `<div class="wrap center ld-load"><img class="ld-load-mra" src="mra-x-${({ kids: 'rocket4', teens: 'rocket5' })[M.ageGroup()] || 'rocket3'}.webp?v=2" alt="Mr. Arrieta"><h2 class="ld-ready">Are you ready?</h2><div class="ld-count"></div><p class="ld-load-t muted"></p></div>`; try { sessionStorage.setItem('mra_logo', '1'); } catch (e) { } if (M.brand) M.brand('logo'); /* v456: sonido de marca al empezar cada lección */
     // 🚀 conteo 1, 2, 3 mientras carga; en el 3 Mr. Arrieta sale volando y dice GO!
     const lt = $('.ld-load-t', app), cd = $('.ld-count', app), rk = $('.ld-load-mra', app); let loaded = false;
-    const pv = M.prevPart(p); const loadP = M.loadAudio(['common', 'keyq9_' + (+M.MOD.n || 1), 'kq10_' + (+M.MOD.n || 1) + '_' + p.topic, ...(pv && pv.topic !== p.topic ? ['kq10_' + (+M.MOD.n || 1) + '_' + pv.topic] : []), ...(window.M2AGE_ON ? ['a2' + window.M2AGE_ON[0]] : []), ...(window.MYAGE_ON && (+M.MOD.n || 1) >= 3 ? ['y' + M.MOD.n + window.MYAGE_ON[0] + p.topic].concat(pv ? ['y' + M.MOD.n + window.MYAGE_ON[0] + pv.topic] : []) : []), ...[].concat(M.MOD.games || []), M.MOD.audio + p.topic].concat(pv ? [M.MOD.audio + pv.topic] : []).concat(missionFor(p) ? ['gm' + (+M.MOD.n || 1) + 't' + p.topic] : []).concat(window.M1AGE_ON && (+M.MOD.n || 1) === 1 ? [(window.M1AGE_ON === 'kids' ? 'ka' : 'ta') + p.topic].concat(pv ? [(window.M1AGE_ON === 'kids' ? 'ka' : 'ta') + pv.topic] : []) : [])).then(() => { loaded = true; }, () => { loaded = true; });
+    const pv = M.prevPart(p); const loadP = M.loadAudio(['common', 'keyq9_' + (+M.MOD.n || 1), 'kq10_' + (+M.MOD.n || 1) + '_' + p.topic, ...(pv && pv.topic !== p.topic ? ['kq10_' + (+M.MOD.n || 1) + '_' + pv.topic] : []), ...(window.M2AGE_ON ? ['a2' + window.M2AGE_ON[0]] : []), ...(window.MYAGE_ON && (+M.MOD.n || 1) >= 3 ? ['y' + M.MOD.n + window.MYAGE_ON[0] + p.topic].concat(pv ? ['y' + M.MOD.n + window.MYAGE_ON[0] + pv.topic] : []) : []), ...[].concat(M.MOD.games || []), M.MOD.audio + p.topic].concat(pv ? [M.MOD.audio + pv.topic] : []).concat(missionFor(p) ? ['gm' + (+M.MOD.n || 1) + 't' + p.topic + (/^[vte]$/.test(missionFor(p).k) ? '' : missionFor(p).k)] : []).concat(window.M1AGE_ON && (+M.MOD.n || 1) === 1 ? [(window.M1AGE_ON === 'kids' ? 'ka' : 'ta') + p.topic].concat(pv ? [(window.M1AGE_ON === 'kids' ? 'ka' : 'ta') + pv.topic] : []) : [])).then(() => { loaded = true; }, () => { loaded = true; });
     const pop = (t) => { cd.textContent = t; cd.classList.remove('pop'); void cd.offsetWidth; cd.classList.add('pop'); };
     for (const t of ['1', '2', '3']) { pop(t); try { sfx('tap'); } catch (e) { } await new Promise(r => setTimeout(r, 750)); }
     if (!loaded) { lt.textContent = 'Preparando tu lección…'; await loadP; lt.textContent = ''; }
@@ -880,17 +880,17 @@
     mission: async (stage, p) => { // v459: Módulo 1 o Kids → «Elige y dilo» · resto → «Notas de voz» (sin puertas ni candados)
       const X = missionFor(p); if (!X) return null;
       const I = n => window.MRI ? MRI(n) : '';
-      const GN = { v: ['plane', 'Viajar'], t: ['briefcase', 'Trabajo'], e: ['grad', 'Estudios'] }[X.k] || ['target', 'Tu objetivo'];
+      const GN = { v: ['plane', 'Viajar'], t: ['briefcase', 'Trabajo'], e: ['grad', 'Estudios'], kc: ['grad', 'Colegio'], kj: ['pad', 'Juegos y videos'], kv: ['plane', 'Viajar'], km: ['music', 'Música'], tc: ['grad', 'Colegio'], ts: ['tv', 'Series y redes'], tg: ['pad', 'Gaming'], tx: ['plane', 'Viajar o estudiar afuera'] }[X.k] || ['target', 'Tu objetivo'];
       const list = X.list.slice(), N = list.length; let c = 0;
       const MIC = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>';
       const PLAY = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4l13 8-13 8z"/></svg>';
-      const av = (x) => `<span class="mv-av">${x.img ? photo('u:' + x.img) : ''}</span>`;
+      const av = (x) => `<span class="mv-av${x.img ? '' : ' ic'}">${x.img ? photo('u:' + x.img) : I(GN[0])}</span>`;
       const pick3 = (M.MOD.n == 1 || M.ageGroup() === 'kids');
       const listen1 = async () => { if (!M.canSR) return { alts: [] }; return await M.listen(10000, { quick: true }); };
       const msgFor = (fj) => fj.gram ? 'Casi. Se dice: “' + esc(fj.fix) + '”.' : fj.rep ? 'Repetiste la pregunta. Ahora respóndela con tus palabras.' : fj.off ? 'Tu respuesta no corresponde a la pregunta. Escúchala otra vez y responde sobre eso.' : 'Casi. Inténtalo otra vez.';
       if (pick3) {
         /* ---- «Elige y dilo»: entiende primero (elige entre 3) y luego habla ---- */
-        const pool = []; Object.keys(window.MRMISSIONS || {}).forEach(k => { if (k.split('-')[0] === String(+M.MOD.n || 1) && k !== (+M.MOD.n || 1) + '-' + p.topic) Object.values(MRMISSIONS[k]).forEach(L => (Array.isArray(L) ? L : [L]).forEach(y => { if (y && y.a && pool.indexOf(y.a) < 0) pool.push(y.a); })); });
+        const pool = []; Object.keys(window.MRMISSIONS || {}).forEach(k => { if (k.split('-')[0] === String(+M.MOD.n || 1) && k !== (+M.MOD.n || 1) + '-' + p.topic) [MRMISSIONS[k][X.k]].filter(Boolean).forEach(L => (Array.isArray(L) ? L : [L]).forEach(y => { if (y && y.a && pool.indexOf(y.a) < 0) pool.push(y.a); })); });
         for (let mi = 0; mi < N; mi++) {
           if (!stage.isConnected) break; const x = list[mi];
           const wrong = sample(pool.filter(a => { if (a === x.a || M.words(a)[0] === M.words(x.a)[0]) return false; try { return !M.freeJudge(x.q, x.a, [a]).ok; } catch (e) { return true; } }), 2); const opts = shuffle([x.a, ...wrong]);
@@ -915,7 +915,7 @@
                 if (mic.disabled) return; mic.disabled = true; stop(); el.classList.add('rec'); $e('.mv-st').textContent = 'Te escucho…';
                 const r = await listen1(); el.classList.remove('rec'); mic.disabled = false;
                 if (!r.alts || !r.alts.length) { $e('.mv-st').textContent = 'No te escuché. Acércate al micrófono e intenta otra vez.'; return; }
-                const sc = M.speechScore(x.a, r.alts).score, fj = M.freeJudge(x.q, x.a, r.alts); okk = sc >= 60 || fj.ok;
+                okk = M.readJudge(x.q, x.a, r.alts).ok;
                 const hd = $e('.mv-heard'); hd.hidden = false; hd.className = 'mv-heard ' + (okk ? 'good' : 'bad'); hd.innerHTML = `<small>Escuché</small>“${esc(r.alts[0])}”`;
                 if (okk) { sfx('ok'); M.praise(); say.classList.add('done'); $e('.mv-st').textContent = '¡Muy bien dicho!'; mic.hidden = true; setTimeout(done, 2000); }
                 else { fails++; sfx('bad'); setTimeout(M.encourage, 250); $e('.mv-st').textContent = 'Casi. Escúchala y dilo otra vez.'; setTimeout(() => play(x.aau), 900);
@@ -939,8 +939,8 @@
           const typing = add('<div class="mv-vn mv-typ"><i></i><i></i><i></i></div>'); await sleep(900); typing.remove();
           const vn = add(`<div class="mv-vn"><div class="mv-pr"><button type="button" class="mv-pp" aria-label="Escuchar">${PLAY}</button><span class="mv-wv"></span></div><b>${esc(x.q)}</b><small>${esc(x.es)}</small></div>`);
           const pp = vn.querySelector('.mv-pp'); const playQ = () => { stop(); vn.classList.add('playing'); play(x.qau); setTimeout(() => vn.classList.remove('playing'), 2200); }; pp.onclick = playQ; playQ();
-          mic.disabled = false; st.textContent = 'Toca el micrófono y responde'; hint.hidden = false;
-          hint.onclick = () => { hint.hidden = true; const ex = add(`<div class="mv-ex"><small>Una respuesta posible</small><span>${esc(x.a)}</span><button type="button" class="mv-pl" aria-label="Escuchar">${I('vol')}</button></div>`); ex.querySelector('.mv-pl').onclick = () => { stop(); play(x.aau); }; stop(); play(x.aau); };
+          { await sleep(700); const ex = add(`<div class="mv-ex"><small>Léela en voz alta</small><span>${esc(x.a)}</span><button type="button" class="mv-pl" aria-label="Escuchar">${I('vol')}</button></div>`); ex.querySelector('.mv-pl').onclick = () => { stop(); play(x.aau); }; await sleep(1600); stop(); play(x.aau); } /* v460: Mr. Arrieta lee la pregunta y la respuesta; el estudiante la lee */
+          mic.disabled = false; st.textContent = 'Toca el micrófono y léela'; hint.hidden = true;
           let okk = false;
           await new Promise(done => {
             let fails = 0;
@@ -950,8 +950,8 @@
               mic.disabled = true; stop(); el.classList.add('rec'); st.textContent = 'Te escucho…';
               const r = await listen1(); el.classList.remove('rec'); mic.disabled = false;
               if (!r.alts || !r.alts.length) { st.textContent = 'No te escuché. Acércate al micrófono e intenta otra vez.'; return; }
-              const fj = M.freeJudge(x.q, x.a, r.alts); okk = fj.ok;
-              add(`<div class="mv-me ${okk ? '' : 'bad'}">${esc(r.alts[0])}<i>${okk ? (fj.fix ? 'Mejor dilo así: ' + esc(fj.fix) : 'Bien dicho') : msgFor(fj)}</i></div>`);
+              const fj = M.readJudge(x.q, x.a, r.alts); okk = fj.ok;
+              add(`<div class="mv-me ${okk ? '' : 'bad'}">${esc(r.alts[0])}<i>${okk ? (fj.fix ? 'Mejor dilo así: ' + esc(fj.fix) : 'Bien dicho') : 'Casi. Escúchala y léela otra vez, despacio.'}</i></div>`); if (!okk) setTimeout(() => play(x.aau), 900);
               if (okk) { sfx('ok'); M.praise(); mic.disabled = true; hint.hidden = true; st.textContent = mi < N - 1 ? '¡Bien! Llega otro mensaje…' : '¡Conversación completada!'; setTimeout(done, fj.fix ? 2600 : 1500); }
               else { fails++; sfx('bad'); setTimeout(M.encourage, 250); st.textContent = 'Intenta otra vez'; if (fails >= 2 && !$e('.mv-skip')) { const sk = h('<button type="button" class="btn w sm mv-skip">Seguir</button>'); $e('.mv-acts').appendChild(sk); sk.onclick = () => { sk.remove(); okk = false; mic.disabled = true; done(); }; } }
             };
@@ -979,7 +979,7 @@
         return ['Yes, ' + sub + ' ' + be + '.', be === 'am' ? "No, I'm not." : 'No, ' + sub + ' ' + neg + '.']; }
       const MN = +M.MOD.n || 1, PIC = { 1: 'mra-wink', 2: 'mra-celebrate', 3: 'mra-wow', 4: 'mra-point' }[MN] || 'mra-wink', SECS = { 1: 15, 2: 12, 3: 10, 4: 10 }[MN] || 12;
       const Q = p.keyq, N = Q.length; let c = 0, pts = 0, streak = 0;
-      const body = A.head(stage, { lbl: 'Listen & practice', title: 'Key questions', ins: 'Mr. Arrieta te hace una videollamada. Escucha la pregunta y <b>responde en voz alta</b>, con tu voz normal.' });
+      const body = A.head(stage, { lbl: 'Listen & practice', title: 'Key questions', ins: 'Mr. Arrieta te hace una videollamada. Escucha la pregunta y <b>lee la respuesta en voz alta</b>, con tu voz normal.' });
       const PF = (window.MRAP && MRAP.get && MRAP.get()) || {}; const INI = (((PF.first || S.name || 'T')[0] || 'T') + ((PF.last || '')[0] || '')).toUpperCase();
       const IC = (n, d) => window.MRI ? MRI(n) : d;
       // 📹 v420: videollamada premium (estudio azul, subtítulo, tu recuadro con tus iniciales, anillo de tiempo en el micrófono)
@@ -988,8 +988,8 @@
           <span class="vk-name">${IC('mic', '')}Mr. Arrieta</span><div class="vk-self"><span class="vk-av">${esc(INI)}</span><span class="vk-lv"><i></i><i></i><i></i><i></i><i></i></span><small>Tú</small></div>
           <i class="vk-ring"></i></div><div class="vk-card"><div class="vk-q"><button type="button" class="vk-qa" aria-label="Escuchar la pregunta">${IC('vol', '')}</button><div><b class="vk-qt"></b><small class="vk-qes"></small></div></div><div class="vk-fb" hidden></div></div>
         <div class="vk-bot"><div class="vk-btns"><div class="vk-cb"><button type="button" class="vk-b vk-rep" aria-label="Escuchar la pregunta otra vez">${IC('vol', '')}</button><small>Repetir</small></div>
-          <div class="vk-cb vk-cbm"><div class="vk-timer"><button type="button" class="vk-b vk-mic" aria-label="Responder">${IC('mic', '')}</button><b hidden>${SECS}</b></div><small>Responder</small></div>
-          <div class="vk-cb"><button type="button" class="vk-b vk-hint" aria-label="Ver una pista">${IC('bulb', '')}</button><small>Pista</small></div></div>
+          <div class="vk-cb vk-cbm"><div class="vk-timer"><button type="button" class="vk-b vk-mic" aria-label="Responder">${IC('mic', '')}</button><b hidden>${SECS}</b></div><small>Leer</small></div>
+          <div class="vk-cb"><button type="button" class="vk-b vk-hint" aria-label="Escuchar la respuesta">${IC('headphones', '')}</button><small>Respuesta</small></div></div>
           <div class="vc vc-strip vc-${M.ageGroup()}" hidden><div class="vc-wv"></div></div>
           <div class="vk-msg">Toca el micrófono y responde</div><div class="vk-ans" hidden></div><button type="button" class="btn k sm vk-next" hidden>Siguiente pregunta →</button></div></div>`);
       { const t0 = Date.now(); const ck = setInterval(() => { if (!vc.isConnected) return clearInterval(ck); const e = Math.floor((Date.now() - t0) / 1000); const c2 = vc.querySelector('.vk-clk'); if (c2) c2.textContent = String(Math.floor(e / 60)).padStart(2, '0') + ':' + String(e % 60).padStart(2, '0'); }, 1000); }
@@ -1000,18 +1000,18 @@
         if (!stage.isConnected) break;
         const k = Q[i], tgt = k.a.split(' / ')[0], blank = k.a.includes('___');
         $v('.vk-n').textContent = `Pregunta ${i + 1}/${N}`; vc.querySelectorAll('.vk-dots i').forEach((d, j) => d.className = j < i ? 'on' : j === i ? 'cur' : ''); $v('.vk-qt').textContent = k.q; $v('.vk-qes').textContent = k.es || '';
-        { const gd = ynGuide(k.q); let gEl = $v('.vk-guide'); if (!gEl) { gEl = h('<div class="vk-guide"></div>'); $v('.vk-q').appendChild(gEl); } gEl.innerHTML = gd ? `Responde como quieras: <b>${esc(gd[0])}</b> o <b>${esc(gd[1])}</b>` : 'Responde con tus propias palabras, en una frase.'; }
+        { const gd = ynGuide(k.q); let gEl = $v('.vk-guide'); if (!gEl) { gEl = h('<div class="vk-guide"></div>'); $v('.vk-q').appendChild(gEl); } gEl.classList.add('vk-read'); gEl.innerHTML = `<small>Lee esta respuesta en voz alta</small><b>${esc(tgt).replace(/___/g, '<u>___</u>')}</b>${blank ? '<em>Completa el ___ con tu información</em>' : ''}`; void gd; } /* v460: el estudiante lee la respuesta modelo; se revisa la pronunciación */
         $v('.vk-ans').hidden = true; $v('.vk-next').hidden = true; $v('.vk-fb').hidden = true; $v('.vk-msg').textContent = 'Escucha la pregunta…';
         vc.classList.remove('ok', 'late', 'bad'); const img = $v('.vk-screen img'); img.src = PIC + '.webp?v=2'; img.classList.remove('talk'); void img.offsetWidth; img.classList.add('talk');
-        await play(k.qau); if (!stage.isConnected) break;
+        await play(k.qau); if (!stage.isConnected) break; if (k.aau) { await sleep(250); await play(k.aau); if (!stage.isConnected) break; }
         const r = await new Promise((done) => {
           let left = SECS, timer = null, busy = false, over = false, late = false, hinted = false;
           const showAns = (why) => { $v('.vk-ans').innerHTML = `<small>${why}</small><b>${esc(tgt).replace(/___/g, '<u>___</u>')}</b>${blank ? '<em>Completa el ___ con tu información</em>' : ''}`; $v('.vk-ans').hidden = false; };
-          const tick = () => { if (busy || over) return; left -= 0.1; setT(left, left / SECS); if (left <= 0) { clearInterval(timer); late = true; vc.classList.add('late'); $v('.vk-msg').textContent = 'Take your time! Responde con tus propias palabras (sin puntos).'; $v('.vk-next').hidden = false; } };
-          setT(left, 1); timer = setInterval(tick, 100); $v('.vk-msg').textContent = blank ? 'Responde con tu información personal' : 'Toca el micrófono y responde';
+          const tick = () => { if (busy || over) return; left -= 0.1; setT(left, left / SECS); if (left <= 0) { clearInterval(timer); late = true; vc.classList.add('late'); $v('.vk-msg').textContent = 'Take your time! Lee la respuesta en voz alta (sin puntos).'; $v('.vk-next').hidden = false; } };
+          setT(left, 1); timer = setInterval(tick, 100); $v('.vk-msg').textContent = blank ? 'Toca el micrófono y léela con tu información' : 'Toca el micrófono y léela';
           const finish = (ok) => { if (over) return; over = true; clearInterval(timer); done({ ok, late, hinted }); };
           $v('.vk-rep').onclick = () => { stop(); play(k.qau); }; $v('.vk-qa').onclick = () => { stop(); play(k.qau); };
-          $v('.vk-hint').onclick = () => { if (hinted) return; hinted = true; const w = tgt.replace(/___/g, '').trim().split(/\s+/); $v('.vk-msg').innerHTML = `Empieza así: <b>${esc(w.slice(0, Math.min(2, w.length)).join(' '))}…</b>`; };
+          $v('.vk-hint').onclick = () => { stop(); if (k.aau) play(k.aau); };
           $v('.vk-next').onclick = () => finish(false);
           $v('.vk-mic').onclick = async () => {
             if (busy || over) return;
@@ -1019,12 +1019,12 @@
             busy = true; stop(); vc.classList.add('rec'); $v('.vk-msg').textContent = 'Te escucho… habla con tu voz normal';
             const rr = await M.listen(9000, { quick: true }); vc.classList.remove('rec'); busy = false; if (over) return;
             if (!rr.alts || !rr.alts.length) { $v('.vk-msg').textContent = rr.error === 'not-allowed' ? 'Permite el micrófono en tu navegador para responder' : 'No te escuché. Acércate un poco al micrófono e intenta otra vez.'; return; }
-            const fj = M.freeJudge(k.q, tgt.replace(/___/g, ''), rr.alts); const sc = { heard: fj.heard }; const ok = fj.ok; // v420: respuesta libre + corrección de gramática
-            const fb = $v('.vk-fb'); fb.hidden = false; fb.className = 'vk-fb ' + (ok ? 'good' : 'bad'); fb.innerHTML = `<span class="vk-fi">${ok ? '<svg viewBox="0 0 24 24"><path d="M5 12.5 10 17l9-10"/></svg>' : '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5v.5"/></svg>'}</span><div><b class="vk-fh">${ok ? (late ? '¡Bien dicho!' : '¡Excelente!') : 'Casi… inténtalo otra vez'}</b><small>Escuché: “${esc(sc.heard || rr.alts[0])}”</small>${fj.fix ? `<em class="vk-fix">${ok ? 'Mejor dilo así' : 'Se dice'}: <b>${esc(fj.fix)}</b></em>` : ''}</div>`;
+            const fj = M.readJudge(k.q, tgt, rr.alts); const sc = { heard: fj.heard }; const ok = fj.ok; // v460: lee la respuesta → se revisa la pronunciación
+            const fb = $v('.vk-fb'); fb.hidden = false; fb.className = 'vk-fb ' + (ok ? 'good' : 'bad'); fb.innerHTML = `<span class="vk-fi">${ok ? '<svg viewBox="0 0 24 24"><path d="M5 12.5 10 17l9-10"/></svg>' : '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5v.5"/></svg>'}</span><div><b class="vk-fh">${ok ? (late ? '¡Bien dicho!' : '¡Excelente!') : 'Casi… léela otra vez'}</b><small>Escuché: “${esc(sc.heard || rr.alts[0])}”</small>${fj.fix ? `<em class="vk-fix">${ok ? 'Mejor dilo así' : 'Se dice'}: <b>${esc(fj.fix)}</b></em>` : ''}</div>`;
             { const im = $v('.vk-screen img'); im.src = (ok ? 'mra-thumbs' : 'mra-think') + '.webp?v=2'; } /* v456: Mr. Arrieta reacciona (un solo personaje en pantalla) */
             if (!ok) vc.classList.add('bad');
             if (ok) { sfx('ok'); M.praise(); vc.classList.add('ok'); $v('.vk-msg').textContent = late ? '¡Bien dicho!' : '¡Excelente!'; setTimeout(() => finish(true), fj.fix ? 3200 : 1500); }
-            else { sfx('bad'); setTimeout(M.encourage, 250); $v('.vk-msg').textContent = fj.gram ? 'Casi. Se dice: “' + fj.fix + '”. Inténtalo otra vez.' : fj.spell ? 'Las letras no coinciden. Se deletrea: ' + fj.fix + '.' : fj.rep ? 'Repetiste la pregunta. Ahora respóndela con tus palabras.' : fj.off ? 'Tu respuesta no corresponde a la pregunta. Escúchala otra vez y responde sobre eso, con tus palabras.' : 'Responde con una frase completa, con tus propias palabras.'; $v('.vk-next').hidden = false; }
+            else { sfx('bad'); setTimeout(M.encourage, 250); $v('.vk-msg').textContent = 'Escucha cómo se dice y léela otra vez, despacio.'; if (k.aau) setTimeout(() => play(k.aau), 900); $v('.vk-next').hidden = false; }
           };
         });
         if (r.ok) { c++; if (!r.late) { streak++; pts += (r.hinted ? 50 : 100) * Math.min(3, streak); } else streak = 0; } else streak = 0;
@@ -1385,7 +1385,8 @@
           const fj = M.freeJudge(it.q, it.m, [txt]); const me = $('.wr-me', body); me.textContent = end(cap(txt)); me.classList.remove('hidden');
           if (fj.ok) return verdict(2, txt, '¡Perfecto! +10', 'Respuesta clara y bien escrita.', '');
           if (fj.fix) return verdict(1, txt, '¡Casi! +5', 'Se entiende. Mejor así:', esc(end(cap(fj.fix))));
-          if (tries < 1) { tries++; me.classList.add('hidden'); show('no', 'Intenta otra vez', 'Lee bien el mensaje y responde con una frase.', ''); sfx('bad'); M.encourage(); ta.focus(); return; }
+          { const gf = M.grammarFix(txt); if (M.words(txt).length >= 3 && !esLike(txt) && !fj.rep) return gf ? verdict(1, txt, '¡Casi! +5', 'Se entiende. Mejor así:', esc(end(cap(gf)))) : verdict(2, txt, '¡Muy bien! +10', 'Respuesta clara. Otra forma de decirlo:', esc(it.m)); } /* v460: nunca se rechaza una respuesta libre en inglés */
+          if (tries < 1) { tries++; me.classList.add('hidden'); show('no', 'Escribe una frase completa', 'Responde el mensaje con una frase en inglés.', ''); sfx('bad'); ta.focus(); return; }
           return verdict(0, txt, 'Sigue practicando', 'Una respuesta posible:', esc(it.m));
         }
         const full = end(String(it.s).trim() + ' ' + txt.replace(/^\s*\.\.\.\s*/, '')); const gf = M.grammarFix(full);
@@ -1480,25 +1481,27 @@
     const missed = []; run.res.forEach(r => (r.missed || []).forEach(m => { if (m.en && !missed.find(x => x.en === m.en)) missed.push(m); }));
     const nx = M.nextPart(p);
     const AG = M.ageGroup();
-    const head = AG === 'kids' ? '¡Misión cumplida!' : pct >= 90 ? '¡Lección perfecta! 🏆' : pct >= 70 ? '¡Muy buen trabajo! 💪' : '¡Lección completada! 👏';
-    const advice = pct >= 90 ? `¡Lo hiciste increíble, ${esc(S.name.split(' ')[0])}! Ya dominas este tema. Sigue con la próxima lección.` : pct >= 70 ? 'Vas muy bien. Repasa las palabras que te costaron y pasa a la siguiente lección.' : 'Te recomendamos repetir esta lección mañana: la repetición es la clave para aprender. ¡Tú puedes!';
-    app.innerHTML = `<div class="player"><div class="card">
-      <div class="center"><h2 style="font-size:30px">${head}</h2><p class="muted">${esc(p._t.title)} · ${PL(p)}: ${esc(p.title)}</p>${revM ? `<p class="ce-revchip">🔁 Repasando: ${M.revCount()} de ${M.totalParts()} lecciones</p>` : ''}</div>
-      <div class="res-stars">${[1, 2, 3].map(i => `<span style="${i <= stars ? '' : 'opacity:.2;filter:grayscale(1)'}">⭐</span>`).join('')}</div>
-      <div class="stats"><div class="stat"><b>${pct}%</b><small>Precisión</small></div><div class="stat"><b>+${run.xp + bonus}</b><small>Puntos ganados ⚡</small></div><div class="stat"><b>${c}/${t}</b><small>Respuestas</small></div></div>
-      ${ageClose(p, nx, AG, run.xp + bonus)}
-      <h3 style="margin:18px 0 8px">📊 Tus 4 habilidades en esta lección</h3>
-      <div class="skills" style="margin-top:0">${SKILLS.map(([k, ic, nm]) => { const v = sk[k]; const pc = v && v[1] ? Math.round(v[0] / v[1] * 100) : null; return `<div class="skill"><div class="ic">${ic}</div><div class="nm">${nm}</div><div class="bar"><i style="width:${pc || 0}%"></i></div><small class="muted">${pc === null ? '—' : pc + '%'}</small></div>`; }).join('')}</div>
-      <div class="lesson"><h3>🧑‍🏫 Consejos del profe</h3><p>${advice}</p>
-        ${weakest && weakest[1][0] / weakest[1][1] < .9 ? `<div class="tipbox"><span>🎯</span><span><b>Para mejorar tu ${weakest[0]}:</b> ${SKILL_TIPS[weakest[0]]}</span></div>` : ''}
-        ${(p.tips || []).slice(0, 2).map(t => `<div class="tipbox"><span>🗣️</span><span>${t}</span></div>`).join('')}
-      </div>
-      ${missed.length ? `<h3 style="margin:18px 0 8px">🔁 Palabras para repasar</h3><div class="weak">${missed.slice(0, 12).map((m, i) => `<span>${esc(m.en)} ${m.au ? `<button class="aud sm" data-i="${i}">🔊</button>` : ''}</span>`).join('')}</div>` : ''}
-      <div class="row" style="margin-top:22px;justify-content:center">
-        <button class="btn w" id="again">🔁 Repetir lección</button>${window.MRAP && MRAP.get() ? '<a class="btn w" id="home" href="index.html" style="text-decoration:none">👤 Volver a mi perfil</a>' : '<button class="btn w" id="home">🏠 Inicio</button>'}
-        ${nx ? `<button class="btn k lg" id="next">Siguiente lección: ${esc(nx._t.title)} · ${PL(nx)} →</button>` : `<button class="btn k lg" id="fin">🏆 Examen final →</button>`}
-      </div></div></div>`;
-    $$('.weak button', app).forEach(b => b.onclick = () => play(missed[+b.dataset.i].au, { btn: b }));
+    /* v460 · resultados en una sola pantalla (todas las edades) */
+    const head = AG === 'kids' ? '¡Misión cumplida!' : pct >= 90 ? '¡Lección perfecta!' : pct >= 70 ? '¡Muy buen trabajo!' : '¡Lección completada!';
+    const I9 = n => window.MRI ? MRI(n) : '';
+    const STAR = (on) => `<svg viewBox="0 0 24 24" class="${on ? 'on' : ''}"><path d="M12 2.8l2.8 5.8 6.3.9-4.6 4.4 1.1 6.3L12 17.2l-5.6 3 1.1-6.3L2.9 9.5l6.3-.9z"/></svg>`;
+    const SKI = { listening: 'headphones', reading: 'book', speaking: 'mic', writing: 'pen' };
+    const TIP9 = { listening: 'Repasa Listening: escucha otra vez los audios de la lección.', reading: 'Repasa Reading: lee el texto en voz alta una vez más.', speaking: 'Repasa Speaking: escucha el modelo y repite en voz alta.', writing: 'Repasa Writing: escribe 2 frases con lo que aprendiste.' };
+    let extra = '';
+    if (AG === 'teens') { const n = Math.max(1, (S.streak && S.streak.n) || 1), WD = ['D', 'L', 'M', 'M', 'J', 'V', 'S'], d0 = new Date().getDay(); const days = Array.from({ length: 7 }, (_, k) => { const back = 6 - k; return `<i class="${back < n ? 'on' : ''}">${WD[(d0 - back + 70) % 7]}</i>`; }).join('');
+      extra = `<div class="r9-ex te"><span class="r9-ei">${I9('flame')}</span><div><b>Racha de ${n} día${n === 1 ? '' : 's'}</b>${nx ? `<small>Siguiente: ${esc(PL(nx))}${nx.topic !== p.topic ? ' · ' + esc(nx._t.title) : ''}</small>` : ''}</div><span class="r9-days">${days}</span></div>`; }
+    else if (AG === 'kids') { const T = M.D.topics, got = T.filter(t => t.parts.some(pp => S.parts[pp.id] && S.parts[pp.id].done)).length;
+      extra = `<div class="r9-ex ki"><span class="r9-ei">${I9('award')}</span><div><b>¡Sello del Tema ${p.topic}!</b><small>Mi álbum de sellos</small></div><span class="r9-al">${got}/${T.length}</span></div>`; }
+    else { const tip = pct >= 90 || !weakest || weakest[1][0] / weakest[1][1] >= .9 ? '¡Excelente! Ya dominas este tema.' : TIP9[weakest[0]] || ''; if (tip) extra = `<div class="r9-ex ad"><span class="r9-ei">${I9('bulb')}</span><span>${tip}</span></div>`; }
+    app.innerHTML = `<div class="player r9p"><div class="r9 ${AG}">
+      <div class="r9-st">${[1, 2, 3].map(i => STAR(i <= stars)).join('')}</div>
+      <h2>${head}</h2><p class="r9-les">${esc(p._t.title)} · ${PL(p)}${revM ? ` · Repasando ${M.revCount()} de ${M.totalParts()}` : ''}</p>
+      <div class="r9-stats"><div><b>${pct}%</b><small>Precisión</small></div><div><b>+${run.xp + bonus}</b><small>Puntos</small></div><div><b>${c}/${t}</b><small>Respuestas</small></div></div>
+      <div class="r9-sk">${SKILLS.map(([k, , nm]) => { const v = sk[k]; const pc = v && v[1] ? Math.round(v[0] / v[1] * 100) : null; return `<div>${I9(SKI[k])}<span>${nm}</span><i style="--w:${pc || 0}%"></i><em>${pc === null ? '—' : pc + '%'}</em></div>`; }).join('')}</div>
+      ${extra}
+      ${nx ? `<button class="r9-go" id="next">Siguiente lección →</button>` : `<button class="r9-go" id="fin">Examen final →</button>`}
+      <div class="r9-lk"><button type="button" id="again">Repetir</button>${window.MRAP && MRAP.get() ? '<a id="home" href="index.html">Mi perfil</a>' : '<button type="button" id="home">Inicio</button>'}</div>
+    </div></div>`;
     wellDone(AG, stars, run.xp + bonus); // v417: también adultos // 🎉 v415: "Well done!" con confeti al terminar (kids y teens)
     $('#again').onclick = () => route('class', p.id); if ($('#home').tagName === 'BUTTON') $('#home').onclick = () => route('home');
     if ($('#next')) $('#next').onclick = () => M.isUnlocked(nx.topic) ? route('class', nx.id) : (route('home'), lockGate(nx.topic));

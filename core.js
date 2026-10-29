@@ -465,7 +465,7 @@
       const m = /^(yes|no|yeah|nope|sure)\b/i.test(String((alts || [])[0] || '').trim()) && /^\s*(can|could|will|would|do|does)\b/i.test(String(q || '')) ? null : String(q || '').match(/\bspell\s+["“'‘]?([A-Za-z]{2,})["”'’]?/i);
       if (m && /^(your|my|his|her|their)$/i.test(m[1])) { const t = String((alts || [])[0] || '').toLowerCase().replace(/double\s*(u|you)/g, ' w ').replace(/[-,.]/g, ' ').split(/\s+/).filter(Boolean); const L = t.filter(x => x.length === 1 || ['jay', 'kay', 'bee', 'cee', 'dee', 'gee', 'pee', 'tee', 'vee', 'zee', 'zed', 'oh', 'ex', 'el', 'em', 'en', 'es', 'ar', 'wye', 'aitch', 'cue'].includes(x)).length; if (L >= 2 && L >= t.length / 2) return { ok: true, heard: (alts || [])[0] || '', fix: null, rep: false, off: false }; } // su propio nombre: basta con que deletree
       if (m && !/^(your|my|his|her|their|it|that|this|the)$/i.test(m[1])) { const W = m[1].toLowerCase(); let best = '', heard0 = (alts && alts[0]) || '';
-        for (const alt of (alts || [])) { const t = String(alt).toLowerCase().replace(/double\s*(u|you)/g, ' w ').replace(/[-,.]/g, ' ').split(/\s+/).filter(Boolean); const L = t.map(x => asLetter(x) || (x.length > 1 && x === W ? x : '')).join(''); if (L === W) return { ok: true, heard: alt, fix: null, rep: false, off: false }; if (L.length > best.length) { best = L; heard0 = alt; } }
+        for (const alt of (alts || [])) { const t = String(alt).toLowerCase().replace(/double\s*(u|you)/g, ' w ').replace(/[-,.]/g, ' ').split(/\s+/).filter(Boolean); const L = t.map(x => asLetter(x) || (x.length > 1 && x === W ? x : '')).join(''), L2 = t.map(x => x.length === 1 ? x : '').join(''); if (L === W || L2 === W) return { ok: true, heard: alt, fix: null, rep: false, off: false }; if (L.length > best.length) { best = L; heard0 = alt; } }
         return { ok: false, heard: heard0, fix: W.toUpperCase().split('').join('-'), rep: false, off: false, spell: true }; }
     }
     const heard = (alts && alts[0]) || ''; const ws = words(heard); let fix = grammarFix(heard);
@@ -507,7 +507,7 @@
     } else {
       const sc = tgt ? speechScore(tgt, alts).score : 0; const pool = new Set(cw((q || '') + ' ' + (tgt || '')));
       const share = cw(heard).some(w => pool.has(w));
-      ok = sc >= 55 || (share && (hasS || ws.length <= 3)) || (hasS && !otherS && ws.length >= 3 && share);
+      ok = sc >= 55 || (share && (hasS || ws.length <= 3)) || (share && !otherS && ws.length >= 2); /* v460: no exige "I/my" si la respuesta usa las palabras de la pregunta ("There are no windows") */
       // misma estructura que el modelo con su propia información (ej. "I'm Colombian" → "I am Peruvian"; "She's from Italy" → "She is from Brazil")
       if (!ok && tgt && hasS && !otherS) { const tw = words(String(tgt).replace(/_+/g, ' ')), qw = new Set(words(q || '')); const frame = tw.filter(w => FW.has(w) || qw.has(w) || ['from', 'years', 'old', 'is', 'am', 'are', 'name', 'like', 'have', 'live', 'work'].includes(w)); const FILL = ['fine', 'good', 'okay', 'ok', 'great', 'thanks', 'thank', 'well', 'bad', 'so', 'very', 'hello', 'hi', 'yes', 'no']; const extra = ws.filter(w => !frame.includes(w) && w.length > 1 && !FILL.includes(w));
         if (frame.length && frame.every(w => ws.includes(w)) && extra.length) ok = true; }
@@ -518,6 +518,17 @@
     let rep = false; if (ok && q && words(q).length >= 3 && speechScore(q, alts).score >= 80 && (!tgt || speechScore(tgt, alts).score < 60)) { ok = false; rep = true; off = false; }
     if (ok && fix) return { ok: false, heard, fix, rep: false, off: false, gram: true }; // v444: gramática mala → no pasa, se muestra cómo se dice
     return { ok, heard, fix: ok ? fix : null, rep, off };
+  }
+  /* v460 · LEER LA RESPUESTA: el estudiante lee en voz alta la respuesta modelo y se revisa la pronunciación.
+     Si dice su propia respuesta y es correcta, también vale (nunca se castiga una respuesta buena). */
+  function readJudge(q, tgt, alts) {
+    const heard = (alts && alts[0]) || ''; if (!heard) return { ok: false, heard, score: 0 };
+    const blank = /_{2,}/.test(tgt || ''), clean = String(tgt || '').replace(/_{2,}/g, ' ').replace(/\s+/g, ' ').trim();
+    const sc = clean ? speechScore(clean, alts).score : 0;
+    if (sc >= (blank ? 45 : 55)) return { ok: true, heard, score: sc, read: true };
+    let fj = null; try { fj = freeJudge(q, tgt, alts); } catch (e) { }
+    if (fj && fj.ok) return { ok: true, heard, score: sc, own: true, fix: fj.fix || null };
+    return { ok: false, heard, score: sc };
   }
   // tarjeta de resultado de voz: SIEMPRE dice si estuvo bien o mal y deja intentar otra vez
   function voiceResult(box, { score, heard, url, model, onRetry, pass = 70 }) {
@@ -675,5 +686,5 @@
     const st = S.stop, ab = S.abort; S.stop = function () { o(); return st.apply(S, arguments); }; S.abort = function () { o(); return ab.apply(S, arguments); }; return S; };
   window.M1 = { face, D, C, MOD, S, $, $$, h, esc, shuffle, sample, sleep, save, touchStreak, addSkill, addWeak, okWeak, skillPct, isUnlocked, finalUnlocked, paceDate, weakParts, reviewMode, revCount, PTS_TIP, hasAccess, progressOpen, lockReason, review, hasProfile, doneCount, totalParts, redeem, codeHash,
     allParts, partById, trackAudio, audioUI, floatStop, recordScore: recordScoreW, letterScorer, voiceResult, floatBubble, setBubbleHidden, prevPart, nextPart, partStars, overallPct, imgURL, photo, play, playSeq, loadAudio, stop, sfx, praise, encourage, ageGroup, brand, fbf, canSR, IOS, MOBILE, listen: listenW, srSession: srSessionW, recordVoice: recordVoiceW,
-    norm, words, lev, speechScore, audBusy, freeJudge, grammarFix, sheet, good, bad, toast, modal, xpFly, confetti, mascot, audioSrc };
+    norm, words, lev, speechScore, audBusy, freeJudge, readJudge, grammarFix, sheet, good, bad, toast, modal, xpFly, confetti, mascot, audioSrc };
 })();

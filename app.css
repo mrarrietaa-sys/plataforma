@@ -7541,3 +7541,35 @@ textarea.wr-in:focus{border-color:#0B2A5B}textarea.wr-in.ro{background:#f6f8fb;c
 .mv-end p{font-size:18px;color:#0B2A5B;margin:12px 0 4px}.mv-end small{color:#6b7a92;font-size:13px}
 @media (max-width:420px){.mv-bq b{font-size:17px}.mv-o{font-size:15px;padding:11px 12px}.mv-pr{min-width:150px}}
 .mv.rec .mv-mic:disabled{opacity:1}
+.mv-av.ic{display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,#1d4ed8,#0B2A5B)}.mv-av.ic .mri{width:20px;height:20px}
+.player .phead .prog i{background:#E3242B}body.ag-kids .player .phead .prog i{background:#f59e0b}body.ag-teens .player .phead .prog i{background:#22e58a}
+/* v460 · Videollamada: el estudiante lee la respuesta modelo */
+.vk2 .vk-guide.vk-read{display:block;flex:0 0 100%;background:#fff8e6;border:1px dashed #e9b949;border-radius:12px;padding:9px 12px;margin-top:10px;color:#5c4300;font-size:15px;line-height:1.35}
+.vk2 .vk-guide.vk-read small{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#a07c1c;margin-bottom:2px}
+.vk2 .vk-guide.vk-read b{font-size:17px;color:#3d2c00}.vk2 .vk-guide.vk-read u{text-decoration:none;border-bottom:2px solid #E3242B;padding:0 6px}
+.vk2 .vk-guide.vk-read em{display:block;font-style:normal;font-size:12.5px;color:#7a6020;margin-top:3px}
+/* v460 · Examen final: bienvenida corta en una sola pantalla */
+.fx9w{padding:18px 18px 20px!important}.fx9w .ex-cover{margin:0 0 12px}.fx9w .ex-cimg{aspect-ratio:12/4.2;max-height:200px}.fx9w .ex-cimg img{width:100%;height:100%;object-fit:cover}
+.fx9-t{font-size:clamp(22px,5vw,30px)!important;margin:4px 0 10px!important;line-height:1.15}
+.fx9w .ex-skills{margin-bottom:12px}
+.fx9-ul{list-style:none;padding:0;margin:0 auto 16px;max-width:420px;text-align:left;display:flex;flex-direction:column;gap:8px}
+.fx9-ul li{display:flex;align-items:center;gap:10px;font-size:15px;color:#33476a;background:#f6f8fb;border-radius:12px;padding:9px 12px}.fx9-ul li .mri{width:18px;height:18px;flex:none;color:#0B2A5B}
+.fx9w{max-width:600px;margin-left:auto!important;margin-right:auto!important}.fx9w .ex-cimg{height:150px!important;max-height:none;aspect-ratio:auto!important}@media (max-width:620px){.fx9w .ex-cimg{height:120px!important}}.fx9w .fx9-ul li{padding:8px 12px}
+/* v460 · Resultados de la lección en una sola pantalla */
+.r9p{display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 130px);min-height:calc(100dvh - 130px);padding:10px 12px}
+.r9{width:100%;max-width:520px;background:#fff;border:1px solid #e3e8f0;border-radius:22px;padding:18px 18px 14px;text-align:center;box-shadow:0 10px 30px rgba(11,42,91,.08)}
+.r9-st{display:flex;justify-content:center;gap:6px;margin-bottom:4px}.r9-st svg{width:36px;height:36px;fill:#e8edf5;stroke:#d5dce7;stroke-width:1.2;stroke-linejoin:round}.r9-st svg.on{fill:#f5b301;stroke:#e09a00;animation:r9pop .45s ease backwards}.r9-st svg.on:nth-child(2){animation-delay:.12s}.r9-st svg.on:nth-child(3){animation-delay:.24s}
+@keyframes r9pop{from{transform:scale(.3);opacity:0}to{transform:none;opacity:1}}
+.r9 h2{font-family:Poppins,system-ui,sans-serif;font-weight:800;font-size:24px;color:#0B2A5B;margin:0;line-height:1.15}.r9-les{color:#6b7a92;font-size:13.5px;margin:3px 0 12px}
+.r9-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}.r9-stats div{background:#f6f8fb;border-radius:12px;padding:8px 4px}.r9-stats b{display:block;font-family:Poppins,system-ui,sans-serif;font-weight:800;font-size:19px;color:#0B2A5B}.r9-stats small{font-weight:600;font-size:11.5px;color:#6b7a92}
+.r9-sk{display:grid;grid-template-columns:1fr 1fr;gap:7px 16px;text-align:left;margin-bottom:12px}.r9-sk div{display:grid;grid-template-columns:16px 72px 1fr 36px;align-items:center;gap:7px;font-weight:600;font-size:12.5px;color:#33476a}.r9-sk .mri{width:16px;height:16px}
+.r9-sk i{height:6px;border-radius:6px;background:#e8edf5;position:relative;overflow:hidden}.r9-sk i:after{content:"";position:absolute;inset:0;width:var(--w);background:var(--c9,#0B2A5B);border-radius:6px}.r9-sk em{font-style:normal;text-align:right;font-size:12px}
+.r9.kids .r9-sk{--c9:#f59e0b}.r9.teens .r9-sk{--c9:#22c58a}
+.r9-ex{display:flex;align-items:center;gap:10px;border-radius:14px;padding:9px 12px;margin-bottom:12px;text-align:left;font-size:13.5px;flex-wrap:wrap}.r9-ex b{display:block;font-size:14.5px}.r9-ex small{display:block;font-size:12.5px;opacity:.85}.r9-ei .mri{width:22px;height:22px}.r9-ex>div{flex:1;min-width:0}
+.r9-ex.ad{background:#f6f8fb;color:#33476a}.r9-ex.ad .r9-ei{color:#E3242B}.r9-ex.ad>span:last-child{flex:1}
+.r9-ex.te{background:#0B2A5B;color:#fff}.r9-ex.te .r9-ei{color:#22e58a}.r9-days{display:flex;gap:3px}.r9-days i{width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,.18);font:700 8.5px Inter,sans-serif;font-style:normal;display:grid;place-items:center}.r9-days i.on{background:#22e58a;color:#0B2A5B}
+.r9-ex.ki{background:#fff4e0;color:#7a4b00}.r9-ex.ki .r9-ei{color:#f59e0b}.r9-al{font-family:Poppins,system-ui,sans-serif;font-weight:800;font-size:16px;color:#f59e0b}
+.r9-go{display:block;width:100%;max-width:340px;margin:0 auto 8px;background:#0B2A5B;color:#fff;border:0;border-radius:13px;padding:13px;font-family:Poppins,system-ui,sans-serif;font-weight:700;font-size:15.5px;cursor:pointer;box-shadow:0 6px 16px rgba(11,42,91,.22)}
+.r9.kids .r9-go{background:#f59e0b;box-shadow:0 6px 16px rgba(245,158,11,.3)}.r9.teens .r9-go{background:#E3242B;box-shadow:0 6px 16px rgba(227,36,43,.3)}
+.r9-lk{display:flex;justify-content:center;gap:20px}.r9-lk button,.r9-lk a{background:none;border:0;font-weight:700;font-size:13.5px;color:#5a6b85;text-decoration:none;cursor:pointer;padding:6px}
+@media (max-width:480px){.r9-sk{grid-template-columns:1fr;gap:6px}.r9-sk div{grid-template-columns:16px 70px 1fr 36px}.r9-days{width:100%;padding-left:32px}.r9{padding:16px 14px 12px}}

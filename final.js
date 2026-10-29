@@ -17,9 +17,9 @@
   const CFG = Object.assign({
     EMAILJS_PUBLIC_KEY: "F1fEtbt3ocfrt5V3C", EMAILJS_SERVICE_ID: "service_dxc9gsh", EMAILJS_TEMPLATE_ID: "template_oridazp",
     SHEETS_WEBAPP_URL: "https://script.google.com/macros/s/AKfycbzFUJ_xanGR-L1A14l7VUU-QeZoLBCpT1xIBjXWQXrqtLxEbpIp8ppgBoyMV1YwBX_-VQ/exec",
-    ADMIN_EMAIL: "mrarrietaa@gmail.com", TIME_MIN: 30, ATTEMPTS: 2, PER_SKILL: 6,
+    ADMIN_EMAIL: "mrarrietaa@gmail.com", TIME_MIN: 15, ATTEMPTS: 2, PER_SKILL: 3,
   }, C.EXAM || {});
-  if (M.MOD.course) { CFG.TIME_MIN = 40; CFG.PER_SKILL = 8; } // examen final del curso: 32 preguntas · 40 min
+  if (M.MOD.course) { CFG.TIME_MIN = 20; CFG.PER_SKILL = 4; } // v460: examen final del curso: 16 preguntas · 20 min (módulos: 12 preguntas · 15 min)
   // ⚡ examen más corto: de cada habilidad se toman preguntas repartidas en todos los temas (siempre las mismas, para poder continuar si recarga)
   EX.sections.forEach(sec => { const L = sec.items, n = CFG.PER_SKILL; if (L.length <= n) return; const pick = []; for (let i = 0; i < n; i++) pick.push(L[Math.round(i * (L.length - 1) / (n - 1))]); sec.items = pick; });
   const LIMIT = CFG.TIME_MIN * 60 * 1000;
@@ -86,8 +86,8 @@
   async function run(appEl, context) {
     app = appEl; ctx = context; ST = Object.assign({ attempts: 0, extra: 0, used: [], prog: null }, load());
     answers = new Array(N).fill(null); cur = 0; fixMode = false; timedOut = false;
-    first = S.examFirst || (S.name || '').split(' ')[0] || ''; last = S.examLast || (S.name || '').split(' ').slice(1).join(' ');
-    temail = S.examTeacherEmail || '';
+    { const PF = (window.MRAP && MRAP.get && MRAP.get()) || {}; first = PF.first || S.examFirst || (S.name || '').split(' ')[0] || ''; last = PF.last || S.examLast || (S.name || '').split(' ').slice(1).join(' '); } /* v460: los datos ya están en la inscripción */
+    temail = ''; /* v460: los estudiantes no tienen profe fijo */
     // evaluación docente obligatoria antes del examen final de módulo (Premium con nube)
     if (needEval()) return evaluation();
     if (ST.attempts >= maxAttempts()) return locked();
@@ -101,18 +101,15 @@
     ST.seenExtra = g; ST.reqPending = 0; persist(); setTimeout(() => sfx('win'), 300);
     return '<div class="ex-ok">✅ Administración te habilitó un intento adicional</div>';
   }
-  function welcome() {
-    const cv = COVERS[EXAM_ID] || COVERS.A1;
-    shell(`${top()}<div class="card center fx-welcome">${extraNotice()}
-      <figure class="ex-cover"><div class="ex-cimg"><img src="https://images.unsplash.com/${cv[0]}?w=1200&h=600&fit=crop&crop=entropy&q=80&auto=format" alt="${esc(cv[1])}" onerror="this.style.opacity=0"><span class="ex-cbadge">${MOD.course ? '🏆 A1 → B2+' : esc(MOD.id)}</span></div><figcaption>${esc(cv[1])}</figcaption></figure>
-      <div class="ex-skills">${EX.sections.map(s => `<span><b>${s.items.length}</b> ${s.icon} ${esc(s.label)}</span>`).join('')}</div>
-      <span class="lbl" style="margin-top:6px">✦ Examen final interactivo</span>
-      <h1 style="font-size:clamp(26px,5.5vw,34px);margin:10px 0 4px">${MOD.course ? '🏆 Examen final del curso' : 'Examen final · ' + MOD.es}</h1>
-      <p style="font-weight:800;margin:0">Listening + Reading + Writing + Speaking</p>
-      <p class="muted" style="margin:4px 0 12px">${MOD.course ? `${N} preguntas — Evaluación de toda tu ruta de aprendizaje: A1 → A2 → B1 → B2+` : `Nivel ${MOD.levelEs} — Evaluación de los ${MOD.topics} temas del ${MOD.es}`}</p>
-      <div class="fx-info">${M.mascot('fx-wmra', 'point')}<div>Vas a completar ${MOD.course ? 'el <b>examen final del curso</b>: al aprobarlo recibes el certificado de tu ruta completa' : 'el examen final del ' + MOD.es}. Primero te pediremos algunos datos, luego verás las instrucciones y comenzarás con la sección de <b>Listening</b>.<br><span class="muted">⏱ ${CFG.TIME_MIN} minutos · ${CFG.ATTEMPTS} intentos ${ST.attempts ? `· Ya usaste <b>${ST.attempts}</b> de ${maxAttempts()}` : ''}</span></div></div>
-      <button class="btn k lg" id="go">Continuar →</button></div>`);
-    wireExit(); $('#go').onclick = studentInfo;
+  function welcome() { /* v460: una sola pantalla corta (sin datos ni correo del profesor) */
+    const cv = COVERS[EXAM_ID] || COVERS.A1, I = n => window.MRI ? MRI(n) : '';
+    shell(`${top()}<div class="card center fx-welcome fx9w">${extraNotice()}
+      <figure class="ex-cover"><div class="ex-cimg"><img src="https://images.unsplash.com/${cv[0]}?w=1200&h=500&fit=crop&crop=entropy&q=80&auto=format" alt="${esc(cv[1])}" onerror="this.style.opacity=0"><span class="ex-cbadge">${MOD.course ? 'A1 → B2+' : esc(MOD.id)}</span></div></figure>
+      <h1 class="fx9-t">${MOD.course ? 'Examen final del curso' : 'Examen final · ' + MOD.es}</h1>
+      <div class="ex-skills">${EX.sections.map(s => `<span><b>${s.items.length}</b> ${esc(s.label)}</span>`).join('')}</div>
+      <ul class="fx9-ul"><li>${I('clock')}<span><b>${N} preguntas · ${CFG.TIME_MIN} minutos</b></span></li><li>${I('check')}<span>Ves al instante si acertaste</span></li><li>${I('award')}<span>Apruebas con <b>${(C.PASS_SCORE / 10).toFixed(1)}</b> y recibes tu certificado</span></li><li>${I('repeat')}<span>${CFG.ATTEMPTS} intentos${ST.attempts ? ` · usaste ${ST.attempts}` : ''} · tu avance se guarda solo</span></li></ul>
+      <button class="btn k lg" id="go">Comenzar examen</button></div>`);
+    wireExit(); $('#go').onclick = async () => { const b = $('#go'); b.disabled = true; b.textContent = 'Cargando…'; await M.loadAudio([MOD.examAudio || 'exam', MA_GROUP].filter(Boolean)); answers = new Array(N).fill(null); startedAt = Date.now(); saveProg(); startTimer(); go(0, false); };
   }
   function resume(p, done) {
     shell(`${top()}<div class="card center">${M.mascot('mascot', 'watch')}<h2>💾 Tienes un examen en progreso</h2>
@@ -323,7 +320,7 @@
       <p class="muted">${esc(r.name)} — ${MOD.es} · ${MOD.level} — ${esc(r.attemptLabel)}</p>
       <div class="fx-bars">${Object.keys(r.per).map(k => `<div><span>${EX.sections.find(s => s.key === k).icon} ${NAMES[k]}</span><div class="bar"><i style="width:${r.per[k].score * 10}%"></i></div><b>${r.per[k].score.toFixed(1)}</b></div>`).join('')}</div>
       <div class="fx-comment">${r.timedOut ? `<b>⏱ Se acabó el tiempo (${CFG.TIME_MIN} minutos).</b> Tu examen se envió automáticamente con las respuestas que tenías.<br><br>` : ''}<b>Comentario:</b> ${esc(comment(r.per, r.b))}</div>
-      <div class="fx-notify">${cloud() ? '<div id="n0" class="pending">⏳ Avisando a tu profe y a administración…</div>' : ''}<div id="n1" class="pending">⏳ Guardando resultados…</div><div id="n2" class="pending">⏳ Enviando correo al profesor…</div><div id="n3" class="pending">⏳ Enviando copia a administración…</div></div>
+      <div class="fx-notify">${cloud() ? '<div id="n0" class="pending">⏳ Avisando a administración…</div>' : ''}<div id="n1" class="pending">⏳ Guardando resultados…</div>${r.temail ? '<div id="n2" class="pending">⏳ Enviando correo al profesor…</div>' : ''}<div id="n3" class="pending">⏳ Enviando copia a administración…</div></div>
       <div class="row" style="justify-content:center;margin-top:14px">${r.passed ? '<button class="btn k lg" id="cert">🎓 Ver mi certificado</button>' : ''}
         <button class="btn w" id="pdf">📄 Descargar reporte PDF</button><button class="btn w" id="cp">📋 Copiar resumen</button>
         ${!r.passed && left > 0 ? `<button class="btn k" id="again">🔁 Intentar de nuevo (te queda${left > 1 ? 'n' : ''} ${left})</button>` : ''}
@@ -348,7 +345,7 @@
     // 0) ☁️ plataforma: el profe y administración reciben el resultado como notificación
     if (cloud()) {
       MRAC.examResult({ exam: EXAM_ID, attempt: r.attemptLabel, listening: params.listening_score, reading: params.reading_score, writing: params.writing_score, speaking: params.speaking_score, final: params.final_score, passed: !!r.passed })
-        .then(x => setN('n0', !!(x && x.ok), x && x.ok ? '✓ Tu profe y administración recibieron tu resultado en la plataforma' : '✗ No se pudo avisar en la plataforma (revisa tu conexión).'))
+        .then(x => setN('n0', !!(x && x.ok), x && x.ok ? '✓ Administración recibió tu resultado en la plataforma' : '✗ No se pudo avisar en la plataforma (revisa tu conexión).'))
         .catch(() => setN('n0', false, '✗ No se pudo avisar en la plataforma (sin conexión).'));
     }
     // 1) panel del profesor (Google Sheets)
@@ -360,8 +357,7 @@
     const ok = await loadScript('https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js', () => !!window.emailjs);
     if (ok) { try { emailjs.init({ publicKey: CFG.EMAILJS_PUBLIC_KEY }); } catch (e) { } }
     const send = async (to) => { if (!ok) return false; try { await (window.MRMAILX ? emailjs.send(CFG.EMAILJS_SERVICE_ID, window.MRMAIL_TEMPLATE, Object.assign({ to_email: to }, window.MRMAILX(params))) : emailjs.send(CFG.EMAILJS_SERVICE_ID, CFG.EMAILJS_TEMPLATE_ID, Object.assign({ to_email: to }, params))); return true; } catch (e) { return false; } };
-    setN('n2', await send(r.temail), '');
-    const e2 = $('#n2'); if (e2) e2.textContent = e2.className === 'ok' ? `✓ Correo enviado al profesor (${r.temail}).` : '✗ No se pudo enviar el correo al profesor. Usa “Copiar resumen”.';
+    if (r.temail) { setN('n2', await send(r.temail), ''); const e2 = $('#n2'); if (e2) e2.textContent = e2.className === 'ok' ? `✓ Correo enviado al profesor (${r.temail}).` : '✗ No se pudo enviar el correo al profesor. Usa “Copiar resumen”.'; } else { const e2 = $('#n2'); if (e2) e2.remove(); } /* v460: sin profe fijo */
     setN('n3', await send(CFG.ADMIN_EMAIL), ''); const e3 = $('#n3'); if (e3) e3.textContent = e3.className === 'ok' ? '✓ Copia enviada a administración.' : '✗ No se pudo enviar la copia a administración.';
   }
   function summaryText(r) { return `📋 Examen final — ${MOD.es} (${MOD.id === 'B2' ? 'B1' : MOD.id}) · mrarrieta.com\n👤 ${r.name}\n📅 ${r.date.toLocaleString()}\n🔁 ${r.attemptLabel}\n🎧 Listening: ${r.per.listening.score.toFixed(1)}\n📖 Reading: ${r.per.reading.score.toFixed(1)}\n✍️ Writing: ${r.per.writing.score.toFixed(1)}\n🎤 Speaking: ${r.per.speaking.score.toFixed(1)}\n⭐ Nota final: ${r.fin.toFixed(1)} / 10 — ${r.passed ? 'APROBADO' : 'NO APROBADO'}\n💬 ${comment(r.per, r.b)}`; }
