@@ -7590,3 +7590,21 @@ textarea.wr-in:focus{border-color:#0B2A5B}textarea.wr-in.ro{background:#f6f8fb;c
 .gs-go{display:block;width:100%;max-width:340px;margin:16px auto 0;border:0;border-radius:14px;padding:14px;font-family:Poppins,system-ui,sans-serif;font-weight:700;font-size:16px;color:#fff;background:#0B2A5B;cursor:pointer;transition:opacity .3s}.gs-go:disabled{opacity:.35;cursor:default}
 .gs.kids .gs-l{color:#d97706}.gs.kids .gs-go{background:#f59e0b}.gs.teens .gs-go{background:#E3242B}
 body.ag-teens .gs-k{color:#9fb4d6}
+/* v463 · Mini lección: regla corta + error tachado + frases correctas con audio */
+.ml10{--ac:#E3242B;--acs:#fdecec;background:#fff;border:1px solid #e3e8f0;border-radius:18px;padding:14px;margin:0 0 14px;text-align:left}
+body.ag-teens .ml10{--ac:#16a874;--acs:#e3f8ef}body.ag-kids .ml10{--ac:#e08a00;--acs:#fff1d6}
+.ml10-h{display:flex;align-items:center;gap:8px;margin-bottom:10px}.ml10-ic{width:30px;height:30px;border-radius:9px;background:var(--acs);color:var(--ac);display:grid;place-items:center;flex:none}.ml10-ic .mri{width:16px;height:16px}
+.ml10-h b{flex:1;font-weight:700;font-size:11px;letter-spacing:.12em;color:#8593a8;text-transform:uppercase}
+.ml10-au{display:inline-flex;align-items:center;gap:6px;border:0;border-radius:20px;padding:6px 11px;background:var(--acs);color:var(--ac);font:700 12.5px Inter,system-ui,sans-serif;cursor:pointer}.ml10-au .mri{width:14px;height:14px}
+.ml10-s.in{animation:wrIn .3s ease}
+.ml10-r{font-family:Poppins,system-ui,sans-serif;font-weight:700;font-size:17px;line-height:1.3;color:#0B2A5B;margin-bottom:10px}.ml10-r em,.ml10-n em{font-style:normal;color:var(--ac);font-weight:800}
+.ml10-c{display:flex;flex-direction:column;gap:6px}
+.ml10-no,.ml10-ok{display:flex;align-items:center;gap:9px;border-radius:11px;padding:9px 10px;font-weight:600;font-size:15px;text-align:left;width:100%;border:0;font-family:Inter,system-ui,sans-serif}
+.ml10-no svg,.ml10-ok svg{width:18px;height:18px;flex:none}
+.ml10-no{background:#fff1f1;color:#b3191f}.ml10-no span{text-decoration:line-through;text-decoration-thickness:1.5px}
+.ml10-ok{background:#eefaf3;color:#127a43;cursor:pointer}.ml10-ok span{flex:1}.ml10-ok i{width:28px;height:28px;border-radius:50%;background:#fff;display:grid;place-items:center;flex:none}.ml10-ok i .mri{width:14px;height:14px}.ml10-ok.playing i{background:#127a43;color:#fff}
+.ml10-n{font-size:13px;color:#6b7a92;margin-top:8px}
+.ml10-f{display:flex;align-items:center;gap:8px;margin-top:12px}.ml10-d{display:flex;gap:4px;flex:1}.ml10-d i{width:12px;height:5px;border-radius:5px;background:#e1e7f0}.ml10-d i.ok{background:#c9d3e2}.ml10-d i.on{background:var(--ac);width:20px}
+.ml10-p,.ml10-x{border:0;border-radius:11px;padding:9px 13px;font-family:Poppins,system-ui,sans-serif;font-weight:700;font-size:13px;cursor:pointer;flex:none}.ml10-p{background:#f1f4f9;color:#5a6b85}.ml10-p:disabled{opacity:.5;cursor:default}.ml10-x{background:#0B2A5B;color:#fff}
+body.ag-kids .ml10-x{background:#f59e0b}body.ag-teens .ml10-x{background:#E3242B}
+.ml10.done{opacity:.85}

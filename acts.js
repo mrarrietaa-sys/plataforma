@@ -6,6 +6,26 @@
   const { $, $$, h, esc, shuffle, sample, sleep, photo, play, stop, sfx, sheet, good, bad, praise } = M;
 
   /* ---------- shared bits ---------- */
+  function ml10(p, onDone) {
+    const ML10 = window.MRML10 && MRML10[(+M.MOD.n || 1) + '-' + p.id]; const ML10S = ML10 && (ML10[M.ageGroup()] || ML10.adult);
+    if (!(ML10S && ML10S.length)) return null; { /* v463 · mini lección nueva: regla en una línea + error tachado + frases correctas con audio */
+      const I = (n) => window.MRI ? MRI(n) : '', em = (t) => esc(t).replace(/\*([^*]+)\*/g, '<em>$1</em>');
+      const XI = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></svg>', OKI = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg>';
+      M.loadAudio(['ml' + (+M.MOD.n || 1) + '_' + p.topic]).catch(() => { });
+      let si = 0; const N = ML10S.length;
+      const ml = h(`<div class="ml10"><div class="ml10-h"><span class="ml10-ic">${I('bulb')}</span><b>La regla</b><button type="button" class="ml10-au">${I('vol')}Escuchar</button></div><div class="ml10-s"></div>
+        <div class="ml10-f"><span class="ml10-d">${ML10S.map(() => '<i></i>').join('')}</span><button type="button" class="ml10-p">Atrás</button><button type="button" class="ml10-x">Siguiente</button></div></div>`);
+      const draw = () => { const x = ML10S[si]; const box = $('.ml10-s', ml);
+        box.innerHTML = `<div class="ml10-r">${em(x.r)}</div><div class="ml10-c">${x.no ? `<div class="ml10-no">${XI}<span>${esc(x.no)}</span></div>` : ''}${x.ok.map((y, j) => `<button type="button" class="ml10-ok" data-j="${j}">${OKI}<span>${esc(y[0])}</span><i>${I('vol')}</i></button>`).join('')}</div>${x.n ? `<div class="ml10-n">${em(x.n)}</div>` : ''}`;
+        box.classList.remove('in'); void box.offsetWidth; box.classList.add('in');
+        $$('.ml10-ok', box).forEach(b => b.onclick = () => { stop(); const y = x.ok[+b.dataset.j]; if (y && y[1]) play(y[1], { btn: b }); });
+        $$('.ml10-d i', ml).forEach((d, j) => d.className = j < si ? 'ok' : j === si ? 'on' : ''); $('.ml10-p', ml).disabled = !si; $('.ml10-x', ml).textContent = si < N - 1 ? 'Siguiente' : 'A practicar'; };
+      $('.ml10-au', ml).onclick = () => { stop(); const x = ML10S[si]; M.playSeq(x.ok.map(y => y[1]).filter(Boolean), 350); };
+      $('.ml10-p', ml).onclick = () => { if (si) { si--; draw(); } };
+      $('.ml10-x', ml).onclick = () => { sfx('tap'); if (si < N - 1) { si++; draw(); } else { ml.classList.add('done'); onDone && onDone(); } };
+      draw(); return ml;
+    }
+  }
   function head(stage, { lbl, title, ins, count }) {
     stage.innerHTML = `<div class="hd"><span class="lbl">${lbl}</span>${count ? `<span class="qcount">${count}</span>` : ''}</div>
       <h2>${title}</h2>${ins ? `<p class="ins">${ins}</p>` : ''}<div class="body"></div>`;
@@ -77,6 +97,9 @@
       hideF(); const done = k >= cards.length; b._i = done ? 0 : b._i; b._run = false; b.textContent = done ? '▶ Escuchar todo' : '▶ Continuar'; };
     // mini lesson + tips
     // v428: mini lección ARRIBA y dinámica (diapositivas con Mr. Arrieta), luego se practican las palabras
+    const ml10el = !o.noTip ? ml10(p, () => tools.scrollIntoView({ behavior: 'smooth', block: 'start' })) : null;
+    if (ml10el) { body.insertBefore(ml10el, tools);
+    } else
     if (!o.noTip && (p.tip || (p.tips && p.tips.length))) {
       const P = String(p.tip || '').split(/<\/p>/i).map(x => x.replace(/<p[^>]*>/gi, '').trim()).filter(x => x.replace(/<[^>]+>/g, '').trim().length > 2);
       for (let j = 0; j < P.length - 1; j++) if (/:\s*$/.test(P[j].replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').trim())) { P[j] = P[j] + '<br>' + P[j + 1]; P.splice(j + 1, 1); } // v438: «…estos pares:» va junto con su ejemplo
@@ -617,5 +640,5 @@
   }
   const speakWords = (stage, p) => speak(stage, p, { words: true, n: 5 });
 
-  window.M1A = { head, playBtn, slowBtn, waitNext, qloop, choose, feedback, typeQ, speakCard, learn, listenChoose, pickWord, typeWord, typeLetter, typeNumber, phone, spellName, typeSentence, fill, unscramble, memory, sort, crossword, speed, spell, plural, dialogue, speak, speakWords, result };
+  window.M1A = { ml10, head, playBtn, slowBtn, waitNext, qloop, choose, feedback, typeQ, speakCard, learn, listenChoose, pickWord, typeWord, typeLetter, typeNumber, phone, spellName, typeSentence, fill, unscramble, memory, sort, crossword, speed, spell, plural, dialogue, speak, speakWords, result };
 })();

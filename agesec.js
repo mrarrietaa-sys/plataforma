@@ -107,7 +107,9 @@
   /* =================== EXPLICACIÓN =================== */
   async function learn(stage, p) {
     const P = paras(p), F = (p.fill || []).filter(f => f && f.s && f.a && f.o && /_{2,}/.test(f.s));
-    if (P.length) { if (ag() === 'teens') await stories(stage, p, P); else await comic(stage, p, P); }
+    const mlEl = A().ml10 ? A().ml10(p) : null; /* v463: misma mini lección nueva (regla corta + error tachado + frases con audio) */
+    if (mlEl) { const body = frame(stage, 'Explanation', 'La regla de hoy', ''); body.appendChild(mlEl); sfx('flip'); await A().waitNext(stage, '¡Ya entendí!'); }
+    else if (P.length) { if (ag() === 'teens') await stories(stage, p, P); else await comic(stage, p, P); }
     let sc = null; if (F.length) sc = ag() === 'teens' ? await poll(stage, F.slice(0, 3)) : await stickers(stage, F.slice(0, 4));
     stage.classList.remove('as-stage', 'dk'); // v415: sin "Listen and repeat" repetido (las palabras ya se practicaron en el calentamiento y se dicen en la tarea oral)
     return sc && sc.n ? A().result(sc.c, sc.n, 'reading') : A().result(1, 1, 'reading');
