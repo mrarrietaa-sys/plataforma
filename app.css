@@ -7624,3 +7624,13 @@ body.ag-kids .ml10-x{background:#f59e0b}body.ag-teens .ml10-x{background:#E3242B
 .vk2 .vk-guide.vk-read{width:100%;box-sizing:border-box;text-align:center;margin:10px 0 0}
 .as-read{text-align:center}.as-read.ch{padding-left:46px}
 .as-ivb{text-align:center}.as-ivb .as-bw{margin-left:auto;margin-right:auto}
+/* v470 · misiones centradas (todas las edades) */
+.mv-stage .hd,.mv-stage h2{text-align:center}
+.mv-k{justify-content:center;text-align:center}
+.mv-pick .mv-in{flex-direction:column;align-items:center;gap:8px}
+.mv-pick .mv-bq{width:100%;box-sizing:border-box;text-align:center;padding:12px 48px}
+.mv-say{flex-direction:column;text-align:center;gap:10px;padding:16px 14px}
+.mv-say>div{flex:none;width:100%}
+.mv-say .mv-hear{flex-direction:row;gap:6px;padding:8px 14px}
+.mv-chat .mv-hd{justify-content:center;text-align:left}
+.mv-k{display:block}.mv-k .mri{display:inline-block;vertical-align:-3px;margin-right:5px}.mv-pick .mv-bq{border-radius:16px}.mv-say{gap:8px;padding:14px}.mv-say .mv-mic{width:52px;height:52px}
