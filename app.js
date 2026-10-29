@@ -42,7 +42,7 @@
   }
   function menu() {
     const m = M.modal(`<div class="mhead"><h3>☰ Menú</h3><button class="mclose" data-a="close" title="Cerrar">✕</button></div><div class="menu-stats"><span class="pill y">⚡ ${S.xp} puntos</span><span class="pill">🔥 ${S.streak.n || 0} días</span></div><p class="muted ce-ptsline">${esc(M.PTS_TIP)}</p><div class="mnu-g" style="display:grid;gap:10px;margin-top:10px">
-      ${window.MRAP && MRAP.get() ? '<a class="btn w block" style="text-decoration:none" href="index.html">👤 Mi perfil y mis módulos</a><a class="btn w block" style="text-decoration:none;margin-top:8px" href="juegos.html">🎮 Zona de juegos</a>' : ''}
+      ${window.MRAP && MRAP.get() ? '<a class="btn w block" style="text-decoration:none" href="index.html">👤 Mi perfil y mis módulos</a>' : ''}
       <button class="btn w block" data-a="home">🏠 Inicio</button>
       <button class="btn w block" data-a="progress">📊 Mi progreso</button>
       <button class="btn w block" data-a="chat">💬 Chat con mi profe</button>
@@ -208,7 +208,7 @@
         ${pendingBlock().replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}]/gu, '')}<div id="hwfb"></div>
         <div class="agr-sec"><h2>${kids ? 'Estaciones' : 'Temas'} del ${esc(M.MOD.es)}</h2><button class="agr-pr" id="prog">${MRI('target')}Mi progreso</button></div>
         <div class="agr-grid">${tp}</div>
-        <div class="agr-ft"><span class="agr-fti">${MRI('award')}</span><div><b>Final Test</b><small>${S.final && S.final.passed ? 'Aprobado · ' + (S.final.best / 10).toFixed(1) + ' / 10' : M.finalUnlocked() ? '24 preguntas · 30 minutos · 2 intentos' : `Se abre al terminar las ${totP} lecciones`}</small></div><button class="agr-ftb" id="final-b">${M.finalUnlocked() ? 'Presentar' : SVL + ' ' + M.doneCount() + '/' + totP}</button>${S.final && S.final.passed ? `<button class="agr-ftb" id="cert-b">${MRI('grad')}Certificado</button>` : ''}</div>
+        <div class="agr-ft"><span class="agr-fti">${MRI('award')}</span><div><b>Final Test</b><small>${S.final && S.final.passed ? 'Aprobado · ' + (S.final.best / 10).toFixed(1) + ' / 10' : M.finalUnlocked() ? (M.MOD.course ? '16 preguntas · 20 minutos' : '12 preguntas · 15 minutos') + ' · intentos ilimitados' : `Se abre al terminar las ${totP} lecciones`}</small></div><button class="agr-ftb" id="final-b">${M.finalUnlocked() ? 'Presentar' : SVL + ' ' + M.doneCount() + '/' + totP}</button>${S.final && S.final.passed ? `<button class="agr-ftb" id="cert-b">${MRI('grad')}Certificado</button>` : ''}</div>
       </div><nav class="agr-tab"><a ${pg('top')}>${MRI('compass')}<span>Inicio</span></a><a class="on" ${pg('learn')}>${MRI('book')}<span>Módulos</span></a>${MRAP.plan && MRAP.plan().premium ? `<a ${pg('cls')}>${MRI('video')}<span>Clases</span></a>` : ''}<a ${pg('me')}>${MRI('user')}<span>Cuenta</span></a></nav></div>`;
     $$('[data-pgo]', app).forEach(a => a.onclick = () => { try { sessionStorage.setItem('mra_pg', a.dataset.pgo); } catch (e) { } });
     $$('.agr-l', app).forEach(b => b.onclick = () => route('class', b.dataset.p));
@@ -246,7 +246,7 @@
       <div id="hwfb"></div>
       <div class="t2-sec"><h2>Temas del ${esc(M.MOD.es)}</h2><div class="t2-tabs" role="tablist"><button class="on" data-f="all">Todos</button><button data-f="cur">En curso</button><button data-f="done">Completados</button></div><div class="t2-acts"><button class="t2-pr" id="prog">${I('target')}Mi progreso</button>${M.hasProfile() ? '' : `<button class="t2-pr" id="code">${I('unlock')}Código de acceso</button>`}</div></div>
       <div class="t2-grid" id="tgrid"></div><p class="t2-empty hidden"></p>
-      <div class="t2-ft"><span class="t2-fti">${I('award')}</span><div class="t2-ftx"><b>Final Test</b><small>${S.final && S.final.passed ? 'Aprobado · ' + (S.final.best / 10).toFixed(1) + ' / 10' : M.finalUnlocked() ? `24 preguntas · 30 minutos · 2 intentos · apruebas con ${(C.PASS_SCORE / 10).toFixed(1)}` : `Se abre al terminar las ${totP} lecciones`}</small></div>${S.final && S.final.passed ? `<button class="t2-ftb w" id="cert-b">${I('grad')}Certificado</button>` : ''}<button class="t2-ftb" id="final-b">${M.finalUnlocked() ? 'Presentar' : SVL + ' ' + M.doneCount() + '/' + totP}</button></div>
+      <div class="t2-ft"><span class="t2-fti">${I('award')}</span><div class="t2-ftx"><b>Final Test</b><small>${S.final && S.final.passed ? 'Aprobado · ' + (S.final.best / 10).toFixed(1) + ' / 10' : M.finalUnlocked() ? `${M.MOD.course ? '16 preguntas · 20 minutos' : '12 preguntas · 15 minutos'} · intentos ilimitados · apruebas con ${(C.PASS_SCORE / 10).toFixed(1)}` : `Se abre al terminar las ${totP} lecciones`}</small></div>${S.final && S.final.passed ? `<button class="t2-ftb w" id="cert-b">${I('grad')}Certificado</button>` : ''}<button class="t2-ftb" id="final-b">${M.finalUnlocked() ? 'Presentar' : SVL + ' ' + M.doneCount() + '/' + totP}</button></div>
       <p class="center fx-foot" style="margin-top:22px;font-size:13.5px;grid-column:1/-1;font-weight:600">¡Aprende inglés HABLANDO!<br><a class="foot-wa" href="https://wa.me/${esc(C.WHATSAPP)}?text=${encodeURIComponent((window.MRNE || String)('¡Hola, mrarrieta.com! Soy ' + (S.name || 'estudiante') + '. Tengo una pregunta.'))}" target="_blank" rel="noopener">WhatsApp ${esc(C.WHATSAPP.replace(/^57/, '').replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3'))}</a></p>
     </div>`;
     const g = $('#tgrid');
@@ -383,7 +383,7 @@
     const f = dt.toLocaleDateString('es-CO', { weekday: 'long', day: 'numeric', month: 'long' });
     const m = M.modal(`<div class="center">${M.mascot('mascot', 'watch')}</div><h3 class="center">📅 Tu próximo tema se abre pronto</h3>
       <p class="center" style="font-size:17px"><b>Topic ${n} · ${esc(t ? t.title : '')}</b> se abre el <b>${esc(f)}</b>.</p>
-      <p class="center">Tu curso avanza paso a paso para que aprendas de verdad. Mientras tanto, repasa los temas que ya viste, practica en la zona de juegos y, si eres Premium, aprovecha tus clases individuales. 💪</p>
+      <p class="center">Tu curso avanza paso a paso para que aprendas de verdad. Mientras tanto, repasa los temas que ya viste y, si eres Premium, aprovecha tus clases individuales. 💪</p>
       <p class="center muted" style="font-size:14px">Te avisaremos por correo y en tu campanita 🔔 el día que se abra.</p>
       <button class="btn k block lg" id="cl">Entendido</button>`, { x: true });
     $('#cl', m).onclick = () => m.remove();
@@ -742,9 +742,9 @@
         const g = p.goal || { en: p.title, es: p.es };
         const can = G0 ? G0.can : g.es, PH = G0 ? G0.p : [];
         const VOL = window.MRI ? MRI('vol') : '';
-        stage.innerHTML = `<div class="gs ${AGg}"><span class="gs-k">Topic ${p.topic} · ${esc(p._t.title)} · ${esc(PL(p))}</span>
+        stage.innerHTML = `<div class="gs ${AGg}"><div class="gs-k"><b>${esc(p._t.title)}</b>Topic ${p.topic} · ${esc(PL(p))}</div>
           <div class="gs-card"><div class="gs-in"><span class="gs-l">Hoy vas a poder</span><div class="gs-can">${esc(can)}</div>${PH.length ? `<div class="gs-ps">${PH.map((x, i) => `<button type="button" class="gs-p" data-i="${i}"><b>${esc(x[0])}</b><span>${VOL}</span></button>`).join('')}</div>` : ''}</div>
-          <canvas class="gs-cv"></canvas><div class="gs-hint"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11V5a1.5 1.5 0 0 1 3 0v5m0-1a1.5 1.5 0 0 1 3 0v2m0-1a1.5 1.5 0 0 1 3 0v4a6 6 0 0 1-6 6h-1a6 6 0 0 1-5-2.7L3.6 14a1.5 1.5 0 0 1 2.4-1.8L9 15"/></svg><span>Raspa</span></div></div>
+          <canvas class="gs-cv"></canvas><div class="gs-hint"><span class="gs-seal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span><b>Tu meta de hoy</b><small>Raspa con el dedo para descubrirla</small></div></div>
           ${prev && !(S.parts[prev.id] && S.parts[prev.id].done) ? `<p class="gs-prev">Te recomendamos completar primero: ${esc(prev._t.title)} · ${PL(prev)}</p>` : ''}
           <button type="button" class="gs-go" disabled>Empezar</button></div>`;
         const card = $('.gs-card', stage), cv = $('.gs-cv', stage), hint = $('.gs-hint', stage), go = $('.gs-go', stage);
@@ -755,10 +755,10 @@
         const reveal = () => { if (doneF) return; doneF = true; cv.style.opacity = 0; hint.style.opacity = 0; setTimeout(() => cv.remove(), 450); card.classList.add('on'); go.disabled = false; try { if (!M.brand || !M.brand('ok')) sfx('ok'); } catch (e) { } try { if (S.vib !== false && navigator.vibrate) navigator.vibrate(30); } catch (e) { } setTimeout(() => playP(0), 650); };
         try {
           const r = card.getBoundingClientRect(), dpr = window.devicePixelRatio || 1; cv.width = Math.max(1, r.width * dpr); cv.height = Math.max(1, r.height * dpr); const x = cv.getContext('2d'); x.scale(dpr, dpr);
-          const C1 = { kids: ['#f59e0b', '#E3242B'], teens: ['#0b1a3a', '#1f7a5a'] }[AGg] || ['#0B2A5B', '#1d4ed8'];
-          const gr = x.createLinearGradient(0, 0, r.width, r.height); gr.addColorStop(0, C1[0]); gr.addColorStop(1, C1[1]); x.fillStyle = gr; x.fillRect(0, 0, r.width, r.height);
-          x.strokeStyle = 'rgba(255,255,255,.08)'; x.lineWidth = 10; for (let i = -r.height; i < r.width; i += 26) { x.beginPath(); x.moveTo(i, 0); x.lineTo(i + r.height, r.height); x.stroke(); }
-          x.fillStyle = 'rgba(255,255,255,.12)'; x.font = '800 15px Poppins, sans-serif'; for (let yy = 24; yy < r.height; yy += 46) for (let xx = (yy / 46 % 2) * 60 - 20; xx < r.width; xx += 120) x.fillText('mrarrieta', xx, yy);
+          /* v471 · diseño A «papel de seguridad»: fondo claro con trama fina (guilloché) */
+          x.fillStyle = '#f7f8fa'; x.fillRect(0, 0, r.width, r.height); x.lineWidth = 1;
+          for (let k = 0; k < 2; k++) { const cx = k ? r.width : 0, cy = k ? r.height : 0; x.strokeStyle = k ? '#e9ecf2' : '#e1e5ec'; for (let rr = 10; rr < Math.hypot(r.width, r.height); rr += 10) { x.beginPath(); x.arc(cx, cy, rr, 0, Math.PI * 2); x.stroke(); } }
+          x.strokeStyle = '#d9dee6'; x.lineWidth = 2; x.strokeRect(1, 1, r.width - 2, r.height - 2);
           x.globalCompositeOperation = 'destination-out';
           let auto = false;
           const helper = () => { if (auto || doneF) return; auto = true; hint.style.opacity = 0; const W = r.width, H = r.height, t0 = performance.now(), T = 800; let last = null;

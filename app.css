@@ -7634,3 +7634,13 @@ body.ag-kids .ml10-x{background:#f59e0b}body.ag-teens .ml10-x{background:#E3242B
 .mv-say .mv-hear{flex-direction:row;gap:6px;padding:8px 14px}
 .mv-chat .mv-hd{justify-content:center;text-align:left}
 .mv-k{display:block}.mv-k .mri{display:inline-block;vertical-align:-3px;margin-right:5px}.mv-pick .mv-bq{border-radius:16px}.mv-say{gap:8px;padding:14px}.mv-say .mv-mic{width:52px;height:52px}
+/* v471 · Goal: diseño A «papel de seguridad» + tema en letra normal */
+.gs-k{text-transform:none!important;letter-spacing:0!important;font-weight:500!important;font-size:12.5px!important;color:#6b7a92!important;line-height:1.4}.gs-k b{display:block;font-size:14.5px;font-weight:700;color:#0B2A5B}
+body.ag-teens .gs-k b{color:#0B2A5B}
+.gs-card{min-height:180px}
+.gs-hint{color:#0B2A5B;gap:4px;font:inherit}.gs-hint b{font:600 15px Inter,system-ui,sans-serif}.gs-hint small{font-size:12.5px;color:#6b7a92}
+.gs-seal{width:50px;height:50px;border-radius:50%;border:1.5px solid currentColor;background:#fff;display:grid;place-items:center;margin-bottom:4px;animation:gsSeal 2s ease-in-out infinite}.gs-seal svg{width:22px;height:22px}
+@keyframes gsSeal{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+.gs.kids .gs-hint{color:#d97706}.gs.teens .gs-hint{color:#16a874}
+.fx-next{background:#f4f7fc;border:1px solid #e3e8f0;border-radius:12px;padding:12px 14px;color:#0B2A5B;margin:12px auto;max-width:460px}
+.gs-hint .gs-seal svg{animation:none!important;width:22px!important;height:22px!important;transform:none!important}

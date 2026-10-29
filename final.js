@@ -21,11 +21,14 @@
   }, C.EXAM || {});
   if (M.MOD.course) { CFG.TIME_MIN = 20; CFG.PER_SKILL = 4; } // v460: examen final del curso: 16 preguntas · 20 min (módulos: 12 preguntas · 15 min)
   // ⚡ examen más corto: de cada habilidad se toman preguntas repartidas en todos los temas (siempre las mismas, para poder continuar si recarga)
-  EX.sections.forEach(sec => { const L = sec.items, n = CFG.PER_SKILL; if (L.length <= n) return; const pick = []; for (let i = 0; i < n; i++) pick.push(L[Math.round(i * (L.length - 1) / (n - 1))]); sec.items = pick; });
+  /* v471 · intentos ilimitados con 12 h de espera; en cada intento salen preguntas distintas (al azar del banco de cada habilidad, fijas durante ese intento para poder continuar si recarga) */
+  const WAIT = 12 * 3600 * 1000; EX.sections.forEach(sec => { sec.pool = sec.items.slice(); });
+  function pickItems(seed) { let t = (+seed || 1) >>> 0; const rnd = () => { t += 0x6D2B79F5; let x = t; x = Math.imul(x ^ x >>> 15, x | 1); x ^= x + Math.imul(x ^ x >>> 7, x | 61); return ((x ^ x >>> 14) >>> 0) / 4294967296; };
+    EX.sections.forEach(sec => { const L = sec.pool, n = CFG.PER_SKILL; if (L.length <= n) { sec.items = L.slice(); return; } const idx = L.map((_, i) => i); for (let i = idx.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [idx[i], idx[j]] = [idx[j], idx[i]]; } sec.items = idx.slice(0, n).sort((a, b) => a - b).map(i => L[i]); });
+    ITEMS.length = 0; EX.sections.forEach(sec => sec.items.forEach((it, idx) => ITEMS.push(Object.assign({}, it, { section: sec.key, label: sec.label, icon: sec.icon, idx })))); }
   const LIMIT = CFG.TIME_MIN * 60 * 1000;
   const MOD = M.MOD; const KEY = MOD.examKey;
-  const ITEMS = []; EX.sections.forEach(sec => sec.items.forEach((it, idx) => ITEMS.push(Object.assign({}, it, { section: sec.key, label: sec.label, icon: sec.icon, idx }))));
-  const N = ITEMS.length;
+  const ITEMS = []; pickItems(1); const N = ITEMS.length;
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 
   // ---------- estado guardado ----------
@@ -74,11 +77,11 @@
     return !f || L === f || L === f + l;
   }
   function saveProg() {
-    ST.prog = { first, last, temail, cur, startedAt, answers: answers.map(a => a && a.url ? Object.assign({}, a, { url: null }) : a) }; persist();
+    ST.prog = { seed: ST.seed || 1, first, last, temail, cur, startedAt, answers: answers.map(a => a && a.url ? Object.assign({}, a, { url: null }) : a) }; persist();
   }
   function shell(html) { stopRec(); stopPoll(); app.innerHTML = `<div class="wrap fx">${html}</div>`; window.scrollTo(0, 0); }
   function top(extra = '') {
-    return `<div class="fx-top"><span class="lbl">Final test · ${MOD.es}</span><span class="fx-chip">INTENTO ${Math.min(ST.attempts + 1, maxAttempts())}/${maxAttempts()}</span>${extra}<div class="grow"></div><button class="btn w sm" id="fx-exit">✕ Salir</button></div>`;
+    return `<div class="fx-top"><span class="lbl">Final test · ${MOD.es}</span><span class="fx-chip">INTENTO ${ST.attempts + 1}</span>${extra}<div class="grow"></div><button class="btn w sm" id="fx-exit">✕ Salir</button></div>`;
   }
   function wireExit() { const b = $('#fx-exit'); if (b) b.onclick = () => { stopTimer(); stopRec(); ctx.route('home'); }; }
 
@@ -90,7 +93,8 @@
     temail = ''; /* v460: los estudiantes no tienen profe fijo */
     // evaluación docente obligatoria antes del examen final de módulo (Premium con nube)
     if (needEval()) return evaluation();
-    if (ST.attempts >= maxAttempts()) return locked();
+    if (ST.prog && ST.prog.seed) pickItems(ST.prog.seed);
+    if (!(ST.prog && ST.prog.startedAt) && ST.lastAt && Date.now() - ST.lastAt < WAIT) return waitScreen();
     const p = ST.prog; const done = p && Array.isArray(p.answers) ? p.answers.filter(a => a && a.answered).length : 0;
     if (p && (done > 0 || p.startedAt)) return resume(p, done);
     welcome();
@@ -107,20 +111,30 @@
       <figure class="ex-cover"><div class="ex-cimg"><img src="https://images.unsplash.com/${cv[0]}?w=1200&h=500&fit=crop&crop=entropy&q=80&auto=format" alt="${esc(cv[1])}" onerror="this.style.opacity=0"><span class="ex-cbadge">${MOD.course ? 'A1 → B2+' : esc(MOD.id)}</span></div></figure>
       <h1 class="fx9-t">${MOD.course ? 'Examen final del curso' : 'Examen final · ' + MOD.es}</h1>
       <div class="ex-skills">${EX.sections.map(s => `<span><b>${s.items.length}</b> ${esc(s.label)}</span>`).join('')}</div>
-      <ul class="fx9-ul"><li>${I('clock')}<span><b>${N} preguntas · ${CFG.TIME_MIN} minutos</b></span></li><li>${I('check')}<span>Ves al instante si acertaste</span></li><li>${I('award')}<span>Apruebas con <b>${(C.PASS_SCORE / 10).toFixed(1)}</b> y recibes tu certificado</span></li><li>${I('repeat')}<span>${CFG.ATTEMPTS} intentos${ST.attempts ? ` · usaste ${ST.attempts}` : ''} · tu avance se guarda solo</span></li></ul>
+      <ul class="fx9-ul"><li>${I('clock')}<span><b>${N} preguntas · ${CFG.TIME_MIN} minutos</b></span></li><li>${I('check')}<span>Ves al instante si acertaste</span></li><li>${I('award')}<span>Apruebas con <b>${(C.PASS_SCORE / 10).toFixed(1)}</b> y recibes tu certificado</span></li><li>${I('repeat')}<span>Intentos ilimitados · 12 horas entre un intento y otro</span></li></ul>
       <button class="btn k lg" id="go">Comenzar examen</button></div>`);
-    wireExit(); $('#go').onclick = async () => { const b = $('#go'); b.disabled = true; b.textContent = 'Cargando…'; await M.loadAudio([MOD.examAudio || 'exam', MA_GROUP].filter(Boolean)); answers = new Array(N).fill(null); startedAt = Date.now(); saveProg(); startTimer(); go(0, false); };
+    wireExit(); $('#go').onclick = async () => { const b = $('#go'); b.disabled = true; b.textContent = 'Cargando…'; await M.loadAudio([MOD.examAudio || 'exam', MA_GROUP].filter(Boolean)); ST.seed = Date.now(); pickItems(ST.seed); answers = new Array(N).fill(null); startedAt = Date.now(); saveProg(); startTimer(); go(0, false); };
+  }
+  /* v471 · espera de 12 horas entre intentos */
+  function nextTxt() { const t = new Date((+ST.lastAt || Date.now()) + WAIT), d = new Date(); const same = t.toDateString() === d.toDateString(), tm = new Date(d.getTime() + 864e5).toDateString() === t.toDateString();
+    const h = t.toLocaleTimeString('es-CO', { hour: 'numeric', minute: '2-digit', hour12: true }).replace(/\s?a\.?\s?m\.?/i, ' a. m.').replace(/\s?p\.?\s?m\.?/i, ' p. m.');
+    return (same ? 'hoy' : tm ? 'mañana' : t.toLocaleDateString('es-CO', { weekday: 'long', day: 'numeric', month: 'long' })) + ' a las ' + h; }
+  function waitScreen() {
+    shell(`${top()}<div class="card center fx-welcome fx9w"><h1 class="fx9-t">Examen final · ${esc(MOD.course ? 'del curso' : MOD.es)}</h1>
+      <p class="fx-next">Podrás presentarlo de nuevo <b>${nextTxt()}</b></p><p class="muted" style="margin:6px 0 16px">Entre un intento y otro hay 12 horas para que repases. En el próximo intento te saldrán preguntas distintas.${S.final && S.final.best ? ` Tu mejor nota: <b>${(S.final.best / 10).toFixed(1)} / 10</b>.` : ''}</p>
+      <button class="btn w lg" id="hm">Volver a mis temas</button></div>`);
+    wireExit(); $('#hm').onclick = () => ctx.route('home');
   }
   function resume(p, done) {
     shell(`${top()}<div class="card center">${M.mascot('mascot', 'watch')}<h2>💾 Tienes un examen en progreso</h2>
       <p class="muted">${esc((p.first || '') + ' ' + (p.last || ''))} — ${done} de ${N} preguntas respondidas.${p.startedAt ? ` Tiempo restante: <b>${fmt(LIMIT - (Date.now() - p.startedAt))}</b>` : ''}</p>
-      <div class="row" style="justify-content:center"><button class="btn k lg" id="c">Continuar donde quedé</button><button class="btn w" id="r">Empezar de nuevo</button></div>
+      <div class="row" style="justify-content:center"><button class="btn k lg" id="c">Continuar donde quedé</button></div>
       <p class="muted" style="font-size:13px;margin-top:10px">Las grabaciones de Speaking no se pueden recuperar al recargar: tendrás que grabarlas otra vez.</p></div>`);
     wireExit();
     $('#c').onclick = async () => { await M.loadAudio([MOD.examAudio || 'exam', MA_GROUP].filter(Boolean)); first = p.first || first; last = p.last || last; temail = ''; /* v466: el resultado nunca se envía por correo al estudiante */ answers = (p.answers && p.answers.length === N) ? p.answers.map(a => a && a.section === 'speaking' && !a.url ? null : a) : new Array(N).fill(null);
       answers = answers.map((a, i) => a && ITEMS[i].section === 'speaking' ? null : a);
       startedAt = p.startedAt || Date.now(); startTimer(); go(p.cur || 0, true); };
-    $('#r').onclick = () => { if (p.startedAt) { ST.attempts++; } ST.prog = null; persist(); run(app, ctx); };
+    ST.seed = p.seed || 1; /* v471: sin «Empezar de nuevo» (cada intento sale con preguntas distintas) */
   }
   function studentInfo() {
     shell(`${top()}<div class="card fx-form"><span class="lbl">Student information</span><h2>Tus datos</h2><p class="muted">Escribe tu nombre y apellido tal como quieres que aparezcan en tu reporte y en tu certificado.</p>
@@ -157,7 +171,7 @@
       <li>Tu progreso se guarda solo: si se recarga la página puedes continuar.</li></ul>
       <div class="actionbar"><button class="btn k lg" id="go">🚀 Comenzar examen</button></div></div>`);
     wireExit();
-    $('#go').onclick = async () => { await M.loadAudio([MOD.examAudio || 'exam', MA_GROUP].filter(Boolean)); answers = new Array(N).fill(null); startedAt = Date.now(); saveProg(); startTimer(); go(0, false); };
+    $('#go').onclick = async () => { await M.loadAudio([MOD.examAudio || 'exam', MA_GROUP].filter(Boolean)); ST.seed = Date.now(); pickItems(ST.seed); answers = new Array(N).fill(null); startedAt = Date.now(); saveProg(); startTimer(); go(0, false); };
   }
 
   // ---------- cronómetro ----------
@@ -303,9 +317,9 @@
   let last_ = null;
   function submit() {
     if (!startedAt && !timedOut) return; stopTimer(); stopRec();
-    ST.attempts++; ST.prog = null; persist(); startedAt = null;
+    ST.attempts++; ST.lastAt = Date.now(); ST.prog = null; persist(); startedAt = null;
     const { per, fin } = scores(); const b = band(fin); const passed = fin * 10 >= C.PASS_SCORE;
-    last_ = { per, fin, b, passed, date: new Date(), name: name(), temail, attempt: ST.attempts, attemptLabel: ST.attempts > CFG.ATTEMPTS ? 'Intento adicional' : `Intento ${ST.attempts} de ${CFG.ATTEMPTS}`, timedOut };
+    last_ = { per, fin, b, passed, date: new Date(), name: name(), temail, attempt: ST.attempts, attemptLabel: `Intento ${ST.attempts}`, timedOut };
     const pct = Math.round(fin * 10);
     S.final = { best: Math.max((S.final && S.final.best) || 0, pct), last: pct, at: Date.now(), passed: passed || !!(S.final && S.final.passed), score: Math.max((S.final && S.final.score) || 0, fin), name: name(), date: (passed ? last_.date : (S.final && S.final.date ? new Date(S.final.date) : last_.date)).toISOString() };
     if (passed) { S.final.score = fin; S.final.date = last_.date.toISOString(); }
@@ -313,7 +327,7 @@
     results(); notify(last_);
   }
   function results() {
-    const r = last_; const left = maxAttempts() - ST.attempts;
+    const r = last_;
     shell(`${top()}<div class="card center fx-res"><div class="row" style="justify-content:center;align-items:center;gap:16px">${M.mascot('mascot bounce', r.passed ? 'celebrate' : 'shrug')}
       <div><span class="lbl">Final ${MOD.en} results</span><div class="fx-score">${r.fin.toFixed(1)}<small> / 10.0</small></div><div class="fx-band ${r.b.k}">${r.b.l}</div>
       <div class="fx-pass-badge ${r.passed ? 'ok' : 'no'}">${r.passed ? '✅ APROBADO' : '❌ NO APROBADO'}</div></div></div>
@@ -323,8 +337,7 @@
       <div class="fx-notify">${cloud() ? '<div id="n0" class="pending">⏳ Avisando a administración…</div>' : ''}<div id="n1" class="pending">⏳ Guardando resultados…</div>${r.temail ? '<div id="n2" class="pending">⏳ Enviando correo al profesor…</div>' : ''}<div id="n3" class="pending">⏳ Enviando copia a administración…</div></div>
       <div class="row" style="justify-content:center;margin-top:14px">${r.passed ? '<button class="btn k lg" id="cert">🎓 Ver mi certificado</button>' : ''}
         <button class="btn w" id="pdf">📄 Descargar reporte PDF</button><button class="btn w" id="cp">📋 Copiar resumen</button>
-        ${!r.passed && left > 0 ? `<button class="btn k" id="again">🔁 Intentar de nuevo (te queda${left > 1 ? 'n' : ''} ${left})</button>` : ''}
-        ${!r.passed && left <= 0 ? `<button class="btn k" id="extra">${cloud() ? '🙋 Solicitar un intento adicional' : '🔑 Solicitar otra oportunidad'}</button>` : ''}<button class="btn w" id="hm">🏠 Inicio</button></div></div>`);
+        ${!r.passed ? `<p class="fx-next">Podrás intentarlo de nuevo <b>${nextTxt()}</b><br>Mientras tanto, repasa tus lecciones.</p>` : ''}<button class="btn w" id="hm">🏠 Inicio</button></div></div>`);
     wireExit();
     if (r.passed) { sfx('win'); M.confetti(4000); $('#cert').onclick = () => certificate(); }
     $('#pdf').onclick = reportPDF; $('#cp').onclick = copySummary; $('#hm').onclick = () => ctx.route('home');
