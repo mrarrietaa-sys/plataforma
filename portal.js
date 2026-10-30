@@ -744,6 +744,7 @@
         ${a && !staff ? `<p style="margin:12px 0 0"><button class="btn w sm" id="pt3">🔁 ¿No estás a gusto con tu nivel?</button></p>` : ''}
         ${a && !ready && !trial ? `<p class="pt-soon">🚧 Tu ${esc(a.name)} se está terminando de construir. ¡Muy pronto estará listo! Mientras tanto puedes repasar los módulos anteriores.</p>` : ''}</div></div>`;
     }
+    try { window.MRAGEIMG_apply && MRAGEIMG_apply(); } catch (e) { }
     const kids = !staff && window.MRKIDS && MRKIDS.on(); document.body.classList.toggle('ag-kids', !!kids); // 🎈 perfil Kids (9 a 11 años)
     let kidsX = '';
     if (kids && a && a.ready && !P.isExpired()) { main = MRKIDS.hero(p, a, P.look().nick || p.first || '') + MRKIDS.words(); kidsX = MRKIDS.map(a) + MRKIDS.medals(a); }

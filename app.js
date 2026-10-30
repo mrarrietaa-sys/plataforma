@@ -230,6 +230,7 @@
     const curId = (M.allParts().find(x => M.isUnlocked(x.topic) && S.parts[x.id] && !S.parts[x.id].done && S.parts[x.id].step) || nu || {}).id;
     const curP = curId ? M.partById(curId) : null;
     const G = ['#7fa6d6,#2f5d99', '#f3c9a8,#c9714f', '#c9e3c4,#4f9152', '#f6dc9b,#cf9226', '#d9cdef,#7a5fb8', '#f2c4cf,#bb5571'];
+    try { window.MRAGEIMG_apply && MRAGEIMG_apply(); } catch (e) { }
     const bg = (t, w, hh) => `background-image:${t.cover ? `url('${M.imgURL(t.cover, w, hh)}'),` : ''}linear-gradient(135deg,${G[(t.n - 1) % G.length]})`;
     const chip = window.MRAP && MRAP.get() ? (MRAP.isTrial() ? `<span class="t2-chip tr">${MRAP.plan && MRAP.plan().expired ? 'Plan vencido' : 'Acceso gratuito'}</span>` : MRAP.role(C.MODULE_ID || 'A1') === 'review' && !MRAP.isStaff() ? '<span class="t2-chip">Modo repaso</span>' : MRAP.isStaff() ? '<span class="t2-chip">Profe</span>' : '') : '';
     const arr = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
