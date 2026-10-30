@@ -54,7 +54,7 @@
     ST = Object.assign({ attempts: 0, extra: 0, used: [], prog: null }, load()); ST.reqPending = 0; store(ST);
     // solo se recarga la pantalla si el estudiante está viendo el bloqueo o los resultados (nunca en medio del examen)
     if (app && (document.getElementById('ex-req') || document.querySelector('.fx-res'))) run(app, ctx);
-    else M.toast('✅ Administración te habilitó un intento adicional');
+    else void 0; /* v472: ya no hay intentos extra */
   });
 
   let app, ctx, answers, cur, first, last, temail, startedAt, timerIv = null, timedOut = false, fixMode = false, rec = null;
@@ -103,7 +103,7 @@
   function extraNotice() {
     const g = +ST.cloudExtra || 0; if (g <= (+ST.seenExtra || 0)) return '';
     ST.seenExtra = g; ST.reqPending = 0; persist(); setTimeout(() => sfx('win'), 300);
-    return '<div class="ex-ok">✅ Administración te habilitó un intento adicional</div>';
+    return ''; /* v472 */
   }
   function welcome() { /* v460: una sola pantalla corta (sin datos ni correo del profesor) */
     const cv = COVERS[EXAM_ID] || COVERS.A1, I = n => window.MRI ? MRI(n) : '';

@@ -65,10 +65,10 @@
     if (e.detail !== KEY) return;
     ST = Object.assign({ attempts: 0, extra: 0, used: [], prog: null }, load()); ST.reqPending = 0; store(ST);
     if (app && (document.getElementById('ex-req') || document.querySelector('.fx-res'))) run(app, ctx);
-    else if (M.toast) M.toast('✅ Administración te habilitó un intento adicional');
+    else if (M.toast) void 0; /* v472: ya no hay intentos extra */
   });
   const ROUNDS = 2; // 2 oportunidades de 2 intentos cada una
-  const maxAttempts = () => CFG.ATTEMPTS * Math.min(ROUNDS, ST.round || 1) + (ST.extra || 0);
+  const maxAttempts = () => 1e9; /* v472: prueba de clasificación con intentos ilimitados (sin solicitudes a administración) */
 
   let app, ctx, answers, cur, first, last, temail, wa, course, startedAt, timerIv = null, timedOut = false, fixMode = false, rec = null;
   const name = () => (first + ' ' + last).trim() || 'Student';
@@ -96,7 +96,7 @@
   function saveProg() { ST.prog = { plan: PL, first, last, temail, wa, course, cur, startedAt, answers: answers.map(a => a && (a.url || a.blob) ? Object.assign({}, a, { url: null, blob: null }) : a) }; persist(); }
   function shell(html) { stopRec(); stopPoll(); app.innerHTML = `<div class="wrap fx">${html}</div>`; window.scrollTo(0, 0); }
   function top(extra = '') {
-    return `<div class="fx-top"><span class="px-ttl">${window.MRI ? MRI('compass') : ''}<b>Placement Test</b><small>Prueba de clasificación</small></span><span class="fx-chip">INTENTO ${Math.min(ST.attempts + 1, maxAttempts())}/${maxAttempts()}</span>${extra}<div class="grow"></div><button class="btn w sm" id="fx-exit">✕ Salir</button></div>`;
+    return `<div class="fx-top"><span class="px-ttl">${window.MRI ? MRI('compass') : ''}<b>Placement Test</b><small>Prueba de clasificación</small></span><span class="fx-chip">INTENTO ${ST.attempts + 1}</span>${extra}<div class="grow"></div><button class="btn w sm" id="fx-exit">✕ Salir</button></div>`;
   }
   function wireExit() { const b = $('#fx-exit'); if (b) b.onclick = () => { stopTimer(); stopRec(); ctx.route('home'); }; }
 
@@ -116,14 +116,14 @@
   function extraNotice() {
     const g = +ST.cloudExtra || 0; if (g <= (+ST.seenExtra || 0)) return '';
     ST.seenExtra = g; ST.reqPending = 0; persist(); setTimeout(() => sfx('win'), 300);
-    return '<div class="ex-ok">✅ Administración te habilitó un intento adicional</div>';
+    return ''; /* v472 */
   }
   function welcome() {
     // portada (ID de Unsplash verificado en build/imgmap3.json: 'road signs two directions')
     shell(`${top()}<div class="card center fx-welcome">${extraNotice()}
       <figure class="ex-cover"><div class="ex-cimg"><img src="https://images.unsplash.com/photo-1583125320604-8245f1e50c1e?w=1200&h=600&fit=crop&crop=entropy&q=80&auto=format" alt="Find your starting point" onerror="this.style.opacity=0"><span class="ex-cbadge">🧭 A1 → B2+</span></div></figure>
       <h1 style="font-size:clamp(24px,5vw,32px);margin:12px 0 4px">Placement Test</h1>
-      <p class="muted" style="margin:0 0 14px">${ST.attempts ? `Ya usaste <b>${ST.attempts}</b> de ${maxAttempts()} intentos` : 'Descubre en qué módulo empiezas'}</p>
+      <p class="muted" style="margin:0 0 14px">Descubre en qué módulo empiezas</p>
       <button class="btn k lg" id="go">Continuar →</button></div>`);
     wireExit(); $('#go').onclick = () => (temail ? instructions() : studentEmail());
   }
@@ -336,7 +336,7 @@
     if (!startedAt && !timedOut) return; stopTimer(); stopRec();
     ST.attempts++; ST.prog = null; persist(); startedAt = null;
     const { per, fin } = scores(); const ms = mastery();
-    last_ = { answersSnap: answers.slice(), per, fin, ms, date: new Date(), name: name(), temail, wa, course, attempt: ST.attempts, attemptLabel: ST.attempts > CFG.ATTEMPTS ? 'Intento adicional' : `Intento ${ST.attempts} de ${CFG.ATTEMPTS}`, timedOut };
+    last_ = { answersSnap: answers.slice(), per, fin, ms, date: new Date(), name: name(), temail, wa, course, attempt: ST.attempts, attemptLabel: `Intento ${ST.attempts}`, timedOut };
     P.setPlacement(ms.rec, { score: fin, mods: Object.fromEntries(Object.entries(ms.mods).map(([k, v]) => [k, Math.round(v.pct * 100)])), skills: Object.fromEntries(Object.entries(per).map(([k, v]) => [k, +v.score.toFixed(1)])), all: ms.all });
     ctx.after && ctx.after(last_);
     results(); notify(last_);
@@ -356,7 +356,7 @@
       ${trial ? `<div class="pt-trial">🟢 <b>Acceso gratuito:</b> ya puedes explorar los <b>2 primeros temas</b> del ${esc((P.trialMod() || m).name)}.</div>` : ''}
       <div class="fx-notify">${cloud() ? '<div id="n0" class="pending">⏳ Enviando tu resultado a administración…</div>' : ''}<div id="n1" class="pending">⏳ Guardando resultados…</div><div id="n2" class="pending">⏳ Enviando correo con tu resultado…</div><div id="n3" class="pending">⏳ Enviando copia a administración…</div></div>
       <div class="row" style="justify-content:center;margin-top:14px"><button class="btn k lg" id="prof">Continuar →</button>
-        ${left > 0 ? `<button class="btn w" id="again">🔁 Intentar de nuevo (te queda${left > 1 ? 'n' : ''} ${left})</button>` : (ST.round || 1) < ROUNDS ? `<button class="btn w" id="again2">🔁 Usar mi segunda oportunidad (${CFG.ATTEMPTS} intentos)</button>` : cloud() ? '<button class="btn w" id="extra">🙋 Solicitar un intento adicional</button>' : ''}</div>
+        <button class="btn w" id="again">Intentar de nuevo</button></div>
       <p class="muted center" style="font-size:14px;margin-top:10px">¿No te sientes a gusto con tu resultado? Puedes repetir la prueba: <b>tu ruta de aprendizaje se actualiza con el nuevo resultado</b>.</p></div>`);
     wireExit(); sfx('win'); M.confetti(3500);
     $('#prof').onclick = () => { scrollTo(0, 0); ctx.route('home'); }; // 🧭 vuelve a su perfil: la guía marca el paso en verde y muestra el siguiente 
@@ -387,7 +387,7 @@
         .then(x => setN('n0', !!(x && x.ok), x && x.ok ? '✓ Administración recibió tu resultado.' : '✗ No se pudo avisar en la plataforma (revisa tu conexión).'))
         .catch(() => setN('n0', false, '✗ No se pudo avisar en la plataforma (sin conexión).'));
     }
-    const params = { subject: `📝 Prueba de clasificación${r.attempt > 1 ? (r.attempt > CFG.ATTEMPTS ? ' – intento adicional' : ' – intento ' + r.attempt) : ''} – ${r.name} – Nivel recomendado: ${m.name} (${m.es})`,
+    const params = { subject: `📝 Prueba de clasificación${r.attempt > 1 ? (false ? '' : ' – intento ' + r.attempt) : ''} – ${r.name} – Nivel recomendado: ${m.name} (${m.es})`,
       student_name: r.name, student_whatsapp: r.wa || '', student_whatsapp_link: waLink(r.wa), course_interest: COURSE[r.course] || '', module: 'Placement Test', level: m.es, recommended_module: m.name,
       result_label: 'Nivel recomendado', result_headline: m.name, result_detail: m.es, result_color: '#0B2A5B',
       attempt_label: r.attemptLabel, date: r.date.toLocaleDateString(), time: r.date.toLocaleTimeString(),
@@ -486,6 +486,6 @@
       renderReq('✗ No se pudo enviar la solicitud (revisa tu conexión) e inténtalo de nuevo.');
     };
   }
-  const status = () => { const s = load(); const round = Math.min(ROUNDS, s.round || 1); return { attempts: s.attempts || 0, max: CFG.ATTEMPTS * round + (s.extra || 0), round, rounds: ROUNDS, inProgress: !!(s.prog && s.prog.startedAt) }; };
+  const status = () => { const s = load(); const round = Math.min(ROUNDS, s.round || 1); return { attempts: s.attempts || 0, max: 1e9, round, rounds: ROUNDS, inProgress: !!(s.prog && s.prog.startedAt) }; };
   window.MRAPLACE = { run, status };
 })();
