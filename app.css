@@ -7786,3 +7786,8 @@ body.ag-teens .gs-k b{color:#0B2A5B}
 .player .stage .ce-ltools{flex-wrap:nowrap;gap:6px;overflow-x:auto;scrollbar-width:none}.player .stage .ce-ltools .btn{white-space:nowrap;padding:7px 11px;font-size:13px}.player .stage .ce-lcnt{white-space:nowrap;font-size:12px;padding:4px 8px}
 .player .stage .actionbar{position:sticky;bottom:10px;z-index:7}
 @media(min-width:900px){.player .lgrid .lcard .ph{height:clamp(84px,13vh,170px)}}
+/* v486 · preguntas de lectura: números para ver y cambiar cada respuesta */
+.yn9-h{flex-wrap:wrap;gap:8px}.yn9-h small{flex:1 1 220px;color:#5B6B82!important;font-weight:600!important}
+.yn9-t{display:flex;gap:6px}.yn9-b{display:flex;align-items:center;gap:6px;border:1.5px solid #DCE4F0;background:#fff;border-radius:10px;padding:5px 10px;cursor:pointer;font:inherit;color:#0B2A5B}
+.yn9-b b{font:800 13px Poppins,system-ui,sans-serif}.yn9-b em{font-style:normal;font-size:11.5px;font-weight:700;color:#127a43}.yn9-b em:empty{display:none}
+.yn9-b.ok{border-color:#9ad9b6;background:#F0FAF4}.yn9-b.on{border-color:#E3242B;box-shadow:0 0 0 1px #E3242B inset}

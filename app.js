@@ -899,10 +899,11 @@
       if (window.__V9 && r.q.length > 3) r = Object.assign({}, r, { q: r.q.slice(0, 3) });
       const qs = r.q.map((q, i) => { const e = h(`<div class="yn"><p>${i + 1}) ${esc(q.s)}</p><div class="b"><button data-v="yes">${AG === 'teens' ? 'TRUE' : 'YES'}</button><button data-v="no">${AG === 'teens' ? 'FALSE' : 'NO'}</button></div></div>`); $$('button', e).forEach(b => b.onclick = () => { $$('button', e).forEach(x => x.classList.remove('sel')); b.classList.add('sel'); e._v = b.dataset.v; sfx('tap'); if (e._pg && e._pg.next) setTimeout(e._pg.next, 380); }); body.appendChild(e); return e; });
       /* v484 · preguntas de una en una (todo cabe en pantalla): «Pregunta 1 de 3» y pasa sola a la siguiente */
-      if (qs.length > 1) { const pg = h(`<div class="yn9-h"><small></small><span class="yn9-d">${qs.map(() => '<i></i>').join('')}</span></div>`); qs[0].before(pg); let qi = 0;
-        const show = (k) => { qi = k; qs.forEach((e, j) => e.classList.toggle('yn9-off', j !== k)); $('small', pg).textContent = `Pregunta ${k + 1} de ${qs.length}`; $$('.yn9-d i', pg).forEach((d, j) => d.className = j === k ? 'on' : qs[j]._v ? 'ok' : ''); };
-        $$('.yn9-d i', pg).forEach((d, j) => d.onclick = () => show(j));
-        qs.forEach((e, j) => e._pg = { next: () => { if (qi !== j) return; const nx = qs.findIndex((x, m) => m > j && !x._v); show(nx >= 0 ? nx : qs.findIndex(x => !x._v) >= 0 ? qs.findIndex(x => !x._v) : j); } }); show(0); body._yn9 = { pg, qs }; }
+      if (qs.length > 1) { const pg = h(`<div class="yn9-h"><small></small><span class="yn9-t">${qs.map((_, j) => `<button type="button" class="yn9-b" data-j="${j}"><b>${j + 1}</b><em></em></button>`).join('')}</span></div>`); qs[0].before(pg); let qi = 0;
+        const lab = (v) => v ? (AG === 'teens' ? (v === 'yes' ? 'TRUE' : 'FALSE') : v.toUpperCase()) : '';
+        const show = (k) => { qi = k; qs.forEach((e, j) => e.classList.toggle('yn9-off', j !== k)); $('small', pg).textContent = `Pregunta ${k + 1} de ${qs.length} · toca un número para ver o cambiar tu respuesta`; $$('.yn9-b', pg).forEach((d, j) => { d.classList.toggle('on', j === k); d.classList.toggle('ok', !!qs[j]._v); $('em', d).textContent = lab(qs[j]._v); }); };
+        $$('.yn9-b', pg).forEach(d => d.onclick = () => show(+d.dataset.j));
+        qs.forEach((e, j) => e._pg = { next: () => { show(qi); if (qi !== j) return; const nx = qs.findIndex((x, m) => m > j && !x._v); const any = qs.findIndex(x => !x._v); show(nx >= 0 ? nx : any >= 0 ? any : j); } }); show(0); body._yn9 = { pg, qs }; }
       const bar = h(`<div class="actionbar"><button class="btn k lg">Comprobar ✓</button></div>`); body.appendChild(bar);
       const c = await new Promise(res => { $('button', bar).onclick = async () => {
         if (qs.some(e => !e._v)) { const k = qs.findIndex(e => !e._v); if (body._yn9) { qs.forEach((e, j) => e.classList.toggle('yn9-off', j !== k)); } M.toast('Responde todas las preguntas 😉'); return; }
