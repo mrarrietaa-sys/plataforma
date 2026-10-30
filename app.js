@@ -744,6 +744,21 @@
     });
   }
   window.addEventListener('mra-nohear2', () => micTips(true));
+  /* v484 · todo cabe en pantalla: si la actividad es más alta que la pantalla, se ajusta (zoom suave, nunca menos de 78%) */
+  (function fit9() {
+    let st = null, key = '', z = 1, ro = null, raf = 0;
+    const MIN = () => innerWidth < 700 ? .8 : .74;
+    const run = () => { raf = 0; if (!st || !st.isConnected) return; const k = ((st.querySelector('h2') || {}).textContent || '') + '|' + ((st.querySelector('.hd .lbl') || {}).textContent || '');
+      if (k !== key) { key = k; z = 1; st.style.zoom = ''; }
+      const r = st.getBoundingClientRect(), topDoc = r.top + scrollY, avail = innerHeight - Math.max(0, topDoc) - 10; if (avail < 240) return;
+      const nat = r.height / z; const nz = Math.max(MIN(), Math.min(1, avail / nat));
+      if (nz < z - .01 || nz > z + .04) { z = Math.round(nz * 100) / 100; st.style.zoom = z >= .995 ? '' : z; } };
+    const sched = () => { if (!raf) raf = requestAnimationFrame(run); };
+    const attach = () => { const s2 = document.querySelector('.player .stage'); if (s2 === st) { sched(); return; } st = s2; key = ''; z = 1; if (ro) ro.disconnect(); if (st && window.ResizeObserver) { ro = new ResizeObserver(sched); ro.observe(st); } sched(); };
+    const mo = new MutationObserver(() => attach()); const go = () => { const app = document.getElementById('app'); if (app) mo.observe(app, { childList: true, subtree: true }); attach(); };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', go); else go();
+    addEventListener('resize', () => { z = 1; if (st) st.style.zoom = ''; key = ''; sched(); });
+  })();
   window.M1ITL = (n, perf, info) => interlude(n, perf, info); // (pruebas)
   const STEP = {
     goal: async (stage, p) => {
@@ -882,10 +897,16 @@
       readAloud(box, $('#rv', box), $('#rvr', box));
       body.appendChild(h(`<h3 style="margin-top:18px">${AG === 'teens' ? 'True or false?' : 'Answer YES or NO'}</h3>`));
       if (window.__V9 && r.q.length > 3) r = Object.assign({}, r, { q: r.q.slice(0, 3) });
-      const qs = r.q.map((q, i) => { const e = h(`<div class="yn"><p>${i + 1}) ${esc(q.s)}</p><div class="b"><button data-v="yes">${AG === 'teens' ? 'TRUE' : 'YES'}</button><button data-v="no">${AG === 'teens' ? 'FALSE' : 'NO'}</button></div></div>`); $$('button', e).forEach(b => b.onclick = () => { $$('button', e).forEach(x => x.classList.remove('sel')); b.classList.add('sel'); e._v = b.dataset.v; sfx('tap'); }); body.appendChild(e); return e; });
+      const qs = r.q.map((q, i) => { const e = h(`<div class="yn"><p>${i + 1}) ${esc(q.s)}</p><div class="b"><button data-v="yes">${AG === 'teens' ? 'TRUE' : 'YES'}</button><button data-v="no">${AG === 'teens' ? 'FALSE' : 'NO'}</button></div></div>`); $$('button', e).forEach(b => b.onclick = () => { $$('button', e).forEach(x => x.classList.remove('sel')); b.classList.add('sel'); e._v = b.dataset.v; sfx('tap'); if (e._pg && e._pg.next) setTimeout(e._pg.next, 380); }); body.appendChild(e); return e; });
+      /* v484 · preguntas de una en una (todo cabe en pantalla): «Pregunta 1 de 3» y pasa sola a la siguiente */
+      if (qs.length > 1) { const pg = h(`<div class="yn9-h"><small></small><span class="yn9-d">${qs.map(() => '<i></i>').join('')}</span></div>`); qs[0].before(pg); let qi = 0;
+        const show = (k) => { qi = k; qs.forEach((e, j) => e.classList.toggle('yn9-off', j !== k)); $('small', pg).textContent = `Pregunta ${k + 1} de ${qs.length}`; $$('.yn9-d i', pg).forEach((d, j) => d.className = j === k ? 'on' : qs[j]._v ? 'ok' : ''); };
+        $$('.yn9-d i', pg).forEach((d, j) => d.onclick = () => show(j));
+        qs.forEach((e, j) => e._pg = { next: () => { if (qi !== j) return; const nx = qs.findIndex((x, m) => m > j && !x._v); show(nx >= 0 ? nx : qs.findIndex(x => !x._v) >= 0 ? qs.findIndex(x => !x._v) : j); } }); show(0); body._yn9 = { pg, qs }; }
       const bar = h(`<div class="actionbar"><button class="btn k lg">Comprobar ✓</button></div>`); body.appendChild(bar);
       const c = await new Promise(res => { $('button', bar).onclick = async () => {
-        if (qs.some(e => !e._v)) { M.toast('Responde todas las preguntas 😉'); return; }
+        if (qs.some(e => !e._v)) { const k = qs.findIndex(e => !e._v); if (body._yn9) { qs.forEach((e, j) => e.classList.toggle('yn9-off', j !== k)); } M.toast('Responde todas las preguntas 😉'); return; }
+        if (body._yn9) { body._yn9.pg.remove(); qs.forEach(e => e.classList.remove('yn9-off')); }
         stop();
         let c = 0; qs.forEach((e, i) => { const ok = e._v === r.q[i].a; if (ok) c++; e.classList.add(ok ? 'right' : 'wrong'); $$('button', e).forEach(b => b.disabled = true); if (!ok) $('p', e).innerHTML += ` <b>(${AG === 'teens' ? (r.q[i].a === 'yes' ? 'TRUE' : 'FALSE') : r.q[i].a.toUpperCase()})</b>`; });
         bar.remove(); c === qs.length ? sfx('win') : sfx(c >= qs.length / 2 ? 'ok' : 'bad');

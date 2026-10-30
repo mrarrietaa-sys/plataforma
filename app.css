@@ -7760,3 +7760,16 @@ body.ag-teens .gs-k b{color:#0B2A5B}
 .itl9 .itl-notes,.itl9 .itl-stars{animation-duration:2.3s}
 @keyframes itl9Up{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}@keyframes itl9Pop{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:none}}
 @media(min-width:900px){.itl9 .itl-actor{max-height:min(48vh,460px)}.itl9 .itl-img{max-height:min(48vh,460px)!important}}
+/* v484 · todo cabe en pantalla */
+.yn9-h{display:flex;align-items:center;justify-content:space-between;margin:6px 2px 8px}.yn9-h small{font:700 12.5px Inter,system-ui,sans-serif;color:#E3242B;letter-spacing:.03em}
+.yn9-d{display:flex;gap:5px}.yn9-d i{display:block;width:18px;height:5px;border-radius:3px;background:#DCE4F0;cursor:pointer}.yn9-d i.ok{background:#0B2A5B}.yn9-d i.on{background:#E3242B}
+.yn.yn9-off{display:none!important}
+.ml10.ml10-min .ml10-s,.ml10.ml10-min .ml10-f{display:none}.ml10.ml10-min .ml10-h{cursor:pointer}.ml10.ml10-min .ml10-h:after{content:'Ver la regla';margin-left:auto;font:600 12px Inter,system-ui,sans-serif;color:#5B6B82;text-decoration:underline}
+.ml10.ml10-min .ml10-au{margin-left:8px}
+.lgrid .lcard .ph{height:clamp(56px,11vh,120px);aspect-ratio:auto!important}.lgrid .lcard .ph img{height:100%;width:100%;object-fit:cover}
+.lgrid .lcard .tx{padding:6px 9px!important}
+@media(max-width:700px){.lgrid.lg-many{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:7px}.lgrid.lg-many .lcard .ph{height:clamp(48px,8vh,84px)}.lgrid.lg-many .lcard .tx .esn{display:none}.lgrid.lg-many .lcard .en{font-size:13.5px}.lgrid.lg-many .ce-mic{font-size:12px;padding:6px 4px}}
+.vk2 .vk-screen{height:clamp(170px,36vh,460px)!important;min-height:0!important}.vk2 .vk-screen img.talk{max-height:100%!important;height:auto!important;width:auto!important;object-fit:contain}
+.player .reading .ph{height:clamp(120px,22vh,240px);aspect-ratio:auto!important}
+.player .reading .txt{max-height:34vh;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+@media(min-width:900px){.player .reading .ph{height:clamp(160px,40vh,360px)}.player .reading .txt{max-height:40vh}}

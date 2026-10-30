@@ -59,7 +59,7 @@
     const tools = h(`<div class="row ce-ltools"><button class="btn sm k" id="all">▶ Escuchar todo</button><span class="ce-lcnt" id="cnt"></span>${canRec ? '<span class="ce-lcnt ce-lok" id="cnt2"></span>' : ''}</div>`);
     body.appendChild(tools);
     if (canRec && !M.canSR) body.appendChild(h('<p class="ce-lnosr">🎧 Tu navegador no puede calificar la voz. Igual puedes <b>grabarte y escucharte</b> para compararte con el modelo. (En Chrome te califico automáticamente.)</p>'));
-    const grid = h(`<div class="lgrid"></div>`); body.appendChild(grid);
+    const grid = h(`<div class="lgrid${p.vocab.length > 8 ? ' lg-many' : ''}"></div>`); body.appendChild(grid);
     const heard = new Set(), said = new Set(); const n = p.vocab.length;
     const upd = () => { $('#cnt', tools).textContent = `👂 ${heard.size} / ${n} escuchadas`; if (canRec) $('#cnt2', tools).textContent = `🎙️ ${said.size} / ${n} ${M.canSR ? 'repetidas bien' : 'grabadas'}`; };
     const cards = p.vocab.map((it, i) => {
@@ -97,7 +97,7 @@
       hideF(); const done = k >= cards.length; b._i = done ? 0 : b._i; b._run = false; b.textContent = done ? '▶ Escuchar todo' : '▶ Continuar'; };
     // mini lesson + tips
     // v428: mini lección ARRIBA y dinámica (diapositivas con Mr. Arrieta), luego se practican las palabras
-    const ml10el = !o.noTip ? ml10(p, () => tools.scrollIntoView({ behavior: 'smooth', block: 'start' })) : null;
+    const ml10el = !o.noTip ? ml10(p, () => { const el = body.querySelector('.ml10'); if (el) { el.classList.add('ml10-min'); const hd = el.querySelector('.ml10-h'); if (hd && !hd._v) { hd._v = 1; hd.addEventListener('click', ev => { if (ev.target.closest('.ml10-au')) return; el.classList.toggle('ml10-min'); }); } } tools.scrollIntoView({ behavior: 'smooth', block: 'start' }); }) : null; // v484: al terminar la regla se pliega y las tarjetas quedan a la vista
     if (ml10el) { body.insertBefore(ml10el, tools);
     } else
     if (!o.noTip && (p.tip || (p.tips && p.tips.length))) {
