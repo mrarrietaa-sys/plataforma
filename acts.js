@@ -82,7 +82,7 @@
             const r = await M.recordScore(target, secs * 1000, f => mic.textContent = `🔴 Te escucho… ${Math.max(0, Math.ceil(secs * (1 - f)))}s`);
             mic.disabled = false; mic.textContent = '🎙️ Repetir otra vez';
             const ok = M.voiceResult(res, { score: r.score, heard: r.heard, url: r.url, model: () => play(it.au), onRetry: doRec, pass: 70 });
-            if (ok) markOk();
+            if (ok) { markOk(); setTimeout(() => { if (res.isConnected && !mic.disabled) res.innerHTML = ''; }, 2600); } // v485: si salió bien, el aviso se cierra solo
             res.addEventListener('selfok', markOk, { once: true });
           } catch (err) { mic.disabled = false; mic.textContent = '🎙️ Repetir'; M.toast('Permite el acceso al micrófono 🎤'); }
         };
@@ -97,7 +97,7 @@
       hideF(); const done = k >= cards.length; b._i = done ? 0 : b._i; b._run = false; b.textContent = done ? '▶ Escuchar todo' : '▶ Continuar'; };
     // mini lesson + tips
     // v428: mini lección ARRIBA y dinámica (diapositivas con Mr. Arrieta), luego se practican las palabras
-    const ml10el = !o.noTip ? ml10(p, () => { const el = body.querySelector('.ml10'); if (el) { el.classList.add('ml10-min'); const hd = el.querySelector('.ml10-h'); if (hd && !hd._v) { hd._v = 1; hd.addEventListener('click', ev => { if (ev.target.closest('.ml10-au')) return; el.classList.toggle('ml10-min'); }); } } tools.scrollIntoView({ behavior: 'smooth', block: 'start' }); }) : null; // v484: al terminar la regla se pliega y las tarjetas quedan a la vista
+    const ml10el = !o.noTip ? ml10(p, () => { const el = body.querySelector('.ml10'); if (el) { el.classList.add('ml10-min'); const hd = el.querySelector('.ml10-h'); if (hd && !hd._v) { hd._v = 1; hd.addEventListener('click', ev => { if (ev.target.closest('.ml10-au')) return; el.classList.toggle('ml10-min'); }); } } try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { } }) : null; // v484: al terminar la regla se pliega y las tarjetas quedan a la vista
     if (ml10el) { body.insertBefore(ml10el, tools);
     } else
     if (!o.noTip && (p.tip || (p.tips && p.tips.length))) {

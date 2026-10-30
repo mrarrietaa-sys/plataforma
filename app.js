@@ -747,7 +747,7 @@
   /* v484 · todo cabe en pantalla: si la actividad es más alta que la pantalla, se ajusta (zoom suave, nunca menos de 78%) */
   (function fit9() {
     let st = null, key = '', z = 1, ro = null, raf = 0;
-    const MIN = () => innerWidth < 700 ? .8 : .74;
+    const MIN = () => innerWidth < 700 ? .9 : .86;
     const run = () => { raf = 0; if (!st || !st.isConnected) return; const k = ((st.querySelector('h2') || {}).textContent || '') + '|' + ((st.querySelector('.hd .lbl') || {}).textContent || '');
       if (k !== key) { key = k; z = 1; st.style.zoom = ''; }
       const r = st.getBoundingClientRect(), topDoc = r.top + scrollY, avail = innerHeight - Math.max(0, topDoc) - 10; if (avail < 240) return;

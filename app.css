@@ -7773,3 +7773,16 @@ body.ag-teens .gs-k b{color:#0B2A5B}
 .player .reading .ph{height:clamp(120px,22vh,240px);aspect-ratio:auto!important}
 .player .reading .txt{max-height:34vh;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 @media(min-width:900px){.player .reading .ph{height:clamp(160px,40vh,360px)}.player .reading .txt{max-height:40vh}}
+/* v485 · tarjetas más grandes (sin exagerar la reducción) y aviso de voz encima de la tarjeta, sin empujar las demás */
+.lgrid .lcard .ph{height:clamp(80px,13vh,150px)}
+@media(min-width:900px){.lgrid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:12px}.lgrid.lg-many{grid-template-columns:repeat(5,minmax(0,1fr))!important}.lgrid .lcard .ph{height:clamp(96px,17vh,180px)}.lgrid .lcard .en{font-size:16px}}
+.ce-lw{position:relative}
+.ce-lw .ce-lres:not(:empty){position:absolute;left:0;right:0;top:0;z-index:6;margin:0;box-shadow:0 10px 24px rgba(11,42,91,.18);background:#fff;border-radius:14px}
+.lgrid .lcard .ph{height:clamp(70px,10vh,130px)}
+@media(min-width:900px){.lgrid .lcard .ph{height:clamp(86px,14vh,170px)}.lgrid{gap:10px}}
+.player .stage .ce-ltools{margin-bottom:8px}.player .stage .ce-lw{gap:4px}.player .stage .lgrid ~ .actionbar{margin-top:10px}
+@media(max-width:899px){.player .lgrid .lcard .ph{height:clamp(54px,7.5vh,110px)}.player .lgrid .lcard .tx{padding:5px 8px!important}.player .lgrid .lcard .en{font-size:14.5px;line-height:1.2}.player .lgrid .lcard .esn{font-size:11.5px;line-height:1.2}.player .lgrid .ce-mic{padding:5px 6px!important;font-size:13px;min-height:0}.player .lgrid{gap:7px}}
+.ml10.ml10-min{padding-top:8px!important;padding-bottom:8px!important}.ml10.ml10-min .ml10-h{margin:0!important}
+.player .stage .ce-ltools{flex-wrap:nowrap;gap:6px;overflow-x:auto;scrollbar-width:none}.player .stage .ce-ltools .btn{white-space:nowrap;padding:7px 11px;font-size:13px}.player .stage .ce-lcnt{white-space:nowrap;font-size:12px;padding:4px 8px}
+.player .stage .actionbar{position:sticky;bottom:10px;z-index:7}
+@media(min-width:900px){.player .lgrid .lcard .ph{height:clamp(84px,13vh,170px)}}
