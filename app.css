@@ -7730,3 +7730,9 @@ body.ag-teens .gs-k b{color:#0B2A5B}
 .c3-ln{width:100%;border-top:1px solid #0B2A5B;padding-top:8px;font-size:clamp(10.5px,2.7vw,13px);font-weight:600;white-space:nowrap}
 .c3-lb{font-size:clamp(10px,2.5vw,12px);color:#5B6B82;letter-spacing:.12em;text-transform:uppercase;margin-top:2px}
 @media print{.c3{box-shadow:none;-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+/* v479 · firma del certificado proporcionada (sin estirarse ni montarse sobre la fecha) */
+.c3-f{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.c3-col,.c3-v{min-width:0}
+.c3-v{overflow:hidden;text-align:center}
+.c3-v img{display:block;width:auto!important;height:auto!important;max-width:100%!important;max-height:52px!important;min-width:0;object-fit:contain;margin:0 auto}
+.c3-ln{white-space:normal}
+.c3-v{font-size:clamp(11.5px,3.3vw,16px);white-space:nowrap}
