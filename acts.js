@@ -684,7 +684,7 @@
     if (!ok) fallback();
     else {
       player = new YT.Player($('.sg9-p', w), { videoId: ids[0], width: '100%', height: '100%', playerVars: { rel: 0, modestbranding: 1, playsinline: 1, hl: 'en', cc_load_policy: 0, iv_load_policy: 3, start: clip[0], end: clip[1] },
-        events: { onReady: () => { try { player.unloadModule('captions'); player.unloadModule('cc'); } catch (e) { } }, onStateChange: (e) => { if (e.data === 1) { try { player.unloadModule('captions'); player.unloadModule('cc'); } catch (er) { } } if (e.data === 0 && i < n) { if (!asking) ask(); } },
+        events: { onReady: () => { try { player.setOption('captions', 'track', {}); player.setOption('cc', 'track', {}); player.unloadModule('captions'); player.unloadModule('cc'); } catch (e) { } }, onStateChange: (e) => { if (e.data === 1) { try { player.setOption('captions', 'track', {}); player.setOption('cc', 'track', {}); player.unloadModule('captions'); player.unloadModule('cc'); } catch (er) { } } if (e.data === 0 && i < n) { if (!asking) ask(); } },
           onError: () => { k++; if (k < ids.length) { try { player.loadVideoById({ videoId: ids[k], startSeconds: clip[0], endSeconds: clip[1] }); } catch (e) { fallback(); } } else fallback(); } } });
       poll = setInterval(() => { if (!w.isConnected) { clearInterval(poll); return; } try { if (!player.getPlayerState || player.getPlayerState() !== 1) return; const t = player.getCurrentTime();
         if (i < n && t >= CP[i]) { if (asking) { player.pauseVideo(); $('.sg9-rep', w).textContent = 'Escuchar otra vez'; } else ask(); } } catch (e) { } }, 200);

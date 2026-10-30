@@ -7645,7 +7645,8 @@ body.ag-teens .gs-k b{color:#0B2A5B}
 .fx-next{background:#f4f7fc;border:1px solid #e3e8f0;border-radius:12px;padding:12px 14px;color:#0B2A5B;margin:12px auto;max-width:460px}
 .gs-hint .gs-seal svg{animation:none!important;width:22px!important;height:22px!important;transform:none!important}
 /* v475 · Music · Completa lo que falta */
-.sg9{--n:#0B2A5B;--mu:#5B6B82;--ln:#D5DCE6;--bg:#fff;max-width:560px;margin:0 auto}
+.sg9{--n:#0B2A5B;--mu:#5B6B82;--ln:#D5DCE6;--bg:#fff;width:100%;max-width:560px;margin:0 auto;align-self:stretch;box-sizing:border-box}
+.sg9-vid{width:100%}.sg9-res{width:100%}
 .dk .sg9{--n:#fff;--mu:#B8C3D6;--ln:rgba(255,255,255,.22);--bg:rgba(255,255,255,.06)}
 .sg9-st{display:flex;align-items:center;gap:10px;margin:0 0 10px;font-size:13px;font-weight:700;color:var(--n)}
 .sg9-bar{flex:1;height:5px;border-radius:3px;background:var(--ln);overflow:hidden}.sg9-bar i{display:block;height:100%;width:0;background:var(--n);transition:width .4s}
