@@ -930,7 +930,7 @@
             el.querySelectorAll('.mv-o').forEach(b => b.onclick = () => {
               if (el.classList.contains('chosen')) return; const o = opts[+b.dataset.i];
               if (o !== x.a) { b.classList.add('bad'); sfx('bad'); setTimeout(M.encourage, 200); setTimeout(() => b.classList.remove('bad'), 650); return; }
-              el.classList.add('chosen'); b.classList.add('on'); sfx('ok'); el.querySelectorAll('.mv-o').forEach(z => { if (z !== b) z.classList.add('off'); });
+              el.classList.add('chosen'); b.classList.add('on'); sfx('ok'); { const tr = window.MRKQAES && MRKQAES[x.a]; if (tr) b.querySelector('span').insertAdjacentHTML('beforeend', `<small class="mv-oes">${esc(tr)}</small>`); } el.querySelectorAll('.mv-o').forEach(z => { if (z !== b) z.classList.add('off'); });
               const say = $e('.mv-say'); say.hidden = false; stop(); setTimeout(() => play(x.aau), 300);
               if (!M.canSR) { $e('.mv-st').textContent = 'Dilo en voz alta.'; okk = true; return setTimeout(done, 2600); }
               let fails = 0; const mic = $e('.mv-mic');
@@ -962,7 +962,7 @@
           const typing = add('<div class="mv-vn mv-typ"><i></i><i></i><i></i></div>'); await sleep(900); typing.remove();
           const vn = add(`<div class="mv-vn"><div class="mv-pr"><button type="button" class="mv-pp" aria-label="Escuchar">${PLAY}</button><span class="mv-wv"></span></div><b>${esc(x.q)}</b><small>${esc(x.es)}</small></div>`);
           const pp = vn.querySelector('.mv-pp'); const playQ = () => { stop(); vn.classList.add('playing'); play(x.qau); setTimeout(() => vn.classList.remove('playing'), 2200); }; pp.onclick = playQ; playQ();
-          { await sleep(700); const ex = add(`<div class="mv-ex"><small>Léela en voz alta</small><span>${esc(x.a)}</span><button type="button" class="mv-pl" aria-label="Escuchar">${I('vol')}</button></div>`); ex.querySelector('.mv-pl').onclick = () => { stop(); play(x.aau); }; await sleep(1600); stop(); play(x.aau); } /* v460: Mr. Arrieta lee la pregunta y la respuesta; el estudiante la lee */
+          { await sleep(700); const ex = add(`<div class="mv-ex"><small>Léela en voz alta</small><span>${esc(x.a)}</span>${window.MRKQAES && MRKQAES[x.a] ? `<em class="mv-exes">${esc(MRKQAES[x.a])}</em>` : ''}<button type="button" class="mv-pl" aria-label="Escuchar">${I('vol')}</button></div>`); ex.querySelector('.mv-pl').onclick = () => { stop(); play(x.aau); }; await sleep(1600); stop(); play(x.aau); } /* v460: Mr. Arrieta lee la pregunta y la respuesta; el estudiante la lee */
           mic.disabled = false; st.textContent = 'Toca el micrófono y léela'; hint.hidden = true;
           let okk = false;
           await new Promise(done => {

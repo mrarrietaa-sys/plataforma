@@ -7670,3 +7670,6 @@ body.ag-teens .gs-k b{color:#0B2A5B}
 .sg9-row em{font-style:normal;font-weight:600}.sg9-row em.ok{color:#1F8A5B}.sg9-row em.bad{color:#C0392B}
 .dk .sg9-row em.ok{color:#5ee0a0}.dk .sg9-row em.bad{color:#ff8f80}
 .sg9-song{margin-top:14px;font-size:13px;opacity:.7}
+/* v475 · traducción de la respuesta en misiones */
+.mv-exes{display:block;font-style:normal;font-size:14px;font-weight:500;opacity:.75;margin-top:4px;line-height:1.35}
+.mv-oes{display:block;font-size:13px;font-weight:500;opacity:.75;margin-top:3px;line-height:1.3}

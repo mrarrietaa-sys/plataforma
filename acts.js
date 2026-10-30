@@ -648,7 +648,7 @@
       setTimeout(() => r(!!(window.YT && YT.Player)), 9000); });
     return ytP9; }
   async function song9(stage, sg, opt = {}) {
-    const kids = M.ageGroup() === 'kids', n = Math.min(kids ? 3 : 4, (sg.g || []).length); if (n < 2) return null;
+    const kids = M.ageGroup() === 'kids', n = Math.min(3, (sg.g || []).length); if (n < 2) return null;
     const G = sg.g.slice(0, n), clip = window.MRCLIP ? MRCLIP(sg) : [30, 105], ids = [sg.yt, ...(sg.alt || [])];
     const CP = G.map((_, i) => i === n - 1 ? clip[1] - .6 : clip[0] + (clip[1] - clip[0]) * (i + 1) / n);
     const body = head(stage, { lbl: opt.lbl || 'Music', title: 'Completa lo que falta', ins: `Dale play. La canción se detiene sola ${n} veces: elige la palabra que escuchaste.` });
@@ -678,13 +678,13 @@
           let ended = false; try { ended = player.getPlayerState() === 0; } catch (e) { } if (ended) { ask(); return; }
           hint('Sigue escuchando…'); try { player.playVideo(); } catch (e) { } }, 1800); }); };
     const fallback = () => { clearInterval(poll); player = null;
-      $('.sg9-vid', w).innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${esc(ids[0])}?rel=0&playsinline=1&start=${clip[0]}&end=${clip[1]}" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+      $('.sg9-vid', w).innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${esc(ids[0])}?rel=0&playsinline=1&start=${clip[0]}&end=${clip[1]}&cc_load_policy=0&iv_load_policy=3" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
       hint('Escucha la canción y luego responde.'); const go = h('<button type="button" class="sg9-rep">Ya la escuché</button>'); $('.sg9-q', w).appendChild(go); go.onclick = () => { go.remove(); ask(); }; };
     const ok = await yt9(); if (!stage.isConnected) return null;
     if (!ok) fallback();
     else {
-      player = new YT.Player($('.sg9-p', w), { videoId: ids[0], width: '100%', height: '100%', playerVars: { rel: 0, modestbranding: 1, playsinline: 1, hl: 'en', start: clip[0], end: clip[1] },
-        events: { onStateChange: (e) => { if (e.data === 0 && i < n) { if (!asking) ask(); } },
+      player = new YT.Player($('.sg9-p', w), { videoId: ids[0], width: '100%', height: '100%', playerVars: { rel: 0, modestbranding: 1, playsinline: 1, hl: 'en', cc_load_policy: 0, iv_load_policy: 3, start: clip[0], end: clip[1] },
+        events: { onReady: () => { try { player.unloadModule('captions'); player.unloadModule('cc'); } catch (e) { } }, onStateChange: (e) => { if (e.data === 1) { try { player.unloadModule('captions'); player.unloadModule('cc'); } catch (er) { } } if (e.data === 0 && i < n) { if (!asking) ask(); } },
           onError: () => { k++; if (k < ids.length) { try { player.loadVideoById({ videoId: ids[k], startSeconds: clip[0], endSeconds: clip[1] }); } catch (e) { fallback(); } } else fallback(); } } });
       poll = setInterval(() => { if (!w.isConnected) { clearInterval(poll); return; } try { if (!player.getPlayerState || player.getPlayerState() !== 1) return; const t = player.getCurrentTime();
         if (i < n && t >= CP[i]) { if (asking) { player.pauseVideo(); $('.sg9-rep', w).textContent = 'Escuchar otra vez'; } else ask(); } } catch (e) { } }, 200);
