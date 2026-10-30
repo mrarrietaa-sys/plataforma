@@ -81,9 +81,17 @@
           try {
             const r = await M.recordScore(target, secs * 1000, f => mic.textContent = `🔴 Te escucho… ${Math.max(0, Math.ceil(secs * (1 - f)))}s`);
             mic.disabled = false; mic.textContent = '🎙️ Repetir otra vez';
+            if (r.score != null) { /* v490 · el resultado va en la tarjeta y en su botón (nada se monta encima) */
+              const sc = Math.round(r.score), ok = sc >= 70, mid = !ok && sc >= 45;
+              wrap.classList.remove('ce-st-ok', 'ce-st-mid', 'ce-st-bad'); wrap.classList.add(ok ? 'ce-st-ok' : mid ? 'ce-st-mid' : 'ce-st-bad'); rep.classList.toggle('ce-has2', !ok);
+              if (ok) { res.innerHTML = ''; mic.textContent = `✓ ${sc}% · Repetir otra vez`; markOk(); }
+              else { res.innerHTML = `<div class="ce-lfb"><b>${sc}%</b> · ${mid ? '¡Casi! Repite despacio' : 'Escucha y repite'}</div><div class="ce-l2"><button type="button" class="btn sm ce-mo">Oír modelo</button><button type="button" class="btn sm ce-ag">Otra vez</button></div>`;
+                res.querySelector('.ce-mo').onclick = (ev) => { ev.stopPropagation(); stop(); play(it.au); };
+                res.querySelector('.ce-ag').onclick = (ev) => { ev.stopPropagation(); sfx('tap'); doRec(); }; }
+            } else {
             const ok = M.voiceResult(res, { score: r.score, heard: r.heard, url: r.url, model: () => play(it.au), onRetry: doRec, pass: 70 });
-            { const vt = res.querySelector('.vres-t'), vr = res.querySelector('.vres'); if (vt && vr) vt.textContent = vr.classList.contains('ok') ? '¡Muy bien!' : vr.classList.contains('mid') ? '¡Casi! Repite despacio.' : 'Otra vez: escucha el modelo.'; } // v487: aviso corto dentro de la tarjeta
-            if (ok) { markOk(); setTimeout(() => { if (res.isConnected && !mic.disabled) res.innerHTML = ''; }, 2600); } // v485: si salió bien, el aviso se cierra solo
+            if (ok) markOk();
+            }
             res.addEventListener('selfok', markOk, { once: true });
           } catch (err) { mic.disabled = false; mic.textContent = '🎙️ Repetir'; M.toast('Permite el acceso al micrófono 🎤'); }
         };
