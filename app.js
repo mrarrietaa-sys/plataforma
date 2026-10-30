@@ -495,20 +495,30 @@
   // v420: Mr. Arrieta dice algo acorde a cómo le fue en la sección (nunca "Great job!" si se equivocó)
   const ITL_FB = { hi: [['Great job!', 'a88a2d51d2', '¡Lo hiciste muy bien!'], ['Excellent!', '54f1859c38', '¡Excelente trabajo!'], ['Awesome!', '98561b5346', '¡Increíble!'], ['Well done!', 'b93b9f5f0f', '¡Muy bien hecho!']],
     mid: [['Nice work!', 'aa2b15da71', 'Vas bien. Al final repasa lo que fallaste.']], lo: [['Not quite. You can do it!', '8b4c184411', 'No pasa nada: equivocarse es parte de aprender. ¡Sigue!']] };
-  function interlude(next, perf) {
+  let itlLast = '';
+  function interlude(next, perf, info) { /* v482 · transición mejorada: resultado real, avance, mitad/última, sin tocar la cabeza ni las letras */
     return new Promise(res => {
       const k = SEC_SC[next] || FREE[sceneN++ % FREE.length], sc0 = SCENES[k];
-      const band = perf == null ? null : perf >= .8 ? 'hi' : perf >= .5 ? 'mid' : 'lo'; const fbx = band ? ITL_FB[band][Math.floor(Math.random() * ITL_FB[band].length)] : null;
-      const sad = band === 'lo' ? 'mra-sad' + (1 + Math.floor(Math.random() * 3)) + '.webp' : null; // v443: Mr. Arrieta triste cuando la sección salió mal
+      const band = perf == null ? null : perf >= .8 ? 'hi' : perf >= .5 ? 'mid' : 'lo';
+      let fbx = null; if (band) { const L = ITL_FB[band].filter(x => x[0] !== itlLast); fbx = (L.length ? L : ITL_FB[band])[Math.floor(Math.random() * (L.length || ITL_FB[band].length))]; itlLast = fbx[0]; }
+      const sad = band === 'lo' ? 'mra-sad' + (1 + Math.floor(Math.random() * 3)) + '.webp' : null;
       const sc = fbx ? Object.assign({}, sad ? { a: 'pop' } : sc0, { say: fbx[0] }) : sc0;
-      const ov = h(`<div class="itl itl-${sc.a}" role="status">${sc.a === 'stage' ? '<div class="itl-lights"></div>' : ''}
-        <div class="itl-actor ${sad ? 'itl-k-sad' : 'itl-k-' + k}"><b class="itl-say">${esc(sc.say)}</b><img class="itl-img" src="${sad || 'mra-x-' + k + '.webp?v=7'}" alt="Mr. Arrieta"></div>
-        <div class="itl-next"><small>NEXT</small><b>${window.MRI ? MRI(SEC_ICO[next] || 'star') : ''} ${esc(next.toUpperCase())}</b><i>Toca para continuar</i></div></div>`);
+      const I9 = info || {}, tot = +I9.total || 0, st = +I9.step || 0;
+      let nick = ''; try { const pp = window.MRAP && MRAP.get && MRAP.get(); nick = ((MRAP.look && MRAP.look().nick) || (pp && pp.first) || '').trim().split(/\s+/)[0]; } catch (e) { }
+      const useName = nick && band === 'hi' && st && st % 3 === 0;
+      const sayTxt = useName ? sc.say.replace(/!$/, ', ' + nick + '!') : sc.say;
+      const resTxt = I9.t ? (band === 'lo' ? 'Sigue intentando, ¡tú puedes!' : `${I9.c} de ${I9.t} en ${I9.sec}`) : '';
+      const special = tot >= 4 && st ? (st === tot ? '¡Última! Ya casi terminas' : st === Math.ceil(tot / 2) ? '¡Vas por la mitad!' : '') : '';
+      const dots = tot ? `<span class="itl-dots">${Array.from({ length: tot }, (_, j) => `<i class="${j < st - 1 ? 'd' : j === st - 1 ? 'c' : ''}"></i>`).join('')}</span><span class="itl-pso">Paso ${st} de ${tot}</span>` : '';
+      const ov = h(`<div class="itl itl9 itl-${sc.a}" role="status">${sc.a === 'stage' ? '<div class="itl-lights"></div>' : ''}
+        <div class="itl-top">${special ? `<span class="itl-tag">${esc(special)}</span>` : ''}<div class="itl-say"><b>${esc(sayTxt)}</b>${resTxt ? `<small>${esc(resTxt)}</small>` : ''}</div></div>
+        <div class="itl-mid"><div class="itl-actor ${sad ? 'itl-k-sad' : 'itl-k-' + k}"><img class="itl-img" src="${sad || 'mra-x-' + k + '.webp?v=7'}" alt="Mr. Arrieta"></div></div>
+        <div class="itl-next"><small>NEXT</small><b>${window.MRI ? MRI(SEC_ICO[next] || 'star') : ''} ${esc(next.toUpperCase())}</b><i>Toca para continuar</i>${dots}</div></div>`);
       document.body.appendChild(ov); try { sfx('win'); } catch (e) { }
       if (fbx) { try { const id = fbx[1]; if (M.ageGroup() === 'adult') setTimeout(() => !done && play(id), 380); else M.fbf().then(() => setTimeout(() => !done && play(window.AUD && window.AUD['fb_' + id] ? 'fb_' + id : id), 380)); } catch (e) { } } else
       try { if (M.ageGroup() !== 'adult') { const sayIt = () => { if (!done && window.AUD && window.AUD['itl_' + k]) play('itl_' + k); }; setTimeout(() => { if (window.AUD && window.AUD['itl_' + k]) sayIt(); else M.fbf().then(sayIt); }, 380); } } catch (e) { }
       let done = false; const end = () => { if (done) return; done = true; ov.classList.add('out'); setTimeout(() => { ov.remove(); res(); }, 250); };
-      ov.onclick = end; setTimeout(end, 2600);
+      ov.onclick = end; setTimeout(end, 2300);
     });
   }
   /* ---------- volver atrás: ver lo que respondió y corregir ---------- */
@@ -618,7 +628,7 @@
       snaps[i] = snapHTML(stage); revisit = false;
       save();
       i++;
-      if (ITL_ON && i < steps.length && steps[i].sec !== s.sec && app.contains(player)) { const RS = Object.values(run.res || {}).filter(x => x && x.sec === s.sec && x.t); const rc = RS.reduce((a, x) => a + x.c, 0), rt = RS.reduce((a, x) => a + x.t, 0); await interlude(steps[i].sec, rt ? rc / rt : null); } // v420: el mensaje depende de cómo le fue
+      if (ITL_ON && i < steps.length && steps[i].sec !== s.sec && app.contains(player)) { const RS = Object.values(run.res || {}).filter(x => x && x.sec === s.sec && x.t); const rc = RS.reduce((a, x) => a + x.c, 0), rt = RS.reduce((a, x) => a + x.t, 0); await interlude(steps[i].sec, rt ? rc / rt : null, { c: rc, t: rt, sec: s.sec, step: i + 1, total: steps.length }); } // v420: el mensaje depende de cómo le fue
     }
     $('.prog i', app).style.width = '100%'; cleanup();
     results(p, run);
@@ -734,7 +744,7 @@
     });
   }
   window.addEventListener('mra-nohear2', () => micTips(true));
-  window.M1ITL = (n, perf) => interlude(n, perf); // (pruebas)
+  window.M1ITL = (n, perf, info) => interlude(n, perf, info); // (pruebas)
   const STEP = {
     goal: async (stage, p) => {
       const prev = M.prevPart(p);
