@@ -718,7 +718,7 @@
     if (!p.module && !staff) {
       main = `<div class="card pt-step"><div class="pt-stepn">1</div><div><span class="lbl">Primer paso</span><h2>Toma tu prueba de clasificación</h2>
         <p>Solo <b>10 minutos</b>. Se adapta a tu nivel y al terminar empiezas de una vez tu ruta de aprendizaje.</p>
-        <p class="muted">⏱ Unos 10 minutos · intentos ilimitados${pst.inProgress ? ' · <b>Tienes una prueba en progreso</b>' : ''}</p>
+        <p class="muted">⏱ Unos 10 minutos · puedes repetirla de inmediato una vez; después, cada 12 horas${pst.inProgress ? ' · <b>Tienes una prueba en progreso</b>' : ''}</p>
         <button class="btn k lg" id="pt">📝 ${pst.inProgress ? 'Continuar' : 'Tomar'} mi prueba de clasificación</button></div><img class="pt-step-plane" src="mra-x-plane-red.webp" alt="Mr. Arrieta"></div>`;
     } else if (a && P.isExpired()) {
       main = `<div class="card pt-mymod"><div class="pt-mymod-img" style="background-image:url('${U(a.img)}')"><span>🔒</span></div><div><span class="lbl">⏰ Plan vencido</span>
@@ -850,7 +850,7 @@
       $('#wbx', wm).onclick = () => wm.remove(); M.confetti && M.confetti(900); } } catch (e) { }
     if (!tourSeenK(tourKind())) setTimeout(portalTour, 900);
     $('#me-av').onclick = () => route('me'); if ($('#me-go')) $('#me-go').onclick = () => route('me');
-    const retake = () => { if (staff) return route('placement'); const m = M.modal(`<h3>¿No estás a gusto con tu nivel?</h3><p>Si gustas, puedes <b>volver a tomar la prueba de clasificación</b>. Tu ruta de aprendizaje se actualizará con el nuevo resultado.</p><p class="muted">Puedes repetirla las veces que quieras.</p><div class="row"><button class="btn k" id="y">Sí, repetir</button><button class="btn w" id="n">Cancelar</button></div>`, { x: true }); $('#n', m).onclick = () => m.remove(); $('#y', m).onclick = () => { m.remove(); route('placement'); }; };
+    const retake = () => { if (staff) return route('placement'); const m = M.modal(`<h3>¿No estás a gusto con tu nivel?</h3><p>Si gustas, puedes <b>volver a tomar la prueba de clasificación</b>. Tu ruta de aprendizaje se actualizará con el nuevo resultado.</p><p class="muted">Puedes repetirla de inmediato una vez; después hay 12 horas entre intentos. Tu módulo se basa en tu resultado más reciente.</p><div class="row"><button class="btn k" id="y">Sí, repetir</button><button class="btn w" id="n">Cancelar</button></div>`, { x: true }); $('#n', m).onclick = () => m.remove(); $('#y', m).onclick = () => { m.remove(); route('placement'); }; };
     ['#pt2', '#pt3'].forEach(id => { if ($(id)) $(id).onclick = retake; });
     $$('.pt-mod').forEach(el => el.onclick = () => openMod(el.dataset.id));
   }

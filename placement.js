@@ -107,7 +107,7 @@
     const pr = P.get() || {};
     first = pr.first || (pr.name || '').split(' ')[0] || ''; last = pr.last || (pr.name || '').split(' ').slice(1).join(' ');
     temail = pr.email || ''; wa = pr.whatsapp || ''; course = pr.course || '';
-    if (ST.attempts >= maxAttempts()) return locked();
+    if (!(ST.prog && ST.prog.startedAt) && (+ST.attempts || 0) >= 2 && ST.lastAt && Date.now() - ST.lastAt < WAIT) return waitScreen(); /* v473: 2 intentos seguidos; desde el 3.º, 12 h entre intentos */
     const p = ST.prog; const done = p && Array.isArray(p.answers) ? p.answers.filter(a => a && a.answered).length : 0; if (p && !p.plan && p.answers) { ST.prog = null; persist(); return welcome(); } // progreso de la versión anterior (40 preguntas)
     if (p && (done > 0 || p.startedAt)) return resume(p, done);
     welcome();
@@ -136,7 +136,7 @@
     $('#c').onclick = async () => { await M.loadAudio(['pt', 'maPT']); first = p.first || first; last = p.last || last; temail = p.temail || temail; wa = p.wa || wa; course = p.course || course;
       answers = (p.answers && p.answers.length === N) ? p.answers.map((a, i) => a && ITEMS[i].section === 'speaking' ? null : a) : new Array(N).fill(null);
       PL = p.plan || null; if (!PL) initPlan(); startedAt = p.startedAt || Date.now(); startTimer(); show(); };
-    $('#r').onclick = () => { if (p.startedAt) { ST.attempts++; } ST.prog = null; persist(); run(app, ctx); };
+    $('#r').onclick = () => { if (p.startedAt) { ST.attempts++; ST.lastAt = Date.now(); } ST.prog = null; persist(); run(app, ctx); };
   }
   const saveProfile = () => { const pr = P.get() || {}; Object.assign(pr, { first, last, name: (first + ' ' + last).trim(), email: temail, whatsapp: wa, course }); P.save(pr); };
   function studentInfo() {
@@ -334,7 +334,7 @@
   let last_ = null;
   function submit() {
     if (!startedAt && !timedOut) return; stopTimer(); stopRec();
-    ST.attempts++; ST.prog = null; persist(); startedAt = null;
+    ST.attempts++; ST.lastAt = Date.now(); ST.prog = null; persist(); startedAt = null;
     const { per, fin } = scores(); const ms = mastery();
     last_ = { answersSnap: answers.slice(), per, fin, ms, date: new Date(), name: name(), temail, wa, course, attempt: ST.attempts, attemptLabel: `Intento ${ST.attempts}`, timedOut };
     P.setPlacement(ms.rec, { score: fin, mods: Object.fromEntries(Object.entries(ms.mods).map(([k, v]) => [k, Math.round(v.pct * 100)])), skills: Object.fromEntries(Object.entries(per).map(([k, v]) => [k, +v.score.toFixed(1)])), all: ms.all });
@@ -356,7 +356,7 @@
       ${trial ? `<div class="pt-trial">🟢 <b>Acceso gratuito:</b> ya puedes explorar los <b>2 primeros temas</b> del ${esc((P.trialMod() || m).name)}.</div>` : ''}
       <div class="fx-notify">${cloud() ? '<div id="n0" class="pending">⏳ Enviando tu resultado a administración…</div>' : ''}<div id="n1" class="pending">⏳ Guardando resultados…</div><div id="n2" class="pending">⏳ Enviando correo con tu resultado…</div><div id="n3" class="pending">⏳ Enviando copia a administración…</div></div>
       <div class="row" style="justify-content:center;margin-top:14px"><button class="btn k lg" id="prof">Continuar →</button>
-        <button class="btn w" id="again">Intentar de nuevo</button></div>
+        ${(+ST.attempts || 0) >= 2 ? `<p class="fx-next" style="width:100%">Podrás repetirla <b>${nextTxt()}</b></p>` : '<button class="btn w" id="again">Repetir ahora</button>'}</div>
       <p class="muted center" style="font-size:14px;margin-top:10px">¿No te sientes a gusto con tu resultado? Puedes repetir la prueba: <b>tu ruta de aprendizaje se actualiza con el nuevo resultado</b>.</p></div>`);
     wireExit(); sfx('win'); M.confetti(3500);
     $('#prof').onclick = () => { scrollTo(0, 0); ctx.route('home'); }; // 🧭 vuelve a su perfil: la guía marca el paso en verde y muestra el siguiente 
@@ -429,6 +429,16 @@
     d.save('Reporte_Prueba_Clasificacion_' + r.name.replace(/\s+/g, '_') + '.pdf');
   }
   function secondChance() { ST.round = 2; ST.prog = null; persist(); sfx('win'); M.toast('✓ Segunda oportunidad activada: tienes ' + CFG.ATTEMPTS + ' intentos más'); run(app, ctx); }
+  const WAIT = 12 * 3600 * 1000;
+  function nextTxt() { const t = new Date((+ST.lastAt || Date.now()) + WAIT), d = new Date(); const same = t.toDateString() === d.toDateString(), tm = new Date(d.getTime() + 864e5).toDateString() === t.toDateString();
+    const h = t.toLocaleTimeString('es-CO', { hour: 'numeric', minute: '2-digit', hour12: true }).replace(/\s?a\.?\s?m\.?/i, ' a. m.').replace(/\s?p\.?\s?m\.?/i, ' p. m.');
+    return (same ? 'hoy' : tm ? 'mañana' : t.toLocaleDateString('es-CO', { weekday: 'long', day: 'numeric', month: 'long' })) + ' a las ' + h; }
+  function waitScreen() {
+    shell(`${top()}<div class="card center fx-welcome fx9w"><h1 class="fx9-t">Prueba de clasificación</h1>
+      <p class="fx-next">Podrás repetirla <b>${nextTxt()}</b></p><p class="muted" style="margin:6px 0 16px">Ya la tomaste dos veces seguidas. Desde ahora hay 12 horas entre un intento y otro. Tu módulo se basa en tu resultado más reciente.</p>
+      <button class="btn w lg" id="hm">Volver a mi perfil</button></div>`);
+    if (typeof wireExit === 'function') wireExit(); const hm = document.getElementById('hm'); if (hm) hm.onclick = () => { location.href = 'index.html'; };
+  }
   function locked() {
     stopTimer();
     if ((ST.round || 1) < ROUNDS) {
