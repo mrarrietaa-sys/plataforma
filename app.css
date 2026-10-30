@@ -7799,3 +7799,5 @@ body.ag-teens .gs-k b{color:#0B2A5B}
 .lgrid .ce-lres .meter{margin:0}.lgrid .ce-lres .meter .bar{height:8px}.lgrid .ce-lres .meter b{font-size:13px}
 .lgrid .ce-lres .vres-b{margin:0;gap:4px;flex-wrap:nowrap}.lgrid .ce-lres .vres-b .btn{padding:5px 6px;font-size:12px;flex:1;min-width:0;white-space:nowrap}
 .lgrid .ce-lres .vres-b [data-a="r"]{display:none}
+/* v488 · durante la lección se oculta el banner de arriba (solo se ve la actividad) */
+body:has(#app .player) .topbar,body:has(#app .ld-load) .topbar{display:none!important}
