@@ -77,11 +77,12 @@
         const secs = Math.min(8, Math.max(3, Math.ceil(target.split(/\s+/).length * .6) + 2));
         const markOk = () => { said.add(i); upd(); c.classList.add('ce-said'); if (!c.querySelector('.ce-saidb')) c.appendChild(h('<span class="ce-saidb" title="¡Repetida bien!">🎙️</span>')); };
         const doRec = async () => {
-          if (mic.disabled) return; stop(); mic.disabled = true; res.innerHTML = '';
+          if (mic.disabled) return; stop(); mic.disabled = true; res.innerHTML = ''; $$('.ce-lres', grid).forEach(x => { if (x !== res) x.innerHTML = ''; }); // v487: un solo aviso abierto a la vez
           try {
             const r = await M.recordScore(target, secs * 1000, f => mic.textContent = `🔴 Te escucho… ${Math.max(0, Math.ceil(secs * (1 - f)))}s`);
             mic.disabled = false; mic.textContent = '🎙️ Repetir otra vez';
             const ok = M.voiceResult(res, { score: r.score, heard: r.heard, url: r.url, model: () => play(it.au), onRetry: doRec, pass: 70 });
+            { const vt = res.querySelector('.vres-t'), vr = res.querySelector('.vres'); if (vt && vr) vt.textContent = vr.classList.contains('ok') ? '¡Muy bien!' : vr.classList.contains('mid') ? '¡Casi! Repite despacio.' : 'Otra vez: escucha el modelo.'; } // v487: aviso corto dentro de la tarjeta
             if (ok) { markOk(); setTimeout(() => { if (res.isConnected && !mic.disabled) res.innerHTML = ''; }, 2600); } // v485: si salió bien, el aviso se cierra solo
             res.addEventListener('selfok', markOk, { once: true });
           } catch (err) { mic.disabled = false; mic.textContent = '🎙️ Repetir'; M.toast('Permite el acceso al micrófono 🎤'); }

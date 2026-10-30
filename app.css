@@ -7791,3 +7791,11 @@ body.ag-teens .gs-k b{color:#0B2A5B}
 .yn9-t{display:flex;gap:6px}.yn9-b{display:flex;align-items:center;gap:6px;border:1.5px solid #DCE4F0;background:#fff;border-radius:10px;padding:5px 10px;cursor:pointer;font:inherit;color:#0B2A5B}
 .yn9-b b{font:800 13px Poppins,system-ui,sans-serif}.yn9-b em{font-style:normal;font-size:11.5px;font-weight:700;color:#127a43}.yn9-b em:empty{display:none}
 .yn9-b.ok{border-color:#9ad9b6;background:#F0FAF4}.yn9-b.on{border-color:#E3242B;box-shadow:0 0 0 1px #E3242B inset}
+/* v487 · aviso de voz compacto dentro de la tarjeta (no se monta sobre las vecinas) */
+.lgrid .ce-lw .ce-lres:not(:empty){top:0;left:0;right:0;bottom:auto;height:calc(100% - 42px);overflow:hidden;border-radius:14px}
+.lgrid .ce-lres .vres{height:100%;box-sizing:border-box;padding:7px 8px;display:flex;flex-direction:column;justify-content:space-between;gap:4px;margin:0;border-radius:14px}
+.lgrid .ce-lres .vres-t{font-size:12.5px;line-height:1.25;margin:0;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.lgrid .ce-lres .vres small.muted{display:none}
+.lgrid .ce-lres .meter{margin:0}.lgrid .ce-lres .meter .bar{height:8px}.lgrid .ce-lres .meter b{font-size:13px}
+.lgrid .ce-lres .vres-b{margin:0;gap:4px;flex-wrap:nowrap}.lgrid .ce-lres .vres-b .btn{padding:5px 6px;font-size:12px;flex:1;min-width:0;white-space:nowrap}
+.lgrid .ce-lres .vres-b [data-a="r"]{display:none}
