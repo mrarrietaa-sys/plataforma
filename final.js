@@ -412,7 +412,7 @@
         <div class="c3-f"><div class="c3-col"><div class="c3-v">${esc(date)}</div><div class="c3-ln">Date of issue</div><div class="c3-lb">mrarrieta.com</div></div><div class="c3-col"><div class="c3-v"><img src="mra-signature.png" alt="Firma"></div><div class="c3-ln">John Jairo Arrieta Jaramillo</div><div class="c3-lb">Director</div></div></div></div></div></div>
       <div class="row noprint" style="justify-content:center;margin-top:16px"><button class="btn k lg" id="dl">⬇️ Descargar certificado (PDF)</button><button class="btn w" id="pr">🖨️ Imprimir</button>
         <button class="btn w" id="hm">🏠 Inicio</button></div></div>`;
-    window.scrollTo(0, 0);
+    window.scrollTo(0, 0); if (innerWidth >= 900) setTimeout(() => { try { const c = document.getElementById('cert'), r = c.getBoundingClientRect(), hd = (document.querySelector('.topbar, header') || { offsetHeight: 90 }).offsetHeight; window.scrollTo({ top: Math.max(0, scrollY + r.top - hd - Math.max(8, (innerHeight - hd - r.height) / 2)), behavior: 'smooth' }); } catch (e) { } }, 300); // v480: en PC el certificado queda completo a la vista
     $('#pr').onclick = () => print(); $('#hm').onclick = () => ctx.route('home');
     $('#dl').onclick = async () => {
       if (!(await jspdf())) return M.toast('No se pudo cargar el generador de PDF.');

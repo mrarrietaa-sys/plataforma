@@ -7736,3 +7736,11 @@ body.ag-teens .gs-k b{color:#0B2A5B}
 .c3-v img{display:block;width:auto!important;height:auto!important;max-width:100%!important;max-height:52px!important;min-width:0;object-fit:contain;margin:0 auto}
 .c3-ln{white-space:normal}
 .c3-v{font-size:clamp(11.5px,3.3vw,16px);white-space:nowrap}
+/* v480 · certificado completo a la vista en PC */
+@media(min-width:900px){
+.c3{max-width:860px}.c3-fr{padding:20px 48px 18px}.c3-logo{width:92px}
+.c3-t{font-size:30px;margin:10px 0 2px}.c3-st{font-size:12px}.c3-orn{margin:10px auto}
+.c3-s{font-size:12px}.c3-n{font-size:38px;margin-top:6px;min-width:50%;padding-bottom:6px}
+.c3-p{font-size:15px;margin:10px 0 2px}.c3-m{font-size:21px}.c3-lv{font-size:14px}.c3-sc{margin-top:10px}
+.c3-f{margin:16px auto 0;max-width:600px}.c3-v{height:46px;font-size:15px}.c3-v img{max-height:44px!important}.c3-ln{font-size:13px}
+}
