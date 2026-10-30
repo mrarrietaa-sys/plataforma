@@ -789,11 +789,11 @@
       ${g1on || !curMod || staff || !window.MRGOAL ? '' : `<div class="pg-mob">${MRGOAL.cardHTML(pct)}</div>`}
       ${newbie ? '' : birthAsk()}
       </section>
-      <section class="pg" data-pgk="learn"><div class="sect-title"><h2>${MRI('book')} Mis módulos</h2></div>
+      <section class="pg" data-pgk="learn">${newbie ? `<div class="sect-title"><h2>${MRI('book')} Mis módulos</h2></div>` : md3Head()}
       ${kidsX}
       ${newbie ? '' : `
-      <div class="pt-mods-grid pt-route">${P.MODS.map(m => modCard(m)).join('')}</div>
-      ${courseCard()}
+      ${md3Hero()}<div class="md3-sec"><h2>De A1 a B2+</h2></div><div class="md3-lad">${P.MODS.map(m => md3Card(m)).join('')}</div>
+      ${md3Final()}
       ${pl ? `<div class="sect-title"><h2>📝 Mi prueba de clasificación</h2></div><div class="card pt-plres"><div><b>Resultado:</b> ${esc(P.mod(pl.module).name)} · ${esc(P.mod(pl.module).es)}<br><span class="muted">${new Date(pl.date).toLocaleDateString('es-CO')}${pl.mods ? ' · ' + [1, 2, 3, 4].map(k => `${P.mod(k).id}: ${pl.mods[k]}%`).join(' · ') : ''}</span></div>${!P.isExpired() && (pst.attempts < pst.max || (pst.round || 1) < (pst.rounds || 1)) ? '<button class="btn w sm" id="pt2">🔁 Repetir prueba</button>' : ''}</div>` : ''}
       ${staff ? `<div class="sect-title"><h2>📝 Prueba de clasificación</h2></div><div class="card pt-plres"><div>Puedes presentar o revisar la prueba de clasificación como lo verá el estudiante.</div><button class="btn w sm" id="pt2">📝 Abrir prueba</button></div>` : ''}
       ${certs()}<div id="pt-notes"></div>`}
@@ -852,11 +852,38 @@
     $('#me-av').onclick = () => route('me'); if ($('#me-go')) $('#me-go').onclick = () => route('me');
     const retake = () => { if (staff) return route('placement'); const m = M.modal(`<h3>¿No estás a gusto con tu nivel?</h3><p>Si gustas, puedes <b>volver a tomar la prueba de clasificación</b>. Tu ruta de aprendizaje se actualizará con el nuevo resultado.</p><p class="muted">Puedes repetirla de inmediato una vez; después hay 12 horas entre intentos. Tu módulo se basa en tu resultado más reciente.</p><div class="row"><button class="btn k" id="y">Sí, repetir</button><button class="btn w" id="n">Cancelar</button></div>`, { x: true }); $('#n', m).onclick = () => m.remove(); $('#y', m).onclick = () => { m.remove(); route('placement'); }; };
     ['#pt2', '#pt3'].forEach(id => { if ($(id)) $(id).onclick = retake; });
-    $$('.pt-mod').forEach(el => el.onclick = () => openMod(el.dataset.id));
+    $$('.pt-mod,.md3-c,.md3-hero').forEach(el => el.onclick = () => openMod(el.dataset.id));
   }
   function routeBar() {
     const fin = courseOpen(), fdone = !!(courseState().final && courseState().final.passed);
     return `<div class="pt-routebar">${P.MODS.map((m, i) => { const r = P.role(m.id); return `${i ? `<i class="ln ${r === 'locked' || r === 'soon' ? '' : 'on'}"></i>` : ''}<div class="st ${r}${P.passed(m.id) ? ' ok' : ''}"><b>${P.passed(m.id) ? '✓' : r === 'current' ? '📍' : m.n}</b><small>${esc(m.lv || m.id)}</small></div>`; }).join('')}<i class="ln ${fin ? 'on' : ''}"></i><div class="st fin ${fdone ? 'ok' : fin ? 'current' : 'locked'}"><b>${fdone ? '🎓' : '🏆'}</b><small>Final</small></div></div>`;
+  }
+  /* v478 · Mis módulos · diseño C (banner «Continúa donde quedaste» + 4 tarjetas con foto) */
+  const LKI = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>';
+  const CKI = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>';
+  function md3Tot(m) { return P.get() && P.isTrial() && P.role(m.id) === 'current' ? 4 : m.classes; }
+  function md3Cur() { const a = P.assigned && P.assigned(); if (a && P.role(a.id) === 'current' && a.ready) return a.id; const m = P.MODS.find(x => P.role(x.id) === 'current' && x.ready && !P.passed(x.id)) || P.MODS.find(x => P.role(x.id) === 'current' && x.ready); return m ? m.id : null; }
+  function md3Head() {
+    const ok = P.MODS.filter(m => P.passed(m.id)).length; let done = 0; P.MODS.forEach(m => { try { if (m.ready) done += (P.progress(m.id).done || 0); } catch (e) { } });
+    return `<div class="md3-hx"><div><span class="md3-k">Tu ruta de inglés</span><h1>Mis módulos</h1></div><div class="md3-stats"><div><b>${ok} / ${P.MODS.length}</b><small>aprobados</small></div><div><b>${done}</b><small>lecciones hechas</small></div></div></div>`;
+  }
+  function md3Hero() {
+    const ci = md3Cur(), m = ci && P.mod(ci); if (!m || P.isExpired()) return '';
+    const pr = P.progress(m.id), tot = md3Tot(m), pct = Math.min(100, Math.round((pr.done || 0) / Math.max(1, tot) * 100));
+    return `<button type="button" class="md3-hero" data-id="${m.id}"><span class="md3-hi" style="background-image:url('${U(m.img, 900, 600)}')"></span><span class="md3-hx2"><span class="md3-k">${pr.done ? 'Continúa donde quedaste' : 'Empieza tu módulo'}</span><b class="md3-ht">${esc(m.name)} · ${esc(m.lv || m.id)}</b><span class="md3-hs">${esc(m.es.replace(/\s*\(.*\)/, ""))}</span><span class="md3-hb"><i style="width:${pct}%"></i></span><span class="md3-hm">${pr.done || 0} de ${tot} lecciones · ${pct}%</span><span class="md3-go">${pr.done ? 'Continuar' : 'Empezar'} <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></span></button>`;
+  }
+  function md3Card(m) {
+    const r0 = P.role(m.id), r = r0 === 'current' && m.id !== md3Cur() ? 'review' : r0, ok = P.passed(m.id), on = (r === 'current' || r === 'review') && m.ready, pr = on ? P.progress(m.id) : null, tot = md3Tot(m), pct = pr ? Math.min(100, Math.round((pr.done || 0) / Math.max(1, tot) * 100)) : 0;
+    const prev = P.MODS.find(x => x.n === m.n - 1), trial = P.get() && P.isTrial();
+    const ring = ok ? `<span class="md3-ring ok"><b>${CKI}</b></span>` : on ? `<span class="md3-ring" style="--p:${pct}"><b>${pct}%</b></span>` : `<span class="md3-ring lk"><b>${LKI}</b></span>`;
+    const tag = ok ? '<span class="md3-tag ok">APROBADO</span>' : r === 'current' ? '<span class="md3-tag now">ESTÁS AQUÍ</span>' : r === 'review' ? `<span class="md3-tag ok">${r0 === 'review' ? 'REPASO' : 'ABIERTO'}</span>` : r === 'soon' ? '<span class="md3-tag lk">PRÓXIMAMENTE</span>' : '<span class="md3-tag lk">BLOQUEADO</span>';
+    const txt = ok && !(pr && pr.done) ? `${m.classes} lecciones` : on ? `${pr.done || 0} de ${tot} lecciones` : r === 'soon' ? 'En construcción' : P.isExpired() ? 'Se abre al renovar tu plan' : trial ? 'Con Plataforma o Premium' : prev ? `Al aprobar el ${esc(prev.name)}` : 'Toma tu prueba de clasificación';
+    return `<button type="button" class="md3-c ${on ? '' : 'md3-lk'} ${r === 'current' ? 'cur' : ''}" data-id="${m.id}"><span class="md3-pic" style="background-image:url('${U(m.img, 640, 360)}')"><span class="md3-lv">${esc(m.lv || m.id)}</span>${ring}<span class="md3-pt"><b>${esc(m.name)}</b><small>${esc(m.es.replace(/\s*\(.*\)/, ""))}</small></span></span><span class="md3-bd"><span>${txt}</span>${tag}</span></button>`;
+  }
+  function md3Final() {
+    const p = P.get(); if (!p || P.isTrial()) return '';
+    const open = courseOpen(), st = courseState(), passed = !!(st.final && st.final.passed), n = P.MODS.filter(m => P.passed(m.id)).length;
+    return `<a class="md3-fin ${open ? 'open' : ''}" href="examen-final.html${passed ? '#cert' : ''}"><span class="md3-fi"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4zM17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg></span><span><b>Examen final del curso</b><small>${passed ? 'Aprobado · Ver mi certificado de ruta completa' : open ? 'Ya puedes presentarlo · certificado de toda tu ruta' : `Se habilita al aprobar los 4 módulos (${n} de 4 aprobados)`}</small></span><span class="md3-pips">${P.MODS.map(m => `<i class="${P.passed(m.id) ? 'on' : ''}"></i>`).join('')}</span></a>`;
   }
   function modCard(m) {
     const r = P.role(m.id); const pr = P.progress(m.id); const trial = P.isTrial();
