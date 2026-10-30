@@ -7801,3 +7801,6 @@ body.ag-teens .gs-k b{color:#0B2A5B}
 .lgrid .ce-lres .vres-b [data-a="r"]{display:none}
 /* v488 · durante la lección se oculta el banner de arriba (solo se ve la actividad) */
 body:has(#app .player) .topbar,body:has(#app .ld-load) .topbar{display:none!important}
+/* v489 · Music en PC: video a la izquierda y palabras a la derecha (todo a la vista) */
+@media(min-width:900px){.sg9{max-width:980px;display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);column-gap:24px;align-items:center}.sg9-st{grid-column:1/-1}.sg9-vid{grid-column:1;max-height:56vh}.sg9-q{grid-column:2;margin-top:0}}
+@media(max-width:899px){.sg9-vid{max-height:30vh;aspect-ratio:auto;height:min(30vh,calc((100vw - 64px) * .5625))}}
