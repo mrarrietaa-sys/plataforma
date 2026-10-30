@@ -640,5 +640,61 @@
   }
   const speakWords = (stage, p) => speak(stage, p, { words: true, n: 5 });
 
-  window.M1A = { ml10, head, playBtn, slowBtn, waitNext, qloop, choose, feedback, typeQ, speakCard, learn, listenChoose, pickWord, typeWord, typeLetter, typeNumber, phone, spellName, typeSentence, fill, unscramble, memory, sort, crossword, speed, spell, plural, dialogue, speak, speakWords, result };
+  /* v475 · Music · Completa lo que falta: el video se pausa solo y el estudiante elige la palabra que escuchó (3 opciones que suenan parecido) */
+  let ytP9 = null;
+  function yt9() { if (window.YT && YT.Player) return Promise.resolve(true); if (ytP9) return ytP9;
+    ytP9 = new Promise(r => { const prev = window.onYouTubeIframeAPIReady; window.onYouTubeIframeAPIReady = () => { prev && prev(); r(true); };
+      if (!document.querySelector('script[src*="youtube.com/iframe_api"]')) { const sc = document.createElement('script'); sc.src = 'https://www.youtube.com/iframe_api'; sc.onerror = () => r(false); document.head.appendChild(sc); }
+      setTimeout(() => r(!!(window.YT && YT.Player)), 9000); });
+    return ytP9; }
+  async function song9(stage, sg, opt = {}) {
+    const kids = M.ageGroup() === 'kids', n = Math.min(kids ? 3 : 4, (sg.g || []).length); if (n < 2) return null;
+    const G = sg.g.slice(0, n), clip = window.MRCLIP ? MRCLIP(sg) : [30, 105], ids = [sg.yt, ...(sg.alt || [])];
+    const CP = G.map((_, i) => i === n - 1 ? clip[1] - .6 : clip[0] + (clip[1] - clip[0]) * (i + 1) / n);
+    const body = head(stage, { lbl: opt.lbl || 'Music', title: 'Completa lo que falta', ins: `Dale play. La canción se detiene sola ${n} veces: elige la palabra que escuchaste.` });
+    const w = h(`<div class="sg9"><div class="sg9-st"><span class="sg9-n">0 / ${n}</span><span class="sg9-bar"><i></i></span></div>
+      <div class="sg9-vid"><div class="sg9-p"></div><span class="sg9-tag" hidden>Pausado</span></div>
+      <div class="sg9-q"><p class="sg9-h">Dale play. La canción se detiene sola ${n} veces: elige la palabra que escuchaste.</p><div class="sg9-line" hidden></div><div class="sg9-ops"></div><button type="button" class="sg9-rep" hidden>Escuchar otra vez</button></div></div>`);
+    body.appendChild(w);
+    let i = 0, asking = false, player = null, k = 0, poll = 0, c = 0; const res = [];
+    const hint = (t) => { $('.sg9-h', w).textContent = t; $('.sg9-h', w).hidden = false; };
+    const prog = () => { $('.sg9-n', w).textContent = `${Math.min(i, n)} / ${n}`; $('.sg9-bar i', w).style.width = (i / n * 100) + '%'; };
+    let finish; const done = new Promise(r => finish = r);
+    const ask = () => { if (asking || i >= n) return; asking = true; try { player && player.pauseVideo(); } catch (e) { }
+      const it = G[i], blank = '<span class="sg9-gap">&nbsp;</span>';
+      $('.sg9-tag', w).hidden = false; hint(kids ? '¿Qué palabra escuchaste?' : '¿Qué palabra escuchaste?');
+      const ln = $('.sg9-line', w); ln.innerHTML = it[0] ? esc(it[0]).replace('___', blank) : blank; ln.hidden = false;
+      const ops = shuffle([it[1], it[2], it[3]]), box = $('.sg9-ops', w);
+      box.innerHTML = ops.map((o, j) => `<button type="button" class="sg9-op" data-j="${j}">${esc(o)}</button>`).join('');
+      const rep = $('.sg9-rep', w); rep.hidden = !player; rep.disabled = false; rep.textContent = 'Escuchar otra vez';
+      rep.onclick = () => { rep.disabled = true; rep.textContent = 'Escuchando…'; try { player.seekTo(Math.max(clip[0], CP[i] - 9), true); player.playVideo(); } catch (e) { } };
+      $$('.sg9-op', box).forEach(b => b.onclick = () => { if (box.dataset.done) return; box.dataset.done = 1; rep.hidden = true; try { player && player.pauseVideo(); } catch (e) { }
+        const pick = ops[+b.dataset.j], ok = pick === it[1]; if (ok) c++; res.push({ it, pick, ok });
+        $$('.sg9-op', box).forEach(x => { x.disabled = true; if (x.textContent === it[1]) x.classList.add('ok'); }); if (!ok) b.classList.add('bad');
+        $('.sg9-gap', ln).textContent = it[1]; $('.sg9-gap', ln).classList.add(ok ? 'ok' : 'bad'); sfx(ok ? 'ok' : 'bad');
+        i++; prog();
+        setTimeout(() => { delete box.dataset.done; box.innerHTML = ''; ln.hidden = true; $('.sg9-tag', w).hidden = true; asking = false;
+          if (i >= n || !player) { if (i >= n) finish(); else ask(); return; }
+          let ended = false; try { ended = player.getPlayerState() === 0; } catch (e) { } if (ended) { ask(); return; }
+          hint('Sigue escuchando…'); try { player.playVideo(); } catch (e) { } }, 1800); }); };
+    const fallback = () => { clearInterval(poll); player = null;
+      $('.sg9-vid', w).innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${esc(ids[0])}?rel=0&playsinline=1&start=${clip[0]}&end=${clip[1]}" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+      hint('Escucha la canción y luego responde.'); const go = h('<button type="button" class="sg9-rep">Ya la escuché</button>'); $('.sg9-q', w).appendChild(go); go.onclick = () => { go.remove(); ask(); }; };
+    const ok = await yt9(); if (!stage.isConnected) return null;
+    if (!ok) fallback();
+    else {
+      player = new YT.Player($('.sg9-p', w), { videoId: ids[0], width: '100%', height: '100%', playerVars: { rel: 0, modestbranding: 1, playsinline: 1, hl: 'en', start: clip[0], end: clip[1] },
+        events: { onStateChange: (e) => { if (e.data === 0 && i < n) { if (!asking) ask(); } },
+          onError: () => { k++; if (k < ids.length) { try { player.loadVideoById({ videoId: ids[k], startSeconds: clip[0], endSeconds: clip[1] }); } catch (e) { fallback(); } } else fallback(); } } });
+      poll = setInterval(() => { if (!w.isConnected) { clearInterval(poll); return; } try { if (!player.getPlayerState || player.getPlayerState() !== 1) return; const t = player.getCurrentTime();
+        if (i < n && t >= CP[i]) { if (asking) { player.pauseVideo(); $('.sg9-rep', w).textContent = 'Escuchar otra vez'; } else ask(); } } catch (e) { } }, 200);
+    }
+    await done; clearInterval(poll); try { player && player.destroy(); } catch (e) { }
+    const all = c === n, rb = head(stage, { lbl: opt.lbl || 'Music', title: all ? 'Well done!' : c >= n / 2 ? '¡Muy bien!' : 'Sigue practicando', ins: '' });
+    rb.innerHTML = `<div class="sg9-res"><b>${c} / ${n}</b><small>palabras que atrapaste</small><div class="sg9-rows">${res.map(r => `<div class="sg9-row"><span>${esc(r.it[1])}</span>${r.ok ? '<em class="ok">Correcto</em>' : `<em class="bad">Elegiste “${esc(r.pick)}”</em>`}</div>`).join('')}</div><div class="sg9-song">${esc(sg.title)}${sg.artist || sg.ch ? ' · ' + esc(sg.artist || sg.ch) : ''}</div></div>`;
+    if (all) { sfx('win'); try { M.confetti(1500); } catch (e) { } }
+    await waitNext(stage, 'Continuar');
+    return { c, t: n, missed: res.filter(r => !r.ok).map(r => ({ en: r.it[1] })) };
+  }
+  window.M1A = { song9, ml10, head, playBtn, slowBtn, waitNext, qloop, choose, feedback, typeQ, speakCard, learn, listenChoose, pickWord, typeWord, typeLetter, typeNumber, phone, spellName, typeSentence, fill, unscramble, memory, sort, crossword, speed, spell, plural, dialogue, speak, speakWords, result };
 })();

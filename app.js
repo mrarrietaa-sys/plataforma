@@ -711,7 +711,7 @@
     txt.innerHTML = ''; txt.appendChild(grid);
   }
   // v443: aviso de micrófono (2 consejos): sale en las 3 primeras lecciones y si la plataforma no lo escucha 2 veces seguidas
-  const MICK = 'mra_mic9';
+  const MICK = (k => !k || k === 'A1' ? 'mra_mic9' : 'mra_mic9_' + k)(((window.M1 || {}).MOD || {}).id); // v475: el aviso sale en las 3 primeras lecciones de CADA módulo
   const micSt = () => { try { return JSON.parse(localStorage.getItem(MICK) || '{}'); } catch (e) { return {}; } };
   const micSave = (o) => { try { localStorage.setItem(MICK, JSON.stringify(o)); } catch (e) { } };
   let micOpen = false, micAgain = false;
@@ -1192,6 +1192,7 @@
   async function playLearn(stage, p) {
     const sg = songFor(p); if (!sg) return null;
     const lbl = 'Play & Learn';
+    if (V9() && sg.g && sg.g.length >= 2) { const r9 = await A.song9(stage, sg, { lbl: 'Music' }); if (r9) return A.result(r9.c, r9.t, 'listening', r9.missed); } // v475: Completa lo que falta
     let c = 0, t = 0; const missed = [];
     const mark = (ok, it) => { t++; if (ok) c++; else missed.push({ en: it.full || it.en, au: it.au }); };
     // 2) Escuchar la canción

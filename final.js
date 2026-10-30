@@ -110,7 +110,6 @@
     shell(`${top()}<div class="card center fx-welcome fx9w">${extraNotice()}
       <figure class="ex-cover"><div class="ex-cimg"><img src="https://images.unsplash.com/${cv[0]}?w=1200&h=500&fit=crop&crop=entropy&q=80&auto=format" alt="${esc(cv[1])}" onerror="this.style.opacity=0"><span class="ex-cbadge">${MOD.course ? 'A1 → B2+' : esc(MOD.id)}</span></div></figure>
       <h1 class="fx9-t">${MOD.course ? 'Examen final del curso' : 'Examen final · ' + MOD.es}</h1>
-      <div class="ex-skills">${EX.sections.map(s => `<span><b>${s.items.length}</b> ${esc(s.label)}</span>`).join('')}</div>
       <ul class="fx9-ul"><li>${I('clock')}<span><b>${N} preguntas · ${CFG.TIME_MIN} minutos</b></span></li><li>${I('check')}<span>Ves al instante si acertaste</span></li><li>${I('award')}<span>Apruebas con <b>${(C.PASS_SCORE / 10).toFixed(1)}</b> y recibes tu certificado</span></li><li>${I('repeat')}<span>Intentos ilimitados · 12 horas entre un intento y otro</span></li></ul>
       <button class="btn k lg" id="go">Comenzar examen</button></div>`);
     wireExit(); $('#go').onclick = async () => { const b = $('#go'); b.disabled = true; b.textContent = 'Cargando…'; await M.loadAudio([MOD.examAudio || 'exam', MA_GROUP].filter(Boolean)); ST.seed = Date.now(); pickItems(ST.seed); answers = new Array(N).fill(null); startedAt = Date.now(); saveProg(); startTimer(); go(0, false); };

@@ -401,6 +401,7 @@
   function musicFor(p) { const n = +((M().MOD || {}).n) || 1, S = n === 1 ? window.MRMUSIC : n === 2 ? window.MRMUSIC2 : n === 3 ? window.MRMUSIC3 : n === 4 ? window.MRMUSIC4 : null, D = S && S[ag()]; return D && D[p.id] ? D[p.id] : null; } // v446: Módulo 2 también
   async function music(stage, p) {
     const sg = musicFor(p); if (!sg) return null; const teens = ag() === 'teens';
+    if (window.__V9 && sg.g && sg.g.length >= 2) { frame(stage, 'Music', '', ''); const r9 = await A().song9(stage, sg); if (r9) { try { const K = 'mra_mstamp_v1', o = JSON.parse(localStorage.getItem(K) || '{}'); o[p.id] = 1; localStorage.setItem(K, JSON.stringify(o)); } catch (e) { } return A().result(r9.c, r9.t, 'listening', r9.missed); } } // v475: Completa lo que falta
     const body = frame(stage, 'Music', teens ? 'Catch the phrase' : 'Atrapa la palabra', teens ? 'Dale play: es solo un minuto de la canción. Cuando escuches una frase, tócala. Cada acierto sube tu combo.' : 'Dale play: es solo un minuto de la canción. Cuando escuches una palabra, ¡tócala!');
     const tiles = shuffle((sg.w || []).map(t => ({ t, ok: true })).concat((sg.d || []).map(t => ({ t, ok: false }))));
     const COL = ['#f59e0b', '#38bdf8', '#fb7185', '#4ade80', '#a78bfa', '#f97316'];
