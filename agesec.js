@@ -107,7 +107,7 @@
   /* =================== EXPLICACIÓN =================== */
   async function learn(stage, p) {
     const P = paras(p), F = (p.fill || []).filter(f => f && f.s && f.a && f.o && /_{2,}/.test(f.s));
-    const mlEl = A().ml10 ? A().ml10(p) : null; /* v463: misma mini lección nueva (regla corta + error tachado + frases con audio) */
+    const mlEl = A().ml10 ? A().ml10(p, null, { noFinal: true }) : null; /* v463: misma mini lección nueva (regla corta + error tachado + frases con audio) */
     if (mlEl) { const body = frame(stage, 'Explanation', 'La regla de hoy', ''); body.appendChild(mlEl); sfx('flip'); await A().waitNext(stage, '¡Ya entendí!'); }
     else if (P.length) { if (ag() === 'teens') await stories(stage, p, P); else await comic(stage, p, P); }
     let sc = null; if (F.length) sc = ag() === 'teens' ? await poll(stage, F.slice(0, 3)) : await stickers(stage, F.slice(0, 4));

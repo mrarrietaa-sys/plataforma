@@ -6,7 +6,7 @@
   const { $, $$, h, esc, shuffle, sample, sleep, photo, play, stop, sfx, sheet, good, bad, praise } = M;
 
   /* ---------- shared bits ---------- */
-  function ml10(p, onDone) {
+  function ml10(p, onDone, opt) {
     const ML10 = window.MRML10 && MRML10[(+M.MOD.n || 1) + '-' + p.id]; const ML10S = ML10 && (ML10[M.ageGroup()] || ML10.adult);
     if (!(ML10S && ML10S.length)) return null; { /* v463 · mini lección nueva: regla en una línea + error tachado + frases correctas con audio */
       const I = (n) => window.MRI ? MRI(n) : '', em = (t) => esc(t).replace(/\*([^*]+)\*/g, '<em>$1</em>');
@@ -19,7 +19,7 @@
         box.innerHTML = `<div class="ml10-r">${em(x.r)}</div><div class="ml10-c">${x.no ? `<div class="ml10-no">${XI}<span>${esc(x.no)}</span></div>` : ''}${x.ok.map((y, j) => `<button type="button" class="ml10-ok" data-j="${j}">${OKI}<span>${esc(y[0])}</span><i>${I('vol')}</i></button>`).join('')}</div>${x.n ? `<div class="ml10-n">${em(x.n)}</div>` : ''}`;
         box.classList.remove('in'); void box.offsetWidth; box.classList.add('in');
         $$('.ml10-ok', box).forEach(b => b.onclick = () => { stop(); const y = x.ok[+b.dataset.j]; if (y && y[1]) play(y[1], { btn: b }); });
-        $$('.ml10-d i', ml).forEach((d, j) => d.className = j < si ? 'ok' : j === si ? 'on' : ''); $('.ml10-p', ml).disabled = !si; $('.ml10-x', ml).textContent = si < N - 1 ? 'Siguiente' : 'A practicar'; };
+        $$('.ml10-d i', ml).forEach((d, j) => d.className = j < si ? 'ok' : j === si ? 'on' : ''); $('.ml10-p', ml).disabled = !si; $('.ml10-x', ml).textContent = si < N - 1 ? 'Siguiente' : 'A practicar'; $('.ml10-x', ml).style.display = opt && opt.noFinal && si >= N - 1 ? 'none' : ''; }; /* v474: en Kids/Teens el último paso lo cierra «¡Ya entendí!» */
       $('.ml10-au', ml).onclick = () => { stop(); const x = ML10S[si]; M.playSeq(x.ok.map(y => y[1]).filter(Boolean), 350); };
       $('.ml10-p', ml).onclick = () => { if (si) { si--; draw(); } };
       $('.ml10-x', ml).onclick = () => { sfx('tap'); if (si < N - 1) { si++; draw(); } else { ml.classList.add('done'); onDone && onDone(); } };
