@@ -7812,3 +7812,4 @@ body:has(#app .player) .topbar,body:has(#app .ld-load) .topbar{display:none!impo
 .ce-lfb{font:600 12px Inter,system-ui,sans-serif;color:#8a2a20;text-align:center;margin:0 0 4px;line-height:1.2}.ce-st-mid .ce-lfb{color:#7a5a00}
 .ce-l2{display:flex;gap:4px}.ce-l2 .btn{flex:1;min-width:0;padding:6px 4px!important;font-size:12px!important;white-space:nowrap;border-radius:10px}
 .ce-l2 .ce-mo{background:#E3242B!important;color:#fff!important;border:0}.ce-l2 .ce-ag{background:#fff!important;border:1.5px solid #DCE4F0!important;color:#0B2A5B!important}
+.wr-bar{gap:10px;justify-content:center}

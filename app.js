@@ -1404,9 +1404,9 @@
     const bar = h(`<div class="actionbar wr-bar"><button class="btn k lg" id="wrgo">Enviar</button></div>`); body.appendChild(bar);
     const go = $('#wrgo', bar);
     setTimeout(() => { try { ta.focus({ preventScroll: true }); } catch (e) { } }, 350);
-    ta.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); go.click(); } });
+    ta.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); const g = $('#wrgo', bar); if (g) g.click(); } });
     return await new Promise(res => {
-      let done = false, tries = 0, tmr = null;
+      let done = false, tries = 0, tmr = null, fixed = false, best0 = 0;
       const show = (kind, head, msg, ex) => {
         const img = kind === 'ok' ? 'mra-thumbs' : 'mra-think';
         fbBox.className = 'wr-fb ' + kind; fbBox.innerHTML = `<img src="${img}.webp?v=2" alt=""><div><h4>${I(kind === 'ok' ? 'check' : 'bulb')}<span>${head}</span></h4>${msg ? `<p>${msg}</p>` : ''}${ex ? `<div class="wr-ex">${ex}</div>` : ''}</div>`;
@@ -1414,11 +1414,17 @@
         try { fbBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) { }
       };
       const finish = (c, txt) => {
-        done = true; if (tmr) clearInterval(tmr); ta.readOnly = true; ta.classList.add('ro');
+        done = true; if (tmr) clearInterval(tmr); ta.readOnly = true; ta.classList.add('ro'); if (fixed) c = Math.max(c, best0);
         S.hw[p.id] = { text: txt, at: Date.now(), score: Math.round(c / 2 * 100) }; save();
         try { if (window.MRAC && MRAC.code && MRAC.code() && txt) MRAC.homework({ module: M.MOD.id, part: p.id, title: `${M.MOD.es} · ${p._t.title} · ${PL(p)}: ${p.title}`, text: txt, score: Math.round(c / 2 * 100) }).catch(() => { }); } catch (e) { }
-        bar.innerHTML = '<button class="btn k lg" id="wrnx">Continuar</button>';
+        bar.innerHTML = (c < 2 && !fixed ? '<button class="btn w lg" id="wrfix">Corregir</button>' : '') + '<button class="btn k lg" id="wrnx">Continuar</button>';
         $('#wrnx', bar).onclick = () => { stop(); res(A.result(c, 2, 'writing')); };
+        if ($('#wrfix', bar)) $('#wrfix', bar).onclick = () => { /* v491 · el estudiante puede corregir una vez si lo desea */
+          fixed = true; best0 = c; done = false; tries = 1; ta.readOnly = false; ta.classList.remove('ro'); fbBox.classList.add('hidden'); const me = $('.wr-me', body); if (me) me.classList.add('hidden');
+          if (it.f === 'f') { $('.wr-start', body).innerHTML = `${esc(it.s)} <em class="wr-blank">&nbsp;</em>`; const ch = $('.wr-chips', body); if (ch) ch.style.display = ''; }
+          const tmb = $('.wr-timer', body); if (tmb) tmb.style.display = 'none';
+          bar.innerHTML = '<button class="btn k lg" id="wrgo">Enviar</button>'; $('#wrgo', bar).onclick = () => check(false); sfx('tap');
+          setTimeout(() => { try { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); } catch (e) { } }, 50); };
       };
       const verdict = (c, txt, head, msg, ex) => { if (c === 2) { sfx('ok'); M.praise(); show('ok', head, msg, ex); } else { sfx('bad'); M.encourage(); show(c ? 'fix' : 'no', head, msg, ex); } finish(c, txt); };
       if (it.f === 'x') {
