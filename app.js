@@ -875,7 +875,7 @@
       const AG = M.ageGroup();
       const body = A.head(stage, { lbl: 'Reading', title: AG === 'adult' ? `📖 ${r.title}` : r.title, ins: AG === 'teens' ? 'Lee el chat mientras lo escuchas. Luego responde <b>TRUE</b> o <b>FALSE</b>.' : AG === 'kids' ? 'Escucha el cuento y toca cada viñeta para oírla otra vez. Luego responde <b>YES</b> o <b>NO</b>.' : 'Escucha y lee al mismo tiempo. Luego responde <b>YES</b> o <b>NO</b>.' });
       const sents = splitSents(r.text);
-      const box = h(`<div class="reading">${photo(r.img)}<div><div class="row" style="margin-bottom:10px"><button class="btn k sm" id="rp">▶ Escuchar lectura</button><button class="btn w sm" id="rv">🎙️ Léela en voz alta <small>(opcional)</small></button></div><div class="txt">${sents.map(s => `<span class="s">${s.split(/(\s+)/).map(w => /\S/.test(w) ? `<i class="rw">${esc(w)}</i>` : w).join('')}</span>`).join('')}</div><div class="rv-res" id="rvr" hidden></div><button class="rd-tr" id="rdtr" type="button" aria-expanded="false"><span>ES</span> Ver traducción al español</button><div class="rd-es" id="rdes" hidden></div></div></div>`);
+      const box = h(`<div class="reading">${photo(r.img)}<div><div class="row" style="margin-bottom:10px"><button class="btn k sm" id="rp">▶ Escuchar lectura</button></div><div class="txt">${sents.map(s => `<span class="s">${s.split(/(\s+)/).map(w => /\S/.test(w) ? `<i class="rw">${esc(w)}</i>` : w).join('')}</span>`).join('')}</div><button class="rd-tr" id="rdtr" type="button" aria-expanded="false"><span>ES</span> Ver traducción al español</button><div class="rd-es" id="rdes" hidden></div></div></div>`);
       body.appendChild(box); if (AG !== 'adult') ageReading(box, r, sents, AG);
       { const tb = $('#rdtr', box), pane = $('#rdes', box);
         const getES = () => window.MRRDES ? Promise.resolve() : new Promise(res => { const base = (document.querySelector('script[src*="core.js"]').getAttribute('src') || '').replace(/core\.js(\?.*)?$/, ''); const q = ((document.querySelector('script[src*="core.js"]').getAttribute('src') || '').match(/\?.*$/) || [''])[0]; const sc = document.createElement('script'); sc.src = base + 'rdes.js' + q; sc.onload = res; sc.onerror = res; document.head.appendChild(sc); });
@@ -897,7 +897,6 @@
         if (rp._t) { const go = () => { try { a.currentTime = rp._t; } catch (e) { } }; if (a.readyState >= 1) go(); else a.addEventListener('loadedmetadata', go, { once: true }); }
         a.play(); window.__ra = a; rp.innerHTML = '⏹ Detener lectura'; rp.classList.add('playing'); const hideF = M.floatStop(rp); a.addEventListener('ended', hideF); };
       rp.onclick = () => { if (rp.classList.contains('playing')) stop(); else karaoke(); };
-      readAloud(box, $('#rv', box), $('#rvr', box));
       body.appendChild(h(`<h3 style="margin-top:18px">${AG === 'teens' ? 'True or false?' : 'Answer YES or NO'}</h3>`));
       if (window.__V9 && r.q.length > 3) r = Object.assign({}, r, { q: r.q.slice(0, 3) });
       const qs = r.q.map((q, i) => { const e = h(`<div class="yn"><p>${i + 1}) ${esc(q.s)}</p><div class="b"><button data-v="yes">${AG === 'teens' ? 'TRUE' : 'YES'}</button><button data-v="no">${AG === 'teens' ? 'FALSE' : 'NO'}</button></div></div>`); $$('button', e).forEach(b => b.onclick = () => { $$('button', e).forEach(x => x.classList.remove('sel')); b.classList.add('sel'); e._v = b.dataset.v; sfx('tap'); if (e._pg && e._pg.next) setTimeout(e._pg.next, 380); }); body.appendChild(e); return e; });
@@ -945,7 +944,7 @@
       const PLAY = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4l13 8-13 8z"/></svg>';
       const av = (x) => `<span class="mv-av${x.img ? '' : ' ic'}">${x.img ? photo('u:' + x.img) : I(GN[0])}</span>`;
       const pick3 = (M.MOD.n == 1 || M.ageGroup() === 'kids');
-      const listen1 = async () => { if (!M.canSR) return { alts: [] }; return await M.listen(10000, { quick: true }); };
+      const listen1 = async (t) => { if (!M.canSR) return { alts: [] }; return await M.listen(10000, { quick: true, target: t }); };
       const msgFor = (fj) => fj.gram ? 'Casi. Se dice: “' + esc(fj.fix) + '”.' : fj.rep ? 'Repetiste la pregunta. Ahora respóndela con tus palabras.' : fj.off ? 'Tu respuesta no corresponde a la pregunta. Escúchala otra vez y responde sobre eso.' : 'Casi. Inténtalo otra vez.';
       if (pick3) {
         /* ---- «Elige y dilo»: entiende primero (elige entre 3) y luego habla ---- */
@@ -972,7 +971,7 @@
               let fails = 0; const mic = $e('.mv-mic');
               mic.onclick = async () => {
                 if (mic.disabled) return; mic.disabled = true; stop(); el.classList.add('rec'); $e('.mv-st').textContent = 'Te escucho…';
-                const r = await listen1(); el.classList.remove('rec'); mic.disabled = false;
+                const r = await listen1(x.a); el.classList.remove('rec'); mic.disabled = false;
                 if (!r.alts || !r.alts.length) { $e('.mv-st').textContent = 'No te escuché. Acércate al micrófono e intenta otra vez.'; return; }
                 const rj = M.readJudge(x.q, x.a, r.alts); okk = rj.ok;
                 const hd = $e('.mv-heard'); hd.className = 'mv-heard ' + (okk ? 'good' : 'bad'); hd.innerHTML = ''; hd.hidden = true;
@@ -1007,7 +1006,7 @@
               if (mic.disabled) return;
               if (!M.canSR) { add(`<div class="mv-me">${esc(x.a)}<i>Dilo en voz alta</i></div>`); okk = true; mic.disabled = true; return setTimeout(done, 2200); }
               mic.disabled = true; stop(); el.classList.add('rec'); st.textContent = 'Te escucho…';
-              const r = await listen1(); el.classList.remove('rec'); mic.disabled = false;
+              const r = await listen1(x.a); el.classList.remove('rec'); mic.disabled = false;
               if (!r.alts || !r.alts.length) { st.textContent = 'No te escuché. Acércate al micrófono e intenta otra vez.'; return; }
               const fj = M.readJudge(x.q, x.a, r.alts); okk = fj.ok;
               add(`<div class="mv-me ${okk ? '' : 'bad'}">${okk ? esc(x.a) : ''}<i>${okk ? (fj.fix ? 'Mejor dilo así: ' + esc(fj.fix) : 'Bien dicho') : fj.gramMiss ? 'Casi: lee cada palabra tal como está escrita' : fj.extra ? 'Casi: dila una sola vez, de corrido.' : 'Casi. Escúchala y léela otra vez, despacio.'}</i></div>`); if (!okk) setTimeout(() => play(x.aau), 900);
@@ -1076,7 +1075,7 @@
             if (busy || over) return;
             if (!M.canSR) { showAns('Dila en voz alta'); if (k.aau) play(k.aau); $v('.vk-msg').textContent = 'Tu navegador no reconoce voz: repite en voz alta'; setTimeout(() => finish(true), 2600); return; }
             busy = true; stop(); vc.classList.add('rec'); $v('.vk-msg').textContent = 'Te escucho… habla con tu voz normal';
-            const rr = await M.listen(9000, { quick: true }); vc.classList.remove('rec'); busy = false; if (over) return;
+            const rr = await M.listen(9000, { quick: true, target: tgt }); vc.classList.remove('rec'); busy = false; if (over) return;
             if (!rr.alts || !rr.alts.length) { $v('.vk-msg').textContent = rr.error === 'not-allowed' ? 'Permite el micrófono en tu navegador para responder' : 'No te escuché. Acércate un poco al micrófono e intenta otra vez.'; return; }
             const fj = M.readJudge(k.q, tgt, rr.alts); const sc = { heard: fj.heard }; const ok = fj.ok; // v460: lee la respuesta → se revisa la pronunciación
             const fb = $v('.vk-fb'); fb.hidden = false; fb.className = 'vk-fb ' + (ok ? 'good' : 'bad'); fb.innerHTML = `<span class="vk-fi">${ok ? '<svg viewBox="0 0 24 24"><path d="M5 12.5 10 17l9-10"/></svg>' : '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5v.5"/></svg>'}</span><div><b class="vk-fh">${ok ? (late ? '¡Bien dicho!' : '¡Excelente!') : fj.gramMiss ? 'Casi: lee cada palabra tal como está escrita' : fj.extra ? 'Casi: dila una sola vez, de corrido' : 'Casi… léela otra vez'}</b>${fj.fix ? `<em class="vk-fix">${ok ? 'Mejor dilo así' : 'Se dice'}: <b>${esc(fj.fix)}</b></em>` : ''}</div>`;
@@ -1149,7 +1148,7 @@
             fb.innerHTML = `${window.MRVC && M.canSR ? '' : `<p class="kt-en">“${esc(tg.en)}”</p><p class="kt-es">${esc(tg.es || '')}</p>`}${M.canSR ? `<button class="mic kt-mic" type="button">🎤</button><p class="kt-st">¡Ahora dilo tú!</p>` : ''}<div class="actionbar"><button class="btn k lg" id="kt-n">Continuar →</button></div>`;
             const mic = $('.kt-mic', fb), stt = $('.kt-st', fb);
             if (mic && window.MRVC) { mic.before(MRVC.card({ target: mic, label: '¡AHORA DILO TÚ!', say: tg.en, es: tg.es, au: tg.au, mascot: false })); stt.textContent = ''; }
-            if (mic) mic.onclick = async () => { stop(); mic.classList.add('rec'); stt.textContent = '¡Te estoy escuchando!'; const r = await M.listen(6000, { quick: true }); mic.classList.remove('rec');
+            if (mic) mic.onclick = async () => { stop(); mic.classList.add('rec'); stt.textContent = '¡Te estoy escuchando!'; const r = await M.listen(6000, { quick: true, target: tg.en }); mic.classList.remove('rec');
               const sc = r.alts && r.alts.length ? M.speechScore(tg.en, r.alts).score : 0; if (sc >= 60) { sfx('ok'); M.praise(); stt.innerHTML = '¡Muy bien dicho! ⭐'; } else { stt.textContent = r.alts && r.alts.length ? '¡Casi! Escucha y dilo otra vez.' : 'No te escuché. Toca el micrófono otra vez.'; setTimeout(M.encourage, 200); } };
             $('#kt-n', fb).onclick = () => { stop(); res(); };
           });

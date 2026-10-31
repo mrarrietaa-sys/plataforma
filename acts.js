@@ -87,7 +87,7 @@
       try {
         const r = await M.recordScore(target, secs * 1000, f => { $('small', mic).textContent = `Te escucho… ${Math.max(0, Math.ceil(secs * (1 - f)))}s`; });
         mic.classList.remove('rec'); mic.disabled = false; $('small', mic).textContent = 'Otra vez'; if (cur !== i) return;
-        if (r.score != null && r.heard && M.readJudge) { const rj = M.readJudge('', target, [r.heard]); r.score = rj.ok ? Math.max(rj.score, 75) : Math.min(rj.score, 69); r._extra = rj.extra; r._gram = rj.gramMiss; } // v494: misma regla exigente
+        if (r.score != null && r.heard && M.readJudge) { const rj = M.readJudge('', target, r.az ? Object.assign([r.heard], { az: r.az }) : [r.heard]); r.score = rj.ok ? Math.max(rj.score, 75) : Math.min(rj.score, 69); r._extra = rj.extra; r._gram = rj.gramMiss; } // v494: misma regla exigente
         if (r.score != null) { // v500: solo dice cómo le fue (nunca muestra lo que escuchó)
           const sc = Math.round(r.score), ok = sc >= 70, mid = !ok && sc >= 45, cls = ok ? 'ce-st-ok' : mid ? 'ce-st-mid' : 'ce-st-bad';
           const html = ok ? `<div class="lrc-fb ok"><b>✓ ¡Muy bien!</b> ${sc}%</div>` : `<div class="lrc-fb"><b>${r._gram ? 'Lee cada palabra tal como está' : r._extra ? 'Dila una sola vez' : mid ? '¡Casi! Repite despacio' : 'Escucha y repite'}</b> ${sc}%</div><div class="ce-l2"><button type="button" class="btn sm ce-mo">Oír modelo</button><button type="button" class="btn sm ce-ag">Otra vez</button></div>`;

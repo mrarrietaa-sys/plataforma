@@ -183,7 +183,7 @@
 
   /* =================== ESCUCHA Y PRACTICA (preguntas clave) =================== */
   const RS = async (tgt, ms) => { try { return await M().recordScore(tgt, ms); } catch (e) { return null; } };
-  const judge = (r, tgt, blank) => { if (!r) return false; if (r.self) return true; if (r.score == null) return false; const w = (r.heard || (r.alts || [])[0] || '').trim().split(/\s+/).filter(Boolean).length; if (blank) return w >= 1; if (r.heard && M().readJudge) return M().readJudge('', tgt, [r.heard]).ok; return r.score >= 75; }; // v494: más exigente al repetir // respuestas personales (nombre, letra, edad…): basta con que responda
+  const judge = (r, tgt, blank) => { if (!r) return false; if (r.self) return true; if (r.score == null) return false; const w = (r.heard || (r.alts || [])[0] || '').trim().split(/\s+/).filter(Boolean).length; if (blank) return w >= 1; if (r.heard && M().readJudge) return M().readJudge('', tgt, r.az ? Object.assign([r.heard], { az: r.az }) : [r.heard]).ok; return r.score >= 75; }; // v494: más exigente al repetir // respuestas personales (nombre, letra, edad…): basta con que responda
   // v420: respuesta libre: se acepta lo que diga; solo se corrige gramática/pronunciación
   const FJ = (r, k, tgt) => { if (!r) return { ok: false, heard: '' }; if (r.self) return { ok: true, heard: '' }; return M().readJudge ? M().readJudge(k.q, tgt, r.alts || []) : M().freeJudge(k.q, tgt.replace(/___/g, ''), r.alts || []); };
   const fixHTML = (f) => f && f.fix ? `<div class="as-fbk fx">${SV(I.bulb)}<span>Mejor dilo así: <b>${esc(f.fix)}</b></span></div>` : '';
@@ -208,7 +208,7 @@
         body.querySelector('#as-ql').onclick = () => k.qau && play(k.qau);
         body.querySelector('#as-hint').onclick = () => { M().stop && M().stop(); if (k.aau) play(k.aau); };
         body.querySelector('#as-mic').onclick = async (e) => { const bt = e.currentTarget; bt.disabled = true; const tr = body.querySelector('#as-tr'); tr.textContent = 'Te escucho…';
-          const r = await RS(tgt.replace(/___/g, ''), Math.max(4000, tgt.split(' ').length * 900 + 2200)); bt.disabled = false; tries++;
+          const r = await RS(tgt, Math.max(4000, tgt.split(' ').length * 900 + 2200)); bt.disabled = false; tries++;
           const fj = FJ(r, k, tgt);
           if (fj.ok) { sfx('ok'); try { M().praise(); } catch (er) { } tr.innerHTML = `<b class="as-ok">${SV(I.ck)}¡Muy bien!</b>${fixHTML(fj)}`; setTimeout(() => done(true), fj.fix ? 3200 : 1300); return; }
           sfx('bad'); tr.innerHTML = `${fj.gram ? 'Casi. Se dice: “' + fj.fix + '”. Inténtalo otra vez.' : fj.spell ? 'Las letras no coinciden. Se deletrea: ' + fj.fix + '.' : fj.rep ? 'Repetiste la pregunta. Ahora <b>respóndela</b> con tus palabras.' : fj.off ? 'Tu respuesta no corresponde a la pregunta. Escúchala otra vez y responde sobre eso.' : fj.heard ? 'Casi. Escúchala y léela otra vez, despacio.' : 'No te escuché bien. Intenta otra vez, despacio.'}${tries >= 2 ? '<button type="button" class="as-lnk" id="as-nx">Siguiente</button>' : ''}`;
@@ -235,7 +235,7 @@
       ci.textContent = blank ? 'Léela con tu información' : 'Toca el micrófono y léela'; mic.disabled = false;
       const ok = await new Promise(done => { let tries = 0;
         mic.onclick = async () => { mic.disabled = true; mic.classList.add('rec'); ci.textContent = 'Grabando nota de voz…';
-          const r = await RS(tgt.replace(/___/g, ''), Math.max(4000, tgt.split(' ').length * 900 + 2200)); mic.classList.remove('rec'); tries++;
+          const r = await RS(tgt, Math.max(4000, tgt.split(' ').length * 900 + 2200)); mic.classList.remove('rec'); tries++;
           const fj = FJ(r, k, tgt), good = fj.ok; const said = fj.heard || '';
           const out = H(`<div class="as-vn out ${good ? '' : 'bad'}"><span class="as-vw">${bars()}</span><small>0:0${Math.min(9, 2 + tgt.split(' ').length)}</small>${good && !/___/.test(tgt) ? `<div class="as-vt">${esc(tgt)}</div>` : ''}<span class="as-tick">${good ? '✓✓' : '!'}</span></div>`); cb.appendChild(out); cb.scrollTop = cb.scrollHeight;
           if (good) { sfx('ok'); tr.innerHTML = fixHTML(fj); setTimeout(() => { tr.innerHTML = ''; done(true); }, fj.fix ? 3200 : 900); return; }

@@ -259,6 +259,90 @@
       setTimeout(() => fin('timeout'), timeoutMs);
     });
   }
+  /* 🎙️ v503 · VOZ CON AZURE: graba la voz (recortando silencios, máx. 8 s) y Azure la compara con la frase sonido por sonido.
+     PC: el navegador revisa primero y Azure confirma solo si suena bien. Celular/iPhone: Azure directo (el micrófono no se puede compartir).
+     Si Azure no está disponible (sin clave, cupo diario o tope del mes), se usa el navegador como antes. */
+  const AZV = (() => {
+    let offAll = false, offDay = '';
+    try { offDay = localStorage.getItem('mra_azoff') || ''; } catch (e) { }
+    const today = () => new Date().toDateString();
+    const can = () => !offAll && offDay !== today() && !!(window.MRAC && MRAC.on && MRAC.code && MRAC.code()) && !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) && !!(window.AudioContext || window.webkitAudioContext);
+    function capture(o) {
+      let stopFn = null, pending = false;
+      const done = new Promise(async (res) => {
+        let stream, ctx, proc, src, fin = false; const bufs = []; let rate = 48000, t0 = Date.now(), spoke = 0, last = 0, noise = 0, nN = 0;
+        const end = () => { if (fin) return; fin = true; try { proc && proc.disconnect(); src && src.disconnect(); } catch (e) { } try { stream && stream.getTracks().forEach(t => t.stop()); } catch (e) { } try { ctx && ctx.close(); } catch (e) { } res({ bufs, rate, spoke }); };
+        stopFn = end; if (pending) return end();
+        try { stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } }); } catch (e) { fin = true; return res({ err: 'mic' }); }
+        if (fin) { try { stream.getTracks().forEach(t => t.stop()); } catch (e) { } return; }
+        try { window.MRAWAVE && MRAWAVE.stream && MRAWAVE.stream(stream); } catch (e) { }
+        const AC = window.AudioContext || window.webkitAudioContext; ctx = new AC(); try { ctx.resume && ctx.resume(); } catch (e) { } rate = ctx.sampleRate; src = ctx.createMediaStreamSource(stream); proc = ctx.createScriptProcessor(4096, 1, 1);
+        proc.onaudioprocess = (e) => { if (fin) return; const d = e.inputBuffer.getChannelData(0); bufs.push(new Float32Array(d)); let q = 0; for (let i = 0; i < d.length; i++) q += d[i] * d[i]; const rms = Math.sqrt(q / d.length), now = Date.now();
+          if (now - t0 < 350) { noise += rms; nN++; return; }
+          const thr = Math.max(0.012, (nN ? noise / nN : 0.004) * 3);
+          if (rms > thr) { if (!spoke) spoke = now; last = now; try { window.MRAWAVE && MRAWAVE.kick(); } catch (er) { } }
+          if (o.auto && spoke && now - last > 950) end();
+          else if (spoke && now - spoke > o.maxSpeechMs + 400) end();
+          else if (o.auto && !spoke && now - t0 > (o.waitMs || 7000)) end();
+          else if (now - t0 > o.maxMs) end(); };
+        src.connect(proc); proc.connect(ctx.destination);
+      });
+      return { stop: () => { if (stopFn) stopFn(); else pending = true; }, done };
+    }
+    function toWav(c) {
+      let n = 0; c.bufs.forEach(b => n += b.length); if (!n) return null; const all = new Float32Array(n); let o = 0; c.bufs.forEach(b => { all.set(b, o); o += b.length; });
+      const R = 16000, ratio = c.rate / R, m = Math.floor(all.length / ratio), x = new Float32Array(m);
+      for (let i = 0; i < m; i++) { const a = Math.floor(i * ratio), b = Math.min(all.length, Math.floor((i + 1) * ratio)); let q = 0; for (let j = a; j < b; j++) q += all[j]; x[i] = q / Math.max(1, b - a); }
+      const W = 320, E = []; for (let i = 0; i + W <= m; i += W) { let q = 0; for (let j = i; j < i + W; j++) q += x[j] * x[j]; E.push(Math.sqrt(q / W)); }
+      let mx = 0; E.forEach(v => { if (v > mx) mx = v; }); const thr = Math.max(0.008, mx * 0.08);
+      let f = E.findIndex(v => v > thr); if (f < 0) return null; let l = E.length - 1; while (l > f && E[l] <= thr) l--;
+      f = Math.max(0, f - 8); l = Math.min(E.length - 1, l + 10); // recorta silencios: deja 0,16 s antes y 0,2 s después
+      let seg = x.subarray(f * W, (l + 1) * W); if (seg.length > R * 8) seg = seg.subarray(0, R * 8);
+      const buf = new ArrayBuffer(44 + seg.length * 2), v = new DataView(buf), ws = (p, t) => { for (let i = 0; i < t.length; i++) v.setUint8(p + i, t.charCodeAt(i)); };
+      ws(0, 'RIFF'); v.setUint32(4, 36 + seg.length * 2, true); ws(8, 'WAVE'); ws(12, 'fmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true); v.setUint32(24, R, true); v.setUint32(28, R * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true); ws(36, 'data'); v.setUint32(40, seg.length * 2, true);
+      for (let i = 0; i < seg.length; i++) { const q = Math.max(-1, Math.min(1, seg[i])); v.setInt16(44 + i * 2, q < 0 ? q * 0x8000 : q * 0x7FFF, true); }
+      const u = new Uint8Array(buf); let bin = ''; for (let i = 0; i < u.length; i += 0x8000) bin += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000));
+      return { b64: btoa(bin), sec: seg.length / R };
+    }
+    async function assess(wav, ref) {
+      try { const r = await MRAC.call('azPron', { code: MRAC.code(), text: ref || '', audio: wav.b64 }, { timeout: 15000 });
+        if (!r || !r.ok) { const e = r && r.err; if (e === 'quota') { offDay = today(); try { localStorage.setItem('mra_azoff', offDay); } catch (er) { } } if (e === 'cap' || e === 'nokey' || e === 'unknown_action') offAll = true; return null; }
+        return r; } catch (e) { return null; }
+    }
+    // veredicto: frase completa, sin palabras de más o cambiadas y pronunciación clara
+    function verdict(az) {
+      if (!az || !az.ref) return null; const W = az.words || [];
+      const om = W.filter(w => w.e === 'Omission').length, ins = W.filter(w => w.e === 'Insertion').length, bad = W.filter(w => w.e === 'Mispronunciation' || (w.e === 'None' && w.a < 40)).length;
+      const ref = W.filter(w => w.e !== 'Insertion').length;
+      const ok = az.comp >= 85 && az.acc >= 60 && az.pron >= 60 && om === 0 && ins <= 1 && bad <= (ref >= 4 ? 1 : 0);
+      return { ok, score: ok ? Math.max(az.pron, 75) : Math.min(az.pron, 69), why: om || ins >= 2 || (ins && !ok) ? 'words' : 'pron', extra: ins >= 2 && !om };
+    }
+    return { can, capture, toWav, assess, verdict };
+  })();
+  const azRef = (t) => { const x = String(t == null ? '' : t).trim(); return !x || /_{2,}/.test(x) || /^[A-Za-z]$/.test(x) ? '' : x; };
+  async function listenAz(timeoutMs = 8000, opts = {}) {
+    const raw = opts.target != null ? String(opts.target) : '', ref = azRef(raw), letter = /^\s*[A-Za-z]\s*$/.test(raw) || !!opts.scorer;
+    if (letter || opts.noAz || !AZV.can()) return listen(timeoutMs, opts);
+    const n = ref ? ref.split(/\s+/).length : 8, maxSpeechMs = Math.min(8000, Math.max(4000, n * 600 + 2500));
+    if (audBusy()) { try { stop(); } catch (e) { } await sleep(500); } // primero se calla la plataforma
+    if (!SR || MOBILE) { // 📱 celular / iPhone: solo Azure
+      const c = await AZV.capture({ auto: true, maxMs: Math.max(timeoutMs, 9000), maxSpeechMs }).done;
+      if (c.err) return { alts: [], error: 'not-allowed' }; if (!c.spoke) { srStat('em', 'no-speech'); return { alts: [], error: 'no-speech' }; }
+      const wav = AZV.toWav(c); if (!wav) return { alts: [], error: 'no-speech' };
+      const az = await AZV.assess(wav, ref);
+      if (!az) return SR ? listen(timeoutMs, opts) : { alts: [], error: 'no-speech' };
+      const alts = (az.alts && az.alts.length ? az.alts : az.text ? [az.text] : []).slice(); alts.az = az; srStat(alts.length ? 'ok' : 'em', 'az');
+      return alts.length ? { alts, az } : { alts: [], error: 'no-speech', az };
+    }
+    if (!ref) return listen(timeoutMs, opts); // 💻 respuesta libre en PC: basta el navegador
+    const cap = AZV.capture({ auto: false, maxMs: Math.max(timeoutMs, 9000) + 1000, maxSpeechMs: 8000 });
+    const r = await listen(timeoutMs, opts); cap.stop(); const c = await cap.done;
+    if (!r.alts || !r.alts.length || c.err) return r;
+    if (speechScore(ref, r.alts).score < 45) return r; // claramente mal: no gasta Azure
+    const wav = AZV.toWav(c); if (!wav) return r;
+    const az = await AZV.assess(wav, ref); if (!az) return r;
+    r.az = az; r.alts.az = az; return r;
+  }
   // sesión larga "toca para grabar / toca para detener" (prueba de clasificación, exámenes): no pierde nada en las pausas
   function srSession(onText, onFatal) {
     const S = { onend: null }; if (!SR) return null; if (audBusy()) try { stop(); } catch (e) { }
@@ -347,6 +431,9 @@
   // devuelve { url, alts, score }  (score = null si el navegador no puede evaluar)
   async function recordScore(target, ms, onTick, scorer) {
     if (!scorer && /^\s*[A-Za-z]\s*$/.test(String(target || ''))) scorer = letterScorer(String(target).trim()); // letras sueltas (A, B, C…)
+    if (!scorer && AZV.can()) { const t0 = Date.now(), iv = setInterval(() => onTick && onTick(Math.min(1, (Date.now() - t0) / ms)), 100); let r; try { r = await listenAz(ms, { quick: true, target: String(target || '') }); } finally { clearInterval(iv); onTick && onTick(1); } // 🎙️ v503: Azure
+      const v = AZV.verdict(r.az); let score = null, heard = ''; if (v) { score = v.score; heard = r.alts[0] || ''; } else if (r.alts.length) { const sc = speechScore(target, r.alts); score = sc.score; heard = sc.heard; } else if (r.error !== 'audio-capture' && r.error !== 'service-not-allowed' && r.error !== 'start' && r.error !== 'not-allowed') score = 0;
+      return { url: null, alts: r.alts, score, heard, error: r.error, az: r.az }; }
     if (audBusy()) { try { stop(); } catch (e) { } await sleep(500); } // 🔇 nunca graba mientras suena la plataforma
     let rec = null, stream = null; const chunks = [];
     try { if ((typeof SR !== 'undefined' && SR) && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) throw 0; // en celular el micrófono no se puede compartir: se prioriza el reconocimiento de voz
@@ -542,6 +629,7 @@
     const blank = /_{2,}/.test(tgt || ''), clean = String(tgt || '').replace(/_{2,}/g, ' ').replace(/\s+/g, ' ').trim();
     if (blank) { const sc = clean ? speechScore(clean, alts).score : 0; if (sc >= 45) return { ok: true, heard, score: sc, read: true };
       let fj = null; try { fj = freeJudge(q, tgt, alts); } catch (e) { } if (fj && fj.ok) return { ok: true, heard, score: sc, own: true, fix: fj.fix || null }; return { ok: false, heard, score: sc }; }
+    { const v = alts && AZV.verdict(alts.az); if (v) return { ok: v.ok, heard, score: v.score, read: true, extra: v.extra, gramMiss: !v.ok && v.why === 'words', az: true, hl: '' }; } // 🎙️ v503: decide Azure
     const tw = words(clean); let best = null;
     for (const alt of (alts || []).slice(0, 5)) { const s0 = speechScore(clean, [alt]).score, aw = words(alt), used = tw.map(() => false); let extra = 0;
       for (const w of aw) { const i = tw.findIndex((t, k) => !used[k] && same9(w, t)); if (i >= 0) used[i] = true; else if (!FILL9.has(w)) extra++; }
@@ -694,7 +782,7 @@
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
   })();
   const WV = (f) => async function () { const W = window.MRAWAVE; W && W.on(); try { return await f.apply(this, arguments); } finally { W && W.off(); } };
-  const listenW0 = WV(listen), recordScoreW0 = WV(recordScore), recordVoiceW = WV(recordVoice);
+  const listenW0 = WV(listenAz), recordScoreW0 = WV(recordScore), recordVoiceW = WV(recordVoice);
   // 🎧 v383: si no se escuchó nada, nunca queda bloqueado: "Intentar otra vez" o "Grábate y escúchate" (se autoevalúa)
   const noHearUI = (target, au) => window.MRVC && MRVC.noHear ? MRVC.noHear({ target, au }) : Promise.resolve('close');
   async function listenW() { const args = arguments; const r = await listenW0.apply(this, args);
@@ -710,6 +798,6 @@
   const srSessionW = function (onText, onFatal) { const W = window.MRAWAVE; let off = !W; const o = () => { if (!off) { off = true; W.off(); } }; if (W) W.on(); const S = srSession(onText, function () { o(); return onFatal && onFatal.apply(this, arguments); }); if (!W) return S; if (!S) { o(); return S; }
     const st = S.stop, ab = S.abort; S.stop = function () { o(); return st.apply(S, arguments); }; S.abort = function () { o(); return ab.apply(S, arguments); }; return S; };
   window.M1 = { face, D, C, MOD, S, $, $$, h, esc, shuffle, sample, sleep, save, touchStreak, addSkill, addWeak, okWeak, skillPct, isUnlocked, finalUnlocked, paceDate, weakParts, reviewMode, revCount, PTS_TIP, hasAccess, progressOpen, lockReason, review, hasProfile, doneCount, totalParts, redeem, codeHash,
-    allParts, partById, trackAudio, audioUI, floatStop, recordScore: recordScoreW, letterScorer, voiceResult, floatBubble, setBubbleHidden, prevPart, nextPart, partStars, overallPct, imgURL, photo, play, playSeq, loadAudio, stop, sfx, praise, encourage, ageGroup, brand, fbf, canSR, IOS, MOBILE, listen: listenW, srSession: srSessionW, recordVoice: recordVoiceW,
+    allParts, partById, trackAudio, audioUI, floatStop, recordScore: recordScoreW, letterScorer, voiceResult, floatBubble, setBubbleHidden, prevPart, nextPart, partStars, overallPct, imgURL, photo, play, playSeq, loadAudio, stop, sfx, praise, encourage, ageGroup, brand, fbf, get canSR() { return canSR || AZV.can(); }, azOn: () => AZV.can(), IOS, MOBILE, listen: listenW, srSession: srSessionW, recordVoice: recordVoiceW,
     norm, words, lev, speechScore, audBusy, freeJudge, readJudge, grammarFix, sheet, good, bad, toast, modal, xpFly, confetti, mascot, audioSrc };
 })();
