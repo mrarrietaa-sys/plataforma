@@ -7888,3 +7888,9 @@ body:has(#app .player) .topbar,body:has(#app .ld-load) .topbar{display:none!impo
 #azwait{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:9500;display:flex;align-items:center;gap:8px;background:#0B2A5B;color:#fff;font:600 14px Inter,system-ui,sans-serif;padding:9px 16px;border-radius:99px;box-shadow:0 8px 22px rgba(11,42,91,.3);pointer-events:none}
 #azwait i{width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;animation:azspin .8s linear infinite}
 @keyframes azspin{to{transform:rotate(360deg)}}
+/* v512 · Opción A: sombra suave en el piso debajo de Mr. Arrieta (todas las edades) */
+img.mra,img.ar-hero-mra,img.ar-res-mra{box-sizing:content-box;padding-bottom:6px;background:radial-gradient(closest-side,rgba(11,42,91,.30),rgba(11,42,91,.12) 55%,transparent) no-repeat 50% 100%/64% 16px}
+img.ld-load-mra,img.kd-mra,img.ld-hero-mra,img.db-hero-mra{box-sizing:content-box;padding-bottom:22px;background:radial-gradient(closest-side,rgba(11,42,91,.26),rgba(11,42,91,.10) 55%,transparent) no-repeat 50% 100%/58% 16px}
+.itl-actor::after{content:"";position:absolute;left:50%;bottom:-14px;transform:translateX(-50%);width:64%;height:20px;border-radius:50%;background:radial-gradient(closest-side,rgba(11,42,91,.34),rgba(11,42,91,.14) 50%,transparent);pointer-events:none;z-index:-1}
+.itl-actor{z-index:0}
+.itl-k-sad::after{bottom:-6px}[class*="itl-k-balloon"]::after{bottom:-34px;width:46%}
