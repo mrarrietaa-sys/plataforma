@@ -1445,6 +1445,19 @@
           return verdict(0, txt, stillErr ? 'El error sigue ahí' : 'Revisa la frase', esc(it.why), esc(it.ok[0]));
         }
         if (it.f === 'c') {
+          { /* v492 · una frase escrita necesita verbo ("It blue" ✗ → "It is blue") */
+            const tk = M.words(txt).map(w => w.toLowerCase().replace(/[^a-z']/g, '')).filter(Boolean);
+            const V = /^(am|is|are|was|were|be|been|being|have|has|had|do|does|did|can|could|will|would|should|must|may|might|shall|don't|doesn't|didn't|can't|won't|isn't|aren't|wasn't|weren't|haven't|hasn't|i'm|you're|we're|they're|he's|she's|it's|that's|there's|what's|let's|i've|i'll|you'll|we'll|they'll|i'd)$/;
+            const BASE = new Set('like love want go goes went play live work eat need think know see get make take watch study speak read write listen drink sleep wear use look feel prefer enjoy visit wake walk run swim cook buy say tell call help come leave stay travel dance sing open close start finish try learn teach meet drive ride bring give put find lose wish hope plan miss hate made ate saw got took gave came left met found bought brought thought told said felt kept slept wrote ran swam drank drove rode wore sang spoke broke chose forgot lost won sat stood began knew grew drew flew threw heard paid sent spent built taught caught sold cut hit let set became fell held'.split(' '));
+            const hasV = tk.some((w, k) => V.test(w) || BASE.has(w) || /(ed|ing)$/.test(w) && w.length > 4 || (k > 0 && /s$/.test(w) && BASE.has(w.slice(0, -1))) || (k > 0 && /ies$/.test(w)) || (k > 0 && /es$/.test(w) && BASE.has(w.slice(0, -2))));
+            const social = /^(hi|hello|hey|good|thanks|thank|yes|no|sure|ok|okay|bye|goodbye|see|congratulations|happy|nice|welcome|sorry|excuse|please|cheers|wow)\b/.test(tk[0] || '');
+            if (tk.length >= 2 && !hasV && !social && !esLike(txt)) {
+              const m0 = txt.trim().match(/^(i|you|we|they|he|she|it|my \w+|his \w+|her \w+|our \w+|their \w+)\s+(.+)$/i); let fix = '';
+              if (m0) { const sj = m0[1].toLowerCase(), be = sj === 'i' ? 'am' : /^(you|we|they)$/.test(sj) || /s$/.test(sj.split(' ').pop()) ? 'are' : 'is'; fix = end(cap(m0[1] + ' ' + be + ' ' + m0[2].replace(/[.!?]+$/, ''))); }
+              const me = $('.wr-me', body); me.textContent = end(cap(txt)); me.classList.remove('hidden');
+              return verdict(1, txt, '¡Casi! +5', 'A tu frase le falta el verbo.', (fix ? esc(fix) + '<br><small>Otra forma: ' + esc(it.m) + '</small>' : 'Mejor así: ' + esc(it.m)));
+            }
+          }
           const fj = M.freeJudge(it.q, it.m, [txt]); const me = $('.wr-me', body); me.textContent = end(cap(txt)); me.classList.remove('hidden');
           if (fj.ok) return verdict(2, txt, '¡Perfecto! +10', 'Respuesta clara y bien escrita.', '');
           if (fj.fix) return verdict(1, txt, '¡Casi! +5', 'Se entiende. Mejor así:', esc(end(cap(fj.fix))));
