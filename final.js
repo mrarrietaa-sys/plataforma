@@ -25,6 +25,9 @@
   const WAIT = 12 * 3600 * 1000; EX.sections.forEach(sec => { sec.pool = sec.items.slice(); });
   function pickItems(seed) { let t = (+seed || 1) >>> 0; const rnd = () => { t += 0x6D2B79F5; let x = t; x = Math.imul(x ^ x >>> 15, x | 1); x ^= x + Math.imul(x ^ x >>> 7, x | 61); return ((x ^ x >>> 14) >>> 0) / 4294967296; };
     EX.sections.forEach(sec => { const L = sec.pool, n = CFG.PER_SKILL; if (L.length <= n) { sec.items = L.slice(); return; } const idx = L.map((_, i) => i); for (let i = idx.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [idx[i], idx[j]] = [idx[j], idx[i]]; } sec.items = idx.slice(0, n).sort((a, b) => a - b).map(i => L[i]); });
+    { const sp = EX.sections.find(x => x.key === 'speaking'), nn = +((M.MOD || {}).n) || 1, B = (window.MRSPK || []).filter(x => nn >= 5 || x.module === nn); // 🎙️ v506: Speaking con Azure: 1 leer + 1 escuchar y repetir + 1 responder (+ 1 libre si son 4)
+      if (sp && B.length) { const one = (ty) => { const L = B.filter(x => x.type === ty); return L.length ? L[Math.floor(rnd() * L.length)] : null; }; const T9 = { read: 'Read aloud', repeat: 'Listen and repeat', answer: 'Answer the question' };
+        const S9 = ['read', 'repeat', 'answer'].map(one).filter(Boolean).map(x => Object.assign({ topic: T9[x.type] }, x)); const free = CFG.PER_SKILL >= 4 && sp.pool.length ? sp.pool[Math.floor(rnd() * sp.pool.length)] : null; sp.items = S9.concat(free ? [free] : []); } }
     ITEMS.length = 0; EX.sections.forEach(sec => sec.items.forEach((it, idx) => ITEMS.push(Object.assign({}, it, { section: sec.key, label: sec.label, icon: sec.icon, idx })))); }
   const LIMIT = CFG.TIME_MIN * 60 * 1000;
   const MOD = M.MOD; const KEY = MOD.examKey;
@@ -205,6 +208,7 @@
     if (it.section === 'listening') renderMC(body, it, a, feedback, true);
     else if (it.section === 'reading') renderMC(body, it, a, feedback, false);
     else if (it.section === 'writing') renderW(body, it, a, feedback);
+    else if (window.MRSPK9 && MRSPK9.is(it)) MRSPK9.render(body, it, a, feedback, { min: 70, onSave: () => saveProg() });
     else renderS(body, it, a, feedback);
   }
   function renderMC(body, it, a, feedback, listen) {
@@ -332,7 +336,7 @@
       <div class="fx-pass-badge ${r.passed ? 'ok' : 'no'}">${r.passed ? '✅ APROBADO' : '❌ NO APROBADO'}</div></div></div>
       <p class="muted">${esc(r.name)} — ${MOD.es} · ${MOD.level} — ${esc(r.attemptLabel)}</p>
       <div class="fx-bars">${Object.keys(r.per).map(k => `<div><span>${EX.sections.find(s => s.key === k).icon} ${NAMES[k]}</span><div class="bar"><i style="width:${r.per[k].score * 10}%"></i></div><b>${r.per[k].score.toFixed(1)}</b></div>`).join('')}</div>
-      <div class="fx-comment">${r.timedOut ? `<b>⏱ Se acabó el tiempo (${CFG.TIME_MIN} minutos).</b> Tu examen se envió automáticamente con las respuestas que tenías.<br><br>` : ''}<b>Comentario:</b> ${esc(comment(r.per, r.b))}</div>
+      ${(() => { const z = window.MRSPK9 ? MRSPK9.summary(ITEMS, answers || []) : {}; return z.pron != null ? `<div class="sp9-sum"><div><b>${z.pron}</b><span>Pronunciación</span></div>${z.flu != null ? `<div><b>${z.flu}</b><span>Fluidez</span></div>` : ''}</div>` : ''; })()}<div class="fx-comment">${r.timedOut ? `<b>⏱ Se acabó el tiempo (${CFG.TIME_MIN} minutos).</b> Tu examen se envió automáticamente con las respuestas que tenías.<br><br>` : ''}<b>Comentario:</b> ${esc(comment(r.per, r.b))}</div>
       <div class="fx-notify">${cloud() ? '<div id="n0" class="pending">⏳ Avisando a administración…</div>' : ''}<div id="n1" class="pending">⏳ Guardando resultados…</div>${r.temail ? '<div id="n2" class="pending">⏳ Enviando correo al profesor…</div>' : ''}<div id="n3" class="pending">⏳ Enviando copia a administración…</div></div>
       <div class="row" style="justify-content:center;margin-top:14px">${r.passed ? '<button class="btn k lg" id="cert">🎓 Ver mi certificado</button>' : ''}
         <button class="btn w" id="pdf">📄 Descargar reporte PDF</button><button class="btn w" id="cp">📋 Copiar resumen</button>
@@ -372,7 +376,7 @@
     if (false && r.temail) { setN('n2', await send(r.temail), ''); const e2 = $('#n2'); if (e2) e2.textContent = e2.className === 'ok' ? `✓ Correo enviado al profesor (${r.temail}).` : '✗ No se pudo enviar el correo al profesor. Usa “Copiar resumen”.'; } else { const e2 = $('#n2'); if (e2) e2.remove(); } /* v460: sin profe fijo */
     setN('n3', await send(CFG.ADMIN_EMAIL), ''); const e3 = $('#n3'); if (e3) e3.textContent = e3.className === 'ok' ? '✓ Copia enviada a administración.' : '✗ No se pudo enviar la copia a administración.';
   }
-  function summaryText(r) { return `📋 Examen final — ${MOD.es} (${MOD.id === 'B2' ? 'B1' : MOD.id}) · mrarrieta.com\n👤 ${r.name}\n📅 ${r.date.toLocaleString()}\n🔁 ${r.attemptLabel}\n🎧 Listening: ${r.per.listening.score.toFixed(1)}\n📖 Reading: ${r.per.reading.score.toFixed(1)}\n✍️ Writing: ${r.per.writing.score.toFixed(1)}\n🎤 Speaking: ${r.per.speaking.score.toFixed(1)}\n⭐ Nota final: ${r.fin.toFixed(1)} / 10 — ${r.passed ? 'APROBADO' : 'NO APROBADO'}\n💬 ${comment(r.per, r.b)}`; }
+  function summaryText(r) { return `${(() => { const z = window.MRSPK9 ? MRSPK9.summary(ITEMS, answers || []) : {}; return z.pron != null ? '🎙️ Speaking (Azure): pronunciación ' + z.pron + (z.flu != null ? ' · fluidez ' + z.flu : '') + '\n' : ''; })()}📋 Examen final — ${MOD.es} (${MOD.id === 'B2' ? 'B1' : MOD.id}) · mrarrieta.com\n👤 ${r.name}\n📅 ${r.date.toLocaleString()}\n🔁 ${r.attemptLabel}\n🎧 Listening: ${r.per.listening.score.toFixed(1)}\n📖 Reading: ${r.per.reading.score.toFixed(1)}\n✍️ Writing: ${r.per.writing.score.toFixed(1)}\n🎤 Speaking: ${r.per.speaking.score.toFixed(1)}\n⭐ Nota final: ${r.fin.toFixed(1)} / 10 — ${r.passed ? 'APROBADO' : 'NO APROBADO'}\n💬 ${comment(r.per, r.b)}`; }
   async function copySummary() { const t = summaryText(last_); try { await navigator.clipboard.writeText(t); M.toast('✓ Resumen copiado'); } catch (e) { const ta = h(`<textarea style="position:fixed;opacity:0">${esc(t)}</textarea>`); document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); M.toast('✓ Resumen copiado'); } }
   const jspdf = () => loadScript((document.querySelector('script[src*="final.js"]').getAttribute('src') || '').replace(/final\.js.*$/, '') + 'jspdf.min.js', () => !!window.jspdf).then(ok => ok || loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js', () => !!window.jspdf));
   async function reportPDF() {
@@ -517,5 +521,5 @@
     };
   }
 
-  window.M1FINAL = { run, certificate: (appEl, context) => { app = appEl; ctx = context; certificate(); } };
+  window.M1FINAL = { _t: { ITEMS, pickItems }, run, certificate: (appEl, context) => { app = appEl; ctx = context; certificate(); } };
 })();

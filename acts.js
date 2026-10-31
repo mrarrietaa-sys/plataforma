@@ -87,6 +87,7 @@
       try {
         const r = await M.recordScore(target, secs * 1000, f => { $('small', mic).textContent = `Te escucho… ${Math.max(0, Math.ceil(secs * (1 - f)))}s`; });
         mic.classList.remove('rec'); mic.disabled = false; $('small', mic).textContent = 'Otra vez'; if (cur !== i) return;
+        if (!r.alts || !r.alts.length) { if (r.score === 0 || r.error) { res.innerHTML = '<div class="lrc-fb"><b>No te escuché.</b> Acércate al micrófono y repite.</div>'; $('small', mic).textContent = 'Repetir'; return; } } // v506
         if (r.score != null && r.heard && M.readJudge) { const rj = M.readJudge('', target, r.az ? Object.assign([r.heard], { az: r.az }) : [r.heard]); r.score = rj.ok ? Math.max(rj.score, 75) : Math.min(rj.score, 69); r._extra = rj.extra; r._gram = rj.gramMiss; } // v494: misma regla exigente
         if (r.score != null) { // v500: solo dice cómo le fue (nunca muestra lo que escuchó)
           const sc = Math.round(r.score), ok = sc >= 70, mid = !ok && sc >= 45, cls = ok ? 'ce-st-ok' : mid ? 'ce-st-mid' : 'ce-st-bad';

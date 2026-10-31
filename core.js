@@ -306,7 +306,7 @@
     }
     async function assess(wav, ref) {
       try { const r = await MRAC.call('azPron', { code: MRAC.code(), text: ref || '', audio: wav.b64 }, { timeout: 15000 });
-        try { if (/[?&]vozdebug=1/.test(location.search)) localStorage.setItem('mra_vozdebug', '1'); if (/[?&]vozdebug=0/.test(location.search)) localStorage.removeItem('mra_vozdebug'); if (localStorage.getItem('mra_vozdebug') === '1') { const W = (r && r.words || []).map(w => w.w + ':' + w.a + (w.e !== 'None' ? '(' + w.e + ')' : '')).join(' '); setTimeout(() => { let d = document.getElementById('azdbg'); if (!d) { d = document.createElement('div'); d.id = 'azdbg'; d.style.cssText = 'position:fixed;left:8px;right:8px;bottom:8px;z-index:99999;background:#111;color:#fff;font:13px/1.4 monospace;padding:10px;border-radius:10px;opacity:.92'; d.onclick = () => d.remove(); document.body.appendChild(d); } d.textContent = (r && r.ok ? `🔧 Azure · reconoció «${r.text || '—'}» · pron ${r.pron} · precisión ${r.acc} · completa ${r.comp} · ${W}` : `🔧 Azure no respondió: ${(r && r.err) || 'error'}`); }, 50); } } catch (er) { } // 🔧 solo para pruebas del administrador (?vozdebug=1)
+        try { localStorage.removeItem('mra_vozdebug'); if (/[?&]vozdebug=1/.test(location.search)) { const W = (r && r.words || []).map(w => w.w + ':' + w.a + (w.e !== 'None' ? '(' + w.e + ')' : '')).join(' '); setTimeout(() => { let d = document.getElementById('azdbg'); if (!d) { d = document.createElement('div'); d.id = 'azdbg'; d.style.cssText = 'position:fixed;left:8px;right:8px;bottom:8px;z-index:99999;background:#111;color:#fff;font:13px/1.4 monospace;padding:10px;border-radius:10px;opacity:.92'; d.onclick = () => d.remove(); document.body.appendChild(d); } d.textContent = (r && r.ok ? `🔧 Azure · reconoció «${r.text || '—'}» · pron ${r.pron} · precisión ${r.acc} · completa ${r.comp} · ${W}` : `🔧 Azure no respondió: ${(r && r.err) || 'error'}`); }, 50); } } catch (er) { } // 🔧 solo para pruebas del administrador (?vozdebug=1)
         if (!r || !r.ok) { const e = r && r.err; if (e === 'quota') { offDay = today(); try { localStorage.setItem('mra_azoff', offDay); } catch (er) { } } if (e === 'cap' || e === 'nokey' || e === 'unknown_action') offAll = true; return null; }
         return r; } catch (e) { return null; }
     }
@@ -324,7 +324,7 @@
   const azRef = (t) => { const x = String(t == null ? '' : t).trim(); return !x || /_{2,}/.test(x) || /^[A-Za-z]$/.test(x) ? '' : x; };
   async function listenAz(timeoutMs = 8000, opts = {}) {
     const raw = opts.target != null ? String(opts.target) : '', ref = azRef(raw), letter = /^\s*[A-Za-z]\s*$/.test(raw) || !!opts.scorer;
-    if (letter || opts.noAz || !AZV.can()) { try { if (localStorage.getItem('mra_vozdebug') === '1' || /vozdebug=1/.test(location.search)) { localStorage.setItem('mra_vozdebug', '1'); setTimeout(() => toast('🔧 Azure NO se usó: ' + (!(window.MRAC && MRAC.code && MRAC.code()) ? 'no hay sesión de estudiante con código' : 'no disponible (cupo/tope/clave)')), 60); } } catch (e) { } return listen(timeoutMs, opts); }
+    if (letter || opts.noAz || !AZV.can()) { try { if (/vozdebug=1/.test(location.search)) { setTimeout(() => toast('🔧 Azure NO se usó: ' + (!(window.MRAC && MRAC.code && MRAC.code()) ? 'no hay sesión de estudiante con código' : 'no disponible (cupo/tope/clave)')), 60); } } catch (e) { } return listen(timeoutMs, opts); }
     const n = ref ? ref.split(/\s+/).length : 8, maxSpeechMs = Math.min(8000, Math.max(4000, n * 600 + 2500));
     if (audBusy()) { try { stop(); } catch (e) { } await sleep(500); } // primero se calla la plataforma
     if (!SR || MOBILE) { // 📱 celular / iPhone: solo Azure
@@ -333,7 +333,7 @@
       const wav = AZV.toWav(c); if (!wav) return { alts: [], error: 'no-speech' };
       const az = await AZV.assess(wav, ref);
       if (!az) return SR ? listen(timeoutMs, opts) : { alts: [], error: 'no-speech' };
-      const alts = (az.alts && az.alts.length ? az.alts : az.text ? [az.text] : []).slice(); alts.az = az; srStat(alts.length ? 'ok' : 'em', 'az');
+      const alts = (az.alts && az.alts.length ? az.alts : az.text ? [az.text] : []).filter(x => /[a-z0-9]/i.test(x || '')); alts.az = az; // v506: si no se reconoció ninguna palabra → «No te escuché» srStat(alts.length ? 'ok' : 'em', 'az');
       return alts.length ? { alts, az } : { alts: [], error: 'no-speech', az };
     }
     if (!ref) return listen(timeoutMs, opts); // 💻 respuesta libre en PC: basta el navegador

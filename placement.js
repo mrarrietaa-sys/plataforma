@@ -23,12 +23,14 @@
   const LIMIT = CFG.TIME_MIN * 60 * 1000;
   const KEY = 'mra_placement_v1';
   const ITEMS = []; EX.sections.forEach(sec => sec.items.forEach((it, idx) => ITEMS.push(Object.assign({}, it, { section: sec.key, label: sec.label, icon: sec.icon, idx }))));
+  (window.MRSPK || []).forEach(it => ITEMS.push(Object.assign({}, it, { section: 'speaking', label: 'Speaking', icon: '🎤', topic: ({ read: 'Read aloud', repeat: 'Listen and repeat', answer: 'Answer the question' })[it.type], idx: ITEMS.length }))); // 🎙️ v506: Speaking con Azure
+  const SP9 = (i) => !!(window.MRSPK9 && MRSPK9.is(ITEMS[i]));
   const N = ITEMS.length;
   // ---------- motor adaptativo ----------
   const SKILLS = ['listening', 'reading', 'writing', 'speaking'];
   let PL = null; // { m, phase, queue, pos, passed, asked, sp, done, rec, all }
   const pick = (arr) => arr.length ? arr[Math.floor(Math.random() * arr.length)] : null;
-  const poolOf = (m, sec, not) => ITEMS.map((it, i) => i).filter(i => ITEMS[i].module === m && ITEMS[i].section === sec && !(not || []).includes(i));
+  const poolOf = (m, sec, not) => ITEMS.map((it, i) => i).filter(i => ITEMS[i].module === m && ITEMS[i].section === sec && !(not || []).includes(i) && (sec !== 'speaking' || !window.MRSPK || SP9(i))); // v506: por nivel solo tareas cortas; la libre va al final
   const isOk = (i) => !!(answers[i] && answers[i].correct === true);
   const stageCore = (m) => SKILLS.map(sec => pick(poolOf(m, sec, PL ? PL.asked : []))).filter(i => i !== null);
   function initPlan() { PL = { m: 1, phase: 'core', queue: [], pos: 0, passed: {}, asked: [], sp: null, done: false }; PL.queue = stageCore(1); }
@@ -190,8 +192,9 @@
   function show() { cur = PL.queue[PL.pos]; if (!PL.asked.includes(cur)) PL.asked.push(cur); saveProg(); item(); }
   function advance() {
     PL.pos++; if (PL.pos < PL.queue.length) return show();
+    if (PL.phase === 'free') return submit(); // v506: tarea 4 (hablar libremente) ya respondida
     const r = decide(); saveProg();
-    if (r === 'end') return submit();
+    if (r === 'end') { const fr = ITEMS.map((x, i) => i).filter(i => ITEMS[i].section === 'speaking' && !SP9(i) && !PL.asked.includes(i)); const pickF = fr.filter(i => ITEMS[i].module === PL.rec); const fi = pick(pickF.length ? pickF : fr); if (window.MRSPK && fi !== null && fi !== undefined && !timedOut) { PL.phase = 'free'; PL.queue = [fi]; PL.pos = 0; saveProg(); return show(); } return submit(); }
     if (r === 'up') return levelUp();
     show();
   }
@@ -215,6 +218,7 @@
     if (it.section === 'listening') renderMC(body, it, a, feedback, true);
     else if (it.section === 'reading') renderMC(body, it, a, feedback, false);
     else if (it.section === 'writing') renderW(body, it, a, feedback);
+    else if (window.MRSPK9 && MRSPK9.is(it)) MRSPK9.render(body, it, a, feedback, { onSave: () => { saveProg(); refreshPills(); } });
     else renderS(body, it, a, feedback);
     refreshPills();
   }
@@ -351,7 +355,7 @@
       <p class="muted">${esc(r.name)} — ${esc(r.attemptLabel)}</p>
       <div class="pt-mods">${[1, 2, 3, 4].map(k => { const mm = P.mod(k), x = r.ms.mods[k]; return `<div class="${k === r.ms.rec ? 'rec' : x.ok ? 'ok' : ''}"><b>${esc(mm.name)}</b><small>${esc(mm.es)}</small><span>${Math.round(x.pct * 100)}%</span><em>${k === r.ms.rec ? '📍 Empiezas aquí' : x.ok ? '✓ Dominado' : '—'}</em></div>`; }).join('')}</div>
       <div class="fx-bars">${Object.keys(r.per).map(k => `<div><span>${EX.sections.find(s => s.key === k).icon} ${NAMES[k]}</span><div class="bar"><i style="width:${r.per[k].score * 10}%"></i></div><b>${r.per[k].score.toFixed(1)}</b></div>`).join('')}</div>
-      <div class="fx-comment">${r.timedOut ? `<b>⏱ Se acabó el tiempo (${CFG.TIME_MIN} minutos).</b> Tu prueba se envió automáticamente con las respuestas que tenías.<br><br>` : ''}<b>Comentario:</b> ${esc(comment(r.per, r.ms))}</div>
+      ${(() => { const z = window.MRSPK9 ? MRSPK9.summary(ITEMS, answers || []) : {}; return z.pron != null ? `<div class="sp9-sum"><div><b>${z.pron}</b><span>Pronunciación</span></div>${z.flu != null ? `<div><b>${z.flu}</b><span>Fluidez</span></div>` : ''}</div>` : ''; })()}<div class="fx-comment">${r.timedOut ? `<b>⏱ Se acabó el tiempo (${CFG.TIME_MIN} minutos).</b> Tu prueba se envió automáticamente con las respuestas que tenías.<br><br>` : ''}<b>Comentario:</b> ${esc(comment(r.per, r.ms))}</div>
       ${(() => { const asg = P.assigned(); return asg && asg.n > m.n ? `<div class="pt-trial">🎓 <b>Ojo:</b> en este dispositivo ya aprobaste el examen final del ${esc(P.mod(asg.n - 1).name)}, por eso hoy tu ruta está en el <b>${esc(asg.name)} (${esc(asg.es)})</b>.</div>` : ''; })()}
       ${trial ? `<div class="pt-trial">🟢 <b>Acceso gratuito:</b> ya puedes explorar los <b>2 primeros temas</b> del ${esc((P.trialMod() || m).name)}.</div>` : ''}
       <div class="fx-notify">${cloud() ? '<div id="n0" class="pending">⏳ Enviando tu resultado a administración…</div>' : ''}<div id="n1" class="pending">⏳ Guardando resultados…</div><div id="n2" class="pending">⏳ Enviando correo con tu resultado…</div><div id="n3" class="pending">⏳ Enviando copia a administración…</div></div>
@@ -404,7 +408,7 @@
     const s1 = await send(r.temail); setN('n2', s1, s1 ? `✓ Te enviamos tu resultado al correo con el que te inscribiste.` : '✗ No se pudo enviar el correo. Usa “Copiar resumen”.');
     const s2 = await send(CFG.ADMIN_EMAIL); setN('n3', s2, s2 ? '✓ Copia enviada a administración.' : '✗ No se pudo enviar la copia a administración.');
   }
-  function summaryText(r) { const m = P.mod(r.ms.rec); return `📋 Placement Test · mrarrieta.com\n👤 ${r.name}\n📅 ${r.date.toLocaleString()}\n🔁 ${r.attemptLabel}\n⭐ Módulo recomendado: ${m.name} — ${m.es}\n${[1, 2, 3, 4].map(k => `   ${P.mod(k).name} (${P.mod(k).es}): ${Math.round(r.ms.mods[k].pct * 100)}%`).join('\n')}\n🎧 Listening: ${r.per.listening.score.toFixed(1)}\n📖 Reading: ${r.per.reading.score.toFixed(1)}\n✍️ Writing: ${r.per.writing.score.toFixed(1)}\n🎤 Speaking: ${r.per.speaking.score.toFixed(1)}\n💬 ${comment(r.per, r.ms)}`; }
+  function summaryText(r) { const m = P.mod(r.ms.rec); return `${(() => { const z = window.MRSPK9 ? MRSPK9.summary(ITEMS, answers || []) : {}; return z.pron != null ? '🎙️ Speaking (Azure): pronunciación ' + z.pron + (z.flu != null ? ' · fluidez ' + z.flu : '') + '\n' : ''; })()}📋 Placement Test · mrarrieta.com\n👤 ${r.name}\n📅 ${r.date.toLocaleString()}\n🔁 ${r.attemptLabel}\n⭐ Módulo recomendado: ${m.name} — ${m.es}\n${[1, 2, 3, 4].map(k => `   ${P.mod(k).name} (${P.mod(k).es}): ${Math.round(r.ms.mods[k].pct * 100)}%`).join('\n')}\n🎧 Listening: ${r.per.listening.score.toFixed(1)}\n📖 Reading: ${r.per.reading.score.toFixed(1)}\n✍️ Writing: ${r.per.writing.score.toFixed(1)}\n🎤 Speaking: ${r.per.speaking.score.toFixed(1)}\n💬 ${comment(r.per, r.ms)}`; }
   async function copySummary() { const t = summaryText(last_); try { await navigator.clipboard.writeText(t); M.toast('✓ Resumen copiado'); } catch (e) { const ta = h(`<textarea style="position:fixed;opacity:0">${esc(t)}</textarea>`); document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); M.toast('✓ Resumen copiado'); } }
   const jspdf = () => loadScript((document.querySelector('script[src*="placement.js"]').getAttribute('src') || '').replace(/placement\.js.*$/, '') + 'jspdf.min.js', () => !!window.jspdf).then(ok => ok || loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js', () => !!window.jspdf));
   function logoData(src) { return new Promise(res => { const i = new Image(); i.onload = () => { const c = document.createElement('canvas'); c.width = i.naturalWidth; c.height = i.naturalHeight; c.getContext('2d').drawImage(i, 0, 0); try { res(c.toDataURL('image/png')); } catch (e) { res(null); } }; i.onerror = () => res(null); i.src = src || 'mra-logo-cert.png'; }); }
@@ -497,5 +501,5 @@
     };
   }
   const status = () => { const s = load(); const round = Math.min(ROUNDS, s.round || 1); return { attempts: s.attempts || 0, max: 1e9, round, rounds: ROUNDS, inProgress: !!(s.prog && s.prog.startedAt) }; };
-  window.MRAPLACE = { run, status };
+  window.MRAPLACE = { run, status, _t: { ITEMS, poolOf, stage: (m) => stageCore(m) } };
 })();
