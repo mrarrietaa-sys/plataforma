@@ -176,7 +176,7 @@
       const hw = words(sc.heard || '');
       const ok = w => words(w).every(x => hw.some(y => y === x || (x.length > 3 && lev(x, y) <= 1)));
       const marked = sc.heard ? tw.map(w => '<span class="' + (ok(w) ? 'hit' : 'miss') + '">' + esc(w) + '</span>').join(' ') : '';
-      box.innerHTML = '<div class="cl-fb ' + cls + '"><b>' + msg + '</b>' + (sc.heard ? '<div class="cl-heard">Escuché: “' + esc(sc.heard) + '” · ' + sc.pct + '%</div><div class="cl-marked">' + marked + '</div>' : '') + (mine ? '<div class="row">' + mine + '</div>' : '') + '</div>';
+      box.innerHTML = '<div class="cl-fb ' + cls + '"><b>' + msg + '</b>' + (sc.heard ? '<div class="cl-heard">' + sc.pct + '%</div><div class="cl-marked">' + marked + '</div>' : '') + (mine ? '<div class="row">' + mine + '</div>' : '') + '</div>';
       voice(v);
     } else {
       box.innerHTML = '<div class="cl-fb mid"><b>🎧 Compara tu voz con el audio original.</b><div class="cl-heard">Tu navegador no puede evaluar la pronunciación, pero sí puedes escucharte.</div><div class="row">' + mine + '</div></div>';

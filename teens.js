@@ -84,7 +84,7 @@
       if (!r.alts || !r.alts.length) { res.innerHTML = `<p class="tn-bad">${/not-allowed|service-not-allowed|audio-capture/.test(r.error || '') ? 'Permite el uso del micrófono en tu navegador (ícono del candado junto a la dirección) e inténtalo de nuevo.' : 'No te escuché. Habla un poco más fuerte e inténtalo de nuevo.'}</p>`; return; }
       const sc = M1.speechScore(ph, r.alts).score; const s = state(); const first80 = sc >= 80 && (s.ch || 0) < 80; if (sc > (s.ch || 0)) { s.ch = sc; save(s); }
       const got = 0;
-      res.innerHTML = `<div class="tn-sc ${sc >= 80 ? 'ok' : ''}"><b>${sc}%</b><span>${sc >= 80 ? '¡Excelente pronunciación!' : 'Casi. Escúchala otra vez e inténtalo: necesitas 80%.'}</span><small>Te escuché: “${esc(r.alts[0])}”</small></div>`;
+      res.innerHTML = `<div class="tn-sc ${sc >= 80 ? 'ok' : ''}"><b>${sc}%</b><span>${sc >= 80 ? '¡Excelente pronunciación!' : 'Casi. Escúchala otra vez e inténtalo: necesitas 80%.'}</span></div>`;
       try { if (sc >= 80) { M1.sfx('win'); M1.confetti(1500); M1.praise(); } else { M1.sfx('bad'); M1.encourage(); } } catch (e) { }
       refresh(root);
     };

@@ -268,7 +268,7 @@
     const mc = $('#mc', body), st = $('#st', body), vr = $('#vr', body);
     const result = () => {
       vr.innerHTML = `<div class="vres ${a.correct === null ? 'self' : a.correct ? 'ok' : 'bad'}"><div class="vres-t">${a.neutral ? '✔ Grabación guardada (tu navegador no puede evaluar la voz).' : a.correct ? '✅ ¡Muy bien! Respondiste correctamente.' : '❌ Todavía no. ' + (it.special === 'spellName' ? 'Deletrea tu nombre letra por letra.' : `Responde con al menos ${it.minWords} palabras e incluye lo que pide la tarea.`)}</div>
-        ${a.value ? `<small class="muted">Te escuché: “${esc(a.value)}”</small>` : ''}<div class="row vres-b">${a.url ? '<button class="btn w sm" id="me">▶ Mi voz</button>' : ''}<button class="btn ${a.correct ? 'w' : 'k'} sm" id="ag">🔁 Grabar de nuevo</button></div></div>`;
+        <div class="row vres-b">${a.url ? '<button class="btn w sm" id="me">▶ Mi voz</button>' : ''}<button class="btn ${a.correct ? 'w' : 'k'} sm" id="ag">🔁 Grabar de nuevo</button></div></div>`;
       if (a.url) $('#me', vr).onclick = () => { const x = new Audio(a.url); x.play(); };
       $('#ag', vr).onclick = () => { a.answered = false; a.correct = null; a.value = null; a.url = null; a.blob = null; vr.innerHTML = ''; mc.click(); refreshPills(); };
       if (a.neutral) feedback(true, '', true); else feedback(a.correct, '');

@@ -630,7 +630,7 @@
         else if (mid) { setTimeout(M.encourage, 250); msg = `👍 ¡Muy bien! Practica: <b>${esc(missedW.join(', '))}</b>. Escucha el modelo y repite despacio.`; sfx('ok'); }
         else { setTimeout(M.encourage, 250); msg = `💪 Escucha el modelo 🔊, repite palabra por palabra y vuelve a intentar.${missedW.length ? ` Revisa: <b>${esc(missedW.slice(0, 4).join(', '))}</b>` : ''}`; sfx('bad'); }
         out.querySelectorAll('.srbox').forEach(x => x.remove());
-        out.prepend(h(`<div class="heardbox srbox"><div class="muted" style="font-size:13px">Escuché: “${esc(sc.heard)}”</div><div class="meter"><div class="bar"><i style="width:${sc.score}%;background:${ok ? 'var(--ok)' : mid ? 'var(--k)' : 'var(--bad)'}"></i></div><b>${sc.score}%</b></div><p style="margin:8px 0 0"><b>${ok ? '✅ ¡Bien hecho!' : mid ? '🟡 ¡Casi!' : '❌ Todavía no.'}</b> ${msg}</p><div class="row" style="margin-top:8px"><button class="btn sm ${ok ? 'w' : 'k'} again">🔁 Intentar otra vez</button></div></div>`));
+        out.prepend(h(`<div class="heardbox srbox"><div class="meter"><div class="bar"><i style="width:${sc.score}%;background:${ok ? 'var(--ok)' : mid ? 'var(--k)' : 'var(--bad)'}"></i></div><b>${sc.score}%</b></div><p style="margin:8px 0 0"><b>${ok ? '✅ ¡Bien hecho!' : mid ? '🟡 ¡Casi!' : '❌ Todavía no.'}</b> ${msg}</p><div class="row" style="margin-top:8px"><button class="btn sm ${ok ? 'w' : 'k'} again">🔁 Intentar otra vez</button></div></div>`));
         const ag = out.querySelector('.srbox .again'); if (ag) ag.onclick = () => mic.click();
         st.textContent = tries >= 3 || ok ? '' : 'Puedes intentarlo de nuevo 🎤';
         if (ok || mid || tries >= 2) $('#nx', bar).classList.remove('hidden');

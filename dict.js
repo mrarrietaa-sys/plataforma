@@ -256,7 +256,7 @@
     const sc = M.speechScore(target, r.alts);
     const fb = btn.parentNode.querySelector('.dict-fb') || btn.parentNode.appendChild(h('<div class="dict-fb"></div>'));
     fb.innerHTML = `<div class="meter"><div class="bar"><i style="width:${sc.score}%;background:${sc.score >= 85 ? 'var(--ok)' : sc.score >= 60 ? 'var(--k)' : 'var(--bad)'}"></i></div><b>${sc.score}%</b></div>
-      <small>${sc.score >= 85 ? '🌟 ¡Excelente pronunciación!' : sc.score >= 60 ? '👍 ¡Muy bien! Escucha otra vez y repite.' : '💪 Escucha el modelo 🔊 y vuelve a intentarlo.'} · Escuché: “${esc(sc.heard)}”</small>`;
+      <small>${sc.score >= 85 ? '🌟 ¡Excelente pronunciación!' : sc.score >= 60 ? '👍 ¡Muy bien! Escucha otra vez y repite.' : '💪 Escucha el modelo 🔊 y vuelve a intentarlo.'}</small>`;
     M.sfx(sc.score >= 60 ? 'ok' : 'bad');
   }
 

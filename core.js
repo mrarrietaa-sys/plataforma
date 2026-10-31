@@ -546,7 +546,7 @@
       ${score == null ? `<b>🎧 Escucha tu voz y el modelo. ¿Sonó parecido?</b>` :
         `<div class="vres-t">${ok ? '✅ ¡Muy bien! Lo dijiste correctamente.' : mid ? '🟡 ¡Casi! Escucha el modelo y repite despacio.' : '❌ No sonó bien todavía. Escucha el modelo y vuelve a intentarlo.'}</div>
          <div class="meter"><div class="bar"><i style="width:${score}%;background:${ok ? 'var(--ok)' : mid ? '#d4a017' : 'var(--bad)'}"></i></div><b>${score}%</b></div>
-         ${heard ? `<small class="muted">Te escuché: “${esc(heard)}”</small>` : ''}`}
+         `}
       <div class="row vres-b">${me ? '<button class="btn w sm" data-a="me">▶ Mi voz</button>' : ''}${model ? '<button class="btn sm" data-a="mo">▶ Modelo</button>' : ''}
         ${score == null ? '<button class="btn k sm" data-a="y">👍 Sí, sonó igual</button><button class="btn w sm" data-a="r">🔁 No, intentar otra vez</button>' : `<button class="btn ${ok ? 'w' : 'k'} sm" data-a="r">🔁 Intentar otra vez</button>`}</div></div>`);
     box.appendChild(card);

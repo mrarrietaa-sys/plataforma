@@ -833,12 +833,12 @@
       busy = true; tries++; const w = items[i]; const ok = score >= 70;
       if (ok) {
         const pts = tries === 1 ? 30 : tries === 2 ? 20 : 10; G.hit($('#vcard', st), pts); M.praise(); i++; fly(); burst(rocket, 12); fx('whoosh');
-        $('#vres', st).innerHTML = `<div class="ar-vr ok">✅ ¡Muy bien! ${mic ? 'Lo dijiste correctamente.' : 'Ese es el audio correcto.'}${heard ? ` <small>Te escuché: “${esc(heard)}”</small>` : ''}</div>`;
+        $('#vres', st).innerHTML = `<div class="ar-vr ok">✅ ¡Muy bien! ${mic ? 'Lo dijiste correctamente.' : 'Ese es el audio correcto.'}</div>`;
         if (i >= N) { G.after(1300, () => { rocket.classList.add('launch'); fx('boom'); G.after(1500, () => { G.add(150); G.end({ win: true, title: '¡Cohete en órbita! 🚀', msg: 'Pronunciaste todas las palabras.' }); }); }); return; }
         G.after(1500, render);
       } else {
         G.miss($('#vcard', st), { life: false }); setTimeout(() => M.encourage(), 200);
-        $('#vres', st).innerHTML = `<div class="ar-vr bad">❌ ${mic ? 'No sonó bien todavía.' : 'Ese no es.'} Escucha el modelo y vuelve a intentarlo.${heard ? ` <small>Te escuché: “${esc(heard)}”</small>` : ''}
+        $('#vres', st).innerHTML = `<div class="ar-vr bad">❌ ${mic ? 'No sonó bien todavía.' : 'Ese no es.'} Escucha el modelo y vuelve a intentarlo.
           <div class="ar-row"><button class="btn w sm" id="vm2">${I('vol')} Modelo</button><button class="btn k sm" id="vre">${I('repeat')} Intentar otra vez</button>${tries >= 2 ? '<button class="btn w sm" id="vskip">Saltar ⏭️</button>' : ''}</div></div>`;
         $('#vm2', st).onclick = () => say(w.au);
         $('#vre', st).onclick = () => { busy = false; $('#vres', st).innerHTML = ''; if (mic) talk(); else { $$('.ar-vo', st).forEach(x => x.classList.remove('sel')); $('#vok', st).disabled = true; } };

@@ -69,7 +69,7 @@
         const finish = (good, heard) => { mic.disabled = true; $$('button', bar).forEach(b => b.disabled = true); res({ good, heard }); };
         mic.onclick = async () => { stop(); mic.classList.add('rec'); st.textContent = '🎧 Te escucho…'; const r = await M.listen(6000, { quick: true }); mic.classList.remove('rec');
           if (!r.alts.length) { st.textContent = 'No te escuché. Intenta otra vez, toca «Escuchar pista» o escríbela.'; return; }
-          const sc = /^[A-Za-z]$/.test(it.en.trim()) ? M.letterScorer(it.en.trim())(r.alts) : M.speechScore(it.en, r.alts); if (sc.score >= 70) { M.praise(); finish(true, sc.heard); } else { st.innerHTML = `❌ Escuché “${esc(sc.heard)}”. Intenta otra vez (usa 💡 Pista).`; sfx('bad'); setTimeout(M.encourage, 250); } };
+          const sc = /^[A-Za-z]$/.test(it.en.trim()) ? M.letterScorer(it.en.trim())(r.alts) : M.speechScore(it.en, r.alts); if (sc.score >= 70) { M.praise(); finish(true, sc.heard); } else { st.innerHTML = `❌ No sonó bien todavía. Intenta otra vez (usa 💡 Pista).`; sfx('bad'); setTimeout(M.encourage, 250); } };
         if ($('#ty', bar)) $('#ty', bar).onclick = () => { inp.classList.remove('hidden'); $('input', inp).focus(); };
         $('#sh', bar).onclick = () => { hints++; st.innerHTML = it.en.trim().length > 1 ? `Empieza por <b>${esc(it.en[0].toUpperCase())}</b> y tiene ${it.en.replace(/[^A-Za-z]/g, '').length} letras. Escucha cómo suena.` : 'Escucha cómo suena y repítela.'; stop(); play(it.au); };
         $('#sk', bar).onclick = () => { const v = $('input', inp).value.trim(); if (v) finish(M.norm(v) === M.norm(it.en), v); else if (M.canSR) mic.click(); };
@@ -128,7 +128,7 @@
         $('button', mic).onclick = async () => { const bt = $('button', mic); stop(); bt.classList.add('rec'); st.textContent = '🎧 Te escucho… di una palabra de los globos'; const r = await M.listen(5000); bt.classList.remove('rec'); tries++;
           if (!r.alts.length) { st.textContent = 'No te escuché 🙉 Intenta otra vez.'; return; }
           let best = -1, bs = 0, heard = ''; items.forEach((it, i) => { if (popped.has(i)) return; const sc = M.speechScore(it.en, r.alts); if (sc.score > bs) { bs = sc.score; best = i; heard = sc.heard; } });
-          if (best >= 0 && bs >= 70) { pop(best); st.innerHTML = `✅ ¡Muy bien! Dijiste <b>${esc(items[best].en)}</b>`; } else { sfx('bad'); setTimeout(M.encourage, 250); st.innerHTML = `❌ Escuché “${esc(heard || r.alts[0])}”. Toca el globo para escucharlo y repite.`; }
+          if (best >= 0 && bs >= 70) { pop(best); st.innerHTML = `✅ ¡Muy bien! Dijiste <b>${esc(items[best].en)}</b>`; } else { sfx('bad'); setTimeout(M.encourage, 250); st.innerHTML = `❌ No sonó bien todavía. Toca el globo para escucharlo y repite.`; }
           if (popped.size === items.length) setTimeout(res, 700); };
       } else {
         let k = 0; const order = shuffle(items.map((_, i) => i));
