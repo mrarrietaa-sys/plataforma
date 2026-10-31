@@ -314,7 +314,8 @@
       if (!az || !az.ref) return null; const W = az.words || [];
       const om = W.filter(w => w.e === 'Omission').length, ins = W.filter(w => w.e === 'Insertion').length, bad = W.filter(w => w.e === 'Mispronunciation' || (w.e === 'None' && w.a < 40)).length;
       const ref = W.filter(w => w.e !== 'Insertion').length;
-      const ok = az.comp >= 85 && az.acc >= 60 && az.pron >= 60 && om === 0 && ins <= 1 && bad <= (ref >= 4 ? 1 : 0);
+      const short = ref <= 2, minA = short ? 80 : 60, bad2 = short ? W.filter(w => w.e !== 'Insertion' && w.a < 80).length : bad; // palabras sueltas: más exigente
+      const ok = az.comp >= 85 && az.acc >= minA && az.pron >= minA && om === 0 && ins <= (short ? 0 : 1) && bad2 <= (ref >= 4 ? 1 : 0);
       return { ok, score: ok ? Math.max(az.pron, 75) : Math.min(az.pron, 69), why: om || ins >= 2 || (ins && !ok) ? 'words' : 'pron', extra: ins >= 2 && !om };
     }
     return { can, capture, toWav, assess, verdict };
@@ -432,7 +433,7 @@
   async function recordScore(target, ms, onTick, scorer) {
     if (!scorer && /^\s*[A-Za-z]\s*$/.test(String(target || ''))) scorer = letterScorer(String(target).trim()); // letras sueltas (A, B, C…)
     if (!scorer && AZV.can()) { const t0 = Date.now(), iv = setInterval(() => onTick && onTick(Math.min(1, (Date.now() - t0) / ms)), 100); let r; try { r = await listenAz(ms, { quick: true, target: String(target || '') }); } finally { clearInterval(iv); onTick && onTick(1); } // 🎙️ v503: Azure
-      const v = AZV.verdict(r.az); let score = null, heard = ''; if (v) { score = v.score; heard = r.alts[0] || ''; } else if (r.alts.length) { const sc = speechScore(target, r.alts); score = sc.score; heard = sc.heard; } else if (r.error !== 'audio-capture' && r.error !== 'service-not-allowed' && r.error !== 'start' && r.error !== 'not-allowed') score = 0;
+      const v = AZV.verdict(r.az); let score = null, heard = ''; if (v) { const j = readJudge('', String(target || ''), r.alts); score = j.ok ? Math.max(75, j.score) : Math.min(69, j.score); heard = r.alts[0] || ''; } else if (r.alts.length) { const sc = speechScore(target, r.alts); score = sc.score; heard = sc.heard; } else if (r.error !== 'audio-capture' && r.error !== 'service-not-allowed' && r.error !== 'start' && r.error !== 'not-allowed') score = 0;
       return { url: null, alts: r.alts, score, heard, error: r.error, az: r.az }; }
     if (audBusy()) { try { stop(); } catch (e) { } await sleep(500); } // 🔇 nunca graba mientras suena la plataforma
     let rec = null, stream = null; const chunks = [];
@@ -624,12 +625,14 @@
   const GRAM9 = new Set('am is are was were be been being do does did have has had will would can could should must not never i you he she it we they me him her us them my your his our their this that these those there'.split(' '));
   const FILL9 = new Set(['um', 'uh', 'ah', 'oh', 'ok', 'okay', 'yeah', 'so', 'well', 'hmm', 'mm', 'eh']);
   function hlWords(tgt, heardWords) { return String(tgt || '').split(/\s+/).filter(Boolean).map(tok => { const ws = words(tok); const okw = ws.length && ws.every(w => heardWords.some(x => same9(x, w))); return `<span class="${okw ? 'hw-ok' : 'hw-no'}">${esc(tok)}</span>`; }).join(' '); }
-  function readJudge(q, tgt, alts) {
+  // 🎙️ v504: con Azure se exigen las dos cosas: que lo que se reconoció sean las palabras correctas Y que Azure apruebe la pronunciación
+  function readJudge(q, tgt, alts) { const base = readJudge0(q, tgt, alts), v = alts && AZV.verdict(alts.az); if (!v) return base;
+    const ok = v.ok && base.ok; return Object.assign({}, base, { ok, score: ok ? v.score : Math.min(v.score, base.score || 0, 69), extra: !ok && (v.extra || base.extra), gramMiss: !ok && (v.why === 'words' || !!base.gramMiss || !base.ok), az: true, hl: '' }); }
+  function readJudge0(q, tgt, alts) {
     const heard = (alts && alts[0]) || ''; if (!heard) return { ok: false, heard, score: 0, hl: '' };
     const blank = /_{2,}/.test(tgt || ''), clean = String(tgt || '').replace(/_{2,}/g, ' ').replace(/\s+/g, ' ').trim();
     if (blank) { const sc = clean ? speechScore(clean, alts).score : 0; if (sc >= 45) return { ok: true, heard, score: sc, read: true };
       let fj = null; try { fj = freeJudge(q, tgt, alts); } catch (e) { } if (fj && fj.ok) return { ok: true, heard, score: sc, own: true, fix: fj.fix || null }; return { ok: false, heard, score: sc }; }
-    { const v = alts && AZV.verdict(alts.az); if (v) return { ok: v.ok, heard, score: v.score, read: true, extra: v.extra, gramMiss: !v.ok && v.why === 'words', az: true, hl: '' }; } // 🎙️ v503: decide Azure
     const tw = words(clean); let best = null;
     for (const alt of (alts || []).slice(0, 5)) { const s0 = speechScore(clean, [alt]).score, aw = words(alt), used = tw.map(() => false); let extra = 0;
       for (const w of aw) { const i = tw.findIndex((t, k) => !used[k] && same9(w, t)); if (i >= 0) used[i] = true; else if (!FILL9.has(w)) extra++; }
