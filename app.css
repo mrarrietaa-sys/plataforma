@@ -7816,3 +7816,37 @@ body:has(#app .player) .topbar,body:has(#app .ld-load) .topbar{display:none!impo
 /* v494 · palabra por palabra al leer en voz alta */
 .hw-line{margin-top:5px;font-size:13.5px;line-height:1.5;font-weight:600;font-style:normal}.hw-line .hw-ok{color:#15803d}.hw-line .hw-no{color:#C0392B;text-decoration:underline wavy rgba(192,57,43,.6);text-underline-offset:3px}
 .mv-me .hw-line .hw-ok{color:#86efac}.mv-me .hw-line .hw-no{color:#fecaca;text-decoration-color:#fecaca}
+/* v500 · Listen and repeat en flashcards (foto grande + miniaturas) */
+.lrc{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+.lrc-card{display:flex;flex-direction:column;border:1.5px solid var(--bd);border-radius:20px;overflow:hidden;background:#fff;transition:border-color .2s,box-shadow .2s}
+.lrc-card.ce-st-ok{border-color:#1a9e55;box-shadow:0 0 0 3px rgba(26,158,85,.15)}.lrc-card.ce-st-mid{border-color:#d4a017}.lrc-card.ce-st-bad{border-color:#E3242B}
+.lrc-ph{position:relative;height:clamp(160px,34vh,380px);cursor:pointer;background:#eef2f8}
+.lrc-ph .ph{position:absolute;inset:0;border:0!important;border-radius:0!important;aspect-ratio:auto!important;height:100%!important;margin:0}
+.lrc-ph .ph img{width:100%;height:100%;object-fit:cover;object-position:center 30%}
+.lrc-ph .ph .tc{height:100%;display:grid;place-items:center}
+.lrc-n{position:absolute;top:10px;left:10px;background:rgba(11,42,91,.82);color:#fff;font-weight:700;font-size:12px;padding:4px 10px;border-radius:99px;z-index:2}
+.lrc-bd{display:flex;flex-direction:row;align-items:center;gap:12px;padding:12px 14px}
+.lrc-w{flex:1;min-width:0;text-align:left}.lrc-en{font-family:var(--fh);font-weight:800;font-size:clamp(24px,6.5vw,30px);line-height:1.1;display:block;color:var(--k,#0B2A5B);overflow-wrap:anywhere}
+.lrc-es{color:var(--mut);font-size:15px;display:block;margin-top:2px}
+.lrc-res{margin-top:6px}.lrc-res:empty{display:none}
+.lrc-fb{font-size:14px;color:#9a3412}.lrc-fb b{font-weight:800}.lrc-fb.ok{color:#15803d}
+.lrc-res .ce-l2{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.lrc-ctr{display:flex;gap:10px;align-items:flex-start}
+.lrc-ctr button{display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:0;padding:0;cursor:pointer;font:inherit}
+.lrc-ctr i{display:grid;place-items:center;font-style:normal;border-radius:50%}
+.lrc-ctr i svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.lrc-au i{width:46px;height:46px;background:#EEF2F8;color:#0B2A5B}
+.lrc-mic i{width:58px;height:58px;background:#E3242B;color:#fff;box-shadow:0 6px 16px rgba(227,36,43,.3)}
+.lrc-mic.rec i{animation:lrcp 1s infinite}@keyframes lrcp{50%{box-shadow:0 0 0 10px rgba(227,36,43,.15)}}
+.lrc-mic:disabled{opacity:.85}
+.lrc-ctr small{font-size:12px;font-weight:700;color:var(--mut);white-space:nowrap}
+.lrc-nav{display:flex;align-items:center;gap:8px}
+.lrc-ar{width:42px;height:42px;flex:none;border-radius:14px;border:1.5px solid var(--bd);background:#fff;font-size:26px;line-height:1;color:#0B2A5B;cursor:pointer}
+.lrc-th{flex:1;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:5px 2px;justify-content:safe center}.lrc-th::-webkit-scrollbar{display:none}
+.lrc-t{flex:none;width:38px;height:38px;border-radius:10px;border:2px solid transparent;padding:0;background:#eef2f8;position:relative;cursor:pointer;opacity:.6}
+.lrc-t img{width:100%;height:100%;object-fit:cover;border-radius:8px;display:block}.lrc-t span{font-weight:800;font-size:12px}
+.lrc-t.lrc-hd{opacity:.9}.lrc-t.lrc-on{opacity:1;border-color:#0B2A5B}.lrc-t.lrc-dn{opacity:1}
+.lrc-t.lrc-dn:after{content:'✓';position:absolute;right:-5px;top:-5px;width:16px;height:16px;border-radius:50%;background:#1a9e55;color:#fff;font-size:10px;font-weight:800;display:grid;place-items:center;border:2px solid #fff}
+@media(min-width:900px){.lrc-card{flex-direction:row;height:clamp(280px,50vh,440px)}.lrc-ph{height:auto;flex:1.35}
+ .lrc-bd{flex:1;flex-direction:column;align-items:flex-start;justify-content:center;padding:24px 30px;gap:18px}.lrc-en{font-size:clamp(30px,3.2vw,44px)}.lrc-es{font-size:18px}
+ .lrc-mic i{width:68px;height:68px}.lrc-t{width:52px;height:42px}}

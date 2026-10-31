@@ -720,7 +720,7 @@
     return g9End(stage, c, R.length, 'reading', missed, `${c} de ${R.length} errores cazados · Continuar`);
   };
   // ✍️ Adultos · Dictado relámpago: escucha y escribe la palabra que falta
-  const nk9 = s => String(s || '').toLowerCase().replace(/[’`]/g, "'").replace(/[^a-z0-9' ]/g, '').trim();
+  const nk9 = s => { const x = String(s || '').toLowerCase().replace(/[’`]/g, "'").replace(/[^a-z0-9' -]/g, '').trim(); return M().norm ? M().norm(x) : x; }; // v500: "He is" = "He's" (contracciones válidas)
   G9.g9Dict = async function (stage, p) {
     const V = vocab(p); const R = shuffle(uniq((p.sentences || []).concat(V.filter(v => words9(v.en).length >= 4))).filter(s => s.en && s.au && words9(s.en).length >= 4 && !/^(yes|no)\b/i.test(s.en) && s.en.length < 70)).map(s => ({ s, g: gap9(s, V) })).filter(x => x.g).slice(0, 4);
     if (R.length < 3) return null; let c = 0; const missed = [];
@@ -729,7 +729,7 @@
     body.querySelector('.g9-tm').style.visibility = 'hidden'; const box = body.querySelector('#g9d'), fb = body.querySelector('#g9f'); let cur = null; body.querySelector('#g9a').onclick = () => cur && play(cur.au);
     for (let i = 0; i < R.length; i++) {
       if (!stage.isConnected) break; const { s, g } = R[i], W = words9(s.en), tail = (W[g.k + (g.n || 1) - 1].match(/[.,!?]$/) || [''])[0]; cur = s;
-      box.innerHTML = `<small>${i + 1} / ${R.length}</small><b>${W.slice(0, g.k).map(esc).join(' ')} <input type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Palabra que falta" style="width:${Math.max(4, g.a.length + 1)}ch">${esc(tail)} ${W.slice(g.k + (g.n || 1)).map(esc).join(' ')}</b><button type="button" class="g9-chk">Comprobar</button>`; fb.innerHTML = '';
+      box.innerHTML = `<small>${i + 1} / ${R.length}</small><b>${W.slice(0, g.k).map(esc).join(' ')} <input type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Palabra que falta" style="width:${Math.max(6, g.a.length + 3)}ch">${esc(tail)} ${W.slice(g.k + (g.n || 1)).map(esc).join(' ')}</b><button type="button" class="g9-chk">Comprobar</button>`; fb.innerHTML = '';
       const inp = box.querySelector('input'); await sleep(250); play(s.au); try { inp.focus(); } catch (e) { }
       const ok = await new Promise(done => { let tries = 0; const go = () => { const v = nk9(inp.value); if (!v) return; if (v === nk9(g.a)) { inp.classList.add('ok'); inp.disabled = true; sfx('ok'); fb.innerHTML = `<span class="g9-yes">${SV(I.ck)}${tries ? '¡Ahora sí!' : '¡Perfecto!'}</span>`; setTimeout(() => done(!tries), 900); return; }
           tries++; sfx('bad'); inp.classList.add('shake'); setTimeout(() => inp.classList.remove('shake'), 450);

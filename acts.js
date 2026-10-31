@@ -59,52 +59,54 @@
     const tools = h(`<div class="row ce-ltools"><button class="btn sm k" id="all">▶ Escuchar todo</button><span class="ce-lcnt" id="cnt"></span>${canRec ? '<span class="ce-lcnt ce-lok" id="cnt2"></span>' : ''}</div>`);
     body.appendChild(tools);
     if (canRec && !M.canSR) body.appendChild(h('<p class="ce-lnosr">🎧 Tu navegador no puede calificar la voz. Igual puedes <b>grabarte y escucharte</b> para compararte con el modelo. (En Chrome te califico automáticamente.)</p>'));
-    const grid = h(`<div class="lgrid${p.vocab.length > 8 ? ' lg-many' : ''}"></div>`); body.appendChild(grid);
-    const heard = new Set(), said = new Set(); const n = p.vocab.length;
-    const upd = () => { $('#cnt', tools).textContent = `👂 ${heard.size} / ${n} escuchadas`; if (canRec) $('#cnt2', tools).textContent = `🎙️ ${said.size} / ${n} ${M.canSR ? 'repetidas bien' : 'grabadas'}`; };
-    const cards = p.vocab.map((it, i) => {
-      const badge = it.x === 'near' ? '👉 cerca' : it.x === 'far' ? '👉 lejos' : '';
-      const en = isPl ? `${esc(it.sg)} → <u>${esc(it.en)}</u>` : esc(it.en);
-      const wrap = h(`<div class="ce-lw"></div>`);
-      const c = h(`<button class="lcard">${photo(it.img, { badge })}<div class="tx"><div class="en">${en}</div><div class="esn">${esc(it.es)}</div></div></button>`);
-      c.onclick = async () => { $$('.lcard', grid).forEach(x => x.classList.remove('on')); c.classList.add('on'); heard.add(i); upd(); if (!c.querySelector('.heard')) c.appendChild(h('<span class="heard">✓</span>'));
-        if (isPl) { await play(it.sgau); await sleep(200); } await play(it.au); };
-      wrap.appendChild(c);
-      if (canRec) {
-        const rep = h(`<div class="ce-lrep"><button class="btn w sm ce-mic">🎙️ Repetir</button><div class="ce-lres"></div></div>`); wrap.appendChild(rep);
-        const mic = $('.ce-mic', rep), res = $('.ce-lres', rep);
-        const target = String(it.en || '').replace(/[≠→]/g, ' ');
-        const secs = Math.min(8, Math.max(3, Math.ceil(target.split(/\s+/).length * .6) + 2));
-        const markOk = () => { said.add(i); upd(); c.classList.add('ce-said'); if (!c.querySelector('.ce-saidb')) c.appendChild(h('<span class="ce-saidb" title="¡Repetida bien!">🎙️</span>')); };
-        const doRec = async () => {
-          if (mic.disabled) return; stop(); mic.disabled = true; res.innerHTML = ''; $$('.ce-lres', grid).forEach(x => { if (x !== res) x.innerHTML = ''; }); // v487: un solo aviso abierto a la vez
-          try {
-            const r = await M.recordScore(target, secs * 1000, f => mic.textContent = `🔴 Te escucho… ${Math.max(0, Math.ceil(secs * (1 - f)))}s`);
-            mic.disabled = false; mic.textContent = '🎙️ Repetir otra vez';
-            if (r.score != null && r.heard && M.readJudge) { const rj = M.readJudge('', target, [r.heard]); r.score = rj.ok ? Math.max(rj.score, 75) : Math.min(rj.score, 69); r._extra = rj.extra; } // v494: misma regla exigente
-            if (r.score != null) { /* v490 · el resultado va en la tarjeta y en su botón (nada se monta encima) */
-              const sc = Math.round(r.score), ok = sc >= 70, mid = !ok && sc >= 45;
-              wrap.classList.remove('ce-st-ok', 'ce-st-mid', 'ce-st-bad'); wrap.classList.add(ok ? 'ce-st-ok' : mid ? 'ce-st-mid' : 'ce-st-bad'); rep.classList.toggle('ce-has2', !ok);
-              if (ok) { res.innerHTML = ''; mic.textContent = `✓ ${sc}% · Repetir otra vez`; markOk(); }
-              else { res.innerHTML = `<div class="ce-lfb"><b>${sc}%</b> · ${r._extra ? 'Dila una sola vez' : mid ? '¡Casi! Repite despacio' : 'Escucha y repite'}</div><div class="ce-l2"><button type="button" class="btn sm ce-mo">Oír modelo</button><button type="button" class="btn sm ce-ag">Otra vez</button></div>`;
-                res.querySelector('.ce-mo').onclick = (ev) => { ev.stopPropagation(); stop(); play(it.au); };
-                res.querySelector('.ce-ag').onclick = (ev) => { ev.stopPropagation(); sfx('tap'); doRec(); }; }
-            } else {
-            const ok = M.voiceResult(res, { score: r.score, heard: r.heard, url: r.url, model: () => play(it.au), onRetry: doRec, pass: 70 });
-            if (ok) markOk();
-            }
-            res.addEventListener('selfok', markOk, { once: true });
-          } catch (err) { mic.disabled = false; mic.textContent = '🎙️ Repetir'; M.toast('Permite el acceso al micrófono 🎤'); }
-        };
-        mic.onclick = (e) => { e.stopPropagation(); sfx('tap'); doRec(); };
-      }
-      grid.appendChild(wrap); return c;
-    });
-    upd();
+    // v500 · flashcards: una palabra a la vez con la foto grande + tira de miniaturas (cabe completo en celular y PC)
+    const grid = h(`<div class="lrc"><div class="lrc-card"><div class="lrc-ph"></div><div class="lrc-bd"><div class="lrc-w"><b class="lrc-en"></b><span class="lrc-es"></span><div class="lrc-res"></div></div>
+      <div class="lrc-ctr"><button type="button" class="lrc-au"><i>${window.MRI ? MRI('vol') : '🔊'}</i><small>Escuchar</small></button>${canRec ? `<button type="button" class="lrc-mic"><i>${window.MRI ? MRI('mic') : '🎙️'}</i><small>Repetir</small></button>` : ''}</div></div></div>
+      <div class="lrc-nav"><button type="button" class="lrc-ar lrc-pv" aria-label="Anterior">‹</button><div class="lrc-th"></div><button type="button" class="lrc-ar lrc-nx" aria-label="Siguiente">›</button></div></div>`); body.appendChild(grid);
+    const heard = new Set(), said = new Set(); const n = p.vocab.length; let cur = 0; const st = {};
+    const upd = () => { $('#cnt', tools).textContent = `👂 ${heard.size} / ${n} escuchadas`; if (canRec) $('#cnt2', tools).textContent = `🎙️ ${said.size} / ${n} ${M.canSR ? 'repetidas bien' : 'grabadas'}`;
+      $$('.lrc-t', grid).forEach((t, j) => { t.classList.toggle('lrc-on', j === cur); t.classList.toggle('lrc-dn', said.has(j)); t.classList.toggle('lrc-hd', heard.has(j)); }); };
+    const ph = $('.lrc-ph', grid), enEl = $('.lrc-en', grid), esEl = $('.lrc-es', grid), res = $('.lrc-res', grid), mic = $('.lrc-mic', grid), card = $('.lrc-card', grid);
+    $('.lrc-th', grid).innerHTML = p.vocab.map((it, i) => `<button type="button" class="lrc-t" aria-label="${esc(it.en)}">${String(it.img || '').startsWith('#') ? `<span>${esc(it.img.slice(1))}</span>` : `<img loading="lazy" alt="" src="${M.imgURL(it.img, 160, 120)}" onerror="this.style.opacity=0">`}</button>`).join('');
+    const sayIt = async (i) => { const it = p.vocab[i]; heard.add(i); upd(); if (isPl) { await play(it.sgau); await sleep(200); } await play(it.au); };
+    const show = (i, auto) => { stop(); cur = (i + n) % n; const it = p.vocab[cur]; const badge = it.x === 'near' ? '👉 cerca' : it.x === 'far' ? '👉 lejos' : '';
+      ph.innerHTML = photo(it.img, { badge }) + `<span class="lrc-n">${cur + 1} / ${n}</span>`;
+      enEl.innerHTML = isPl ? `${esc(it.sg)} → <u>${esc(it.en)}</u>` : esc(it.en); esEl.textContent = it.es || '';
+      const s0 = st[cur]; card.classList.remove('ce-st-ok', 'ce-st-mid', 'ce-st-bad'); res.innerHTML = s0 ? s0.html : ''; if (s0) card.classList.add(s0.cls); bindRes();
+      if (mic) { mic.disabled = false; $('small', mic).textContent = said.has(cur) ? 'Otra vez' : 'Repetir'; }
+      const th = $$('.lrc-t', grid)[cur]; if (th) th.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
+      upd(); if (auto !== false) return sayIt(cur); };
+    const bindRes = () => { const mo = res.querySelector('.ce-mo'), ag = res.querySelector('.ce-ag'); if (mo) mo.onclick = (ev) => { ev.stopPropagation(); stop(); play(p.vocab[cur].au); }; if (ag) ag.onclick = (ev) => { ev.stopPropagation(); sfx('tap'); doRec(); }; };
+    const markOk = (i) => { said.add(i); upd(); };
+    const doRec = async () => {
+      if (!mic || mic.disabled) return; const i = cur, it = p.vocab[i]; stop(); mic.disabled = true; res.innerHTML = ''; card.classList.remove('ce-st-ok', 'ce-st-mid', 'ce-st-bad'); mic.classList.add('rec');
+      const target = String(it.en || '').replace(/[≠→]/g, ' ');
+      const secs = Math.min(8, Math.max(3, Math.ceil(target.split(/\s+/).length * .6) + 2));
+      try {
+        const r = await M.recordScore(target, secs * 1000, f => { $('small', mic).textContent = `Te escucho… ${Math.max(0, Math.ceil(secs * (1 - f)))}s`; });
+        mic.classList.remove('rec'); mic.disabled = false; $('small', mic).textContent = 'Otra vez'; if (cur !== i) return;
+        if (r.score != null && r.heard && M.readJudge) { const rj = M.readJudge('', target, [r.heard]); r.score = rj.ok ? Math.max(rj.score, 75) : Math.min(rj.score, 69); r._extra = rj.extra; } // v494: misma regla exigente
+        if (r.score != null) { // v500: solo dice cómo le fue (nunca muestra lo que escuchó)
+          const sc = Math.round(r.score), ok = sc >= 70, mid = !ok && sc >= 45, cls = ok ? 'ce-st-ok' : mid ? 'ce-st-mid' : 'ce-st-bad';
+          const html = ok ? `<div class="lrc-fb ok"><b>✓ ¡Muy bien!</b> ${sc}%</div>` : `<div class="lrc-fb"><b>${r._extra ? 'Dila una sola vez' : mid ? '¡Casi! Repite despacio' : 'Escucha y repite'}</b> ${sc}%</div><div class="ce-l2"><button type="button" class="btn sm ce-mo">Oír modelo</button><button type="button" class="btn sm ce-ag">Otra vez</button></div>`;
+          st[i] = { html, cls }; card.classList.add(cls); res.innerHTML = html; bindRes(); if (ok) { sfx('ok'); markOk(i); } else sfx('bad');
+        } else {
+          const ok = M.voiceResult(res, { score: r.score, url: r.url, model: () => play(it.au), onRetry: doRec, pass: 70 });
+          if (ok) markOk(i); res.addEventListener('selfok', () => markOk(i), { once: true });
+        }
+      } catch (err) { mic.classList.remove('rec'); mic.disabled = false; $('small', mic).textContent = 'Repetir'; M.toast('Permite el acceso al micrófono 🎤'); }
+    };
+    if (mic) mic.onclick = (e) => { e.stopPropagation(); sfx('tap'); doRec(); };
+    $('.lrc-au', grid).onclick = () => { stop(); sayIt(cur); };
+    ph.onclick = () => { stop(); sayIt(cur); };
+    $('.lrc-pv', grid).onclick = () => { sfx('tap'); show(cur - 1); };
+    $('.lrc-nx', grid).onclick = () => { sfx('tap'); show(cur + 1); };
+    $$('.lrc-t', grid).forEach((t, j) => t.onclick = () => { sfx('tap'); show(j); });
+    show(0, false);
     $('#all', tools).onclick = async (e) => { const b = e.currentTarget; if (b._run) { b._run = false; stop(); b.textContent = '▶ Continuar'; return; } b._run = true; b.textContent = '⏹ Detener'; const onStop = () => { b._run = false; }; window.addEventListener('m1-audio-stop', onStop, { once: true }); const hideF = M.floatStop(b);
       let k = b._i || 0; /* ▶️ retoma desde la tarjeta donde se detuvo */
-      for (; k < cards.length; k++) { if (!b._run || !b.isConnected) break; b._i = k; const c = cards[k]; c.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); await c.onclick(); if (!b._run) break; await sleep(450); }
-      hideF(); const done = k >= cards.length; b._i = done ? 0 : b._i; b._run = false; b.textContent = done ? '▶ Escuchar todo' : '▶ Continuar'; };
+      for (; k < n; k++) { if (!b._run || !b.isConnected) break; b._i = k; show(k, false); window.addEventListener('m1-audio-stop', onStop, { once: true }); await sayIt(k); if (!b._run) break; await sleep(700); }
+      hideF(); const done = k >= n; b._i = done ? 0 : b._i; b._run = false; b.textContent = done ? '▶ Escuchar todo' : '▶ Continuar'; };
     // mini lesson + tips
     // v428: mini lección ARRIBA y dinámica (diapositivas con Mr. Arrieta), luego se practican las palabras
     const ml10el = !o.noTip ? ml10(p, () => { const el = body.querySelector('.ml10'); if (el) { el.classList.add('ml10-min'); const hd = el.querySelector('.ml10-h'); if (hd && !hd._v) { hd._v = 1; hd.addEventListener('click', ev => { if (ev.target.closest('.ml10-au')) return; el.classList.toggle('ml10-min'); }); } } try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { } }) : null; // v484: al terminar la regla se pliega y las tarjetas quedan a la vista
@@ -132,7 +134,7 @@
         <p class="center muted">Llevas <b>${said.size} de ${need}</b>. ${falta === 1 ? '¡Te falta solo 1!' : 'Te faltan ' + falta + '.'} Aquí aprendes inglés HABLANDO 💪</p>
         <p class="center muted" style="font-size:13px">Si no te deja grabar, permite el uso del micrófono en tu navegador (ícono 🔒 junto a la dirección).</p>
         <button class="btn k block lg" id="mk">¡Entendido, voy a repetir!</button>`, { x: true });
-      $('#mk', m).onclick = () => { m.remove(); const w = Array.from(grid.querySelectorAll('.ce-lw')).find(x => !x.querySelector('.ce-said')), b = (w || grid).querySelector('.ce-mic'); if (b) b.scrollIntoView({ block: 'center', behavior: 'smooth' }); };
+      $('#mk', m).onclick = () => { m.remove(); let j = 0; while (j < n && said.has(j)) j++; if (j < n && j !== cur) show(j, false); grid.scrollIntoView({ block: 'center', behavior: 'smooth' }); };
       return false;
     });
     return null; // not scored
