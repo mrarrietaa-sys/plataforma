@@ -887,8 +887,11 @@
       }
       // approximate karaoke highlight by character proportion
       const rp = $('#rp', box);
+      // v495: la lectura baja sola siguiendo el audio (centra la frase activa dentro del cuadro)
+      const follow = (sp) => { const tx = $('.txt', box); if (!tx || tx.scrollHeight <= tx.clientHeight + 4) return; const el = sp.closest('.rd-msg,.rd-pan') || sp; const tr = tx.getBoundingClientRect(), er = el.getBoundingClientRect();
+        const y = tx.scrollTop + (er.top - tr.top) - (tx.clientHeight - Math.min(er.height, tx.clientHeight)) / 2; tx.scrollTo({ top: Math.max(0, y), behavior: 'smooth' }); };
       const karaoke = () => { stop(); const a = M.trackAudio(new Audio(M.audioSrc(r.au))); const spans = $$('.s', box); const lens = sents.map(s => s.length); const tot = lens.reduce((x, y) => x + y, 0);
-        a.ontimeupdate = () => { if (!a.duration) return; const f = a.currentTime / a.duration * tot; let acc = 0; spans.forEach((sp, i) => { const on = f >= acc && f < acc + lens[i]; sp.classList.toggle('on', on); acc += lens[i]; }); };
+        a.ontimeupdate = () => { if (!a.duration) return; const f = a.currentTime / a.duration * tot; let acc = 0; let cur = -1; spans.forEach((sp, i) => { const on = f >= acc && f < acc + lens[i]; sp.classList.toggle('on', on); if (on) cur = i; acc += lens[i]; }); if (cur >= 0 && cur !== a._cur) { a._cur = cur; follow(spans[cur]); } };
         a.addEventListener('ended', () => { rp._t = 0; spans.forEach(sp => sp.classList.remove('on')); rp.innerHTML = '▶ Escuchar lectura'; rp.classList.remove('playing'); });
         a.addEventListener('pause', () => { if (a.ended) return; rp._t = a.currentTime; rp.innerHTML = '▶ Continuar lectura'; rp.classList.remove('playing'); }); /* ▶️ retoma donde quedó */
         if (rp._t) { const go = () => { try { a.currentTime = rp._t; } catch (e) { } }; if (a.readyState >= 1) go(); else a.addEventListener('loadedmetadata', go, { once: true }); }
