@@ -62,9 +62,11 @@
     // v500 · flashcards: una palabra a la vez con la foto grande + tira de miniaturas (cabe completo en celular y PC)
     const grid = h(`<div class="lrc"><div class="lrc-card"><div class="lrc-ph"></div><div class="lrc-bd"><div class="lrc-w"><b class="lrc-en"></b><span class="lrc-es"></span><div class="lrc-res"></div></div>
       <div class="lrc-ctr"><button type="button" class="lrc-au"><i>${window.MRI ? MRI('vol') : '🔊'}</i><small>Escuchar</small></button>${canRec ? `<button type="button" class="lrc-mic"><i>${window.MRI ? MRI('mic') : '🎙️'}</i><small>Repetir</small></button>` : ''}</div></div></div>
-      <div class="lrc-nav"><button type="button" class="lrc-ar lrc-pv" aria-label="Anterior">‹</button><div class="lrc-th"></div><button type="button" class="lrc-ar lrc-nx" aria-label="Siguiente">›</button></div></div>`); body.appendChild(grid);
+      <div class="lrc-nav"><button type="button" class="lrc-ar lrc-pv" aria-label="Anterior">‹</button><div class="lrc-th"></div><button type="button" class="lrc-ar lrc-nx" aria-label="Siguiente">›</button></div><p class="lrc-need" hidden></p></div>`); body.appendChild(grid); tools.classList.add('lrc-tools');
+    const needN = canRec && !(window.MRTEACH && MRTEACH.on()) ? Math.min(3, p.vocab.length) : 0;
     const heard = new Set(), said = new Set(); const n = p.vocab.length; let cur = 0; const st = {};
-    const upd = () => { $('#cnt', tools).textContent = `👂 ${heard.size} / ${n} escuchadas`; if (canRec) $('#cnt2', tools).textContent = `🎙️ ${said.size} / ${n} ${M.canSR ? 'repetidas bien' : 'grabadas'}`;
+    const upd = () => { $('#cnt', tools).textContent = `👂 ${heard.size} / ${n} escuchadas`; if (canRec) $('#cnt2', tools).textContent = `🎙️ ${said.size} / ${n} ${M.canSR ? 'repetidas' : 'grabadas'}`;
+      { const nd = $('.lrc-need', grid); if (nd && needN) { const okN = said.size >= needN; nd.hidden = false; nd.classList.toggle('ok', okN); nd.textContent = okN ? '✓ ¡Listo! Ya puedes avanzar' : `Repite por lo menos ${needN} para avanzar`; } }
       $$('.lrc-t', grid).forEach((t, j) => { t.classList.toggle('lrc-on', j === cur); t.classList.toggle('lrc-dn', said.has(j)); t.classList.toggle('lrc-hd', heard.has(j)); }); };
     const ph = $('.lrc-ph', grid), enEl = $('.lrc-en', grid), esEl = $('.lrc-es', grid), res = $('.lrc-res', grid), mic = $('.lrc-mic', grid), card = $('.lrc-card', grid);
     $('.lrc-th', grid).innerHTML = p.vocab.map((it, i) => `<button type="button" class="lrc-t" aria-label="${esc(it.en)}">${String(it.img || '').startsWith('#') ? `<span>${esc(it.img.slice(1))}</span>` : `<img loading="lazy" alt="" src="${M.imgURL(it.img, 160, 120)}" onerror="this.style.opacity=0">`}</button>`).join('');
@@ -85,10 +87,10 @@
       try {
         const r = await M.recordScore(target, secs * 1000, f => { $('small', mic).textContent = `Te escucho… ${Math.max(0, Math.ceil(secs * (1 - f)))}s`; });
         mic.classList.remove('rec'); mic.disabled = false; $('small', mic).textContent = 'Otra vez'; if (cur !== i) return;
-        if (r.score != null && r.heard && M.readJudge) { const rj = M.readJudge('', target, [r.heard]); r.score = rj.ok ? Math.max(rj.score, 75) : Math.min(rj.score, 69); r._extra = rj.extra; } // v494: misma regla exigente
+        if (r.score != null && r.heard && M.readJudge) { const rj = M.readJudge('', target, [r.heard]); r.score = rj.ok ? Math.max(rj.score, 75) : Math.min(rj.score, 69); r._extra = rj.extra; r._gram = rj.gramMiss; } // v494: misma regla exigente
         if (r.score != null) { // v500: solo dice cómo le fue (nunca muestra lo que escuchó)
           const sc = Math.round(r.score), ok = sc >= 70, mid = !ok && sc >= 45, cls = ok ? 'ce-st-ok' : mid ? 'ce-st-mid' : 'ce-st-bad';
-          const html = ok ? `<div class="lrc-fb ok"><b>✓ ¡Muy bien!</b> ${sc}%</div>` : `<div class="lrc-fb"><b>${r._extra ? 'Dila una sola vez' : mid ? '¡Casi! Repite despacio' : 'Escucha y repite'}</b> ${sc}%</div><div class="ce-l2"><button type="button" class="btn sm ce-mo">Oír modelo</button><button type="button" class="btn sm ce-ag">Otra vez</button></div>`;
+          const html = ok ? `<div class="lrc-fb ok"><b>✓ ¡Muy bien!</b> ${sc}%</div>` : `<div class="lrc-fb"><b>${r._gram ? 'Lee cada palabra tal como está' : r._extra ? 'Dila una sola vez' : mid ? '¡Casi! Repite despacio' : 'Escucha y repite'}</b> ${sc}%</div><div class="ce-l2"><button type="button" class="btn sm ce-mo">Oír modelo</button><button type="button" class="btn sm ce-ag">Otra vez</button></div>`;
           st[i] = { html, cls }; card.classList.add(cls); res.innerHTML = html; bindRes(); if (ok) { sfx('ok'); markOk(i); } else sfx('bad');
         } else {
           const ok = M.voiceResult(res, { score: r.score, url: r.url, model: () => play(it.au), onRetry: doRec, pass: 70 });
@@ -660,7 +662,7 @@
       setTimeout(() => r(!!(window.YT && YT.Player)), 9000); });
     return ytP9; }
   async function song9(stage, sg, opt = {}) {
-    const kids = M.ageGroup() === 'kids', n = Math.min(3, (sg.g || []).length); if (n < 2) return null;
+    const kids = M.ageGroup() === 'kids', n = Math.min(2, (sg.g || []).length); if (n < 2) return null; // v501: 2 pausas
     const G = sg.g.slice(0, n), clip = window.MRCLIP ? MRCLIP(sg) : [30, 105], ids = [sg.yt, ...(sg.alt || [])];
     const CP = G.map((_, i) => i === n - 1 ? clip[1] - .6 : clip[0] + (clip[1] - clip[0]) * (i + 1) / n);
     const body = head(stage, { lbl: opt.lbl || 'Music', title: 'Completa lo que falta', ins: `Dale play. La canción se detiene sola ${n} veces: elige la palabra que escuchaste.` });

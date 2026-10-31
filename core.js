@@ -523,6 +523,7 @@
   /* v460 · LEER LA RESPUESTA: el estudiante lee en voz alta la respuesta modelo y se revisa la pronunciación.
      Si dice su propia respuesta y es correcta, también vale (nunca se castiga una respuesta buena). */
   /* v494 · leer en voz alta es más exigente: 75 % de la frase, las palabras de más restan y se marca palabra por palabra */
+  const GRAM9 = new Set('am is are was were be been being do does did have has had will would can could should must not never i you he she it we they me him her us them my your his our their this that these those there'.split(' '));
   const FILL9 = new Set(['um', 'uh', 'ah', 'oh', 'ok', 'okay', 'yeah', 'so', 'well', 'hmm', 'mm', 'eh']);
   function hlWords(tgt, heardWords) { return String(tgt || '').split(/\s+/).filter(Boolean).map(tok => { const ws = words(tok); const okw = ws.length && ws.every(w => heardWords.some(x => same9(x, w))); return `<span class="${okw ? 'hw-ok' : 'hw-no'}">${esc(tok)}</span>`; }).join(' '); }
   function readJudge(q, tgt, alts) {
@@ -534,8 +535,13 @@
     for (const alt of (alts || []).slice(0, 5)) { const s0 = speechScore(clean, [alt]).score, aw = words(alt), used = tw.map(() => false); let extra = 0;
       for (const w of aw) { const i = tw.findIndex((t, k) => !used[k] && same9(w, t)); if (i >= 0) used[i] = true; else if (!FILL9.has(w)) extra++; }
       const sc = Math.max(0, s0 - (extra > 1 ? (extra - 1) * 10 : 0)); const cand = { s0, sc, extra, alt, aw }; if (!best || cand.sc > best.sc) best = cand; }
-    const ok = best.sc >= 75 && best.extra <= 1, extraOnly = !ok && best.s0 >= 75 && best.extra >= 2;
-    return { ok, heard: best.alt, score: best.sc, read: true, extra: extraOnly, hl: hlWords(clean, best.aw) };
+    // v501: las palabras de gramática tienen que estar exactas (is ≠ was, does ≠ did, he ≠ she…)
+    const gOK = (aw) => { const ta = tw.filter(w => GRAM9.has(w)), ha = aw.filter(w => GRAM9.has(w)); const cnt = a => a.reduce((m, w) => (m[w] = (m[w] || 0) + 1, m), {}); const A = cnt(ta), B = cnt(ha);
+      return Object.keys(A).every(w => (B[w] || 0) >= A[w]) && Object.keys(B).every(w => (A[w] || 0) >= B[w]); };
+    if (!gOK(best.aw)) { for (const alt of (alts || []).slice(0, 5)) { const aw = words(alt); if (!gOK(aw)) continue; const s0 = speechScore(clean, [alt]).score; if (s0 >= 75) { best = { s0, sc: s0, extra: 0, alt, aw }; break; } } }
+    const gram = !gOK(best.aw);
+    const ok = !gram && best.sc >= 75 && best.extra <= 1, extraOnly = !ok && !gram && best.s0 >= 75 && best.extra >= 2;
+    return { ok, heard: best.alt, score: gram ? Math.min(best.sc, 60) : best.sc, read: true, extra: extraOnly, gramMiss: gram, hl: hlWords(clean, best.aw) };
   }
   // tarjeta de resultado de voz: SIEMPRE dice si estuvo bien o mal y deja intentar otra vez
   function voiceResult(box, { score, heard, url, model, onRetry, pass = 70 }) {

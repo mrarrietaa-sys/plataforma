@@ -7850,3 +7850,15 @@ body:has(#app .player) .topbar,body:has(#app .ld-load) .topbar{display:none!impo
 @media(min-width:900px){.lrc-card{flex-direction:row;height:clamp(280px,50vh,440px)}.lrc-ph{height:auto;flex:1.35}
  .lrc-bd{flex:1;flex-direction:column;align-items:flex-start;justify-content:center;padding:24px 30px;gap:18px}.lrc-en{font-size:clamp(30px,3.2vw,44px)}.lrc-es{font-size:18px}
  .lrc-mic i{width:68px;height:68px}.lrc-t{width:52px;height:42px}}
+/* v501 · Listen and repeat: barra corta que cabe en el celular + aviso de 3 palabras */
+.player .stage .ce-ltools.lrc-tools{overflow:visible;flex-wrap:nowrap}.ce-ltools.lrc-tools #cnt{display:none}
+.lrc-need{text-align:center;font-size:13px;font-weight:700;color:#9a3412;margin:0}.lrc-need.ok{color:#15803d}
+/* v501 · letras de la lectura un poco más grandes (todas las edades) */
+.player .reading .txt{font-size:18.5px;line-height:1.6}
+.player .reading .rd-msg{font-size:17.5px}
+.player .reading .rd-pan p{font-size:18px}
+.player .stage .yn p{font-size:17px}
+@media(min-width:900px){.player .reading .txt{font-size:20.5px}.player .reading .rd-msg{font-size:18.5px}.player .stage .yn p{font-size:18px}}
+@media(min-width:900px){.player .reading.rd-kids .ph{height:clamp(80px,12vh,150px)}.player .reading .rd-pan p{line-height:1.42}.player .reading .rd-comic{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}}
+@media(max-width:899px){.player .reading .txt{max-height:32vh}}
+@media(min-width:900px){.player .reading .rd-ph{min-height:0;height:32px;padding-top:0;padding-bottom:0}.player .reading .rd-pan p{padding:8px 12px 10px}}
