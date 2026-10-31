@@ -7878,3 +7878,7 @@ body:has(#app .player) .topbar,body:has(#app .ld-load) .topbar{display:none!impo
 .sp9-st{margin:0;font-size:13px;font-weight:700;color:var(--mut)}
 .sp9-res{border-radius:14px;padding:12px;font-weight:700;text-align:center}.sp9-res.ok{background:#e8f7ee;color:#15803d}.sp9-res.no{background:#fff4e5;color:#9a3412}.sp9-res.nt{background:#EEF2F8}
 .sp9-sum{display:flex;gap:10px;justify-content:center;margin:10px 0}.sp9-sum div{background:#F4F6FA;border-radius:14px;padding:10px 18px;text-align:center}.sp9-sum b{font-family:var(--fh);font-size:24px;display:block;color:#0B2A5B}.sp9-sum span{font-size:12px;color:var(--mut)}
+/* v507 · lectura pareja: texto, burbujas, viñetas y preguntas del mismo tamaño (un poco más grande) */
+.player .stage .reading .txt,.player .stage .reading .txt .s,.player .stage .reading .rd-msg,.player .stage .reading .rd-pan p,.player .stage .yn p{font-size:18px!important;line-height:1.55}
+@media(min-width:900px){.player .stage .reading .txt,.player .stage .reading .txt .s,.player .stage .reading .rd-msg,.player .stage .reading .rd-pan p,.player .stage .yn p{font-size:19px!important}}
+@media(min-width:900px){.player .reading.rd-kids .txt{max-height:30vh!important;overflow-y:auto}}
