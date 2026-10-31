@@ -461,7 +461,18 @@
     const bad = !allow.includes(as) || !okAux || (yes && neg) || (no && !neg && ws.length <= 3);
     return { bad, fix: fx };
   }
-  function freeJudge(q, tgt, alts) {
+  // v502 · respuesta libre: además debe tener verbo ("I from Colombia" ✗) y el mismo tiempo de la pregunta ("Is he shy?" → "he was" ✗)
+  const VB9 = /^(am|is|are|was|were|be|been|have|has|had|do|does|did|can|could|will|would|should|must|may|might|not|like|love|want|go|goes|went|play|live|work|eat|need|think|know|see|get|make|take|watch|study|speak|read|write|listen|drink|sleep|wear|use|look|feel|prefer|enjoy|visit|walk|run|swim|cook|buy|say|call|help|come|stay|travel|dance|sing|start|finish|try|learn|teach|meet|drive|ride|give|find|hope|plan|hate|made|ate|saw|got|took|gave|came|met|found|bought|thought|told|said|felt|wrote|ran|drank|spoke|lost|won|knew|heard|paid|spent|taught|let)$/;
+  function freeJudge(q, tgt, alts) { const r = freeJudge0(q, tgt, alts); if (!r || !r.ok || r.spell) return r;
+    const heard = r.heard || (alts && alts[0]) || '', ws = words(heard);
+    const social = /^(hi|hello|hey|good|thanks|thank|yes|no|yeah|nope|sure|ok|okay|bye|goodbye|see|nice|welcome|sorry|excuse|please|wow|me|not|of|because|at|in|on|with|by|from|to|for|about|maybe|probably|always|never|sometimes|usually|every|the|a|an|my|your)$/.test(ws[0] || '');
+    const hasV = ws.some(w => VB9.test(w) || (/(ed|ing)$/.test(w) && w.length > 4) || (/s$/.test(w) && VB9.test(w.slice(0, -1))) || (/es$/.test(w) && VB9.test(w.slice(0, -2))) || /ies$/.test(w));
+    if (ws.length >= 2 && !hasV && !social && /^(i|you|we|they|he|she|it|my|his|her|our|their|this|that)$/.test(ws[0])) { const be = ws[0] === 'i' ? 'am' : /^(you|we|they)$/.test(ws[0]) ? 'are' : 'is'; return { ok: false, heard, fix: (ws[0] === 'i' ? 'I' : ws[0][0].toUpperCase() + ws[0].slice(1)) + ' ' + be + ' ' + String(heard).trim().split(/\s+/).slice(1).join(' ').replace(/[.!?]+$/, '') + '.', rep: false, off: false, gram: true }; }
+    const qL = String(q || '').trim().split(/(?<=[.!?])\s+/).filter(x => /\?\s*$/.test(x)).pop() || String(q || ''), qa = (qL.toLowerCase().match(/\b(is|are|am|was|were|do|does|did)\b/) || [])[1];
+    const tgtW = words(tgt || ''), wrongT = qa && (/^(is|are|am)$/.test(qa) ? ws.find(w => /^(was|were)$/.test(w) && !tgtW.includes(w)) : /^(was|were)$/.test(qa) ? ws.find(w => /^(is|are|am)$/.test(w) && !tgtW.includes(w)) : /^(do|does)$/.test(qa) ? ws.find(w => w === 'did' && !tgtW.includes(w)) : qa === 'did' ? ws.find(w => /^(do|does)$/.test(w) && !tgtW.includes(w)) : null);
+    if (wrongT) return { ok: false, heard, fix: tgt && !/_{2,}/.test(tgt) ? tgt : null, rep: false, off: false, gram: true };
+    return r; }
+  function freeJudge0(q, tgt, alts) {
     { // v439: deletreo de una palabra concreta ("How do you spell "Wilson"?") → las letras tienen que ser exactas, en orden
       const m = /^(yes|no|yeah|nope|sure)\b/i.test(String((alts || [])[0] || '').trim()) && /^\s*(can|could|will|would|do|does)\b/i.test(String(q || '')) ? null : String(q || '').match(/\bspell\s+["“'‘]?([A-Za-z]{2,})["”'’]?/i);
       if (m && /^(your|my|his|her|their)$/i.test(m[1])) { const t = String((alts || [])[0] || '').toLowerCase().replace(/double\s*(u|you)/g, ' w ').replace(/[-,.]/g, ' ').split(/\s+/).filter(Boolean); const L = t.filter(x => x.length === 1 || ['jay', 'kay', 'bee', 'cee', 'dee', 'gee', 'pee', 'tee', 'vee', 'zee', 'zed', 'oh', 'ex', 'el', 'em', 'en', 'es', 'ar', 'wye', 'aitch', 'cue'].includes(x)).length; if (L >= 2 && L >= t.length / 2) return { ok: true, heard: (alts || [])[0] || '', fix: null, rep: false, off: false }; } // su propio nombre: basta con que deletree
@@ -539,7 +550,8 @@
     const gOK = (aw) => { const ta = tw.filter(w => GRAM9.has(w)), ha = aw.filter(w => GRAM9.has(w)); const cnt = a => a.reduce((m, w) => (m[w] = (m[w] || 0) + 1, m), {}); const A = cnt(ta), B = cnt(ha);
       return Object.keys(A).every(w => (B[w] || 0) >= A[w]) && Object.keys(B).every(w => (A[w] || 0) >= B[w]); };
     if (!gOK(best.aw)) { for (const alt of (alts || []).slice(0, 5)) { const aw = words(alt); if (!gOK(aw)) continue; const s0 = speechScore(clean, [alt]).score; if (s0 >= 75) { best = { s0, sc: s0, extra: 0, alt, aw }; break; } } }
-    const gram = !gOK(best.aw);
+    const s3 = (aw) => tw.every((w, i) => !(i > 0 && /^(he|she|it)$/.test(tw[i - 1]) && /[^s]s$/.test(w) && !GRAM9.has(w)) || aw.includes(w)); // v502: "he work" ≠ "he works"
+    const gram = !gOK(best.aw) || !s3(best.aw);
     const ok = !gram && best.sc >= 75 && best.extra <= 1, extraOnly = !ok && !gram && best.s0 >= 75 && best.extra >= 2;
     return { ok, heard: best.alt, score: gram ? Math.min(best.sc, 60) : best.sc, read: true, extra: extraOnly, gramMiss: gram, hl: hlWords(clean, best.aw) };
   }
@@ -659,7 +671,7 @@
     const m = MOODS[mood] || 'thumbs';
     return `<img class="${cls} mra mra-${m}" src="mra-${m}.webp" alt="Mr. Arrieta" draggable="false">`;
   }
-  function audioSrc(au) { return window.AUD && window.AUD[au] ? 'data:audio/mpeg;base64,' + window.AUD[au] : 'audio/' + au + '.mp3'; }
+  function audioSrc(au) { if (window.MRFIX && window.MRFIX.has(au)) return 'audio/' + au + '.mp3?v=' + (window.MRFIXV || ''); return window.AUD && window.AUD[au] ? 'data:audio/mpeg;base64,' + window.AUD[au] : 'audio/' + au + '.mp3'; }
 
   // caras reales (fotos) para personajes de juegos — en vez de emojis
   const FACES = { f: ['photo-1646293890121-b16539364dcc', 'photo-1623039497550-c4f2ccc7b875', 'photo-1662850886700-4ec19bd30d11', 'photo-1489424731084-a5d8b219a5bb', 'photo-1590650213165-c1fef80648c4', 'photo-1506863530036-1efeddceb993', 'photo-1663429122432-c2769373768f', 'photo-1713256449316-1a4067517c3b'],
