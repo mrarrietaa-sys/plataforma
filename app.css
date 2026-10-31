@@ -7813,3 +7813,6 @@ body:has(#app .player) .topbar,body:has(#app .ld-load) .topbar{display:none!impo
 .ce-l2{display:flex;gap:4px}.ce-l2 .btn{flex:1;min-width:0;padding:6px 4px!important;font-size:12px!important;white-space:nowrap;border-radius:10px}
 .ce-l2 .ce-mo{background:#E3242B!important;color:#fff!important;border:0}.ce-l2 .ce-ag{background:#fff!important;border:1.5px solid #DCE4F0!important;color:#0B2A5B!important}
 .wr-bar{gap:10px;justify-content:center}
+/* v494 · palabra por palabra al leer en voz alta */
+.hw-line{margin-top:5px;font-size:13.5px;line-height:1.5;font-weight:600;font-style:normal}.hw-line .hw-ok{color:#15803d}.hw-line .hw-no{color:#C0392B;text-decoration:underline wavy rgba(192,57,43,.6);text-underline-offset:3px}
+.mv-me .hw-line .hw-ok{color:#86efac}.mv-me .hw-line .hw-no{color:#fecaca;text-decoration-color:#fecaca}

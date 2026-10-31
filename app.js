@@ -971,10 +971,10 @@
                 if (mic.disabled) return; mic.disabled = true; stop(); el.classList.add('rec'); $e('.mv-st').textContent = 'Te escucho…';
                 const r = await listen1(); el.classList.remove('rec'); mic.disabled = false;
                 if (!r.alts || !r.alts.length) { $e('.mv-st').textContent = 'No te escuché. Acércate al micrófono e intenta otra vez.'; return; }
-                okk = M.readJudge(x.q, x.a, r.alts).ok;
-                const hd = $e('.mv-heard'); hd.hidden = false; hd.className = 'mv-heard ' + (okk ? 'good' : 'bad'); hd.innerHTML = `<small>Escuché</small>“${esc(r.alts[0])}”`;
+                const rj = M.readJudge(x.q, x.a, r.alts); okk = rj.ok;
+                const hd = $e('.mv-heard'); hd.hidden = false; hd.className = 'mv-heard ' + (okk ? 'good' : 'bad'); hd.innerHTML = `<small>Escuché</small>“${esc(rj.heard || r.alts[0])}”${rj.hl ? `<div class="hw-line">${rj.hl}</div>` : ''}`;
                 if (okk) { sfx('ok'); M.praise(); say.classList.add('done'); $e('.mv-st').textContent = '¡Muy bien dicho!'; mic.hidden = true; setTimeout(done, 2000); }
-                else { fails++; sfx('bad'); setTimeout(M.encourage, 250); $e('.mv-st').textContent = 'Casi. Escúchala y dilo otra vez.'; setTimeout(() => play(x.aau), 900);
+                else { fails++; sfx('bad'); setTimeout(M.encourage, 250); $e('.mv-st').textContent = rj.extra ? 'Casi: dila una sola vez, de corrido.' : 'Casi. Escúchala y dilo otra vez.'; setTimeout(() => play(x.aau), 900);
                   if (fails >= 2 && !$e('.mv-skip')) { const sk = h('<button type="button" class="btn w sm mv-skip">Seguir</button>'); $e('.mv-acts').appendChild(sk); sk.onclick = () => { okk = false; done(); }; } }
               };
             });
@@ -1007,7 +1007,7 @@
               const r = await listen1(); el.classList.remove('rec'); mic.disabled = false;
               if (!r.alts || !r.alts.length) { st.textContent = 'No te escuché. Acércate al micrófono e intenta otra vez.'; return; }
               const fj = M.readJudge(x.q, x.a, r.alts); okk = fj.ok;
-              add(`<div class="mv-me ${okk ? '' : 'bad'}">${esc(r.alts[0])}<i>${okk ? (fj.fix ? 'Mejor dilo así: ' + esc(fj.fix) : 'Bien dicho') : 'Casi. Escúchala y léela otra vez, despacio.'}</i></div>`); if (!okk) setTimeout(() => play(x.aau), 900);
+              add(`<div class="mv-me ${okk ? '' : 'bad'}">${esc(fj.heard || r.alts[0])}${fj.hl ? `<div class="hw-line">${fj.hl}</div>` : ''}<i>${okk ? (fj.fix ? 'Mejor dilo así: ' + esc(fj.fix) : 'Bien dicho') : fj.extra ? 'Casi: dila una sola vez, de corrido.' : 'Casi. Escúchala y léela otra vez, despacio.'}</i></div>`); if (!okk) setTimeout(() => play(x.aau), 900);
               if (okk) { sfx('ok'); M.praise(); mic.disabled = true; hint.hidden = true; st.textContent = mi < N - 1 ? '¡Bien! Llega otro mensaje…' : '¡Conversación completada!'; setTimeout(done, fj.fix ? 2600 : 1500); }
               else { fails++; sfx('bad'); setTimeout(M.encourage, 250); st.textContent = 'Intenta otra vez'; if (fails >= 2 && !$e('.mv-skip')) { const sk = h('<button type="button" class="btn w sm mv-skip">Seguir</button>'); $e('.mv-acts').appendChild(sk); sk.onclick = () => { sk.remove(); okk = false; mic.disabled = true; done(); }; } }
             };
@@ -1076,7 +1076,7 @@
             const rr = await M.listen(9000, { quick: true }); vc.classList.remove('rec'); busy = false; if (over) return;
             if (!rr.alts || !rr.alts.length) { $v('.vk-msg').textContent = rr.error === 'not-allowed' ? 'Permite el micrófono en tu navegador para responder' : 'No te escuché. Acércate un poco al micrófono e intenta otra vez.'; return; }
             const fj = M.readJudge(k.q, tgt, rr.alts); const sc = { heard: fj.heard }; const ok = fj.ok; // v460: lee la respuesta → se revisa la pronunciación
-            const fb = $v('.vk-fb'); fb.hidden = false; fb.className = 'vk-fb ' + (ok ? 'good' : 'bad'); fb.innerHTML = `<span class="vk-fi">${ok ? '<svg viewBox="0 0 24 24"><path d="M5 12.5 10 17l9-10"/></svg>' : '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5v.5"/></svg>'}</span><div><b class="vk-fh">${ok ? (late ? '¡Bien dicho!' : '¡Excelente!') : 'Casi… léela otra vez'}</b><small>Escuché: “${esc(sc.heard || rr.alts[0])}”</small>${fj.fix ? `<em class="vk-fix">${ok ? 'Mejor dilo así' : 'Se dice'}: <b>${esc(fj.fix)}</b></em>` : ''}</div>`;
+            const fb = $v('.vk-fb'); fb.hidden = false; fb.className = 'vk-fb ' + (ok ? 'good' : 'bad'); fb.innerHTML = `<span class="vk-fi">${ok ? '<svg viewBox="0 0 24 24"><path d="M5 12.5 10 17l9-10"/></svg>' : '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5v.5"/></svg>'}</span><div><b class="vk-fh">${ok ? (late ? '¡Bien dicho!' : '¡Excelente!') : fj.extra ? 'Casi: dila una sola vez, de corrido' : 'Casi… léela otra vez'}</b><small>Escuché: “${esc(sc.heard || rr.alts[0])}”</small>${fj.hl ? `<div class="hw-line">${fj.hl}</div>` : ''}${fj.fix ? `<em class="vk-fix">${ok ? 'Mejor dilo así' : 'Se dice'}: <b>${esc(fj.fix)}</b></em>` : ''}</div>`;
             { const im = $v('.vk-screen img'); im.src = (ok ? 'mra-thumbs' : 'mra-think') + '.webp?v=2'; } /* v456: Mr. Arrieta reacciona (un solo personaje en pantalla) */
             if (!ok) vc.classList.add('bad');
             if (ok) { sfx('ok'); M.praise(); vc.classList.add('ok'); $v('.vk-msg').textContent = late ? '¡Bien dicho!' : '¡Excelente!'; setTimeout(() => finish(true), fj.fix ? 3200 : 1500); }

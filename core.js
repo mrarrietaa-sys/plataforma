@@ -522,14 +522,20 @@
   }
   /* v460 · LEER LA RESPUESTA: el estudiante lee en voz alta la respuesta modelo y se revisa la pronunciación.
      Si dice su propia respuesta y es correcta, también vale (nunca se castiga una respuesta buena). */
+  /* v494 · leer en voz alta es más exigente: 75 % de la frase, las palabras de más restan y se marca palabra por palabra */
+  const FILL9 = new Set(['um', 'uh', 'ah', 'oh', 'ok', 'okay', 'yeah', 'so', 'well', 'hmm', 'mm', 'eh']);
+  function hlWords(tgt, heardWords) { return String(tgt || '').split(/\s+/).filter(Boolean).map(tok => { const ws = words(tok); const okw = ws.length && ws.every(w => heardWords.some(x => same9(x, w))); return `<span class="${okw ? 'hw-ok' : 'hw-no'}">${esc(tok)}</span>`; }).join(' '); }
   function readJudge(q, tgt, alts) {
-    const heard = (alts && alts[0]) || ''; if (!heard) return { ok: false, heard, score: 0 };
+    const heard = (alts && alts[0]) || ''; if (!heard) return { ok: false, heard, score: 0, hl: '' };
     const blank = /_{2,}/.test(tgt || ''), clean = String(tgt || '').replace(/_{2,}/g, ' ').replace(/\s+/g, ' ').trim();
-    const sc = clean ? speechScore(clean, alts).score : 0;
-    if (sc >= (blank ? 45 : 55)) return { ok: true, heard, score: sc, read: true };
-    let fj = null; try { fj = freeJudge(q, tgt, alts); } catch (e) { }
-    if (fj && fj.ok) return { ok: true, heard, score: sc, own: true, fix: fj.fix || null };
-    return { ok: false, heard, score: sc };
+    if (blank) { const sc = clean ? speechScore(clean, alts).score : 0; if (sc >= 45) return { ok: true, heard, score: sc, read: true };
+      let fj = null; try { fj = freeJudge(q, tgt, alts); } catch (e) { } if (fj && fj.ok) return { ok: true, heard, score: sc, own: true, fix: fj.fix || null }; return { ok: false, heard, score: sc }; }
+    const tw = words(clean); let best = null;
+    for (const alt of (alts || []).slice(0, 5)) { const s0 = speechScore(clean, [alt]).score, aw = words(alt), used = tw.map(() => false); let extra = 0;
+      for (const w of aw) { const i = tw.findIndex((t, k) => !used[k] && same9(w, t)); if (i >= 0) used[i] = true; else if (!FILL9.has(w)) extra++; }
+      const sc = Math.max(0, s0 - (extra > 1 ? (extra - 1) * 10 : 0)); const cand = { s0, sc, extra, alt, aw }; if (!best || cand.sc > best.sc) best = cand; }
+    const ok = best.sc >= 75 && best.extra <= 1, extraOnly = !ok && best.s0 >= 75 && best.extra >= 2;
+    return { ok, heard: best.alt, score: best.sc, read: true, extra: extraOnly, hl: hlWords(clean, best.aw) };
   }
   // tarjeta de resultado de voz: SIEMPRE dice si estuvo bien o mal y deja intentar otra vez
   function voiceResult(box, { score, heard, url, model, onRetry, pass = 70 }) {

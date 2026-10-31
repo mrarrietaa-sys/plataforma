@@ -81,11 +81,12 @@
           try {
             const r = await M.recordScore(target, secs * 1000, f => mic.textContent = `🔴 Te escucho… ${Math.max(0, Math.ceil(secs * (1 - f)))}s`);
             mic.disabled = false; mic.textContent = '🎙️ Repetir otra vez';
+            if (r.score != null && r.heard && M.readJudge) { const rj = M.readJudge('', target, [r.heard]); r.score = rj.ok ? Math.max(rj.score, 75) : Math.min(rj.score, 69); r._extra = rj.extra; } // v494: misma regla exigente
             if (r.score != null) { /* v490 · el resultado va en la tarjeta y en su botón (nada se monta encima) */
               const sc = Math.round(r.score), ok = sc >= 70, mid = !ok && sc >= 45;
               wrap.classList.remove('ce-st-ok', 'ce-st-mid', 'ce-st-bad'); wrap.classList.add(ok ? 'ce-st-ok' : mid ? 'ce-st-mid' : 'ce-st-bad'); rep.classList.toggle('ce-has2', !ok);
               if (ok) { res.innerHTML = ''; mic.textContent = `✓ ${sc}% · Repetir otra vez`; markOk(); }
-              else { res.innerHTML = `<div class="ce-lfb"><b>${sc}%</b> · ${mid ? '¡Casi! Repite despacio' : 'Escucha y repite'}</div><div class="ce-l2"><button type="button" class="btn sm ce-mo">Oír modelo</button><button type="button" class="btn sm ce-ag">Otra vez</button></div>`;
+              else { res.innerHTML = `<div class="ce-lfb"><b>${sc}%</b> · ${r._extra ? 'Dila una sola vez' : mid ? '¡Casi! Repite despacio' : 'Escucha y repite'}</div><div class="ce-l2"><button type="button" class="btn sm ce-mo">Oír modelo</button><button type="button" class="btn sm ce-ag">Otra vez</button></div>`;
                 res.querySelector('.ce-mo').onclick = (ev) => { ev.stopPropagation(); stop(); play(it.au); };
                 res.querySelector('.ce-ag').onclick = (ev) => { ev.stopPropagation(); sfx('tap'); doRec(); }; }
             } else {
