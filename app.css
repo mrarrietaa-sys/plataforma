@@ -7882,3 +7882,5 @@ body:has(#app .player) .topbar,body:has(#app .ld-load) .topbar{display:none!impo
 .player .stage .reading .txt,.player .stage .reading .txt .s,.player .stage .reading .rd-msg,.player .stage .reading .rd-pan p,.player .stage .yn p{font-size:18px!important;line-height:1.55}
 @media(min-width:900px){.player .stage .reading .txt,.player .stage .reading .txt .s,.player .stage .reading .rd-msg,.player .stage .reading .rd-pan p,.player .stage .yn p{font-size:19px!important}}
 @media(min-width:900px){.player .reading.rd-kids .txt{max-height:30vh!important;overflow-y:auto}}
+/* v509 · juegos de Kids/Teens: las opciones nunca se salen de la pantalla del celular */
+.g9 [class^="g9-"]{min-width:0}.g9-food{grid-template-columns:repeat(3,minmax(0,1fr))!important}.g9-food>*{min-width:0;max-width:100%}.g9-food img,.g9-food .ph{max-width:100%;width:100%;height:auto}

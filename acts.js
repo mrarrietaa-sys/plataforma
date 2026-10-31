@@ -623,7 +623,7 @@
       mic.onclick = async () => {
         if (!M.canSR) { $('#rec', recRow).click(); return; }
         stop(); mic.classList.add('rec'); st.textContent = '🎧 Te escucho… habla ahora';
-        const r = await M.listen(Math.max(5000, it.en.split(' ').length * 1200)); mic.classList.remove('rec');
+        const r = await M.listen(Math.max(5000, it.en.split(' ').length * 1200), { target: it.en }); mic.classList.remove('rec');
         if (r.error === 'not-allowed' || r.error === 'service-not-allowed') { st.textContent = 'Permite el micrófono en tu navegador 🎤'; return; }
         if (!r.alts.length) { st.textContent = 'No te escuché bien 🙉 Toca el micrófono e intenta otra vez.'; return; }
         tries++; const sc = M.speechScore(it.en, r.alts); best = Math.max(best, sc.score);

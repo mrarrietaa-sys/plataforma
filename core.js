@@ -399,6 +399,8 @@
   const POSS = ['my', 'your', 'his', 'her', 'our', 'their', 'its'];
   const LEADC = /^(i'm|you're|he's|she's|it's|we're|they're|let's|what's|where's|there's|that's|who's|here's|how's|i'll|i've|i'd|he'll|she'll|we'll|they'll|you'll|it'll|we've|you've|they've|he'd|she'd|we'd|you'd|it is|he is|she is|there is|there are|i am|we are|they are|you are|that is)\b/i;
   function speechScore(target, alts, _j) {
+    if (alts && alts.az && alts.az.ref && !_j) { const top = [String(alts.az.text || alts[0] || '')]; const base = speechScore(target, top, 2), j = readJudge('', target, alts); return Object.assign({}, base, { score: j.ok ? Math.max(75, j.score || base.score) : Math.min(44, base.score), heard: top[0] }); } // v509: con Azure decide Azure + lo que realmente reconoció
+    if (_j === 2) _j = 0;
     if (!_j && /[a-z]-[a-z]/i.test(String(target))) { const A = speechScore0(target, alts), B = speechScore(String(target).replace(/([a-z])-([a-z])/gi, '$1$2'), alts, 1); return B.score > A.score ? B : A; }
     return speechScore0(target, alts);
   }
@@ -434,7 +436,7 @@
   async function recordScore(target, ms, onTick, scorer) {
     if (!scorer && /^\s*[A-Za-z]\s*$/.test(String(target || ''))) scorer = letterScorer(String(target).trim()); // letras sueltas (A, B, C…)
     if (!scorer && AZV.can()) { const t0 = Date.now(), iv = setInterval(() => onTick && onTick(Math.min(1, (Date.now() - t0) / ms)), 100); let r; try { r = await listenAz(ms, { quick: true, target: String(target || '') }); } finally { clearInterval(iv); onTick && onTick(1); } // 🎙️ v503: Azure
-      const v = AZV.verdict(r.az); let score = null, heard = ''; if (v) { const j = readJudge('', String(target || ''), r.alts); score = j.ok ? Math.max(75, j.score) : Math.min(69, j.score); heard = r.alts[0] || ''; } else if (r.alts.length) { const sc = speechScore(target, r.alts); score = sc.score; heard = sc.heard; } else if (r.error !== 'audio-capture' && r.error !== 'service-not-allowed' && r.error !== 'start' && r.error !== 'not-allowed') score = 0;
+      const v = AZV.verdict(r.az); let score = null, heard = ''; if (v) { const j = readJudge('', String(target || ''), r.alts); score = j.ok ? Math.max(75, j.score) : Math.min(44, j.score); heard = r.alts[0] || ''; } /* v509: si Azure dice que no, la nota queda por debajo de TODOS los umbrales */ else if (r.alts.length) { const sc = speechScore(target, r.alts); score = sc.score; heard = sc.heard; } else if (r.error !== 'audio-capture' && r.error !== 'service-not-allowed' && r.error !== 'start' && r.error !== 'not-allowed') score = 0;
       return { url: null, alts: r.alts, score, heard, error: r.error, az: r.az }; }
     if (audBusy()) { try { stop(); } catch (e) { } await sleep(500); } // 🔇 nunca graba mientras suena la plataforma
     let rec = null, stream = null; const chunks = [];
