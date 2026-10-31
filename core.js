@@ -765,7 +765,7 @@
     const m = MOODS[mood] || 'thumbs';
     return `<img class="${cls} mra mra-${m}" src="mra-${m}.webp" alt="Mr. Arrieta" draggable="false">`;
   }
-  function audioSrc(au) { if (window.MRFIX && window.MRFIX.has(au)) return 'audio/' + au + '.mp3?v=' + (window.MRFIXV || ''); return window.AUD && window.AUD[au] ? 'data:audio/mpeg;base64,' + window.AUD[au] : 'audio/' + au + '.mp3'; }
+  function audioSrc(au) { if (window.MRFIX && window.MRFIX.has(au)) return au + '.mp3?v=' + (window.MRFIXV || ''); return window.AUD && window.AUD[au] ? 'data:audio/mpeg;base64,' + window.AUD[au] : 'audio/' + au + '.mp3'; }
 
   // caras reales (fotos) para personajes de juegos — en vez de emojis
   const FACES = { f: ['photo-1646293890121-b16539364dcc', 'photo-1623039497550-c4f2ccc7b875', 'photo-1662850886700-4ec19bd30d11', 'photo-1489424731084-a5d8b219a5bb', 'photo-1590650213165-c1fef80648c4', 'photo-1506863530036-1efeddceb993', 'photo-1663429122432-c2769373768f', 'photo-1713256449316-1a4067517c3b'],
