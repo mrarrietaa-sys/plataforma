@@ -7884,3 +7884,7 @@ body:has(#app .player) .topbar,body:has(#app .ld-load) .topbar{display:none!impo
 @media(min-width:900px){.player .reading.rd-kids .txt{max-height:30vh!important;overflow-y:auto}}
 /* v509 · juegos de Kids/Teens: las opciones nunca se salen de la pantalla del celular */
 .g9 [class^="g9-"]{min-width:0}.g9-food{grid-template-columns:repeat(3,minmax(0,1fr))!important}.g9-food>*{min-width:0;max-width:100%}.g9-food img,.g9-food .ph{max-width:100%;width:100%;height:auto}
+/* v511 · aviso fijo mientras Azure revisa la voz (no mueve la pantalla) */
+#azwait{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:9500;display:flex;align-items:center;gap:8px;background:#0B2A5B;color:#fff;font:600 14px Inter,system-ui,sans-serif;padding:9px 16px;border-radius:99px;box-shadow:0 8px 22px rgba(11,42,91,.3);pointer-events:none}
+#azwait i{width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;animation:azspin .8s linear infinite}
+@keyframes azspin{to{transform:rotate(360deg)}}

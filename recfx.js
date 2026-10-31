@@ -73,7 +73,7 @@
     depth++; if (depth > 1) return;
     t0 = Date.now(); act = 0.4; tick = 0; anchor = lastBtn; vc = findVc(); lastUsed = vc; tip();
     if (vc) { vc.classList.add('rec'); const l = vc.querySelector('.vc-lb'); if (l) l.textContent = REC_LBL[ag()] || REC_LBL.adult; [...vc.querySelectorAll('.vc-wv i')].forEach(i => i.style.opacity = 1); }
-    else buildPill();
+    else if (!(anchor && anchor.closest && anchor.closest('.mv-say,.mv-bar'))) buildPill(); /* v511: «Elige y dilo» ya tiene su micrófono animado; la tira insertada movía la pantalla */
     cancelAnimationFrame(raf); loop(); addEventListener('scroll', placePill, true);
   }
   function off() {

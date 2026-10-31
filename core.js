@@ -304,11 +304,12 @@
       const u = new Uint8Array(buf); let bin = ''; for (let i = 0; i < u.length; i += 0x8000) bin += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000));
       return { b64: btoa(bin), sec: seg.length / R };
     }
+    function waitOn(on) { try { let d = document.getElementById('azwait'); if (!on) { if (d) d.remove(); return; } if (!d) { d = document.createElement('div'); d.id = 'azwait'; d.setAttribute('role', 'status'); d.innerHTML = '<i></i>Revisando…'; document.body.appendChild(d); } } catch (e) { } }
     async function assess(wav, ref) {
-      try { const r = await MRAC.call('azPron', { code: MRAC.code(), text: ref || '', audio: wav.b64 }, { timeout: 15000 });
+      waitOn(true); try { const r = await MRAC.call('azPron', { code: MRAC.code(), text: ref || '', audio: wav.b64 }, { timeout: 15000 }).finally(() => waitOn(false));
         try { localStorage.removeItem('mra_vozdebug'); if (/[?&]vozdebug=1/.test(location.search)) { const W = (r && r.words || []).map(w => w.w + ':' + w.a + (w.e !== 'None' ? '(' + w.e + ')' : '')).join(' '); setTimeout(() => { let d = document.getElementById('azdbg'); if (!d) { d = document.createElement('div'); d.id = 'azdbg'; d.style.cssText = 'position:fixed;left:8px;right:8px;bottom:8px;z-index:99999;background:#111;color:#fff;font:13px/1.4 monospace;padding:10px;border-radius:10px;opacity:.92'; d.onclick = () => d.remove(); document.body.appendChild(d); } d.textContent = (r && r.ok ? `🔧 Azure · reconoció «${r.text || '—'}» · pron ${r.pron} · precisión ${r.acc} · completa ${r.comp} · ${W}` : `🔧 Azure no respondió: ${(r && r.err) || 'error'}`); }, 50); } } catch (er) { } // 🔧 solo para pruebas del administrador (?vozdebug=1)
         if (!r || !r.ok) { const e = r && r.err; if (e === 'quota') { offDay = today(); try { localStorage.setItem('mra_azoff', offDay); } catch (er) { } } if (e === 'cap' || e === 'nokey' || e === 'unknown_action') offAll = true; return null; }
-        return r; } catch (e) { return null; }
+        return r; } catch (e) { waitOn(false); return null; }
     }
     // veredicto: frase completa, sin palabras de más o cambiadas y pronunciación clara
     function verdict(az) {
@@ -316,8 +317,9 @@
       const om = W.filter(w => w.e === 'Omission').length, ins = W.filter(w => w.e === 'Insertion').length, bad = W.filter(w => w.e === 'Mispronunciation' || (w.e === 'None' && w.a < 40)).length;
       const ref = W.filter(w => w.e !== 'Insertion').length;
       const short = ref <= 2, minA = short ? 80 : 60, bad2 = short ? W.filter(w => w.e !== 'Insertion' && w.a < 80).length : bad; // palabras sueltas: más exigente
-      const ok = az.comp >= 85 && az.acc >= minA && az.pron >= minA && om === 0 && ins <= (short ? 0 : 1) && bad2 <= (ref >= 4 ? 1 : 0);
-      return { ok, score: ok ? Math.max(az.pron, 75) : Math.min(az.pron, 69), why: om || ins >= 2 || (ins && !ok) ? 'words' : 'pron', extra: ins >= 2 && !om };
+      const tail = az.end != null && az.sec ? (az.sec - az.end > 0.9 || az.off > 0.8) : false; // v511: habló más de lo que Azure reconoció
+      const ok = !tail && az.comp >= 85 && az.acc >= minA && az.pron >= minA && om === 0 && ins <= (short ? 0 : 1) && bad2 <= (ref >= 4 ? 1 : 0);
+      return { ok, score: ok ? Math.max(az.pron, 75) : Math.min(az.pron, 69), why: tail || om || ins >= 2 || (ins && !ok) ? 'words' : 'pron', extra: ins >= 2 && !om };
     }
     return { can, capture, toWav, assess, verdict };
   })();
@@ -474,6 +476,34 @@
   // 🗣️ v420: respuestas LIBRES (preguntas personales / sí-no): se acepta lo que el estudiante quiera decir;
   // la plataforma solo corrige la gramática básica y la pronunciación (nunca le dice qué responder)
   const FULLC = { "he's": 'he is', "she's": 'she is', "it's": 'it is', "they're": 'they are', "we're": 'we are', "you're": 'you are', "i'm": 'I am', "that's": 'that is' };
+  // v511 · ortografía en escritura: palabras inexistentes, meses/días sin mayúscula, palabras pequeñas con mayúscula en medio
+  let dictP = null;
+  function loadDict() { if (window.MRDICT || dictP) return dictP; const el = document.querySelector('script[src*="core.js"]'), src = el ? el.getAttribute('src') || '' : '', base = src.replace(/core\.js(\?.*)?$/, ''), q = (src.match(/\?.*$/) || [''])[0];
+    dictP = new Promise(res => { const sc = document.createElement('script'); sc.src = base + 'dict.js' + q; sc.onload = res; sc.onerror = res; document.head.appendChild(sc); }); return dictP; }
+  const CAPW = new Set('monday tuesday wednesday thursday friday saturday sunday january february march april may june july august september october november december english spanish american colombian'.split(' '));
+  const LOWW = new Set('in on at the an is are am was were and or but to of for with from by my your his her our their its it this that these those be have has had do does did not'.split(' '));
+  function spellFix(txt) {
+    const D = window.MRDICT; if (!D) return null; const probs = []; let first = true;
+    const out = String(txt).replace(/[A-Za-zÀ-ſ]+(?:['’][A-Za-z]+)?|[.!?:"“”]+/g, (w) => {
+      if (/^[.!?:"“”]+$/.test(w)) { first = true; return w; }
+      const atStart = first; first = false; const lo = w.toLowerCase().replace(/’/g, "'").normalize('NFD').replace(/[̀-ͯ]/g, ''), base = lo.replace(/'s$/, '');
+      if (/[^a-z']/.test(lo)) return w;
+      if (lo === 'i') return 'I';
+      if (!D.has(lo) && !D.has(base)) { if (/^[A-ZÀ-Þ]/.test(w) && !ES2EN[base]) return w; /* nombres propios */ const sg = suggest(base, D); probs.push({ k: 'sp', w, sg }); return sg ? keepCase(w, sg) : w; }
+      if ((CAPW.has(base) || CAPW.has(base.replace(/s$/, ''))) && !/^[A-Z]/.test(w) && !(base === 'may' && !atStart)) { probs.push({ k: 'cap', w }); return w[0].toUpperCase() + w.slice(1); }
+      if (!atStart && LOWW.has(lo) && /^[A-Z][a-z]/.test(w)) { probs.push({ k: 'low', w }); return lo; }
+      return w; });
+    if (!probs.length) return null;
+    const sp = probs.filter(p => p.k === 'sp'), msg = sp.length ? 'Revisa cómo se escribe: ' + sp.map(p => '«' + p.w + '»').join(', ') + '.' : probs.some(p => p.k === 'cap') ? 'Los meses, los días y los idiomas van con mayúscula.' : 'Esa palabra va en minúscula: ' + probs.filter(p => p.k === 'low').map(p => '«' + p.w + '»').join(', ') + '.';
+    return { fix: out, msg };
+  }
+  function keepCase(w, sg) { const c = CAPW.has(sg) ? sg[0].toUpperCase() + sg.slice(1) : sg; return /^[A-Z]/.test(w) ? c[0].toUpperCase() + c.slice(1) : c; }
+  const ES2EN = { enero: 'january', febrero: 'february', marzo: 'march', abril: 'april', mayo: 'may', junio: 'june', julio: 'july', agosto: 'august', septiembre: 'september', setiembre: 'september', octubre: 'october', noviembre: 'november', diciembre: 'december', lunes: 'monday', martes: 'tuesday', miercoles: 'wednesday', jueves: 'thursday', viernes: 'friday', sabado: 'saturday', domingo: 'sunday' };
+  function suggest(w, D) { if (ES2EN[w]) return ES2EN[w]; if (w.length < 3) return ''; let best = '', bd = 3; const pri = [...CAPW];
+    for (const x of pri) { const d = lev(w, x); if (d < bd) { bd = d; best = x; } }
+    if (bd <= 2 && best) return best;
+    for (const x of D) { if (Math.abs(x.length - w.length) > 2 || x[0] !== w[0]) continue; const d = lev(w, x); if (d < bd) { bd = d; best = x; if (d === 1) break; } }
+    return bd <= 2 ? best : ''; }
   function grammarFix(txt) {
     let t = String(txt || '').trim().replace(/\s+/g, ' '); if (!t) return null; const orig = t;
     t = t.replace(/\b(he|she|it|they|we|you|i|that)['’](s|re|m)\s*$/i, (m) => { const k = m.toLowerCase().replace('’', "'").replace(/^(he|she|it|that)s$/, "$1's").replace(/^(they|we|you)re$/, "$1're").replace(/^im$/, "i'm"); return FULLC[k] || m; }); // "yes he's" → "yes he is"
@@ -629,7 +659,14 @@
   const FILL9 = new Set(['um', 'uh', 'ah', 'oh', 'ok', 'okay', 'yeah', 'so', 'well', 'hmm', 'mm', 'eh']);
   function hlWords(tgt, heardWords) { return String(tgt || '').split(/\s+/).filter(Boolean).map(tok => { const ws = words(tok); const okw = ws.length && ws.every(w => heardWords.some(x => same9(x, w))); return `<span class="${okw ? 'hw-ok' : 'hw-no'}">${esc(tok)}</span>`; }).join(' '); }
   // 🎙️ v504: con Azure se exigen las dos cosas: que lo que se reconoció sean las palabras correctas Y que Azure apruebe la pronunciación
-  function readJudge(q, tgt, alts) { const v = alts && AZV.verdict(alts.az); if (!v) return readJudge0(q, tgt, alts); const top = [String(alts.az.text || alts[0] || '')]; const base = readJudge0(q, tgt, top); // v505: con Azure solo cuenta lo que realmente reconoció (su primera opción), no las alternativas
+  // v511 · palabras de más: "I'm working now" para "I'm working." ✗ (Azure a veces las ignora)
+  const N20 = 'zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen'.split(' '), N10 = 'x x twenty thirty forty fifty sixty seventy eighty ninety'.split(' ');
+  function n2w(n) { n = +n; if (n < 20) return N20[n]; if (n < 100) return N10[Math.floor(n / 10)] + (n % 10 ? ' ' + N20[n % 10] : ''); if (n < 1000) return N20[Math.floor(n / 100)] + ' hundred' + (n % 100 ? ' ' + n2w(n % 100) : ''); return String(n); }
+  function numWords(t, tgt) { if (/\d/.test(tgt || '')) return t; return String(t || '').replace(/(\d+)\s*%/g, (m, d) => d + ' percent').replace(/\b(\d{1,2}):(\d\d)\b/g, (m, h, mi) => h + (mi === '00' ? '' : ' ' + (+mi < 10 ? 'oh ' + (+mi) : +mi))).replace(/\b\d{1,3}\b/g, d => n2w(d)); }
+  function toks9(t) { return String(t || '').toLowerCase().replace(/[’‘`]/g, "'").replace(/\bi'm\b/g, 'i am').replace(/\b(he|she|it|that|what|there|who|where|here|how|when|why|this|everything|nobody|everyone|someone|something)'s\b/g, '$1 is').replace(/'re\b/g, ' are').replace(/'ll\b/g, ' will').replace(/'ve\b/g, ' have').replace(/\bcan't\b/g, 'can not').replace(/\bwon't\b/g, 'will not').replace(/n't\b/g, ' not').replace(/'d\b/g, ' would').replace(/[^a-z0-9' ]+/g, ' ').split(/\s+/).filter(w => w && !/^(uh|um|uhm|hmm|mm|ah|oh|er|eh)$/.test(w)); }
+  function extraWords(tgt, heard) { const T = {}; toks9(tgt).forEach(w => { const k = w.replace(/'s$/, ''); T[k] = (T[k] || 0) + 1; }); const X = []; toks9(heard).forEach(w => { if (/\d/.test(w)) return; const k = w.replace(/'s$/, ''); if (T[k]) T[k]--; else X.push(w); }); return X; }
+  function readJudge(q, tgt, alts) { const r9 = readJudge1(q, tgt, alts); if (!r9.ok || /_{2,}/.test(tgt || '')) return r9; const h = alts && alts.az ? String(alts.az.text || alts[0] || '') : String((alts && alts[0]) || ''); const X = extraWords(tgt, numWords(h, tgt)); if (!X.length) return r9; return Object.assign({}, r9, { ok: false, score: Math.min(r9.score || 0, 44), extra: true, gramMiss: true, why: 'words' }); }
+  function readJudge1(q, tgt, alts) { const v = alts && AZV.verdict(alts.az); if (!v) return readJudge0(q, tgt, alts); const top = [numWords(String(alts.az.text || alts[0] || ''), tgt)]; const base = readJudge0(q, tgt, top); // v505: con Azure solo cuenta lo que realmente reconoció (su primera opción), no las alternativas
     const ok = v.ok && base.ok; return Object.assign({}, base, { ok, score: ok ? v.score : Math.min(v.score, base.score || 0, 69), extra: !ok && (v.extra || base.extra), gramMiss: !ok && (v.why === 'words' || !!base.gramMiss || !base.ok), az: true, hl: '' }); }
   function readJudge0(q, tgt, alts) {
     const heard = (alts && alts[0]) || ''; if (!heard) return { ok: false, heard, score: 0, hl: '' };
@@ -805,5 +842,5 @@
     const st = S.stop, ab = S.abort; S.stop = function () { o(); return st.apply(S, arguments); }; S.abort = function () { o(); return ab.apply(S, arguments); }; return S; };
   window.M1 = { face, D, C, MOD, S, $, $$, h, esc, shuffle, sample, sleep, save, touchStreak, addSkill, addWeak, okWeak, skillPct, isUnlocked, finalUnlocked, paceDate, weakParts, reviewMode, revCount, PTS_TIP, hasAccess, progressOpen, lockReason, review, hasProfile, doneCount, totalParts, redeem, codeHash,
     allParts, partById, trackAudio, audioUI, floatStop, recordScore: recordScoreW, letterScorer, voiceResult, floatBubble, setBubbleHidden, prevPart, nextPart, partStars, overallPct, imgURL, photo, play, playSeq, loadAudio, stop, sfx, praise, encourage, ageGroup, brand, fbf, get canSR() { return canSR || AZV.can(); }, azOn: () => AZV.can(), IOS, MOBILE, listen: listenW, srSession: srSessionW, recordVoice: recordVoiceW,
-    norm, words, lev, speechScore, audBusy, freeJudge, readJudge, grammarFix, sheet, good, bad, toast, modal, xpFly, confetti, mascot, audioSrc };
+    norm, words, lev, speechScore, audBusy, freeJudge, readJudge, grammarFix, spellFix, loadDict, sheet, good, bad, toast, modal, xpFly, confetti, mascot, audioSrc };
 })();

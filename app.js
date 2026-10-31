@@ -1434,6 +1434,7 @@
         const paint = () => { tl.style.width = (left / T * 100) + '%'; tb.textContent = '0:' + String(left).padStart(2, '0'); $('.wr-timer', body).classList.toggle('low', left <= 8); };
         paint(); tmr = setInterval(() => { if (done) return; left--; paint(); if (left <= 0) { clearInterval(tmr); const txt = ta.value.trim(); if (txt.length >= 3) check(true); else verdict(0, txt, 'Se acabó el tiempo', 'No pasa nada. Así se escribe:', esc(it.ok[0])); } }, 1000);
       }
+      try { M.loadDict && M.loadDict(); } catch (e) { }
       const check = (auto) => {
         if (done) return; const txt = ta.value.trim();
         if (!auto && M.words(txt).length < (it.f === 'f' ? 1 : 2)) { ta.focus(); M.toast(it.f === 'f' ? 'Escribe cómo termina la frase' : 'Escribe una frase completa'); return; }
@@ -1461,6 +1462,7 @@
             }
           }
           const fj = M.freeJudge(it.q, it.m, [txt]); const me = $('.wr-me', body); me.textContent = end(cap(txt)); me.classList.remove('hidden');
+          { const sf = !esLike(txt) && M.spellFix && M.spellFix(txt); if (sf) return verdict(1, txt, '¡Casi! +5', sf.msg + ' Mejor así:', esc(end(cap(M.grammarFix(sf.fix) || sf.fix)))); }
           if (fj.ok) return verdict(2, txt, '¡Perfecto! +10', 'Respuesta clara y bien escrita.', '');
           if (fj.fix) return verdict(1, txt, '¡Casi! +5', 'Se entiende. Mejor así:', esc(end(cap(fj.fix))));
           { const gf = M.grammarFix(txt); if (M.words(txt).length >= 3 && !esLike(txt) && !fj.rep) return gf ? verdict(1, txt, '¡Casi! +5', 'Se entiende. Mejor así:', esc(end(cap(gf)))) : verdict(2, txt, '¡Muy bien! +10', 'Respuesta clara. Otra forma de decirlo:', esc(it.m)); } /* v460: nunca se rechaza una respuesta libre en inglés */
@@ -1469,6 +1471,7 @@
         }
         const full = end(String(it.s).trim() + ' ' + txt.replace(/^\s*\.\.\.\s*/, '')); const gf = M.grammarFix(full);
         $('.wr-start', body).innerHTML = esc(full); $('.wr-chips', body).style.display = 'none';
+        { const sf = M.spellFix && M.spellFix(full); if (sf) return verdict(1, txt, '¡Casi! +5', sf.msg + ' Mejor así:', esc(end(cap(M.grammarFix(sf.fix) || sf.fix)))); }
         if (!gf) return verdict(2, txt, '¡Muy bien! +10', 'Tu frase está correcta y suena natural.', '');
         return verdict(1, txt, '¡Casi! +5', 'Mejor así:', esc(end(cap(gf))));
       };
