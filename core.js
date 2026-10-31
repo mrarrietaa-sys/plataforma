@@ -306,6 +306,7 @@
     }
     async function assess(wav, ref) {
       try { const r = await MRAC.call('azPron', { code: MRAC.code(), text: ref || '', audio: wav.b64 }, { timeout: 15000 });
+        try { if (/[?&]vozdebug=1/.test(location.search)) localStorage.setItem('mra_vozdebug', '1'); if (/[?&]vozdebug=0/.test(location.search)) localStorage.removeItem('mra_vozdebug'); if (localStorage.getItem('mra_vozdebug') === '1') { const W = (r && r.words || []).map(w => w.w + ':' + w.a + (w.e !== 'None' ? '(' + w.e + ')' : '')).join(' '); setTimeout(() => { let d = document.getElementById('azdbg'); if (!d) { d = document.createElement('div'); d.id = 'azdbg'; d.style.cssText = 'position:fixed;left:8px;right:8px;bottom:8px;z-index:99999;background:#111;color:#fff;font:13px/1.4 monospace;padding:10px;border-radius:10px;opacity:.92'; d.onclick = () => d.remove(); document.body.appendChild(d); } d.textContent = (r && r.ok ? `🔧 Azure · reconoció «${r.text || '—'}» · pron ${r.pron} · precisión ${r.acc} · completa ${r.comp} · ${W}` : `🔧 Azure no respondió: ${(r && r.err) || 'error'}`); }, 50); } } catch (er) { } // 🔧 solo para pruebas del administrador (?vozdebug=1)
         if (!r || !r.ok) { const e = r && r.err; if (e === 'quota') { offDay = today(); try { localStorage.setItem('mra_azoff', offDay); } catch (er) { } } if (e === 'cap' || e === 'nokey' || e === 'unknown_action') offAll = true; return null; }
         return r; } catch (e) { return null; }
     }
@@ -323,7 +324,7 @@
   const azRef = (t) => { const x = String(t == null ? '' : t).trim(); return !x || /_{2,}/.test(x) || /^[A-Za-z]$/.test(x) ? '' : x; };
   async function listenAz(timeoutMs = 8000, opts = {}) {
     const raw = opts.target != null ? String(opts.target) : '', ref = azRef(raw), letter = /^\s*[A-Za-z]\s*$/.test(raw) || !!opts.scorer;
-    if (letter || opts.noAz || !AZV.can()) return listen(timeoutMs, opts);
+    if (letter || opts.noAz || !AZV.can()) { try { if (localStorage.getItem('mra_vozdebug') === '1' || /vozdebug=1/.test(location.search)) { localStorage.setItem('mra_vozdebug', '1'); setTimeout(() => toast('🔧 Azure NO se usó: ' + (!(window.MRAC && MRAC.code && MRAC.code()) ? 'no hay sesión de estudiante con código' : 'no disponible (cupo/tope/clave)')), 60); } } catch (e) { } return listen(timeoutMs, opts); }
     const n = ref ? ref.split(/\s+/).length : 8, maxSpeechMs = Math.min(8000, Math.max(4000, n * 600 + 2500));
     if (audBusy()) { try { stop(); } catch (e) { } await sleep(500); } // primero se calla la plataforma
     if (!SR || MOBILE) { // 📱 celular / iPhone: solo Azure
@@ -626,7 +627,7 @@
   const FILL9 = new Set(['um', 'uh', 'ah', 'oh', 'ok', 'okay', 'yeah', 'so', 'well', 'hmm', 'mm', 'eh']);
   function hlWords(tgt, heardWords) { return String(tgt || '').split(/\s+/).filter(Boolean).map(tok => { const ws = words(tok); const okw = ws.length && ws.every(w => heardWords.some(x => same9(x, w))); return `<span class="${okw ? 'hw-ok' : 'hw-no'}">${esc(tok)}</span>`; }).join(' '); }
   // 🎙️ v504: con Azure se exigen las dos cosas: que lo que se reconoció sean las palabras correctas Y que Azure apruebe la pronunciación
-  function readJudge(q, tgt, alts) { const base = readJudge0(q, tgt, alts), v = alts && AZV.verdict(alts.az); if (!v) return base;
+  function readJudge(q, tgt, alts) { const v = alts && AZV.verdict(alts.az); if (!v) return readJudge0(q, tgt, alts); const top = [String(alts.az.text || alts[0] || '')]; const base = readJudge0(q, tgt, top); // v505: con Azure solo cuenta lo que realmente reconoció (su primera opción), no las alternativas
     const ok = v.ok && base.ok; return Object.assign({}, base, { ok, score: ok ? v.score : Math.min(v.score, base.score || 0, 69), extra: !ok && (v.extra || base.extra), gramMiss: !ok && (v.why === 'words' || !!base.gramMiss || !base.ok), az: true, hl: '' }); }
   function readJudge0(q, tgt, alts) {
     const heard = (alts && alts[0]) || ''; if (!heard) return { ok: false, heard, score: 0, hl: '' };
