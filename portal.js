@@ -816,7 +816,7 @@
     if ($('#pt')) $('#pt').onclick = () => route('placement');
     if (!staff && window.MRGOAL) { // 🎯 objetivo personal: elegir o cambiar
       const gw = () => $$('[data-goal]').forEach(b => b.onclick = () => MRGOAL.ask({ noSkip: true }).then(g => { if (g) home(); }));
-      $$('.db-side .gl-card.gl-empty').forEach(x => { if ($('.g1')) x.remove(); }); gw(); if (MRGOAL.shouldAsk() && !$('.g1')) setTimeout(() => { if (!document.querySelector('.modal')) MRGOAL.ask().then(g => { if (g) home(); }); }, 900);
+      $$('.db-side .gl-card.gl-empty').forEach(x => { if ($('.g1')) x.remove(); }); gw(); if (MRGOAL.must()) setTimeout(() => MRGOAL.require().then(g => { if (g) home(); }), 600); /* v515: objetivo obligatorio */
     }
     const plans = (e) => { if (e) e.preventDefault(); M.modal(`<div class="pt-plmodal">${planSection()}</div>`, { x: true }); };
     $$('.tb-up').forEach(x => x.onclick = plans); if ($('#pt-tour')) $('#pt-tour').onclick = () => { window.scrollTo(0, 0); portalTour(true); }; if ($('#pt-plans')) $('#pt-plans').onclick = plans;

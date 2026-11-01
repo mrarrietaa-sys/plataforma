@@ -83,7 +83,11 @@
     });
   }
   // ¿mostrar la pregunta? solo estudiantes, sin objetivo y sin haber dicho "Ahora no" hace poco
-  function shouldAsk() { const p = P() && P().get(); return !!p && p.type !== 'staff' && !get() && !skipped(); }
+  function shouldAsk() { const p = P() && P().get(); return !!p && p.type !== 'staff' && !get(); } // v515: el objetivo es obligatorio para estudiantes
+  function must() { return shouldAsk(); }
+  // v515: muestra la ventana (sin «Ahora no») cuando no haya otra ventana abierta; se resuelve con el objetivo elegido
+  let mP = null;
+  function require() { if (!must()) return Promise.resolve(get()); if (mP) return mP; mP = new Promise(res => { const go = () => { if (document.querySelector('.modal:not(.gl-modal)') || document.querySelector('.tour-ov,.tour')) return setTimeout(go, 700); ask({ noSkip: true }).then(g => { mP = null; res(g); }); }; go(); }); return mP; }
   // "por qué te sirve" para un tema (módulo m, tema n)
   function why(m, n, g) { g = valid(g || get()); if (!g || !window.MRGOALWHY || G[g.k].age) return ''; const x = MRGOALWHY[(+m || 1) + '-' + n]; return x && x[g.k] ? { k: g.k, name: G[g.k].short, t: x[g.k] } : ''; }
   function whyHTML(m, n, g) { const w = why(m, n, g); return w ? `<div class="gl-why"><div><b>Para tu objetivo · ${esc(w.name)}</b><span>${esc(w.t)}</span></div></div>` : ''; }
@@ -132,5 +136,5 @@
 .gl-why{display:flex;gap:10px;align-items:flex-start;border-left:0!important;background:#fffbea!important;border:1px solid #fbe7a6!important}.gl-why b{display:block;color:#0B2A5B;font-size:13.5px;margin-bottom:2px}.gl-why span{color:#5b4500}
 `;
   document.head.appendChild(css);
-  window.MRGOAL = { G, get, save, ask, shouldAsk, label, lineHTML, cardHTML, why, whyHTML, chip, questions, weeksLeft };
+  window.MRGOAL = { G, get, save, ask, shouldAsk, must, require, label, lineHTML, cardHTML, why, whyHTML, chip, questions, weeksLeft };
 })();

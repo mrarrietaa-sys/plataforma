@@ -264,7 +264,7 @@
      Si Azure no está disponible (sin clave, cupo diario o tope del mes), se usa el navegador como antes. */
   const AZV = (() => {
     let offAll = false, offDay = '';
-    try { offDay = localStorage.getItem('mra_azoff') || ''; } catch (e) { }
+    try { offDay = localStorage.getItem('mra_azoff2') || ''; } catch (e) { }
     const today = () => new Date().toDateString();
     const can = () => !offAll && offDay !== today() && !!(window.MRAC && MRAC.on && MRAC.code && MRAC.code()) && !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) && !!(window.AudioContext || window.webkitAudioContext);
     function capture(o) {
@@ -308,7 +308,7 @@
     async function assess(wav, ref) {
       waitOn(true); try { const r = await MRAC.call('azPron', { code: MRAC.code(), text: ref || '', audio: wav.b64 }, { timeout: 15000 }).finally(() => waitOn(false));
         try { localStorage.removeItem('mra_vozdebug'); if (/[?&]vozdebug=1/.test(location.search)) { const W = (r && r.words || []).map(w => w.w + ':' + w.a + (w.e !== 'None' ? '(' + w.e + ')' : '')).join(' '); setTimeout(() => { let d = document.getElementById('azdbg'); if (!d) { d = document.createElement('div'); d.id = 'azdbg'; d.style.cssText = 'position:fixed;left:8px;right:8px;bottom:8px;z-index:99999;background:#111;color:#fff;font:13px/1.4 monospace;padding:10px;border-radius:10px;opacity:.92'; d.onclick = () => d.remove(); document.body.appendChild(d); } d.textContent = (r && r.ok ? `🔧 Azure · reconoció «${r.text || '—'}» · pron ${r.pron} · precisión ${r.acc} · completa ${r.comp} · ${W}` : `🔧 Azure no respondió: ${(r && r.err) || 'error'}`); }, 50); } } catch (er) { } // 🔧 solo para pruebas del administrador (?vozdebug=1)
-        if (!r || !r.ok) { const e = r && r.err; if (e === 'quota') { offDay = today(); try { localStorage.setItem('mra_azoff', offDay); } catch (er) { } } if (e === 'cap' || e === 'nokey' || e === 'unknown_action') offAll = true; return null; }
+        if (!r || !r.ok) { const e = r && r.err; if (e === 'quota') { offDay = today(); try { localStorage.setItem('mra_azoff2', offDay); } catch (er) { } } if (e === 'cap' || e === 'nokey' || e === 'unknown_action') offAll = true; return null; }
         return r; } catch (e) { waitOn(false); return null; }
     }
     // veredicto: frase completa, sin palabras de más o cambiadas y pronunciación clara
@@ -326,7 +326,7 @@
   const azRef = (t) => { const x = String(t == null ? '' : t).trim(); return !x || /_{2,}/.test(x) || /^[A-Za-z]$/.test(x) ? '' : x; };
   async function listenAz(timeoutMs = 8000, opts = {}) {
     const raw = opts.target != null ? String(opts.target) : '', ref = azRef(raw), letter = /^\s*[A-Za-z]\s*$/.test(raw) || !!opts.scorer;
-    if (letter || opts.noAz || !AZV.can()) { try { if (/vozdebug=1/.test(location.search)) { setTimeout(() => toast('🔧 Azure NO se usó: ' + (!(window.MRAC && MRAC.code && MRAC.code()) ? 'no hay sesión de estudiante con código' : 'no disponible (cupo/tope/clave)')), 60); } } catch (e) { } return listen(timeoutMs, opts); }
+    if ((letter && SR && !MOBILE) || opts.noAz || !AZV.can()) { /* v514: en celular las letras sueltas también van con Azure (el navegador no oye una letra sola) */ try { if (/vozdebug=1/.test(location.search)) { setTimeout(() => toast('🔧 Azure NO se usó: ' + (!(window.MRAC && MRAC.code && MRAC.code()) ? 'no hay sesión de estudiante con código' : 'no disponible (cupo/tope/clave)')), 60); } } catch (e) { } return listen(timeoutMs, opts); }
     const n = ref ? ref.split(/\s+/).length : 8, maxSpeechMs = Math.min(8000, Math.max(4000, n * 600 + 2500));
     if (audBusy()) { try { stop(); } catch (e) { } await sleep(500); } // primero se calla la plataforma
     if (!SR || MOBILE) { // 📱 celular / iPhone: solo Azure
@@ -447,7 +447,8 @@
     catch (e) { if (!SR) throw e; }
     const t0 = Date.now(); const iv = setInterval(() => onTick && onTick(Math.min(1, (Date.now() - t0) / ms)), 100);
     let r = { alts: [] };
-    if (SR) { r = await listen(ms, { quick: true, target: String(target || '').trim() || null, scorer }); if (Date.now() - t0 < 1200 && !r.alts.length) await sleep(Math.min(3000, Math.max(0, ms - (Date.now() - t0)))); }
+    if (scorer && AZV.can() && (MOBILE || !SR)) { r = await listenAz(Math.max(ms, 6000), { quick: true, target: String(target || '').trim(), scorer }); }
+    else if (SR) { r = await listen(ms, { quick: true, target: String(target || '').trim() || null, scorer }); if (Date.now() - t0 < 1200 && !r.alts.length) await sleep(Math.min(3000, Math.max(0, ms - (Date.now() - t0)))); }
     else await sleep(ms);
     clearInterval(iv); onTick && onTick(1);
     let url = null;
