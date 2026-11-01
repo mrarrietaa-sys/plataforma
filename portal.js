@@ -279,9 +279,9 @@
       if (busy) return; const h0 = prizeGet(); if (h0) return showOwned(h0, true);
       if (!M.canSR) { res.hidden = false; res.innerHTML = `<p class="lp-rmsg">Para el reto, abre esta página en <b>Google Chrome</b> y permite el micrófono.</p>`; return; }
       busy = true; tries++; box.classList.add('rec'); $('#lp-dl').textContent = 'TE ESTAMOS ESCUCHANDO…'; res.hidden = true;
-      const r = await M.listen(9000, { quick: true }); busy = false; box.classList.remove('rec'); $('#lp-dl').textContent = 'RETO · TOCA EL MICRÓFONO Y DI';
+      let r, melS = null; if (window.MRMEL && MRMEL.can() && ph.au) { let hb = box.parentNode.querySelector('.lp-mel'); if (!hb) { hb = document.createElement('div'); hb.className = 'lp-mel'; box.after(hb); } const ms = await MRMEL.score(ph.au, hb); r = ms.score != null ? { alts: [ph.t] } : { alts: [], error: ms.err ? 'not-allowed' : 'no-speech' }; melS = ms.score; } else r = await M.listen(9000, { quick: true, target: ph.t }); /* v517 */ busy = false; box.classList.remove('rec'); $('#lp-dl').textContent = 'RETO · TOCA EL MICRÓFONO Y DI';
       if (!r.alts || !r.alts.length) { res.hidden = false; res.innerHTML = `<p class="lp-rmsg">${r.error === 'not-allowed' || r.error === 'service-not-allowed' ? 'Permite el micrófono para jugar el reto.' : 'No te escuchamos. Toca el micrófono y habla un poco más fuerte.'}</p>`; return; }
-      const sc = M.speechScore(ph.t, r.alts); const W = ph.t.split(' ');
+      const sc = melS != null ? { score: melS, hit: ph.t.split(' ').map(() => melS >= 80), heard: '' } : M.speechScore(ph.t, r.alts); const W = ph.t.split(' ');
       if (sc.score >= 100) return prizeWin(sc.score);
       res.hidden = false; res.innerHTML = `<div class="lp-almost"><b>¡Casi! ${sc.score}%</b><div class="lp-wd">${W.map((w, k) => `<span class="${sc.hit[k] ? 'ok' : 'bad'}">${esc(w)}</span>`).join('')}</div><p>Escucha el ejemplo ${LI(LP.vol)} y vuelve a intentarlo. ${tries >= 3 ? '¡Tú puedes!' : ''}</p></div>`;
     };

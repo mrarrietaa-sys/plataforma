@@ -826,7 +826,25 @@
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
   })();
   const WV = (f) => async function () { const W = window.MRAWAVE; W && W.on(); try { return await f.apply(this, arguments); } finally { W && W.off(); } };
-  const listenW0 = WV(listenAz), recordScoreW0 = WV(recordScore), recordVoiceW = WV(recordVoice);
+  // v516 · SIN RECONOCIMIENTO DE VOZ en lecciones y juegos: solo se detecta que el estudiante habló (nunca «No te escuché» si habló).
+  //        Los exámenes y la prueba de clasificación siguen con Azure (listenAsr / recordScoreAsr).
+  const tgtClean = (t) => String(t == null ? '' : t).replace(/_{2,}/g, ' ').replace(/[≠→]/g, ' ').replace(/\s+/g, ' ').trim();
+  async function voiceOnly(ms, target) {
+    if (audBusy()) { try { stop(); } catch (e) { } await sleep(400); }
+    const n = target ? target.split(/\s+/).length : 6, maxSpeechMs = Math.min(9000, Math.max(3500, n * 650 + 2500));
+    let c; try { c = await AZV.capture({ auto: true, maxMs: Math.max(ms || 0, 7000), maxSpeechMs, waitMs: 7000 }).done; } catch (e) { return { err: 'mic' }; }
+    if (c.err) return { err: 'mic' }; if (!c.spoke) return { none: true };
+    const w = AZV.toWav(c); if (!w || w.sec < 0.25) return { none: true }; return { ok: true, sec: w.sec };
+  }
+  async function listenNoAsr(timeoutMs = 8000, opts = {}) { const t = tgtClean(opts.target); const v = await voiceOnly(timeoutMs, t);
+    if (v.err) return { alts: [], error: 'not-allowed' }; if (v.none) { srStat('em', 'no-speech'); return { alts: [], error: 'no-speech' }; }
+    srStat('ok', 'voz'); return { alts: [t || 'ok'], noAsr: true }; }
+  async function recordScoreNoAsr(target, ms, onTick, scorer) { const t = tgtClean(target), t0 = Date.now(), iv = setInterval(() => onTick && onTick(Math.min(1, (Date.now() - t0) / (ms || 5000))), 100);
+    let v; try { v = await voiceOnly(ms, t); } finally { clearInterval(iv); onTick && onTick(1); }
+    if (v.err) return { url: null, alts: [], score: null, heard: '', error: 'not-allowed' };
+    if (v.none) return { url: null, alts: [], score: 0, heard: '', error: 'no-speech' };
+    return { url: null, alts: [t || 'ok'], score: 90, heard: t, noAsr: true }; }
+  const listenW0 = WV(listenNoAsr), recordScoreW0 = WV(recordScoreNoAsr), recordVoiceW = WV(recordVoice), listenAsrW = WV(listenAz), recordScoreAsrW = WV(recordScore);
   // 🎧 v383: si no se escuchó nada, nunca queda bloqueado: "Intentar otra vez" o "Grábate y escúchate" (se autoevalúa)
   const noHearUI = (target, au) => window.MRVC && MRVC.noHear ? MRVC.noHear({ target, au }) : Promise.resolve('close');
   async function listenW() { const args = arguments; const r = await listenW0.apply(this, args);
@@ -842,6 +860,6 @@
   const srSessionW = function (onText, onFatal) { const W = window.MRAWAVE; let off = !W; const o = () => { if (!off) { off = true; W.off(); } }; if (W) W.on(); const S = srSession(onText, function () { o(); return onFatal && onFatal.apply(this, arguments); }); if (!W) return S; if (!S) { o(); return S; }
     const st = S.stop, ab = S.abort; S.stop = function () { o(); return st.apply(S, arguments); }; S.abort = function () { o(); return ab.apply(S, arguments); }; return S; };
   window.M1 = { face, D, C, MOD, S, $, $$, h, esc, shuffle, sample, sleep, save, touchStreak, addSkill, addWeak, okWeak, skillPct, isUnlocked, finalUnlocked, paceDate, weakParts, reviewMode, revCount, PTS_TIP, hasAccess, progressOpen, lockReason, review, hasProfile, doneCount, totalParts, redeem, codeHash,
-    allParts, partById, trackAudio, audioUI, floatStop, recordScore: recordScoreW, letterScorer, voiceResult, floatBubble, setBubbleHidden, prevPart, nextPart, partStars, overallPct, imgURL, photo, play, playSeq, loadAudio, stop, sfx, praise, encourage, ageGroup, brand, fbf, get canSR() { return canSR || AZV.can(); }, azOn: () => AZV.can(), IOS, MOBILE, listen: listenW, srSession: srSessionW, recordVoice: recordVoiceW,
+    allParts, partById, trackAudio, audioUI, floatStop, recordScore: recordScoreW, recordScoreAsr: recordScoreAsrW, listenAsr: listenAsrW, letterScorer, voiceResult, floatBubble, setBubbleHidden, prevPart, nextPart, partStars, overallPct, imgURL, photo, play, playSeq, loadAudio, stop, sfx, praise, encourage, ageGroup, brand, fbf, get canSR() { return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && (window.AudioContext || window.webkitAudioContext)); }, /* v516: basta con micrófono */ azOn: () => AZV.can(), IOS, MOBILE, listen: listenW, srSession: srSessionW, recordVoice: recordVoiceW,
     norm, words, lev, speechScore, audBusy, freeJudge, readJudge, grammarFix, spellFix, loadDict, sheet, good, bad, toast, modal, xpFly, confetti, mascot, audioSrc };
 })();

@@ -61,10 +61,10 @@
       const card = h(`<div class="sw-card"><small>Número ${idx + 1}</small><div class="sw-es">${esc(it.es)}</div><p class="muted" style="margin:4px 0 6px">¿Cómo se dice en inglés?</p><button type="button" class="btn w sm sw-hear">${window.MRI ? MRI('vol') : ''} Escuchar pista</button></div>`); body.appendChild(card);
       $('.sw-hear', card).onclick = (e) => { stop(); play(it.au, { btn: e.currentTarget }); }; // v420: pista de audio para guiarse
       const ok = await new Promise(res => {
-        const mic = h(`<button class="mic">🎤</button>`); const st = h(`<p class="center" style="font-weight:700;margin:4px 0">${M.canSR ? 'Toca el micrófono y dila en inglés' : 'Escribe la palabra en inglés'}</p>`);
-        const inp = h(`<div class="${M.canSR ? 'hidden' : ''}" style="max-width:420px;margin:0 auto"><input class="inp" placeholder="Escribe en inglés…" autocomplete="off" autocapitalize="off"></div>`);
-        const bar = h(`<div class="actionbar"><button class="btn w" id="sh">💡 Pista</button>${M.canSR ? '<button class="btn w" id="ty">⌨️ Escribir</button>' : ''}<button class="btn k" id="sk">Comprobar ✓</button></div>`);
-        if (window.MRVC && M.canSR) { card.append(MRVC.card({ target: mic, label: 'TOCA EL MICRÓFONO Y DILA EN INGLÉS', mascot: false }), mic, st, inp); st.textContent = ''; } else card.append(mic, st, inp); body.appendChild(bar);
+        const mic = h(`<button class="mic">🎤</button>`); const st = h(`<p class="center" style="font-weight:700;margin:4px 0">${false /* v516: se escribe */ ? 'Toca el micrófono y dila en inglés' : 'Escribe la palabra en inglés'}</p>`);
+        const inp = h(`<div class="${false /* v516: se escribe */ ? 'hidden' : ''}" style="max-width:420px;margin:0 auto"><input class="inp" placeholder="Escribe en inglés…" autocomplete="off" autocapitalize="off"></div>`);
+        const bar = h(`<div class="actionbar"><button class="btn w" id="sh">💡 Pista</button>${false /* v516: se escribe */ ? '<button class="btn w" id="ty">⌨️ Escribir</button>' : ''}<button class="btn k" id="sk">Comprobar ✓</button></div>`);
+        if (window.MRVC && false /* v516: se escribe */) { card.append(MRVC.card({ target: mic, label: 'TOCA EL MICRÓFONO Y DILA EN INGLÉS', mascot: false }), mic, st, inp); st.textContent = ''; } else card.append(mic, st, inp); body.appendChild(bar);
         let hints = 0;
         const finish = (good, heard) => { mic.disabled = true; $$('button', bar).forEach(b => b.disabled = true); res({ good, heard }); };
         mic.onclick = async () => { stop(); mic.classList.add('rec'); st.textContent = '🎧 Te escucho…'; const r = await M.listen(6000, { quick: true }); mic.classList.remove('rec');
@@ -72,7 +72,7 @@
           const sc = /^[A-Za-z]$/.test(it.en.trim()) ? M.letterScorer(it.en.trim())(r.alts) : M.speechScore(it.en, r.alts); if (sc.score >= 70) { M.praise(); finish(true, sc.heard); } else { st.innerHTML = `❌ No sonó bien todavía. Intenta otra vez (usa 💡 Pista).`; sfx('bad'); setTimeout(M.encourage, 250); } };
         if ($('#ty', bar)) $('#ty', bar).onclick = () => { inp.classList.remove('hidden'); $('input', inp).focus(); };
         $('#sh', bar).onclick = () => { hints++; st.innerHTML = it.en.trim().length > 1 ? `Empieza por <b>${esc(it.en[0].toUpperCase())}</b> y tiene ${it.en.replace(/[^A-Za-z]/g, '').length} letras. Escucha cómo suena.` : 'Escucha cómo suena y repítela.'; stop(); play(it.au); };
-        $('#sk', bar).onclick = () => { const v = $('input', inp).value.trim(); if (v) finish(M.norm(v) === M.norm(it.en), v); else if (M.canSR) mic.click(); };
+        $('#sk', bar).onclick = () => { const v = $('input', inp).value.trim(); if (v) finish(M.norm(v) === M.norm(it.en), v); else if (false /* v516: se escribe */) mic.click(); };
         $('input', inp).onkeydown = e => { if (e.key === 'Enter') $('#sk', bar).click(); };
       });
       t++; if (ok.good) c++; else missed.push(it); play(it.au);
@@ -113,7 +113,7 @@
   /* ============ HABLA Y REVIENTA GLOBOS ============ */
   async function sayPop(stage, p) {
     const P = pool(p).filter(v => v.en.split(' ').length <= 3); const items = sample(P, Math.min(5, P.length)); const popped = new Set(); const missed = [];
-    const body = head(stage, { lbl: 'Speaking game', title: '🎈 Habla y revienta', ins: M.canSR ? 'Toca un globo para escucharlo. Luego toca 🎤 y <b>di la palabra</b>: ¡si la pronuncias bien, el globo revienta!' : 'Escucha 🔊 y toca el globo con la palabra que oyes.' });
+    const body = head(stage, { lbl: 'Listening game', title: '🎈 Escucha y revienta', ins: false ? 'Toca un globo para escucharlo. Luego toca 🎤 y <b>di la palabra</b>: ¡si la pronuncias bien, el globo revienta!' : 'Escucha 🔊 y toca el globo con la palabra que oyes.' });
     const sky = h(`<div class="sp-sky"></div>`); body.appendChild(sky);
     const cols = ['#E3242B', '#1D5FD1', '#0B2A5B', '#E3242B', '#1D5FD1'];
     const balls = items.map((it, i) => { const b = h(`<button class="sp-ball" style="--c:${cols[i % 5]};--d:${(i * .4).toFixed(1)}s">${esc(it.en)}<i></i></button>`); b.onclick = () => { if (!M.canSR) return; sfx('tap'); play(it.au); }; sky.appendChild(b); return b; });
@@ -121,7 +121,7 @@
     const pop = (i) => { popped.add(i); balls[i].classList.add('pop'); sfx('ok'); M.praise(); };
     await new Promise(res => {
       const bar = h(`<div class="actionbar"><button class="btn w" id="sd">Terminar</button></div>`);
-      if (M.canSR) {
+      if (false) { /* v516: escucha y revienta (sin reconocimiento) */
         const mic = h(`<div class="center"><button class="mic">🎤</button></div>`); body.insertBefore(mic, st);
         if (window.MRVC) body.insertBefore(MRVC.card({ target: $('button', mic), label: 'DI UNA PALABRA DE LOS GLOBOS', mascot: false }), mic);
         let tries = 0;

@@ -52,20 +52,20 @@
     if (window.__V9 && p.vocab && p.vocab.length > 13) p = Object.assign({}, p, { vocab: p.vocab.slice(0, 13) }); // v438: las tarjetas ya vienen recortadas (hw9.js · trazabilidad) // o: { noTip, title, ins } (Kids/Teens ya vieron la regla en su cómic / historias)
     const isPl = !!p.plurals;
     // escuchar + grabar la voz del estudiante repitiendo + calificación con voz (o autoevaluación si el navegador no reconoce voz)
-    const canRec = M.canSR || !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder);
+    const canRec = !!(window.MRMEL && MRMEL.can()); // v516: motor de melodía
     const body = head(stage, { lbl: 'Explanation', title: o.title || 'Listen and repeat', ins: o.ins ? o.ins : canRec
-      ? `Toca cada tarjeta para <b>escuchar</b> la pronunciación. Luego toca <b>🎙️ Repetir</b> y dila en voz alta: ${M.canSR ? 'te digo si la dijiste bien.' : 'grábate y compárate con el modelo.'} Usa <b>“Escuchar todo”</b> para oírlas seguidas.`
+      ? `Toca cada tarjeta para <b>escuchar</b> la pronunciación. Luego toca <b>🎙️ Repetir</b> y dila en voz alta: verás tu melodía junto a la del modelo. Usa <b>“Escuchar todo”</b> para oírlas seguidas.`
       : 'Toca cada tarjeta para escuchar la pronunciación y <b>repítela en voz alta</b>. Usa <b>“Escuchar todo”</b> para oírlas seguidas.' });
     const tools = h(`<div class="row ce-ltools"><button class="btn sm k" id="all">▶ Escuchar todo</button><span class="ce-lcnt" id="cnt"></span>${canRec ? '<span class="ce-lcnt ce-lok" id="cnt2"></span>' : ''}</div>`);
     body.appendChild(tools);
-    if (canRec && !M.canSR) body.appendChild(h('<p class="ce-lnosr">🎧 Tu navegador no puede calificar la voz. Igual puedes <b>grabarte y escucharte</b> para compararte con el modelo. (En Chrome te califico automáticamente.)</p>'));
+    if (false) body.appendChild(h('<p class="ce-lnosr">🎧 Tu navegador no puede calificar la voz. Igual puedes <b>grabarte y escucharte</b> para compararte con el modelo. (En Chrome te califico automáticamente.)</p>'));
     // v500 · flashcards: una palabra a la vez con la foto grande + tira de miniaturas (cabe completo en celular y PC)
     const grid = h(`<div class="lrc"><div class="lrc-card"><div class="lrc-ph"></div><div class="lrc-bd"><div class="lrc-w"><b class="lrc-en"></b><span class="lrc-es"></span><div class="lrc-res"></div></div>
       <div class="lrc-ctr"><button type="button" class="lrc-au"><i>${window.MRI ? MRI('vol') : '🔊'}</i><small>Escuchar</small></button>${canRec ? `<button type="button" class="lrc-mic"><i>${window.MRI ? MRI('mic') : '🎙️'}</i><small>Repetir</small></button>` : ''}</div></div></div>
       <div class="lrc-nav"><button type="button" class="lrc-ar lrc-pv" aria-label="Anterior">‹</button><div class="lrc-th"></div><button type="button" class="lrc-ar lrc-nx" aria-label="Siguiente">›</button></div><p class="lrc-need" hidden></p></div>`); body.appendChild(grid); tools.classList.add('lrc-tools');
     const needN = canRec && !(window.MRTEACH && MRTEACH.on()) ? Math.min(3, p.vocab.length) : 0;
     const heard = new Set(), said = new Set(); const n = p.vocab.length; let cur = 0; const st = {};
-    const upd = () => { $('#cnt', tools).textContent = `👂 ${heard.size} / ${n} escuchadas`; if (canRec) $('#cnt2', tools).textContent = `🎙️ ${said.size} / ${n} ${M.canSR ? 'repetidas' : 'grabadas'}`;
+    const upd = () => { $('#cnt', tools).textContent = `👂 ${heard.size} / ${n} escuchadas`; if (canRec) $('#cnt2', tools).textContent = `🎙️ ${said.size} / ${n} repetidas`;
       { const nd = $('.lrc-need', grid); if (nd && needN) { const okN = said.size >= needN; nd.hidden = false; nd.classList.toggle('ok', okN); nd.textContent = okN ? '✓ ¡Listo! Ya puedes avanzar' : `Repite por lo menos ${needN} para avanzar`; } }
       $$('.lrc-t', grid).forEach((t, j) => { t.classList.toggle('lrc-on', j === cur); t.classList.toggle('lrc-dn', said.has(j)); t.classList.toggle('lrc-hd', heard.has(j)); }); };
     const ph = $('.lrc-ph', grid), enEl = $('.lrc-en', grid), esEl = $('.lrc-es', grid), res = $('.lrc-res', grid), mic = $('.lrc-mic', grid), card = $('.lrc-card', grid);
@@ -80,24 +80,18 @@
       upd(); if (auto !== false) return sayIt(cur); };
     const bindRes = () => { const mo = res.querySelector('.ce-mo'), ag = res.querySelector('.ce-ag'); if (mo) mo.onclick = (ev) => { ev.stopPropagation(); stop(); play(p.vocab[cur].au); }; if (ag) ag.onclick = (ev) => { ev.stopPropagation(); sfx('tap'); doRec(); }; };
     const markOk = (i) => { said.add(i); upd(); };
-    const doRec = async () => {
-      if (!mic || mic.disabled) return; const i = cur, it = p.vocab[i]; stop(); mic.disabled = true; res.innerHTML = ''; card.classList.remove('ce-st-ok', 'ce-st-mid', 'ce-st-bad'); mic.classList.add('rec');
-      const target = String(it.en || '').replace(/[≠→]/g, ' ');
-      const secs = Math.min(8, Math.max(3, Math.ceil(target.split(/\s+/).length * .6) + 2));
-      try {
-        const r = await M.recordScore(target, secs * 1000, f => { $('small', mic).textContent = `Te escucho… ${Math.max(0, Math.ceil(secs * (1 - f)))}s`; });
-        mic.classList.remove('rec'); mic.disabled = false; $('small', mic).textContent = 'Otra vez'; if (cur !== i) return;
-        if (!r.alts || !r.alts.length) { if (r.score === 0 || r.error) { res.innerHTML = '<div class="lrc-fb"><b>No te escuché.</b> Acércate al micrófono y repite.</div>'; $('small', mic).textContent = 'Repetir'; return; } } // v506
-        if (r.score != null && r.heard && M.readJudge) { const rj = M.readJudge('', target, r.az ? Object.assign([r.heard], { az: r.az }) : [r.heard]); r.score = rj.ok ? Math.max(rj.score, 75) : Math.min(rj.score, 69); r._extra = rj.extra; r._gram = rj.gramMiss; } // v494: misma regla exigente
-        if (r.score != null) { // v500: solo dice cómo le fue (nunca muestra lo que escuchó)
-          const sc = Math.round(r.score), ok = sc >= 70, mid = !ok && sc >= 45, cls = ok ? 'ce-st-ok' : mid ? 'ce-st-mid' : 'ce-st-bad';
-          const html = ok ? `<div class="lrc-fb ok"><b>✓ ¡Muy bien!</b> ${sc}%</div>` : `<div class="lrc-fb"><b>${r._gram ? 'Lee cada palabra tal como está' : r._extra ? 'Dila una sola vez' : mid ? '¡Casi! Repite despacio' : 'Escucha y repite'}</b> ${sc}%</div><div class="ce-l2"><button type="button" class="btn sm ce-mo">Oír modelo</button><button type="button" class="btn sm ce-ag">Otra vez</button></div>`;
-          st[i] = { html, cls }; card.classList.add(cls); res.innerHTML = html; bindRes(); if (ok) { sfx('ok'); markOk(i); } else sfx('bad');
-        } else {
-          const ok = M.voiceResult(res, { score: r.score, url: r.url, model: () => play(it.au), onRetry: doRec, pass: 70 });
-          if (ok) markOk(i); res.addEventListener('selfok', () => markOk(i), { once: true });
-        }
-      } catch (err) { mic.classList.remove('rec'); mic.disabled = false; $('small', mic).textContent = 'Repetir'; M.toast('Permite el acceso al micrófono 🎤'); }
+    const doRec = async () => { // v516 · motor de melodía: sin reconocimiento de voz, nunca bloquea
+      if (!mic || mic.disabled) return; const i = cur, it = p.vocab[i]; stop(); if (window.MRMEL) MRMEL.stop(); mic.disabled = true; card.classList.remove('ce-st-ok', 'ce-st-mid', 'ce-st-bad');
+      res.innerHTML = ''; const v = MRMEL.view(res); mic.classList.add('rec'); $('small', mic).textContent = 'Te escucho…';
+      let r = null; try { r = await MRMEL.take(it.au, v); } catch (e) { r = { err: 'x' }; }
+      mic.classList.remove('rec'); mic.disabled = false; $('small', mic).textContent = 'Otra vez'; if (cur !== i) return;
+      if (r.err) { res.innerHTML = ''; $('small', mic).textContent = 'Repetir'; M.toast('Permite el acceso al micrófono'); return; }
+      if (r.silent) { v.el.insertAdjacentHTML('afterend', '<div class="lrc-fb"><b>No te escuché.</b> Acércate al micrófono y repite.</div>'); $('small', mic).textContent = 'Repetir'; return; }
+      const cls = !r.ok ? 'ce-st-bad' : r.r + r.it >= 5 ? 'ce-st-ok' : 'ce-st-mid'; card.classList.add(cls);
+      v.el.insertAdjacentHTML('afterend', MRMEL.resultHTML(r) + '<div class="mel9-bt"><button type="button" class="btn w sm mel9-me">▶ Tu voz</button><button type="button" class="btn w sm ce-mo">▶ Modelo</button></div>');
+      res.querySelector('.mel9-me').onclick = (ev) => { ev.stopPropagation(); stop(); MRMEL.play(r.buf); };
+      res.querySelector('.ce-mo').onclick = (ev) => { ev.stopPropagation(); MRMEL.stop(); play(it.au); };
+      st[i] = { html: MRMEL.resultHTML(r), cls }; if (!r.ok) { sfx('bad'); return; } sfx(cls === 'ce-st-ok' ? 'ok' : 'tap'); markOk(i);
     };
     if (mic) mic.onclick = (e) => { e.stopPropagation(); sfx('tap'); doRec(); };
     $('.lrc-au', grid).onclick = () => { stop(); sayIt(cur); };
@@ -621,6 +615,13 @@
       };
       $('#rec', recRow).onclick = doRec;
       mic.onclick = async () => {
+        if (window.MRMEL && MRMEL.can() && it.au) { // v517 · motor de melodía (sin reconocimiento de voz)
+          if (mic.classList.contains('rec')) { MRMEL.stop(); return; } stop(); mic.classList.add('rec'); st.textContent = 'Te escucho…';
+          const mm = await MRMEL.judge(it.au, out); mic.classList.remove('rec');
+          if (mm.err) { st.textContent = 'Permite el micrófono en tu navegador'; return; }
+          if (mm.silent) { st.textContent = 'No te escuché. Toca el micrófono e intenta otra vez.'; return; }
+          tries++; if (mm.ok) { best = Math.max(best, mm.r + mm.it >= 5 ? 90 : 75); sfx('ok'); praise(); st.textContent = ''; } else { sfx('bad'); st.textContent = 'Escucha el modelo y repite.'; }
+          if (mm.ok || tries >= 3) $('#nx', bar).classList.remove('hidden'); return; }
         if (!M.canSR) { $('#rec', recRow).click(); return; }
         stop(); mic.classList.add('rec'); st.textContent = '🎧 Te escucho… habla ahora';
         const r = await M.listen(Math.max(5000, it.en.split(' ').length * 1200), { target: it.en }); mic.classList.remove('rec');

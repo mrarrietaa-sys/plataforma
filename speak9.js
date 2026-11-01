@@ -37,11 +37,11 @@
       let ok = false, why = '', r = null;
       try {
         if (it.type === 'answer') {
-          r = await M().listen(10000, { quick: true, target: it.pat });
+          r = await (M().listenAsr || M().listen)(10000, { quick: true, target: it.pat }); /* v516: exámenes con Azure */
           if (!r.alts || !r.alts.length) why = 'nohear';
           else { const fj = M().freeJudge(it.q, it.pat, r.alts), w = String(r.alts[0] || '').trim().split(/\s+/).filter(Boolean).length; ok = !!fj.ok && w >= 2; a.gram = ok ? 1 : 0; }
         } else {
-          r = await M().recordScore(tgt, ms);
+          r = await (M().recordScoreAsr || M().recordScore)(tgt, ms);
           if (r.score == null) { a.neutral = !M().canSR; }
           else if (!r.alts || !r.alts.length) why = 'nohear';
           else { const j = M().readJudge('', tgt, r.az ? Object.assign([r.heard || r.alts[0]], { az: r.az }) : r.alts); ok = !!j.ok && (!r.az || r.az.pron >= min); why = ok ? '' : j.gramMiss ? 'words' : 'pron'; }

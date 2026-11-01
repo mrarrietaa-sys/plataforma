@@ -53,11 +53,11 @@
         box.querySelector('#as-say2').onclick = async (e) => {
           const bt = e.currentTarget; if (!M().canSR) { sfx('ok'); finish(true); return; }
           bt.disabled = true; const tr = box.querySelector('#as-tr'); tr.textContent = 'Te escucho…';
-          let r = null; try { r = await M().recordScore(it.en, Math.max(3000, it.en.split(' ').length * 900 + 1800)); } catch (er) { r = null; }
-          bt.disabled = false; tries++;
-          const ok = r && (r.self || (r.score != null && r.score >= 60));
-          if (ok) { tr.innerHTML = `<b class="as-ok">${SV(I.ck)}¡Lo dijiste muy bien!</b>`; sfx('ok'); try { M().praise(); } catch (er) { } setTimeout(() => finish(true), 900); return; }
-          sfx('bad'); tr.innerHTML = `<span>Casi. Escucha otra vez y repite despacio.</span>${tries >= 2 ? '<button type="button" class="as-lnk" id="as-skip">Siguiente cofre</button>' : ''}`;
+          let ok = false, mel = false; if (window.MRMEL && MRMEL.can() && it.au) { mel = true; const mm = await MRMEL.judge(it.au, tr); bt.disabled = false; if (mm.silent || mm.err) return; ok = !!mm.ok; } /* v517: motor de melodía */
+          else { let r = null; try { r = await M().recordScore(it.en, Math.max(3000, it.en.split(' ').length * 900 + 1800)); } catch (er) { r = null; } bt.disabled = false; ok = r && (r.self || (r.score != null && r.score >= 60)); }
+          tries++;
+          if (ok) { if (mel) tr.insertAdjacentHTML('afterbegin', `<b class="as-ok">${SV(I.ck)}¡Lo dijiste muy bien!</b>`); else tr.innerHTML = `<b class="as-ok">${SV(I.ck)}¡Lo dijiste muy bien!</b>`; sfx('ok'); try { M().praise(); } catch (er) { } setTimeout(() => finish(true), mel ? 2400 : 900); return; }
+          sfx('bad'); if (mel) { if (tries >= 2 && !tr.querySelector('#as-skip')) tr.insertAdjacentHTML('beforeend', '<button type="button" class="as-lnk" id="as-skip">Siguiente cofre</button>'); } else tr.innerHTML = `<span>Casi. Escucha otra vez y repite despacio.</span>${tries >= 2 ? '<button type="button" class="as-lnk" id="as-skip">Siguiente cofre</button>' : ''}`;
           const sk = tr.querySelector('#as-skip'); if (sk) sk.onclick = () => finish(false);
         };
       };
@@ -183,6 +183,14 @@
 
   /* =================== ESCUCHA Y PRACTICA (preguntas clave) =================== */
   const RS = async (tgt, ms) => { try { return await M().recordScore(tgt, ms); } catch (e) { return null; } };
+  // v517 · con audio modelo: motor de melodía (línea + estrellas). Devuelve null si no habló.
+  const blankType = (tgt, host) => new Promise(res => { const parts = tgt.split(/_{2,}/); host.innerHTML = `<div class="bl9"><small>Completa con tu información y escríbelo</small><div class="bl9-r"><span>${esc(parts[0] || '')}</span><input class="inp bl9-i" autocomplete="off" placeholder="…"><span>${esc(parts.slice(1).join(' ') || '')}</span></div><button type="button" class="btn k sm bl9-ok">Listo</button></div>`;
+    const inp = host.querySelector('.bl9-i'), ok = host.querySelector('.bl9-ok'); setTimeout(() => { try { inp.focus(); } catch (e) { } }, 50);
+    const go = () => { const v = inp.value.trim(); if (!/[a-z0-9]/i.test(v)) { inp.focus(); return; } host.innerHTML = ''; res({ self: true, alts: [tgt.replace(/_{2,}/, v)], score: 90 }); }; ok.onclick = go; inp.onkeydown = (e) => { if (e.key === 'Enter') go(); }; });
+  const RSM = async (k, tgt, blank, host, ms) => { if (blank) return blankType(tgt, host); /* v517: lo personal se escribe */ if (!(window.MRMEL && MRMEL.can() && k.aau)) return RS(tgt, ms);
+    host.innerHTML = ''; const v = MRMEL.view(host); let m = null; try { m = await MRMEL.take(k.aau, v); } catch (e) { m = { err: 1 }; }
+    if (m.err || m.silent) { host.innerHTML = '<span class="as-hint">No te escuché. Acércate al micrófono y toca otra vez.</span>'; return null; }
+    host.insertAdjacentHTML('beforeend', MRMEL.resultHTML(m)); if (!m.ok) return { alts: [], score: 0, heard: '', mel: m, nomatch: true }; return { alts: [tgt], score: 90, heard: tgt, mel: m }; };
   const judge = (r, tgt, blank) => { if (!r) return false; if (r.self) return true; if (r.score == null) return false; const w = (r.heard || (r.alts || [])[0] || '').trim().split(/\s+/).filter(Boolean).length; if (blank) return w >= 1; if (r.heard && M().readJudge) return M().readJudge('', tgt, r.az ? Object.assign([r.heard], { az: r.az }) : [r.heard]).ok; return r.score >= 75; }; // v494: más exigente al repetir // respuestas personales (nombre, letra, edad…): basta con que responda
   // v420: respuesta libre: se acepta lo que diga; solo se corrige gramática/pronunciación
   const FJ = (r, k, tgt) => { if (!r) return { ok: false, heard: '' }; if (r.self) return { ok: true, heard: '' }; return M().readJudge ? M().readJudge(k.q, tgt, r.alts || []) : M().freeJudge(k.q, tgt.replace(/___/g, ''), r.alts || []); };
@@ -208,9 +216,9 @@
         body.querySelector('#as-ql').onclick = () => k.qau && play(k.qau);
         body.querySelector('#as-hint').onclick = () => { M().stop && M().stop(); if (k.aau) play(k.aau); };
         body.querySelector('#as-mic').onclick = async (e) => { const bt = e.currentTarget; bt.disabled = true; const tr = body.querySelector('#as-tr'); tr.textContent = 'Te escucho…';
-          const r = await RS(tgt, Math.max(4000, tgt.split(' ').length * 900 + 2200)); bt.disabled = false; tries++;
+          const r = await RSM(k, tgt, blank, tr, Math.max(4000, tgt.split(' ').length * 900 + 2200)); bt.disabled = false; if (r === null) return; tries++;
           const fj = FJ(r, k, tgt);
-          if (fj.ok) { sfx('ok'); try { M().praise(); } catch (er) { } tr.innerHTML = `<b class="as-ok">${SV(I.ck)}¡Muy bien!</b>${fixHTML(fj)}`; setTimeout(() => done(true), fj.fix ? 3200 : 1300); return; }
+          if (fj.ok) { sfx('ok'); try { M().praise(); } catch (er) { } if (r && r.mel) { tr.insertAdjacentHTML('afterbegin', `<b class="as-ok">${SV(I.ck)}¡Muy bien!</b>`); setTimeout(() => done(true), 3200); return; } tr.innerHTML = `<b class="as-ok">${SV(I.ck)}¡Muy bien!</b>${fixHTML(fj)}`; setTimeout(() => done(true), fj.fix ? 3200 : 1300); return; }
           sfx('bad'); tr.innerHTML = `${fj.gram ? 'Casi. Se dice: “' + fj.fix + '”. Inténtalo otra vez.' : fj.spell ? 'Las letras no coinciden. Se deletrea: ' + fj.fix + '.' : fj.rep ? 'Repetiste la pregunta. Ahora <b>respóndela</b> con tus palabras.' : fj.off ? 'Tu respuesta no corresponde a la pregunta. Escúchala otra vez y responde sobre eso.' : fj.heard ? 'Casi. Escúchala y léela otra vez, despacio.' : 'No te escuché bien. Intenta otra vez, despacio.'}${tries >= 2 ? '<button type="button" class="as-lnk" id="as-nx">Siguiente</button>' : ''}`;
           if (tries >= 2) { body.querySelector('#as-nx').onclick = () => done(false); } };
       });
@@ -235,10 +243,10 @@
       ci.textContent = blank ? 'Léela con tu información' : 'Toca el micrófono y léela'; mic.disabled = false;
       const ok = await new Promise(done => { let tries = 0;
         mic.onclick = async () => { mic.disabled = true; mic.classList.add('rec'); ci.textContent = 'Grabando nota de voz…';
-          const r = await RS(tgt, Math.max(4000, tgt.split(' ').length * 900 + 2200)); mic.classList.remove('rec'); tries++;
+          const r = await RSM(k, tgt, blank, tr, Math.max(4000, tgt.split(' ').length * 900 + 2200)); mic.classList.remove('rec'); if (r === null) { mic.disabled = false; ci.textContent = 'Toca el micrófono y léela'; return; } tries++;
           const fj = FJ(r, k, tgt), good = fj.ok; const said = fj.heard || '';
           const out = H(`<div class="as-vn out ${good ? '' : 'bad'}"><span class="as-vw">${bars()}</span><small>0:0${Math.min(9, 2 + tgt.split(' ').length)}</small>${good && !/___/.test(tgt) ? `<div class="as-vt">${esc(tgt)}</div>` : ''}<span class="as-tick">${good ? '✓✓' : '!'}</span></div>`); cb.appendChild(out); cb.scrollTop = cb.scrollHeight;
-          if (good) { sfx('ok'); tr.innerHTML = fixHTML(fj); setTimeout(() => { tr.innerHTML = ''; done(true); }, fj.fix ? 3200 : 900); return; }
+          if (good) { sfx('ok'); if (!(r && r.mel)) tr.innerHTML = fixHTML(fj); setTimeout(() => { tr.innerHTML = ''; done(true); }, r && r.mel ? 2800 : fj.fix ? 3200 : 900); return; }
           sfx('bad'); mic.disabled = false; ci.textContent = 'Intenta otra vez';
           tr.innerHTML = tries >= 2 ? `<span class="as-hint">${fj.gram ? 'Se dice: <b>' + esc(fj.fix) + '</b>' : fj.spell ? 'Se deletrea: <b>' + fj.fix + '</b>' : 'Escúchala y léela otra vez, despacio.'}</span><button type="button" class="as-gt" id="as-nx">Siguiente nota${SV(I.r)}</button>` : `<span class="as-hint">${fj.gram ? 'Casi. Se dice: “' + fj.fix + '”. Inténtalo otra vez.' : fj.spell ? 'Las letras no coinciden. Se deletrea: ' + fj.fix + '.' : fj.rep ? 'Repetiste la pregunta. Ahora respóndela con tus palabras.' : fj.off ? 'Tu respuesta no corresponde a la pregunta. Escúchala otra vez y responde sobre eso, con tus palabras.' : said ? 'Casi. Escúchala y léela otra vez, despacio.' : 'No te escuché bien. Habla con tu voz normal, cerca del celular.'}</span>`;
           if (tries >= 2) { body.querySelector('#as-nx').onclick = () => { tr.innerHTML = ''; done(false); }; } };
@@ -384,9 +392,9 @@
       const hp = body.querySelector('#as-help'); if (hp) hp.onclick = () => { body.querySelector('#as-h').innerHTML = `En inglés se dice: <b>${esc(it.en)}</b>`; play(it.au); };
       const ls = body.querySelector('#as-ls'); if (ls) ls.onclick = () => play(it.au); if (teens) { await sleep(200); play(it.au); }
       const ok = await new Promise(done => { let tries = 0; body.querySelector('#as-mic').onclick = async (e) => { const bt = e.currentTarget; bt.disabled = true; const tr = body.querySelector('#as-tr'); tr.textContent = teens ? 'Grabando…' : 'Te escucho…';
-        const r = await RS(it.en, Math.max(4000, it.en.split(' ').length * 900 + 2200)); bt.disabled = false; tries++;
-        if (judge(r, it.en, false)) { sfx('ok'); try { M().praise(); } catch (er) { } tr.innerHTML = `<b class="as-ok">${SV(I.ck)}${teens ? 'Voice-over listo' : '¡Misión cumplida!'}</b>${r && r.score != null ? ` <small>${r.score}%</small>` : ''}`; setTimeout(() => done(true), 1200); return; }
-        sfx('bad'); tr.innerHTML = `${tries >= 2 ? `Así se dice: <b>${esc(it.en)}</b><button type="button" class="as-lnk" id="as-nx">Siguiente</button>` : 'Escucha el modelo e inténtalo otra vez.'}`;
+        let okb, mel = false; if (window.MRMEL && MRMEL.can() && it.au) { mel = true; const mm = await MRMEL.judge(it.au, tr); bt.disabled = false; if (mm.silent || mm.err) return; okb = !!mm.ok; } else { const r = await RS(it.en, Math.max(4000, it.en.split(' ').length * 900 + 2200)); bt.disabled = false; okb = judge(r, it.en, false); } tries++;
+        if (okb) { sfx('ok'); try { M().praise(); } catch (er) { } if (mel) tr.insertAdjacentHTML('afterbegin', `<b class="as-ok">${SV(I.ck)}${teens ? 'Voice-over listo' : '¡Misión cumplida!'}</b>`); else tr.innerHTML = `<b class="as-ok">${SV(I.ck)}${teens ? 'Voice-over listo' : '¡Misión cumplida!'}</b>`; setTimeout(() => done(true), mel ? 2600 : 1200); return; }
+        sfx('bad'); if (mel) tr.insertAdjacentHTML('beforeend', `${tries >= 2 ? `<p>Así se dice: <b>${esc(it.en)}</b><button type="button" class="as-lnk" id="as-nx">Siguiente</button></p>` : ''}`); else tr.innerHTML = `${tries >= 2 ? `Así se dice: <b>${esc(it.en)}</b><button type="button" class="as-lnk" id="as-nx">Siguiente</button>` : 'Escucha el modelo e inténtalo otra vez.'}`;
         if (tries >= 2) { play(it.au); body.querySelector('#as-nx').onclick = () => done(false); } }; });
       if (ok) c++;
     }
@@ -600,9 +608,10 @@
       await sleep(250); await play(it.au);
       const ok = await new Promise(done => { let tries = 0; const go = async () => { mic.disabled = true; fb.innerHTML = '<span class="g9-mid">Prepárate… 1, 2, 3, 4</span>'; await countIn(); if (!stage.isConnected) return;
           fb.innerHTML = '<span class="g9-mid">¡Ahora! Te escucho…</span>'; wave.classList.add('on'); mic.classList.add('rec');
-          const r = await RS(it.en, Math.max(3500, it.en.split(' ').length * 800 + 2000)); wave.classList.remove('on'); mic.classList.remove('rec'); mic.disabled = false; tries++;
-          if (judge(r, it.en, false)) { sfx('ok'); try { M().praise(); } catch (e) { } fb.innerHTML = `<span class="g9-yes">${SV(I.ck)}¡En el ritmo!${r && r.score != null ? ` ${r.score}%` : ''}</span>`; setTimeout(() => done(true), 1300); return; }
-          sfx('bad'); fb.innerHTML = `<span class="g9-no">${tries >= 2 ? 'Escucha el modelo. ¡La próxima sale!' : 'Escucha el modelo y otra vez.'}</span>`;
+          let r, okb; if (window.MRMEL && MRMEL.can() && it.au) { wave.style.display = 'none'; const mm = await MRMEL.judge(it.au, fb); wave.style.display = ''; if (mm.silent || mm.err) { wave.classList.remove('on'); mic.classList.remove('rec'); mic.disabled = false; return; } okb = !!mm.ok; r = { score: null }; } else { r = await RS(it.en, Math.max(3500, it.en.split(' ').length * 800 + 2000)); okb = judge(r, it.en, false); }
+          wave.classList.remove('on'); mic.classList.remove('rec'); mic.disabled = false; tries++;
+          if (okb) { sfx('ok'); try { M().praise(); } catch (e) { } fb.insertAdjacentHTML('afterbegin', `<span class="g9-yes">${SV(I.ck)}¡En el ritmo!</span>`); setTimeout(() => done(true), 2600); return; }
+          sfx('bad'); fb.insertAdjacentHTML('afterbegin', `<span class="g9-no">${tries >= 2 ? 'Escucha el modelo. ¡La próxima sale!' : 'Escucha el modelo y otra vez.'}</span>`);
           if (tries >= 2) { await play(it.au); setTimeout(() => done(false), 600); } };
         mic.onclick = go; });
       if (ok) c++;

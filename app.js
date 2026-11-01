@@ -830,7 +830,7 @@
       let c = 0; const AG = M.ageGroup();
       for (let i = 0; i < p.warm.length; i++) {
         const q = p.warm[i];
-        const body = A.head(stage, { lbl: 'Speaking', title: 'Listen and answer', ins: 'Calentamiento: escucha la pregunta y <b>respóndela en voz alta</b> con tus propias palabras. ¡No hay respuestas incorrectas!', count: `${i + 1} / ${p.warm.length}` });
+        const body = A.head(stage, { lbl: 'Speaking', title: 'Listen and answer', ins: 'Calentamiento: escucha la pregunta y <b>respóndela escribiendo</b> con tus propias palabras. ¡No hay respuestas incorrectas!', count: `${i + 1} / ${p.warm.length}` });
         const ok = await new Promise(res => {
           let vnDone = null;
           if (AG === 'teens') { stage.classList.add('dk');
@@ -852,18 +852,18 @@
           if (q.es) body.appendChild(h(`<div class="warm-es">${q.ex ? `<div class="ex">💡 Puedes responder: <b>${esc(q.ex)}</b></div>` : ''}</div>`));
           const pr = h(`<div class="center"></div>`); pr.appendChild(A.playBtn(q.au)); body.appendChild(pr);
           }
-          const mic = h(`<button class="mic">🎤</button>`); if (window.MRVC && M.canSR) body.appendChild(MRVC.card({ target: mic, label: AG === 'teens' ? 'NOTA DE VOZ · TOCA Y RESPONDE' : 'TOCA EL MICRÓFONO Y RESPONDE', say: q.q, es: q.es, au: q.au, mascot: AG === 'kids', cheer: 'Escucha la pregunta y respóndela.' })); body.appendChild(mic);
-          const st = h(`<p class="center" style="font-weight:700">${window.MRVC && M.canSR ? '' : M.canSR ? (AG === 'teens' ? 'Toca el micrófono y responde con una nota de voz' : 'Toca el micrófono y responde en inglés') : 'Escribe tu respuesta en inglés 👇'}</p>`); body.appendChild(st);
-          const alt = h(`<div class="${M.canSR ? 'hidden' : ''}"><input class="inp" placeholder="Escribe tu respuesta en inglés…" style="font-size:18px"></div>`); body.appendChild(alt);
-          const bar = h(`<div class="actionbar">${M.canSR ? '<button class="btn w" id="ty">⌨️ Prefiero escribir</button>' : ''}<button class="btn w" id="sk">Saltar</button><button class="btn k lg" id="ok">Enviar ✓</button></div>`); body.appendChild(bar);
+          const mic = h(`<button class="mic">🎤</button>`); if (window.MRVC && false /* v517: se responde escribiendo */) body.appendChild(MRVC.card({ target: mic, label: AG === 'teens' ? 'NOTA DE VOZ · TOCA Y RESPONDE' : 'TOCA EL MICRÓFONO Y RESPONDE', say: q.q, es: q.es, au: q.au, mascot: AG === 'kids', cheer: 'Escucha la pregunta y respóndela.' })); body.appendChild(mic);
+          const st = h(`<p class="center" style="font-weight:700">${window.MRVC && false /* v517: se responde escribiendo */ ? '' : false /* v517: se responde escribiendo */ ? (AG === 'teens' ? 'Toca el micrófono y responde con una nota de voz' : 'Toca el micrófono y responde en inglés') : 'Escribe tu respuesta en inglés 👇'}</p>`); body.appendChild(st);
+          const alt = h(`<div class="${false /* v517: se responde escribiendo */ ? 'hidden' : ''}"><input class="inp" placeholder="Escribe tu respuesta en inglés…" style="font-size:18px"></div>`); body.appendChild(alt);
+          const bar = h(`<div class="actionbar">${false /* v517: se responde escribiendo */ ? '<button class="btn w" id="ty">⌨️ Prefiero escribir</button>' : ''}<button class="btn w" id="sk">Saltar</button><button class="btn k lg" id="ok">Enviar ✓</button></div>`); body.appendChild(bar);
           setTimeout(() => play(q.au), 400);
           const minW = (q.ex && M.words(q.ex).length <= 3) || /letter|name|number|old|colou?r|favorite|favourite|from|live/i.test(q.q || '') ? 1 : 2; // respuestas cortas válidas (una letra, un nombre…)
           const accept = async (txt) => { const n = M.words(txt).length; if (n >= minW) { sfx('ok'); M.praise(); const tm = vnDone ? vnDone() : ''; await sheet({ ok: true, title: good(), msg: `${tm}`, tip: 'Intenta responder con oraciones completas, por ejemplo: <i>I\'m fine, thank you.</i>' }); res(true); } else { st.innerHTML = 'Te escuché muy poco. Responde con una frase corta y toca el micrófono otra vez.'; sfx('bad'); setTimeout(M.encourage, 250); } };
-          mic.onclick = async () => { stop(); mic.classList.add('rec'); st.textContent = '🎧 Te escucho…'; const r = await M.listen(8000, { quick: true }); mic.classList.remove('rec');
+          mic.onclick = async () => { stop(); mic.classList.add('rec'); st.textContent = '🎧 Te escucho…'; const r = await M.listen(8000, { quick: true, target: q.ex || q.q }); mic.classList.remove('rec');
             if (!r.alts.length) { st.textContent = r.error === 'not-allowed' ? 'Permite el micrófono 🎤 o escribe tu respuesta.' : 'No te escuché 🙉 Intenta otra vez.'; if (r.error === 'not-allowed') alt.classList.remove('hidden'); return; } accept(r.alts[0]); };
           if ($('#ty', bar)) $('#ty', bar).onclick = () => { alt.classList.remove('hidden'); $('input', alt).focus(); };
           $('#sk', bar).onclick = () => res(null);
-          $('#ok', bar).onclick = () => { const v = $('input', alt).value; if (v.trim()) accept(v); else if (M.canSR) mic.click(); };
+          $('#ok', bar).onclick = () => { const v = $('input', alt).value; if (v.trim()) accept(v); else if (false /* v517: se responde escribiendo */) mic.click(); };
           $('input', alt).onkeydown = e => { if (e.key === 'Enter') $('#ok', bar).click(); };
         });
         if (ok) c++;
@@ -936,7 +936,67 @@
     },
 
     // 🚀 MISIÓN según el objetivo: situación real + pregunta en audio + respuesta en voz alta con corrección
-    mission: async (stage, p) => { // v459: Módulo 1 o Kids → «Elige y dilo» · resto → «Notas de voz» (sin puertas ni candados)
+    // 🎬 v517 · MISIÓN = ESCENA DE DOBLAJE según el objetivo: elige la respuesta (entiende) y la dobla con el motor de melodía (sin reconocimiento de voz)
+    mission: async (stage, p) => {
+      const X = missionFor(p); if (!X) return null; if (!window.MRMEL) return STEP.missionOld(stage, p);
+      const I = n => window.MRI ? MRI(n) : '';
+      const GN = { v: ['plane', 'Viajar'], t: ['briefcase', 'Trabajo'], e: ['grad', 'Estudios'], kc: ['grad', 'Colegio'], kj: ['pad', 'Juegos y videos'], kv: ['plane', 'Viajar'], km: ['music', 'Música'], tc: ['grad', 'Colegio'], ts: ['tv', 'Series y redes'], tg: ['pad', 'Gaming'], tx: ['plane', 'Viajar o estudiar afuera'] }[X.k] || ['target', 'Tu objetivo'];
+      const BG = { v: '1551882547-ff40c63fe5fa', kv: '1436491865332-7a61a109cc05', tx: '1436491865332-7a61a109cc05', t: '1497215728101-856f4ea42174', e: '1522202176988-66273c2fd55f', ts: '1522202176988-66273c2fd55f', kc: '1580582932707-520aed937b7b', tc: '1580582932707-520aed937b7b', km: '1511379938547-c1f69419868d', kj: '1542751371-adc38448a05e', tg: '1542751371-adc38448a05e' }[X.k] || '1497215728101-856f4ea42174';
+      const list = X.list.slice(), N = list.length; let c = 0; const takes = [];
+      const PF = (window.MRAP && MRAP.get && MRAP.get()) || {}; const INI = (((PF.first || S.name || 'T')[0] || 'T') + ((PF.last || '')[0] || '')).toUpperCase();
+      const pool = []; Object.keys(window.MRMISSIONS || {}).forEach(k => { if (k.split('-')[0] === String(+M.MOD.n || 1) && k !== (+M.MOD.n || 1) + '-' + p.topic) [MRMISSIONS[k][X.k]].filter(Boolean).forEach(L => (Array.isArray(L) ? L : [L]).forEach(y => { if (y && y.a && pool.indexOf(y.a) < 0) pool.push(y.a); })); });
+      const body = A.head(stage, { lbl: 'Mission', title: 'Tu misión', count: GN[1] }); stage.classList.add('ms9-stage'); if (M.ageGroup() === 'teens') stage.classList.add('dk');
+      const el = h(`<div class="ms9"><div class="ms9-sc" style="background-image:url('${M.imgURL('u:photo-' + BG, 900, 420)}')"><span class="ms9-goal">${I(GN[0])}${esc(GN[1])}</span>
+          <div class="ms9-ch"><span class="ms9-av">${list[0].img ? photo('u:' + list[0].img) : M.ageGroup() === 'kids' ? '<img src="mra-smile.webp" alt="Mr. Arrieta" style="object-fit:cover;object-position:top">' : photo('u:photo-1494790108377-be9c29b29330')}</span></div><div class="ms9-ch me"><span class="ms9-av ini">${esc(INI)}</span><small>Tú</small></div></div>
+        <div class="ms9-sit"></div><div class="ms9-dl"></div><div class="ms9-turn"></div></div>`); body.appendChild(el);
+      const $e = q => el.querySelector(q), dl = $e('.ms9-dl'), turn = $e('.ms9-turn');
+      const bub = (txt, me, es) => { const b = h(`<div class="ms9-b${me ? ' me' : ''}">${esc(txt)}${es ? `<small>${esc(es)}</small>` : ''}</div>`); dl.appendChild(b); dl.scrollTop = dl.scrollHeight; return b; };
+      for (let mi = 0; mi < N; mi++) {
+        if (!stage.isConnected) break; const x = list[mi];
+        $e('.ms9-sit').textContent = x.sit || ''; $e('.ms9-ch').classList.add('talk'); bub(x.q, false, x.es); turn.innerHTML = '';
+        await play(x.qau); $e('.ms9-ch').classList.remove('talk'); if (!stage.isConnected) break;
+        const wrong = sample(pool.filter(a => { if (a === x.a || M.words(a)[0] === M.words(x.a)[0]) return false; try { return !M.freeJudge(x.q, x.a, [a]).ok; } catch (e) { return true; } }), 2); const opts = shuffle([x.a, ...wrong]);
+        // 1) elige la respuesta (prueba que entendió)
+        const first = await new Promise(done => { let miss = 0;
+          turn.innerHTML = `<p class="ms9-q">¿Qué le respondes?</p><div class="ms9-opts">${opts.map((o, i) => `<button type="button" class="ms9-o" data-i="${i}">${esc(o)}</button>`).join('')}</div><button type="button" class="ms9-rep">${I('vol')} Escuchar otra vez</button>`;
+          turn.querySelector('.ms9-rep').onclick = () => { stop(); play(x.qau); };
+          turn.querySelectorAll('.ms9-o').forEach(b => b.onclick = () => { const o = opts[+b.dataset.i]; if (o !== x.a) { miss++; b.classList.add('bad'); sfx('bad'); setTimeout(() => b.classList.remove('bad'), 600); return; } sfx('ok'); done(miss === 0); }); });
+        if (first) c++;
+        // 2) dobla su línea con el motor de melodía
+        const tr = window.MRKQAES && MRKQAES[x.a];
+        const tk = await new Promise(done => { let cur = null, fails = 0;
+          turn.innerHTML = `<div class="ms9-line"><small>TU TURNO · DÍLO EN VOZ ALTA</small><b>${esc(x.a)}</b>${tr ? `<span>${esc(tr)}</span>` : ''}</div><div class="ms9-mel"></div><div class="ms9-res"></div>
+            <div class="ms9-act"><button type="button" class="ms9-mic" aria-label="Grabar">${I('mic')}</button><div><b class="ms9-st">Toca el micrófono y dila</b><small class="ms9-st2">Imita el ritmo y la melodía del modelo</small></div><button type="button" class="btn w sm ms9-mo">${I('vol')} Modelo</button></div>`;
+          const v = MRMEL.view(turn.querySelector('.ms9-mel')); MRMEL.model(x.aau).then(m => v.setModel(m)).catch(() => { });
+          const mic = turn.querySelector('.ms9-mic'), st = turn.querySelector('.ms9-st'), st2 = turn.querySelector('.ms9-st2'), res = turn.querySelector('.ms9-res');
+          turn.querySelector('.ms9-mo').onclick = () => { MRMEL.stop(); stop(); play(x.aau); };
+          mic.onclick = async () => { if (mic.classList.contains('rec')) { MRMEL.stop(); return; } stop(); mic.classList.add('rec'); st.textContent = 'Te escucho…'; st2.textContent = 'Se detiene sola cuando terminas'; res.innerHTML = '';
+            let r = null; try { r = await MRMEL.take(x.aau, v); } catch (e) { r = { err: 1 }; } mic.classList.remove('rec');
+            if (r.err) { st.textContent = 'Permite el micrófono'; st2.textContent = 'Actívalo en el candado de la barra de direcciones.'; return; }
+            if (r.silent) { st.textContent = 'No te escuché'; st2.textContent = 'Acércate al micrófono y toca otra vez.'; return; }
+            if (!r.ok) { fails++; sfx('bad'); st.textContent = 'Otra toma'; st2.textContent = 'Escucha el modelo y dila igual';
+              res.innerHTML = MRMEL.resultHTML(r) + (fails >= 3 ? `<div class="ms9-bt"><button type="button" class="btn w sm ms9-sk">Seguir sin estrellas →</button></div>` : '');
+              const sk = res.querySelector('.ms9-sk'); if (sk) sk.onclick = () => done(null); return; } // v517: hablar no basta
+            cur = r; sfx(r.r + r.it >= 5 ? 'ok' : 'tap'); st.textContent = 'Otra toma'; st2.textContent = 'Si quieres, grábala otra vez';
+            res.innerHTML = MRMEL.resultHTML(r) + `<div class="ms9-bt"><button type="button" class="btn w sm ms9-me">▶ Tu toma</button><button type="button" class="btn k sm ms9-ok">Usar esta toma →</button></div>`;
+            res.querySelector('.ms9-me').onclick = () => { stop(); MRMEL.play(r.buf); }; res.querySelector('.ms9-ok').onclick = () => done(cur); };
+          if (!MRMEL.can()) { st.textContent = 'Escúchala y dila en voz alta'; st2.textContent = ''; mic.hidden = true; play(x.aau); setTimeout(() => done(null), 2500); } });
+        takes.push(tk); bub(x.a, true).insertAdjacentHTML('beforeend', tk ? `<em>${'★'.repeat(Math.round((tk.r + tk.it) / 2))}</em>` : '');
+        await sleep(300);
+      }
+      if (!stage.isConnected) return A.result(c, N, 'speaking');
+      // 3) el estreno: la escena completa con su voz
+      const T = takes.filter(Boolean), sr = T.length ? Math.round(T.reduce((a, t) => a + t.r, 0) / T.length) : 0, si = T.length ? Math.round(T.reduce((a, t) => a + t.it, 0) / T.length) : 0;
+      $e('.ms9-sit').textContent = '';
+      turn.innerHTML = `<div class="ms9-fin"><b>¡Misión cumplida!</b>${T.length ? `<span>Ritmo <i>${MRMEL.stars(sr)}</i> · Entonación <i>${MRMEL.stars(si)}</i></span>` : ''}</div><div class="ms9-bt"><button type="button" class="btn k ms9-all">▶ Escuchar mi escena</button><button type="button" class="btn w ms9-nx">Continuar →</button></div>`;
+      if (sr + si >= 5) { try { M.confetti(900); } catch (e) { } sfx('win'); }
+      const bs = () => [...dl.querySelectorAll('.ms9-b')];
+      turn.querySelector('.ms9-all').onclick = async (ev) => { const btn = ev.currentTarget; btn.disabled = true; for (let i = 0; i < N; i++) { const x = list[i]; const B = bs(); B.forEach(b => b.classList.remove('now'));
+          if (B[i * 2]) B[i * 2].classList.add('now'); await play(x.qau); await sleep(250); if (B[i * 2 + 1]) B[i * 2 + 1].classList.add('now'); if (takes[i]) await MRMEL.play(takes[i].buf); else await play(x.aau); await sleep(300); } bs().forEach(b => b.classList.remove('now')); btn.disabled = false; };
+      await new Promise(r => turn.querySelector('.ms9-nx').onclick = () => { MRMEL.stop(); stop(); r(); });
+      return A.result(c, N, 'speaking');
+    },
+    missionOld: async (stage, p) => { // v459: Módulo 1 o Kids → «Elige y dilo» · resto → «Notas de voz» (sin puertas ni candados)
       const X = missionFor(p); if (!X) return null;
       const I = n => window.MRI ? MRI(n) : '';
       const GN = { v: ['plane', 'Viajar'], t: ['briefcase', 'Trabajo'], e: ['grad', 'Estudios'], kc: ['grad', 'Colegio'], kj: ['pad', 'Juegos y videos'], kv: ['plane', 'Viajar'], km: ['music', 'Música'], tc: ['grad', 'Colegio'], ts: ['tv', 'Series y redes'], tg: ['pad', 'Gaming'], tx: ['plane', 'Viajar o estudiar afuera'] }[X.k] || ['target', 'Tu objetivo'];
@@ -1075,7 +1135,20 @@
           $v('.vk-mic').onclick = async () => {
             if (busy || over) return;
             if (!M.canSR) { showAns('Dila en voz alta'); if (k.aau) play(k.aau); $v('.vk-msg').textContent = 'Tu navegador no reconoce voz: repite en voz alta'; setTimeout(() => finish(true), 2600); return; }
+            if (blank) { // v517: lo personal (___) se completa escribiendo
+              busy = true; const fb = $v('.vk-fb'); fb.hidden = false; fb.className = 'vk-fb mel'; const parts = tgt.split(/_{2,}/);
+              fb.innerHTML = `<div class="bl9"><small>Completa con tu información</small><div class="bl9-r"><span>${esc(parts[0] || '')}</span><input class="inp bl9-i" autocomplete="off" placeholder="…"><span>${esc(parts.slice(1).join(' ') || '')}</span></div><button type="button" class="btn k sm bl9-ok">Listo</button></div>`;
+              const inp = fb.querySelector('.bl9-i'); setTimeout(() => { try { inp.focus(); } catch (e) { } }, 50);
+              const go = () => { if (!/[a-z0-9]/i.test(inp.value)) { inp.focus(); return; } busy = false; sfx('ok'); M.praise(); vc.classList.add('ok'); $v('.vk-msg').textContent = '¡Excelente!'; fb.innerHTML = `<b>${esc(tgt.replace(/_{2,}/, inp.value.trim()))}</b>`; setTimeout(() => finish(true), 1600); };
+              fb.querySelector('.bl9-ok').onclick = go; inp.onkeydown = (e) => { if (e.key === 'Enter') go(); }; return; }
             busy = true; stop(); vc.classList.add('rec'); $v('.vk-msg').textContent = 'Te escucho… habla con tu voz normal';
+            if (window.MRMEL && MRMEL.can() && k.aau && !blank) { // v517: motor de melodía (sin reconocimiento de voz)
+              const fb = $v('.vk-fb'); fb.hidden = false; fb.className = 'vk-fb mel'; const mm = await MRMEL.judge(k.aau, fb); vc.classList.remove('rec'); busy = false; if (over) return;
+              if (mm.silent || mm.err) { $v('.vk-msg').textContent = mm.err ? 'Permite el micrófono en tu navegador para responder' : 'No te escuché. Acércate un poco al micrófono e intenta otra vez.'; return; }
+              { const im = $v('.vk-screen img'); im.src = (mm.ok ? 'mra-thumbs' : 'mra-think') + '.webp?v=2'; }
+              if (mm.ok) { sfx('ok'); M.praise(); vc.classList.add('ok'); $v('.vk-msg').textContent = late ? '¡Bien dicho!' : '¡Excelente!'; setTimeout(() => finish(true), 2600); }
+              else { sfx('bad'); vc.classList.add('bad'); $v('.vk-msg').textContent = 'Escucha cómo se dice y léela otra vez, despacio.'; if (k.aau) setTimeout(() => play(k.aau), 900); $v('.vk-next').hidden = false; }
+              return; }
             const rr = await M.listen(9000, { quick: true, target: tgt }); vc.classList.remove('rec'); busy = false; if (over) return;
             if (!rr.alts || !rr.alts.length) { $v('.vk-msg').textContent = rr.error === 'not-allowed' ? 'Permite el micrófono en tu navegador para responder' : 'No te escuché. Acércate un poco al micrófono e intenta otra vez.'; return; }
             const fj = M.readJudge(k.q, tgt, rr.alts); const sc = { heard: fj.heard }; const ok = fj.ok; // v460: lee la respuesta → se revisa la pronunciación
@@ -1099,31 +1172,22 @@
       return A.result(c, N, 'speaking');
     },
 
-    speakLetters: async (stage, p) => {
-      // Oral task for alphabet: spell your name / words aloud with recording
-      const items = [{ en: 'How do you spell your name?', es: '¿Cómo deletreas tu nombre?', au: null }];
-      const body = A.head(stage, { lbl: 'Oral task', title: 'Spell it out loud!', ins: 'Graba tu voz deletreando las letras en inglés y compárala con el modelo.' });
-      const L = M.D.letters; const letters = p.vocab.map(v => v.en);
-      const grid = h(`<div class="tiles"></div>`); body.appendChild(grid);
-      letters.forEach(l => { const b = h(`<button class="tile">${l}</button>`); b.onclick = () => play(L[l]); grid.appendChild(b); });
-      const nm = (S.name.split(' ')[0] || 'NAME').toUpperCase().replace(/[^A-Z]/g, '');
-      body.appendChild(h(`<div class="lesson"><h3>🎤 Tu reto</h3><p>Deletrea tu nombre en inglés: <b style="font-size:22px;letter-spacing:4px">${esc(nm.split('').join('-'))}</b></p><p class="muted">Toca cada letra para escucharla y luego grábate.</p></div>`));
-      const sp = h(`<div class="row" style="justify-content:center;margin-top:12px"></div>`); body.appendChild(sp);
-      nm.split('').forEach(ch => { const b = h(`<button class="chip">${ch}</button>`); b.onclick = () => play(L[ch]); sp.appendChild(b); });
-      const rb = h(`<div class="center" style="margin-top:14px"><button class="btn k">🎙️ Grabar y comprobar</button><p class="muted" style="font-size:14px;margin:6px 0 0">Di cada letra despacio: ${esc(nm.split('').join(' – '))}</p><div class="out"></div></div>`); body.appendChild(rb);
-      let did = false, best = 0;
-      const playModel = async () => { for (const ch of nm.split('')) { await play(L[ch]); await sleep(180); } };
-      const go = async () => { const b = $('button', rb); const secs = Math.min(10, 3 + nm.length * 0.8);
-        try { b.disabled = true; stop();
-          const r = await M.recordScore(nm, secs * 1000, f => b.textContent = `🔴 Te escucho… ${Math.max(0, Math.ceil(secs * (1 - f)))}s`, M.letterScorer(nm));
-          b.disabled = false; b.textContent = '🎙️ Grabar otra vez'; did = true; if (r.score != null) best = Math.max(best, r.score);
-          const out = $('.out', rb); M.voiceResult(out, { score: r.score, heard: r.heard, url: r.url, model: playModel, onRetry: go, pass: 75 });
-          out.addEventListener('selfok', () => { best = Math.max(best, 80); }, { once: true });
-        } catch (err) { b.disabled = false; b.textContent = '🎙️ Grabar y comprobar'; M.toast('Permite el micrófono 🎤'); } };
-      $('button', rb).onclick = go;
-      if (window.MRVC) rb.prepend(MRVC.card({ target: $('button', rb), label: 'TOCA EL MICRÓFONO Y DELETREA', say: nm.split('').join(' - '), es: 'Deletrea tu nombre letra por letra', onEx: playModel, mascot: false }));
-      void items;
-      await A.waitNext(stage, 'Continuar'); return A.result(did && best >= 75 ? 1 : 0, 1, 'speaking');
+    speakLetters: async (stage, p) => { // v517 · sin reconocimiento de voz: escucha la letra y tócala (las letras sueltas no se pueden reconocer bien)
+      const L = M.D.letters; const letters = [...new Set(p.vocab.map(v => String(v.en).trim().toUpperCase()).filter(x => /^[A-Z]$/.test(x) && L[x]))];
+      const all = Object.keys(L || {}).filter(x => /^[A-Z]$/.test(x)); const pool = letters.length >= 4 ? letters : all;
+      const nm = (S.name.split(' ')[0] || 'NAME').toUpperCase().replace(/[^A-Z]/g, '').slice(0, 8);
+      const rounds = shuffle(pool).slice(0, 5).concat(nm.split('').filter(ch => L[ch]).slice(0, 3)); let c = 0;
+      const body = A.head(stage, { lbl: 'Practice', title: 'Escucha y toca la letra', ins: 'Escucha cada letra en inglés y tócala. Al final, las letras de tu nombre.' });
+      const box = h(`<div class="lt9"><div class="lt9-top"><span class="lt9-n"></span><button type="button" class="btn w sm lt9-pl">${window.MRI ? MRI('vol') : ''} Escuchar otra vez</button></div><div class="lt9-g"></div><p class="lt9-fb"></p></div>`); body.appendChild(box);
+      for (let k = 0; k < rounds.length; k++) {
+        if (!stage.isConnected) break; const ans = rounds[k]; const opts = shuffle([ans, ...shuffle(all.filter(x => x !== ans)).slice(0, 5)]);
+        $('.lt9-n', box).textContent = k < 5 ? `Letra ${k + 1} de 5` : `Tu nombre · ${nm.split('').join('-')}`;
+        $('.lt9-g', box).innerHTML = opts.map(x => `<button type="button" class="lt9-b">${x}</button>`).join(''); $('.lt9-fb', box).textContent = '';
+        $('.lt9-pl', box).onclick = () => { stop(); play(L[ans]); }; await sleep(250); play(L[ans]);
+        const first = await new Promise(done => { let miss = 0; box.querySelectorAll('.lt9-b').forEach(b => b.onclick = () => { if (b.textContent !== ans) { miss++; b.classList.add('bad'); sfx('bad'); $('.lt9-fb', box).textContent = 'Escucha otra vez.'; return; } b.classList.add('ok'); sfx('ok'); $('.lt9-fb', box).textContent = '¡Correcto! ' + ans; setTimeout(() => done(miss === 0), 700); }); });
+        if (first) c++;
+      }
+      await A.waitNext(stage, 'Continuar'); return A.result(c, rounds.length, 'listening');
     },
 
     music: async (stage, p) => playLearn(stage, p),
@@ -1149,7 +1213,7 @@
             fb.innerHTML = `${window.MRVC && M.canSR ? '' : `<p class="kt-en">“${esc(tg.en)}”</p><p class="kt-es">${esc(tg.es || '')}</p>`}${M.canSR ? `<button class="mic kt-mic" type="button">🎤</button><p class="kt-st">¡Ahora dilo tú!</p>` : ''}<div class="actionbar"><button class="btn k lg" id="kt-n">Continuar →</button></div>`;
             const mic = $('.kt-mic', fb), stt = $('.kt-st', fb);
             if (mic && window.MRVC) { mic.before(MRVC.card({ target: mic, label: '¡AHORA DILO TÚ!', say: tg.en, es: tg.es, au: tg.au, mascot: false })); stt.textContent = ''; }
-            if (mic) mic.onclick = async () => { stop(); mic.classList.add('rec'); stt.textContent = '¡Te estoy escuchando!'; const r = await M.listen(6000, { quick: true, target: tg.en }); mic.classList.remove('rec');
+            if (mic) mic.onclick = async () => { if (window.MRMEL && MRMEL.can() && tg.au) { if (mic.classList.contains('rec')) { MRMEL.stop(); return; } stop(); mic.classList.add('rec'); stt.textContent = '¡Te estoy escuchando!'; let hb = fb.querySelector('.kt-mel'); if (!hb) { hb = h('<div class="kt-mel"></div>'); stt.after(hb); } const mm = await MRMEL.judge(tg.au, hb); mic.classList.remove('rec'); if (mm.silent || mm.err) { stt.textContent = 'No te escuché. Toca el micrófono otra vez.'; return; } if (mm.ok) { sfx('ok'); M.praise(); stt.innerHTML = '¡Muy bien dicho!'; } else { sfx('bad'); stt.textContent = 'Escucha y dilo otra vez.'; } return; } /* v517 */ stop(); mic.classList.add('rec'); stt.textContent = '¡Te estoy escuchando!'; const r = await M.listen(6000, { quick: true, target: tg.en }); mic.classList.remove('rec');
               const sc = r.alts && r.alts.length ? M.speechScore(tg.en, r.alts).score : 0; if (sc >= 60) { sfx('ok'); M.praise(); stt.innerHTML = '¡Muy bien dicho! ⭐'; } else { stt.textContent = r.alts && r.alts.length ? '¡Casi! Escucha y dilo otra vez.' : 'No te escuché. Toca el micrófono otra vez.'; setTimeout(M.encourage, 200); } };
             $('#kt-n', fb).onclick = () => { stop(); res(); };
           });
@@ -1335,7 +1399,7 @@
     const AG = M.ageGroup(); if (AG === 'teens') stage.classList.add('dk');
     const body = A.head(stage, { lbl: V9() ? 'Writing' : 'Homework', title: V9() ? 'Escribe 2 frases' : AG === 'teens' ? 'Nuevo post' : AG === 'kids' ? 'Tu tarea' : '✍️ Writing task', ins: esc(hw.es) }); { const ik = stage.querySelector('.ins'); if (ik) ik.classList.add('ins-keep'); } /* v457: el enunciado de la escritura sí se muestra */
     if (AG === 'kids') { const kt = h(`<div class="khw">${[['pen', '1', 'Escríbelo aquí', 'Abajo, en inglés'], ['mic', '2', 'Dilo en voz alta', 'Toca y practica']].map(([ic, n, t, s]) => `<div class="khw-t${n === '2' ? ' khw-say' : ''}"><span>${window.MRI ? MRI(ic) : ''}</span><b>${n}. ${t}</b><small>${s}</small></div>`).join('')}</div>`); body.appendChild(kt);
-      const ks = $('.khw-say', kt); if (!M.canSR) ks.style.display = 'none'; else ks.onclick = async () => { const txt = ($('textarea.hw', body) || {}).value || ''; if (txt.trim().length < 5) { M.toast('Primero escribe tu tarea y luego dila en voz alta 😉'); return; } stop(); ks.classList.add('rec'); $('small', ks).textContent = '¡Te estoy escuchando!'; const r = await M.listen(12000); ks.classList.remove('rec'); const sc = r.alts && r.alts.length ? M.speechScore(txt, r.alts).score : 0; $('small', ks).textContent = sc >= 60 ? '¡Muy bien dicho! ⭐' : r.alts && r.alts.length ? '¡Casi! Inténtalo otra vez' : 'No te escuché, toca otra vez'; if (sc >= 60) { sfx('ok'); M.praise(); } else M.encourage(); }; }
+      const ks = $('.khw-say', kt); { ks.style.display = 'none'; } /* v517: la tarea se escribe (sin voz) */ if (false) ks.onclick = async () => { const txt = ($('textarea.hw', body) || {}).value || ''; if (txt.trim().length < 5) { M.toast('Primero escribe tu tarea y luego dila en voz alta 😉'); return; } stop(); ks.classList.add('rec'); $('small', ks).textContent = '¡Te estoy escuchando!'; const r = await M.listen(12000, { target: txt }); ks.classList.remove('rec'); const sc = r.alts && r.alts.length ? M.speechScore(txt, r.alts).score : 0; $('small', ks).textContent = sc >= 60 ? '¡Muy bien dicho! ⭐' : r.alts && r.alts.length ? '¡Casi! Inténtalo otra vez' : 'No te escuché, toca otra vez'; if (sc >= 60) { sfx('ok'); M.praise(); } else M.encourage(); }; }
     body.appendChild(h(`<p><span class="hint">Mínimo ${hw.n} ${/palabras|frutas|objetos|plural/.test(hw.es) && !/oraci/.test(hw.es) ? 'elementos' : 'oraciones'}</span> ${hw.kw.length ? `<span class="hint">Usa: ${hw.kw.map(esc).join(', ')}</span>` : ''}</p>`));
     const ta = h(`<textarea class="hw${AG === 'teens' ? ' tpost' : ''}" placeholder="${AG === 'teens' ? 'Escribe tu post en inglés…' : 'Escribe aquí en inglés…'}">${esc(saved)}</textarea>`); body.appendChild(ta);
     if (AG === 'teens' && hw.kw.length) { const chips = h(`<div class="tp-kw">${hw.kw.map(k => `<em data-k="${esc(k.toLowerCase())}">${esc(k)}</em>`).join('')}</div>`); body.appendChild(chips);

@@ -125,7 +125,7 @@
     { id: 'mole', icon: I('mole'), name: 'Atrapa lo que oyes', en: 'Whack-a-Word', c: 'r', tag: 'Escucha', desc: 'Escucha la palabra y golpea el letrero correcto cuando salga del hueco.' },
     { id: 'tower', icon: I('tower'), name: 'Torre de oraciones', en: 'Sentence Tower', c: 'b', tag: 'Gramática', desc: 'Toca los bloques en orden para armar la oración antes de que la torre llegue arriba.' },
     { id: 'quiz', icon: I('quiz'), name: '¿Quién quiere ser bilingüe?', en: 'Quiz Show', c: 'k', tag: 'Concurso', desc: '10 preguntas, 4 comodines y una escalera de puntos. ¿Llegas a la cima?' },
-    { id: 'voice', icon: I('voice'), name: 'Cohete de voz', en: 'Voice Rocket', c: 'w', tag: 'Pronunciación', desc: 'Di cada palabra en voz alta para darle combustible a tu cohete.' },
+    { id: 'voice', icon: I('voice'), name: 'Cohete de voz', en: 'Voice Rocket', c: 'w', tag: 'Escucha', desc: 'Escucha cada palabra y elige la correcta para darle combustible a tu cohete.' },
     { id: 'echo', icon: I('echo'), name: 'Detective de sonidos', en: 'Sound Detective', c: 'r', tag: 'Escucha', desc: 'Escucha la oración y descubre cuál de las tres versiones es la que oíste.' },
     { id: 'swipe', icon: I('swipe'), name: 'Desliza y traduce', en: 'Swipe & Translate', c: 'b', tag: 'Contrarreloj', desc: '¿La traducción es correcta? Desliza a la derecha (sí) o a la izquierda (no).' },
   ];
@@ -794,7 +794,7 @@
      ================================================================= */
   function voiceGame(G, st, D) {
     const N = 6; const items = sample(D.w.filter(w => w.en.split(' ').length <= 3), N);
-    let i = 0, tries = 0, mic = M.canSR, busy = false;
+    let i = 0, tries = 0, mic = false, busy = false; /* v517: modo escucha (sin reconocimiento de voz) */
     st.innerHTML = `<div class="ar-voice"><div class="ar-sky2"><div class="ar-stages">${items.map((_, k) => `<i data-k="${k}"></i>`).join('')}</div><span class="ar-rocket" id="rocket">🚀</span><div class="ar-pad"></div></div>
       <div class="ar-vmain"><div class="card ar-vcard" id="vcard"></div><div id="vres"></div><button class="ar-link" id="vmode"></button></div></div>`;
     const rocket = $('#rocket', st);
@@ -821,7 +821,7 @@
     async function talk() {
       if (busy || !G.alive) return; busy = true; const w = items[i]; M.stop();
       const b = $('#vmic', st); b.classList.add('rec'); b.textContent = '🎙️ Te escucho…';
-      const r = await M.listen(5000); if (!G.alive) return;
+      const r = await M.listen(5000, { target: w.en }); if (!G.alive) return;
       b.classList.remove('rec'); b.innerHTML = I('voice') + ' Decirlo';
       if (!r.alts.length && ['not-allowed', 'service-not-allowed', 'audio-capture', 'network', 'nosupport', 'start'].includes(r.error)) {
         mic = false; M.toast('No pudimos usar el micrófono: jugamos en modo escucha 🎧'); return render();
@@ -846,7 +846,7 @@
         G.cheat = () => $('#vre', st);
       }
     }
-    $('#vmode', st).onclick = () => { mic = !mic; render(); };
+    { const vm = $('#vmode', st); if (vm) vm.style.display = 'none'; }
     fly(); render();
   }
 
