@@ -874,6 +874,7 @@
     },
 
     reading: async (stage, p) => {
+      if (window.M2X && M2X.mod && M2X.mod() === 4) { const rr = await M2X.readParts(stage, p); if (rr) return rr; } /* v523: Módulo 4 · lectura por partes */
       let r = p.reading;
       const AG = M.ageGroup();
       const body = A.head(stage, { lbl: 'Reading', title: AG === 'adult' ? `📖 ${r.title}` : r.title, ins: AG === 'teens' ? 'Lee el chat mientras lo escuchas. Luego responde <b>TRUE</b> o <b>FALSE</b>.' : AG === 'kids' ? 'Escucha el cuento y toca cada viñeta para oírla otra vez. Luego responde <b>YES</b> o <b>NO</b>.' : 'Escucha y lee al mismo tiempo. Luego responde <b>YES</b> o <b>NO</b>.' });
@@ -968,9 +969,9 @@
         // 2) dobla su línea con el motor de melodía
         const tr = window.MRKQAES && MRKQAES[x.a];
         const tk = await new Promise(done => { let cur = null, fails = 0;
-          turn.innerHTML = `<div class="ms9-line">${window.M2X && M2X.on() ? `<small>TU TURNO · RECUERDA LA PALABRA</small>${M2X.hide(x.a, p)}` : `<small>TU TURNO · DÍLO EN VOZ ALTA</small><b>${esc(x.a)}</b>`}${tr ? `<span>${esc(tr)}</span>` : ''}</div><div class="ms9-mel"></div><div class="ms9-res"></div>
+          turn.innerHTML = `<div class="ms9-line">${window.M2X && M2X.on() ? `<small>TU TURNO · ${M2X.mod() === 4 ? 'SIN TEXTO' : M2X.mod() === 3 ? 'SOLO LAS INICIALES' : 'RECUERDA LA PALABRA'}</small>${M2X.hide(x.a, p)}` : `<small>TU TURNO · DÍLO EN VOZ ALTA</small><b>${esc(x.a)}</b>`}${tr ? `<span>${esc(tr)}</span>` : ''}</div><div class="ms9-mel"></div><div class="ms9-res"></div>
             <div class="ms9-act"><button type="button" class="ms9-mic" aria-label="Grabar">${I('mic')}</button><div><b class="ms9-st">Toca el micrófono y dila</b><small class="ms9-st2">Imita el ritmo y la melodía del modelo</small></div><button type="button" class="btn w sm ms9-mo">${I('vol')} Modelo</button></div>`;
-          if (window.M2X) M2X.bindHint(turn); const v = MRMEL.view(turn.querySelector('.ms9-mel')); MRMEL.model(x.aau).then(m => v.setModel(m)).catch(() => { });
+          if (window.M2X) M2X.bindHint(turn, x.aau); const v = MRMEL.view(turn.querySelector('.ms9-mel')); MRMEL.model(x.aau).then(m => v.setModel(m)).catch(() => { });
           const mic = turn.querySelector('.ms9-mic'), st = turn.querySelector('.ms9-st'), st2 = turn.querySelector('.ms9-st2'), res = turn.querySelector('.ms9-res');
           turn.querySelector('.ms9-mo').onclick = () => { MRMEL.stop(); stop(); play(x.aau); };
           mic.onclick = async () => { if (mic.classList.contains('rec')) { MRMEL.stop(); return; } stop(); mic.classList.add('rec'); st.textContent = 'Te escucho…'; st2.textContent = 'Se detiene sola cuando terminas'; res.innerHTML = '';
@@ -980,7 +981,7 @@
             if (!r.ok) { fails++; sfx('bad'); st.textContent = 'Otra toma'; st2.textContent = 'Escucha el modelo y dila igual';
               res.innerHTML = MRMEL.resultHTML(r) + (fails >= 3 || r.unv ? `<div class="ms9-bt"><button type="button" class="btn w sm ms9-sk">Seguir sin estrellas →</button></div>` : '');
               const sk = res.querySelector('.ms9-sk'); if (sk) sk.onclick = () => done(null); return; } // v517: hablar no basta
-            cur = r; sfx(r.r + r.it >= 5 ? 'ok' : 'tap'); st.textContent = 'Otra toma'; st2.textContent = 'Si quieres, grábala otra vez';
+            if (turn.dataset.peek) r.it = Math.max(1, r.it - 1); /* v523: miró el texto en la misión eco → −1 estrella */ cur = r; sfx(r.r + r.it >= 5 ? 'ok' : 'tap'); st.textContent = 'Otra toma'; st2.textContent = 'Si quieres, grábala otra vez';
             res.innerHTML = MRMEL.resultHTML(r) + `<div class="ms9-bt"><button type="button" class="btn w sm ms9-me">▶ Tu toma</button><button type="button" class="btn k sm ms9-ok">Usar esta toma →</button></div>`;
             res.querySelector('.ms9-me').onclick = () => { stop(); MRMEL.play(r.buf); }; res.querySelector('.ms9-ok').onclick = () => done(cur); };
           if (!MRMEL.can()) { st.textContent = 'Escúchala y dila en voz alta'; st2.textContent = ''; mic.hidden = true; play(x.aau); setTimeout(() => done(null), 2500); } });

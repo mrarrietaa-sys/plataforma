@@ -16,8 +16,8 @@
   const SV = (d) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
   const IC = { vol: '<path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/>', mic: '<rect x="9" y="2" width="6" height="12" rx="3"/><path d="M19 10v1a7 7 0 0 1-14 0v-1M12 18v4"/>', end: '<path d="M3 15c5-5 13-5 18 0l-2.5 2.5-3-1.5v-2.5a10 10 0 0 0-7 0V16l-3 1.5z"/>', play: '<path d="M8 5v14l11-7z" fill="currentColor"/>', ck: '<path d="M5 12.5 10 17l9-10"/>', bulb: '<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"/>' };
   const mod = () => { try { return +(M().MOD && M().MOD.n) || 0; } catch (e) { return 0; } };
-  const on = () => mod() === 2 || mod() === 3; // v520: el Módulo 3 también tiene su experiencia propia
-  const theme = () => { const a = ag(); document.documentElement.classList.add('m2x'); document.documentElement.classList.toggle('m3x', mod() === 3); ['adult', 'teens', 'kids'].forEach(x => document.documentElement.classList.toggle('m2x-' + x, x === a)); };
+  const on = () => mod() === 2 || mod() === 3 || mod() === 4; // v523: el Módulo 4 también // v520: el Módulo 3 también tiene su experiencia propia
+  const theme = () => { const a = ag(); document.documentElement.classList.add('m2x'); document.documentElement.classList.toggle('m3x', mod() === 3); document.documentElement.classList.toggle('m4x', mod() === 4); ['adult', 'teens', 'kids'].forEach(x => document.documentElement.classList.toggle('m2x-' + x, x === a)); };
   function frame(stage, lbl, title, ins) { theme(); stage.classList.toggle('dk', ag() === 'teens'); stage.classList.add('as-stage', 'as-' + ag(), 'm2x-st'); return A().head(stage, { lbl, title, ins }); }
   const tes = (k) => { const t = window.MRKQAES && (MRKQAES[k.a] || MRKQAES[k.a.split(' / ')[0]]); return t ? String(t).split(' / ')[0] : ''; };
 
@@ -121,7 +121,7 @@
     mr.src = 'mra-celebrate.webp'; b.innerHTML = `<b>Over and out!</b><small>Fin de la transmisión</small>`; turn.innerHTML = `<div class="m2-sum"><b>${c} de ${Q.length}</b><span>mensajes enviados</span></div>`; sfx('win');
     await A().waitNext(stage, 'Continuar'); return A().result(c, Q.length, 'speaking');
   }
-  function oral(stage, p) { const a = ag(); if (mod() === 3) return a === 'teens' ? M3.prompter(stage, p) : a === 'kids' ? M3.news(stage, p) : M3.interview(stage, p); return a === 'teens' ? live(stage, p) : a === 'kids' ? walkie(stage, p) : call(stage, p); }
+  function oral(stage, p) { const a = ag(); if (mod() === 4) return a === 'teens' ? M4.podcast(stage, p) : a === 'kids' ? M4.control(stage, p) : M4.board(stage, p); if (mod() === 3) return a === 'teens' ? M3.prompter(stage, p) : a === 'kids' ? M3.news(stage, p) : M3.interview(stage, p); return a === 'teens' ? live(stage, p) : a === 'kids' ? walkie(stage, p) : call(stage, p); }
 
   /* =================== JUEGOS DEL TEMA «LA HORA» =================== */
   const NUM = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12, twenty: 20, 'twenty-five': 25 };
@@ -273,7 +273,7 @@
     await A().waitNext(stage, 'Continuar'); return A().result(me, R.length, 'reading', missed);
   }
 
-  function game(stage, p) { const a = ag(); if (mod() === 3) return a === 'teens' ? M3.path(stage, p) : a === 'kids' ? M3.map(stage, p) : M3.bet(stage, p); const clock = p.topic === 1 && timePool(p).length >= 4;
+  function game(stage, p) { const a = ag(); if (mod() === 4) return a === 'teens' ? M4.duel(stage, p) : a === 'kids' ? M4.rocket(stage, p) : M4.blocks(stage, p); if (mod() === 3) return a === 'teens' ? M3.path(stage, p) : a === 'kids' ? M3.map(stage, p) : M3.bet(stage, p); const clock = p.topic === 1 && timePool(p).length >= 4;
     if (clock) return a === 'teens' ? speedClock(stage, p) : a === 'kids' ? magicClock(stage, p) : agenda(stage, p);
     return a === 'teens' ? factCheck(stage, p) : a === 'kids' ? race(stage, p) : email(stage, p); }
   const gameFor = (p) => on() && p && ((mod() === 2 && p.topic === 1 && timePool(p).length >= 4) || fillPool(p).length >= 3) ? 'm2game' : null;
@@ -289,13 +289,13 @@
   /* =================== 🎯 MISIÓN · palabra oculta =================== */
   const STOP = /^(the|and|but|you|your|are|was|were|have|has|this|that|with|from|for|not|yes|its|it's|i'm|what|when|where|very|much|please|thank|thanks|sure|okay)$/i;
   const focusOf = (p) => { const F = {}; try { const T = M1DATA.topics.find(x => x.n === p.topic); (T ? T.parts : [p]).forEach(pp => { (pp.fill || []).forEach(f => String(f.a).toLowerCase().split(/\s+/).forEach(w => F[w.replace(/[^a-z']/g, '')] = 1)); (pp.vocab || []).forEach(v => { const e = String(v.en || '').toLowerCase(); if (!/\s/.test(e)) F[e.replace(/[^a-z']/g, '')] = 1; }); }); } catch (e) { } return F; };
-  function hide(a, p) { if (mod() === 3) return M3.initials(a); const w = a.split(/(\s+)/); const F = p ? focusOf(p) : {}; let best = -1, bl = 0, bf = -1, bfl = 0; w.forEach((x, i) => { if (!/\S/.test(x) || i === 0) return; const c = x.replace(/[^A-Za-z']/g, ''); if (c.length >= 2 && F[c.toLowerCase()] && c.length > bfl) { bfl = c.length; bf = i; } if (c.length >= 3 && !STOP.test(c) && c.length > bl) { bl = c.length; best = i; } }); if (bf >= 0) best = bf;
+  function hide(a, p) { if (mod() === 4) return M4.eco(a); if (mod() === 3) return M3.initials(a); const w = a.split(/(\s+)/); const F = p ? focusOf(p) : {}; let best = -1, bl = 0, bf = -1, bfl = 0; w.forEach((x, i) => { if (!/\S/.test(x) || i === 0) return; const c = x.replace(/[^A-Za-z']/g, ''); if (c.length >= 2 && F[c.toLowerCase()] && c.length > bfl) { bfl = c.length; bf = i; } if (c.length >= 3 && !STOP.test(c) && c.length > bl) { bl = c.length; best = i; } }); if (bf >= 0) best = bf;
     if (best < 0) return `<b>${esc(a)}</b>`; const raw = w[best], core = raw.replace(/[^A-Za-z']/g, ''), pre = raw.slice(0, raw.indexOf(core)), post = raw.slice(raw.indexOf(core) + core.length);
     return `<b class="m2h">${w.map((x, i) => i === best ? `${esc(pre)}<span class="m2h-w" data-w="${esc(core)}">${'_'.repeat(Math.max(4, core.length))}</span>${esc(post)}` : esc(x)).join('')}</b><button type="button" class="m2h-hint">${SV(IC.bulb)} Ver pista</button>`; }
-  function bindHint(host) { if (mod() === 3) return M3.bindIni(host); const b = host.querySelector('.m2h-hint'); if (!b) return; let n = 0; b.onclick = () => { const w = host.querySelector('.m2h-w'); if (!w) return; const word = w.dataset.w; n++; if (n === 1) { w.textContent = word[0] + '_'.repeat(Math.max(3, word.length - 1)); b.innerHTML = SV(IC.bulb) + ' Ver la palabra'; } else { w.textContent = word; w.classList.add('shown'); b.remove(); } sfx('tap'); }; }
+  function bindHint(host, au) { if (mod() === 4) return M4.bindEco(host, au); if (mod() === 3) return M3.bindIni(host); const b = host.querySelector('.m2h-hint'); if (!b) return; let n = 0; b.onclick = () => { const w = host.querySelector('.m2h-w'); if (!w) return; const word = w.dataset.w; n++; if (n === 1) { w.textContent = word[0] + '_'.repeat(Math.max(3, word.length - 1)); b.innerHTML = SV(IC.bulb) + ' Ver la palabra'; } else { w.textContent = word; w.classList.add('shown'); b.remove(); } sfx('tap'); }; }
 
   /* =================== 🎤 KARAOKE de la canción =================== */
-  async function karaoke(stage, p) { if (mod() === 3) return M3.dictation(stage, p);
+  async function karaoke(stage, p) { if (mod() === 4) return M4.order(stage, p); if (mod() === 3) return M3.dictation(stage, p);
     const S = window.M1SONGS; const sid = S && S.map && S.map[p.id]; const so = sid && S.songs[sid]; const L = so && (so.lc || []).filter(x => x.full && x.au && x.full.split(' ').length <= 9); if (!L || !L.length) return null;
     const R = L.slice(0, 2); let c = 0;
     for (let i = 0; i < R.length; i++) {
@@ -463,8 +463,173 @@
     return { interview, prompter, news, bet, path, map, magBox, magBind, initials, bindIni, dictation };
   })();
 
+  /* =================== v523 · MÓDULO 4 (B2+) · experiencia propia =================== */
+  const M4 = (function () {
+    /* ---------- 🏛️ Adultos · presentación en la junta ---------- */
+    async function board(stage, p) {
+      const Q = KQ(p); if (!Q.length) return null; let c = 0; const AV = ['u:photo-1494790108377-be9c29b29330', 'u:photo-1507003211169-0a1dd7228f2d', 'u:photo-1438761681033-6461ffad8d80'];
+      const body = frame(stage, 'Practice', 'Presentación en la junta', 'La junta directiva te hace preguntas. Escucha cada una y responde leyendo tu respuesta.');
+      body.insertAdjacentHTML('beforeend', `<div class="m4b"><div class="m4b-room"><div class="m4b-sl"><small>BOARD MEETING · Q3</small><b></b></div><div class="m4b-aud">${AV.map((a, i) => `<span class="m4b-av" style="background-image:url('${M().imgURL(a, 160, 160)}')"></span>`).join('')}</div></div><div class="m4b-turn"></div><div class="m2c-dots">${Q.map(() => '<i></i>').join('')}</div></div>`);
+      const el = body.querySelector('.m4b'), sl = el.querySelector('.m4b-sl b'), turn = el.querySelector('.m4b-turn'), avs = el.querySelectorAll('.m4b-av');
+      for (let i = 0; i < Q.length; i++) {
+        if (!stage.isConnected) break; const k = Q[i]; el.querySelectorAll('.m2c-dots i').forEach((d, j) => d.className = j < i ? 'ok' : j === i ? 'cur' : '');
+        avs.forEach((a, j) => a.classList.toggle('on', j === i % avs.length)); sl.innerHTML = `${esc(k.q)} <button type="button" class="m4b-pl">${SV(IC.vol)}</button><span>${esc(k.es || '')}</span>`; sl.querySelector('.m4b-pl').onclick = () => { stopA(); play(k.qau); };
+        turn.innerHTML = ''; await play(k.qau); if (!stage.isConnected) break;
+        const r = await voiceTurn(turn, k, { lbl: 'TU RESPUESTA A LA JUNTA', mode: 'tap' }); if (r.ok) c++;
+      }
+      if (!stage.isConnected) return A().result(c, Q.length, 'speaking');
+      sl.innerHTML = 'Thank you. Great presentation.'; avs.forEach(a => a.classList.add('on')); turn.innerHTML = `<div class="m2-sum"><b>${c} de ${Q.length}</b><span>respuestas aprobadas por la junta</span></div>`; sfx(c === Q.length ? 'win' : 'ok');
+      await A().waitNext(stage, 'Continuar'); return A().result(c, Q.length, 'speaking');
+    }
+    /* ---------- 🎙️ Teens · podcast ON AIR ---------- */
+    async function podcast(stage, p) {
+      const Q = KQ(p); if (!Q.length) return null; let c = 0; const NM = ['Kai', 'Mia', 'Leo', 'Zoe'][Math.floor(Math.random() * 4)];
+      const body = frame(stage, 'Practice', 'Podcast ON AIR', `Estás al aire con ${NM}, tu co-host. Escucha cada pregunta y responde.`);
+      body.insertAdjacentHTML('beforeend', `<div class="m4p"><div class="m4p-st"><span class="m4p-on"><i></i>ON AIR</span><span class="m4p-t">00:00</span><div class="m4p-mics"><span class="m4p-h" style="background-image:url('${M().imgURL('u:photo-1500648767791-00dcc994a43e', 160, 160)}')"></span><span class="m4p-lv">${'<i></i>'.repeat(9)}</span><span class="m4p-me">TÚ</span></div><small>EP. ${(+p.topic || 1) * 2 + (+p.part || 1)} · con ${NM}</small></div><div class="m4p-q"></div><div class="m4p-turn"></div></div>`);
+      const el = body.querySelector('.m4p'), qn = el.querySelector('.m4p-q'), turn = el.querySelector('.m4p-turn'), tm = el.querySelector('.m4p-t'), t0 = Date.now();
+      const tick = setInterval(() => { if (!stage.isConnected) return clearInterval(tick); const s = Math.floor((Date.now() - t0) / 1000); tm.textContent = String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); }, 500);
+      for (let i = 0; i < Q.length; i++) {
+        if (!stage.isConnected) break; const k = Q[i];
+        qn.innerHTML = `<button type="button" class="m2c-ql">${SV(IC.vol)}</button><div><small>${esc(NM.toUpperCase())}</small><b>${esc(k.q)}</b><span>${esc(k.es || '')}</span></div>`; qn.querySelector('.m2c-ql').onclick = () => { stopA(); play(k.qau); };
+        turn.innerHTML = ''; el.classList.add('talk'); await play(k.qau); el.classList.remove('talk'); if (!stage.isConnected) break;
+        const r = await voiceTurn(turn, k, { lbl: 'TU RESPUESTA AL AIRE', mode: 'tap' }); if (r.ok) c++;
+      }
+      clearInterval(tick); if (!stage.isConnected) return A().result(c, Q.length, 'speaking');
+      qn.innerHTML = `<div><b>That's a wrap for today!</b><span>Fin del episodio</span></div>`; turn.innerHTML = `<div class="m2-sum"><b>${c} de ${Q.length}</b><span>respuestas al aire</span></div>`; sfx(c === Q.length ? 'win' : 'ok');
+      await A().waitNext(stage, 'Terminar el episodio'); return A().result(c, Q.length, 'speaking');
+    }
+    /* ---------- 🚀 Kids · control de misión ---------- */
+    async function control(stage, p) {
+      const Q = KQ(p); if (!Q.length) return null; let c = 0;
+      const body = frame(stage, 'Practice', 'Control de misión', 'Mr. Arrieta viaja en el cohete. Tú eres la base: escucha y responde.');
+      body.insertAdjacentHTML('beforeend', `<div class="m4k"><div class="m4k-sp"><img class="m4k-rk" src="mra-x-rocket4.webp?v=7" alt="Mr. Arrieta en su cohete"><div class="m4k-hud"><small>MISSION CONTROL</small><b>T-minus <span>${Q.length}</span></b></div></div><div class="m4k-q"></div><div class="m4k-turn"></div></div>`);
+      const qn = body.querySelector('.m4k-q'), turn = body.querySelector('.m4k-turn'), cnt = body.querySelector('.m4k-hud span'), sp = body.querySelector('.m4k-sp');
+      for (let i = 0; i < Q.length; i++) {
+        if (!stage.isConnected) break; const k = Q[i];
+        qn.innerHTML = `<button type="button" class="m2c-ql">${SV(IC.vol)}</button><div><b>${esc(k.q)}</b><small>${esc(k.es || '')}</small></div>`; qn.querySelector('.m2c-ql').onclick = () => { stopA(); play(k.qau); };
+        turn.innerHTML = ''; sp.classList.add('rx'); await play(k.qau); sp.classList.remove('rx'); if (!stage.isConnected) break;
+        const r = await voiceTurn(turn, k, { lbl: 'RESPONDE A LA BASE', mode: 'tap' }); if (r.ok) c++; cnt.textContent = Q.length - i - 1;
+      }
+      if (!stage.isConnected) return A().result(c, Q.length, 'speaking');
+      sp.classList.add('go'); qn.innerHTML = `<div><b>Liftoff!</b><small>¡Despegue!</small></div>`; turn.innerHTML = `<div class="m2-sum"><b>${c} de ${Q.length}</b><span>mensajes a la base</span></div>`; sfx('win'); try { M().confetti(1000); } catch (e) { }
+      await A().waitNext(stage, 'Continuar'); return A().result(c, Q.length, 'speaking');
+    }
+    /* ---------- 🧱 Adultos · arma la frase por bloques (uno sobra) ---------- */
+    function chunksOf(f) { const full = fullOf(f), a = String(f.a); const i = full.toLowerCase().indexOf(a.toLowerCase()); if (i < 0) return null;
+      const pre = full.slice(0, i).trim().split(/\s+/).filter(Boolean), post = full.slice(i + a.length).trim().split(/\s+/).filter(Boolean);
+      const grp = (L, n) => { const out = []; for (let k = 0; k < L.length; k += n) out.push(L.slice(k, k + n).join(' ')); return out; };
+      const ansChunk = [a].concat(post.slice(0, 1)).join(' '), rest = post.slice(1);
+      const C = grp(pre, 3).concat([ansChunk]).concat(grp(rest, 3)).filter(Boolean); if (C.length < 3 || C.length > 6) return null;
+      const bad = [f.o[0]].concat(post.slice(0, 1)).join(' '); return { C, bad, full }; }
+    async function blocks(stage, p) {
+      const pool = fillPool(p).map(f => ({ f, x: chunksOf(f) })).filter(o => o.x); if (pool.length < 2) return null; const R = pool.slice(0, 3); let c = 0; const missed = [];
+      for (let i = 0; i < R.length; i++) {
+        if (!stage.isConnected) break; const { f, x } = R[i]; const cards = shuffle(x.C.map((t, k) => ({ t, k })).concat([{ t: x.bad, k: -1 }])); const pick = []; window.__m2t = { order: x.C };
+        const body = frame(stage, 'Practice', 'Arma la frase', `Toca los bloques en orden para formar la frase correcta. Uno sobra. Frase ${i + 1} de ${R.length}.`);
+        body.insertAdjacentHTML('beforeend', `<div class="m4c"><div class="m4c-sl"></div>${hintBox(f)}<div class="m4c-cards">${cards.map((o, j) => `<button type="button" class="m4c-b" data-j="${j}">${esc(o.t)}</button>`).join('')}</div><div class="m4c-fb"></div></div>`);
+        const sl = body.querySelector('.m4c-sl'), fb = body.querySelector('.m4c-fb');
+        const draw = () => { sl.innerHTML = x.C.map((_, k) => pick[k] != null ? `<button type="button" class="m4c-s on" data-k="${k}">${esc(cards[pick[k]].t)}</button>` : `<span class="m4c-s">${k + 1}</span>`).join(''); body.querySelectorAll('.m4c-b').forEach((b, j) => b.classList.toggle('used', pick.includes(j)));
+          sl.querySelectorAll('.m4c-s.on').forEach(s => s.onclick = () => { if (fb.dataset.done) return; pick.splice(+s.dataset.k); draw(); }); };
+        draw();
+        const ok = await new Promise(done => { body.querySelectorAll('.m4c-b').forEach((b, j) => b.onclick = () => { if (fb.dataset.done || pick.includes(j) || pick.length >= x.C.length) return; pick.push(j); sfx('tap'); draw();
+          if (pick.length === x.C.length) { fb.dataset.done = 1; const good = pick.every((pj, k) => cards[pj].k === k); body.querySelectorAll('.m4c-b').forEach(bb => bb.disabled = true); sl.classList.add(good ? 'good' : 'bad'); sfx(good ? 'ok' : 'bad');
+            fb.innerHTML = `<div class="as-fbk ${good ? 'ok' : 'no'}"><span>${good ? 'Perfecto.' : 'Así es la frase:'} <b>${esc(x.full)}</b>${!good && f.h ? ' · ' + esc(f.h) : ''}</span></div><button type="button" class="btn k m4c-nx">${i < R.length - 1 ? 'Siguiente frase' : 'Ver resultado'}</button>`; play(f.au); fb.querySelector('.m4c-nx').onclick = () => { stopA(); done(good); }; } }); });
+        if (ok) c++; else missed.push({ en: x.full, au: f.au });
+      }
+      const body = frame(stage, 'Practice', 'Arma la frase', ''); body.insertAdjacentHTML('beforeend', `<div class="m2-sum"><b>${c} de ${R.length}</b><span>frases armadas a la primera</span></div>`); sfx(c === R.length ? 'win' : 'ok');
+      await A().waitNext(stage, 'Continuar'); return A().result(c, R.length, 'writing', missed);
+    }
+    /* ---------- ⚔️ Teens · duelo 1 vs 1 ---------- */
+    async function duel(stage, p) {
+      const pool = fillPool(p); if (pool.length < 3) return null; const R = pool.slice(0, Math.min(6, pool.length)); let me = 100, rv = 100, c = 0; const missed = []; const RV = ['kai_99', 'zoe.gg', 'max_fx'][Math.floor(Math.random() * 3)]; const HIT = Math.ceil(100 / Math.min(4, R.length));
+      for (let i = 0; i < R.length && me > 0 && rv > 0; i++) {
+        if (!stage.isConnected) break; const f = R[i], parts = noPar(f.s).split(/_{2,}/), ops = shuffle([f.a].concat(f.o)).filter((x, j, a) => a.indexOf(x) === j); window.__m2t = { a: f.a };
+        const body = frame(stage, 'Practice', 'Duelo 1 vs 1', 'Cada acierto le quita vida a tu rival. Cada error te la quita a ti. Tienes 10 segundos.');
+        body.insertAdjacentHTML('beforeend', `<div class="m4d"><div class="m4d-bar"><div><small>TÚ</small><i class="m4d-hp"><b style="width:${me}%"></b></i></div><span class="m4d-vs">VS</span><div><small>@${RV}</small><i class="m4d-hp r"><b style="width:${rv}%"></b></i></div></div><div class="m2s-tm"><i></i></div><div class="m4d-s">${esc(parts[0] || '')}<span class="m3b-gap">?</span>${esc(parts.slice(1).join(' ') || '')}</div>${hintBox(f)}<div class="m3b-ops">${ops.map(o => `<button type="button" class="m4d-o" data-o="${esc(o)}">${esc(o)}</button>`).join('')}</div><div class="m4d-fb"></div></div>`);
+        const tm = body.querySelector('.m2s-tm i'), t0 = Date.now(), fb = body.querySelector('.m4d-fb');
+        const ok = await new Promise(done => { let over = false; const end = (o) => { if (over) return; over = true; clearInterval(iv); const good = o === f.a; body.querySelectorAll('.m4d-o').forEach(b => { b.disabled = true; if (b.dataset.o === f.a) b.classList.add('ok'); else if (b.dataset.o === o) b.classList.add('bad'); });
+            const g = body.querySelector('.m3b-gap'); g.textContent = f.a; g.classList.add(good ? 'ok' : 'bad'); if (good) rv = Math.max(0, rv - HIT); else me = Math.max(0, me - HIT);
+            const hp = body.querySelectorAll('.m4d-hp b'); hp[0].style.width = me + '%'; hp[1].style.width = rv + '%'; body.querySelector(good ? '.m4d-hp.r' : '.m4d-hp:not(.r)').classList.add('hit'); sfx(good ? 'ok' : 'bad');
+            fb.innerHTML = `<div class="as-fbk ${good ? 'ok' : 'no'}"><span>${o == null ? 'Se acabó el tiempo. ' : good ? '¡Golpe! ' : 'Te golpearon. '}${good ? '' : `Era <b>${esc(f.a)}</b>.`}</span></div><button type="button" class="as-gt m4d-nx">${me > 0 && rv > 0 && i < R.length - 1 ? 'Siguiente ronda' : 'Ver resultado'}</button>`;
+            play(f.au); fb.querySelector('.m4d-nx').onclick = () => { stopA(); done(good); }; };
+          const iv = setInterval(() => { if (!stage.isConnected) return clearInterval(iv); const fr = 1 - (Date.now() - t0) / 10000; tm.style.width = Math.max(0, fr * 100) + '%'; tm.classList.toggle('lo', fr < .3); if (fr <= 0) end(null); }, 60);
+          body.querySelectorAll('.m4d-o').forEach(b => b.onclick = () => end(b.dataset.o)); });
+        if (ok) c++; else missed.push({ en: fullOf(f), au: f.au });
+      }
+      const win = rv <= me; const body = frame(stage, 'Practice', win ? '¡Ganaste el duelo!' : 'Perdiste el duelo', ''); body.insertAdjacentHTML('beforeend', `<div class="as-kpi"><div><b>${c}</b><small>golpes</small></div><div><b>${me}%</b><small>tu vida</small></div><div><b>${rv}%</b><small>vida del rival</small></div></div>`); sfx(win ? 'win' : 'ok');
+      await A().waitNext(stage, win ? 'Continuar' : 'Revancha en la próxima · Continuar'); return A().result(c, Math.max(1, c + missed.length), 'reading', missed);
+    }
+    /* ---------- 🚀 Kids · construye el cohete ---------- */
+    async function rocket(stage, p) {
+      const pool = fillPool(p); if (pool.length < 3) return null; const R = pool.slice(0, 4); const PARTS = ['Punta', 'Ventana', 'Alas', 'Motor']; const got = []; const missed = [];
+      const body = frame(stage, 'Practice', 'Construye el cohete', 'Cada respuesta correcta suma una pieza. Con las 4 piezas, ¡el cohete despega!');
+      body.insertAdjacentHTML('beforeend', `<div class="m4r"><div class="m4r-pz">${PARTS.map((t, k) => `<i class="m4r-p" data-k="${k}">${t}</i>`).join('')}</div><div class="m4r-play"></div></div>`);
+      const pl = body.querySelector('.m4r-play');
+      for (let i = 0; i < R.length; i++) {
+        if (!stage.isConnected) break; const f = R[i], parts = noPar(f.s).split(/_{2,}/), ops = shuffle([f.a].concat(f.o)).filter((x, j, a) => a.indexOf(x) === j); window.__m2t = { a: f.a };
+        pl.innerHTML = `<div class="m2q-cnt">PIEZA ${i + 1} DE ${R.length}: ${PARTS[i].toUpperCase()}</div><div class="m2q-s">${esc(parts[0] || '')}<span class="m2q-gap">?</span>${esc(parts.slice(1).join(' ') || '')}</div>${hintBox(f)}<div class="m2q-ops">${ops.map(o => `<button type="button" class="m2q-o" data-o="${esc(o)}">${esc(o)}</button>`).join('')}</div><div class="m2q-fb"></div>`;
+        const ok = await new Promise(done => { let miss = 0; pl.querySelectorAll('.m2q-o').forEach(b => b.onclick = async () => { const good = b.dataset.o === f.a;
+          if (!good) { miss++; b.classList.add('bad'); b.disabled = true; sfx('bad'); pl.querySelector('.m2q-fb').innerHTML = `<div class="as-fbk no"><span>${f.h ? 'Pista: <b>' + esc(f.h) + '</b>. ' : ''}¡Intenta otra vez!</span></div>`; return; }
+          pl.querySelectorAll('.m2q-o').forEach(x => x.disabled = true); b.classList.add('ok'); const g = pl.querySelector('.m2q-gap'); g.textContent = f.a; g.classList.add('ok'); sfx('ok'); body.querySelector(`.m4r-p[data-k="${i}"]`).classList.add('on');
+          pl.querySelector('.m2q-fb').innerHTML = `<div class="as-fbk ok"><span>¡Pieza nueva: ${PARTS[i]}!</span></div>`; await play(f.au); await sleep(400); done(miss === 0); }); });
+        if (!ok) missed.push({ en: fullOf(f), au: f.au });
+      }
+      if (!stage.isConnected) return A().result(R.length - missed.length, R.length, 'reading', missed);
+      pl.innerHTML = `<div class="m4r-go"><img src="mra-x-rocket4.webp?v=7" alt="Mr. Arrieta en su cohete"><b>¡Despegue!</b><span>${R.length - missed.length} de ${R.length} a la primera</span></div>`; sfx('win'); try { M().confetti(1200); } catch (e) { }
+      await A().waitNext(stage, 'Continuar'); return A().result(R.length - missed.length, R.length, 'reading', missed);
+    }
+    /* ---------- 📖 Lectura por partes (pregunta después de cada parte) ---------- */
+    const splitS = t => String(t).replace(/\s+/g, ' ').match(/[^.!?]+[.!?]+["”’)]*\s*/g) || [t];
+    const ow = (a, b) => { const A0 = new Set(String(a).toLowerCase().match(/[a-z']{3,}/g) || []); let n = 0; (String(b).toLowerCase().match(/[a-z']{3,}/g) || []).forEach(w => { if (A0.has(w)) n++; }); return n; };
+    async function readParts(stage, p) {
+      const r = p.reading; if (!r || !r.text || !(r.q || []).length) return null; const S = splitS(r.text), Qs = r.q.slice(0, 3), a = ag();
+      const at = Qs.map(q => { let bi = 0, bs = -1; S.forEach((s, k) => { const v = ow(q.s, s); if (v > bs) { bs = v; bi = k; } }); return bi; });
+      const cuts = [...new Set(at.concat([S.length - 1]))].sort((x, y) => x - y); const P = []; let st = 0; cuts.forEach(cu => { if (cu >= st) { P.push({ s: S.slice(st, cu + 1), q: [] }); st = cu + 1; } });
+      Qs.forEach((q, k) => { const idx = P.findIndex((pp, j) => { let end = -1; for (let m = 0; m <= j; m++) end += P[m].s.length; return at[k] <= end; }); (P[idx >= 0 ? idx : P.length - 1]).q.push(q); });
+      const kick = a === 'teens' ? 'HILO' : a === 'kids' ? 'PÁGINA' : 'INFORME · PARTE'; const tot = S.join('').length; let off = 0; P.forEach(pp => { pp.t0 = off / tot; off += pp.s.join('').length; pp.t1 = off / tot; });
+      const body = frame(stage, 'Reading', r.title, a === 'kids' ? 'Lee cada página, escúchala y responde antes de seguir.' : 'Lee por partes. Después de cada parte responde una pregunta rápida.');
+      body.insertAdjacentHTML('beforeend', `<div class="m4l"><div class="m4l-hd"><small></small><div class="m4l-st">${P.map(() => '<i></i>').join('')}</div></div><div class="m4l-parts"></div><button class="rd-tr" id="rdtr" type="button" aria-expanded="false" hidden><span>ES</span> Ver traducción al español</button></div>`);
+      const parts = body.querySelector('.m4l-parts'), hd = body.querySelector('.m4l-hd small'); let c = 0, n = 0; const A0 = M().audioEl ? M().audioEl(r.au) : new Audio(M().audioSrc(r.au)); try { M().trackAudio(A0); } catch (e) { }
+      const playSeg = (pp, btn) => { stopA(); const go = () => { try { A0.currentTime = pp.t0 * A0.duration; } catch (e) { } A0.play().catch(() => { }); btn.classList.add('on'); const iv = setInterval(() => { if (!A0.duration || A0.paused || A0.currentTime >= pp.t1 * A0.duration - 0.05) { A0.pause(); btn.classList.remove('on'); clearInterval(iv); } }, 80); }; if (A0.readyState >= 1) go(); else A0.addEventListener('loadedmetadata', go, { once: true }); A0.load && A0.readyState < 1 && A0.load(); };
+      for (let k = 0; k < P.length; k++) {
+        if (!stage.isConnected) break; const pp = P[k]; hd.textContent = `${kick} ${k + 1} DE ${P.length}`; body.querySelectorAll('.m4l-st i').forEach((d, j) => d.className = j < k ? 'd' : j === k ? 'c' : '');
+        const card = H(`<div class="m4l-p in"><button type="button" class="m4l-pl">${SV(IC.vol)} Escuchar esta parte</button><p>${pp.s.map(s => esc(s.trim())).join(' ')}</p><div class="m4l-q"></div></div>`); parts.querySelectorAll('.m4l-p').forEach(x => x.classList.add('past')); parts.appendChild(card); card.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        const pb = card.querySelector('.m4l-pl'); pb.onclick = () => playSeg(pp, pb); playSeg(pp, pb);
+        const qh = card.querySelector('.m4l-q');
+        for (const q of pp.q) { n++; const L = a === 'teens' ? ['TRUE', 'FALSE'] : ['YES', 'NO'];
+          const ok = await new Promise(done => { qh.innerHTML = `<div class="m4l-qq"><span>${esc(q.s)}</span><div><button type="button" data-v="yes">${L[0]}</button><button type="button" data-v="no">${L[1]}</button></div></div>`; window.__m2t = { a: q.a };
+            qh.querySelectorAll('button').forEach(b => b.onclick = () => { const good = b.dataset.v === q.a; qh.querySelectorAll('button').forEach(x => { x.disabled = true; if (x.dataset.v === q.a) x.classList.add('ok'); }); if (!good) b.classList.add('bad'); sfx(good ? 'ok' : 'bad'); setTimeout(() => done(good), 900); }); });
+          if (ok) c++; qh.insertAdjacentHTML('beforeend', `<div class="m4l-ans ${ok ? 'ok' : 'no'}">${ok ? '✓' : '✗'} ${esc(q.s)}</div>`); qh.querySelector('.m4l-qq').remove(); }
+        if (k < P.length - 1) await new Promise(res => { const b = H(`<button type="button" class="btn k m4l-nx">${a === 'kids' ? 'Pasar la página' : 'Siguiente parte'} ↓</button>`); card.appendChild(b); b.onclick = () => { A0.pause(); b.remove(); res(); }; });
+      }
+      try { A0.pause(); } catch (e) { } if (!stage.isConnected) return A().result(c, n, 'reading');
+      body.querySelectorAll('.m4l-st i').forEach(d => d.className = 'd'); parts.querySelectorAll('.m4l-p').forEach(x => x.classList.remove('past'));
+      parts.insertAdjacentHTML('beforeend', `<div class="m2-sum"><b>${c} de ${n}</b><span>respuestas correctas</span></div>`); sfx(c === n ? 'win' : 'ok');
+      await A().waitNext(stage, `${c}/${n} correctas — Continuar`); return A().result(c, n, 'reading');
+    }
+    /* ---------- 🔁 Misión eco · sin texto ---------- */
+    function eco(a) { return `<b class="m4e" data-full="${esc(a)}"><span class="m4e-w">${'<i></i>'.repeat(20)}</span><em>Escucha la respuesta y repítela de memoria</em></b><div class="m3ini-h"><button type="button" class="m4e-ag">${SV(IC.vol)} Escuchar otra vez</button><button type="button" class="m4e-tx">Ver el texto (−1 estrella)</button></div>`; }
+    function bindEco(host, au) { const b = host.querySelector('.m4e-ag'), t = host.querySelector('.m4e-tx'); if (b) b.onclick = () => { stopA(); if (au) play(au); }; if (t) t.onclick = () => { const e = host.querySelector('.m4e'); e.innerHTML = esc(e.dataset.full); e.classList.add('shown'); host.dataset.peek = 1; t.remove(); sfx('tap'); }; if (au) setTimeout(() => { if (host.isConnected) play(au); }, 300); }
+    /* ---------- 🎵 Canción · ordena las frases ---------- */
+    async function order(stage, p) {
+      const S = window.M1SONGS; const sid = S && S.map && S.map[p.id]; const so = sid && S.songs[sid]; const L = so && (so.lc || []).filter(x => x.full && x.au && x.full.split(' ').length <= 13); if (!L || L.length < 3) return null;
+      const R = L.slice(0, 3); const cards = shuffle(R.map((x, k) => ({ x, k }))); const pick = []; window.__m2t = { order: R.map(x => x.full) };
+      const body = frame(stage, 'Music', 'Ordena las frases', 'Escucha las 3 frases de la canción y tócalas en el orden en que sonaron.');
+      body.insertAdjacentHTML('beforeend', `<div class="m2o m4o"><div class="m2o-sc"><span class="m2o-eq">${'<i></i>'.repeat(14)}</span><small>${ag() === 'adult' ? esc(so.title || '') : 'Escucha con atención'}</small></div><button type="button" class="btn w sm m4o-ag">${SV(IC.vol)} Escuchar otra vez</button><div class="m4o-l">${cards.map((o, j) => `<button type="button" class="m4o-b" data-j="${j}"><b>?</b><span>${esc(o.x.full)}</span></button>`).join('')}</div><div class="m4o-fb"></div></div>`);
+      const el = body.querySelector('.m4o'), fb = el.querySelector('.m4o-fb'); let busy = false;
+      const listen = async () => { if (busy) return; busy = true; el.classList.add('m2on'); for (const x of R) { if (!stage.isConnected) break; await play(x.au); await sleep(350); } el.classList.remove('m2on'); busy = false; };
+      el.querySelector('.m4o-ag').onclick = () => listen(); await listen();
+      const c = await new Promise(done => el.querySelectorAll('.m4o-b').forEach(b => b.onclick = () => { if (fb.dataset.done) return; const j = +b.dataset.j; const at = pick.indexOf(j);
+        if (at >= 0) { pick.splice(at); } else pick.push(j); el.querySelectorAll('.m4o-b').forEach((x, jj) => { const k = pick.indexOf(jj); x.classList.toggle('on', k >= 0); x.querySelector('b').textContent = k >= 0 ? k + 1 : '?'; }); sfx('tap');
+        if (pick.length === R.length) { fb.dataset.done = 1; let n = 0; pick.forEach((pj, k) => { const good = cards[pj].k === k; if (good) n++; el.querySelectorAll('.m4o-b')[pj].classList.add(good ? 'good' : 'bad'); });
+          sfx(n === R.length ? 'win' : 'bad'); fb.innerHTML = `<div class="as-fbk ${n === R.length ? 'ok' : 'no'}"><span>${n === R.length ? '¡Orden perfecto!' : `${n} de ${R.length} en su lugar. El orden era: ${R.map((x, k) => `${k + 1}. ${esc(x.full)}`).join(' · ')}`}</span></div><button type="button" class="btn k m4o-nx">Continuar</button>`; fb.querySelector('.m4o-nx').onclick = () => { stopA(); done(n); }; } }));
+      return { c, t: R.length };
+    }
+    return { board, podcast, control, blocks, duel, rocket, readParts, eco, bindEco, order };
+  })();
+
   // Kids y Teens: su canción propia también termina con el karaoke
   const wrapMusic = () => { const G = window.MRAGE2; if (!G || !G.music || G.music.__m2) return; const om = G.music; G.music = async (st, p) => { const r = await om(st, p); if (on() && r !== null && r !== undefined && st.isConnected) { try { st.innerHTML = ''; await karaoke(st, p); } catch (e) { console.error(e); } } return r; }; G.music.__m2 = 1; };
   wrapMusic(); document.addEventListener('DOMContentLoaded', wrapMusic);
-  window.M2X = { mod, on, oral, game, gameFor, podBox, podWatch, hide, bindHint, karaoke, parseTime, timePool, fillPool, focusOf, theme };
+  window.M2X = { readParts: (st, p) => M4.readParts(st, p), mod, on, oral, game, gameFor, podBox, podWatch, hide, bindHint, karaoke, parseTime, timePool, fillPool, focusOf, theme };
 })();
