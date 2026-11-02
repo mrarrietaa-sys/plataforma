@@ -8173,3 +8173,7 @@ img.ld-load-mra,img.kd-mra,img.ld-hero-mra,img.db-hero-mra{box-sizing:content-bo
 /* v520 · lectura de Kids en PC igual que en celular: viñetas una debajo de otra */
 .player .reading .rd-comic{grid-template-columns:1fr!important}
 @media(min-width:900px){.player .reading .rd-comic .rd-pan{max-width:760px;width:100%;margin:0 auto}}
+/* v520 · reto de la portada: melodía compacta dentro de la tarjeta */
+.lp-mel{margin-top:6px!important}.lp-mel .mel9-lg,.lp-mel .mel9-res,.lp-mel .mel9-tip{display:none!important}.lp-mel .mel9-cv{height:34px!important}
+.lp-almost.cmp{padding:8px 12px!important}.lp-almost.cmp b{font-size:16px}.lp-almost.cmp .lp-st{display:block;font-size:13px;font-weight:700;margin:2px 0}.lp-almost.cmp .lp-st i{opacity:.3;font-style:normal}.lp-almost.cmp p{margin:2px 0 0;font-size:13px}
+.lp-mel{width:100%}
