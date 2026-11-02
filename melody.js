@@ -90,7 +90,18 @@
     return { r, it, tip, buf, ok };
   }
   let PS = null;
-  function play(buf) { try { if (PS) PS.stop(); } catch (e) { } return new Promise(res => { const s = ac().createBufferSource(); s.buffer = buf; s.connect(ac().destination); s.onended = () => { if (PS === s) PS = null; res(); }; PS = s; s.start(); }); }
+  // v518 · la toma se reproduce como archivo de audio normal (en Android el audio que se graba con el micrófono
+  //        queda en «modo llamada» y casi no suena por el altavoz). Además se sube el volumen de la toma.
+  const URLS = new WeakMap();
+  function wavURL(buf) { if (URLS.has(buf)) return URLS.get(buf);
+    const x = buf.getChannelData(0), rate = buf.sampleRate; let mx = 0; for (let i = 0; i < x.length; i++) { const v = Math.abs(x[i]); if (v > mx) mx = v; } const k = mx > 0 ? Math.min(8, 0.9 / mx) : 1;
+    const ab = new ArrayBuffer(44 + x.length * 2), v = new DataView(ab), w = (p, s) => { for (let i = 0; i < s.length; i++) v.setUint8(p + i, s.charCodeAt(i)); };
+    w(0, 'RIFF'); v.setUint32(4, 36 + x.length * 2, true); w(8, 'WAVE'); w(12, 'fmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true); v.setUint32(24, rate, true); v.setUint32(28, rate * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true); w(36, 'data'); v.setUint32(40, x.length * 2, true);
+    for (let i = 0; i < x.length; i++) { const q = Math.max(-1, Math.min(1, x[i] * k)); v.setInt16(44 + i * 2, q < 0 ? q * 0x8000 : q * 0x7FFF, true); }
+    const u = URL.createObjectURL(new Blob([ab], { type: 'audio/wav' })); URLS.set(buf, u); return u; }
+  function play(buf) { try { if (PS) { PS.pause(); PS.onended && PS.onended(); } } catch (e) { } try { window.M1 && M1.stop && M1.stop(); } catch (e) { }
+    return new Promise(res => { if (!buf) return res(); const a = new Audio(wavURL(buf)); a.volume = 1; let done = false; const end = () => { if (done) return; done = true; if (PS === a) PS = null; res(); };
+      a.onended = end; a.onerror = end; PS = a; const p = a.play(); if (p && p.catch) p.catch(end); setTimeout(end, (buf.duration || 8) * 1000 + 1500); }); }
   const stars = (n) => '★'.repeat(n) + '<i>' + '★'.repeat(3 - n) + '</i>';
   // resultado estándar: estrellas + consejo (nunca muestra lo que dijo)
   function resultHTML(r) { return `<div class="mel9-res${r.ok === false ? ' no' : ''}"><span>Ritmo <b>${stars(r.r)}</b></span><span>Entonación <b>${stars(r.it)}</b></span></div><p class="mel9-tip">${r.tip}</p>`; }

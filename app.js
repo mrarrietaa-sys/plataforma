@@ -1120,7 +1120,7 @@
         const k = Q[i], tgt = k.a.split(' / ')[0], blank = k.a.includes('___');
         $v('.vk-n').textContent = `Pregunta ${i + 1}/${N}`; vc.querySelectorAll('.vk-dots i').forEach((d, j) => d.className = j < i ? 'on' : j === i ? 'cur' : ''); $v('.vk-qt').textContent = k.q; $v('.vk-qes').textContent = k.es || '';
         { const gd = ynGuide(k.q); let gEl = $v('.vk-guide'); if (!gEl) { gEl = h('<div class="vk-guide"></div>'); $v('.vk-q').appendChild(gEl); } gEl.classList.add('vk-read'); { const tes = window.MRKQAES && (MRKQAES[k.a] || MRKQAES[tgt]); gEl.innerHTML = `<small>Lee esta respuesta en voz alta</small><b>${esc(tgt).replace(/___/g, '<u>___</u>')}</b>${tes ? `<span class="vk-res">${esc(String(tes).split(' / ')[0])}</span>` : ''}${blank ? '<em>Completa el ___ con tu información</em>' : ''}`; } /* v466: traducción de la respuesta, pequeña y en gris */ void gd; } /* v460: el estudiante lee la respuesta modelo; se revisa la pronunciación */
-        $v('.vk-ans').hidden = true; $v('.vk-next').hidden = true; $v('.vk-fb').hidden = true; $v('.vk-msg').textContent = 'Escucha la pregunta…';
+        $v('.vk-ans').hidden = true; $v('.vk-next').hidden = true; $v('.vk-fb').hidden = true; $v('.vk-fb').innerHTML = ''; $v('.vk-msg').textContent = 'Escucha la pregunta…';
         vc.classList.remove('ok', 'late', 'bad'); const img = $v('.vk-screen img'); img.src = PIC + '.webp?v=2'; img.classList.remove('talk'); void img.offsetWidth; img.classList.add('talk');
         await play(k.qau); if (!stage.isConnected) break; if (k.aau) { await sleep(250); await play(k.aau); if (!stage.isConnected) break; }
         const r = await new Promise((done) => {
@@ -1146,7 +1146,9 @@
               const fb = $v('.vk-fb'); fb.hidden = false; fb.className = 'vk-fb mel'; const mm = await MRMEL.judge(k.aau, fb); vc.classList.remove('rec'); busy = false; if (over) return;
               if (mm.silent || mm.err) { $v('.vk-msg').textContent = mm.err ? 'Permite el micrófono en tu navegador para responder' : 'No te escuché. Acércate un poco al micrófono e intenta otra vez.'; return; }
               { const im = $v('.vk-screen img'); im.src = (mm.ok ? 'mra-thumbs' : 'mra-think') + '.webp?v=2'; }
-              if (mm.ok) { sfx('ok'); M.praise(); vc.classList.add('ok'); $v('.vk-msg').textContent = late ? '¡Bien dicho!' : '¡Excelente!'; setTimeout(() => finish(true), 2600); }
+              if (mm.ok) { sfx('ok'); M.praise(); vc.classList.add('ok'); vc.classList.remove('bad'); $v('.vk-msg').textContent = (late ? '¡Bien dicho!' : '¡Excelente!') + ' Puedes repetirla o seguir.'; // v518: puede repetir su frase si quiere
+                fb.insertAdjacentHTML('beforeend', '<div class="rp9"><button type="button" class="btn w sm rp9-me">▶ Tu voz</button><button type="button" class="btn w sm rp9-ag">↻ Repetir</button><button type="button" class="btn k sm rp9-nx">Siguiente →</button></div>');
+                fb.querySelector('.rp9-me').onclick = () => { stop(); MRMEL.play(mm.buf); }; fb.querySelector('.rp9-ag').onclick = () => $v('.vk-mic').click(); fb.querySelector('.rp9-nx').onclick = () => finish(true); }
               else { sfx('bad'); vc.classList.add('bad'); $v('.vk-msg').textContent = 'Escucha cómo se dice y léela otra vez, despacio.'; if (k.aau) setTimeout(() => play(k.aau), 900); $v('.vk-next').hidden = false; }
               return; }
             const rr = await M.listen(9000, { quick: true, target: tgt }); vc.classList.remove('rec'); busy = false; if (over) return;

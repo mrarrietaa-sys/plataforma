@@ -7941,3 +7941,5 @@ img.ld-load-mra,img.kd-mra,img.ld-hero-mra,img.db-hero-mra{box-sizing:content-bo
 .bl9{display:flex;flex-direction:column;gap:8px}.bl9 small{font-weight:700;color:#5a6b85;font-size:12.5px}.bl9-r{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-weight:700;font-size:16px}.bl9-i{flex:1;min-width:120px;font-size:16px;padding:8px 10px}.bl9-ok{align-self:flex-start}
 .dk .bl9 small{color:#9fb3d1}.dk .bl9-r{color:#fff}
 .rl-mel,.kw-mel,.lp-mel{margin-top:8px}
+/* v518 · repetir la frase si quiere */
+.rp9{display:flex;gap:6px;margin-top:8px}.rp9 .btn{flex:1;padding:8px 6px;font-size:13px}
