@@ -15,8 +15,9 @@
   const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
   const SV = (d) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
   const IC = { vol: '<path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/>', mic: '<rect x="9" y="2" width="6" height="12" rx="3"/><path d="M19 10v1a7 7 0 0 1-14 0v-1M12 18v4"/>', end: '<path d="M3 15c5-5 13-5 18 0l-2.5 2.5-3-1.5v-2.5a10 10 0 0 0-7 0V16l-3 1.5z"/>', play: '<path d="M8 5v14l11-7z" fill="currentColor"/>', ck: '<path d="M5 12.5 10 17l9-10"/>', bulb: '<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"/>' };
-  const on = () => { try { return +(M().MOD && M().MOD.n) === 2; } catch (e) { return false; } };
-  const theme = () => { const a = ag(); document.documentElement.classList.add('m2x'); ['adult', 'teens', 'kids'].forEach(x => document.documentElement.classList.toggle('m2x-' + x, x === a)); };
+  const mod = () => { try { return +(M().MOD && M().MOD.n) || 0; } catch (e) { return 0; } };
+  const on = () => mod() === 2 || mod() === 3; // v520: el Módulo 3 también tiene su experiencia propia
+  const theme = () => { const a = ag(); document.documentElement.classList.add('m2x'); document.documentElement.classList.toggle('m3x', mod() === 3); ['adult', 'teens', 'kids'].forEach(x => document.documentElement.classList.toggle('m2x-' + x, x === a)); };
   function frame(stage, lbl, title, ins) { theme(); stage.classList.toggle('dk', ag() === 'teens'); stage.classList.add('as-stage', 'as-' + ag(), 'm2x-st'); return A().head(stage, { lbl, title, ins }); }
   const tes = (k) => { const t = window.MRKQAES && (MRKQAES[k.a] || MRKQAES[k.a.split(' / ')[0]]); return t ? String(t).split(' / ')[0] : ''; };
 
@@ -32,7 +33,7 @@
         host.querySelector('.m2v-wok').onclick = go; inp.onkeydown = e => { if (e.key === 'Enter') go(); }; return;
       }
       const t2 = tes(k);
-      host.innerHTML = `<div class="m2v-card"><small>${opt.lbl}</small><b>${esc(tgt)}</b>${t2 ? `<span>${esc(t2)}</span>` : ''}</div><div class="m2v-mel"></div><div class="m2v-res"></div>
+      host.innerHTML = `<div class="m2v-card${opt.compact ? ' cp' : ''}"><small>${opt.lbl}</small>${opt.compact ? '' : `<b>${esc(tgt)}</b>`}${t2 ? `<span>${esc(t2)}</span>` : ''}</div><div class="m2v-mel"></div><div class="m2v-res"></div>
         <div class="m2v-row">${opt.mode === 'hold' ? `<button type="button" class="m2v-ptt">${SV(IC.mic)}<span>Mantén presionado para hablar</span></button>` : `<button type="button" class="m2v-mic" aria-label="Hablar">${SV(IC.mic)}</button><div class="m2v-st"><b>Toca y responde</b><small>Imita el ritmo y la melodía del modelo</small></div>`}<button type="button" class="btn w sm m2v-mo">${SV(IC.vol)} Modelo</button></div>`;
       const v = MRMEL.view(host.querySelector('.m2v-mel')); MRMEL.model(k.aau).then(m => v.setModel(m)).catch(() => { });
       const res = host.querySelector('.m2v-res'), st = host.querySelector('.m2v-st'); let fails = 0, busy = false;
@@ -41,7 +42,7 @@
       const go = async (btn) => {
         if (busy) return; busy = true; stopA(); btn.classList.add('rec'); res.innerHTML = ''; say('Te escucho…', 'Se detiene sola cuando terminas');
         let r = null; try { r = await MRMEL.take(k.aau, v); } catch (e) { r = { err: 1 }; } btn.classList.remove('rec'); busy = false;
-        if (r.err) { say('Permite el micrófono', 'Actívalo en el candado de la barra de direcciones.'); return; }
+        if (r.err) { if (r.err === 'mic') say('Permite el micrófono', 'Actívalo en el candado de la barra de direcciones.'); else say('Intenta otra vez', 'No se pudo preparar el audio. Toca el micrófono de nuevo.'); return; }
         if (r.silent) { say('No te escuché', 'Acércate al micrófono e intenta otra vez.'); if (!st) res.innerHTML = '<p class="mel9-tip">No te escuché. Acércate al micrófono e intenta otra vez.</p>'; return; }
         res.innerHTML = MRMEL.resultHTML(r);
         if (!r.ok) { fails++; sfx('bad'); say('Otra vez', 'Escucha el modelo y dilo igual'); if (fails >= 3) { res.insertAdjacentHTML('beforeend', '<div class="rp9"><button type="button" class="btn w sm m2v-sk">Seguir →</button></div>'); res.querySelector('.m2v-sk').onclick = () => { stopA(); done({ ok: false }); }; } return; }
@@ -120,7 +121,7 @@
     mr.src = 'mra-celebrate.webp'; b.innerHTML = `<b>Over and out!</b><small>Fin de la transmisión</small>`; turn.innerHTML = `<div class="m2-sum"><b>${c} de ${Q.length}</b><span>mensajes enviados</span></div>`; sfx('win');
     await A().waitNext(stage, 'Continuar'); return A().result(c, Q.length, 'speaking');
   }
-  function oral(stage, p) { const a = ag(); return a === 'teens' ? live(stage, p) : a === 'kids' ? walkie(stage, p) : call(stage, p); }
+  function oral(stage, p) { const a = ag(); if (mod() === 3) return a === 'teens' ? M3.prompter(stage, p) : a === 'kids' ? M3.news(stage, p) : M3.interview(stage, p); return a === 'teens' ? live(stage, p) : a === 'kids' ? walkie(stage, p) : call(stage, p); }
 
   /* =================== JUEGOS DEL TEMA «LA HORA» =================== */
   const NUM = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12, twenty: 20, 'twenty-five': 25 };
@@ -272,43 +273,198 @@
     await A().waitNext(stage, 'Continuar'); return A().result(me, R.length, 'reading', missed);
   }
 
-  function game(stage, p) { const a = ag(), clock = p.topic === 1 && timePool(p).length >= 4;
+  function game(stage, p) { const a = ag(); if (mod() === 3) return a === 'teens' ? M3.path(stage, p) : a === 'kids' ? M3.map(stage, p) : M3.bet(stage, p); const clock = p.topic === 1 && timePool(p).length >= 4;
     if (clock) return a === 'teens' ? speedClock(stage, p) : a === 'kids' ? magicClock(stage, p) : agenda(stage, p);
     return a === 'teens' ? factCheck(stage, p) : a === 'kids' ? race(stage, p) : email(stage, p); }
-  const gameFor = (p) => on() && p && ((p.topic === 1 && timePool(p).length >= 4) || fillPool(p).length >= 3) ? 'm2game' : null;
+  const gameFor = (p) => on() && p && ((mod() === 2 && p.topic === 1 && timePool(p).length >= 4) || fillPool(p).length >= 3) ? 'm2game' : null;
 
   /* =================== 🎙️ LECTURA EN FORMATO PODCAST =================== */
-  function podBox(r, sents, photo) { const a = ag(); const kind = a === 'kids' ? 'Cuento en audio' : 'Podcast';
+  function podBox(r, sents, photo) { if (mod() === 3) return M3.magBox(r, sents, photo); const a = ag(); const kind = a === 'kids' ? 'Cuento en audio' : 'Podcast';
     return `<div class="reading pod9"><div class="pod9-pl"><div class="pod9-cv">${photo(r.img)}</div><div class="pod9-in"><small>${kind} · Episodio ${(M().partById && 0) || ''}</small><b>${esc(r.title)}</b><div class="pod9-bar"><i></i></div><div class="pod9-tm"><span class="pod9-c">0:00</span><span class="pod9-d"></span></div></div><button class="pod9-go" id="rp" aria-label="Escuchar">▶ Escuchar</button></div>
       <div class="pod9-lb">TRANSCRIPCIÓN</div><div class="txt">${sents.map(s => `<span class="s">${s.split(/(\s+)/).map(w => /\S/.test(w) ? `<i class="rw">${esc(w)}</i>` : w).join('')}</span>`).join(' ')}</div><button class="rd-tr" id="rdtr" type="button" aria-expanded="false"><span>ES</span> Ver traducción al español</button><div class="rd-es" id="rdes" hidden></div></div>`; }
-  function podWatch(box) { theme(); const bar = box.querySelector('.pod9-bar i'), cu = box.querySelector('.pod9-c'), du = box.querySelector('.pod9-d'), f = s => Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
-    const sm = box.querySelector('small'); if (sm) sm.textContent = (ag() === 'kids' ? 'Cuento en audio' : 'Podcast') + ' · Episodio ' + (window.__m2ep || 1);
+  function podWatch(box) { theme(); if (mod() === 3) M3.magBind(box); const bar = box.querySelector('.pod9-bar i'), cu = box.querySelector('.pod9-c'), du = box.querySelector('.pod9-d'), f = s => Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
+    const sm = box.querySelector('small'); if (sm && mod() !== 3) sm.textContent = (ag() === 'kids' ? 'Cuento en audio' : 'Podcast') + ' · Episodio ' + (window.__m2ep || 1);
     const loop = () => { if (!box.isConnected) return; const a = window.__ra; if (a && a.duration) { bar.style.width = (a.currentTime / a.duration * 100) + '%'; cu.textContent = f(a.currentTime); du.textContent = f(a.duration); } requestAnimationFrame(loop); }; loop(); }
 
   /* =================== 🎯 MISIÓN · palabra oculta =================== */
   const STOP = /^(the|and|but|you|your|are|was|were|have|has|this|that|with|from|for|not|yes|its|it's|i'm|what|when|where|very|much|please|thank|thanks|sure|okay)$/i;
   const focusOf = (p) => { const F = {}; try { const T = M1DATA.topics.find(x => x.n === p.topic); (T ? T.parts : [p]).forEach(pp => { (pp.fill || []).forEach(f => String(f.a).toLowerCase().split(/\s+/).forEach(w => F[w.replace(/[^a-z']/g, '')] = 1)); (pp.vocab || []).forEach(v => { const e = String(v.en || '').toLowerCase(); if (!/\s/.test(e)) F[e.replace(/[^a-z']/g, '')] = 1; }); }); } catch (e) { } return F; };
-  function hide(a, p) { const w = a.split(/(\s+)/); const F = p ? focusOf(p) : {}; let best = -1, bl = 0, bf = -1, bfl = 0; w.forEach((x, i) => { if (!/\S/.test(x) || i === 0) return; const c = x.replace(/[^A-Za-z']/g, ''); if (c.length >= 2 && F[c.toLowerCase()] && c.length > bfl) { bfl = c.length; bf = i; } if (c.length >= 3 && !STOP.test(c) && c.length > bl) { bl = c.length; best = i; } }); if (bf >= 0) best = bf;
+  function hide(a, p) { if (mod() === 3) return M3.initials(a); const w = a.split(/(\s+)/); const F = p ? focusOf(p) : {}; let best = -1, bl = 0, bf = -1, bfl = 0; w.forEach((x, i) => { if (!/\S/.test(x) || i === 0) return; const c = x.replace(/[^A-Za-z']/g, ''); if (c.length >= 2 && F[c.toLowerCase()] && c.length > bfl) { bfl = c.length; bf = i; } if (c.length >= 3 && !STOP.test(c) && c.length > bl) { bl = c.length; best = i; } }); if (bf >= 0) best = bf;
     if (best < 0) return `<b>${esc(a)}</b>`; const raw = w[best], core = raw.replace(/[^A-Za-z']/g, ''), pre = raw.slice(0, raw.indexOf(core)), post = raw.slice(raw.indexOf(core) + core.length);
     return `<b class="m2h">${w.map((x, i) => i === best ? `${esc(pre)}<span class="m2h-w" data-w="${esc(core)}">${'_'.repeat(Math.max(4, core.length))}</span>${esc(post)}` : esc(x)).join('')}</b><button type="button" class="m2h-hint">${SV(IC.bulb)} Ver pista</button>`; }
-  function bindHint(host) { const b = host.querySelector('.m2h-hint'); if (!b) return; let n = 0; b.onclick = () => { const w = host.querySelector('.m2h-w'); if (!w) return; const word = w.dataset.w; n++; if (n === 1) { w.textContent = word[0] + '_'.repeat(Math.max(3, word.length - 1)); b.innerHTML = SV(IC.bulb) + ' Ver la palabra'; } else { w.textContent = word; w.classList.add('shown'); b.remove(); } sfx('tap'); }; }
+  function bindHint(host) { if (mod() === 3) return M3.bindIni(host); const b = host.querySelector('.m2h-hint'); if (!b) return; let n = 0; b.onclick = () => { const w = host.querySelector('.m2h-w'); if (!w) return; const word = w.dataset.w; n++; if (n === 1) { w.textContent = word[0] + '_'.repeat(Math.max(3, word.length - 1)); b.innerHTML = SV(IC.bulb) + ' Ver la palabra'; } else { w.textContent = word; w.classList.add('shown'); b.remove(); } sfx('tap'); }; }
 
   /* =================== 🎤 KARAOKE de la canción =================== */
-  async function karaoke(stage, p) {
+  async function karaoke(stage, p) { if (mod() === 3) return M3.dictation(stage, p);
     const S = window.M1SONGS; const sid = S && S.map && S.map[p.id]; const so = sid && S.songs[sid]; const L = so && (so.lc || []).filter(x => x.full && x.au && x.full.split(' ').length <= 9); if (!L || !L.length) return null;
     const R = L.slice(0, 2); let c = 0;
     for (let i = 0; i < R.length; i++) {
       if (!stage.isConnected) break; const x = R[i];
       const body = frame(stage, 'Music', 'Karaoke', `Escucha la línea y dila al mismo ritmo. Línea ${i + 1} de ${R.length}.`);
-      body.insertAdjacentHTML('beforeend', `<div class="m2o"><div class="m2o-sc"><span class="m2o-eq">${'<i></i>'.repeat(14)}</span><small>${ag() === 'adult' ? esc(so.title || '') : 'Karaoke'}</small></div><div class="m2o-turn"></div></div>`);
-      const turn = body.querySelector('.m2o-turn'); body.querySelector('.m2o').classList.add('play'); await play(x.au); const m2 = body.querySelector('.m2o'); if (m2) m2.classList.remove('play'); if (!stage.isConnected) break;
-      const r = await voiceTurn(turn, { a: x.full, aau: x.au }, { lbl: 'KARAOKE · DILA AL RITMO', mode: 'tap' }); if (r.ok) c++;
+      body.insertAdjacentHTML('beforeend', `<div class="m2o"><div class="m2o-sc"><span class="m2o-eq">${'<i></i>'.repeat(14)}</span><small>${ag() === 'adult' ? esc(so.title || '') : 'Karaoke'}</small><b class="m2o-ln">${esc(x.full)}</b></div><div class="m2o-turn"></div></div>`);
+      const turn = body.querySelector('.m2o-turn'); body.querySelector('.m2o').classList.add('m2on'); await play(x.au); const m2 = body.querySelector('.m2o'); if (m2) m2.classList.remove('m2on'); if (!stage.isConnected) break;
+      const ln = body.querySelector('.m2o-ln'); if (ln) ln.remove(); const r = await voiceTurn(turn, { a: x.full, aau: x.au }, { lbl: 'KARAOKE · DILA AL RITMO', mode: 'tap' }); if (r.ok) c++;
     }
     return { c, t: R.length };
   }
 
+  /* =================== v520 · MÓDULO 3 (B1) · experiencia propia =================== */
+  const M3 = (function () {
+    const persona = { adult: ['Laura Kim', 'Recruiter', 'u:photo-1494790108377-be9c29b29330'] };
+    /* ---------- 💼 Adultos · entrevista en video ---------- */
+    async function interview(stage, p) {
+      const Q = KQ(p); if (!Q.length) return null; let c = 0; const P = persona.adult;
+      const body = frame(stage, 'Practice', 'Entrevista en video', 'Laura te entrevista. Escucha cada pregunta y responde leyendo tu respuesta.');
+      body.insertAdjacentHTML('beforeend', `<div class="m3i"><div class="m3i-v" style="background-image:url('${M().imgURL(P[2], 700, 520)}')"><span class="m3i-rec"><i></i>REC <b>00:00</b></span><span class="m3i-who">${esc(P[0])} · ${esc(P[1])}</span><span class="m3i-me">${SV(IC.mic)}</span></div><div class="m3i-q"></div><div class="m3i-turn"></div><div class="m2c-dots">${Q.map(() => '<i></i>').join('')}</div></div>`);
+      const el = body.querySelector('.m3i'), qn = el.querySelector('.m3i-q'), turn = el.querySelector('.m3i-turn'), tm = el.querySelector('.m3i-rec b'), t0 = Date.now();
+      const tick = setInterval(() => { if (!stage.isConnected) return clearInterval(tick); const s = Math.floor((Date.now() - t0) / 1000); tm.textContent = String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); }, 500);
+      for (let i = 0; i < Q.length; i++) {
+        if (!stage.isConnected) break; const k = Q[i]; el.querySelectorAll('.m2c-dots i').forEach((d, j) => d.className = j < i ? 'ok' : j === i ? 'cur' : '');
+        qn.innerHTML = `<button type="button" class="m2c-ql">${SV(IC.vol)}</button><div><small>PREGUNTA ${i + 1} DE ${Q.length}</small><b>${esc(k.q)}</b><span>${esc(k.es || '')}</span></div>`; qn.querySelector('.m2c-ql').onclick = () => { stopA(); play(k.qau); };
+        turn.innerHTML = ''; el.classList.add('talk'); await play(k.qau); el.classList.remove('talk'); if (!stage.isConnected) break;
+        const r = await voiceTurn(turn, k, { lbl: 'TU RESPUESTA', mode: 'tap' }); if (r.ok) c++;
+      }
+      clearInterval(tick); if (!stage.isConnected) return A().result(c, Q.length, 'speaking');
+      qn.innerHTML = ''; turn.innerHTML = `<div class="m2-sum"><b>${c} de ${Q.length}</b><span>respuestas con buena melodía · entrevista terminada</span></div>`; sfx(c === Q.length ? 'win' : 'ok');
+      await A().waitNext(stage, 'Continuar'); return A().result(c, Q.length, 'speaking');
+    }
+    /* ---------- 🎬 Teens · graba tu video con teleprompter ---------- */
+    async function prompter(stage, p) {
+      const Q = KQ(p); if (!Q.length) return null; let c = 0;
+      const body = frame(stage, 'Practice', 'Graba tu video', 'Lee la respuesta del teleprompter como si grabaras un video para tu canal.');
+      body.insertAdjacentHTML('beforeend', `<div class="m3t"><div class="m3t-v" style="background-image:url('${M().imgURL('u:photo-1522202176988-66273c2fd55f', 700, 700)}')"><span class="m3i-rec"><i></i>REC</span><span class="m3t-n"></span><div class="m3t-tp"></div></div><div class="m3t-turn"></div></div>`);
+      const tp = body.querySelector('.m3t-tp'), turn = body.querySelector('.m3t-turn'), nn = body.querySelector('.m3t-n');
+      for (let i = 0; i < Q.length; i++) {
+        if (!stage.isConnected) break; const k = Q[i]; nn.textContent = `TOMA ${i + 1} / ${Q.length}`;
+        tp.innerHTML = `<span class="m3t-q">${esc(k.q)} <button type="button" class="m3t-pl">${SV(IC.vol)}</button></span><b>${esc(k.a.split(' / ')[0])}</b>`; tp.querySelector('.m3t-pl').onclick = () => { stopA(); play(k.qau); };
+        turn.innerHTML = `<p class="m2l-es">${esc(k.es || '')}</p>`; await play(k.qau); if (!stage.isConnected) break;
+        const r = await voiceTurn(turn, k, { lbl: 'LEE EL TELEPROMPTER', mode: 'tap', compact: 1 }); if (r.ok) c++;
+      }
+      if (!stage.isConnected) return A().result(c, Q.length, 'speaking');
+      tp.innerHTML = `<b>That's a wrap!</b>`; turn.innerHTML = `<div class="m2-sum"><b>${c} de ${Q.length}</b><span>tomas aprobadas</span></div>`; sfx(c === Q.length ? 'win' : 'ok');
+      await A().waitNext(stage, 'Publicar y continuar'); return A().result(c, Q.length, 'speaking');
+    }
+    /* ---------- 📺 Kids · reportero de noticias ---------- */
+    async function news(stage, p) {
+      const Q = KQ(p); if (!Q.length) return null; let c = 0; const POSE = ['present', 'point', 'idea', 'wink'];
+      const body = frame(stage, 'Practice', 'Reportero de noticias', 'Mr. Arrieta presenta las noticias. Tú eres el reportero: responde en vivo.');
+      body.insertAdjacentHTML('beforeend', `<div class="m3n"><div class="m3n-tv"><img class="m3n-mr" src="mra-present.webp" alt="Mr. Arrieta"><div class="m3n-br"><span class="m3n-live">EN VIVO</span><b>KIDS NEWS</b></div><div class="m3n-tk">Reportero: tú · Reporte <span>1</span> de ${Q.length}</div></div><div class="m3n-q"></div><div class="m3n-turn"></div></div>`);
+      const qn = body.querySelector('.m3n-q'), turn = body.querySelector('.m3n-turn'), mr = body.querySelector('.m3n-mr'), tk = body.querySelector('.m3n-tk span');
+      for (let i = 0; i < Q.length; i++) {
+        if (!stage.isConnected) break; const k = Q[i]; mr.src = 'mra-' + POSE[i % POSE.length] + '.webp'; tk.textContent = i + 1;
+        qn.innerHTML = `<button type="button" class="m2c-ql">${SV(IC.vol)}</button><div><b>${esc(k.q)}</b><small>${esc(k.es || '')}</small></div>`; qn.querySelector('.m2c-ql').onclick = () => { stopA(); play(k.qau); };
+        turn.innerHTML = ''; await play(k.qau); if (!stage.isConnected) break;
+        const r = await voiceTurn(turn, k, { lbl: 'TU REPORTE', mode: 'tap' }); if (r.ok) { c++; mr.src = 'mra-thumbs.webp'; } await sleep(300);
+      }
+      if (!stage.isConnected) return A().result(c, Q.length, 'speaking');
+      mr.src = 'mra-celebrate.webp'; qn.innerHTML = `<div><b>That's all for today!</b><small>Fin del noticiero</small></div>`; turn.innerHTML = `<div class="m2-sum"><b>${c} de ${Q.length}</b><span>reportes en vivo</span></div>`; sfx('win');
+      await A().waitNext(stage, 'Continuar'); return A().result(c, Q.length, 'speaking');
+    }
+    /* ---------- 🎲 Adultos · apuesta tu seguridad ---------- */
+    async function bet(stage, p) {
+      const pool = fillPool(p); if (pool.length < 3) return null; const R = pool.slice(0, Math.min(5, pool.length)); let pts = 10, c = 0; const missed = [];
+      for (let i = 0; i < R.length; i++) {
+        if (!stage.isConnected) break; const f = R[i], parts = noPar(f.s).split(/_{2,}/), ops = shuffle([f.a].concat(f.o)).filter((x, j, a) => a.indexOf(x) === j); window.__m2t = { a: f.a };
+        const body = frame(stage, 'Practice', 'Apuesta tu seguridad', 'Elige la respuesta y apuesta 1, 2 o 3 puntos según qué tan seguro estés. Si aciertas, ganas lo apostado; si fallas, lo pierdes.');
+        body.insertAdjacentHTML('beforeend', `<div class="m3b"><div class="m3b-bank"><span>Tus puntos</span><b>${pts}</b><small>Ronda ${i + 1} de ${R.length}</small></div><div class="m3b-s">${esc(parts[0] || '')}<span class="m3b-gap">?</span>${esc(parts.slice(1).join(' ') || '')}</div>${hintBox(f)}<div class="m3b-ops">${ops.map(o => `<button type="button" class="m3b-o" data-o="${esc(o)}">${esc(o)}</button>`).join('')}</div><div class="m3b-bet" hidden><p class="m2r-ins">¿Qué tan seguro estás?</p><div class="m3b-chips">${[1, 2, 3].map(n => `<button type="button" class="m3b-c" data-n="${n}">${n}</button>`).join('')}</div></div><div class="m3b-fb"></div></div>`);
+        const el = body.querySelector('.m3b'), bt = el.querySelector('.m3b-bet'), fb = el.querySelector('.m3b-fb'); let pick = null;
+        const ok = await new Promise(done => {
+          el.querySelectorAll('.m3b-o').forEach(b => b.onclick = () => { pick = b.dataset.o; sfx('tap'); el.querySelectorAll('.m3b-o').forEach(x => x.classList.toggle('on', x === b)); el.querySelector('.m3b-gap').textContent = pick; bt.hidden = false; });
+          el.querySelectorAll('.m3b-c').forEach(b => b.onclick = () => { if (!pick) return; const n = +b.dataset.n, good = pick === f.a; el.querySelectorAll('.m3b-o,.m3b-c').forEach(x => x.disabled = true); b.classList.add('on');
+            el.querySelectorAll('.m3b-o').forEach(x => { if (x.dataset.o === f.a) x.classList.add('ok'); else if (x.dataset.o === pick) x.classList.add('bad'); });
+            const g = el.querySelector('.m3b-gap'); g.textContent = f.a; g.classList.add(good ? 'ok' : 'bad'); pts = Math.max(0, pts + (good ? n : -n)); el.querySelector('.m3b-bank b').textContent = pts; el.querySelector('.m3b-bank').classList.add(good ? 'up' : 'dn'); sfx(good ? 'ok' : 'bad');
+            fb.innerHTML = `<div class="as-fbk ${good ? 'ok' : 'no'}"><span>${good ? `Ganaste ${n} punto${n > 1 ? 's' : ''}.` : `Perdiste ${n} punto${n > 1 ? 's' : ''}. Era <b>${esc(f.a)}</b>.`}${f.h ? ' · ' + esc(f.h) : ''}</span></div><button type="button" class="btn k m3b-nx">${i < R.length - 1 ? 'Siguiente ronda' : 'Ver resultado'}</button>`;
+            play(f.au); fb.querySelector('.m3b-nx').onclick = () => { stopA(); done(good); }; });
+        });
+        if (ok) c++; else missed.push({ en: fullOf(f), au: f.au });
+      }
+      const body = frame(stage, 'Practice', 'Apuesta tu seguridad', ''); body.insertAdjacentHTML('beforeend', `<div class="as-kpi"><div><b>${pts}</b><small>puntos finales</small></div><div><b>${c}/${R.length}</b><small>correctas</small></div><div><b>${pts >= 10 ? '+' : ''}${pts - 10}</b><small>ganancia</small></div></div>`); sfx(c === R.length ? 'win' : 'ok');
+      await A().waitNext(stage, 'Continuar'); return A().result(c, R.length, 'reading', missed);
+    }
+    /* ---------- 🧭 Teens · elige tu camino (historia por capítulos) ---------- */
+    async function path(stage, p) {
+      const pool = fillPool(p); if (pool.length < 3) return null; const R = pool.slice(0, Math.min(5, pool.length)); let c = 0; const missed = []; const NM = ['Mia', 'Leo', 'Sara', 'Nico'][Math.floor(Math.random() * 4)];
+      const CH = ['El mensaje', 'El plan', 'La sorpresa', 'El problema', 'El final'];
+      for (let i = 0; i < R.length; i++) {
+        if (!stage.isConnected) break; const f = R[i], parts = noPar(f.s).split(/_{2,}/), ops = shuffle([f.a].concat(f.o)).filter((x, j, a) => a.indexOf(x) === j); window.__m2t = { a: f.a };
+        const body = frame(stage, 'Practice', 'Elige tu camino', `Tú decides cómo sigue la historia con ${NM}. Elige la opción correcta para avanzar.`);
+        body.insertAdjacentHTML('beforeend', `<div class="m3p"><div class="m3p-path">${R.map((_, j) => `<i class="${j < i ? 'd' : j === i ? 'c' : ''}"></i>`).join('<em></em>')}</div><div class="m3p-st"><small>CAPÍTULO ${i + 1} · ${CH[i % CH.length]}</small><p>${esc(parts[0] || '')}<span class="m3p-gap">?</span>${esc(parts.slice(1).join(' ') || '')}</p>${hintBox(f)}</div><div class="m3p-ops">${ops.map(o => `<button type="button" class="m3p-o" data-o="${esc(o)}">${esc(o)}</button>`).join('')}</div><div class="m3p-fb"></div></div>`);
+        const el = body.querySelector('.m3p'), fb = el.querySelector('.m3p-fb');
+        const ok = await new Promise(done => { let miss = 0; el.querySelectorAll('.m3p-o').forEach(b => b.onclick = () => { const good = b.dataset.o === f.a;
+          if (!good) { miss++; b.classList.add('bad'); b.disabled = true; sfx('bad'); fb.innerHTML = `<div class="as-fbk no"><span>Ese camino no funciona aquí.${f.h ? ' Pista: ' + esc(f.h) : ''} Prueba otra opción.</span></div>`; return; }
+          el.querySelectorAll('.m3p-o').forEach(x => x.disabled = true); b.classList.add('ok'); const g = el.querySelector('.m3p-gap'); g.textContent = f.a; g.classList.add('ok'); sfx('ok');
+          fb.innerHTML = `<div class="as-fbk ok"><span>${miss ? 'Ahora sí. ' : '¡Perfecto! '}La historia sigue.</span></div><button type="button" class="as-gt m3p-nx">${i < R.length - 1 ? 'Siguiente capítulo' : 'Ver el final'}</button>`;
+          play(f.au); fb.querySelector('.m3p-nx').onclick = () => { stopA(); done(miss === 0); }; }); });
+        if (ok) c++; else missed.push({ en: fullOf(f), au: f.au });
+      }
+      const body = frame(stage, 'Practice', 'Fin de la historia', ''); body.insertAdjacentHTML('beforeend', `<div class="as-kpi"><div><b>${c}/${R.length}</b><small>a la primera</small></div><div><b>${R.length}</b><small>capítulos</small></div><div><b>${Math.round(c / R.length * 100)}%</b><small>acierto</small></div></div>`); sfx('win');
+      await A().waitNext(stage, 'Continuar'); return A().result(c, R.length, 'reading', missed);
+    }
+    /* ---------- 🗺️ Kids · el mapa del tesoro ---------- */
+    async function map(stage, p) {
+      const pool = fillPool(p); if (pool.length < 3) return null; const R = pool.slice(0, Math.min(5, pool.length)); let pos = 0; const missed = [];
+      const body = frame(stage, 'Practice', 'El mapa del tesoro', 'Cada respuesta correcta te acerca al tesoro. ¡Llega a la X!');
+      const PTS = [[12, 82], [30, 64], [50, 74], [66, 50], [80, 30], [90, 14]].slice(0, R.length + 1); PTS[PTS.length - 1] = [88, 16];
+      body.insertAdjacentHTML('beforeend', `<div class="m3m"><div class="m3m-map"><svg viewBox="0 0 100 100" preserveAspectRatio="none"><polyline points="${PTS.map(q => q.join(',')).join(' ')}" class="m3m-ln"/></svg>${PTS.map((q, j) => `<span class="m3m-st${j === PTS.length - 1 ? ' x' : ''}" style="left:${q[0]}%;top:${q[1]}%">${j === PTS.length - 1 ? '✕' : ''}</span>`).join('')}<span class="m3m-pin" style="left:${PTS[0][0]}%;top:${PTS[0][1]}%"></span></div><div class="m3m-play"></div></div>`);
+      const pl = body.querySelector('.m3m-play'), pin = body.querySelector('.m3m-pin'), st = body.querySelectorAll('.m3m-st');
+      for (let i = 0; i < R.length; i++) {
+        if (!stage.isConnected) break; const f = R[i], parts = noPar(f.s).split(/_{2,}/), ops = shuffle([f.a].concat(f.o)).filter((x, j, a) => a.indexOf(x) === j); window.__m2t = { a: f.a };
+        pl.innerHTML = `<div class="m2q-cnt">PISTA ${i + 1} DE ${R.length}</div><div class="m2q-s">${esc(parts[0] || '')}<span class="m2q-gap">?</span>${esc(parts.slice(1).join(' ') || '')}</div>${hintBox(f)}<div class="m2q-ops">${ops.map(o => `<button type="button" class="m2q-o" data-o="${esc(o)}">${esc(o)}</button>`).join('')}</div><div class="m2q-fb"></div>`;
+        const ok = await new Promise(done => { let miss = 0; pl.querySelectorAll('.m2q-o').forEach(b => b.onclick = async () => { const good = b.dataset.o === f.a;
+          if (!good) { miss++; b.classList.add('bad'); b.disabled = true; sfx('bad'); pl.querySelector('.m2q-fb').innerHTML = `<div class="as-fbk no"><span>${f.h ? 'Pista: <b>' + esc(f.h) + '</b>. ' : ''}¡Intenta otra vez!</span></div>`; return; }
+          pl.querySelectorAll('.m2q-o').forEach(x => x.disabled = true); b.classList.add('ok'); const g = pl.querySelector('.m2q-gap'); g.textContent = f.a; g.classList.add('ok'); sfx('ok');
+          pos++; const q = PTS[Math.min(pos, PTS.length - 1)]; pin.style.left = q[0] + '%'; pin.style.top = q[1] + '%'; if (st[pos - 1]) st[pos - 1].classList.add('d');
+          pl.querySelector('.m2q-fb').innerHTML = `<div class="as-fbk ok"><span>${miss ? '¡Ahora sí!' : '¡Muy bien!'} Avanzas en el mapa.</span></div>`; await play(f.au); await sleep(400); done(miss === 0); }); });
+        if (!ok) missed.push({ en: fullOf(f), au: f.au });
+      }
+      if (!stage.isConnected) return A().result(R.length - missed.length, R.length, 'reading', missed);
+      body.querySelector('.m3m-map').classList.add('won'); pl.innerHTML = `<div class="m2q-end"><img src="mra-celebrate.webp" alt="Mr. Arrieta"><b>¡Encontraste el tesoro!</b><span>${R.length - missed.length} de ${R.length} a la primera</span></div>`; sfx('win'); try { M().confetti(1200); } catch (e) { }
+      await A().waitNext(stage, 'Continuar'); return A().result(R.length - missed.length, R.length, 'reading', missed);
+    }
+    /* ---------- 📰 Lectura · revista / blog / diario con palabras clave ---------- */
+    const partOfReading = (r) => { try { for (const t of M1DATA.topics) for (const pt of t.parts) if (pt.reading && (pt.reading === r || pt.reading.au === r.au)) return pt; } catch (e) { } return null; };
+    function keyWords(r) { const pt = partOfReading(r); if (!pt || !window.MRGLOS3) return []; const g = ag()[0] === 't' ? 't' : ag()[0] === 'k' ? 'k' : 'a'; const L = MRGLOS3[g + ':' + pt.id] || []; const low = ' ' + r.text.toLowerCase().replace(/[^a-z' ]/g, ' ') + ' ';
+      return L.filter(x => low.includes(' ' + x[0] + ' ')).map(x => ({ k: x[0], es: x[1] })); }
+    function magBox(r, sents, photo) { const a = ag(), KW = keyWords(r); const kick = a === 'teens' ? 'BLOG' : a === 'kids' ? 'MI DIARIO' : 'MAGAZINE';
+      const mark = (s) => { let h = s.split(/(\s+)/).map(w => /\S/.test(w) ? `<i class="rw">${esc(w)}</i>` : w).join(''); KW.forEach((k, n) => { const words = k.k.split(' '); const re = new RegExp('((?:<i class="rw">[^<]*</i>\\s*){' + words.length + '})', 'g'); h = h.replace(re, (m) => { const plain = m.replace(/<[^>]+>/g, '').replace(/&[a-z#0-9]+;/gi, '').trim().toLowerCase().replace(/[^a-z' ]/g, ''); return plain === k.k ? `<span class="gk" data-n="${n}">${m.trim()}</span> ` : m; }); }); return h; };
+      return `<div class="reading pod9 mag9"><div class="pod9-pl mag9-hd"><div class="pod9-in"><small>${kick}</small><b>${esc(r.title)}</b><div class="pod9-bar"><i></i></div><div class="pod9-tm"><span class="pod9-c">0:00</span><span class="pod9-d"></span></div></div><button class="pod9-go" id="rp" aria-label="Escuchar">▶ Escuchar</button></div>
+        ${KW.length ? '<div class="pod9-lb">TOCA LAS PALABRAS RESALTADAS</div>' : ''}<div class="txt">${sents.map(s => `<span class="s">${mark(s)}</span>`).join(' ')}</div><div class="mag9-gl" hidden></div><button class="rd-tr" id="rdtr" type="button" aria-expanded="false"><span>ES</span> Ver traducción al español</button><div class="rd-es" id="rdes" hidden></div></div>`; }
+    function magBind(box) { const r0 = box.querySelector('.pod9-in b'); const gl = box.querySelector('.mag9-gl'); const r = (function () { try { for (const t of M1DATA.topics) for (const pt of t.parts) if (pt.reading && pt.reading.title === r0.textContent) return pt.reading; } catch (e) { } return null; })(); if (!r) return; const KW = keyWords(r);
+      box.querySelectorAll('.gk').forEach(g => g.onclick = (e) => { e.stopPropagation(); const k = KW[+g.dataset.n]; if (!k) return; box.querySelectorAll('.gk').forEach(x => x.classList.toggle('on', x === g)); gl.hidden = false; gl.innerHTML = `<b>${esc(k.k)}</b> = ${esc(k.es)} ${k.au ? `<button type="button" class="mag9-pl">${SV(IC.vol)}</button>` : ''}`; const pb = gl.querySelector('.mag9-pl'); if (pb) pb.onclick = () => play(k.au); if (k.au && !(window.__ra && !window.__ra.paused)) play(k.au); sfx('tap'); }); }
+    /* ---------- 🎯 Misión · solo las iniciales ---------- */
+    function initials(a) { const w = a.split(/(\s+)/); const ini = w.map(x => /\S/.test(x) ? x.replace(/^([^A-Za-z0-9]*)([A-Za-z0-9])([A-Za-z0-9']*)(.*)$/, (m, p1, c1, rest, p2) => p1 + c1 + p2) : x).join('');
+      return `<b class="m3ini" data-full="${esc(a)}">${w.map((x, i) => /\S/.test(x) ? `<span class="m3w" data-w="${esc(x)}">${esc(x.replace(/^([^A-Za-z0-9]*)([A-Za-z0-9])([A-Za-z0-9']*)(.*)$/, (m, p1, c1, rest, p2) => p1 + c1 + p2))}</span>` : ' ').join('')}</b><div class="m3ini-h"><button type="button" class="m3ini-1">${SV(IC.bulb)} Ver 1 palabra</button><button type="button" class="m3ini-all">Ver todo</button></div>`; }
+    function bindIni(host) { const b1 = host.querySelector('.m3ini-1'), ba = host.querySelector('.m3ini-all'); if (!b1) return;
+      const left = () => [...host.querySelectorAll('.m3w:not(.shown)')];
+      b1.onclick = () => { const L = left(); if (!L.length) return; const w = L.sort((x, y) => y.dataset.w.length - x.dataset.w.length)[0]; w.textContent = w.dataset.w; w.classList.add('shown'); sfx('tap'); if (left().length === 0) host.querySelector('.m3ini-h').remove(); };
+      ba.onclick = () => { left().forEach(w => { w.textContent = w.dataset.w; w.classList.add('shown'); }); sfx('tap'); host.querySelector('.m3ini-h').remove(); }; }
+    /* ---------- 🎵 Música · dictado musical ---------- */
+    const norm = s => String(s || '').toLowerCase().replace(/[’‘`]/g, "'").replace(/-/g, ' ').replace(/\bwon't\b/g, 'will not').replace(/\bcan't\b|\bcannot\b/g, 'can not').replace(/n't\b/g, ' not').replace(/'m\b/g, ' am').replace(/'re\b/g, ' are').replace(/'ll\b/g, ' will').replace(/'ve\b/g, ' have').replace(/[^a-z0-9' ]/g, ' ').replace(/\s+/g, ' ').trim(); // v520: acepta contracciones o formas completas
+    async function dictation(stage, p) {
+      const S = window.M1SONGS; const sid = S && S.map && S.map[p.id]; const so = sid && S.songs[sid]; const L = so && (so.lc || []).filter(x => x.full && x.au && x.full.split(' ').length <= 9 && x.full.split(' ').length >= 3); if (!L || !L.length) return null;
+      const R = L.slice(0, 2); let c = 0;
+      for (let i = 0; i < R.length; i++) {
+        if (!stage.isConnected) break; const x = R[i]; window.__m2t = { a: x.full };
+        const body = frame(stage, 'Music', 'Dictado musical', `Escucha la frase de la canción y escríbela completa. Frase ${i + 1} de ${R.length}.`);
+        body.insertAdjacentHTML('beforeend', `<div class="m3d"><div class="m2o-sc"><span class="m2o-eq">${'<i></i>'.repeat(14)}</span><small>${ag() === 'adult' ? esc(so.title || '') : 'Dictado'}</small></div><div class="m3d-row"><button type="button" class="btn w sm m3d-pl">${SV(IC.vol)} Escuchar otra vez</button><button type="button" class="btn w sm m3d-sl">Más despacio</button></div><textarea class="inp m3d-in" rows="2" autocomplete="off" autocapitalize="sentences" spellcheck="false" placeholder="Escribe lo que escuchas…"></textarea><div class="m3d-fb"></div><button type="button" class="btn k lg m3d-ok">Comprobar</button></div>`);
+        const el = body.querySelector('.m3d'), inp = el.querySelector('.m3d-in'), fb = el.querySelector('.m3d-fb'), okb = el.querySelector('.m3d-ok');
+        const say = async (slow) => { stopA(); el.classList.add('m2on'); try { await (slow ? M().play(x.au, { rate: .72 }) : play(x.au)); } catch (e) { } el.classList.remove('m2on'); };
+        el.querySelector('.m3d-pl').onclick = () => say(false); el.querySelector('.m3d-sl').onclick = () => say(true); await say(false); try { inp.focus(); } catch (e) { }
+        const ok = await new Promise(done => { let tries = 0; okb.onclick = () => { const v = norm(inp.value), t = norm(x.full); if (!v) { inp.focus(); return; } tries++;
+          const tw = t.split(' '), vw = v.split(' '); const good = v === t;
+          if (good) { sfx('ok'); inp.disabled = true; fb.innerHTML = `<div class="as-fbk ok"><span>Perfecto: <b>${esc(x.full)}</b></span></div>`; okb.textContent = i < R.length - 1 ? 'Siguiente frase' : 'Continuar'; okb.onclick = () => done(tries === 1); return; }
+          const marked = vw.map((w, j) => tw[j] === w ? esc(w) : `<u>${esc(w)}</u>`).join(' ') + (vw.length < tw.length ? ' <u>…</u>' : '');
+          sfx('bad'); if (tries >= 2) { inp.disabled = true; fb.innerHTML = `<div class="as-fbk no"><span>Así es la frase: <b>${esc(x.full)}</b></span></div>`; okb.textContent = i < R.length - 1 ? 'Siguiente frase' : 'Continuar'; okb.onclick = () => done(false); play(x.au); return; }
+          fb.innerHTML = `<div class="as-fbk no"><span>Casi. Revisa lo subrayado y escucha otra vez: ${marked}${vw.length < tw.length ? ' (faltan palabras)' : ''}</span></div>`; }; });
+        if (ok) c++;
+      }
+      return { c, t: R.length };
+    }
+    return { interview, prompter, news, bet, path, map, magBox, magBind, initials, bindIni, dictation };
+  })();
+
   // Kids y Teens: su canción propia también termina con el karaoke
   const wrapMusic = () => { const G = window.MRAGE2; if (!G || !G.music || G.music.__m2) return; const om = G.music; G.music = async (st, p) => { const r = await om(st, p); if (on() && r !== null && r !== undefined && st.isConnected) { try { st.innerHTML = ''; await karaoke(st, p); } catch (e) { console.error(e); } } return r; }; G.music.__m2 = 1; };
   wrapMusic(); document.addEventListener('DOMContentLoaded', wrapMusic);
-  window.M2X = { on, oral, game, gameFor, podBox, podWatch, hide, bindHint, karaoke, parseTime, timePool, fillPool, focusOf, theme };
+  window.M2X = { mod, on, oral, game, gameFor, podBox, podWatch, hide, bindHint, karaoke, parseTime, timePool, fillPool, focusOf, theme };
 })();

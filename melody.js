@@ -24,7 +24,8 @@
   function pearS(a, b) { let best = -1; for (let k = -4; k <= 4; k++) { const A = [], B = []; for (let i = 0; i < a.length; i++) { const j = i + k; if (j >= 0 && j < b.length) { A.push(a[i]); B.push(b[j]); } } best = Math.max(best, pear(A, B)); } return best; }
   async function model(au) {
     if (MODELS[au]) return MODELS[au];
-    const src = window.M1 && M1.audioSrc ? M1.audioSrc(au) : au; const ab = await (await fetch(src)).arrayBuffer(); const buf = await ac().decodeAudioData(ab);
+    const L = window.M1 && M1.audioSrcs ? M1.audioSrcs(au) : [window.M1 && M1.audioSrc ? M1.audioSrc(au) : au]; let buf = null, er = null; /* v520: prueba raíz, audio/ y el audio original */
+    for (const src of L) { try { const r = await fetch(src); if (!r.ok) continue; buf = await ac().decodeAudioData(await r.arrayBuffer()); break; } catch (e) { er = e; } } if (!buf) throw er || new Error('audio');
     const x = down(buf.getChannelData(0), buf.sampleRate), F = analyze(x), thr = voiceThr(F), sp = span(F, thr) || [0, Math.max(0, F.length - 1)], con = contour(F, sp);
     return MODELS[au] = { buf, con, dur: Math.max(0.3, (sp[1] - sp[0] + 1) * HOP / R) };
   }

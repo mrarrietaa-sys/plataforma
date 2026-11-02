@@ -147,14 +147,14 @@
     halt();
     return new Promise(res => {
       if (!au) return res();
-      const a = new Audio(audioSrc(au));
+      const a = audioEl(au);
       a.playbackRate = opts.rate || 1; a.preservesPitch = true;
       cur = a; if (opts.btn) { curBtn = opts.btn; opts.btn.classList.add('playing'); }
       let done = false;
       const end = () => { if (done) return; done = true; if (opts.btn) opts.btn.classList.remove('playing'); if (cur === a) cur = null; if (curEnd === end) curEnd = null; audioUI(); res(); };
       curEnd = end;
-      a.onended = end; a.onerror = end;
-      a.play().then(audioUI).catch(end);
+      a.onended = end; a.addEventListener('mrfail', end); /* v520: si un archivo no está, prueba el siguiente antes de rendirse */
+      a.play().then(audioUI).catch(e => { if (!e || e.name === 'NotAllowedError' || a.__ex) end(); });
     });
   }
   // audio is packed in a few files (js/audio/*.js) so the folder is easy to upload to GitHub
@@ -803,7 +803,14 @@
     const m = MOODS[mood] || 'thumbs';
     return `<img class="${cls} mra mra-${m}" src="mra-${m}.webp" alt="Mr. Arrieta" draggable="false">`;
   }
-  function audioSrc(au) { if (window.MRFIX && window.MRFIX.has(au)) return au + '.mp3?v=' + (window.MRFIXV || ''); return window.AUD && window.AUD[au] ? 'data:audio/mpeg;base64,' + window.AUD[au] : 'audio/' + au + '.mp3'; }
+  /* v520 · audios corregidos: se buscan en la raíz y en audio/ y, si no están, suena el audio original del paquete (nunca queda en silencio) */
+  function audioSrcs(au) { const L = [], q = '?v=' + (window.MRFIXV || ''), dat = window.AUD && window.AUD[au] ? 'data:audio/mpeg;base64,' + window.AUD[au] : null;
+    if (window.MRFIX && window.MRFIX.has(au)) { const r = au + '.mp3' + q, f = 'audio/' + au + '.mp3' + q; if (window.MRFIXB === 'audio/') L.push(f, r); else L.push(r, f); }
+    if (dat) L.push(dat); else if (!L.length) L.push('audio/' + au + '.mp3'); return L; }
+  function audioSrc(au) { return audioSrcs(au)[0]; }
+  function audioEl(au) { const L = audioSrcs(au); let k = 0; const a = new Audio(L[0]); a.addEventListener('error', () => { if (++k < L.length) { const pr = a.playbackRate, wasPlay = a.__want; a.src = L[k]; a.playbackRate = pr; if (wasPlay) a.play().catch(() => { }); } else { a.__ex = 1; a.dispatchEvent(new Event('mrfail')); } }); const P = a.play.bind(a); a.play = () => { a.__want = 1; return P(); }; return a; }
+  // detecta una sola vez dónde quedaron subidos los audios corregidos (raíz o carpeta audio/)
+  setTimeout(() => { try { if (!window.MRFIX || window.MRFIXB != null) return; const id = window.MRFIX.values().next().value; window.MRFIXB = ''; fetch(id + '.mp3?v=' + (window.MRFIXV || ''), { method: 'HEAD' }).then(r => { if (!r.ok) return fetch('audio/' + id + '.mp3', { method: 'HEAD' }).then(r2 => { window.MRFIXB = r2.ok ? 'audio/' : ''; }); }).catch(() => { }); } catch (e) { } }, 300);
 
   // caras reales (fotos) para personajes de juegos — en vez de emojis
   const FACES = { f: ['photo-1646293890121-b16539364dcc', 'photo-1623039497550-c4f2ccc7b875', 'photo-1662850886700-4ec19bd30d11', 'photo-1489424731084-a5d8b219a5bb', 'photo-1590650213165-c1fef80648c4', 'photo-1506863530036-1efeddceb993', 'photo-1663429122432-c2769373768f', 'photo-1713256449316-1a4067517c3b'],
@@ -861,5 +868,5 @@
     const st = S.stop, ab = S.abort; S.stop = function () { o(); return st.apply(S, arguments); }; S.abort = function () { o(); return ab.apply(S, arguments); }; return S; };
   window.M1 = { face, D, C, MOD, S, $, $$, h, esc, shuffle, sample, sleep, save, touchStreak, addSkill, addWeak, okWeak, skillPct, isUnlocked, finalUnlocked, paceDate, weakParts, reviewMode, revCount, PTS_TIP, hasAccess, progressOpen, lockReason, review, hasProfile, doneCount, totalParts, redeem, codeHash,
     allParts, partById, trackAudio, audioUI, floatStop, recordScore: recordScoreW, recordScoreAsr: recordScoreAsrW, listenAsr: listenAsrW, letterScorer, voiceResult, floatBubble, setBubbleHidden, prevPart, nextPart, partStars, overallPct, imgURL, photo, play, playSeq, loadAudio, stop, sfx, praise, encourage, ageGroup, brand, fbf, get canSR() { return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && (window.AudioContext || window.webkitAudioContext)); }, /* v516: basta con micrófono */ azOn: () => AZV.can(), IOS, MOBILE, listen: listenW, srSession: srSessionW, recordVoice: recordVoiceW,
-    norm, words, lev, speechScore, audBusy, freeJudge, readJudge, grammarFix, spellFix, loadDict, sheet, good, bad, toast, modal, xpFly, confetti, mascot, audioSrc };
+    norm, words, lev, speechScore, audBusy, freeJudge, readJudge, grammarFix, spellFix, loadDict, sheet, good, bad, toast, modal, xpFly, confetti, mascot, audioSrc, audioSrcs, audioEl };
 })();

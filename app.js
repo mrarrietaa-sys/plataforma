@@ -713,7 +713,7 @@
       const st = acc / tot; grp.forEach((_, j) => acc += lens[k * per + j]); const en = acc / tot;
       const pan = h(`<div class="rd-pan" style="--pc:${COL[k % 4]}"><div class="rd-ph"><b>${k + 1}</b><button class="rd-pp" type="button" aria-label="Escuchar viñeta ${k + 1}">${window.MRI ? MRI('vol') : '▶'}</button></div><p></p></div>`);
       grp.forEach(sp => $('p', pan).appendChild(sp));
-      $('.rd-pp', pan).onclick = (e) => { e.stopPropagation(); stop(); sfx('tap'); const a = M.trackAudio(new Audio(M.audioSrc(r.au)));
+      $('.rd-pp', pan).onclick = (e) => { e.stopPropagation(); stop(); sfx('tap'); const a = M.trackAudio(M.audioEl ? M.audioEl(r.au) : new Audio(M.audioSrc(r.au)));
         $$('.rd-pan', grid).forEach(x => x.classList.remove('on')); pan.classList.add('on');
         const go = () => { try { a.currentTime = st * a.duration; } catch (er) { } a.play(); };
         a.ontimeupdate = () => { if (a.duration && a.currentTime >= en * a.duration - 0.05) { a.pause(); pan.classList.remove('on'); } };
@@ -747,19 +747,19 @@
   }
   window.addEventListener('mra-nohear2', () => micTips(true));
   /* v484 · todo cabe en pantalla: si la actividad es más alta que la pantalla, se ajusta (zoom suave, nunca menos de 78%) */
-  (function fit9() {
-    let st = null, key = '', z = 1, ro = null, raf = 0;
+  (function fit9() { /* v520: altura estable (la barra del navegador en Android ya no dispara el ajuste) y sin rebotes → la pantalla no tiembla */
+    let st = null, key = '', z = 1, ro = null, raf = 0, lockT = 0, W = innerWidth, VH = innerHeight;
     const MIN = () => innerWidth < 700 ? .9 : .86;
-    const run = () => { raf = 0; if (!st || !st.isConnected) return; const k = ((st.querySelector('h2') || {}).textContent || '') + '|' + ((st.querySelector('.hd .lbl') || {}).textContent || '');
+    const run = () => { raf = 0; if (!st || !st.isConnected || Date.now() < lockT) return; const k = ((st.querySelector('h2') || {}).textContent || '') + '|' + ((st.querySelector('.hd .lbl') || {}).textContent || '');
       if (k !== key) { key = k; z = 1; st.style.zoom = ''; }
-      const r = st.getBoundingClientRect(), topDoc = r.top + scrollY, avail = innerHeight - Math.max(0, topDoc) - 10; if (avail < 240) return;
+      const r = st.getBoundingClientRect(), topDoc = r.top + scrollY, avail = VH - Math.max(0, topDoc) - 10; if (avail < 240) return;
       const nat = r.height / z; const nz = Math.max(MIN(), Math.min(1, avail / nat));
-      if (nz < z - .01 || nz > z + .04) { z = Math.round(nz * 100) / 100; st.style.zoom = z >= .995 ? '' : z; } };
+      if (nz < z - .02 || nz > z + .08) { z = Math.round(nz * 100) / 100; st.style.zoom = z >= .995 ? '' : z; lockT = Date.now() + 350; } };
     const sched = () => { if (!raf) raf = requestAnimationFrame(run); };
-    const attach = () => { const s2 = document.querySelector('.player .stage'); if (s2 === st) { sched(); return; } st = s2; key = ''; z = 1; if (ro) ro.disconnect(); if (st && window.ResizeObserver) { ro = new ResizeObserver(sched); ro.observe(st); } sched(); };
+    const attach = () => { const s2 = document.querySelector('.player .stage'); if (s2 === st) { sched(); return; } st = s2; key = ''; z = 1; lockT = 0; if (ro) ro.disconnect(); if (st && window.ResizeObserver) { ro = new ResizeObserver(sched); ro.observe(st); } sched(); };
     const mo = new MutationObserver(() => attach()); const go = () => { const app = document.getElementById('app'); if (app) mo.observe(app, { childList: true, subtree: true }); attach(); };
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', go); else go();
-    addEventListener('resize', () => { z = 1; if (st) st.style.zoom = ''; key = ''; sched(); });
+    addEventListener('resize', () => { const dw = Math.abs(innerWidth - W), dh = Math.abs(innerHeight - VH); if (!dw && dh < 180) { VH = Math.max(VH, innerHeight); return; } /* solo la barra del navegador: se ignora */ W = innerWidth; VH = innerHeight; z = 1; if (st) st.style.zoom = ''; key = ''; lockT = 0; sched(); });
   })();
   window.M1ITL = (n, perf, info) => interlude(n, perf, info); // (pruebas)
   const STEP = {
@@ -894,7 +894,7 @@
       // v495: la lectura baja sola siguiendo el audio (centra la frase activa dentro del cuadro)
       const follow = (sp) => { const tx = $('.txt', box); if (!tx || tx.scrollHeight <= tx.clientHeight + 4) return; const el = sp.closest('.rd-msg,.rd-pan') || sp; const tr = tx.getBoundingClientRect(), er = el.getBoundingClientRect();
         const y = tx.scrollTop + (er.top - tr.top) - (tx.clientHeight - Math.min(er.height, tx.clientHeight)) / 2; tx.scrollTo({ top: Math.max(0, y), behavior: 'smooth' }); };
-      const karaoke = () => { stop(); const a = M.trackAudio(new Audio(M.audioSrc(r.au))); const spans = $$('.s', box); const lens = sents.map(s => s.length); const tot = lens.reduce((x, y) => x + y, 0);
+      const karaoke = () => { stop(); const a = M.trackAudio(M.audioEl ? M.audioEl(r.au) : new Audio(M.audioSrc(r.au))); const spans = $$('.s', box); const lens = sents.map(s => s.length); const tot = lens.reduce((x, y) => x + y, 0);
         a.ontimeupdate = () => { if (!a.duration) return; const f = a.currentTime / a.duration * tot; let acc = 0; let cur = -1; spans.forEach((sp, i) => { const on = f >= acc && f < acc + lens[i]; sp.classList.toggle('on', on); if (on) cur = i; acc += lens[i]; }); if (cur >= 0 && cur !== a._cur) { a._cur = cur; follow(spans[cur]); } };
         a.addEventListener('ended', () => { rp._t = 0; spans.forEach(sp => sp.classList.remove('on')); rp.innerHTML = '▶ Escuchar lectura'; rp.classList.remove('playing'); });
         a.addEventListener('pause', () => { if (a.ended) return; rp._t = a.currentTime; rp.innerHTML = '▶ Continuar lectura'; rp.classList.remove('playing'); }); /* ▶️ retoma donde quedó */
@@ -975,7 +975,7 @@
           turn.querySelector('.ms9-mo').onclick = () => { MRMEL.stop(); stop(); play(x.aau); };
           mic.onclick = async () => { if (mic.classList.contains('rec')) { MRMEL.stop(); return; } stop(); mic.classList.add('rec'); st.textContent = 'Te escucho…'; st2.textContent = 'Se detiene sola cuando terminas'; res.innerHTML = '';
             let r = null; try { r = await MRMEL.take(x.aau, v); } catch (e) { r = { err: 1 }; } mic.classList.remove('rec');
-            if (r.err) { st.textContent = 'Permite el micrófono'; st2.textContent = 'Actívalo en el candado de la barra de direcciones.'; return; }
+            if (r.err) { if (r.err === 'mic') { st.textContent = 'Permite el micrófono'; st2.textContent = 'Actívalo en el candado de la barra de direcciones.'; } else { st.textContent = 'Intenta otra vez'; st2.textContent = 'No se pudo preparar el audio. Toca el micrófono de nuevo.'; } return; }
             if (r.silent) { st.textContent = 'No te escuché'; st2.textContent = 'Acércate al micrófono y toca otra vez.'; return; }
             if (!r.ok) { fails++; sfx('bad'); st.textContent = 'Otra toma'; st2.textContent = 'Escucha el modelo y dila igual';
               res.innerHTML = MRMEL.resultHTML(r) + (fails >= 3 ? `<div class="ms9-bt"><button type="button" class="btn w sm ms9-sk">Seguir sin estrellas →</button></div>` : '');
