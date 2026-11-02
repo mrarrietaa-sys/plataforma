@@ -50,11 +50,11 @@
   async function take(au, v, opts) {
     opts = opts || {}; stop(); const m = await model(au); v.setModel(m);
     let stream; try { stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } }); } catch (e) { return { err: 'mic' }; }
-    const ctx = ac(), src = ctx.createMediaStreamSource(stream), pr = ctx.createScriptProcessor(2048, 1, 1), raw = []; let pend = new Float32Array(0), frames = [], noise = [], thr = 0.02, onset = -1, lastV = -1; const stu = [], t0 = performance.now();
+    const ctx = new (window.AudioContext || window.webkitAudioContext)(); try { ctx.resume && ctx.resume(); } catch (e) { } const src = ctx.createMediaStreamSource(stream), /* v518: contexto propio para grabar, se cierra al terminar (en Android un contexto abierto deja el sonido en «modo llamada») */ pr = ctx.createScriptProcessor(2048, 1, 1), raw = []; let pend = new Float32Array(0), frames = [], noise = [], thr = 0.02, onset = -1, lastV = -1; const stu = [], t0 = performance.now();
     const maxMs = Math.max(4000, m.dur * 2200 + 2500); opts.onStart && opts.onStart();
-    try { window.MRAWAVE && MRAWAVE.stream && MRAWAVE.stream(stream); } catch (e) { }
+    /* v518: sin MRAWAVE.stream (dejaba un contexto de audio abierto y el sonido quedaba bajito en Android) */
     return new Promise(res => {
-      const fin = () => { if (!REC) return; REC = null; try { pr.disconnect(); src.disconnect(); } catch (e) { } stream.getTracks().forEach(t => t.stop()); res(score(raw, ctx.sampleRate, m, v)); };
+      const fin = () => { if (!REC) return; REC = null; try { pr.disconnect(); src.disconnect(); } catch (e) { } stream.getTracks().forEach(t => t.stop()); const rate = ctx.sampleRate; try { ctx.close(); } catch (e) { } res(score(raw, rate, m, v)); };
       REC = fin;
       pr.onaudioprocess = e => { if (!REC) return; const d = e.inputBuffer.getChannelData(0); raw.push(new Float32Array(d)); const y = down(d, ctx.sampleRate), z = new Float32Array(pend.length + y.length); z.set(pend); z.set(y, pend.length); pend = z;
         while (pend.length >= FR) { const f = frame(pend, 0); frames.push(f); pend = pend.slice(HOP); const tms = frames.length * HOP / R * 1000;
@@ -83,7 +83,7 @@
     else if (it < 3) tip = 'Imita la melodía: dónde sube y baja la voz.';
     else if (r < 3) tip = 'Sigue el ritmo del modelo.';
     const a = Math.max(0, (sp[0] + 15) * HOP / R - 0.15), b = Math.min(all.length / rate, (sp[1] + 15) * HOP / R + FR / R + 0.2), seg = all.slice(Math.floor(a * rate), Math.floor(b * rate));
-    const buf = ac().createBuffer(1, Math.max(1, seg.length), rate); buf.copyToChannel(seg, 0);
+    let buf; try { buf = new AudioBuffer({ length: Math.max(1, seg.length), numberOfChannels: 1, sampleRate: rate }); } catch (e) { buf = ac().createBuffer(1, Math.max(1, seg.length), rate); } buf.copyToChannel(seg, 0);
     v.draw(con.map((c, i) => ({ x: i / con.length * ratio, s: c.s })), false);
     const ok = r >= 2 && ratio > 0.5 && ratio < 2.1; // v517: hablar no basta: tiene que parecerse al modelo
     if (!ok) tip = 'No se parece a la frase. Escúchala y repítela.';

@@ -447,10 +447,11 @@
     const st = [{ sec: 'Goal', k: 'goal' }];
     if (M.prevPart(p)) st.push({ sec: 'Speaking', k: 'review' });
     st.push({ sec: 'Explanation', k: 'learn' });
-    if (p.keyq) st.push({ sec: 'Practice', k: 'keyq' });
+    const X2 = window.M2X && M2X.on(); // v519: el Módulo 2 tiene su propia experiencia
+    if (p.keyq) st.push({ sec: 'Practice', k: X2 ? 'm2oral' : 'keyq' });
     const acts = (C.PLAN || PLAN)[p.id] || p.acts;
     const AGG = M.ageGroup() !== 'adult' && window.MRAGE2 ? MRAGE2.gamesFor(p) : []; // Kids/Teens: su juego propio de la edad
-    const g = (window.MRAGE2 && MRAGE2.game9For && MRAGE2.game9For(p)) || AGG[0] || acts.find(a => !['learn', 'speak', 'speakWords'].includes(a)); if (g) st.push({ sec: 'Practice', k: g }); // v435: juego corto y divertido de su edad
+    const g = (X2 && M2X.gameFor(p)) || (window.MRAGE2 && MRAGE2.game9For && MRAGE2.game9For(p)) || AGG[0] || acts.find(a => !['learn', 'speak', 'speakWords'].includes(a)); if (g) st.push({ sec: 'Practice', k: g }); // v435: juego corto y divertido de su edad
     if (p.reading) st.push({ sec: 'Reading', k: 'reading' });
     if (missionFor(p)) st.push({ sec: 'Mission', k: 'mission' });
     if (songFor(p) || (M.ageGroup() !== 'adult' && window.MRAGE2 && MRAGE2.musicFor(p))) st.push({ sec: 'Music', k: 'music' });
@@ -762,6 +763,7 @@
   })();
   window.M1ITL = (n, perf, info) => interlude(n, perf, info); // (pruebas)
   const STEP = {
+    m2oral: (stage, p) => window.M2X.oral(stage, p), m2game: (stage, p) => window.M2X.game(stage, p), // v519 · Módulo 2
     goal: async (stage, p) => {
       const prev = M.prevPart(p);
       if (V9()) { // v461 · «Raspa y descubre»: goal corto («Hoy vas a poder…») + 2 frases; se revela en menos de 2 s
@@ -876,8 +878,9 @@
       const AG = M.ageGroup();
       const body = A.head(stage, { lbl: 'Reading', title: AG === 'adult' ? `📖 ${r.title}` : r.title, ins: AG === 'teens' ? 'Lee el chat mientras lo escuchas. Luego responde <b>TRUE</b> o <b>FALSE</b>.' : AG === 'kids' ? 'Escucha el cuento y toca cada viñeta para oírla otra vez. Luego responde <b>YES</b> o <b>NO</b>.' : 'Escucha y lee al mismo tiempo. Luego responde <b>YES</b> o <b>NO</b>.' });
       const sents = splitSents(r.text);
-      const box = h(`<div class="reading">${photo(r.img)}<div><div class="row" style="margin-bottom:10px"><button class="btn k sm" id="rp">▶ Escuchar lectura</button></div><div class="txt">${sents.map(s => `<span class="s">${s.split(/(\s+)/).map(w => /\S/.test(w) ? `<i class="rw">${esc(w)}</i>` : w).join('')}</span>`).join('')}</div><button class="rd-tr" id="rdtr" type="button" aria-expanded="false"><span>ES</span> Ver traducción al español</button><div class="rd-es" id="rdes" hidden></div></div></div>`);
-      body.appendChild(box); if (AG !== 'adult') ageReading(box, r, sents, AG);
+      const POD = window.M2X && M2X.on(); /* v519: lectura en formato podcast (Módulo 2) */
+      const box = POD ? h(M2X.podBox(r, sents, photo)) : h(`<div class="reading">${photo(r.img)}<div><div class="row" style="margin-bottom:10px"><button class="btn k sm" id="rp">▶ Escuchar lectura</button></div><div class="txt">${sents.map(s => `<span class="s">${s.split(/(\s+)/).map(w => /\S/.test(w) ? `<i class="rw">${esc(w)}</i>` : w).join('')}</span>`).join('')}</div><button class="rd-tr" id="rdtr" type="button" aria-expanded="false"><span>ES</span> Ver traducción al español</button><div class="rd-es" id="rdes" hidden></div></div></div>`);
+      body.appendChild(box); if (POD) M2X.podWatch(box); else if (AG !== 'adult') ageReading(box, r, sents, AG);
       { const tb = $('#rdtr', box), pane = $('#rdes', box);
         const getES = () => window.MRRDES ? Promise.resolve() : new Promise(res => { const base = (document.querySelector('script[src*="core.js"]').getAttribute('src') || '').replace(/core\.js(\?.*)?$/, ''); const q = ((document.querySelector('script[src*="core.js"]').getAttribute('src') || '').match(/\?.*$/) || [''])[0]; const sc = document.createElement('script'); sc.src = base + 'rdes.js' + q; sc.onload = res; sc.onerror = res; document.head.appendChild(sc); });
         tb.onclick = async () => {
@@ -965,9 +968,9 @@
         // 2) dobla su línea con el motor de melodía
         const tr = window.MRKQAES && MRKQAES[x.a];
         const tk = await new Promise(done => { let cur = null, fails = 0;
-          turn.innerHTML = `<div class="ms9-line"><small>TU TURNO · DÍLO EN VOZ ALTA</small><b>${esc(x.a)}</b>${tr ? `<span>${esc(tr)}</span>` : ''}</div><div class="ms9-mel"></div><div class="ms9-res"></div>
+          turn.innerHTML = `<div class="ms9-line">${window.M2X && M2X.on() ? `<small>TU TURNO · RECUERDA LA PALABRA</small>${M2X.hide(x.a, p)}` : `<small>TU TURNO · DÍLO EN VOZ ALTA</small><b>${esc(x.a)}</b>`}${tr ? `<span>${esc(tr)}</span>` : ''}</div><div class="ms9-mel"></div><div class="ms9-res"></div>
             <div class="ms9-act"><button type="button" class="ms9-mic" aria-label="Grabar">${I('mic')}</button><div><b class="ms9-st">Toca el micrófono y dila</b><small class="ms9-st2">Imita el ritmo y la melodía del modelo</small></div><button type="button" class="btn w sm ms9-mo">${I('vol')} Modelo</button></div>`;
-          const v = MRMEL.view(turn.querySelector('.ms9-mel')); MRMEL.model(x.aau).then(m => v.setModel(m)).catch(() => { });
+          if (window.M2X) M2X.bindHint(turn); const v = MRMEL.view(turn.querySelector('.ms9-mel')); MRMEL.model(x.aau).then(m => v.setModel(m)).catch(() => { });
           const mic = turn.querySelector('.ms9-mic'), st = turn.querySelector('.ms9-st'), st2 = turn.querySelector('.ms9-st2'), res = turn.querySelector('.ms9-res');
           turn.querySelector('.ms9-mo').onclick = () => { MRMEL.stop(); stop(); play(x.aau); };
           mic.onclick = async () => { if (mic.classList.contains('rec')) { MRMEL.stop(); return; } stop(); mic.classList.add('rec'); st.textContent = 'Te escucho…'; st2.textContent = 'Se detiene sola cuando terminas'; res.innerHTML = '';
@@ -1192,7 +1195,7 @@
       await A.waitNext(stage, 'Continuar'); return A.result(c, rounds.length, 'listening');
     },
 
-    music: async (stage, p) => playLearn(stage, p),
+    music: async (stage, p) => { const r = await playLearn(stage, p); if (window.M2X && M2X.on() && stage.isConnected) { try { stage.innerHTML = ''; await M2X.karaoke(stage, p); } catch (e) { console.error(e); } } return r; }, // v519: + karaoke en el Módulo 2
 
     hw: async (stage, p) => homework(stage, p),
     game9: async (stage, p) => { const pv = M.prevPart(p); const old = pv ? sample((pv.vocab || []).filter(v => v && v.en && !(p.vocab || []).some(x => x.en === v.en)), 2) : []; const fn = STEP[p._g9] || A[p._g9]; return fn(stage, Object.assign({}, p, { vocab: (p.vocab || []).concat(old) })); },

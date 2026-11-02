@@ -694,8 +694,8 @@
           let ended = false; try { ended = player.getPlayerState() === 0; } catch (e) { } if (ended) { ask(); return; }
           hint('Sigue escuchando…'); try { player.playVideo(); } catch (e) { } }, 1800); }); };
     const fallback = () => { clearInterval(poll); player = null;
-      $('.sg9-vid', w).innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${esc(ids[0])}?rel=0&playsinline=1&start=${clip[0]}&end=${clip[1]}&cc_load_policy=0&iv_load_policy=3" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
-      hint('Escucha la canción y luego responde.'); const go = h('<button type="button" class="sg9-rep">Ya la escuché</button>'); $('.sg9-q', w).appendChild(go); go.onclick = () => { go.remove(); ask(); }; };
+      $('.sg9-vid', w).innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${esc(ids[0])}?rel=0&playsinline=1&start=${clip[0]}&end=${clip[1]}&cc_load_policy=0&iv_load_policy=3" allow="autoplay; encrypted-media" allowfullscreen></iframe><span class="sg9-tag" hidden>Pausado</span>`; /* v519: conserva la etiqueta (sin ella la actividad se rompía) */
+      hint('Escucha la canción y luego responde.'); const go = h('<button type="button" class="sg9-rep">Ya la escuché</button>'); $('.sg9-q', w).appendChild(go); go.onclick = () => { go.hidden = true; ask(); }; }; /* v519: sin YouTube API el botón se reutiliza (antes se borraba y la actividad se rompía) */
     const ok = await yt9(); if (!stage.isConnected) return null;
     if (!ok) fallback();
     else {
