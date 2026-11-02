@@ -48,14 +48,14 @@
   // ---------- una toma ----------
   let REC = null;
   function stop() { if (REC) REC(); }
-  async function take(au, v, opts) {
+  async function take0(au, v, opts) {
     opts = opts || {}; stop(); const m = await model(au); v.setModel(m);
     let stream; try { stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } }); } catch (e) { return { err: 'mic' }; }
     const ctx = new (window.AudioContext || window.webkitAudioContext)(); try { ctx.resume && ctx.resume(); } catch (e) { } const src = ctx.createMediaStreamSource(stream), /* v518: contexto propio para grabar, se cierra al terminar (en Android un contexto abierto deja el sonido en «modo llamada») */ pr = ctx.createScriptProcessor(2048, 1, 1), raw = []; let pend = new Float32Array(0), frames = [], noise = [], thr = 0.02, onset = -1, lastV = -1; const stu = [], t0 = performance.now();
     const maxMs = Math.max(4000, m.dur * 2200 + 2500); opts.onStart && opts.onStart();
     /* v518: sin MRAWAVE.stream (dejaba un contexto de audio abierto y el sonido quedaba bajito en Android) */
     return new Promise(res => {
-      const fin = () => { if (!REC) return; REC = null; try { pr.disconnect(); src.disconnect(); } catch (e) { } stream.getTracks().forEach(t => t.stop()); const rate = ctx.sampleRate; try { ctx.close(); } catch (e) { } res(score(raw, rate, m, v)); };
+      const fin = () => { if (!REC) return; REC = null; try { pr.disconnect(); src.disconnect(); } catch (e) { } stream.getTracks().forEach(t => t.stop()); const rate = ctx.sampleRate; try { ctx.close(); } catch (e) { } res(Object.assign(score(raw, rate, m, v), { _raw: raw, _rate: rate })); };
       REC = fin;
       pr.onaudioprocess = e => { if (!REC) return; const d = e.inputBuffer.getChannelData(0); raw.push(new Float32Array(d)); const y = down(d, ctx.sampleRate), z = new Float32Array(pend.length + y.length); z.set(pend); z.set(y, pend.length); pend = z;
         while (pend.length >= FR) { const f = frame(pend, 0); frames.push(f); pend = pend.slice(HOP); const tms = frames.length * HOP / R * 1000;
@@ -66,6 +66,40 @@
         const now = performance.now() - t0; if (onset >= 0 && (frames.length - 1 - lastV) * HOP / R > 1.0) fin(); else if (onset < 0 && now > 7000) fin(); else if (now > maxMs) fin(); };
       src.connect(pr); pr.connect(ctx.destination);
     });
+  }
+
+  /* ===== v520 · DOBLE FILTRO: melodía + palabras exactas (Azure con la frase de referencia) =====
+     Nunca se aprueba una frase distinta: si falta, sobra o cambia una palabra, la toma no pasa. */
+  let REF = null;
+  function refOf(au) { if (!au) return ''; if (!REF) { REF = {}; const seen = new Set();
+      const put = (id, t) => { if (id && typeof t === 'string' && t.length < 220 && !REF[id]) REF[id] = t; };
+      const walk = (o, d) => { if (!o || typeof o !== 'object' || d > 9 || seen.has(o)) return; seen.add(o);
+        if (Array.isArray(o)) { o.forEach(x => walk(x, d + 1)); return; }
+        if (o.qau) put(o.qau, o.q); if (o.aau) put(o.aau, String(o.a || '').split(' / ')[0]); if (o.au) put(o.au, o.full || o.en || o.w || o.s || o.t || o.ph || o.say);
+        for (const k in o) { const x = o[k]; if (x && typeof x === 'object') walk(x, d + 1); } };
+      try { Object.keys(window).forEach(k => { if (/^(M1DATA|MRMISSIONS|M1SONGS|M2AGE|MYAGE\d|MRKQ\w*|KQ\w*|MRKW\w*|MRRL\w*|MRPH\w*|MRGOALS?\w*|MRSP9\w*|M1KQ\w*)$/.test(k)) walk(window[k], 0); }); } catch (e) { } }
+    return REF[au] || ''; }
+  const norm = s => String(s || '').toLowerCase().replace(/[’‘`]/g, "'").replace(/[^a-z0-9' ]/g, ' ').replace(/\s+/g, ' ').trim();
+  function strict(az, ref) { // la frase debe ser exactamente la de referencia
+    const W = (az && az.words) || []; if (!az || !az.ref || !W.length) return { ok: false, unv: 1 };
+    const om = W.filter(w => w.e === 'Omission'), ins = W.filter(w => w.e === 'Insertion'), mis = W.filter(w => w.e !== 'Insertion' && w.e !== 'Omission' && w.a < 45);
+    const tail = az.end != null && az.sec ? (az.sec - az.end > 1.1) : false;
+    const ok = !om.length && !ins.length && !mis.length && !tail && (az.comp == null || az.comp >= 90);
+    const words = norm(ref).split(' '); const miss = om[0] || mis.sort((a, b) => a.a - b.a)[0];
+    return { ok, miss: miss ? miss.w : '', extra: !miss && (ins.length > 0 || tail), n: words.length };
+  }
+  async function take(au, v, opts) {
+    opts = opts || {}; const r = await take0(au, v, opts); if (!r || r.err || r.silent) return r;
+    const raw = r._raw, rate = r._rate; delete r._raw; delete r._rate;
+    const ref = String(opts.ref || refOf(au) || '').replace(/_{2,}/g, ' ').trim(); if (!ref || opts.noWords) return r;
+    if (!r.ok) return r; // si la melodía no se parece, ni se gasta la revisión de palabras
+    const Z = window.M1 && M1.AZV; if (!Z || !Z.can()) { r.ok = false; r.unv = 1; r.tip = 'No pudimos revisar tus palabras en este momento. Escucha el modelo e inténtalo otra vez.'; return r; }
+    let az = null; try { const wav = Z.toWav({ bufs: raw, rate }); az = wav ? await Z.assess(wav, ref) : null; } catch (e) { az = null; }
+    if (!az) { r.ok = false; r.unv = 1; r.tip = 'No pudimos revisar tus palabras en este momento. Inténtalo otra vez.'; return r; }
+    if (az.silent) { r.ok = false; r.tip = 'No entendimos las palabras. Dila otra vez, clara y completa.'; return r; }
+    const j = strict(az, ref); r.words = j;
+    if (!j.ok) { r.ok = false; r.tip = j.miss ? `No es la frase exacta. Revisa la palabra: “${j.miss}”. Escucha el modelo y dila completa.` : j.extra ? 'Dijiste palabras de más. Di solo la frase, igual al modelo.' : 'No es la frase exacta. Escucha el modelo y dila completa.'; }
+    return r;
   }
   function score(raw, rate, m, v) {
     const n = raw.reduce((a, b) => a + b.length, 0), all = new Float32Array(n); let o = 0; raw.forEach(b => { all.set(b, o); o += b.length; });
@@ -108,11 +142,11 @@
   function resultHTML(r) { return `<div class="mel9-res${r.ok === false ? ' no' : ''}"><span>Ritmo <b>${stars(r.r)}</b></span><span>Entonación <b>${stars(r.it)}</b></span></div><p class="mel9-tip">${r.tip}</p>`; }
   const can = () => !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && (window.AudioContext || window.webkitAudioContext));
   // juicio completo en un contenedor: vista + resultado. Devuelve {silent}|{err}|{ok,r,it,tip,buf}
-  async function judge(au, host) { host.innerHTML = ''; const v = view(host); let r; try { r = await take(au, v); } catch (e) { r = { err: 1 }; }
+  async function judge(au, host, ref) { host.innerHTML = ''; const v = view(host); let r; try { r = await take(au, v, ref ? { ref } : {}); } catch (e) { r = { err: 1 }; }
     if (r.err) { host.insertAdjacentHTML('beforeend', '<p class="mel9-tip">Permite el micrófono para practicar.</p>'); return r; }
     if (r.silent) { host.insertAdjacentHTML('beforeend', '<p class="mel9-tip">No te escuché. Acércate al micrófono y repite.</p>'); return r; }
     host.insertAdjacentHTML('beforeend', resultHTML(r)); return r; }
   // puntaje 0-100 para retos antiguos: 100 = 3+3 estrellas; si no se parece, menos de 60
-  async function scoreAu(au, host) { const r = await judge(au, host); if (r.err) return { err: 1 }; if (r.silent) return { silent: 1 }; return { score: !r.ok ? 45 : r.r + r.it >= 6 ? 100 : r.r + r.it >= 5 ? 90 : 80, r }; }
-  window.MRMEL = { can, model, view, take, stop, play, resultHTML, stars, judge, score: scoreAu };
+  async function scoreAu(au, host, ref) { const r = await judge(au, host, ref); if (r.err) return { err: 1 }; if (r.silent) return { silent: 1 }; return { score: !r.ok ? 45 : r.r + r.it >= 6 ? 100 : r.r + r.it >= 5 ? 90 : 80, r }; }
+  window.MRMEL = { can, model, view, take, stop, play, resultHTML, stars, judge, score: scoreAu, refOf };
 })();

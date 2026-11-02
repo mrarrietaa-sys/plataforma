@@ -87,11 +87,11 @@
       mic.classList.remove('rec'); mic.disabled = false; $('small', mic).textContent = 'Otra vez'; if (cur !== i) return;
       if (r.err) { res.innerHTML = ''; $('small', mic).textContent = 'Repetir'; M.toast('Permite el acceso al micrófono'); return; }
       if (r.silent) { v.el.insertAdjacentHTML('afterend', '<div class="lrc-fb"><b>No te escuché.</b> Acércate al micrófono y repite.</div>'); $('small', mic).textContent = 'Repetir'; return; }
-      const cls = !r.ok ? 'ce-st-bad' : r.r + r.it >= 5 ? 'ce-st-ok' : 'ce-st-mid'; card.classList.add(cls);
+      const cls = r.unv ? 'ce-st-mid' : !r.ok ? 'ce-st-bad' : r.r + r.it >= 5 ? 'ce-st-ok' : 'ce-st-mid'; card.classList.add(cls);
       v.el.insertAdjacentHTML('afterend', MRMEL.resultHTML(r) + '<div class="mel9-bt"><button type="button" class="btn w sm mel9-me">▶ Tu voz</button><button type="button" class="btn w sm ce-mo">▶ Modelo</button></div>');
       res.querySelector('.mel9-me').onclick = (ev) => { ev.stopPropagation(); stop(); MRMEL.play(r.buf); };
       res.querySelector('.ce-mo').onclick = (ev) => { ev.stopPropagation(); MRMEL.stop(); play(it.au); };
-      st[i] = { html: MRMEL.resultHTML(r), cls }; if (!r.ok) { sfx('bad'); return; } sfx(cls === 'ce-st-ok' ? 'ok' : 'tap'); markOk(i);
+      st[i] = { html: MRMEL.resultHTML(r), cls }; if (r.unv) { markOk(i); return; } /* v520: si la revisión de palabras no está disponible, cuenta como practicada (sin marcarla correcta) para no bloquear */ if (!r.ok) { sfx('bad'); return; } sfx(cls === 'ce-st-ok' ? 'ok' : 'tap'); markOk(i);
     };
     if (mic) mic.onclick = (e) => { e.stopPropagation(); sfx('tap'); doRec(); };
     $('.lrc-au', grid).onclick = () => { stop(); sayIt(cur); };

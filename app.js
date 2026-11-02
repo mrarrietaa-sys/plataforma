@@ -978,7 +978,7 @@
             if (r.err) { if (r.err === 'mic') { st.textContent = 'Permite el micrófono'; st2.textContent = 'Actívalo en el candado de la barra de direcciones.'; } else { st.textContent = 'Intenta otra vez'; st2.textContent = 'No se pudo preparar el audio. Toca el micrófono de nuevo.'; } return; }
             if (r.silent) { st.textContent = 'No te escuché'; st2.textContent = 'Acércate al micrófono y toca otra vez.'; return; }
             if (!r.ok) { fails++; sfx('bad'); st.textContent = 'Otra toma'; st2.textContent = 'Escucha el modelo y dila igual';
-              res.innerHTML = MRMEL.resultHTML(r) + (fails >= 3 ? `<div class="ms9-bt"><button type="button" class="btn w sm ms9-sk">Seguir sin estrellas →</button></div>` : '');
+              res.innerHTML = MRMEL.resultHTML(r) + (fails >= 3 || r.unv ? `<div class="ms9-bt"><button type="button" class="btn w sm ms9-sk">Seguir sin estrellas →</button></div>` : '');
               const sk = res.querySelector('.ms9-sk'); if (sk) sk.onclick = () => done(null); return; } // v517: hablar no basta
             cur = r; sfx(r.r + r.it >= 5 ? 'ok' : 'tap'); st.textContent = 'Otra toma'; st2.textContent = 'Si quieres, grábala otra vez';
             res.innerHTML = MRMEL.resultHTML(r) + `<div class="ms9-bt"><button type="button" class="btn w sm ms9-me">▶ Tu toma</button><button type="button" class="btn k sm ms9-ok">Usar esta toma →</button></div>`;

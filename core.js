@@ -318,7 +318,7 @@
       const ref = W.filter(w => w.e !== 'Insertion').length;
       const short = ref <= 2, minA = short ? 80 : 60, bad2 = short ? W.filter(w => w.e !== 'Insertion' && w.a < 80).length : bad; // palabras sueltas: más exigente
       const tail = az.end != null && az.sec ? (az.sec - az.end > 0.9 || az.off > 0.8) : false; // v511: habló más de lo que Azure reconoció
-      const ok = !tail && az.comp >= 85 && az.acc >= minA && az.pron >= minA && om === 0 && ins <= (short ? 0 : 1) && bad2 <= (ref >= 4 ? 1 : 0);
+      const ok = !tail && az.comp >= 85 && az.acc >= minA && az.pron >= minA && om === 0 && ins === 0 && bad2 <= (ref >= 4 ? 1 : 0);
       return { ok, score: ok ? Math.max(az.pron, 75) : Math.min(az.pron, 69), why: tail || om || ins >= 2 || (ins && !ok) ? 'words' : 'pron', extra: ins >= 2 && !om };
     }
     return { can, capture, toWav, assess, verdict };
@@ -866,7 +866,7 @@
     return r; }
   const srSessionW = function (onText, onFatal) { const W = window.MRAWAVE; let off = !W; const o = () => { if (!off) { off = true; W.off(); } }; if (W) W.on(); const S = srSession(onText, function () { o(); return onFatal && onFatal.apply(this, arguments); }); if (!W) return S; if (!S) { o(); return S; }
     const st = S.stop, ab = S.abort; S.stop = function () { o(); return st.apply(S, arguments); }; S.abort = function () { o(); return ab.apply(S, arguments); }; return S; };
-  window.M1 = { face, D, C, MOD, S, $, $$, h, esc, shuffle, sample, sleep, save, touchStreak, addSkill, addWeak, okWeak, skillPct, isUnlocked, finalUnlocked, paceDate, weakParts, reviewMode, revCount, PTS_TIP, hasAccess, progressOpen, lockReason, review, hasProfile, doneCount, totalParts, redeem, codeHash,
+  window.M1 = { AZV, face, D, C, MOD, S, $, $$, h, esc, shuffle, sample, sleep, save, touchStreak, addSkill, addWeak, okWeak, skillPct, isUnlocked, finalUnlocked, paceDate, weakParts, reviewMode, revCount, PTS_TIP, hasAccess, progressOpen, lockReason, review, hasProfile, doneCount, totalParts, redeem, codeHash,
     allParts, partById, trackAudio, audioUI, floatStop, recordScore: recordScoreW, recordScoreAsr: recordScoreAsrW, listenAsr: listenAsrW, letterScorer, voiceResult, floatBubble, setBubbleHidden, prevPart, nextPart, partStars, overallPct, imgURL, photo, play, playSeq, loadAudio, stop, sfx, praise, encourage, ageGroup, brand, fbf, get canSR() { return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && (window.AudioContext || window.webkitAudioContext)); }, /* v516: basta con micrófono */ azOn: () => AZV.can(), IOS, MOBILE, listen: listenW, srSession: srSessionW, recordVoice: recordVoiceW,
     norm, words, lev, speechScore, audBusy, freeJudge, readJudge, grammarFix, spellFix, loadDict, sheet, good, bad, toast, modal, xpFly, confetti, mascot, audioSrc, audioSrcs, audioEl };
 })();
