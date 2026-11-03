@@ -995,8 +995,9 @@
       turn.innerHTML = `<div class="ms9-fin"><b>¡Misión cumplida!</b>${T.length ? `<span>Ritmo <i>${MRMEL.stars(sr)}</i> · Entonación <i>${MRMEL.stars(si)}</i></span>` : ''}</div><div class="ms9-bt"><button type="button" class="btn k ms9-all">▶ Escuchar mi escena</button><button type="button" class="btn w ms9-nx">Continuar →</button></div>`;
       if (sr + si >= 5) { try { M.confetti(900); } catch (e) { } sfx('win'); }
       const bs = () => [...dl.querySelectorAll('.ms9-b')];
+      const fol = (b) => { try { const dr = dl.getBoundingClientRect(), br = b.getBoundingClientRect(); dl.scrollTo({ top: Math.max(0, dl.scrollTop + (br.top - dr.top) - (dl.clientHeight - br.height) / 2), behavior: 'smooth' }); } catch (e) { } }; /* v524: la escena baja sola siguiendo lo que suena */
       turn.querySelector('.ms9-all').onclick = async (ev) => { const btn = ev.currentTarget; btn.disabled = true; for (let i = 0; i < N; i++) { const x = list[i]; const B = bs(); B.forEach(b => b.classList.remove('now'));
-          if (B[i * 2]) B[i * 2].classList.add('now'); await play(x.qau); await sleep(250); if (B[i * 2 + 1]) B[i * 2 + 1].classList.add('now'); if (takes[i]) await MRMEL.play(takes[i].buf); else await play(x.aau); await sleep(300); } bs().forEach(b => b.classList.remove('now')); btn.disabled = false; };
+          if (B[i * 2]) { B[i * 2].classList.add('now'); fol(B[i * 2]); } await play(x.qau); await sleep(250); if (B[i * 2 + 1]) { B[i * 2 + 1].classList.add('now'); fol(B[i * 2 + 1]); } if (takes[i]) await MRMEL.play(takes[i].buf); else await play(x.aau); await sleep(300); } bs().forEach(b => b.classList.remove('now')); btn.disabled = false; };
       await new Promise(r => turn.querySelector('.ms9-nx').onclick = () => { MRMEL.stop(); stop(); r(); });
       return A.result(c, N, 'speaking');
     },
