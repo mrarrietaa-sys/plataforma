@@ -8327,3 +8327,6 @@ img.ld-hero-mra{background:none!important}.ld-hero-mra+.rk-sh{height:16px;backgr
  .tpl .tp-livei span{font-size:12px;line-height:1.2}.tpl .tp-livei span small{font-size:10.5px}
  .tpl .tp-livei em::after{font-size:13px}
 }
+
+/* v543 · franja de edad: solo imagen y nombre (PC y celular) */
+.tpl .tpl-hd{padding:6px 12px;gap:10px}.tpl .tpl-hd img{width:38px;height:38px}.tpl .tpl-hd b{font-size:14px}.tpl .tpl-hd span{display:none}
