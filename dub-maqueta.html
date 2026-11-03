@@ -1,0 +1,104 @@
+<!doctype html><html><head><meta charset="utf-8"><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700;800&family=Inter:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#eef2f8;font-family:Inter,sans-serif;color:#0B2A5B;padding:26px}
+h1{font:800 26px Poppins;margin:0 0 4px}p.s{margin:0 0 18px;color:#5a6b85;font-size:15px}
+.row{display:flex;gap:20px}.col{flex:1;min-width:0}.tag{display:inline-block;font:700 11px Inter;letter-spacing:.06em;padding:4px 10px;border-radius:99px;background:#dfe6f1;margin-bottom:6px}
+.cap{font:800 15px Poppins;margin:0 0 8px}
+.ph{border:7px solid #0B2A5B;border-radius:30px;overflow:hidden;height:800px;position:relative;background:#fff}
+.scr{padding:14px;height:100%;box-sizing:border-box;display:flex;flex-direction:column;gap:10px}
+.top{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:700;color:#5a6b85}
+.top b{font:800 16px Poppins;color:inherit}
+.scene{border-radius:18px;height:180px;position:relative;overflow:hidden;display:flex;align-items:flex-end;justify-content:space-around;padding:0 10px}
+.chr{display:flex;flex-direction:column;align-items:center;gap:4px;font:700 11px Inter}
+.av{width:62px;height:62px;border-radius:50%;display:grid;place-items:center;font:800 22px Poppins;color:#fff;border:3px solid #fff;box-shadow:0 4px 10px rgba(0,0,0,.15)}
+.chr.me .av{outline:3px solid #E3242B;outline-offset:2px}
+.chr span{background:#fff;padding:2px 8px;border-radius:99px;margin-bottom:10px}
+.chr.me span{background:#E3242B;color:#fff}
+.dlg{display:flex;flex-direction:column;gap:6px;font-size:13px}
+.b{max-width:85%;padding:7px 11px;border-radius:14px;background:#f1f4f9;color:#5a6b85}
+.b.me{align-self:flex-end;background:#fde8e9;color:#0B2A5B}
+.line{border-radius:16px;padding:12px;background:#0B2A5B;color:#fff}
+.line small{display:block;font:700 10.5px Inter;letter-spacing:.08em;color:#ffd43b;margin-bottom:4px}
+.kara{font:800 21px Poppins;line-height:1.3}.kara .d{color:#ffd43b}.kara .n{color:rgba(255,255,255,.45)}
+.mel{background:#f6f8fc;border:1.5px solid #e3e9f3;border-radius:16px;padding:8px 10px 6px}
+.mel .lb{display:flex;gap:12px;font-size:11px;font-weight:700;color:#5a6b85;margin-top:2px}
+.mel .lb i{display:inline-block;width:14px;height:3px;border-radius:2px;vertical-align:3px;margin-right:4px}
+.stars{display:flex;gap:10px}.st{flex:1;background:#f6f8fc;border-radius:14px;padding:8px 10px;font-size:12px;font-weight:700;color:#5a6b85}
+.st b{display:block;color:#f59e0b;font-size:18px;letter-spacing:2px}.st b .o{color:#dcd3c3}
+.act{display:flex;align-items:center;gap:12px;margin-top:auto}
+.mic{width:60px;height:60px;border-radius:50%;background:#E3242B;display:grid;place-items:center;flex:none;box-shadow:0 0 0 8px rgba(227,36,43,.18)}
+.mic svg{width:26px;height:26px;stroke:#fff}
+.act .t{font-size:13px;font-weight:700}.act .t small{display:block;font-weight:500;color:#5a6b85}
+.btn2{display:flex;gap:8px}.btn2 button{flex:1;border:1.5px solid #dbe3ef;background:#f6f8fc;border-radius:14px;padding:10px 6px;font:700 13px Inter;color:#0B2A5B}
+.go{border:0;border-radius:16px;padding:14px;font:800 15px Poppins;background:#0B2A5B;color:#fff;width:100%}
+/* teens */
+.T .ph{background:#0B1E3F}.T .scr{color:#fff}.T .top{color:#9fb3d1}.T .b{background:#16305c;color:#9fb3d1}.T .b.me{background:#3a1d3a;color:#fff}
+.T .line{background:#16305c}.T .line small{color:#22e58a}.T .kara .d{color:#22e58a}
+.T .mel{background:#12284f;border-color:#1e3a6b}.T .mel .lb{color:#9fb3d1}.T .st{background:#12284f;color:#9fb3d1}
+.T .btn2 button{background:#16305c;border-color:#2a4a80;color:#fff}.T .go{background:#22e58a;color:#0B1E3F}.T .act .t small{color:#9fb3d1}
+/* kids */
+.K .ph{background:#fff8ec}.K .line{background:#f59e0b}.K .line small{color:#fff}.K .kara .d{color:#fff}.K .kara .n{color:rgba(255,255,255,.55)}.K .kara{font-size:24px}
+.K .mel{background:#fff;border-color:#ffd27a}.K .b.me{background:#ffe7b8}
+/* estreno */
+.E .scene{height:260px}.big{width:74px;height:74px;border-radius:50%;background:rgba(255,255,255,.95);display:grid;place-items:center;position:absolute;left:50%;top:50%;transform:translate(-50%,-60%);box-shadow:0 8px 20px rgba(0,0,0,.2)}
+.big i{width:0;height:0;border-left:24px solid #0B2A5B;border-top:15px solid transparent;border-bottom:15px solid transparent;margin-left:6px}
+.wa{border:0;border-radius:16px;padding:14px;font:800 15px Poppins;background:#1fae5b;color:#fff;width:100%}
+.sum{background:#f6f8fc;border-radius:16px;padding:12px;font-size:13px;line-height:1.5}
+.sum b{font:800 16px Poppins;display:block}
+.brand{position:absolute;right:10px;top:10px;background:#fff;border-radius:8px;padding:3px 8px;font:800 11px Poppins;color:#0B2A5B}
+.prem{border:1.5px dashed #c7d2e3;border-radius:14px;padding:10px;font-size:12.5px;color:#5a6b85}
+.prem b{color:#0B2A5B}
+</style></head><body>
+<h1>RealTalk Studio · Dobla la escena</h1><p class="s">El estudiante pone su voz a un personaje. Mientras habla, su línea de melodía se dibuja encima de la del modelo. Al final escucha la escena completa con su voz y la puede compartir.</p>
+<div class="row">
+<div class="col"><span class="tag">ADULTOS</span><div class="cap">1 · Grabando su línea</div><div class="ph"><div class="scr">
+ <div class="top"><b>En la cafetería</b><span>Línea 3 de 6</span></div>
+ <div class="scene" style="background:linear-gradient(160deg,#cfe0f5,#f3e6d6)"><div class="chr"><div class="av" style="background:#7b5cd6">B</div><span>Barista</span></div><div class="chr me"><div class="av" style="background:#0B2A5B">TÚ</div><span>Cliente</span></div></div>
+ <div class="dlg"><div class="b">Hi! What can I get you?</div><div class="b me">Can I have a large latte, please?</div><div class="b">Sure. For here or to go?</div></div>
+ <div class="line"><small>TU TURNO · CLIENTE</small><div class="kara"><span class="d">To go,</span> <span class="d">please.</span> <span class="n">How much is it?</span></div></div>
+ <div class="mel" data-me="0.62"></div>
+ <div class="act"><span class="mic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span><div class="t">Grabando…<small>Di las palabras amarillas al ritmo del modelo</small></div></div>
+</div></div></div>
+
+<div class="col T"><span class="tag">TEENS</span><div class="cap">2 · Resultado de la toma</div><div class="ph"><div class="scr">
+ <div class="top"><b>Chat con Alex</b><span>Línea 2 de 5</span></div>
+ <div class="scene" style="background:linear-gradient(160deg,#1e3a6b,#3a1d5c)"><div class="chr"><div class="av" style="background:#22a5e5">A</div><span style="color:#0B1E3F">Alex</span></div><div class="chr me"><div class="av" style="background:#22e58a;color:#0B1E3F">TÚ</div><span>Tú</span></div></div>
+ <div class="dlg"><div class="b">Did you watch the new episode?</div><div class="b me">No, I didn't! Was it good?</div></div>
+ <div class="line"><small>TU TOMA</small><div class="kara"><span class="d">No, I didn't! Was it good?</span></div></div>
+ <div class="mel" data-me="1"></div>
+ <div class="stars"><div class="st">Ritmo<b>★★★</b></div><div class="st">Entonación<b>★★<span class="o">★</span></b></div></div>
+ <div class="btn2"><button>▶ Tu toma</button><button>▶ Modelo</button><button>↻ Otra toma</button></div>
+ <div style="font-size:12.5px;color:#9fb3d1">Tip: en «Was it good?» la voz sube al final, como en la línea verde.</div>
+ <button class="go" style="margin-top:auto">Usar esta toma →</button>
+</div></div></div>
+
+<div class="col K"><span class="tag">KIDS</span><div class="cap">1 · Grabando su línea</div><div class="ph"><div class="scr">
+ <div class="top"><b>Mr. Arrieta en el zoológico</b><span>2 de 4</span></div>
+ <div class="scene" style="background:linear-gradient(160deg,#bfe8c9,#ffe7a3)"><div class="chr"><img src="mra-thumbs.webp" style="height:150px"></div><div class="chr me"><div class="av" style="background:#f59e0b">TÚ</div><span>Guía</span></div></div>
+ <div class="dlg"><div class="b">Look! What animal is that?</div></div>
+ <div class="line"><small>¡TU TURNO!</small><div class="kara"><span class="d">It's a</span> <span class="n">big lion!</span></div></div>
+ <div class="mel" data-me="0.45"></div>
+ <div class="act"><span class="mic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span><div class="t">¡Te estoy escuchando!<small>Habla como el guía del zoológico</small></div></div>
+</div></div></div>
+
+<div class="col E"><span class="tag">TODAS LAS EDADES</span><div class="cap">3 · El estreno</div><div class="ph"><div class="scr">
+ <div class="top"><b>¡Tu escena está lista!</b><span></span></div>
+ <div class="scene" style="background:linear-gradient(160deg,#cfe0f5,#f3e6d6)"><span class="brand">mrarrieta.com</span><div class="chr"><div class="av" style="background:#7b5cd6">B</div><span>Barista</span></div><div class="chr me"><div class="av" style="background:#0B2A5B">TÚ</div><span>Vale</span></div><div class="big"><i></i></div></div>
+ <div class="sum"><b>En la cafetería · con la voz de Vale</b>6 líneas · 42 segundos<br>Ritmo ★★★ · Entonación ★★☆</div>
+ <button class="wa">Enviar por WhatsApp</button>
+ <div class="btn2"><button>⬇ Guardar</button><button>↻ Volver a doblar</button></div>
+ <div class="prem"><b>Premium:</b> envía tu escena al profe y la comentan en tu próxima clase.</div>
+ <button class="go" style="margin-top:auto">Siguiente escena →</button>
+</div></div></div>
+</div>
+<script>
+// líneas de melodía: modelo (gris) y estudiante (color) hasta donde va
+const model=[.55,.5,.42,.35,.38,.5,.62,.6,.48,.4,.36,.45,.6,.72,.78,.7];
+document.querySelectorAll('.mel').forEach(el=>{const me=+el.dataset.me, T=el.closest('.T'), K=el.closest('.K');
+ const W=300,H=74,pt=(a,j)=>a.map((v,i)=>[i*(W/(a.length-1)),H-v*H*.9-4]);
+ const mo=pt(model), st=model.map((v,i)=>Math.max(.05,Math.min(.95,v+(Math.sin(i*1.7)*.07)+(i>11?-.08:0))));
+ const n=Math.max(2,Math.round(model.length*me)); const sp=pt(st).slice(0,n);
+ const path=a=>a.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
+ const cMo=T?'#5f7aa6':'#b7c3d6', cSt=T?'#22e58a':K?'#f59e0b':'#E3242B';
+ el.innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}"><path d="${path(mo)}" fill="none" stroke="${cMo}" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" opacity=".55"/><path d="${path(sp)}" fill="none" stroke="${cSt}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>${me<1?`<circle cx="${sp[sp.length-1][0]}" cy="${sp[sp.length-1][1]}" r="6" fill="${cSt}"/>`:''}</svg><div class="lb"><span><i style="background:${cMo}"></i>Modelo</span><span><i style="background:${cSt}"></i>Tu voz</span></div>`;});
+</script></body></html>

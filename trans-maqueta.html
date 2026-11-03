@@ -1,0 +1,22 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="app.css?v=511"><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700;800;900&family=Inter:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#eef2f8;font-family:Inter,sans-serif;color:#0B2A5B;padding:26px}
+h1{font:800 26px Poppins;margin:0 0 4px}p.s{margin:0 0 20px;color:#5a6b85;font-size:15px}
+.row{display:flex;gap:22px}.col{flex:1}
+.col h2{font:800 18px Poppins;margin:0 0 2px}.col small{display:block;color:#5a6b85;font-size:13px;margin-bottom:10px;min-height:52px}.col h2{white-space:nowrap}
+.tag{display:inline-block;font:700 11px Inter;letter-spacing:.06em;padding:4px 9px;border-radius:99px;background:#dfe6f1;margin-bottom:8px}.tag.r{background:#e8f7ee;color:#0e8045}
+.ph{position:relative;width:100%;aspect-ratio:9/17;border-radius:26px;overflow:hidden;box-shadow:0 10px 28px rgba(11,42,91,.15);border:6px solid #0B2A5B}
+.ph .itl{position:absolute!important;animation:none!important}
+.ph .itl *{animation:none!important}
+.ph .itl-actor{width:78%!important;transform:none!important}
+.gs{position:absolute;left:50%;transform:translateX(-50%);border-radius:50%;pointer-events:none}
+.A .gs{bottom:4%;width:64%;height:20px;background:radial-gradient(ellipse at center,rgba(11,42,91,.34) 0%,rgba(11,42,91,.14) 50%,transparent 72%)}
+.B .gs{bottom:-6%;width:44%;height:16px;background:radial-gradient(ellipse at center,rgba(11,42,91,.26) 0%,rgba(11,42,91,.10) 50%,transparent 72%);filter:blur(1.5px)}
+.note{font-size:13px;color:#5a6b85;margin-top:10px;line-height:1.4}
+</style></head><body>
+<h1>Sombra en las transiciones de la lección</h1><p class="s">La pantalla que sale entre una actividad y otra («Awesome!» · NEXT). Ejemplo con el cohete; aplicaría a todos los vehículos y personajes.</p>
+<div class="row" id="r"></div>
+<script>
+const V=[['ACTUAL','','Sin sombra en el piso','Hoy solo tiene un brillo alrededor de la imagen; parece pegado al fondo.'],['OPCIÓN A','A','Sombra suave en el piso','Una sombra discreta justo debajo. Da sensación de profundidad.'],['OPCIÓN B','B','Sombra lejana (vuelo)','Más pequeña y lejos, como si volara alto. Al moverse, la sombra crece y se achica.']];
+document.getElementById('r').innerHTML=V.map(([t,c,h,s])=>`<div class="col ${c}"><span class="tag ${c?'r':''}">${t}</span><h2>${h}</h2><small>${s}</small><div class="ph"><div class="itl itl9 itl-up"><div class="itl-top"><div class="itl-say"><b>Awesome!</b><small>4 de 5 en 0:42</small></div></div><div class="itl-mid"><div class="itl-actor itl-k-rocket"><img class="itl-img" src="mra-x-rocket.webp?v=7">${c?'<i class="gs"></i>':''}</div></div><div class="itl-next"><small>NEXT</small><b>SPEAKING</b><i>Toca para continuar</i><span class="itl-dots"><i class="d"></i><i class="d"></i><i class="c"></i><i></i><i></i></span><span class="itl-pso">Paso 3 de 5</span></div></div></div>${c==='B'?'<div class="note">La sombra acompaña el vuelo: cuando el cohete sube, la sombra se hace más pequeña y clara.</div>':''}</div>`).join('');
+</script></body></html>

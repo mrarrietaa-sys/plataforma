@@ -1,0 +1,66 @@
+<!doctype html><html><head><meta charset="utf-8"><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700;800&family=Inter:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#eef2f8;font-family:Inter,sans-serif;color:#0B2A5B;padding:26px}
+h1{font:800 26px Poppins;margin:0 0 4px}p.s{margin:0 0 20px;color:#5a6b85;font-size:15px}
+.row{display:flex;gap:24px}.col{flex:1}.col>.tag{display:inline-block;font:700 11px Inter;letter-spacing:.06em;padding:4px 10px;border-radius:99px;background:#dfe6f1;margin-bottom:10px}
+.ph{border:7px solid #0B2A5B;border-radius:30px;overflow:hidden;height:780px;position:relative}
+.scr{padding:16px;height:100%;box-sizing:border-box}
+.h{font:800 19px Poppins;margin:2px 0 10px}
+.card{border-radius:20px;overflow:hidden;border:1.5px solid #e3e9f3;background:#fff}
+.pic{height:190px;display:grid;place-items:center;background:linear-gradient(135deg,#c9d7ec,#eef3fa)}
+.pic svg{width:90px;height:90px;opacity:.55}
+.in{padding:14px 16px 16px}
+.ph-en{font:800 27px Poppins;line-height:1.25}
+.w{border-radius:8px;padding:0 3px}
+.g{color:#0e8045;background:#e5f6ec}.y{color:#a85d00;background:#fff1d6;text-decoration:underline wavy #f0a020 2px;text-underline-offset:5px}
+.es{color:#5a6b85;font-size:15px;margin-top:4px}
+.res{display:flex;align-items:center;gap:8px;margin-top:12px;font-weight:700;font-size:15px}
+.res .dot{width:10px;height:10px;border-radius:50%;background:#f0a020}
+.tip{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff7e6;border:1px solid #f6dfae;border-radius:14px;padding:10px 12px;margin-top:10px;font-size:14.5px}
+.tip b{color:#a85d00}.mini{border:0;background:#fff;border-radius:99px;padding:6px 12px;font:700 13px Inter;color:#a85d00;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.cmp{display:flex;gap:10px;margin-top:12px}
+.cmp button{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;border:1.5px solid #dbe3ef;background:#f6f8fc;border-radius:14px;padding:11px 8px;font:700 14px Inter;color:#0B2A5B}
+.cmp i{width:0;height:0;border-left:9px solid currentColor;border-top:6px solid transparent;border-bottom:6px solid transparent}
+.act{display:flex;align-items:center;gap:12px;margin-top:14px}
+.mic{width:54px;height:54px;border-radius:50%;background:#E3242B;display:grid;place-items:center;flex:none}
+.mic svg{width:24px;height:24px;stroke:#fff}
+.act small{font-size:13px;color:#5a6b85;line-height:1.3}
+.next{margin-top:16px;width:100%;border:0;border-radius:16px;padding:15px;font:800 16px Poppins;background:#0B2A5B;color:#fff}
+.legend{display:flex;gap:12px;font-size:12px;color:#5a6b85;margin-top:10px}.legend span:before{content:"";display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:5px;vertical-align:0}
+.legend .lg:before{background:#17a35a}.legend .ly:before{background:#f0a020}.legend .lr:before{background:#E3242B}
+/* teens */
+.T .scr{background:#0B1E3F;color:#fff}.T .card{background:#12284f;border-color:#1e3a6b}.T .ph-en{color:#fff}.T .es,.T .act small{color:#9fb3d1}
+.T .g{background:rgba(34,229,138,.15);color:#22e58a}.T .y{background:rgba(255,184,0,.15);color:#ffc53d}
+.T .tip{background:rgba(255,184,0,.1);border-color:rgba(255,184,0,.3);color:#fff}.T .tip b{color:#ffc53d}.T .mini{background:#1e3a6b;color:#ffc53d}
+.T .cmp button{background:#1a3462;border-color:#2a4a80;color:#fff}.T .next{background:#22e58a;color:#0B1E3F}.T .pic{background:linear-gradient(135deg,#1e3a6b,#12284f)}.T .pic svg{stroke:#9fb3d1}
+/* kids */
+.K .scr{background:#fff8ec}.K .card{border:3px solid #ffd27a;border-radius:24px}.K .ph-en{font-size:30px}
+.K .pic{background:linear-gradient(135deg,#ffe3a3,#fff3d6)}.K .next{background:#f59e0b;font-size:18px}
+.stars{font-size:26px;letter-spacing:4px;margin-top:10px;color:#f59e0b}.stars .off{color:#e6dccb}
+.K .res{font-size:17px}
+.note{margin-top:22px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.note div{background:#fff;border-radius:16px;padding:14px 16px;font-size:14px;line-height:1.45;box-shadow:0 4px 14px rgba(11,42,91,.06)}
+.note b{display:block;font:800 15px Poppins;margin-bottom:4px}
+</style></head><body>
+<h1>Nueva tarjeta «Listen and repeat»</h1><p class="s">Así se vería justo después de grabar «I'm working now.» Se pinta la frase modelo, nunca lo que dijo el estudiante, y el botón Siguiente nunca se bloquea.</p>
+<div class="row" id="r"></div>
+<div class="note">
+<div><b>1 · Colores por palabra</b>Verde: bien dicha. Amarillo: practícala. Rojo: no se oyó o se cambió. Ya no hay un «mal» para toda la frase.</div>
+<div><b>2 · Escucha tu voz</b>El estudiante oye su grabación y la del modelo, una tras otra, y se corrige solo. Esto no depende de que la máquina acierte.</div>
+<div><b>3 · Siempre avanza</b>En la práctica nada bloquea. Solo en los exámenes la nota de Azure decide.</div>
+</div>
+<script>
+const LAP='<svg viewBox="0 0 24 24" fill="none" stroke="#0B2A5B" stroke-width="1.5"><rect x="4" y="5" width="16" height="11" rx="1.5"/><path d="M2 19h20"/></svg>';
+const MIC='<svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>';
+const ph=`<span class="w g">I'm</span> <span class="w y">working</span> <span class="w g">now.</span>`;
+const V=[['ADULTOS','A','¡Casi! 2 de 3 palabras claras'],['TEENS','T','¡Casi! 2 de 3 palabras claras'],['KIDS','K','¡Muy cerca!']];
+document.getElementById('r').innerHTML=V.map(([t,c,res])=>`<div class="col ${c}"><span class="tag">${t}</span><div class="ph"><div class="scr"><div class="h">Listen and repeat</div><div class="card"><div class="pic">${LAP}</div><div class="in">
+<div class="ph-en">${ph}</div><div class="es">Estoy trabajando ahora.</div>
+${c==='K'?'<div class="stars">★★<span class="off">★</span></div>':''}
+<div class="res">${c==='K'?'':'<span class="dot"></span>'}${res}</div>
+<div class="tip"><span>Practica <b>working</b></span><button class="mini">▶ Oír palabra</button></div>
+<div class="cmp"><button><i></i>Tu voz</button><button><i></i>Modelo</button></div>
+<div class="act"><span class="mic">${MIC}</span><small>Toca para intentarlo otra vez<br>(opcional)</small></div>
+${c!=='K'?'<div class="legend"><span class="lg">Bien</span><span class="ly">Practica</span><span class="lr">No se oyó</span></div>':''}
+</div></div><button class="next">Siguiente →</button></div></div></div>`).join('');
+</script></body></html>

@@ -1,0 +1,40 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--k:#0B2A5B;--y:#E3242B;--mu:#5B6B82;--ln:#DCE4F0;--g:#1F8A5B}
+body{margin:0;background:#F4F7FC;font-family:Inter,system-ui,sans-serif;color:var(--k);padding:20px 16px}
+.w{max-width:1040px;margin:0 auto}
+h2{font-family:Poppins;font-weight:700;font-size:24px;margin:0}.sub{color:var(--mu);font-size:14px;margin:4px 0 18px}
+.ov{display:flex;align-items:center;gap:14px;background:#fff;border:1px solid var(--ln);border-radius:14px;padding:14px 16px;margin-bottom:14px}
+.ov b{font-family:Poppins;font-size:22px}.ov small{display:block;color:var(--mu);font-size:12.5px}
+.ov .tr{flex:1;display:grid;grid-template-columns:repeat(4,1fr);gap:4px}.ov .tr i{height:6px;border-radius:3px;background:var(--ln)}.ov .tr i.d{background:var(--k)}.ov .tr i.h{background:linear-gradient(90deg,var(--k) 14%,var(--ln) 14%)}
+.gr{display:grid;gap:12px}
+@media(min-width:760px){.gr{grid-template-columns:repeat(2,1fr)}}
+.m{background:#fff;border:1px solid var(--ln);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px;position:relative}
+.m.cur{border-color:var(--k);box-shadow:0 0 0 1px var(--k) inset}
+.m.lock{background:#FAFBFD}.m.lock .ttl,.m.lock .lv{opacity:.55}
+.hd{display:flex;align-items:center;gap:12px}
+.cd{width:46px;height:46px;border-radius:10px;display:grid;place-items:center;font-family:Poppins;font-weight:700;font-size:15px;background:#EEF2F8;color:var(--k);flex:none}
+.m.cur .cd{background:var(--k);color:#fff}.m.done .cd{background:#EAF6F0;color:var(--g)}
+.ttl{font-family:Poppins;font-weight:600;font-size:16px}.lv{font-size:13px;color:var(--mu)}
+.pl{margin-left:auto;font-size:11.5px;font-weight:600;padding:4px 9px;border-radius:999px;letter-spacing:.02em;white-space:nowrap}
+.pl.ok{background:#EAF6F0;color:var(--g)}.pl.on{background:var(--k);color:#fff}.pl.lk{background:#EEF2F8;color:var(--mu)}
+.bar{height:6px;border-radius:3px;background:var(--ln);overflow:hidden}.bar i{display:block;height:100%;background:var(--k)}.m.done .bar i{background:var(--g)}
+.ft{display:flex;align-items:center;justify-content:space-between;font-size:13px;color:var(--mu)}
+.btn{background:var(--k);color:#fff;border:0;border-radius:10px;padding:9px 14px;font-weight:600;font-size:13.5px;font-family:inherit}
+.lnk{color:var(--k);font-weight:600;font-size:13.5px;text-decoration:underline}
+.lk-i{width:16px;height:16px;vertical-align:-3px;margin-right:4px}
+.ex{margin-top:12px;background:#fff;border:1px dashed #B9C6DA;border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:12px}
+.ex .cd{background:#FFF4F4;color:var(--y)}.ex small{display:block;color:var(--mu);font-size:13px;margin-top:2px}
+svg{stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+</style></head><body><div class="w">
+<h2>Mis módulos</h2><p class="sub">Tu ruta de A1 a B2+</p>
+<div class="ov"><div><b>1 de 4</b><small>módulos aprobados</small></div><div class="tr"><i class="d"></i><i class="h"></i><i></i><i></i></div></div>
+<div class="gr">
+<div class="m done"><div class="hd"><div class="cd">A1</div><div><div class="ttl">Módulo 1</div><div class="lv">Elemental</div></div><span class="pl ok">Aprobado</span></div><div class="bar"><i style="width:100%"></i></div><div class="ft"><span>28 de 28 lecciones</span><span class="lnk">Repasar</span></div></div>
+<div class="m cur"><div class="hd"><div class="cd">A2</div><div><div class="ttl">Módulo 2</div><div class="lv">Básico</div></div><span class="pl on">Estás aquí</span></div><div class="bar"><i style="width:14%"></i></div><div class="ft"><span>3 de 22 lecciones</span><button class="btn">Continuar</button></div></div>
+<div class="m lock"><div class="hd"><div class="cd">B1</div><div><div class="ttl">Módulo 3</div><div class="lv">Intermedio</div></div><span class="pl lk">Bloqueado</span></div><div class="ft"><span><svg class="lk-i" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Se abre al aprobar el Módulo 2</span></div></div>
+<div class="m lock"><div class="hd"><div class="cd">B2+</div><div><div class="ttl">Módulo 4</div><div class="lv">Avanzado</div></div><span class="pl lk">Bloqueado</span></div><div class="ft"><span><svg class="lk-i" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Se abre al aprobar el Módulo 3</span></div></div>
+</div>
+<div class="ex"><div class="cd"><svg width="22" height="22" viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4zM17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg></div><div><b style="font-family:Poppins;font-weight:600">Examen final del curso</b><small>Se habilita al aprobar los 4 módulos</small></div></div>
+</div></body></html>

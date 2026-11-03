@@ -1,0 +1,63 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="app.css">
+<style>
+body{margin:0;background:#F4F7FC;font-family:Inter,system-ui,sans-serif;color:#0B2A5B;height:100vh;overflow:hidden}
+.tb{height:56px;background:#fff;border-bottom:3px solid #E3242B;display:flex;align-items:center;padding:0 14px;gap:10px}.tb img{height:34px}.tb .sp{flex:1}.tb i{width:34px;height:34px;border-radius:10px;background:#EEF2F8;display:block}
+.pc .tb{height:64px}
+.wrap{height:calc(100vh - 59px);display:flex;flex-direction:column;padding:10px 14px 12px;box-sizing:border-box;max-width:1100px;margin:0 auto}
+.hd{display:flex;align-items:center;gap:10px;flex:none}.hd .b{width:34px;height:34px;border-radius:10px;border:1px solid #DCE4F0;background:#fff;display:grid;place-items:center;font-size:14px;color:#5B6B82}
+.bar{flex:1;height:7px;border-radius:4px;background:#E3E8F0;overflow:hidden}.bar i{display:block;height:100%;width:55%;background:#E3242B}.lb{text-align:right;font-size:12px;line-height:1.2}.lb b{display:block;font-size:13px}
+.card{flex:1;min-height:0;margin-top:10px;background:#fff;border:1px solid #E3E8F0;border-radius:20px;padding:14px;display:flex;flex-direction:column;box-sizing:border-box}
+.ttl{font:800 clamp(17px,2.6vh,22px) Poppins,system-ui;margin:0 0 8px;flex:none}
+.acx{flex:none;display:flex;gap:10px;justify-content:center;align-items:center;padding-top:10px}
+.mcb{width:clamp(56px,9vh,72px);height:clamp(56px,9vh,72px);border-radius:50%;background:#E3242B;display:grid;place-items:center;color:#fff;font-size:22px;box-shadow:0 6px 16px rgba(227,36,43,.3)}
+.cbt{width:clamp(42px,6.5vh,52px);height:clamp(42px,6.5vh,52px);border-radius:50%;border:1px solid #DCE4F0;display:grid;place-items:center}
+.btn{background:#0B2A5B;color:#fff;border-radius:12px;padding:12px 22px;font-weight:700}
+/* A1: keyq read */
+.kq{flex:1;min-height:0;display:flex;flex-direction:column;gap:10px}
+.kq .ph{flex:1;min-height:0;border-radius:16px;background:radial-gradient(circle at 50% 40%,#1d4c9c,#0B2A5B);display:flex;align-items:flex-end;justify-content:center;overflow:hidden}
+.kq .ph img{height:92%;max-height:100%;width:auto;object-fit:contain}
+.kq .qa{flex:none;text-align:center}.kq .q{font:800 clamp(16px,2.6vh,22px) Poppins,system-ui}.kq .qs{color:#5B6B82;font-size:13px}
+.kq .rd{margin-top:8px;border:1.5px dashed #E8C76A;background:#FFFBEB;border-radius:12px;padding:8px 10px}.kq .rd small{display:block;font:800 11px Inter;letter-spacing:.12em;color:#A16207}.kq .rd b{display:block;font-size:clamp(14px,2.2vh,17px);margin:2px 0}.kq .rd span{font-size:13px;color:#5B6B82}
+.pc .kq{flex-direction:row;gap:18px}.pc .kq .ph{flex:0 0 40%}.pc .kq .qa{flex:1;display:flex;flex-direction:column;justify-content:center;text-align:left}.pc .kq .rd{margin-top:14px}
+/* A2: 8 cards */
+.g8{flex:1;min-height:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:minmax(0,1fr);gap:8px}
+.pc .g8{grid-template-columns:repeat(4,minmax(0,1fr))}
+.g8 div{border:1px solid #E3E8F0;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;min-height:0}
+.g8 i{flex:1;min-height:0;background-size:cover;background-position:center}.g8 b{flex:none;font-size:clamp(11.5px,1.7vh,14px);padding:5px 8px;line-height:1.2}
+.chips{display:flex;gap:6px;flex:none;margin-bottom:8px}.chips span{font-size:11.5px;font-weight:700;border:1px solid #DCE4F0;border-radius:20px;padding:4px 9px}
+/* A3: reading */
+.rdx{flex:1;min-height:0;display:flex;flex-direction:column;gap:10px}
+.rdx .im{flex:0 0 26%;border-radius:12px;background:#ddd center/cover}
+.rdx .tx{flex:1;min-height:0;overflow:auto;font-size:clamp(13.5px,2vh,16px);line-height:1.5;border:1px solid #E3E8F0;border-radius:12px;padding:10px}
+.rdx .qs{flex:none;border:1px solid #E3E8F0;border-radius:12px;padding:10px;font-size:14px;display:flex;justify-content:space-between;align-items:center}
+.yn{display:flex;gap:6px}.yn span{border:1px solid #0B2A5B;border-radius:9px;padding:6px 12px;font-weight:700;font-size:13px}
+.pc .rdx{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr auto;gap:12px}.pc .rdx .tx{font-size:16px}.pc .kq .q{font-size:24px}.pc .kq .rd b{font-size:19px}.pc .rdx .im{grid-row:1/3;height:auto}.pc .rdx .tx{grid-column:2}.pc .rdx .qs{grid-column:2}
+.qs small.qc{display:block;font:700 11.5px Inter;color:#E3242B;letter-spacing:.04em;margin-bottom:2px}.qd{display:flex;gap:4px;margin-top:6px}.qd i{width:16px;height:4px;border-radius:2px;background:#DCE4F0}.qd i.on{background:#E3242B}
+.mx{flex:1;min-height:0;display:flex;flex-direction:column;gap:8px}.mx .sit{flex:none;font-size:13.5px;color:#5B6B82;text-align:center}.mx .bq{flex:none;border:1px solid #E3E8F0;border-radius:14px;padding:10px 12px;text-align:center}.mx .bq b{display:block;font:800 clamp(15px,2.3vh,19px) Poppins,system-ui}.mx .bq small{color:#5B6B82;font-size:13px}
+.mx .mxav{flex:1;min-height:0;display:flex;align-items:center;justify-content:center}.mx .mxav .avc{flex:none;aspect-ratio:1;width:clamp(48px,9vh,76px);height:clamp(48px,9vh,76px);border-radius:50%;background:linear-gradient(135deg,#1d4c9c,#0B2A5B);display:block}
+.mx .op{flex:none;border:1.5px solid #DCE4F0;border-radius:12px;padding:clamp(9px,1.6vh,13px) 12px;font-weight:700;font-size:clamp(14px,2vh,16px)}
+.pc .mx{max-width:460px;margin:0 auto;width:100%}
+.wr{flex:1;min-height:0;display:flex;flex-direction:column;gap:10px}.wr .msg{flex:none;display:flex;gap:8px;align-items:flex-end}.wr .msg i{width:34px;height:34px;border-radius:50%;background:#F59E0B;flex:none}.wr .msg div{background:#EEF2F8;border-radius:14px 14px 14px 4px;padding:9px 12px;font-size:15px}.wr .msg small{display:block;font-size:11px;color:#5B6B82;font-weight:700}
+.wr .sp{flex:1}.wr .in{flex:none;border:1.5px solid #0B2A5B;border-radius:14px;padding:12px;font-size:15px;color:#8593a8;min-height:56px}.wr .hint{flex:none;display:flex;gap:6px;flex-wrap:wrap}.wr .hint span{font-size:12.5px;border:1px solid #DCE4F0;border-radius:20px;padding:4px 10px}
+.pc .wr{max-width:460px;margin:0 auto;width:100%}
+.dc{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center}.dc .pl{background:#E3242B;color:#fff;border-radius:999px;padding:11px 20px;font-weight:800;display:flex;gap:8px;align-items:center}.dc .s{font:800 clamp(18px,2.8vh,26px) Poppins,system-ui}.dc .s u{display:inline-block;width:70px;border-bottom:3px solid #E3242B;text-decoration:none;vertical-align:-4px}.dc .ct{font-size:12.5px;font-weight:700;color:#5B6B82}
+.mu{flex:1;min-height:0;display:flex;flex-direction:column;gap:8px}.mu .vd{flex:0 0 auto;aspect-ratio:16/9;max-height:34vh;align-self:center;width:100%;border-radius:12px;background:#111 center/cover}.mu .q{flex:none;text-align:center}.mu .q b{font:800 clamp(17px,2.6vh,21px) Poppins,system-ui}.mu .q u{display:inline-block;width:80px;border-bottom:3px solid #0B2A5B;text-decoration:none;vertical-align:-4px}
+.mu .ops{flex:1;min-height:0;display:flex;flex-direction:column;gap:7px;justify-content:center}.mu .ops span{border:1.5px solid #DCE4F0;border-radius:11px;padding:clamp(8px,1.5vh,12px);text-align:center;font-weight:700}
+.pc .mu{display:grid;grid-template-columns:1.2fr 1fr;grid-template-rows:auto 1fr;column-gap:18px;min-height:0}.pc .mu .vd{grid-row:1/3;max-height:100%;height:100%;width:auto;aspect-ratio:16/9;justify-self:center;align-self:center}.pc .mu .q{grid-column:2;align-self:end}.pc .mu .ops{grid-column:2;justify-content:flex-start}
+</style></head><body><div class="tb"><img src="mra-logo-cert.png"><span class="sp"></span><i></i><i></i><i></i></div>
+<div class="wrap"><div class="hd"><span class="b">X</span><span class="b">&larr;</span><div class="bar"><i></i></div><div class="lb"><b id="sec">Speaking</b>Paso 5 de 9</div></div>
+<div class="card" id="c"></div></div>
+<script>
+const P=new URLSearchParams(location.search),A=P.get('a')||'1';if(P.get('pc'))document.body.classList.add('pc');
+const U=id=>`https://images.unsplash.com/${id}?w=500&h=400&fit=crop&auto=format`;
+const c=document.getElementById('c');const ic=d=>`<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;const VOL=ic('<path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/>'),MIC=ic('<rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 17v5"/>'),HP=ic('<path d="M3 18v-6a9 9 0 0 1 18 0v6"/><rect x="3" y="16" width="4" height="5" rx="1"/><rect x="17" y="16" width="4" height="5" rx="1"/>');
+if(A==='1'){sec.textContent='Key questions';c.innerHTML=`<div class="kq"><div class="ph"><img src="mra-think.webp" onerror="this.src='mra-point.webp'"></div><div class="qa"><div class="q">Does your neighbor speak English?</div><div class="qs">¿Tu vecino habla inglés?</div><div class="rd"><small>LEE ESTA RESPUESTA EN VOZ ALTA</small><b>No, he doesn't. He speaks only Spanish.</b><span>No. Él solo habla español.</span></div></div></div><div class="acx"><span class="cbt">${VOL}</span><span class="mcb">${MIC}</span><span class="cbt">${HP}</span></div>`}
+if(A==='2'){sec.textContent='Listen & practice';const L=[['I don’t drink coffee.','photo-1509042239860-f550ce710b93'],['She doesn’t work on Sundays.','photo-1499750310107-5fef28a66643'],['Do you speak English?','photo-1522202176988-66273c2fd55f'],['Does he live here?','photo-1545324418-cc1a3fa10c00'],['I like it!','photo-1507003211169-0a1dd7228f2d'],['I don’t know.','photo-1499996860823-5214fcc65f8f'],['She is happy.','photo-1524504388940-b1c1722653e1'],['He is stressed.','photo-1489424731084-a5d8b219a5bb']];
+ c.innerHTML=`<div class="chips"><span>Escuchar todo</span><span>8/8 escuchadas</span><span>0/8 repetidas</span></div><div class="g8">${L.map(x=>`<div><i style="background-image:url(${U(x[1])})"></i><b>${x[0]}</b></div>`).join('')}</div><div class="acx"><span class="btn">Repetir: Does he live here?</span></div>`}
+if(A==='3'){sec.textContent='Reading';c.innerHTML=`<div class="rdx"><div class="im" style="background-image:url(${U('photo-1503676260728-1c00da094a0b')})"></div><div class="tx">Hi, I'm Kim. My name has three letters: K, I, M. My friend's name is Bella. Her name has five letters: B, E, L, L, A. In English, the letter A sounds like "ay" and the letter E sounds like "ee". The letter I sounds like "eye".</div><div class="qs"><div><small class="qc">Pregunta 1 de 3</small><span>Kim's name has three letters.</span><span class="qd"><i class="on"></i><i></i><i></i></span></div><span class="yn"><span>YES</span><span>NO</span></span></div></div><div class="acx"><span class="cbt">${VOL}</span><span class="btn">Continuar</span></div>`}
+if(A==='4'){sec.textContent='Mission';c.innerHTML=`<div class="mx"><div class="sit">En el recreo, un compañero nuevo se acerca.</div><div class="bq"><b>Hi! I'm Max. Where are you from?</b><small>¡Hola! Soy Max. ¿De dónde eres?</small></div><div class="mxav"><span class="avc" style="display:grid;place-items:center;color:#fff"><svg viewBox="0 0 24 24" width="55%" height="55%" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/></svg></span></div><div class="op">I'm from Colombia.</div><div class="op">I'm ten years old.</div><div class="op">My favorite color is blue.</div></div><div class="acx"><span class="cbt">${VOL}</span><span class="mcb">${MIC}</span></div>`}
+if(A==='5'){sec.textContent='Writing';c.innerHTML=`<div class="wr"><div class="msg"><i></i><div><small>Laura</small>What do you do on weekends?</div></div><div class="sp"></div><div class="hint"><span>go to</span><span>with my family</span></div><div class="in">Escribe tu respuesta...</div></div><div class="acx"><span class="btn">Enviar</span></div>`}
+if(A==='6'){sec.textContent='Practice';c.innerHTML=`<div class="dc"><div class="ct">Dictado relámpago · 1 / 4</div><span class="pl">${VOL} Escuchar otra vez</span><div class="s">Do they live <u></u> Chicago?</div></div><div class="acx"><span class="btn">Comprobar</span></div>`}
+if(A==='7'){sec.textContent='Music';c.innerHTML=`<div class="mu"><div class="vd" style="background-image:url(${U('photo-1511379938547-c1f69419868d')})"></div><div class="q"><small style="color:#5B6B82;font-size:13px">¿Qué palabra escuchaste? · 1 / 3</small><br><b>I wake up every <u></u></b></div><div class="ops"><span>morning</span><span>mourning</span><span>warning</span></div></div><div class="acx"><span class="cbt">${VOL}</span></div>`}
+</script></body></html>

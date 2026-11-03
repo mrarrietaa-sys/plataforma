@@ -1,0 +1,44 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--k:#0B2A5B;--y:#E3242B;--mu:#5B6B82;--ln:#DCE4F0;--g:#1F8A5B}
+body{margin:0;background:#F4F7FC;font-family:Inter,system-ui,sans-serif;color:var(--k);padding:20px 16px}
+.w{max-width:1040px;margin:0 auto}
+h2{font-family:Poppins;font-weight:700;font-size:24px;margin:0 0 16px}
+.card{background:#fff;border:1px solid var(--ln);border-radius:16px;overflow:hidden}
+.tl{list-style:none;margin:0;padding:6px 0}
+.st{display:grid;grid-template-columns:44px 1fr auto;gap:14px;align-items:center;padding:14px 18px;position:relative}
+.st+.st{border-top:1px solid #EEF2F8}
+.dot{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-family:Poppins;font-weight:700;font-size:13px;border:2px solid var(--ln);color:var(--mu);background:#fff;position:relative;z-index:1}
+.st.done .dot{background:var(--g);border-color:var(--g);color:#fff}.st.cur .dot{background:var(--k);border-color:var(--k);color:#fff}
+.st:not(:last-child)::after{content:'';position:absolute;left:39px;top:50px;bottom:-14px;width:2px;background:var(--ln)}
+.st.done:not(:last-child)::after{background:var(--g)}
+.nm{font-family:Poppins;font-weight:600;font-size:15.5px}.nm small{font-family:Inter;font-weight:500;color:var(--mu);font-size:13px;margin-left:6px}
+.ds{font-size:13px;color:var(--mu);margin-top:2px}
+.st.lock .nm{color:#8A97AC}
+.rt{font-size:13px;color:var(--mu);text-align:right;white-space:nowrap}.rt b{color:var(--g);font-weight:600}
+.cur-box{grid-column:2/4;margin-top:10px;background:#F6F8FC;border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.pb{flex:1;min-width:140px}.pb small{display:block;font-size:12.5px;color:var(--mu);margin-bottom:6px}.bar{height:6px;border-radius:3px;background:var(--ln);overflow:hidden}.bar i{display:block;height:100%;width:14%;background:var(--k)}
+.btn{background:var(--k);color:#fff;border:0;border-radius:10px;padding:10px 16px;font-weight:600;font-size:14px;font-family:inherit}
+.ex{display:flex;align-items:center;gap:12px;padding:14px 18px;border-top:1px solid var(--ln);background:#FCFCFE}
+.ex .ic{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;color:var(--y);border:2px dashed #F2B8BA;margin-left:4px}
+.ex b{font-family:Poppins;font-weight:600;font-size:15px}.ex small{display:block;color:var(--mu);font-size:13px}
+svg{stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+@media(min-width:820px){
+ .w{max-width:760px}
+
+}
+.side{display:none;background:var(--k);color:#fff;border-radius:16px;padding:22px}
+.side .k{font-size:12px;letter-spacing:.14em;text-transform:uppercase;opacity:.7}.side h3{font-family:Poppins;font-size:22px;margin:6px 0 2px}.side p{opacity:.8;font-size:14px;margin:0 0 16px}
+.side .bar{background:rgba(255,255,255,.2)}.side .bar i{background:#fff}.side .row{display:flex;justify-content:space-between;font-size:13px;opacity:.85;margin:8px 0 18px}
+.side .btn{background:#fff;color:var(--k);width:100%}
+</style></head><body><div class="w"><h2>Mis módulos</h2>
+<div class="lay"><div class="card"><ol class="tl">
+<li class="st done"><span class="dot"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg></span><div><div class="nm">Módulo 1<small>A1 · Elemental</small></div><div class="ds">28 de 28 lecciones</div></div><div class="rt"><b>Aprobado</b></div></li>
+<li class="st cur"><span class="dot">2</span><div><div class="nm">Módulo 2<small>A2 · Básico</small></div><div class="ds">Estás aquí</div></div><div class="rt">14%</div>
+ <div class="cur-box"><div class="pb"><small>3 de 22 lecciones</small><div class="bar"><i></i></div></div><button class="btn">Continuar</button></div></li>
+<li class="st lock"><span class="dot">3</span><div><div class="nm">Módulo 3<small>B1 · Intermedio</small></div><div class="ds">Se abre al aprobar el Módulo 2</div></div><div class="rt"><svg width="16" height="16" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div></li>
+<li class="st lock"><span class="dot">4</span><div><div class="nm">Módulo 4<small>B2+ · Avanzado</small></div><div class="ds">Se abre al aprobar el Módulo 3</div></div><div class="rt"><svg width="16" height="16" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div></li>
+</ol><div class="ex"><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4zM17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg></span><div><b>Examen final del curso</b><small>Se habilita al aprobar los 4 módulos</small></div></div></div>
+<aside class="side"><div class="k">Tu módulo actual</div><h3>Módulo 2 · A2</h3><p>Básico</p><div class="bar"><i></i></div><div class="row"><span>3 de 22 lecciones</span><span>14%</span></div><button class="btn">Continuar lección 4</button></aside></div>
+</div></body></html>

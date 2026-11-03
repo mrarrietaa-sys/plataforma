@@ -48,6 +48,35 @@ canvas{width:100%;height:96px;display:block;background:var(--soft);border:1.5px 
 .fin h2{font:800 22px Poppins;margin:0}.fin p{margin:0;color:var(--mut);font-size:14px}
 .foot{text-align:center;font-size:11.5px;color:var(--mut)}
 [hidden]{display:none!important}
+
+/* v2 · todo cabe en la pantalla (celular y PC), sin desplazarse */
+html,body{height:100%;overflow:hidden}
+.app{height:100vh;height:100dvh;padding:10px max(14px,env(safe-area-inset-left)) 10px;gap:8px;display:grid;grid-template-columns:1fr;grid-template-rows:auto auto minmax(0,1fr) auto;grid-template-areas:"hd" "sc" "dl" "cd";overflow:hidden}
+.hd{grid-area:hd}.scene{grid-area:sc}.dlg{grid-area:dl}#vIntro,#vLine,#vFin{grid-area:cd}#vIntro{grid-row:3/5}
+.foot{display:none}
+.hd b{font-size:17px}.hd small{font-size:12px}
+.scene{height:clamp(92px,19dvh,190px)}
+.av{width:clamp(46px,7.5dvh,76px)!important;height:clamp(46px,7.5dvh,76px)!important}
+.chr span{font-size:11px;padding:2px 8px}
+.dlg{max-height:none;min-height:0;overflow:auto;align-self:stretch}
+.b{font-size:13.5px;padding:6px 11px}
+.card{padding:12px;gap:9px}
+.turn{padding:10px 12px}.kara{font-size:clamp(18px,3dvh,23px)}.es{font-size:12.5px}
+canvas{height:clamp(56px,9dvh,96px)}
+.lg{margin-top:-4px}
+.mic{width:clamp(52px,7dvh,66px);height:clamp(52px,7dvh,66px)}
+.btn{padding:clamp(8px,1.3dvh,12px) 6px;font-size:13.5px}
+.go{padding:clamp(11px,1.6dvh,15px)}
+.stars div{padding:6px 10px}.stars b{font-size:18px}
+.tip{padding:8px 11px;font-size:13.5px}
+#pRec .row,#pRes .row{margin-top:8px!important}#bUse{margin-top:8px!important}
+.intro p{font-size:14px}.roles .role{padding:9px}.role .av{width:44px!important;height:44px!important}
+@media (max-height:700px){.es{display:none}.lg{display:none}.intro p{font-size:13px}}
+@media (min-width:900px){
+ .app{max-width:1120px;grid-template-columns:1.1fr 1fr;grid-template-rows:auto auto minmax(0,1fr);grid-template-areas:"hd hd" "sc cd" "dl cd";column-gap:22px;padding:18px 24px}
+ #vIntro,#vLine,#vFin{align-self:start}#vIntro{grid-row:2/4}
+ .scene{height:clamp(160px,32vh,300px)}
+}
 </style></head><body>
 <div class="app">
  <div class="hd"><div><b>RealTalk Studio</b><small>Dobla la escena · Módulo 1</small></div><span class="pill" id="prog">En la cafetería</span></div>
@@ -81,7 +110,6 @@ canvas{width:100%;height:96px;display:block;background:var(--soft);border:1.5px 
  <section class="card fin" id="vFin" hidden>
   <h2>¡Tu escena está lista!</h2><p id="finS"></p>
   <button class="go" id="bPlayAll">▶ Escuchar mi escena</button>
-  <button class="go wa" id="bShare">Enviar por WhatsApp</button>
   <div class="row"><button class="btn" id="bSave">⬇ Guardar audio</button><button class="btn" id="bRedo">↻ Volver a doblar</button></div>
  </section>
  <div class="foot">Prototipo · mrarrieta.com</div>
@@ -119,7 +147,7 @@ async function loadModel(i){ if(MODEL[i]) return MODEL[i]; const ab=await (await
  return MODEL[i]={buf,F,sp,con,dur,words,off:sp[0]*HOP/R}; }
 // ---------- dibujo ----------
 const cv=$('#cv'), g=cv.getContext('2d'); const STU=getComputedStyle(document.documentElement).getPropertyValue('--stu').trim()||'#E3242B';
-function sizeCv(){ const r=cv.getBoundingClientRect(), d=window.devicePixelRatio||1; cv.width=Math.round(r.width*d); cv.height=Math.round(96*d); }
+function sizeCv(){ const r=cv.getBoundingClientRect(), d=window.devicePixelRatio||1; cv.width=Math.round(r.width*d); cv.height=Math.round((r.height||80)*d); }
 function yOf(s){ const H=cv.height; return H/2 - Math.max(-9,Math.min(9,s))/9*(H/2-10); }
 function draw(model,stu,prog){ const W=cv.width,H=cv.height,d=window.devicePixelRatio||1; g.clearRect(0,0,W,H);
  g.strokeStyle='#e3e9f3'; g.lineWidth=1*d; g.beginPath(); g.moveTo(0,H/2); g.lineTo(W,H/2); g.stroke();
@@ -204,7 +232,7 @@ $('#bMine').onclick=()=>cur&&playBuf(cur.buf);
 $('#bAgain').onclick=()=>{ $('#pRes').hidden=true; $('#pRec').hidden=false; setKara(idx,0); draw(MODEL[idx],null); startRec(); };
 $('#bUse').onclick=()=>{ takes[idx]=cur; cur=null; idx++; next(); };
 $('#bPlayAll').onclick=playAll;
-$('#bShare').onclick=async()=>{ const f=file(); try{ if(navigator.canShare&&navigator.canShare({files:[f]})){ await navigator.share({files:[f],title:'Mi escena en inglés',text:'Escucha mi escena en inglés · mrarrieta.com'}); return; } }catch(e){ if(e&&e.name==='AbortError') return; } save(f); };
+window.__noShare=async()=>{ const f=file(); try{ if(navigator.canShare&&navigator.canShare({files:[f]})){ await navigator.share({files:[f],title:'Mi escena en inglés',text:'Escucha mi escena en inglés · mrarrieta.com'}); return; } }catch(e){ if(e&&e.name==='AbortError') return; } save(f); };
 function save(f){ const a=document.createElement('a'); a.href=URL.createObjectURL(f||file()); a.download='mi-escena-mrarrieta.wav'; document.body.appendChild(a); a.click(); setTimeout(()=>a.remove(),500); }
 $('#bSave').onclick=()=>save();
 $('#bRedo').onclick=()=>{ $('#vFin').hidden=true; idx=0; takes={}; next(); };
