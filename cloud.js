@@ -68,11 +68,13 @@ function mraMergeKey(k, aS, bS) { /* a = lo que ya había, b = lo nuevo · nunca
     if (migrate) setTimeout(() => sync(true), 1500);
     return r;
   }
-  function cacheMe(r) { try { sessionStorage.setItem(ME, JSON.stringify({ t: Date.now(), r })); } catch (e) { } applyExtras(r && r.extras); saveClubs(r && r.clubs); }
+  function cacheMe(r) { try { sessionStorage.setItem(ME, JSON.stringify({ t: Date.now(), r })); } catch (e) { } try { if (r && r.ok && r.student) localStorage.setItem('mra_me_last', JSON.stringify({ c: upC(r.student.code), t: Date.now(), r })); } catch (e) { } /* v529: última copia para mostrar las clases al instante */ applyExtras(r && r.extras); saveClubs(r && r.clubs); }
   // horarios de los clubs (los cambia administración) → los usa clubes.html
   function saveClubs(c) { if (!c || !c.list) return; const o = { start: c.start, band: c.band }; c.list.forEach(k => { o[k.key + '_' + c.band] = { day: k.day, time: k.time, link: k.link, teacher: k.teacher }; }); ls.set('mra_clubs', JSON.stringify(o)); }
   // intentos extra aprobados por administración → se suman al examen en este dispositivo (una sola vez por aprobación)
   function applyExtras(ex) { if (!ex) return; Object.keys(ex).forEach(k => { if (!/^mra_[a-z0-9_]+$/.test(k)) return; const st = J(ls.get(k), {}) || {}; const g = +ex[k] || 0, done = +st.cloudExtra || 0; if (g > done) { st.extra = (+st.extra || 0) + (g - done); st.cloudExtra = g; ls.set(k, JSON.stringify(st)); try { window.dispatchEvent(new CustomEvent('mra-extra', { detail: k })); } catch (e) { } } }); }
+  const upC = (x) => String(x || '').trim().toUpperCase();
+  function meLast() { try { const o = J(localStorage.getItem('mra_me_last'), null); if (!o || !o.r || o.c !== upC(code()) || Date.now() - o.t > 7 * 864e5) return null; return o.r; } catch (e) { return null; } }
   function cachedMe() { try { return J(sessionStorage.getItem(ME), null); } catch (e) { return null; } }
   // datos frescos del estudiante (plan, créditos, grupo, próximas clases)
   async function me(force) {
@@ -137,8 +139,8 @@ function mraMergeKey(k, aS, bS) { /* a = lo que ya había, b = lo nuevo · nunca
   // al abrir cualquier página con sesión: refresca plan, avisos e intentos extra (máx. 1 vez por minuto)
   setTimeout(() => { if (code()) me().catch(() => { }); }, 800);
   // cerrar sesión: guarda en la nube y deja el dispositivo limpio (el siguiente que entre no ve el progreso de otro)
-  async function signOut() { if (window.MRTEACH && MRTEACH.on()) { MRTEACH.exit(); return true; } const ok = await sync(true); if (ok) { wipeLocal(true); ls.del(OWNER); ls.del(ME); try { sessionStorage.removeItem(ME); } catch (e) { } } return ok; }
+  async function signOut() { if (window.MRTEACH && MRTEACH.on()) { MRTEACH.exit(); return true; } const ok = await sync(true); if (ok) { wipeLocal(true); ls.del(OWNER); ls.del(ME); try { sessionStorage.removeItem(ME); localStorage.removeItem('mra_me_last'); } catch (e) { } } return ok; }
   function setCode(nc) { const p = prof(); if (p) { p.code = nc; ls.set('mra_profile_v1', JSON.stringify(p)); } ls.set(OWNER, nc); ls.del(ME); try { sessionStorage.removeItem(ME); } catch (e) { } } // 🔑 nuevo código de acceso
-  window.MRAC = { setCode, signOut, flush: () => beacon(true), examResult, requestAttempt, homework, feedbackFor, evalSave, notifications, markRead, isPremium: premium, cachedMe: () => { const c = cachedMe(); return c && c.r; }, on: !!URL_, url: URL_, call, login, me, sync, upload, saveProfile, code, toB64, applyStudent, wipeLocal,
+  window.MRAC = { setCode, signOut, flush: () => beacon(true), examResult, requestAttempt, homework, feedbackFor, evalSave, notifications, markRead, isPremium: premium, cachedMe: () => { const c = cachedMe(); return c && c.r; }, meLast, on: !!URL_, url: URL_, call, login, me, sync, upload, saveProfile, code, toB64, applyStudent, wipeLocal,
     planName: (p) => ({ free: 'Acceso gratuito', membership: 'Plataforma', premium: 'Premium · 4 clases', premium8: 'Premium · 8 clases' }[p] || 'Acceso gratuito') };
 })();
