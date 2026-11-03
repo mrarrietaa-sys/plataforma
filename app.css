@@ -8227,3 +8227,17 @@ img.ld-load-mra,img.kd-mra,img.ld-hero-mra,img.db-hero-mra{box-sizing:content-bo
 .m4o-b b{width:26px;height:26px;border-radius:50%;background:#e8ece9;display:grid;place-items:center;font-size:12px;flex:none}.m4o-b.on{border-color:var(--m2a);background:var(--m2s)}.m4o-b.on b{background:var(--m2a);color:#fff}.m4o-b.good{border-color:#16a34a}.m4o-b.good b{background:#16a34a}.m4o-b.bad{border-color:#E3242B}.m4o-b.bad b{background:#E3242B}
 .m4x.m2x-teens .m4o-b{background:#141126;border-color:#2a2645;color:#fff}.m4o-fb{display:flex;flex-direction:column;gap:8px}
 .lv-off{display:flex;flex-direction:column;gap:8px;align-items:flex-start}.lv-off h3{margin:0}.lv-off p{margin:0}
+/* v530 · admin: editar / borrar desde la lista de estudiantes */
+.ad-ract{display:flex;align-items:center;gap:8px;margin-left:auto;align-self:center;flex-shrink:0;cursor:default}
+.ad-rbtn{width:40px;height:40px;border-radius:12px;border:1.5px solid #dfe5ef;background:#fff;color:var(--n,#0e2a5c);display:grid;place-items:center;cursor:pointer;transition:background .15s,border-color .15s}
+.ad-rbtn svg{width:18px;height:18px}.ad-rbtn:hover{background:#f1f5fb;border-color:#c6d2e4}
+.ad-rbtn.del{color:#c81e1e}.ad-rbtn.del:hover{background:#fdecec;border-color:#f3b4b4}
+.ad-rchk{position:relative;width:24px;height:24px;cursor:pointer;display:block}
+.ad-rchk input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.ad-rchk span{position:absolute;inset:0;border:2px solid #b8c4d6;border-radius:7px;background:#fff;transition:all .15s}
+.ad-rchk input:checked+span{background:var(--n,#0e2a5c);border-color:var(--n,#0e2a5c)}
+.ad-rchk input:checked+span::after{content:"";position:absolute;left:7px;top:3px;width:6px;height:11px;border:solid #fff;border-width:0 2.5px 2.5px 0;transform:rotate(45deg)}
+.ad-bulk{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:900;display:flex;align-items:center;gap:12px;background:#0e2a5c;color:#fff;padding:10px 12px 10px 18px;border-radius:16px;box-shadow:0 12px 30px rgba(14,42,92,.3);max-width:calc(100vw - 32px);flex-wrap:wrap}
+.ad-bulk .btn svg{width:16px;height:16px;vertical-align:-3px;margin-right:4px}
+@media (max-width:640px){.ad-row{flex-wrap:wrap}.ad-ract{width:100%;justify-content:flex-end;margin-top:6px}}
+body:not(:has(#ad-rows)) .ad-bulk{display:none}

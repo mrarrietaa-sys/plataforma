@@ -70,7 +70,7 @@
     await loadRef();
     const h = (location.hash || '').slice(1); go(TABS.some(t => t[0] === h) ? h : 'today');
   }
-  function go(t) { TAB = t; history.replaceState(null, '', '#' + t); $$('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === t)); const on = $(`#tabs button[data-t="${t}"]`); on && on.scrollIntoView({ inline: 'center', block: 'nearest' }); window.scrollTo(0, 0); (VIEWS[t] || VIEWS.home)(); }
+  function go(t) { if (t !== 'students') { const bb = document.getElementById('ad-bulk'); if (bb) bb.remove(); try { Object.keys(SEL).forEach(k => delete SEL[k]); } catch (e) { } } TAB = t; history.replaceState(null, '', '#' + t); $$('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === t)); const on = $(`#tabs button[data-t="${t}"]`); on && on.scrollIntoView({ inline: 'center', block: 'nearest' }); window.scrollTo(0, 0); (VIEWS[t] || VIEWS.home)(); }
   const view = () => $('#view');
   function badges(s) { const set = (k, n) => { const e = $(`[data-b="${k}"]`); if (e) { e.textContent = n || ''; e.style.display = n ? '' : 'none'; } };
     set('enroll', s.enrollNew); set('recruit', s.recruitNew); set('buys', s.buysPending); set('claims', s.claimsPending); }
@@ -192,8 +192,36 @@
       row: s => { const pr = J(s.progress, {}); const mod = s.module ? ({ 1: 'A1', 2: 'A2', 3: 'B2', 4: 'B2+' })[s.module] : ''; const cur = mod && pr[mod] ? pr[mod].pct : 0;
         return `<div class="card ad-row" data-open="${esc(s.code)}"><div class="ad-av">${esc(((s.first || '?')[0] + (s.last || '')[0]).toUpperCase())}</div><div class="grow"><b>${esc(s.first)} ${esc(s.last)}</b> ${s.source === 'prueba' ? chip('🧪 PRUEBA', 'p-free') : ''}${planChip(s)}${s.mailBad ? chip('⚠️ correo', 'p-expired') : ''}${s._trial != null ? chip(s._trial > 0 ? '🎁 prueba: ' + s._trial + ' día' + (s._trial > 1 ? 's' : '') : '🔒 prueba terminada', s._trial > 0 ? '' : 'gray') : ''}${s.status && s.status !== 'activo' ? chip(esc(s.status), 'gray') : ''}
           <small>${esc(s.code)} · ${mod ? 'Módulo ' + mod : 'Sin placement'}</small>
-          <div class="ad-rowstats">${mod ? `${bar(cur)}<span>${cur}% de su módulo</span>` : ''}<span>✅ ${+s.classesDone || 0} lecciones de la plataforma</span><span>👩‍🏫 ${s._attended} clases con profe</span><span>🕒 ${s.lastSeen ? fDT(s.lastSeen) : 'nunca'}</span></div></div></div>`; },
+          <div class="ad-rowstats">${mod ? `${bar(cur)}<span>${cur}% de su módulo</span>` : ''}<span>✅ ${+s.classesDone || 0} lecciones de la plataforma</span><span>👩‍🏫 ${s._attended} clases con profe</span><span>🕒 ${s.lastSeen ? fDT(s.lastSeen) : 'nunca'}</span></div></div>
+          <div class="ad-ract" data-stop><label class="ad-rchk" title="Seleccionar"><input type="checkbox" data-sel="${esc(s.code)}" data-nm="${esc((s.first + ' ' + s.last).trim())}"${SEL[s.code] ? ' checked' : ''}><span></span></label><button class="ad-rbtn" data-ed="${esc(s.code)}" title="Editar" aria-label="Editar">${SVG.pen}</button><button class="ad-rbtn del" data-dl="${esc(s.code)}" data-nm="${esc((s.first + ' ' + s.last).trim())}" title="Borrar" aria-label="Borrar">${SVG.trash}</button></div></div>`; },
+      after: (box) => { // v530: editar y borrar desde la lista (también varios a la vez)
+        const reload = () => go('students');
+        $$('[data-ed]', box).forEach(b => b.onclick = async () => { await studentDetail(b.dataset.ed); const c = $('#d-save'); if (c) setTimeout(() => c.closest('.card').scrollIntoView({ behavior: 'smooth', block: 'start' }), 80); });
+        $$('[data-dl]', box).forEach(b => b.onclick = () => delAsk('Estudiantes', b.dataset.dl, b.dataset.nm, 'Se borra su código y sus datos. Ya no podrá entrar a la plataforma.', () => { delete SEL[b.dataset.dl]; reload(); }));
+        $$('[data-sel]', box).forEach(c => c.onchange = () => { if (c.checked) SEL[c.dataset.sel] = c.dataset.nm; else delete SEL[c.dataset.sel]; bulkBar(reload); });
+        bulkBar(reload);
+      },
       open: (code) => studentDetail(code), empty: 'Aún no hay estudiantes. Crea el primero con “＋ Nuevo estudiante”.' });
+  }
+  const SEL = {}; // estudiantes seleccionados en la lista
+  window.addEventListener('hashchange', () => { if (!/students/.test(location.hash)) { Object.keys(SEL).forEach(k => delete SEL[k]); const b = document.getElementById('ad-bulk'); if (b) b.remove(); } });
+  const SVG = { pen: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>', trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>' };
+  function bulkBar(reload) {
+    let b = $('#ad-bulk'); const ks = Object.keys(SEL);
+    if (!ks.length) { if (b) b.remove(); return; }
+    if (!b) { b = document.createElement('div'); b.id = 'ad-bulk'; b.className = 'ad-bulk'; document.body.appendChild(b); }
+    b.innerHTML = `<span><b>${ks.length}</b> seleccionado${ks.length > 1 ? 's' : ''}</span><button class="btn w sm" id="bk-no">Quitar selección</button><button class="btn k sm ad-del" id="bk-del">${SVG.trash} Borrar ${ks.length}</button>`;
+    $('#bk-no', b).onclick = () => { ks.forEach(k => delete SEL[k]); $$('[data-sel]').forEach(c => c.checked = false); bulkBar(reload); };
+    $('#bk-del', b).onclick = () => {
+      const names = ks.map(k => SEL[k]);
+      const m = modal(`<div class="center"><h2>¿Borrar ${ks.length} estudiante${ks.length > 1 ? 's' : ''}?</h2><p class="muted">${names.slice(0, 8).map(esc).join(', ')}${names.length > 8 ? ' y ' + (names.length - 8) + ' más' : ''}.</p><p class="muted">Se borran sus códigos y sus datos. Ya no podrán entrar a la plataforma.</p><p><b>Esto no se puede deshacer.</b></p><div class="row" style="justify-content:center;margin-top:10px"><button class="btn w" id="bd-no">Cancelar</button><button class="btn k ad-del" id="bd-ok">Sí, borrar ${ks.length}</button></div><p class="muted" id="bd-st"></p></div>`);
+      $('#bd-no', m).onclick = () => m.remove();
+      $('#bd-ok', m).onclick = async () => { $('#bd-ok', m).disabled = true; $('#bd-no', m).disabled = true; let ok = 0, bad = 0;
+        for (let i = 0; i < ks.length; i++) { $('#bd-st', m).textContent = 'Borrando ' + (i + 1) + ' de ' + ks.length + '…'; const r = await api('aDelete', { table: 'Estudiantes', id: ks[i] }).catch(() => null); if (r && r.ok) { ok++; delete SEL[ks[i]]; } else bad++; }
+        m.remove(); toast(bad ? `Se borraron ${ok}. ${bad} no se pudieron borrar.` : `Se borraron ${ok} estudiante${ok > 1 ? 's' : ''}`); bulkBar(reload); reload(); };
+    };
+  }
+  function _studentsEnd() {
   }
   function studentForm(s, isNew) {
     s = s || {};
