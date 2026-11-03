@@ -78,7 +78,7 @@ function mraMergeKey(k, aS, bS) { /* a = lo que ya había, b = lo nuevo · nunca
   async function me(force) {
     const c = code(); if (!c) return null; const cm = cachedMe();
     if (!force && cm && Date.now() - cm.t < 60000) return cm.r;
-    const r = await call('me', { code: c }); if (!r.ok) { if (r.err === 'notfound' || r.err === 'inactive' || r.err === 'trial_over' || r.err === 'moved') { return r; } return cm ? cm.r : null; }
+    const r = await call('me', { code: c }, { timeout: 60000 }); if (!r.ok) { if (r.err === 'notfound' || r.err === 'inactive' || r.err === 'trial_over' || r.err === 'moved') { return r; } return cm ? cm.r : null; }
     applyStudent(r.student, r.state); cacheMe(r); return r;
   }
   // ---------- sincronización del progreso ----------
