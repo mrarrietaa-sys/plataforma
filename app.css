@@ -8312,3 +8312,18 @@ img.ld-hero-mra{background:none!important}.ld-hero-mra+.rk-sh{height:16px;backgr
 @media (min-width:700px){.tpl .tp-livel{grid-template-columns:1fr 1fr}.tpl .tp-livei span small{white-space:nowrap}.tpl .tp-livei em{font-size:0}.tpl .tp-livei em::after{content:'→';font-size:16px}}
 @media (max-width:520px){.tp-modal-card.tpl-box{max-width:100%}}
 .tpl .tp-livel>*{min-width:0}.tpl .tp-livei{overflow:hidden}.tpl .tp-livei span{overflow:hidden}.tpl .tp-livei span small{overflow:hidden;text-overflow:ellipsis}
+/* v542 · celular: ventana Clases en vivo más pequeña, cabe en la pantalla */
+@media (max-width:600px){
+ .tp-modal:has(.tpl-box){padding:22px 18px}
+ .tp-modal-card.tpl-box{max-width:360px;max-height:80vh;max-height:80svh;padding:12px 12px 10px;border-radius:18px}
+ .tpl h3{font-size:15px;margin:0 32px 2px 0}.tpl .tp-x{width:28px;height:28px;font-size:13px}
+ .tpl>p.muted{display:none}
+ .tpl .tp-agtabs{margin-top:6px;padding-bottom:6px;gap:5px}.tpl .tp-agtabs button{font-size:11px;padding:4px 10px}
+ .tpl .tpl-hd{padding:6px 10px;margin:6px 0 0;gap:8px;border-radius:12px}.tpl .tpl-hd img{width:30px;height:30px}.tpl .tpl-hd b{font-size:12px}.tpl .tpl-hd span{display:none}
+ .tpl .tp-livetabs:not(.tp-agtabs){gap:4px;margin-top:6px}.tpl .tp-livetabs:not(.tp-agtabs) button{font-size:9.5px;padding:5px 1px}
+ .tpl .tp-livel{gap:5px;margin-top:8px}
+ .tpl .tp-livei{padding:5px 8px;gap:8px;min-height:0;border-radius:10px!important}
+ .tpl .tpl-ph{width:36px;height:28px;border-radius:7px}.tpl .tpl-ph b{width:16px!important;height:16px!important;font-size:9.5px!important;left:-4px;top:-4px}
+ .tpl .tp-livei span{font-size:12px;line-height:1.2}.tpl .tp-livei span small{font-size:10.5px}
+ .tpl .tp-livei em::after{font-size:13px}
+}
