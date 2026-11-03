@@ -8245,3 +8245,5 @@ body:not(:has(#ad-rows)) .ad-bulk{display:none}
 .vb-tp .vb-tag{display:inline-block;justify-self:start;font-style:normal;font:800 11px/1 var(--fh,inherit);letter-spacing:.04em;text-transform:uppercase;padding:5px 8px;border-radius:999px;margin-bottom:8px;background:#eef2f8;color:#0e2a5c}
 .vb-tp .vb-tag.now{background:#e11d2e;color:#fff}.vb-tp .vb-tag.rev{background:#fff4d6;color:#8a5a00}.vb-tp .vb-tag.ok{background:#e3f6ea;color:#11683a}
 .vb-tp.on .vb-tag{background:#fff;color:#0e2a5c}
+/* v534 · portal profe: elegir la edad antes de practicar */
+.tp-agtabs{padding-bottom:10px;border-bottom:1px solid #e9eef6}.tp-agtabs button.on{background:#e11d2e;border-color:#e11d2e;color:#fff}
