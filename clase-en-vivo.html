@@ -2,11 +2,11 @@
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>Clase en vivo · mrarrieta.com</title>
 <script src="https://unpkg.com/@daily-co/daily-js@0.92.2/dist/daily.js"></script>
-<script src="clase-topics.js?v=525"></script>
-<script src="config.js?v=525"></script>
-<script src="goals.js?v=525"></script>
-<script src="goalsdata.js?v=525"></script>
-<script src="missions.js?v=525"></script>
+<script src="clase-topics.js?v=526"></script>
+<script src="config.js?v=526"></script>
+<script src="goals.js?v=526"></script>
+<script src="goalsdata.js?v=526"></script>
+<script src="missions.js?v=526"></script>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--n:#0B2A5B;--n2:#1e4a8f;--r:#E3242B;--y:#FFC21A;--g:#16a34a;--bd:#e3e9f3;--mu:#5b6577;--bg:#eef2f8}
@@ -112,6 +112,7 @@ body.only-s #vbox{position:sticky;top:0;z-index:20;background:var(--bg);padding-
 .cd .w{text-align:center}.cd img{width:min(46vw,250px);animation:rk 3.9s ease-in forwards;filter:drop-shadow(0 18px 30px rgba(0,0,0,.4))}@keyframes rk{0%{transform:translateY(40px) rotate(-6deg)}60%{transform:translateY(0) rotate(4deg)}80%{transform:translateY(-10px) rotate(-3deg)}100%{transform:translateY(-120vh) rotate(0)}}
 .cd b{display:block;font:900 clamp(80px,22vw,170px)/1 Poppins;color:var(--y);text-shadow:0 10px 30px rgba(0,0,0,.35);animation:pz .45s}.cd b.go{color:#fff}.cd small{display:block;font:700 18px Poppins;opacity:.85;margin-top:6px;letter-spacing:1px}
 .stars i{position:absolute;width:3px;height:3px;background:#fff;border-radius:50%;opacity:.7;animation:bl 2s infinite}
+.agsel{display:inline-flex;gap:4px;align-items:center;margin-left:8px;font-size:12.5px;font-weight:700}.agsel a{padding:3px 10px;border-radius:999px;border:1.5px solid #d6dfec;color:#0B2A5B;text-decoration:none}.agsel a.on{background:#0B2A5B;color:#fff;border-color:#0B2A5B}
 </style></head><body>
 <canvas id="cf"></canvas><div class="cheer" id="cheer"></div>
 <header><img src="mra-brand.png" alt="mrarrieta.com" onerror="this.style.display='none'"><div style="flex:1"><h1>Clase en vivo · HABLANDO</h1><small id="hsub">mrarrieta.com</small></div><a id="hback" class="hback" hidden>← Mi portal</a></header>
@@ -120,7 +121,7 @@ body.only-s #vbox{position:sticky;top:0;z-index:20;background:var(--bg);padding-
 <script>
 (function(){
 const CLOUD=(window.M1CONFIG&&M1CONFIG.CLOUD_URL)||'https://script.google.com/macros/s/AKfycbzGXtwZH_eBIPz01faL6e8cMydhW-0u2H4UtzdHQYCr8CqMG62Tdp1dNDZ4MY4khE0N/exec';
-const CV='525',SESSION_MIN=60,CLASS_MIN=50;let SNAME='Carlos',TNAME='Mrs. Jennifer';
+const CV='526',SESSION_MIN=60,CLASS_MIN=50;let SNAME='Carlos',TNAME='Mrs. Jennifer';
 const QP=new URLSearchParams(location.search),CID=(QP.get('c')||'').replace(/[^\w]/g,''),DEMO=QP.get('demo')==='1',PLATFORM=!!CID;let INFO=null,VTOKEN='',GATE=PLATFORM,TAUTH=null,SAVED=0,MARKED=0;
 const base=()=>PLATFORM&&INFO?INFO.startMs:st.started;if(DEMO)SNAME='tu estudiante';
 const TOPICS_M1=[['The Greetings','Los saludos'],['The Alphabet','El abecedario'],['The Nationalities','Las nacionalidades'],['Numbers and Colors','Números y colores'],['Verb To Be and A / An','Verbo to be y a / an'],['Jobs and Occupations','Trabajos y ocupaciones'],['Family and Animals','Familia y animales'],['The Food vs. The Fruit and Vegetables','Comida, frutas y verduras'],['Weekdays and Months of the Year','Días y meses del año'],['The Weather Forecast and the Clothes','El clima y la ropa'],['School Supplies and Parts of the House','Útiles escolares y partes de la casa'],['The Singular and the Plural Nouns','Sustantivos singulares y plurales'],['Demonstrative Pronouns','Pronombres demostrativos'],['There is and There are','There is y there are']];
@@ -136,11 +137,37 @@ const mmss=s=>{s=Math.max(0,Math.round(s));return Math.floor(s/60)+':'+String(s%
 function loadJS(paths){return new Promise((ok,ko)=>{const tr=n=>{if(n>=paths.length)return ko();const s=document.createElement('script');s.src=paths[n];s.onload=ok;s.onerror=()=>{s.remove();tr(n+1);};document.head.appendChild(s);};tr(0);});}
 const LOADING={},AUDL={};
 // 🎯 misión según el objetivo del estudiante (reemplaza el «Repaso» final; mismos pasos en profe y estudiante)
-function addMission(m,n){try{const l=CLASES[kOf(m,n)];if(!l||l._mis||!PLATFORM||!INFO)return;l._mis=1;const g0=INFO.goal;if(!g0||!window.MRMISSIONS)return;const gk={x:'v',c:'t'}[g0.k]||g0.k,GN={v:'Viajar',t:'Trabajo',e:'Estudios'}[gk];let x=(MRMISSIONS[m+'-'+n]||{})[gk];if(Array.isArray(x))x=x[0];if(!x)return;
+function addMission(m,n){try{const l=CLASES[kOf(m,n)];if(!l||l._mis||!PLATFORM||!INFO)return;l._mis=1;const g0=INFO.goal;if(!g0||!window.MRMISSIONS)return;const gk={x:'v',c:'t'}[g0.k]||g0.k,GN={v:'Viajar',t:'Trabajo',e:'Estudios',kc:'Colegio',kj:'Juegos y videos',kv:'Viajar',km:'Música',tc:'Colegio',ts:'Series y redes',tg:'Gaming',tx:'Viajar o estudiar afuera'}[gk]||'Tu objetivo';let x=(MRMISSIONS[m+'-'+n]||{})[gk];if(Array.isArray(x))x=x[0];if(!x)return;
  const step={type:'ask',sk:'speaking',sec:'Misión',t:'Misión · '+GN,q:x.q,es:x.es,ans:x.a,ok:'Situación: '+x.sit+' Acepta cualquier respuesta completa y natural; corrige con amabilidad y pídele que la repita mejorada.',au:[x.qau],ins:'Objetivo de {S}: '+GN+'. Plantéale la situación («'+x.sit+'») y hazle la pregunta.',min:2};
  const i=l.steps.map(s=>s.sec).lastIndexOf('Repaso');if(i>=0)l.steps[i]=step;else{l.steps.splice(Math.max(0,l.steps.length-1),0,step);const big=l.steps.filter(s=>s!==step&&s.min>=3).sort((a,b)=>b.min-a.min)[0];if(big)big.min=Math.max(1.5,big.min-step.min);}}catch(e){}}
+
+/* v526 · KITS POR EDAD (Kids 9-11 · Teens 12-17): mismo tema y gramática, con lectura, preguntas y modelos de su mundo. Los adultos no cambian. */
+const AGF={1:['age_a1.js','M1AGE'],2:['age_a2.js','M2AGE'],3:['age_b2.js','MYAGE3'],4:['age_b2p.js','MYAGE4']};
+const AGBAN=/\b(work|works|worked|working|job|jobs|office|boss|manager|coworkers?|colleagues?|clients?|meetings?|deadline|salary|raise|promotion|hired|fired|interview|contract|business|company|report|presentation|mortgage|loan|debt|rent|landlord|tax|invoice|budget|lottery|beer|wine|bar|girlfriend|boyfriend|husband|wife|coffee|employees?|career|investors?|profit|cocktail|hangover|smoke|smokes|smoking|cigarettes?|drunk)\b/i;
+const AGBIZ=/\b(supplier|units?|shipping|upfront|regards|sincerely|dear (mr|mrs|ms)\.?|invoice|customers?|purchase)\b/i;
+function AGE(){try{const q=new URLSearchParams(location.search).get('ag');if(q==='kids'||q==='teens')return q;}catch(e){}return INFO&&(INFO.ag==='kids'||INFO.ag==='teens')?INFO.ag:'adult';}
+function ageFiles(m){const g=AGE();if(g==='adult')return Promise.resolve();const f=AGF[m]||AGF[1],L=[];if(!window[f[1]])L.push(loadJS(['js/'+f[0]+'?v='+CV,f[0]+'?v='+CV]).catch(()=>{}));if(!window.MRKQ10)L.push(loadJS(['js/keyq10.js?v='+CV,'keyq10.js?v='+CV]).catch(()=>{}));if(!window['__misy'+m]){window['__misy'+m]=1;L.push(loadJS(['js/missions_y'+m+'.js?v='+CV,'missions_y'+m+'.js?v='+CV]).catch(()=>{}));}return Promise.all(L);}
+function ageAudio(m,n){const g=AGE();if(g==='adult')return;const c=g[0],B=['kq10_'+m+'_'+n].concat(m===1?[(g==='kids'?'ka':'ta')+n]:m===2?['a2'+c]:['y'+m+c+n]).concat(['gm'+m+'t'+n+({kids:'kc',teens:'tc'}[g])]);B.forEach(b=>{if(!AUDL[b])AUDL[b]=loadJS(['js/audio/'+b+'.js',b+'.js']).catch(()=>{});});}
+function adaptAge(m,n){try{const g=AGE(),l=CLASES[kOf(m,n)];if(g==='adult'||!l||l._ag)return;l._ag=g;
+ const A=(window[(AGF[m]||AGF[1])[1]]||{})[g]||{},o1=A['t'+n+'p1']||{},o2=A['t'+n+'p2']||{},K=window.MRKQ10||{};
+ const kq=[].concat(K[m+'|'+g+'|t'+n+'p1']||[],K[m+'|'+g+'|t'+n+'p2']||[],o1.keyq||[],o2.keyq||[]).filter((x,i,a)=>x&&x.q&&x.a&&a.findIndex(y=>y.q===x.q)===i);
+ const R=o1.reading||o2.reading,img=(x)=>String(x||'').replace(/^u:/,''),bad=(st)=>AGBAN.test([st.q,st.ans,st.txt,st.title,st.t,(st.lines||[]).join(' '),(st.items||[]).map(i=>i.en+' '+(i.h||'')).join(' '),(st.yn||[]).map(y=>y.s).join(' ')].join(' '));
+ let w=0;const warm=(o1.warm||[]).concat(kq);
+ l.steps=l.steps.map(st=>{
+  if(st.type==='read'&&R){return Object.assign({},st,{_age:1,title:R.title,txt:R.text,au:R.au?[R.au]:[],img:img(R.img)||st.img});}
+  if(st.type==='yn'&&R&&(R.q||[]).length){const Y=R.q.slice(0,4);return Object.assign({},st,{_age:1,yn:Y,ans:Y.map(y=>y.a.toUpperCase()).join(' · '),img:img(R.img)||st.img});}
+  if(st.sec==='Calentamiento'&&st.type==='ask'&&warm[w]){const x=warm[w++];return Object.assign({},st,{_age:1,q:x.q,es:x.es||'',ans:String(x.a||'').split(' / ')[0],au:x.qau?[x.qau]:(x.au?[x.au]:[]),img:img(x.img)||img(R&&R.img)||st.img,ins:'Hazle esta pregunta a {S} (reprodúcela si hace falta) y espera su respuesta completa.',ok:'Acepta cualquier respuesta completa y natural de su edad; corrige con amabilidad.'});}
+  if(st.sec==='Repaso'&&st.lines&&kq.length){const Q=kq.slice(0,4);return Object.assign({},st,{_age:1,lines:Q.map(x=>x.q),ans:Q.map(x=>String(x.a||'').split(' / ')[0]).join(' · '),au:Q.map(x=>x.qau).filter(Boolean)});}
+  if(st.type==='free'&&AGBIZ.test((st.q||'')+' '+(st.es||'')+' '+(st.ans||''))){const md=o1.hwModel||o2.hwModel||kq.slice(0,3).map(x=>String(x.a||'').split(' / ')[0].replace(/_{2,}/,'…')).join(' ');return Object.assign({},st,{q:'Write 2 or 3 sentences about you. Use today\'s English.',es:'Escribe 2 o 3 frases sobre ti usando lo que practicaron hoy.',ans:md,ok:'Revisa la gramática del tema y léele su texto en voz alta para corregirlo juntos.',ins:'Pídele a {S} que escriba 2 o 3 frases sobre su vida usando lo de hoy. Aquí verás lo que escribe.'});}
+  if(st.type==='free'&&AGBAN.test(st.ans||'')){const keep=(String(st.ans).match(/[^.!?]+[.!?]+/g)||[]).filter(x=>!AGBAN.test(x)).map(x=>x.trim()).join(' ').trim();const md=o1.hwModel||o2.hwModel||(keep.split(/\s+/).length>=6?keep:kq.slice(0,2).map(x=>String(x.a||'').split(' / ')[0].replace(/_{2,}/,'…')).join(' '));return Object.assign({},st,{ans:md});}
+  return st;});
+ const jobs=/job|occupation|profesi|trabaj/i.test((l.title||'')+' '+(l.es||''));const bad2=(st)=>jobs?/\b(boss|beer|wine|bar|salary|mortgage|loan|debt|tax|invoice|girlfriend|boyfriend|husband|wife|coffee|hangover|smok\w*|cigarettes?|drunk|lottery|cocktail)\b/i.test([st.q,st.ans,st.txt].join(' ')):bad(st);
+ l.steps=l.steps.filter(st=>st._age||st.type==='free'||['intro','qa'].includes(st.type)||st.sec==='Misión'||!bad2(st));
+ const tot=l.steps.reduce((a,st)=>a+(+st.min||0),0);if(tot>0){const f=50/tot;l.steps.forEach(st=>st.min=Math.round((+st.min||0)*f*2)/2||0.5);}{const t2=l.steps.reduce((a,st)=>a+(+st.min||0),0),big=l.steps.slice().sort((x,y)=>y.min-x.min)[0];if(big)big.min=Math.max(0.5,Math.round((big.min+50-t2)*2)/2);}
+ const s0=l.steps[0];if(s0)s0.ok=(g==='kids'?'Clase para Kids (9 a 11 años): habla despacio, con frases cortas, mucha energía y felicita cada logro. ':'Clase para Teens (12 a 17 años): trato cercano, temas de su mundo (colegio, amigos, series, juegos). ')+(s0.ok||'');
+ l.reading&&R&&(l.reading=R);}catch(e){}}
 function ensureTopic(n,m){m=+(m||st.mod||1);window.CLASES=window.CLASES||{};const k=kOf(m,n);if(CLASES[k])return Promise.resolve();const f=m===1?'clase-t'+n+'.js':'clase-m'+m+'-t'+n+'.js',pre={1:'t',2:'b',3:'c',4:'d'}[m]||'t';
- if(!LOADING[k])LOADING[k]=loadJS(['js/'+f+'?v='+CV,f+'?v='+CV]).then(()=>{addMission(m,n);render();}).catch(()=>{});if(!AUDL['gm'+m+'t'+n])AUDL['gm'+m+'t'+n]=loadJS(['js/audio/gm'+m+'t'+n+'.js','gm'+m+'t'+n+'.js']).catch(()=>{});if(!AUDL[k])AUDL[k]=loadJS(['js/audio/'+pre+n+'.js',pre+n+'.js']).catch(()=>{});if(m===1&&n===2&&!AUDL.c)AUDL.c=loadJS(['js/audio/common.js','common.js']).catch(()=>{});return LOADING[k];}
+ if(!LOADING[k])LOADING[k]=Promise.all([loadJS(['js/'+f+'?v='+CV,f+'?v='+CV]),ageFiles(m)]).then(()=>{adaptAge(m,n);addMission(m,n);render();}).catch(()=>{});ageAudio(m,n);if(!AUDL['gm'+m+'t'+n])AUDL['gm'+m+'t'+n]=loadJS(['js/audio/gm'+m+'t'+n+'.js','gm'+m+'t'+n+'.js']).catch(()=>{});if(!AUDL[k])AUDL[k]=loadJS(['js/audio/'+pre+n+'.js',pre+n+'.js']).catch(()=>{});if(m===1&&n===2&&!AUDL.c)AUDL.c=loadJS(['js/audio/common.js','common.js']).catch(()=>{});return LOADING[k];}
 // ---------- estado y conexión ----------
 Object.assign(P,{cam:'<path d="m16 13 5.2 3.5a.5.5 0 0 0 .8-.4V7.9a.5.5 0 0 0-.8-.4L16 11"/><rect x="2" y="6" width="14" height="12" rx="2"/>',camoff:'<path d="M10.7 6H14a2 2 0 0 1 2 2v3.3l1 1L22 7v10"/><path d="M16 16a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h2"/><path d="m2 2 20 20"/>',micoff:'<path d="m2 2 20 20"/><path d="M18.9 13a7 7 0 0 0 .1-1v-2"/><path d="M5 10v2a7 7 0 0 0 12 5"/><path d="M15 9.3V5a3 3 0 0 0-5.7-1.3"/><path d="M9 9v3a3 3 0 0 0 5.1 2.1"/><path d="M12 19v3"/>',out:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/>',stop:'<rect x="5" y="5" width="14" height="14" rx="2"/>'});
 const qs=new URLSearchParams(location.search),rol=qs.get('rol')==='estudiante'||(PLATFORM&&qs.get('rol')!=='profe')?'estudiante':'profe';document.body.classList.add(rol==='estudiante'?'only-s':'only-t');
@@ -341,7 +368,7 @@ function renderT(){const l=L(),top=$('#m-top'),body=$('#m-body');
   ${st.started?`<div class="clock" id="clk">${clockHTML()}</div>${bar()}`:''}`;
  $('#t-pz').onclick=()=>send({pzOn:st.pzOn?0:1});$('#t-cnt').onclick=contentModal;$('#t-top').onclick=()=>topicModal();const rs=$('#t-rs');if(rs)rs.onclick=()=>{if(!confirm('¿Empezar la clase de nuevo desde el paso 1? Se borran los puntos de hoy.'))return;stopAudio(true);send({started:Date.now()+3900,i:0,res:[],ok:0,rep:0,pts:0,fb:'',fin:null,hl:-1,sh:-1,cheer:st.cheer});countdown(3900);};
  if(!st.started){body.innerHTML=animKey('pre'+st.mod+st.topic,`<div class="pre"><div class="hero"><img src="${U(l.cover,1100,620)}" alt=""><div><small>Tema ${l.n} · ${modLabel(l)}</small><h2>${esc(l.title)}</h2><p>${esc(l.goal)}</p></div></div>
-   <div class="sug">${DEMO?`<span>${I('book')} Modo práctica · sin estudiante</span>`:`<span>${I('check')} Elegido por ${esc(SNAME)}: <b>${esc(PLATFORM?(INFO.topic||'No eligió tema'):(topicsOf(CHOSEN_M)[CHOSEN-1]||[''])[0])}</b></span>`}${SUGGEST?`<span>${I('bulb')} Sugerido según sus errores: <b>${esc(TOPICS[SUGGEST.n-1][0])}</b> (${esc(SUGGEST.why)})</span>`:''}</div>${PLATFORM&&!INFO.topicN?`<div class="tip n" style="margin-bottom:8px"><b>${I('bulb')} ${esc(SNAME)} pidió un tema libre</b><small>Elige con «Cambiar tema» el tema de su módulo que más se acerque, o usa la Pizarra y el Contenido del tema para guiar la conversación.</small></div>`:''}
+   <div class="sug">${DEMO?`<span>${I('book')} Modo práctica · sin estudiante</span><span class="agsel">Practicar como: ${[['adult','Adulto'],['kids','Kids'],['teens','Teens']].map(([k,t])=>`<a href="#" data-ag="${k}" class="${AGE()===k?'on':''}">${t}</a>`).join('')}</span>`:`<span>${I('check')} Elegido por ${esc(SNAME)}: <b>${esc(PLATFORM?(INFO.topic||'No eligió tema'):(topicsOf(CHOSEN_M)[CHOSEN-1]||[''])[0])}</b></span>`}${SUGGEST?`<span>${I('bulb')} Sugerido según sus errores: <b>${esc(TOPICS[SUGGEST.n-1][0])}</b> (${esc(SUGGEST.why)})</span>`:''}</div>${PLATFORM&&!INFO.topicN?`<div class="tip n" style="margin-bottom:8px"><b>${I('bulb')} ${esc(SNAME)} pidió un tema libre</b><small>Elige con «Cambiar tema» el tema de su módulo que más se acerque, o usa la Pizarra y el Contenido del tema para guiar la conversación.</small></div>`:''}
    ${PLATFORM&&INFO&&INFO.goal&&window.MRGOAL?`<div class="tip n gl-live"><b>🧭 Objetivo de ${esc(SNAME)}: ${MRGOAL.chip(INFO.goal)}</b>${(()=>{const w=MRGOAL.why(st.mod,st.topic,INFO.goal);return w?`<small>Para su objetivo: ${esc(w.t)}</small>`:''})()}<div class="gl-qs">${MRGOAL.questions(INFO.goal,st.topic).map((q,i)=>`<div>💬 ${esc(q)}</div>`).join('')}</div>${l.steps.some(x=>x.sec==='Misión')?`<small style="display:block;margin-top:8px;color:#E3242B;font-weight:700">🚀 Al final: una Misión de su objetivo (situación real) ya incluida en los pasos.</small>`:''}</div>`:''}
    <div class="tip n"><b>Clase de ${CLASS_MIN} minutos · ${l.steps.length} pasos · Speaking, Listening, Reading y Writing.</b><small>En cada paso verás arriba qué hacer, el botón de audio (suena en los dos equipos), la respuesta esperada y el tiempo sugerido.</small></div>
    ${DEMO?'':`<div class="st ${st.ready?'':'w'}">${I('phone')} ${st.ready?esc(SNAME)+' ya entró y ve la pantalla de bienvenida':'Esperando a que '+esc(SNAME)+' entre'+(PLATFORM?'…':' con el código '+room+'…')}</div>`}
@@ -410,5 +437,7 @@ if(DEMO&&(()=>{try{return !JSON.parse(sessionStorage.getItem('mra_tp_session')||
 else if(PLATFORM)boot();else{ensureTopic(st.topic);render();if(rol==='profe'&&!DEMO){poll();push();}}
 if(rol==='estudiante'||PLATFORM||DEMO)$('#help').style.display='none';
 if(PLATFORM||DEMO){const hb=$('#hback');hb.href=rol==='profe'?'profesores.html':'index.html';hb.hidden=false;}
+window.__cev={ensureTopic,kOf,AGE};
+document.addEventListener('click',e=>{const a=e.target.closest('.agsel a');if(!a)return;e.preventDefault();const q=new URLSearchParams(location.search);if(a.dataset.ag==='adult')q.delete('ag');else q.set('ag',a.dataset.ag);location.search=q.toString();});
 })();
 </script></body></html>
