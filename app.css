@@ -8276,3 +8276,8 @@ body:not(:has(#ad-rows)) .ad-bulk{display:none}
 .tpl-teens .tpl-hd{background:#13275a;border:1px solid #22e58a55}.tpl-teens .tpl-hd b{color:#22e58a}.tpl-teens .tpl-hd span{color:#c9d6f2}
 .tpl-teens .tp-livetabs{border-color:#1e3570}.tpl-teens .tp-livetabs button{background:#13275a;border-color:#1e3570;color:#e8eefc}.tpl-teens .tp-livetabs button.on{background:#22e58a;border-color:#22e58a;color:#06210f}
 .tpl-teens .tp-livei{background:#13275a;border-color:#1e3570}.tpl-teens .tp-livei span{color:#fff}.tpl-teens .tp-livei small{color:#22e58a}.tpl-teens .tp-livei em{color:#22e58a}.tpl-teens .tpl-ph b,.tpl-teens .tp-livei>b{background:#22e58a!important;color:#06210f!important}
+/* v540 · portal profe: Clases en vivo · Adultos «RealTalk» (sobrio y premium) */
+.tpl-box-adult{background:#fff!important;border-top:4px solid #E3242B}.tpl-adult h3{color:#0B2A5B}
+.tpl-adult .tpl-hd{background:linear-gradient(135deg,#0B2A5B,#1e4a8f)}.tpl-adult .tpl-hd b{color:#fff}.tpl-adult .tpl-hd span{color:#c9d6ea}
+.tpl-adult .tp-livetabs button.on{background:#0B2A5B;border-color:#0B2A5B;color:#fff}.tpl-adult .tp-agtabs button.on{background:#E3242B;border-color:#E3242B}
+.tpl-adult .tp-livei{border-radius:16px}.tpl-adult .tp-livei small{color:#5b6577}.tpl-adult .tpl-ph b{background:#0B2A5B!important;color:#fff!important}
