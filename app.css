@@ -8281,3 +8281,34 @@ body:not(:has(#ad-rows)) .ad-bulk{display:none}
 .tpl-adult .tpl-hd{background:linear-gradient(135deg,#0B2A5B,#1e4a8f)}.tpl-adult .tpl-hd b{color:#fff}.tpl-adult .tpl-hd span{color:#c9d6ea}
 .tpl-adult .tp-livetabs button.on{background:#0B2A5B;border-color:#0B2A5B;color:#fff}.tpl-adult .tp-agtabs button.on{background:#E3242B;border-color:#E3242B}
 .tpl-adult .tp-livei{border-radius:16px}.tpl-adult .tp-livei small{color:#5b6577}.tpl-adult .tpl-ph b{background:#0B2A5B!important;color:#fff!important}
+
+/* v541 · sombra de Mr. Arrieta en su cohete */
+.rk-sh{position:absolute;height:16px;border-radius:50%;background:radial-gradient(ellipse at center,rgba(11,42,91,.6) 0%,rgba(11,42,91,.28) 45%,rgba(11,42,91,0) 72%);opacity:.85;pointer-events:none;z-index:0;transform-origin:center}
+img.ld-hero-mra{background:none!important}.ld-hero-mra+.rk-sh{height:16px;background:radial-gradient(closest-side,rgba(11,42,91,.42),rgba(11,42,91,.16) 55%,transparent);opacity:1}
+/* v541 · Clases en vivo (portal profe) más compacto en celular y PC */
+.tp-modal-card.tpl-box{max-width:460px;padding:16px 16px 14px}
+.tpl h3{font-size:18px;margin:0 36px 4px 0}.tpl>p.muted{font-size:12.5px;line-height:1.45;margin:0 0 8px}
+.tpl .tp-livetabs{gap:6px;margin-top:8px}.tpl .tp-livetabs button{font-size:12px;padding:5px 11px}
+.tpl .tp-agtabs{padding-bottom:8px}
+.tpl .tp-livetabs:not(.tp-agtabs){flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}.tpl .tp-livetabs:not(.tp-agtabs)::-webkit-scrollbar{display:none}.tpl .tp-livetabs:not(.tp-agtabs) button{flex:none}
+.tpl .tpl-hd{gap:10px;padding:8px 12px;margin:8px 0 2px;border-radius:14px}.tpl .tpl-hd img{width:42px;height:42px}.tpl .tpl-hd b{font-size:14px}.tpl .tpl-hd span{font-size:11.5px;line-height:1.35}
+.tpl .tp-livel{grid-template-columns:1fr;gap:6px;margin-top:10px}
+.tpl .tp-livei{padding:7px 10px;gap:10px;border-radius:12px}.tpl-kids .tp-livei{border-radius:14px;box-shadow:0 3px 0 #ead9c2}
+.tpl .tpl-ph{width:48px;height:36px;border-radius:9px}.tpl .tpl-ph b{width:20px!important;height:20px!important;font-size:11px!important;left:-5px;top:-5px}
+.tpl .tp-livei span{font-size:13.5px;line-height:1.25;min-width:0}.tpl .tp-livei span small{font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tpl .tp-livei em{font-size:11.5px}
+@media (max-width:520px){.tp-modal-card.tpl-box{padding:14px 12px 12px}.tpl>p.muted{font-size:12px}.tpl .tp-livei em{font-size:0}.tpl .tp-livei em::after{content:'→';font-size:16px}}
+@media (max-width:520px){.tpl .tp-livetabs:not(.tp-agtabs){display:grid;grid-template-columns:repeat(4,1fr);overflow:visible}.tpl .tp-livetabs:not(.tp-agtabs) button{font-size:10.5px;padding:6px 2px;white-space:nowrap;text-align:center}}
+/* v541 · PC: ventana más uniforme y bordes limpios */
+.tp-modal-card.tpl-box{max-width:560px;border-radius:22px;border:0!important;box-shadow:0 24px 60px rgba(9,20,45,.35)}
+.tp-modal-card.tpl-box-kids{box-shadow:0 0 0 3px #f3c27a,0 24px 60px rgba(9,20,45,.35)}
+.tp-modal-card.tpl-box-teens{box-shadow:0 0 0 1px #22e58a66,0 24px 60px rgba(0,0,0,.5)}
+.tp-modal-card.tpl-box-adult{box-shadow:inset 0 4px 0 #E3242B,0 24px 60px rgba(9,20,45,.35)}
+.tpl .tp-livetabs:not(.tp-agtabs){display:grid;grid-template-columns:repeat(4,1fr);gap:6px;overflow:visible}.tpl .tp-livetabs:not(.tp-agtabs) button{text-align:center;white-space:nowrap;padding:6px 4px}
+.tpl .tp-livei{border-width:1px!important;border-radius:12px!important;box-shadow:none!important;min-height:52px}
+.tpl-kids .tp-livei{border-color:#f0dcc2!important}.tpl-kids .tp-livei:hover{border-color:#e8762b!important}
+.tpl-adult .tp-livei:hover{border-color:#0B2A5B!important}.tpl-teens .tp-livei:hover{border-color:#22e58a!important}
+.tpl .tp-livel{max-height:none}
+@media (min-width:700px){.tpl .tp-livel{grid-template-columns:1fr 1fr}.tpl .tp-livei span small{white-space:nowrap}.tpl .tp-livei em{font-size:0}.tpl .tp-livei em::after{content:'→';font-size:16px}}
+@media (max-width:520px){.tp-modal-card.tpl-box{max-width:100%}}
+.tpl .tp-livel>*{min-width:0}.tpl .tp-livei{overflow:hidden}.tpl .tp-livei span{overflow:hidden}.tpl .tp-livei span small{overflow:hidden;text-overflow:ellipsis}

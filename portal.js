@@ -519,24 +519,13 @@
     };
   }
   // ✨ bienvenida en la página de entrada: lluvia de estrellas doradas y destellos (1 vez por visita) → luego vuela Mr. Arrieta
-  function welcomeFx() {
-    // se muestra siempre (también con el ahorro de batería del celular, que activa 'reducir animaciones')
-    const cv = document.createElement('canvas'); cv.className = 'wfx'; document.body.appendChild(cv); const x = cv.getContext('2d');
-    const fit = () => { cv.width = innerWidth * devicePixelRatio; cv.height = innerHeight * devicePixelRatio; x.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0); }; fit();
-    const W = innerWidth, H = innerHeight, N = innerWidth < 600 ? 46 : 80, COL = ['#FFD23F', '#FFC21A', '#ffffff', '#E3242B', '#7fb2ff'];
-    const P = Array.from({ length: N }, () => ({ x: Math.random() * W, y: -20 - Math.random() * H * 0.6, s: 5 + Math.random() * 9, v: 1.6 + Math.random() * 2.4, r: Math.random() * 6.28, vr: (Math.random() - .5) * 0.12, sw: Math.random() * 6.28, c: COL[Math.floor(Math.random() * COL.length)], k: Math.random() < .7 ? 'star' : 'spark' }));
-    const star = (s) => { x.beginPath(); for (let i = 0; i < 10; i++) { const a = i * Math.PI / 5 - Math.PI / 2, rr = i % 2 ? s * 0.45 : s; x.lineTo(Math.cos(a) * rr, Math.sin(a) * rr); } x.closePath(); x.fill(); };
-    const t0 = performance.now(), DUR = 2300;
-    const loop = (t) => { const e = t - t0; x.clearRect(0, 0, W, H); const fade = e > DUR - 500 ? Math.max(0, (DUR - e) / 500) : 1;
-      P.forEach((p) => { p.y += p.v; p.sw += 0.05; p.r += p.vr; const px = p.x + Math.sin(p.sw) * 14; x.save(); x.globalAlpha = fade * (p.k === 'spark' ? 0.6 + 0.4 * Math.sin(e / 90 + p.sw) : 1); x.translate(px, p.y); x.rotate(p.r); x.fillStyle = p.c; x.shadowColor = p.c; x.shadowBlur = p.k === 'spark' ? 10 : 4;
-        if (p.k === 'star') star(p.s); else { x.fillRect(-p.s * 0.12, -p.s, p.s * 0.24, p.s * 2); x.fillRect(-p.s, -p.s * 0.12, p.s * 2, p.s * 0.24); } x.restore(); });
-      if (e < DUR) requestAnimationFrame(loop); else { cv.remove(); rocketTour(); } };
-    requestAnimationFrame(loop);
-  }
+  function welcomeFx() { setTimeout(() => rocketTour(), 700); } // v541: sin lluvia de estrellas; solo el vuelo de Mr. Arrieta
   // 🚀 recorrido volando de Mr. Arrieta en la página de entrada (1 vez por visita; al tocarlo se repite)
+  function rkShadow(el) { try { const p = el.offsetParent; if (!p) return null; let sh = el._sh; if (!sh || !sh.isConnected) { sh = document.createElement('span'); sh.className = 'rk-sh'; el.after(sh); el._sh = sh; } const hero = el.classList.contains('ld-hero-mra'); const w = el.offsetWidth * .58; sh.style.width = w + 'px'; sh.style.left = (el.offsetLeft + el.offsetWidth * (hero ? .21 : .22)) + 'px'; sh.style.top = (el.offsetTop + el.offsetHeight - (hero ? 16 : 6)) + 'px'; /* celular: ocupa el lugar de la sombra fija que había */ return sh; } catch (e) { return null; } }
   function rocketTour(force) {
     const mob = innerWidth <= 600; const el = mob ? $('.ld-hero-mra') : $('.ld-login .pt-rkt'); if (!el || el.offsetParent === null) return;
     if (!el._tw) { el._tw = 1; el.style.cursor = 'pointer'; el.addEventListener('click', () => rocketTour(true)); }
+    const sh = rkShadow(el);
     if (el._fly) return; el._fly = 1;
     const r = el.getBoundingClientRect(), W = innerWidth, H = innerHeight;
     let K;
@@ -562,6 +551,7 @@
     }
     el.style.position = el.style.position || 'relative'; el.style.zIndex = 50;
     const a = el.animate(K.map(k => ({ transform: k.t, opacity: k.o, offset: k.f })), { duration: mob ? 3600 : 4000, easing: 'cubic-bezier(.4,0,.3,1)' });
+    if (sh) sh.animate([{ opacity: 1, transform: 'scaleX(1)', offset: 0 }, { opacity: 0, transform: 'scaleX(.3)', offset: .06 }, { opacity: 0, transform: 'scaleX(.3)', offset: .8 }, { opacity: 1, transform: 'scaleX(1.12)', offset: .91 }, { opacity: .75, transform: 'scaleX(.94)', offset: .96 }, { opacity: 1, transform: 'scaleX(1)', offset: 1 }], { duration: mob ? 3600 : 4000, easing: 'cubic-bezier(.4,0,.3,1)' }); // v541: sombra real (se va cuando vuela y vuelve al aterrizar)
     const tr = setInterval(() => { const b = el.getBoundingClientRect(); const st = document.createElement('span'); st.className = 'rk-star'; st.textContent = Math.random() < .5 ? '✦' : '★'; st.style.left = (b.left + b.width * (mob ? .18 : .2) + window.scrollX) + 'px'; st.style.top = (b.top + b.height * .72 + window.scrollY) + 'px'; document.body.appendChild(st); setTimeout(() => st.remove(), 900); }, 70);
     a.onfinish = () => { clearTimeout(rocketTour.rep); rocketTour.rep = setTimeout(() => { if (!document.hidden && document.body.classList.contains('home-app') && !document.querySelector('.modal,.sheet-on,.wfx') && $('.ld-hero')) welcomeFx(); }, 5000); /* 🔁 cada 5 s: estrellas + vuelo */ clearInterval(tr); el._fly = 0; el.style.zIndex = ''; const b = el.getBoundingClientRect(), rg = document.createElement('span'); rg.className = 'rk-ring'; rg.style.left = (b.left + b.width / 2 + scrollX) + 'px'; rg.style.top = (b.top + b.height * .8 + scrollY) + 'px'; document.body.appendChild(rg); setTimeout(() => rg.remove(), 800); };
   }
