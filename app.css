@@ -8241,3 +8241,7 @@ img.ld-load-mra,img.kd-mra,img.ld-hero-mra,img.db-hero-mra{box-sizing:content-bo
 .ad-bulk .btn svg{width:16px;height:16px;vertical-align:-3px;margin-right:4px}
 @media (max-width:640px){.ad-row{flex-wrap:wrap}.ad-ract{width:100%;justify-content:flex-end;margin-top:6px}}
 body:not(:has(#ad-rows)) .ad-bulk{display:none}
+/* v533 · reserva: estado del tema en su ruta */
+.vb-tp .vb-tag{display:inline-block;justify-self:start;font-style:normal;font:800 11px/1 var(--fh,inherit);letter-spacing:.04em;text-transform:uppercase;padding:5px 8px;border-radius:999px;margin-bottom:8px;background:#eef2f8;color:#0e2a5c}
+.vb-tp .vb-tag.now{background:#e11d2e;color:#fff}.vb-tp .vb-tag.rev{background:#fff4d6;color:#8a5a00}.vb-tp .vb-tag.ok{background:#e3f6ea;color:#11683a}
+.vb-tp.on .vb-tag{background:#fff;color:#0e2a5c}

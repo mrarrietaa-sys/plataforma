@@ -1287,7 +1287,8 @@
     const today = P.todayISO();
     const pend = (pr.requests || []).find(q => q.status === 'pendiente');
     const dl = cr.cycleEnd ? Math.round((new Date(cr.cycleEnd + 'T12:00:00') - new Date(today + 'T12:00:00')) / 864e5) : 99;
-    const nag = cr.vipLeft > 0 && (!up.some(c => c.type === 'vip') || dl <= 7) ? `<div class="lv-nag">${MRI('alert')}<div class="grow">Te ${cr.vipLeft === 1 ? 'queda <b>1 clase</b>' : 'quedan <b>' + cr.vipLeft + ' clases</b>'}. Se vencen el <b>${fmtD(cr.cycleEnd, { day: 'numeric', month: 'long' })}</b>${dl <= 7 ? ' (en ' + dl + ' día' + (dl === 1 ? '' : 's') + ')' : ''}.</div><button class="btn k sm" data-nagbook>Reservar</button></div>` : ''; // ⚠️ recordatorio visible (sin enviar mensajes)
+    const pEnd = String(((r && r.state) || {}).planEnd || (P.get() || {}).planEnd || '').slice(0, 10); const nxt = (() => { try { if (!cr.cycleEnd || !pEnd || pEnd <= String(cr.cycleEnd).slice(0, 10) || !cr.vipIncluded) return ''; const d = new Date(String(cr.cycleEnd).slice(0, 10) + 'T12:00:00'); d.setDate(d.getDate() + 1); return d.toISOString().slice(0, 10); } catch (e) { return ''; } })(); // v533: si el plan sigue después de este mes, se dice cuándo llegan las clases nuevas
+    const nag = cr.vipLeft > 0 && (!up.some(c => c.type === 'vip') || dl <= 7) ? `<div class="lv-nag">${MRI('alert')}<div class="grow">Te ${cr.vipLeft === 1 ? 'queda <b>1 clase</b>' : 'quedan <b>' + cr.vipLeft + ' clases</b>'}${nxt ? ' este mes' : ''}. Úsala${cr.vipLeft === 1 ? '' : 's'} antes del <b>${fmtD(cr.cycleEnd, { day: 'numeric', month: 'long' })}</b>${dl <= 7 ? ' (en ' + dl + ' día' + (dl === 1 ? '' : 's') + ')' : ''}.${nxt ? ' El <b>' + fmtD(nxt, { day: 'numeric', month: 'long' }) + '</b> recibes <b>' + cr.vipIncluded + ' clase' + (cr.vipIncluded === 1 ? ' nueva' : 's nuevas') + '</b>.' : ''}</div><button class="btn k sm" data-nagbook>Reservar</button></div>` : ''; // ⚠️ recordatorio visible (sin enviar mensajes)
     box.innerHTML = `<div class="sect-title"><h2>${MRI('video')} Mis clases con profes</h2></div>${nag}<div class="lv-wrap">
       <div class="lv-stats2">
         <div class="lv-s2 s-red"><span class="lv-s2i">${MRI('calendar')}</span><div class="lv-s2t"><small>Clases disponibles</small><b>${cr.vipLeft}<em>/ ${cr.vipTotal}</em></b><div class="lv-s2bar"><i style="width:${cr.vipTotal ? Math.round(cr.vipLeft / cr.vipTotal * 100) : 0}%"></i></div><span>Periodo: ${fmtD(cr.cycleStart, { day: 'numeric', month: 'short' })} – ${fmtD(cr.cycleEnd, { day: 'numeric', month: 'short' })}</span></div></div>
@@ -1350,6 +1351,12 @@
     m.classList.remove('vb-load'); // ya hay espacios: ventana completa
     let T = null, D = null, S = null, TP = null, OT = '', ALL = false, PICK = false, FD = null, FH = null;
     const MN = (P.assigned() || {}).n || +(P.get() || {}).module || 1; const tops = TOPICS[MN] || TOPICS[1];
+    // v533: solo los temas de su ruta → «Vas aquí» (el tema actual), «Repasar» (hechos con menos de 80 %) y «Completo» (hechos con 80 % o más). Sin «Otro tema».
+    const ORD = (() => { try { const mod = (P.MODS || []).find(m => m.n === MN); const st = (mod && P.modState(mod.id)) || {}; const parts = st.parts || {}; const T = (window.MRKIDS && MRKIDS.topics && mod) ? MRKIDS.topics(mod) : [];
+      const done = (i) => T[i] ? !!T[i].done : false; const avg = (i) => { const ks = Object.keys(parts).filter(k => k.indexOf('t' + (i + 1) + 'p') === 0 && parts[k] && parts[k].done); return ks.length ? ks.reduce((a, k) => a + (+parts[k].best || 0), 0) / ks.length : 0; };
+      let cur = tops.findIndex((t, i) => !done(i)); const out = []; if (cur >= 0) out.push({ i: cur, tag: 'Vas aquí', c: 'now' });
+      const dn = tops.map((t, i) => i).filter(i => done(i)); dn.filter(i => avg(i) < 80).forEach(i => out.push({ i, tag: 'Repasar', c: 'rev' })); dn.filter(i => avg(i) >= 80).forEach(i => out.push({ i, tag: 'Completo', c: 'ok' }));
+      return out.length ? out : [{ i: 0, tag: 'Vas aquí', c: 'now' }]; } catch (e) { return [{ i: 0, tag: 'Vas aquí', c: 'now' }]; } })();
     const step = () => {
       if (!T && ALL) { // 📅 todos los horarios de todos los profes, por día
         const sl = []; r.teachers.forEach(t => t.slots.forEach(x => sl.push(Object.assign({ t }, x)))); sl.sort((a, c) => (a.date + a.time).localeCompare(c.date + c.time));
@@ -1367,7 +1374,7 @@
         <div class="vb-dates">${dates.map(d => `<button class="vb-d${d === D ? ' on' : ''}" data-d="${d}"><small>${fmtD(d, { weekday: 'short' })}</small><b>${fmtD(d, { day: 'numeric' })}</b><small>${fmtD(d, { month: 'short' })}</small></button>`).join('')}</div>
         <div class="vb-times">${times.map(s => `<button class="vb-h${S && S.id === s.id ? ' on' : ''}" data-s="${esc(s.id)}">${fmtT(s.time)}<small>50 min</small></button>`).join('')}</div>
         <p class="vb-st">3️⃣ ¿Qué quieres practicar? <small>(tu profe lo recibe antes de la clase)</small></p>
-        <div class="vb-topics">${tops.map((t, i) => `<button type="button" class="vb-tp${TP === i ? ' on' : ''}" data-tp="${i}"><b>${i + 1}. ${esc(t[0])}</b><small>${esc(t[1])}</small></button>`).join('')}<button type="button" class="vb-tp vb-other${TP === 'o' ? ' on' : ''}" data-tp="o"><b>✏️ Otro tema</b><small>Algo diferente</small></button></div>
+        <div class="vb-topics">${ORD.map(({ i, tag, c }) => { const t = tops[i]; return `<button type="button" class="vb-tp${TP === i ? ' on' : ''}" data-tp="${i}"><i class="vb-tag ${c}">${tag}</i><b>${i + 1}. ${esc(t[0])}</b><small>${esc(t[1])}</small></button>`; }).join('')}</div>
         <input class="inp${TP === 'o' ? '' : ' hidden'}" id="vb-topic" maxlength="180" placeholder="Ej: entrevista de trabajo en inglés" value="${esc(OT)}">
         <button class="btn k block lg vb-ok" id="vb-ok" ${S && TP != null ? '' : 'disabled'}>${S && TP == null ? '👆 Elige el tema de tu clase' : S ? `✅ Reservar · ${fmtD(S.date, { weekday: 'short', day: 'numeric', month: 'short' })} · ${fmtT(S.time)}` : 'Elige una hora'}</button>`;
       $('#vb-back', b).onclick = () => { T = null; D = null; S = null; step(); }; $('#vb-back', b).textContent = PICK ? '← Profes' : '← Buscar por hora';

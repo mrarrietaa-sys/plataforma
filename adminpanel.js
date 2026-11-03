@@ -70,7 +70,7 @@
     await loadRef();
     const h = (location.hash || '').slice(1); go(TABS.some(t => t[0] === h) ? h : 'today');
   }
-  function go(t) { if (t !== 'students') { const bb = document.getElementById('ad-bulk'); if (bb) bb.remove(); try { Object.keys(SEL).forEach(k => delete SEL[k]); } catch (e) { } } TAB = t; history.replaceState(null, '', '#' + t); $$('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === t)); const on = $(`#tabs button[data-t="${t}"]`); on && on.scrollIntoView({ inline: 'center', block: 'nearest' }); window.scrollTo(0, 0); (VIEWS[t] || VIEWS.home)(); }
+  function go(t) { if (t !== TAB) { const bb = document.getElementById('ad-bulk'); if (bb) bb.remove(); try { Object.keys(SEL).forEach(k => delete SEL[k]); } catch (e) { } } TAB = t; history.replaceState(null, '', '#' + t); $$('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === t)); const on = $(`#tabs button[data-t="${t}"]`); on && on.scrollIntoView({ inline: 'center', block: 'nearest' }); window.scrollTo(0, 0); (VIEWS[t] || VIEWS.home)(); }
   const view = () => $('#view');
   function badges(s) { const set = (k, n) => { const e = $(`[data-b="${k}"]`); if (e) { e.textContent = n || ''; e.style.display = n ? '' : 'none'; } };
     set('enroll', s.enrollNew); set('recruit', s.recruitNew); set('buys', s.buysPending); set('claims', s.claimsPending); }
@@ -206,19 +206,20 @@
   const SEL = {}; // estudiantes seleccionados en la lista
   window.addEventListener('hashchange', () => { if (!/students/.test(location.hash)) { Object.keys(SEL).forEach(k => delete SEL[k]); const b = document.getElementById('ad-bulk'); if (b) b.remove(); } });
   const SVG = { pen: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>', trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>' };
-  function bulkBar(reload) {
+  const BK_ST = { table: 'Estudiantes', one: 'estudiante', many: 'estudiantes', note: 'Se borran sus códigos y sus datos. Ya no podrán entrar a la plataforma.' };
+  function bulkBar(reload, cfg) { cfg = cfg || BK_ST;
     let b = $('#ad-bulk'); const ks = Object.keys(SEL);
     if (!ks.length) { if (b) b.remove(); return; }
     if (!b) { b = document.createElement('div'); b.id = 'ad-bulk'; b.className = 'ad-bulk'; document.body.appendChild(b); }
     b.innerHTML = `<span><b>${ks.length}</b> seleccionado${ks.length > 1 ? 's' : ''}</span><button class="btn w sm" id="bk-no">Quitar selección</button><button class="btn k sm ad-del" id="bk-del">${SVG.trash} Borrar ${ks.length}</button>`;
-    $('#bk-no', b).onclick = () => { ks.forEach(k => delete SEL[k]); $$('[data-sel]').forEach(c => c.checked = false); bulkBar(reload); };
+    $('#bk-no', b).onclick = () => { ks.forEach(k => delete SEL[k]); $$('[data-sel]').forEach(c => c.checked = false); bulkBar(reload, cfg); };
     $('#bk-del', b).onclick = () => {
       const names = ks.map(k => SEL[k]);
-      const m = modal(`<div class="center"><h2>¿Borrar ${ks.length} estudiante${ks.length > 1 ? 's' : ''}?</h2><p class="muted">${names.slice(0, 8).map(esc).join(', ')}${names.length > 8 ? ' y ' + (names.length - 8) + ' más' : ''}.</p><p class="muted">Se borran sus códigos y sus datos. Ya no podrán entrar a la plataforma.</p><p><b>Esto no se puede deshacer.</b></p><div class="row" style="justify-content:center;margin-top:10px"><button class="btn w" id="bd-no">Cancelar</button><button class="btn k ad-del" id="bd-ok">Sí, borrar ${ks.length}</button></div><p class="muted" id="bd-st"></p></div>`);
+      const m = modal(`<div class="center"><h2>¿Borrar ${ks.length} ${ks.length > 1 ? cfg.many : cfg.one}?</h2><p class="muted">${names.slice(0, 8).map(esc).join(', ')}${names.length > 8 ? ' y ' + (names.length - 8) + ' más' : ''}.</p><p class="muted">${cfg.note}</p><p><b>Esto no se puede deshacer.</b></p><div class="row" style="justify-content:center;margin-top:10px"><button class="btn w" id="bd-no">Cancelar</button><button class="btn k ad-del" id="bd-ok">Sí, borrar ${ks.length}</button></div><p class="muted" id="bd-st"></p></div>`);
       $('#bd-no', m).onclick = () => m.remove();
       $('#bd-ok', m).onclick = async () => { $('#bd-ok', m).disabled = true; $('#bd-no', m).disabled = true; let ok = 0, bad = 0;
-        for (let i = 0; i < ks.length; i++) { $('#bd-st', m).textContent = 'Borrando ' + (i + 1) + ' de ' + ks.length + '…'; const r = await api('aDelete', { table: 'Estudiantes', id: ks[i] }).catch(() => null); if (r && r.ok) { ok++; delete SEL[ks[i]]; } else bad++; }
-        m.remove(); toast(bad ? `Se borraron ${ok}. ${bad} no se pudieron borrar.` : `Se borraron ${ok} estudiante${ok > 1 ? 's' : ''}`); bulkBar(reload); reload(); };
+        for (let i = 0; i < ks.length; i++) { $('#bd-st', m).textContent = 'Borrando ' + (i + 1) + ' de ' + ks.length + '…'; const r = await api('aDelete', { table: cfg.table, id: ks[i] }).catch(() => null); if (r && r.ok) { ok++; delete SEL[ks[i]]; } else bad++; }
+        m.remove(); toast(bad ? `Se borraron ${ok}. ${bad} no se pudieron borrar.` : `Se borraron ${ok} ${ok > 1 ? cfg.many : cfg.one}`); bulkBar(reload, cfg); if (cfg.after) await cfg.after(); reload(); };
     };
   }
   function _studentsEnd() {
@@ -447,7 +448,15 @@
   function teachers() {
     list('teachers', { title: '🧑‍🏫 Profesores', sub: `Portal de profes (disponibilidad y asistencia): ${BASE}profesores.html`, add: '＋ Nuevo profesor', onAdd: () => teacherEdit({}),
       row: t => { const s = REF.teachers.find(x => x.id === t.id) || {}; return `<div class="card ad-row" data-open="${esc(t.id)}"><div class="ad-av${t.photo ? ' has' : ''}">${t.photo ? `<img src="${esc(t.photo)}" alt="">` : esc((t.name || '?')[0].toUpperCase())}</div><div class="grow"><b>${esc(t.name)}</b> ${t.active === 'no' ? chip('inactivo', 'gray') : chip('activo', 'p-premium')}
-        <small>${esc(t.code)}</small><div class="ad-rowstats"><span>✅ ${s.taughtMonth || 0} dictadas este mes</span><span>📚 ${s.taughtTotal || 0} en total (🎯 ${s.vipTotal || 0} individuales · 👥 ${s.groupTotal || 0} grupales)</span><span>📅 ${s.upcoming || 0} programadas</span><span>🟢 ${s.freeSlots || 0} espacios libres</span></div></div></div>`; },
+        <small>${esc(t.code)}</small><div class="ad-rowstats"><span>✅ ${s.taughtMonth || 0} dictadas este mes</span><span>📚 ${s.taughtTotal || 0} en total (🎯 ${s.vipTotal || 0} individuales · 👥 ${s.groupTotal || 0} grupales)</span><span>📅 ${s.upcoming || 0} programadas</span><span>🟢 ${s.freeSlots || 0} espacios libres</span></div></div>
+        <div class="ad-ract" data-stop><label class="ad-rchk" title="Seleccionar"><input type="checkbox" data-sel="${esc(t.id)}" data-nm="${esc(t.name)}"${SEL[t.id] ? ' checked' : ''}><span></span></label><button class="ad-rbtn" data-ed="${esc(t.id)}" title="Editar" aria-label="Editar">${SVG.pen}</button><button class="ad-rbtn del" data-dl="${esc(t.id)}" data-nm="${esc(t.name)}" title="Borrar" aria-label="Borrar">${SVG.trash}</button></div></div>`; },
+      after: (box, rows) => { // v533: editar, borrar y seleccionar también en profesores
+        const reload = () => go('teachers'); const cfg = { table: 'Profesores', one: 'profesor', many: 'profesores', note: 'Se borran sus códigos y sus espacios libres. El historial de clases dictadas se conserva.', after: () => loadRef() };
+        $$('[data-ed]', box).forEach(b => b.onclick = () => { const t = rows.find(x => x.id === b.dataset.ed); if (t) teacherEdit(t, () => go('teachers')); });
+        $$('[data-dl]', box).forEach(b => b.onclick = () => delAsk('Profesores', b.dataset.dl, b.dataset.nm, cfg.note + ' Si tiene grupos o clubs asignados, asígnale otro profe.', async () => { delete SEL[b.dataset.dl]; await loadRef(); reload(); }));
+        $$('[data-sel]', box).forEach(c => c.onchange = () => { if (c.checked) SEL[c.dataset.sel] = c.dataset.nm; else delete SEL[c.dataset.sel]; bulkBar(reload, cfg); });
+        bulkBar(reload, cfg);
+      },
       open: (id) => teacherDetail(id), empty: 'Aún no hay profesores. Crea el primero.' });
     payCard();
   }
