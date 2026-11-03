@@ -84,7 +84,7 @@
   }
   function shell(html) { stopRec(); stopPoll(); app.innerHTML = `<div class="wrap fx">${html}</div>`; window.scrollTo(0, 0); }
   function top(extra = '') {
-    return `<div class="fx-top"><span class="lbl">Final test · ${MOD.es}</span><span class="fx-chip">INTENTO ${ST.attempts + 1}</span>${extra}<div class="grow"></div><button class="btn w sm" id="fx-exit">✕ Salir</button></div>`;
+    return `<div class="fx-top"><span class="lbl">Final test · ${MOD.es}</span><span class="fx-chip">INTENTO ${window.__fxAtt || ST.attempts + 1}</span>${extra}<div class="grow"></div><button class="btn w sm" id="fx-exit">✕ Salir</button></div>`;
   }
   function wireExit() { const b = $('#fx-exit'); if (b) b.onclick = () => { stopTimer(); stopRec(); ctx.route('home'); }; }
 
@@ -270,6 +270,13 @@
     if (a.answered) result();
     mc.onclick = async () => {
       if (rec) { rec.stop(); return; }
+      /* v525 · respuesta libre: se transcribe con Azure (sin texto de referencia) y se califica con la rúbrica. Si no se entiende nada, no cuenta como correcta. */
+      if (M.AZV && M.AZV.can() && M.listenAsr && it.special !== 'spellName') { if (mc.dataset.busy) return; mc.dataset.busy = 1; mc.classList.add('rec'); st.textContent = '🔴 Te escucho… responde en 1 o 2 frases (se detiene sola).'; M.stop();
+        let r = null; try { r = await M.listenAsr(9000, { quick: false, target: '' }); } catch (e) { r = null; } delete mc.dataset.busy; mc.classList.remove('rec');
+        const tr = r && r.alts && r.alts.length ? String(r.alts[0] || '').trim() : '';
+        if (!tr) { st.textContent = r && r.error === 'not-allowed' ? 'Permite el micrófono 🎤 y toca otra vez.' : 'No te escuché bien. Acércate al micrófono y toca otra vez.'; return; }
+        a.value = tr; a.answered = true; a.neutral = false; a.url = null; a.correct = rubric(it, tr);
+        sfx(a.correct ? 'ok' : 'bad'); st.textContent = 'Toca el micrófono para grabar de nuevo.'; result(); saveProg(); refreshPills(); return; }
       let stream = null, mr = null, chunks = [], transcript = '', sr = null, srOk = !!SR, cancelled = false;
       try { if ((typeof SR !== 'undefined' && SR) && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) throw 0; // en celular el micrófono no se puede compartir: se prioriza el reconocimiento de voz
       stream = await navigator.mediaDevices.getUserMedia({ audio: true }); mr = new MediaRecorder(stream); mr.ondataavailable = e => e.data.size && chunks.push(e.data); mr.start(); }
@@ -286,7 +293,7 @@
           await Promise.all([pRec, pSr]); stream && stream.getTracks().forEach(t => t.stop()); if (cancelled) return;
           a.url = chunks.length ? URL.createObjectURL(new Blob(chunks, { type: (mr && mr.mimeType) || 'audio/webm' })) : null;
           const tr = transcript.trim(); a.value = tr; a.answered = true;
-          if (!srOk && !tr) { a.correct = true; a.neutral = true; }
+          if (!tr) { a.answered = false; a.value = null; st.textContent = 'No te escuché bien. Toca el micrófono y responde otra vez.'; refreshPills && refreshPills(); return; } /* v525: el silencio nunca cuenta como correcto */
           else { a.neutral = false; a.correct = it.special === 'spellName' ? (M.letterScorer((first || '').replace(/[^A-Za-z]/g, '') || 'NAME')([tr]).score >= 70) : rubric(it, tr); }
           sfx(a.correct ? 'ok' : 'bad'); st.textContent = 'Toca el micrófono para grabar de nuevo.'; result(); saveProg(); refreshPills(); },
       };
@@ -331,7 +338,8 @@
   }
   function results() {
     const r = last_;
-    shell(`${top()}<div class="card center fx-res"><div class="row" style="justify-content:center;align-items:center;gap:16px">${M.mascot('mascot bounce', r.passed ? 'celebrate' : 'shrug')}
+    window.__fxAtt = r.attempt; const tp = top(); window.__fxAtt = 0; /* v525: el resultado muestra el intento que se presentó */
+    shell(`${tp}<div class="card center fx-res"><div class="row" style="justify-content:center;align-items:center;gap:16px">${M.mascot('mascot bounce', r.passed ? 'celebrate' : 'shrug')}
       <div><span class="lbl">Final ${MOD.en} results</span><div class="fx-score">${r.fin.toFixed(1)}<small> / 10.0</small></div><div class="fx-band ${r.b.k}">${r.b.l}</div>
       <div class="fx-pass-badge ${r.passed ? 'ok' : 'no'}">${r.passed ? '✅ APROBADO' : '❌ NO APROBADO'}</div></div></div>
       <p class="muted">${esc(r.name)} — ${MOD.es} · ${MOD.level} — ${esc(r.attemptLabel)}</p>

@@ -98,7 +98,7 @@
   function saveProg() { ST.prog = { plan: PL, first, last, temail, wa, course, cur, startedAt, answers: answers.map(a => a && (a.url || a.blob) ? Object.assign({}, a, { url: null, blob: null }) : a) }; persist(); }
   function shell(html) { stopRec(); stopPoll(); app.innerHTML = `<div class="wrap fx">${html}</div>`; window.scrollTo(0, 0); }
   function top(extra = '') {
-    return `<div class="fx-top"><span class="px-ttl">${window.MRI ? MRI('compass') : ''}<b>Placement Test</b><small>Prueba de clasificación</small></span><span class="fx-chip">INTENTO ${ST.attempts + 1}</span>${extra}<div class="grow"></div><button class="btn w sm" id="fx-exit">✕ Salir</button></div>`;
+    return `<div class="fx-top"><span class="px-ttl">${window.MRI ? MRI('compass') : ''}<b>Placement Test</b><small>Prueba de clasificación</small></span><span class="fx-chip">INTENTO ${window.__pxAtt || ST.attempts + 1}</span>${extra}<div class="grow"></div><button class="btn w sm" id="fx-exit">✕ Salir</button></div>`;
   }
   function wireExit() { const b = $('#fx-exit'); if (b) b.onclick = () => { stopTimer(); stopRec(); ctx.route('home'); }; }
 
@@ -280,6 +280,13 @@
     if (a.answered) result();
     mc.onclick = async () => {
       if (rec) { rec.stop(); return; }
+      /* v525 · respuesta libre: se transcribe con Azure (sin texto de referencia) y se califica con la rúbrica. Si no se entiende nada, no cuenta como correcta. */
+      if (M.AZV && M.AZV.can() && M.listenAsr && it.special !== 'spellName') { if (mc.dataset.busy) return; mc.dataset.busy = 1; mc.classList.add('rec'); st.textContent = '🔴 Te escucho… responde en 1 o 2 frases (se detiene sola).'; M.stop();
+        let r = null; try { r = await M.listenAsr(9000, { quick: false, target: '' }); } catch (e) { r = null; } delete mc.dataset.busy; mc.classList.remove('rec');
+        const tr = r && r.alts && r.alts.length ? String(r.alts[0] || '').trim() : '';
+        if (!tr) { st.textContent = r && r.error === 'not-allowed' ? 'Permite el micrófono 🎤 y toca otra vez.' : 'No te escuché bien. Acércate al micrófono y toca otra vez.'; return; }
+        a.value = tr; a.answered = true; a.neutral = false; a.url = null; a.correct = rubric(it, tr);
+        sfx(a.correct ? 'ok' : 'bad'); st.textContent = 'Toca el micrófono para grabar de nuevo.'; result(); saveProg(); refreshPills(); return; }
       let stream = null, mr = null, chunks = [], transcript = '', sr = null, srOk = !!SR, cancelled = false;
       try { if ((typeof SR !== 'undefined' && SR) && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) throw 0; // en celular el micrófono no se puede compartir: se prioriza el reconocimiento de voz
       stream = await navigator.mediaDevices.getUserMedia({ audio: true }); mr = new MediaRecorder(stream); mr.ondataavailable = e => e.data.size && chunks.push(e.data); mr.start(); }
@@ -295,7 +302,7 @@
           await Promise.all([pRec, pSr]); stream && stream.getTracks().forEach(t => t.stop()); if (cancelled) return;
           a.blob = chunks.length ? new Blob(chunks, { type: (mr && mr.mimeType) || 'audio/webm' }) : null; a.url = a.blob ? URL.createObjectURL(a.blob) : null;
           const tr = transcript.trim(); a.value = tr; a.answered = true;
-          if (!srOk && !tr) { a.correct = true; a.neutral = true; }
+          if (!tr) { a.answered = false; a.value = null; st.textContent = 'No te escuché bien. Toca el micrófono y responde otra vez.'; refreshPills && refreshPills(); return; } /* v525: el silencio nunca cuenta como correcto */
           else { a.neutral = false; a.correct = it.special === 'spellName' ? (M.letterScorer((first || '').replace(/[^A-Za-z]/g, '') || 'NAME')([tr]).score >= 70) : rubric(it, tr); }
           sfx(a.correct ? 'ok' : 'bad'); st.textContent = 'Toca el micrófono para grabar de nuevo.'; result(); saveProg(); refreshPills(); },
       };
@@ -350,7 +357,8 @@
   function results() {
     const r = last_; const m = P.mod(r.ms.rec); const left = maxAttempts() - ST.attempts; const trial = P.isTrial();
     const waMsg = encodeURIComponent((window.MRNE || String)(`Hola, soy ${r.name}. Acabo de hacer el Placement Test en mrarrieta.com y me ubicó en el ${m.name} (${m.es}). Me interesa: ${COURSE[r.course] || 'un curso'}. Quiero más información 😊`));
-    shell(`${top()}<div class="card center fx-res"><div class="px-head">${M.mascot('mascot bounce', 'celebrate')}
+    window.__pxAtt = ST.attempts; const tp0 = top(); window.__pxAtt = 0; /* v525: muestra el intento presentado */
+    shell(`${tp0}<div class="card center fx-res"><div class="px-head">${M.mascot('mascot bounce', 'celebrate')}
       <div class="px-tx"><span class="px-eye">${window.MRI ? MRI('compass') : ''} Tu ruta de aprendizaje empieza en</span><div class="px-mod">${esc(m.name)}</div><div class="px-band">${esc(m.es)} · ${esc(m.level)}</div></div></div>
       <p class="muted">${esc(r.name)} — ${esc(r.attemptLabel)}</p>
       <div class="pt-mods">${[1, 2, 3, 4].map(k => { const mm = P.mod(k), x = r.ms.mods[k]; return `<div class="${k === r.ms.rec ? 'rec' : x.ok ? 'ok' : ''}"><b>${esc(mm.name)}</b><small>${esc(mm.es)}</small><span>${Math.round(x.pct * 100)}%</span><em>${k === r.ms.rec ? '📍 Empiezas aquí' : x.ok ? '✓ Dominado' : '—'}</em></div>`; }).join('')}</div>

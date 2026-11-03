@@ -829,7 +829,7 @@
     const act = (id) => { closeAll();
       const open = (sel, click) => { const el = $(sel); if (!el) return M.toast('Esta sección aún no está disponible.'); const pk = pgOf(el); if (pk && pk !== PG) setPg(pk, true); sdShow(el); if (el.tagName === 'DETAILS') el.open = true; el.scrollIntoView({ behavior: 'smooth', block: 'start' }); if (click) setTimeout(() => { const c = $(click); c && c.click(); }, 450); };
       ({ route: () => setPg('learn'), games: () => { location.href = 'juegos.html'; }, notes: () => open('#pt-notes'), place: () => route('placement'),
-        book: () => { const c = $('#lv-book'); if (c && !c.disabled) c.click(); else open('.lv-vip'); }, next: () => open('.lv-next'), extra: () => { const x = $('#lv-extra'); if (x) x.click(); else open('.lv-vip'); }, hist: () => open('.lv-hist'), claim: () => open('.lv-claim'), chat: () => { const c = $('#lv-msg'); if (c) c.click(); else open('#pt-live'); },
+        book: () => { const c = $('#lv-book'); if (c && !c.disabled) c.click(); else if ($('.lv-load')) M.toast('Cargando tus clases, un momento…'); else if ($('.lv-off')) open('.lv-off'); else open('.lv-vip'); }, next: () => open('.lv-next'), extra: () => { const x = $('#lv-extra'); if (x) x.click(); else open('.lv-vip'); }, hist: () => open('.lv-hist'), claim: () => open('.lv-claim'), chat: () => { const c = $('#lv-msg'); if (c) c.click(); else open('#pt-live'); },
         plan: () => plans(), perso: () => route('me'), pass: () => { const b = $('#pt-pass'); b ? b.click() : null; }, ref: () => open('#pt-ref'), pol: () => window.MRPOLICY && MRPOLICY.show(), agree: () => window.MRAGREE && MRAGREE.open(), mail: () => mailEdit(), priv: () => privModal(), tour: () => { window.scrollTo(0, 0); portalTour(true); } }[id] || (() => { }))(); };
     const closeAll = () => { $$('.sd-dd').forEach(d => d.classList.remove('open')); const sh = $('.sd-sheet'); if (sh) sh.remove(); };
     $$('.sd-dd').forEach(d => { d.querySelector('.sd-ddb').onclick = (e) => { e.stopPropagation(); const o = d.classList.contains('open'); closeAll(); if (!o) d.classList.add('open'); }; });
@@ -1138,7 +1138,9 @@
     if (!window.MRAC || !MRAC.code()) return;
     const box = $('#pt-live'); const sig = () => { const q = P.get() || {}; return [q.plan, q.planEnd, q.type, q.module, q.expired].map(x => String(x == null ? '' : x)).join('|'); }; const before = sig();
     if (box && P.plan().premium) box.innerHTML = '<div class="sect-title"><h2>' + MRI('video') + ' Mis clases con profes</h2></div><div class="card lv-load">⏳ Cargando tus clases…</div>';
-    const r = await MRAC.me(); if (!r || (box && !document.body.contains(box)) || !$('#pt-ann')) return;
+    let r = await MRAC.me(); if (!r && box && document.body.contains(box)) r = await MRAC.me(true); /* v525: un reintento */
+    if (!r) { if (box && document.body.contains(box) && P.plan().premium) { box.innerHTML = `<div class="sect-title"><h2>${MRI('video')} Mis clases con profes</h2></div><div class="card lv-off"><h3>No pudimos cargar tus clases</h3><p class="muted">Revisa tu conexión a internet e inténtalo de nuevo.</p><button class="btn k" id="lv-retry">Reintentar</button></div>`; const rt = $('#lv-retry'); if (rt) rt.onclick = () => live(); } return; }
+    if ((box && !document.body.contains(box)) || !$('#pt-ann')) return;
     if (r.ok === false && r.err === 'trial_over') { const c = MRAC.code(); P.clear(); try { sessionStorage.removeItem('mra_me_cache'); } catch (e) { } route('home'); return trialOver(c); }
     if (r.ok === false && r.err === 'moved') { P.clear(); try { sessionStorage.removeItem('mra_me_cache'); } catch (e) { } M.modal(`<div class="center"><div class="to-ic">${MRI('check')}</div><h3>¡Tu plan ya está activo!</h3><p>Te enviamos un <b>código de acceso nuevo</b> a tu correo. El código gratuito ya no funciona: entra con el nuevo.</p><button class="btn k block lg" onclick="location.reload()">Entendido</button></div>`, { x: false }); return; }
     if (r.ok === false && (r.err === 'notfound' || r.err === 'inactive')) { M.toast('Tu acceso ya no está activo. Escríbenos por WhatsApp.'); return; }
@@ -1148,7 +1150,9 @@
     refCard(); notesCard();
     if (r.mail && r.mail.bad && $('#pt-ann')) { $('#pt-ann').insertAdjacentHTML('afterbegin', `<div class="pt-ann pt-mailbad"><span>✉️ No hemos podido enviarte correos a <b>${esc(r.mail.email)}</b>. Corrígelo para recibir los avisos de tus clases.</span><button class="btn w sm" id="pt-mailfix">✏️ Corregir mi correo</button></div>`); $('#pt-mailfix').onclick = () => mailEdit(r.mail.email); }
     if (window.MRAGREE && (P.get() || {}).type !== 'staff' && P.plan().paid) await MRAGREE.check(); // 📄 acuerdo de servicio (una sola vez)
-    if (!r.premium) { if (box) box.innerHTML = ''; return; }
+    if (!r.premium) { if (box) { const q0 = P.get() || {}, st0 = r.state || {}; const wasP = P.plan().premium || /premium/.test(String(st0.plan || q0.plan || ''));
+        box.innerHTML = wasP ? `<div class="sect-title"><h2>${MRI('video')} Mis clases con profes</h2></div><div class="card lv-off"><h3>Tu plan Premium no está activo</h3><p class="muted">${st0.planEnd || q0.planEnd ? 'Venció el <b>' + esc(String(st0.planEnd || q0.planEnd).slice(0, 10)) + '</b>. ' : ''}Para reservar clases con profes, renueva tu plan. Si ya pagaste o administración te habilitó clases, pide que actualicen la fecha de tu plan.</p><button class="btn k" id="lv-renew">${MRI('crown')} Renovar mi plan</button></div>` : '';
+        const rn = $('#lv-renew'); if (rn) rn.onclick = () => plans(); } return; } /* v525: aviso claro en vez de dejar la sección vacía */
     nextClassCard(r);
     if (box) { renderLive(box, r); boardsHook(); sdTidy(); }
     askReview(r.premium && r.premium.reviewDue);
