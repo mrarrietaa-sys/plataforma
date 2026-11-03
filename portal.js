@@ -184,7 +184,7 @@
     // 📱 celular: la entrada no se desplaza, todo queda a la vista
     const lock = () => { const on = document.body.classList.contains('home-app'); const mob = innerWidth < 900; document.documentElement.classList.toggle('home-lock', on);
       const h = document.querySelector('.ld-hero'), tb = document.getElementById('topbar'); if (!h) return;
-      if (!on || !mob) { h.style.height = ''; if (on) scrollTo(0, 0); return; } const top = h.getBoundingClientRect().top + scrollY; h.style.height = Math.max(360, innerHeight - top - d.offsetHeight - 22) + 'px'; scrollTo(0, 0); };
+      if (!on || !mob) { h.style.height = ''; if (on) scrollTo(0, 0); return; } const top = h.getBoundingClientRect().top + scrollY; h.style.height = Math.max(360, (innerHeight - top) / (parseFloat(document.documentElement.style.zoom) || 1) - d.offsetHeight - 22) + 'px'; scrollTo(0, 0); };
     lock(); setTimeout(lock, 300); setTimeout(lock, 1200); addEventListener('resize', lock);
   }
   // 💳 planes compactos y de venta (caben en una pantalla)
@@ -250,7 +250,7 @@
     window.__lpTab = go;
     dock.addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (b) go(b.dataset.tab); });
     document.addEventListener('click', e => { const a = e.target.closest('[data-tab],a[href^="#ld-"],a[href="#lp-control"]'); if (!a || dock.contains(a)) return; const h = a.dataset.tab || ({ '#ld-planes': 'planes', '#ld-testimonios': 'opin', '#ld-profes': 'profes', '#lp-control': 'papas' })[a.getAttribute('href')]; if (!h) return; e.preventDefault(); e.stopImmediatePropagation(); go(h); }, true);
-    const fit = () => { const tb = document.getElementById('topbar'); const top = box.getBoundingClientRect().top + scrollY; const dh = dock.offsetHeight + 18; box.style.height = Math.max(360, innerHeight - top - dh) + 'px'; };
+    const fit = () => { const tb = document.getElementById('topbar'); const top = box.getBoundingClientRect().top + scrollY; const dh = dock.offsetHeight + 18; box.style.height = Math.max(360, (innerHeight - top) / (parseFloat(document.documentElement.style.zoom) || 1) - dh) + 'px'; };
     const gh = document.getElementById('go-home'); if (gh) gh.onclick = () => { location.href = 'index.html'; };
     const padTop = () => { const tb = document.getElementById('topbar'), ap = document.getElementById('app'); if (tb && ap) ap.style.paddingTop = innerWidth < 900 ? (tb.offsetHeight + 10) + 'px' : ''; };
     padTop(); fit(); addEventListener('resize', () => { padTop(); fit(); }); setTimeout(() => { padTop(); fit(); }, 300);
