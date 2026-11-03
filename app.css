@@ -8262,3 +8262,17 @@ body:not(:has(#ad-rows)) .ad-bulk{display:none}
 .r6me .r6n{color:#fff}.r6me .r6a{background:rgba(255,255,255,.14);color:#fff}.r6me .r6m,.r6me .r6v{color:#fff}.r6me small{display:block;font:500 12px Inter;color:#b9c6de;margin-top:1px}
 .r6f,.r6h,.r6l{margin:12px 2px 0;font:500 12px Inter;color:#8a93a3;text-align:center}.r6l{font-size:14px;padding:20px 0}.r6h{color:#b45309}
 .r6r.me{background:#f6f8fc;border-radius:12px;padding-left:8px;padding-right:8px}.r6tip{margin:10px 0 0;padding:10px 12px;border-radius:12px;background:#0B2A5B;color:#fff;font:600 13px Inter;text-align:center}
+/* v539 · portal profe: Clases en vivo con la experiencia de cada edad */
+.tpl-hd{display:flex;align-items:center;gap:14px;border-radius:18px;padding:12px 14px;margin:12px 0 4px}.tpl-hd img{width:64px;height:64px;object-fit:contain;flex:none}.tpl-hd b{display:block;font:800 16px Poppins}.tpl-hd span{display:block;font:600 13px Inter;line-height:1.4;margin-top:2px}
+.tp-livei.ag{align-items:center}.tpl-ph{position:relative;width:64px;height:48px;border-radius:12px;background:#ddd center/cover no-repeat;flex:none;font-style:normal}.tpl-ph b{position:absolute;left:-6px;top:-6px;width:24px!important;height:24px!important;min-width:0!important;font-size:12px!important;border-radius:50%!important;display:grid;place-items:center}
+.tp-livei span small{display:block;font:600 12.5px Inter;margin-top:2px}
+/* Kids · Aventura */
+.tpl-box-kids{background:#fffaf2!important;border:4px solid #0e2a5c}.tpl-kids h3{color:#b5530a}.tpl-kids .muted{color:#8a6a4b}
+.tpl-kids .tpl-hd{background:#fff1de}.tpl-kids .tpl-hd b{color:#b5530a}.tpl-kids .tpl-hd span{color:#5a2a08}
+.tpl-kids .tp-livetabs button{border-color:#f0dcc2;color:#b5530a;background:#fff}.tpl-kids .tp-livetabs button.on{background:#e8762b;border-color:#e8762b;color:#fff}
+.tpl-kids .tp-livei{background:#fff;border:2px solid #f0dcc2;border-radius:18px;box-shadow:0 4px 0 #ead9c2}.tpl-kids .tp-livei span{color:#3b1f0b}.tpl-kids .tp-livei small{color:#b5530a}.tpl-kids .tp-livei em{color:#e8762b}.tpl-kids .tpl-ph b{background:#e8762b!important;color:#fff!important}.tpl-kids .tp-livei>b{background:#e8762b!important;color:#fff!important}
+/* Teens · Vida real */
+.tpl-box-teens{background:#0e1f48!important;border:1px solid #1e3570;color:#e8eefc}.tpl-teens h3{color:#fff}.tpl-teens .muted,.tpl-teens .muted b{color:#9fb0d3}.tpl-teens .tp-x{background:#13275a;color:#fff;border-color:#1e3570}
+.tpl-teens .tpl-hd{background:#13275a;border:1px solid #22e58a55}.tpl-teens .tpl-hd b{color:#22e58a}.tpl-teens .tpl-hd span{color:#c9d6f2}
+.tpl-teens .tp-livetabs{border-color:#1e3570}.tpl-teens .tp-livetabs button{background:#13275a;border-color:#1e3570;color:#e8eefc}.tpl-teens .tp-livetabs button.on{background:#22e58a;border-color:#22e58a;color:#06210f}
+.tpl-teens .tp-livei{background:#13275a;border-color:#1e3570}.tpl-teens .tp-livei span{color:#fff}.tpl-teens .tp-livei small{color:#22e58a}.tpl-teens .tp-livei em{color:#22e58a}.tpl-teens .tpl-ph b,.tpl-teens .tp-livei>b{background:#22e58a!important;color:#06210f!important}
