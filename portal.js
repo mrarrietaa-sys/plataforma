@@ -25,7 +25,7 @@
     if ($('#snd-b')) $('#snd-b').onclick = () => { const on = !voiceOn(); try { localStorage.setItem(VKEY, on ? '0' : '1'); } catch (e) { } if (!on) M.stop(); $('#snd-b').textContent = on ? '🔊' : '🔇'; M.toast(on ? '🔊 Voz de bienvenida activada' : '🔇 Voz de bienvenida desactivada'); };
   }
   let curRoute = 'home';
-  function route(r) { curRoute = r || 'home'; M.stop && M.stop(); window.scrollTo(0, 0); topbar(); const p = PAGE !== 'home' ? null : P.get();
+  function route(r) { try { if (r !== 'placement') document.documentElement.classList.remove('in-place'); } catch (e) { } curRoute = r || 'home'; M.stop && M.stop(); window.scrollTo(0, 0); topbar(); const p = PAGE !== 'home' ? null : P.get();
     if (p) { const hd = document.querySelector('.lp-dock.home'); if (hd) { hd.remove(); document.body.classList.remove('home-app'); document.documentElement.classList.remove('home-lock'); } }
     if (!p) return login();
     if (!p.first && !(p.cloud && p.type === 'student')) return nameStep(); // v410: los datos (nombre, fecha de nacimiento, correo) ya se piden al inscribirse; solo se preguntan si de verdad faltan en un acceso sin nube

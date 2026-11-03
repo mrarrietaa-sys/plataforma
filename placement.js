@@ -103,7 +103,7 @@
   function wireExit() { const b = $('#fx-exit'); if (b) b.onclick = () => { stopTimer(); stopRec(); ctx.route('home'); }; }
 
   // ---------- inicio ----------
-  async function run(appEl, context) {
+  async function run(appEl, context) { try { document.documentElement.classList.add('in-place'); } catch (e) { } // v537: sin la barra de abajo durante la prueba
     app = appEl; ctx = context; ST = Object.assign({ attempts: 0, extra: 0, used: [], prog: null }, load());
     answers = new Array(N).fill(null); cur = 0; fixMode = false; timedOut = false;
     const pr = P.get() || {};

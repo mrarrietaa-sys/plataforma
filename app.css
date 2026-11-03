@@ -8247,3 +8247,5 @@ body:not(:has(#ad-rows)) .ad-bulk{display:none}
 .vb-tp.on .vb-tag{background:#fff;color:#0e2a5c}
 /* v534 · portal profe: elegir la edad antes de practicar */
 .tp-agtabs{padding-bottom:10px;border-bottom:1px solid #e9eef6}.tp-agtabs button.on{background:#e11d2e;border-color:#e11d2e;color:#fff}
+
+.in-place .lp-dock{display:none!important}
