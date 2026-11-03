@@ -764,7 +764,7 @@
         <div class="db-me"><button class="pt-avwrap" id="me-av" title="Personaliza tu foto">${P.avHTML('pt-av')}<i class="pt-pen">✏️</i></button>
           <div class="db-me-tx"><span class="db-greet">${greet}!</span><h2>${esc(P.look().nick || p.first)} ${esc(p.last || '')}</h2><span class="db-chip ${plNow.eff}">${MRI(plIc)} ${plName}</span>${!staff && window.MRGOAL ? MRGOAL.lineHTML() : ''}${plNow.end && plNow.paid && !P.isExpired() ? `<small class="muted">Activo hasta el ${fmtD(plNow.end, { day: 'numeric', month: 'long' })}</small>` : ''}</div></div>
         ${curMod ? `<div class="db-ring" style="--p:${pct}"><div><b>${pct}%</b><small>de tu módulo</small></div></div><small class="muted db-modtx">${esc(a.name)} · ${esc(a.lv || a.id)} · ${curMod.done} de ${trial ? 4 : a.classes} lecciones</small>${!staff && window.MRGOAL ? MRGOAL.cardHTML(pct) : ''}` : staff ? '' : `<div class="db-ring" style="--p:0"><div><b>0%</b><small>tu progreso</small></div></div><small class="muted db-modtx">Empieza con tu prueba de clasificación</small>`}
-        <nav class="db-qa">${staff ? '' : `<button class="btn w" id="pt-plans">${MRI('crown')} Mi plan</button>`}${!staff && P.plan().premium ? `<button class="btn w" data-go="#pt-live">${MRI('calendar')} Mis clases</button>` : ''}${!staff && P.plan().premium ? `<button class="btn w pt-polb">${MRI('file')} Política de reservas</button>` : ''}<button class="btn w" id="me-go2">${MRI('user')} Personalizar perfil</button>${staff ? '' : `<button class="btn w" id="pt-pass">${MRI('unlock')} Cambiar mi código</button>`}<button class="btn w" id="pt-tour">${MRI('compass')} Ver el tour</button></nav><nav class="db-pgnav">${['top', 'learn', 'cls', 'me'].filter(k => k === 'top' || k === 'learn' || k === 'me' || (k === 'cls' && !staff && P.plan().premium)).map(k => `<button data-pg="${k}">${MRI({ top: 'compass', learn: 'book', cls: 'video', me: 'user' }[k])}<span>${{ top: 'Inicio', learn: 'Mis módulos', cls: 'Mis clases', me: 'Mi cuenta' }[k]}</span></button>`).join('')}</nav></aside>`;
+        <nav class="db-qa">${staff ? '' : `<button class="btn w" id="pt-plans">${MRI('crown')} Mi plan</button>`}${!staff && P.plan().premium ? `<button class="btn w" data-go="#pt-live">${MRI('calendar')} Mis clases</button>` : ''}${!staff && P.plan().premium ? `<button class="btn w pt-polb">${MRI('file')} Política de reservas</button>` : ''}<button class="btn w" id="me-go2">${MRI('user')} Personalizar perfil</button>${staff ? '' : `<button class="btn w" id="pt-pass">${MRI('unlock')} Cambiar mi código</button>`}<button class="btn w" id="pt-tour">${MRI('compass')} Ver el tour</button></nav><nav class="db-pgnav">${['top', 'learn', 'cls', 'me'].filter(k => k === 'top' || k === 'learn' || k === 'me' || (k === 'cls' && !staff && P.plan().premium)).map(k => `<button data-pg="${k}">${MRI({ top: 'compass', learn: 'book', cls: 'video', me: 'user' }[k])}<span>${{ top: 'Inicio', learn: 'Mis módulos', cls: 'Mis clases', me: 'Mi cuenta' }[k]}</span></button>`).join('')}${staff ? '' : `<button data-rank>${MRI('trophy')}<span>Ranking</span></button>`}</nav></aside>`;
     const prem = !staff && P.plan().premium;
     const MENU = { // 📂 todo el perfil organizado en 3 grupos
       learn: ['💻', 'Mis módulos', [['route', 'ib', '🧭', 'Mi ruta de aprendizaje', 'Módulos, lecciones y progreso'], ['notes', 'ib3', '✏️', 'Mis apuntes', 'Tu cuaderno personal'], ['place', 'ib2', '📝', 'Prueba de clasificación', 'Ubica tu nivel']]],
@@ -805,7 +805,7 @@
       ${newbie ? '' : '<div id="pt-ref"></div>'}${pgRows('me')}</section>
       </div>
       <p class="center fx-foot db-foot" style="margin-top:22px;font-size:13.5px;font-weight:600">¡Aprende inglés HABLANDO!<br><a class="foot-wa" href="https://wa.me/${esc(C.WHATSAPP)}?text=${encodeURIComponent((window.MRNE || String)('¡Hola, mrarrieta.com! Soy ' + ((p.first || '') + ' ' + (p.last || '')).trim() + '. Tengo una pregunta.'))}" target="_blank" rel="noopener">WhatsApp ${esc(C.WHATSAPP.replace(/^57/, '').replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3'))}</a></p></div>
-      <nav class="db-tabbar sd-tab"><button class="on" data-st="top">${MRI('compass')}<span>Inicio</span></button>${Object.keys(MENU).map((k) => `<button data-st="${k}">${MRI(PGI[k])}<span>${k === 'cls' ? 'Clases' : k === 'me' ? 'Cuenta' : 'Módulos'}</span></button>`).join('')}</nav>`;
+      <nav class="db-tabbar sd-tab"><button class="on" data-st="top">${MRI('compass')}<span>Inicio</span></button>${Object.keys(MENU).map((k) => `<button data-st="${k}">${MRI(PGI[k])}<span>${k === 'cls' ? 'Clases' : k === 'me' ? 'Cuenta' : 'Módulos'}</span></button>`).join('')}${staff ? '' : `<button data-rank>${MRI('trophy')}<span>Ranking</span></button>`}</nav>`;
     const setPg = (k, quiet) => { const w = $('.wrap.db'); if (!w) return; if (!w.querySelector(`[data-pgk="${k}"]`)) k = 'top'; PG = k; w.dataset.pg = k; try { sessionStorage.setItem('mra_pg', k); } catch (e) { }
       $$('.sd-tab button').forEach(x => x.classList.toggle('on', x.dataset.st === k)); $$('.db-pgnav button').forEach(x => x.classList.toggle('on', x.dataset.pg === k));
       if (!quiet) window.scrollTo({ top: 0, behavior: 'smooth' }); };
@@ -838,7 +838,8 @@
     $$('[data-kg]').forEach(b => b.onclick = () => M.loadAudio(['kg']).then(() => M.play(b.dataset.kg, { btn: b })));
     if (!window.__sddd) { window.__sddd = 1; document.addEventListener('click', (e) => { if (!e.target.closest('.sd-dd')) $$('.sd-dd').forEach(d => d.classList.remove('open')); }); }
     $$('.sd-tab button').forEach(b => b.onclick = () => { closeAll(); setPg(b.dataset.st); });
-    $$('.db-pgnav button').forEach(b => b.onclick = () => setPg(b.dataset.pg));
+    $$('[data-rank]').forEach(b => b.onclick = (e) => { e.preventDefault(); closeAll(); rankModal(); }); // 🏆 v538
+    $$('.db-pgnav button:not([data-rank])').forEach(b => b.onclick = () => setPg(b.dataset.pg));
     $$('.pg-row').forEach(b => b.onclick = () => act(b.dataset.act));
     setPg(PG, true);
     $$('.pt-polb').forEach(x => x.onclick = () => window.MRPOLICY && MRPOLICY.show());
@@ -1010,6 +1011,22 @@
     ctx.drawImage(src, (w - m) / 2, (hh - m) / 2, m, m, 0, 0, size, size); return cv.toDataURL('image/jpeg', .85);
   }
   /* ---------- 🔐 v393: privacidad y mis datos (Ley 1581): autorización, promociones y solicitudes ---------- */
+  // 🏆 v538 · Ranking de su nivel (misma edad y mismo módulo): Racha y Esta semana
+  async function rankModal() {
+    if (!window.MRAC || !MRAC.code()) return M.toast('Entra con tu código para ver el ranking.');
+    const m = M.modal(`<div class="r6"><h3>Ranking</h3><p class="r6p">Practica cada día y sube de puesto en tu nivel.</p><div class="r6t"><button class="on" data-rt="streak">Racha</button><button data-rt="week">Esta semana</button></div><div class="r6b"><p class="r6l">Cargando…</p></div><p class="r6f">Racha: días seguidos practicando · Esta semana: lecciones hechas</p></div>`, { x: true });
+    const box = $('.r6b', m); const r = await MRAC.call('rankAll', { code: MRAC.code() }).catch(() => null);
+    if (!r || !r.ok) { box.innerHTML = '<p class="r6l">No pudimos cargar el ranking. Inténtalo de nuevo en un momento.</p>'; return; }
+    const ini = (n) => esc(String(n || '?').trim().charAt(0).toUpperCase());
+    const val = (k, v) => k === 'streak' ? (v === 1 ? '1 día' : v + ' días') : (v === 1 ? '1 lección' : v + ' lecciones');
+    const draw = (k) => { const B = r[k] || { top: [] }; const meIn = B.top.some(x => x.me && x.n === B.pos);
+      const tip = B.pos === 1 ? (B.v ? 'Vas de primero. ¡Sigue así!' : 'Haz una lección y toma el primer puesto') : B.next ? `Una lección hoy te sube al puesto ${B.next}` : 'Practica hoy y mantén tu puesto';
+      box.innerHTML = B.top.map(x => `<div class="r6r${x.me ? ' me' : ''}"><span class="r6n${x.n <= 3 ? ' top' : ''}">${x.n}</span><span class="r6a">${ini(x.name)}</span><span class="r6m">${x.me ? 'Tú' : esc(x.name)}</span><span class="r6v">${val(k, x.v)}</span></div>`).join('')
+        + (meIn ? `<p class="r6tip">${tip}</p>` : `<div class="r6me"><span class="r6n">${B.pos}</span><span class="r6a">${ini((P.get() || {}).first || 'T')}</span><span class="r6m">Tú<small>${tip}</small></span><span class="r6v">${val(k, B.v)}</span></div>`)
+        + (r.hidden ? '<p class="r6h">No apareces para los demás. Puedes cambiarlo en Mi cuenta → Privacidad.</p>' : '');
+      $$('[data-rt]', m).forEach(b => b.classList.toggle('on', b.dataset.rt === k)); };
+    $$('[data-rt]', m).forEach(b => b.onclick = () => draw(b.dataset.rt)); draw('streak');
+  }
   async function privModal() {
     const m = M.modal(`<div class="pvm"><div class="pd-hd"><span class="pd-ic">${MRI('shield')}</span><div><h3>Privacidad y mis datos</h3><small>Tus datos son tuyos. Aquí manejas tu autorización y tus derechos.</small></div></div><div class="pd-body"><p class="muted center">Cargando…</p></div></div>`, { x: true });
     const body = $('.pd-body', m); const r = await (window.MRAC && MRAC.me ? MRAC.me(true).catch(() => null) : null); const st = (r && r.student) || {};
@@ -1019,10 +1036,12 @@
     const row = (ic, b, sm, right, act) => `<${act ? 'button' : 'div'} class="pd-row"${act ? ` data-pv="${act}"` : ''}><i>${MRI(ic)}</i><span><b>${b}</b><small>${sm}</small></span>${right || ''}</${act ? 'button' : 'div'}>`;
     body.innerHTML = row('check', 'Autorizaste el tratamiento de tus datos', whenTx).replace('<i>', '<i class="ok">')
       + `<label class="pd-row pd-sw"><i>${MRI('mail')}</i><span><b>Novedades y promociones</b><small>Por WhatsApp y correo</small></span><input type="checkbox" id="pv-mk" ${mk ? 'checked' : ''}><em></em></label>`
+      + `<label class="pd-row pd-sw"><i>${MRI('trophy')}</i><span><b>Aparecer en el ranking</b><small>Solo tu nombre y la inicial de tu apellido</small></span><input type="checkbox" id="pv-rk" ${st.rk === 0 ? '' : 'checked'}><em></em></label>`
       + row('file', 'Ver la política de privacidad', 'Completa y actualizada', MRI('chev', 'pd-ar'), 'pol')
       + row('pen', 'Consultar mis datos', 'Te respondemos en máximo 10 días hábiles', MRI('chev', 'pd-ar'), 'consulta')
       + row('pen', 'Corregir mis datos', 'Te respondemos en máximo 15 días hábiles', MRI('chev', 'pd-ar'), 'corregir')
       + row('trash', 'Pedir que borren mis datos', 'Te respondemos en máximo 15 días hábiles', MRI('chev', 'pd-ar'), 'borrar');
+    $('#pv-rk', m).onchange = async (e) => { const v = e.target.checked; const x = await MRAC.call('privSet', { code: MRAC.code(), op: 'rank', v }).catch(() => null); if (x && x.ok) M.toast(v ? 'Listo: apareces en el ranking' : 'Listo: ya no apareces en el ranking'); else { e.target.checked = !v; M.toast('No se pudo guardar. Inténtalo de nuevo.'); } };
     $('#pv-mk', m).onchange = async (e) => { const v = e.target.checked; const x = await MRAC.call('privSet', { code: MRAC.code(), op: 'mkt', v }).catch(() => null); if (x && x.ok) M.toast(v ? 'Listo: recibirás novedades y promociones' : 'Listo: ya no te enviaremos promociones'); else { e.target.checked = !v; M.toast('No se pudo guardar. Intenta de nuevo.'); } };
     const ASK = { consulta: ['Consultar mis datos', 'Te enviaremos qué datos tenemos tuyos y para qué los usamos.', '¿Algo en especial que quieras saber? (opcional)'], corregir: ['Corregir mis datos', 'Cuéntanos qué dato está mal y cuál es el correcto.', 'Ej: mi correo correcto es…'], borrar: ['Pedir que borren mis datos', 'Borraremos tus datos, salvo los que la ley nos obliga a conservar (por ejemplo, los de pagos). Si tienes un plan activo, perderás el acceso.', '¿Quieres contarnos el motivo? (opcional)'] };
     $$('[data-pv]', m).forEach(b => b.onclick = () => { const k = b.dataset.pv; if (k === 'pol') { window.open('privacidad.html', '_blank'); return; }
