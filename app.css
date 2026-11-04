@@ -8383,12 +8383,12 @@ img.ld-hero-mra{background:none!important}.ld-hero-mra+.rk-sh{height:16px;backgr
 .vb-tp.nxt b,.vb-tp.nxt small,.vb-tp.nxt .th-can .th-p{color:#94a3b8!important}.vb-tp.nxt .th-can .th-l{color:#cbd5e1!important}
 .vb-tp .vb-lkt{color:#94a3b8;font-weight:600}
 .vf-a{text-transform:none!important}
-/* v553 · PC: «Te recomendamos reforzar» sin espacio vacío (título a la izquierda, temas a la derecha) */
+/* v557 · PC: «Te recomendamos reforzar» arriba y centrado; temas sugeridos centrados y más angostos */
 @media (min-width:760px){
- .vb-rec{display:grid;grid-template-columns:230px minmax(0,1fr);gap:16px;align-items:center;padding:14px 16px}
- .vb-rec>p{margin:0;text-align:left;font-size:16px}.vb-rec>p small{font-size:12.5px;margin-top:4px}
- .vb-rec .vb-topics{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))!important}
+ .vb-rec{padding:14px 16px}
+ .vb-rec .vb-topics{grid-template-columns:repeat(auto-fit,minmax(240px,300px))!important;justify-content:center}
 }
+
 /* v553 · diccionario */
 .iconbtn.dict-ic{color:#0B2A5B}.iconbtn.dict-ic svg{display:block}
 .dx-modal>.card.dx{max-width:520px;width:calc(100% - 24px);padding:18px 18px 14px!important;text-align:left}
