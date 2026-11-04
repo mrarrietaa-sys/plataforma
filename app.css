@@ -8377,3 +8377,8 @@ img.ld-hero-mra{background:none!important}.ld-hero-mra+.rk-sh{height:16px;backgr
 .vb-tp.vb-nowbar .vb-tag{margin:0;flex:none}
 .vb-tp.vb-nowbar span{font:600 13.5px Inter,sans-serif;color:#0B2A5B;line-height:1.3;min-width:0}.vb-tp.vb-nowbar span b{font:800 14px var(--fh,Poppins),sans-serif}
 .vb-tp.vb-nowbar.on{background:#0B2A5B;border-color:#0B2A5B}.vb-tp.vb-nowbar.on span,.vb-tp.vb-nowbar.on span b{color:#fff}
+/* v551 · etiquetas de la reserva */
+.vb-tp .vb-tag.dom{background:#e3f6ea;color:#11683a}.vb-tp .vb-tag.ref{background:#fff4d6;color:#8a5a00}.vb-tp .vb-tag.nx{background:#eef2f8;color:#64748b}.vb-tp .vb-tag.av{background:#eef2f8;color:#0e2a5c}
+.vb-tp.nxt{background:#F8FAFC;border-style:dashed;cursor:not-allowed;opacity:1}
+.vb-tp.nxt b,.vb-tp.nxt small,.vb-tp.nxt .th-can .th-p{color:#94a3b8!important}.vb-tp.nxt .th-can .th-l{color:#cbd5e1!important}
+.vb-tp .vb-lkt{color:#94a3b8;font-weight:600}
