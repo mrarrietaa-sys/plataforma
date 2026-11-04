@@ -26,7 +26,7 @@
     helmet: { cw: 80, f: 1.12, y: 66, es: 'Casco de obra', p: [['#FFC21A', 'M10 60 C8 6 92 6 90 60 Z'], ['#e0a400', 'M44 8 H56 V60 H44 Z'], ['#FFC21A', 'M-2 56 H102 V64 H-2 Z']] },
   };
   const BGS = { red: ['#E3242B', '#ff6b6b'], navy: ['#0B2A5B', '#2f5fa8'], yellow: ['#FFC21A', '#ffe38a'], sky: ['#3AA0E8', '#bfe4ff'], green: ['#2E9E5B', '#a6e3bd'], purple: ['#7B4BC4', '#d3bdf5'], pink: ['#F07AB0', '#ffd3e6'], white: ['#ffffff', '#e9eef6'], usa: ['#0B2A5B', '#E3242B'] };
-  const STICKERS = ['', '⭐', '🏆', '📚', '🎸', '⚽', '☕', '❤️', '🇺🇸', '🚀', '🎧', '🔥'];
+  const STICKERS = ['', '⭐', '🏆', '🎧', '🎸', '⚽', '☕', '❤️', '🇺🇸', '🚀', '🎧', '🔥'];
   const def = () => ({ pose: 'welcome', shirt: '', pants: '', shoes: '', hat: 'none', bg: 'red', sticker: '' });
 
   const imgs = {};

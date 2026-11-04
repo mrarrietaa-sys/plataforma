@@ -99,7 +99,7 @@
         if (ok) c++; else missed.push({ en: r.a, au: r.au });
         await say(body, ok, r.a, r.es, r.au);
       } else {
-        const body = head(stage, { lbl: 'Game', title: '📔 ¿Would funciona?', ins: 'Lee la frase del diario del abuelo. ¿Se puede usar <b>would</b> (acción repetida) o <b>solo used to</b> (estado: <i>live, have, own, be</i>)?', count: `${k + 1} / ${R.length}` });
+        const body = head(stage, { lbl: 'Game', title: '✍️ ¿Would funciona?', ins: 'Lee la frase del diario del abuelo. ¿Se puede usar <b>would</b> (acción repetida) o <b>solo used to</b> (estado: <i>live, have, own, be</i>)?', count: `${k + 1} / ${R.length}` });
         body.appendChild(h(`<div class="g5b-diary"><small>Grandpa's diary · 1978</small><p>${esc(r.s).replace('would', '<u>would</u>')}</p></div>`));
         const opts = ['🔁 Sí, <b>would</b> funciona', '🏠 No: solo <b>used to</b>'];
         ok = await ask(body, opts, r.ok ? 0 : 1, 'g3-two');

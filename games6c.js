@@ -143,7 +143,7 @@
         <div class="g6c-post"><div class="g6c-ph"><span class="g6c-pav">${r.av}</span><div><b>@${esc(r.u)}</b><small>${2 + k}h · 🌎</small></div></div>
         <p>${esc(r.t)}</p><div class="g6c-pact"><span>❤️ ${r.likes.toLocaleString('en-US')}</span><span>💬 ${Math.round(r.likes / 9)}</span><span>🔁 ${Math.round(r.likes / 5)}</span></div><div class="g6c-stamp hidden"></div></div></div>`);
       body.appendChild(phone); center(body, rep(r.au, '🔊 Escuchar la publicación')); play(r.au);
-      const gd = h(`<details class="g6c-guide"><summary>📖 Guía rápida de falacias</summary>${F.map(x => `<p><b>${esc(x.en)}</b> (${esc(x.es)}): ${esc(x.def)}</p>`).join('')}</details>`);
+      const gd = h(`<details class="g6c-guide"><summary>💡 Guía rápida de falacias</summary>${F.map(x => `<p><b>${esc(x.en)}</b> (${esc(x.es)}): ${esc(x.def)}</p>`).join('')}</details>`);
       const wrap = h(`<div class="g6c-flags">${F.map((x, i) => `<button class="g6c-flag" data-i="${i}"><b>🚩 ${esc(x.en)}</b><small>${esc(x.es)}</small></button>`).join('')}</div>`);
       body.appendChild(wrap); body.appendChild(gd);
       const btns = $$('button', wrap);

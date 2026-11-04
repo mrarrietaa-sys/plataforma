@@ -404,7 +404,7 @@
   function placement() {
     list('placement', { title: '🧭 Prueba de clasificación', sub: 'Resultados y audios de Speaking',
       row: x => `<div class="card ad-row" data-open="${esc(x.id)}"><div class="ad-av">${esc((x.name || '?')[0].toUpperCase())}</div><div class="grow"><b>${esc(x.name)}</b> ${chip(esc(x.level || ('Módulo ' + x.module)), 'p-membership')}
-        <small>${fDT(x.date)} · ${esc(x.attempt)} ${x.code ? '· 🔑 ' + esc(x.code) : ''}</small><div class="ad-rowstats"><span>🎧 ${esc(x.listening)}</span><span>📖 ${esc(x.reading)}</span><span>✍️ ${esc(x.writing)}</span><span>🎤 ${esc(x.speaking)}</span><span><b>Nota ${esc(x.final)}</b></span><span>🔊 ${J(x.files, []).length} audios</span></div></div></div>`,
+        <small>${fDT(x.date)} · ${esc(x.attempt)} ${x.code ? '· 🔑 ' + esc(x.code) : ''}</small><div class="ad-rowstats"><span>🎧 ${esc(x.listening)}</span><span>👀 ${esc(x.reading)}</span><span>✍️ ${esc(x.writing)}</span><span>🎤 ${esc(x.speaking)}</span><span><b>Nota ${esc(x.final)}</b></span><span>🔊 ${J(x.files, []).length} audios</span></div></div></div>`,
       open: (id) => placementDetail(id, () => go('placement')), empty: 'Aún nadie ha tomado la prueba de clasificación con la nube activa.' });
   }
   async function placementDetail(id, onBack) {
@@ -412,7 +412,7 @@
     const r = await api('aGet', { table: 'Placement', id }); if (!r.ok) return; const x = r.row; const mods = J(x.mods, {});
     view().innerHTML = `${back()}<div class="card ad-dhead"><div class="ad-av lg">${esc((x.name || '?')[0].toUpperCase())}</div><div class="grow"><h1>${esc(x.name)}</h1><p>${chip(esc(x.level || ''), 'p-membership')} ${x.timedOut ? chip('⏱ se acabó el tiempo', 'gray') : ''}</p><p class="muted">${fDT(x.date)} · ${esc(x.attempt)} · ${esc(x.email)} ${x.whatsapp ? '· ' + esc(x.whatsapp) : ''}</p></div>
       <div class="ad-dact">${x.code ? `<button class="btn w sm" id="p-st">🎓 Ver estudiante</button>` : ''}${x.whatsapp ? `<a class="btn ad-wa sm" target="_blank" rel="noopener" href="${waLink(x.whatsapp, 'Hola ' + x.name + ' 👋')}">💬</a>` : ''}</div></div>
-      <div class="card"><h3>Resultados</h3><div class="ad-scores">${[['🎧 Listening', x.listening], ['📖 Reading', x.reading], ['✍️ Writing', x.writing], ['🎤 Speaking', x.speaking], ['⭐ Nota final', x.final]].map(([k, v]) => `<div><span>${k}</span><b>${esc(v)}</b>${bar(+v * 10)}</div>`).join('')}</div>
+      <div class="card"><h3>Resultados</h3><div class="ad-scores">${[['🎧 Listening', x.listening], ['👀 Reading', x.reading], ['✍️ Writing', x.writing], ['🎤 Speaking', x.speaking], ['⭐ Nota final', x.final]].map(([k, v]) => `<div><span>${k}</span><b>${esc(v)}</b>${bar(+v * 10)}</div>`).join('')}</div>
         <h4>Dominio por módulo</h4><div class="ad-mods">${[1, 2, 3, 4].map(n => `<div class="ad-mod${+x.module === n ? ' ok' : ''}"><b>${MODN[n]}</b>${bar(mods[n])}<span>${mods[n] != null ? mods[n] + '%' : '—'}${+x.module === n ? ' · 📍 empieza aquí' : ''}</span></div>`).join('')}</div></div>
       <div class="card"><h3>🎤 Grabaciones de Speaking</h3>${audioList(x.files, x.speakingAnswers)}</div>`;
     wireBack(onBack); wireAudios(view()); if ($('#p-st')) $('#p-st').onclick = () => studentDetail(x.code);
@@ -424,7 +424,7 @@
     list('recruit', { title: '👩‍🏫 Proceso de selección', sub: `Formulario para candidatos: ${BASE}reclutamiento.html`,
       filters: [{ k: 'status', opts: [['', 'Todos los estados']].concat(REC_ST) }, { k: 'passed', opts: [['', 'Aprobados y no aprobados'], ['sí', '✅ Aprobados'], ['no', '❌ No aprobados']] }],
       row: x => `<div class="card ad-row" data-open="${esc(x.id)}"><div class="ad-av">${esc((x.name || '?')[0].toUpperCase())}</div><div class="grow"><b>${esc(x.name)}</b> ${chip(x.passed === 'sí' ? '✅ Aprobó' : '❌ No aprobó', x.passed === 'sí' ? 'p-premium' : 'p-expired')} ${chip((REC_ST.find(s => s[0] === x.status) || ['', x.status])[1], 'st-' + x.status)}
-        <small>${fDT(x.date)} · ${esc(x.city)} · ${esc(x.experience)}</small><div class="ad-rowstats"><span>🎧 ${esc(x.listening)}</span><span>📖 ${esc(x.reading)}</span><span>✍️ ${esc(x.writing)}</span><span>🎤 ${esc(x.speaking)}</span><span><b>Final ${esc(x.final)}</b></span><span>${J(x.cv, null) ? '📄 CV' : 'sin CV'}</span></div></div></div>`,
+        <small>${fDT(x.date)} · ${esc(x.city)} · ${esc(x.experience)}</small><div class="ad-rowstats"><span>🎧 ${esc(x.listening)}</span><span>👀 ${esc(x.reading)}</span><span>✍️ ${esc(x.writing)}</span><span>🎤 ${esc(x.speaking)}</span><span><b>Final ${esc(x.final)}</b></span><span>${J(x.cv, null) ? '📄 CV' : 'sin CV'}</span></div></div></div>`,
       open: (id) => recruitDetail(id), empty: 'Aún no hay candidatos. Comparte el enlace del proceso de selección.' });
   }
   async function recruitDetail(id) {
@@ -434,7 +434,7 @@
       <div class="ad-dact">${x.whatsapp ? `<a class="btn ad-wa sm" target="_blank" rel="noopener" href="${waLink(x.whatsapp, 'Hola ' + x.name + '. Te escribimos de mrarrieta.com por tu proceso de selección.')}">💬 WhatsApp</a>` : ''}</div></div>
       <div class="card"><div class="ad-kv">${[['Ciudad / país', x.city], ['Experiencia', x.experience], ['Disponibilidad', x.availability], ['Sobre el candidato', x.about]].map(([k, v]) => `<span>${k}</span><b>${esc(v || '—')}</b>`).join('')}</div>
         <h4>📄 Hoja de vida</h4>${cv ? `<div class="row"><button class="btn w" id="r-cv">⬇️ Descargar ${esc(cv.name)}</button><a class="btn w" target="_blank" rel="noopener" href="https://drive.google.com/file/d/${esc(cv.fileId)}/view">Abrir en Drive</a></div>` : '<p class="muted">No adjuntó hoja de vida.</p>'}</div>
-      <div class="card"><h3>Resultados de la prueba</h3><div class="ad-scores">${[['🎧 Listening', x.listening], ['📖 Reading', x.reading], ['✍️ Writing', x.writing], ['🎤 Speaking', x.speaking], ['⭐ Final', x.final]].map(([k, v]) => `<div><span>${k}</span><b>${esc(v)}</b>${bar(+v * 10)}</div>`).join('')}</div></div>
+      <div class="card"><h3>Resultados de la prueba</h3><div class="ad-scores">${[['🎧 Listening', x.listening], ['👀 Reading', x.reading], ['✍️ Writing', x.writing], ['🎤 Speaking', x.speaking], ['⭐ Final', x.final]].map(([k, v]) => `<div><span>${k}</span><b>${esc(v)}</b>${bar(+v * 10)}</div>`).join('')}</div></div>
       <div class="card"><h3>🎤 Grabaciones de Speaking</h3>${audioList(x.files, x.speakingAnswers)}</div>
       <div class="card"><h3>Seguimiento</h3><div class="ad-form"><label>Estado<select class="inp" id="r-st">${REC_ST.map(([v, n]) => `<option value="${v}" ${x.status === v ? 'selected' : ''}>${n}</option>`).join('')}</select></label><label class="full">Notas<textarea class="inp" id="r-n" rows="2">${esc(x.notes)}</textarea></label></div>
         <div class="row"><button class="btn w" id="r-sv">💾 Guardar</button><button class="btn k" id="r-hire">🧑‍🏫 Crear como profesor</button></div></div>`;
@@ -448,7 +448,7 @@
   function teachers() {
     list('teachers', { title: '🧑‍🏫 Profesores', sub: `Portal de profes (disponibilidad y asistencia): ${BASE}profesores.html`, add: '＋ Nuevo profesor', onAdd: () => teacherEdit({}),
       row: t => { const s = REF.teachers.find(x => x.id === t.id) || {}; return `<div class="card ad-row" data-open="${esc(t.id)}"><div class="ad-av${t.photo ? ' has' : ''}">${t.photo ? `<img src="${esc(t.photo)}" alt="">` : esc((t.name || '?')[0].toUpperCase())}</div><div class="grow"><b>${esc(t.name)}</b> ${t.active === 'no' ? chip('inactivo', 'gray') : chip('activo', 'p-premium')}
-        <small>${esc(t.code)}</small><div class="ad-rowstats"><span>✅ ${s.taughtMonth || 0} dictadas este mes</span><span>📚 ${s.taughtTotal || 0} en total (🎯 ${s.vipTotal || 0} individuales · 👥 ${s.groupTotal || 0} grupales)</span><span>📅 ${s.upcoming || 0} programadas</span><span>🟢 ${s.freeSlots || 0} espacios libres</span></div></div>
+        <small>${esc(t.code)}</small><div class="ad-rowstats"><span>✅ ${s.taughtMonth || 0} dictadas este mes</span><span>🎓 ${s.taughtTotal || 0} en total (🎯 ${s.vipTotal || 0} individuales · 👥 ${s.groupTotal || 0} grupales)</span><span>📅 ${s.upcoming || 0} programadas</span><span>🟢 ${s.freeSlots || 0} espacios libres</span></div></div>
         <div class="ad-ract" data-stop><label class="ad-rchk" title="Seleccionar"><input type="checkbox" data-sel="${esc(t.id)}" data-nm="${esc(t.name)}"${SEL[t.id] ? ' checked' : ''}><span></span></label><button class="ad-rbtn" data-ed="${esc(t.id)}" title="Editar" aria-label="Editar">${SVG.pen}</button><button class="ad-rbtn del" data-dl="${esc(t.id)}" data-nm="${esc(t.name)}" title="Borrar" aria-label="Borrar">${SVG.trash}</button></div></div>`; },
       after: (box, rows) => { // v533: editar, borrar y seleccionar también en profesores
         const reload = () => go('teachers'); const cfg = { table: 'Profesores', one: 'profesor', many: 'profesores', note: 'Se borran sus códigos y sus espacios libres. El historial de clases dictadas se conserva.', after: () => loadRef() };

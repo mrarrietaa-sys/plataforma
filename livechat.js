@@ -86,7 +86,7 @@
     if (!m.file) return '';
     const view = 'https://drive.google.com/file/d/' + encodeURIComponent(m.file) + '/view';
     if (/^image\//.test(m.fmime)) return `<a href="${view}" target="_blank" rel="noopener"><img class="wa-img" loading="lazy" src="https://drive.google.com/thumbnail?id=${encodeURIComponent(m.file)}&sz=w800" alt="${esc(m.fname)}" onerror="this.outerHTML='<span class=&quot;wa-doc&quot;><span>🖼️</span><b>${esc(m.fname || 'Imagen')}</b><small>Ver</small></span>'"></a>`;
-    const ic = /pdf/.test(m.fmime) ? '📕' : /sheet|excel/.test(m.fmime) ? '📗' : /presentation|powerpoint/.test(m.fmime) ? '📙' : /audio/.test(m.fmime) ? '🎵' : '📘';
+    const ic = /pdf/.test(m.fmime) ? '📄' : /sheet|excel/.test(m.fmime) ? '📊' : /presentation|powerpoint/.test(m.fmime) ? '📽️' : /audio/.test(m.fmime) ? '🎵' : '📘';
     return `<a class="wa-doc" href="${view}" target="_blank" rel="noopener"><span>${ic}</span><b>${esc(m.fname || 'Documento')}</b><small>Abrir</small></a>`;
   }
   // 📎 adjuntar: las imágenes se reducen (máx. 1600 px) para que suban rápido; documentos hasta 10 MB

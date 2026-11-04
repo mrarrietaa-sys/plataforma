@@ -480,7 +480,7 @@
   // v511 · ortografía en escritura: palabras inexistentes, meses/días sin mayúscula, palabras pequeñas con mayúscula en medio
   let dictP = null;
   function loadDict() { if (window.MRDICT || dictP) return dictP; const el = document.querySelector('script[src*="core.js"]'), src = el ? el.getAttribute('src') || '' : '', base = src.replace(/core\.js(\?.*)?$/, ''), q = (src.match(/\?.*$/) || [''])[0];
-    dictP = new Promise(res => { const sc = document.createElement('script'); sc.src = base + 'dict.js' + q; sc.onload = res; sc.onerror = res; document.head.appendChild(sc); }); return dictP; }
+    dictP = new Promise(res => { const sc = document.createElement('script'); sc.src = base + 'dictwords.js' + q; /* v556: la lista de palabras va aparte; dict.js es el diccionario */ sc.onload = res; sc.onerror = res; document.head.appendChild(sc); }); return dictP; }
   const CAPW = new Set('monday tuesday wednesday thursday friday saturday sunday january february march april may june july august september october november december english spanish american colombian'.split(' '));
   const LOWW = new Set('in on at the an is are am was were and or but to of for with from by my your his her our their its it this that these those be have has had do does did not'.split(' '));
   function spellFix(txt) {

@@ -7,7 +7,7 @@
   const M = window.M1, A = window.M1A;
   const { D, C, S, $, $$, h, esc, shuffle, sample, sleep, photo, play, stop, sfx, sheet, good, bad, save } = M;
   const app = $('#app');
-  const SKILLS = [['listening', '🎧', 'Listening'], ['reading', '📖', 'Reading'], ['speaking', '🗣️', 'Speaking'], ['writing', '✍️', 'Writing']];
+  const SKILLS = [['listening', '🎧', 'Listening'], ['reading', '👀', 'Reading'], ['speaking', '🗣️', 'Speaking'], ['writing', '✍️', 'Writing']];
   const SKILL_TIPS = {
     listening: 'Escucha cada audio 2 veces: la primera para entender la idea y la segunda para los detalles. Puedes repetir cada audio las veces que quieras con 🔊.',
     reading: 'Lee en voz alta mientras escuchas la lectura. Subraya mentalmente las palabras que no conoces y búscalas en la Explanation.',
@@ -32,7 +32,7 @@
     tb.innerHTML = `<div class="brand" id="go-home"><span class="logo-pill"><img class="logo" src="mra-brand.png" alt="mrarrieta.com"></span></div><div class="sp"></div><span class="tb-tag">${M.MOD.es.toUpperCase()} · ${M.MOD.id === 'B2' ? 'B1' : M.MOD.id}</span>
       <button class="pill y ce-pts" id="pts-b" title="${esc(M.PTS_TIP)}" aria-label="${S.xp} puntos. ${esc(M.PTS_TIP)}">⚡ ${S.xp} <span class="ce-ptw">puntos</span></button>
       <span class="pill hide-s" title="Días seguidos estudiando">🔥 ${S.streak.n || 0}</span>
-      <button class="iconbtn chat-ic" id="chat-tb" title="Chat con mi profe" aria-label="Chat con mi profe"><svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><path fill="#fff" d="M16 3C8.8 3 3 8.6 3 15.6c0 2.5.8 4.9 2.1 6.9L3.6 28l5.7-1.5c2 1.1 4.3 1.7 6.7 1.7 7.2 0 13-5.6 13-12.6S23.2 3 16 3zm6.3 17.6c-.3.8-1.6 1.5-2.2 1.6-.6.1-1.3.1-2.1-.1-.5-.2-1.1-.4-1.9-.7-3.3-1.4-5.5-4.7-5.6-4.9-.2-.2-1.3-1.8-1.3-3.4s.8-2.4 1.1-2.7c.3-.3.6-.4.8-.4h.6c.2 0 .5-.1.7.6.3.7.9 2.3 1 2.5.1.2.1.4 0 .6-.1.2-.2.4-.3.6l-.5.6c-.2.2-.3.4-.1.7.2.3.9 1.5 2 2.4 1.4 1.2 2.5 1.6 2.9 1.8.4.2.6.1.8-.1.2-.2.9-1 1.1-1.4.2-.4.5-.3.8-.2.3.1 2 .9 2.3 1.1.3.2.6.3.7.4.1.3.1 1-.2 1.8z"/></svg><i class="fbadge hidden" id="chat-n"></i></button>${S.dictHidden ? '<button class="iconbtn" id="dict-b" title="Diccionario">🔎</button>' : ''}${window.MRAP && MRAP.get() ? (MRAP.pic() ? `<a class="tb-avbtn" id="prof-b" href="index.html" title="Mi perfil">${MRAP.avHTML('tb-av')}</a>` : '<a class="iconbtn" id="prof-b" href="index.html" title="Mi perfil">👤</a>') : ''}<button class="iconbtn" id="menu-b" title="Menú">☰</button>`;
+      <button class="iconbtn chat-ic" id="chat-tb" title="Chat con mi profe" aria-label="Chat con mi profe"><svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><path fill="#fff" d="M16 3C8.8 3 3 8.6 3 15.6c0 2.5.8 4.9 2.1 6.9L3.6 28l5.7-1.5c2 1.1 4.3 1.7 6.7 1.7 7.2 0 13-5.6 13-12.6S23.2 3 16 3zm6.3 17.6c-.3.8-1.6 1.5-2.2 1.6-.6.1-1.3.1-2.1-.1-.5-.2-1.1-.4-1.9-.7-3.3-1.4-5.5-4.7-5.6-4.9-.2-.2-1.3-1.8-1.3-3.4s.8-2.4 1.1-2.7c.3-.3.6-.4.8-.4h.6c.2 0 .5-.1.7.6.3.7.9 2.3 1 2.5.1.2.1.4 0 .6-.1.2-.2.4-.3.6l-.5.6c-.2.2-.3.4-.1.7.2.3.9 1.5 2 2.4 1.4 1.2 2.5 1.6 2.9 1.8.4.2.6.1.8-.1.2-.2.9-1 1.1-1.4.2-.4.5-.3.8-.2.3.1 2 .9 2.3 1.1.3.2.6.3.7.4.1.3.1 1-.2 1.8z"/></svg><i class="fbadge hidden" id="chat-n"></i></button>${S.dictHidden ? '<button class="iconbtn dict-ic" id="dict-b" title="Diccionario" aria-label="Diccionario"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg></button>' : ''}${window.MRAP && MRAP.get() ? (MRAP.pic() ? `<a class="tb-avbtn" id="prof-b" href="index.html" title="Mi perfil">${MRAP.avHTML('tb-av')}</a>` : '<a class="iconbtn" id="prof-b" href="index.html" title="Mi perfil">👤</a>') : ''}<button class="iconbtn" id="menu-b" title="Menú">☰</button>`;
     $('#go-home', tb).onclick = () => { stop(); route('home'); };
     $('#menu-b', tb).onclick = menu; hwBadge();
     const db = $('#dict-b', tb); if (db) db.onclick = () => window.M1DICT && M1DICT.open();
@@ -100,7 +100,7 @@
     const steps = [
       { mood: 'welcome', t: `¡Hola, ${first}! 👋`, d: 'Soy Mr. Arrieta, tu profe. Te muestro en 1 minuto cómo funciona tu plataforma.' },
       { sel: '.ringbox', mood: 'point', t: 'Tu progreso', d: `Aquí ves cuánto llevas del ${M.MOD.es}: el porcentaje sube con cada lección que completas.` },
-      { sel: '.hello .skills', mood: 'idea', t: 'Tus 4 habilidades', d: 'Escuchar 🎧, leer 📖, hablar 🗣️ y escribir ✍️. Las barras suben con cada lección que haces.' },
+      { sel: '.hello .skills', mood: 'idea', t: 'Tus 4 habilidades', d: 'Escuchar 🎧, leer 👀, hablar 🗣️ y escribir ✍️. Las barras suben con cada lección que haces.' },
       { sel: '#tgrid > :first-child', mood: 'pointside', t: `Los ${M.MOD.topics} temas`, d: 'Cada tema tiene <b>2 lecciones</b>. Los temas se abren <b>en orden</b>: termina un tema para abrir el siguiente.' },
       { mood: 'idea', t: '¿Cómo es una lección?', d: 'Cada lección sigue el mismo orden: <b>Goal → Speaking → Reading → Explanation → Practice → Oral task → Music → Homework</b>.<br><br>🔊 escucha · 🎤 habla (permite el micrófono) · <b>← Atrás</b> para corregir · tu avance se guarda solo.' },
       { sel: '#dict-fab', mood: 'present', t: 'Tu diccionario', d: '¿No entiendes una palabra? Toca aquí, <b>escríbela o dila en voz alta</b> (en español o inglés) y te doy la respuesta con su pronunciación.' },
@@ -316,7 +316,7 @@
     const pend = pendingHW(); const t = new Date().toISOString().slice(0, 10);
     if (!pend.length || S.remindDay === t) return;
     S.remindDay = t; save();
-    if (window.Notification && Notification.permission === 'granted') { try { new Notification('📚 Mr. Arrieta', { body: `Tienes ${pend.length} tarea(s) pendiente(s) en el ${M.MOD.es}. ¡Vamos!`, icon: 'mra-point.webp' }); } catch (e) { } }
+    if (window.Notification && Notification.permission === 'granted') { try { new Notification('🎓 Mr. Arrieta', { body: `Tienes ${pend.length} tarea(s) pendiente(s) en el ${M.MOD.es}. ¡Vamos!`, icon: 'mra-point.webp' }); } catch (e) { } }
     setTimeout(() => {
       const m = M.modal(`<div class="center">${M.mascot('mascot', 'watch')}</div><h3 class="center">¡Hola, ${esc(S.name.split(' ')[0])}! 👋</h3>
         <p class="center" style="font-size:17px">Te recuerdo que tienes <b>${pend.length} ${pend.length === 1 ? 'tarea pendiente' : 'tareas pendientes'}</b>.<br>Hazla ahora y suma puntos ⚡</p><p class="muted center ce-ptsline">${esc(M.PTS_TIP)}</p>
@@ -354,7 +354,7 @@
     if (r && r.t) { M.addSkill('writing', r.c, r.t); const gain = r.c * 10 + 20; S.xp += gain; save(); sfx('win'); M.confetti(1500); M.toast(`¡Tarea entregada! +${gain} puntos ⚡`); }
     route('home');
   }
-  function tipOfDay() { const t = ['Tip: escucha y repite en voz alta 🗣️', 'Tip: usa el 📖 diccionario cuando no entiendas algo', 'Tip: graba tu voz y compárala 🎙️', 'Tip: estudia 15 min cada día 🔥', 'Tip: escribe tus tareas en inglés ✍️']; return t[new Date().getDay() % t.length]; }
+  function tipOfDay() { const t = ['Tip: escucha y repite en voz alta 🗣️', 'Tip: usa el diccionario cuando no entiendas algo', 'Tip: graba tu voz y compárala 🎙️', 'Tip: estudia 15 min cada día 🔥', 'Tip: escribe tus tareas en inglés ✍️']; return t[new Date().getDay() % t.length]; }
 
   /* ---------------- unlock ---------------- */
   function unlockModal() {
@@ -486,7 +486,7 @@
     surf: { a: 'surf', say: 'Catch the wave!' }, hero: { a: 'fly', say: 'Super English!' }, balloon1: { a: 'balloon', say: 'Up, up and away!' }, balloon2: { a: 'balloon', say: "Let's explore!" }, balloon3: { a: 'balloon', say: 'Here we go!' }, laptop: { a: 'pop', say: 'Homework time!' }, wave: { a: 'pop', say: 'Hello!' }, rocket3: { a: 'up', say: 'Full speed!' }, rocket5: { a: 'up', say: 'To the moon!' }, 'plane-red': { a: 'fly', say: 'Ready for takeoff!' }, 'plane-blue': { a: 'fly', say: 'Great job!' }, 'plane-yellow': { a: 'fly', say: 'This way!' }, 'plane-green': { a: 'fly', say: 'Keep flying!' } };
   // 🎯 misión del tema según el objetivo (solo en la última parte del tema y si el estudiante eligió objetivo)
   function missionFor(p) { try { const g = window.MRGOAL && MRGOAL.get(); if (!g || !window.MRMISSIONS) return null; const x = MRMISSIONS[(+M.MOD.n || 1) + '-' + p.topic]; const L = x && x[g.k]; if (!L) return null; const arr = Array.isArray(L) ? L : [L]; const k = Math.max(0, (+p.part || 1) - 1) * 2; const two = arr.slice(k, k + 2); return two.length ? { k: g.k, list: two } : null; } catch (e) { return null; } }
-  const SEC_IC = { Goal: '🎯', Mission: '🚀', Speaking: '🗣️', Reading: '📖', Review: '🔁', Explanation: '💡', 'Listen & practice': '🎧', Practice: '🎮', 'Oral task': '🎤', Music: '🎵', Homework: '📝' };
+  const SEC_IC = { Goal: '🎯', Mission: '🚀', Speaking: '🗣️', Reading: '👀', Review: '🔁', Explanation: '💡', 'Listen & practice': '🎧', Practice: '🎮', 'Oral task': '🎤', Music: '🎵', Homework: '📝' };
   const SEC_ICO = { Writing: 'pen', Goal: 'target', Mission: 'rocket', Speaking: 'chat', Reading: 'book', Review: 'repeat', Explanation: 'bulb', 'Listen & practice': 'headphones', Practice: 'game', 'Oral task': 'mic', Music: 'music', Homework: 'pen' };
   const SEC_MRI = s => window.MRI ? MRI(SEC_ICO[s] || 'star') + MRI('check', 'ok') : '';
   const SEC_SC = { Reading: 'balloon2', Homework: 'laptop', Music: 'guitar', Review: 'plane-blue' };
@@ -877,7 +877,7 @@
       if (window.M2X && M2X.mod && M2X.mod() === 4) { const rr = await M2X.readParts(stage, p); if (rr) return rr; } /* v523: Módulo 4 · lectura por partes */
       let r = p.reading;
       const AG = M.ageGroup();
-      const body = A.head(stage, { lbl: 'Reading', title: AG === 'adult' ? `📖 ${r.title}` : r.title, ins: AG === 'teens' ? 'Lee el chat mientras lo escuchas. Luego responde <b>TRUE</b> o <b>FALSE</b>.' : AG === 'kids' ? 'Escucha el cuento y toca cada viñeta para oírla otra vez. Luego responde <b>YES</b> o <b>NO</b>.' : 'Escucha y lee al mismo tiempo. Luego responde <b>YES</b> o <b>NO</b>.' });
+      const body = A.head(stage, { lbl: 'Reading', title: AG === 'adult' ? `👀 ${r.title}` : r.title, ins: AG === 'teens' ? 'Lee el chat mientras lo escuchas. Luego responde <b>TRUE</b> o <b>FALSE</b>.' : AG === 'kids' ? 'Escucha el cuento y toca cada viñeta para oírla otra vez. Luego responde <b>YES</b> o <b>NO</b>.' : 'Escucha y lee al mismo tiempo. Luego responde <b>YES</b> o <b>NO</b>.' });
       const sents = splitSents(r.text);
       const POD = window.M2X && M2X.on(); /* v519: lectura en formato podcast (Módulo 2) */
       const box = POD ? h(M2X.podBox(r, sents, photo)) : h(`<div class="reading">${photo(r.img)}<div><div class="row" style="margin-bottom:10px"><button class="btn k sm" id="rp">▶ Escuchar lectura</button></div><div class="txt">${sents.map(s => `<span class="s">${s.split(/(\s+)/).map(w => /\S/.test(w) ? `<i class="rw">${esc(w)}</i>` : w).join('')}</span>`).join('')}</div><button class="rd-tr" id="rdtr" type="button" aria-expanded="false"><span>ES</span> Ver traducción al español</button><div class="rd-es" id="rdes" hidden></div></div></div>`);

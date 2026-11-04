@@ -17,7 +17,7 @@
   const ADMIN_EMAIL = 'mrarrietaa@gmail.com';
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   const NAMES = { listening: 'Listening', reading: 'Reading', writing: 'Writing', speaking: 'Speaking' };
-  const ICONS = { listening: '🎧', reading: '📖', writing: '✍️', speaking: '🎤' };
+  const ICONS = { listening: '🎧', reading: '👀', writing: '✍️', speaking: '🎤' };
   const ITEMS = []; EX.sections.forEach(sec => sec.items.forEach((it, idx) => ITEMS.push(Object.assign({}, it, { section: sec.key, idx, n: idx + 1 }))));
   const N = ITEMS.length;
   const SPK = ITEMS.map((it, i) => i).filter(i => ITEMS[i].section === 'speaking');
@@ -392,7 +392,7 @@
   const statusTxt = (r) => r.passed ? 'APROBADO' : 'NO APROBADO';
   function summaryText() {
     const f = ST.form, r = ST.result;
-    return `👩‍🏫 Proceso de selección de profesores — mrarrieta.com\n👤 ${f.name}\n📧 ${f.email}\n📱 ${f.whatsapp}\n📍 ${f.city}\n🧑‍🏫 Experiencia: ${f.experience}\n🕒 Disponibilidad: ${(f.availability || []).join(', ')}\n📅 ${new Date(r.date).toLocaleString('es-CO')}\n\n🎧 Listening: ${r.per.listening.toFixed(1)}\n📖 Reading: ${r.per.reading.toFixed(1)}\n✍️ Writing: ${r.per.writing.toFixed(1)}\n🎤 Speaking: ${r.per.speaking.toFixed(1)}${r.pending ? ' (pendiente de revisión)' : ''}\n\n✅ Resultado: ${statusTxt(r)}`;
+    return `👩‍🏫 Proceso de selección de profesores — mrarrieta.com\n👤 ${f.name}\n📧 ${f.email}\n📱 ${f.whatsapp}\n📍 ${f.city}\n🧑‍🏫 Experiencia: ${f.experience}\n🕒 Disponibilidad: ${(f.availability || []).join(', ')}\n📅 ${new Date(r.date).toLocaleString('es-CO')}\n\n🎧 Listening: ${r.per.listening.toFixed(1)}\n👀 Reading: ${r.per.reading.toFixed(1)}\n✍️ Writing: ${r.per.writing.toFixed(1)}\n🎤 Speaking: ${r.per.speaking.toFixed(1)}${r.pending ? ' (pendiente de revisión)' : ''}\n\n✅ Resultado: ${statusTxt(r)}`;
   }
   async function results() {
     const r = ST.result, f = ST.form, S = ST.send || {};

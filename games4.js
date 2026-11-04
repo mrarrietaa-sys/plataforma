@@ -275,8 +275,8 @@
   /* ====== t6p1 — MI DIARIO (escribe el pasado) ====== */
   async function diary(stage, p) {
     const D = G().diary || []; let c = 0; const missed = [];
-    const body = head(stage, { lbl: 'Game', title: '📔 El diario de ayer', ins: 'Completa el diario escribiendo el <b>pasado</b> de cada verbo (+ed). ¡Cuidado con la ortografía: study → studied, stop → stopped!' });
-    const page = h(`<div class="g4-diary"><div class="g4-dh">📔 Dear diary,</div></div>`); body.appendChild(page);
+    const body = head(stage, { lbl: 'Game', title: '✍️ El diario de ayer', ins: 'Completa el diario escribiendo el <b>pasado</b> de cada verbo (+ed). ¡Cuidado con la ortografía: study → studied, stop → stopped!' });
+    const page = h(`<div class="g4-diary"><div class="g4-dh">✍️ Dear diary,</div></div>`); body.appendChild(page);
     for (let k = 0; k < D.length && live(stage); k++) {
       const r = D[k];
       const row = h(`<div class="g4-drow">${esc(r.s).replace('___', `<input class="inp g4-din" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${esc(r.b)}">`)}<button class="btn k sm">✓</button></div>`); page.appendChild(row);
@@ -286,7 +286,7 @@
       await play(r.au);
     }
     await sleep(400);
-    return finish(c, D.length, 'writing', missed, '📔 Verbos en pasado', '¡Tu diario quedó perfecto! ✍️');
+    return finish(c, D.length, 'writing', missed, '✍️ Verbos en pasado', '¡Tu diario quedó perfecto! ✍️');
   }
 
   /* ====== t6p2 — CONTRARRELOJ DE IRREGULARES ====== */
