@@ -8429,3 +8429,5 @@ img.ld-hero-mra{background:none!important}.ld-hero-mra+.rk-sh{height:16px;backgr
 .pg-bd.off{opacity:1;filter:none}.pg-bd.off b{color:#94A3B8}
 .skills .skill.pg-sk .ic{border-radius:12px!important}
 @media (min-width:900px){.badges:has(.pg-bd){grid-template-columns:repeat(8,minmax(0,1fr))!important}}
+/* v566 · celular: primero los profes disponibles y después «¿Ningún horario te sirve?» */
+@media (max-width:899px){.vf-left{display:contents}.vf>.vf-left>*{order:1}.vf>.vf-right{order:2}.vf>.vf-left>.vf-none{order:3}}
