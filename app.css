@@ -8413,3 +8413,19 @@ img.ld-hero-mra{background:none!important}.ld-hero-mra+.rk-sh{height:16px;backgr
 #drop-x.on{transform:translate(-50%,0) scale(1)}
 #drop-x.hot{background:#E3242B;border-color:#E3242B;transform:translate(-50%,0) scale(1.12)}
 #drop-x.hot span{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='M6 6l12 12M18 6 6 18'/%3E%3C/svg%3E")}
+/* v562 · reserva: resumen del día y la hora ya elegidos */
+.vb-sum{display:flex;align-items:center;gap:12px;background:#F8FAFF;border:1.5px solid #dbe3ef;border-radius:14px;padding:12px 14px;margin:4px 0 14px;text-align:left}
+.vb-sum-ic{flex:none;width:42px;height:42px;border-radius:12px;background:#0B2A5B;color:#fff;display:grid;place-items:center}.vb-sum-ic svg{width:22px;height:22px}
+.vb-sum div{flex:1;min-width:0}.vb-sum b{display:block;font:800 16px var(--fh,Poppins),sans-serif;color:#0B2A5B}.vb-sum small{display:block;font:500 13.5px Inter,sans-serif;color:#64748b;margin-top:2px}
+.vb-sum-x{flex:none;background:none;border:0;color:#E3242B;font:700 14px var(--fh,Poppins),sans-serif;text-decoration:underline;cursor:pointer;padding:6px}
+.pg-back{margin:0 0 12px;cursor:pointer}
+/* v564 · Mi progreso: íconos de línea en habilidades e insignias */
+.pg-sk .ic{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;margin:0 auto 8px;background:#0B2A5B!important;color:#fff;font-size:0;box-shadow:none;border:0}.pg-sk .ic svg{width:24px;height:24px}
+.pg-sk .bar i{background:#E3242B!important}
+.pg-bd .e{width:50px;height:50px;border-radius:50%;display:grid;place-items:center;margin:0 auto 4px;background:linear-gradient(145deg,#0B2A5B,#1D4E9E);color:#fff;font-size:0;box-shadow:0 0 0 3px #fff,0 0 0 4.5px #E3242B;filter:none!important;opacity:1!important}.pg-bd .e svg{width:24px;height:24px}
+.pg-bd.off .e{background:#E2E8F0;color:#94A3B8;box-shadow:0 0 0 3px #fff,0 0 0 4.5px #e2e8f0}
+.pg-bd b{margin-top:8px}
+.skills .skill.pg-sk{background:#fff!important;border:1px solid #e5ecf6!important;border-radius:14px}
+.pg-bd.off{opacity:1;filter:none}.pg-bd.off b{color:#94A3B8}
+.skills .skill.pg-sk .ic{border-radius:12px!important}
+@media (min-width:900px){.badges:has(.pg-bd){grid-template-columns:repeat(8,minmax(0,1fr))!important}}

@@ -1389,9 +1389,10 @@
       const dates = [...new Set(T.slots.map(s => s.date))];
       if (!D) D = dates[0];
       const times = T.slots.filter(s => s.date === D);
-      b.innerHTML = `<button class="btn w sm" id="vb-back">← Profes</button><p class="vb-st"><i class="vb-n">2</i> ${esc(T.name)}: elige fecha y hora <small>(hora Colombia)</small></p>
+      const SUM = !PICK && S; // v562: si ya eligió día y hora en el buscador, solo se muestra el resumen
+      b.innerHTML = `${SUM ? `<div class="vb-sum"><span class="vb-sum-ic">${MRI('calendar')}</span><div><b>${(s => s[0].toUpperCase() + s.slice(1))(fmtD(S.date, { weekday: 'short', day: 'numeric', month: 'short' }).replace(/\./g, ''))} · ${fmtT(S.time)}</b><small>Con ${esc(T.name)} · 50 min</small></div><button type="button" class="vb-sum-x" id="vb-back">Cambiar</button></div>` : `<button class="btn w sm" id="vb-back">← Profes</button><p class="vb-st"><i class="vb-n">2</i> ${esc(T.name)}: elige fecha y hora <small>(hora Colombia)</small></p>
         <div class="vb-dates">${dates.map(d => `<button class="vb-d${d === D ? ' on' : ''}" data-d="${d}"><small>${fmtD(d, { weekday: 'short' })}</small><b>${fmtD(d, { day: 'numeric' })}</b><small>${fmtD(d, { month: 'short' })}</small></button>`).join('')}</div>
-        <div class="vb-times">${times.map(s => `<button class="vb-h${S && S.id === s.id ? ' on' : ''}" data-s="${esc(s.id)}">${fmtT(s.time)}<small>50 min</small></button>`).join('')}</div>
+        <div class="vb-times">${times.map(s => `<button class="vb-h${S && S.id === s.id ? ' on' : ''}" data-s="${esc(s.id)}">${fmtT(s.time)}<small>50 min</small></button>`).join('')}</div>`}
         <p class="vb-st"><i class="vb-n">3</i> ¿Qué quieres practicar? <small>(tu profe lo recibe antes de la clase)</small></p>
         ${(() => { const O = ordFor(MS), TT = TOPICS[MS] || tops; const card = ({ i, tag, c, pc, lk }) => { const t = TT[i]; return `<button type="button" class="vb-tp${lk ? ' nxt' : TP === i ? ' on' : ''}" data-tp="${i}"${lk ? ' disabled' : ''}><i class="vb-tag ${c}">${tag}</i><b>${c === 'sug' ? '' : (i + 1) + '. '}${esc(t[0])}</b><small>${esc(t[1])}</small>${window.MRTH ? MRTH.html(MS, i + 1, M.ageGroup && M.ageGroup(), 's') : ''}${pc != null ? `<span class="vb-pc${pc >= 80 ? ' g' : ''}">Tu resultado: ${pc}%</span>` : ''}${lk ? '<span class="vb-pc vb-lkt">🔒 Se habilita cuando llegues a este tema</span>' : ''}</button>`; };
           return `<div class="vb-mods">${[1, 2, 3, 4].map(n => { const op = modOpen(n), cur = n === MN; return `<button type="button" class="vb-m${cur ? ' cur' : ''}${op ? '' : ' vb-off'}${n === MS ? ' on' : ''}" data-m="${n}"><b>Módulo ${n}</b><small>${cur ? '<i></i>Estás aquí' : op ? '✓ Hecho' : '🔒'}</small></button>`; }).join('')}</div>`
@@ -1400,7 +1401,7 @@
           + `<div class="vb-topics">${O.all.map(card).join('')}</div>`; })()}
         <input class="inp${TP === 'o' ? '' : ' hidden'}" id="vb-topic" maxlength="180" placeholder="Ej: entrevista de trabajo en inglés" value="${esc(OT)}">
         <button class="btn k block lg vb-ok" id="vb-ok" ${S && TP != null ? '' : 'disabled'}>${S && TP == null ? '👆 Elige el tema de tu clase' : S ? `✅ Reservar · ${fmtD(S.date, { weekday: 'short', day: 'numeric', month: 'short' })} · ${fmtT(S.time)}` : 'Elige una hora'}</button>`;
-      $('#vb-back', b).onclick = () => { T = null; D = null; S = null; step(); }; $('#vb-back', b).textContent = PICK ? '← Profes' : '← Buscar por hora';
+      $('#vb-back', b).onclick = () => { T = null; D = null; S = null; step(); }; if (!SUM) $('#vb-back', b).textContent = PICK ? '← Profes' : '← Buscar por hora';
       $$('.vb-d', b).forEach(x => x.onclick = () => { D = x.dataset.d; S = null; step(); });
       $$('.vb-h', b).forEach(x => x.onclick = () => { S = T.slots.find(s => s.id === x.dataset.s); sfx('tap'); OT = $('#vb-topic', b).value; step(); });
       $$('.vb-m', b).forEach(x => x.onclick = () => { const n = +x.dataset.m; OT = $('#vb-topic', b).value; if (!modOpen(n)) { LK = n; step(); return; } LK = 0; if (n !== MS) { MS = n; TP = null; } sfx('tap'); step(); });

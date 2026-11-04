@@ -331,7 +331,7 @@
     const build = () => { const [hh, mm] = ($('#rt', m).value || '19:00').split(':'); S.remindTime = `${hh}:${mm}`; save();
       const d = new Date(); d.setDate(d.getDate() + (d.getHours() * 60 + d.getMinutes() >= (+hh) * 60 + (+mm) ? 1 : 0));
       const ymd = d.toISOString().slice(0, 10).replace(/-/g, ''); const st = `${ymd}T${hh}${mm}00`; const en = `${ymd}T${hh}${String(Math.min(59, +mm + 15)).padStart(2, '0')}00`;
-      const title = '📚 Mr. Arrieta: practica inglés y haz tu tarea'; const det = `¡Es hora de practicar! Entra al ${M.MOD.es}: ${url}`;
+      const title = 'Mr. Arrieta: practica inglés'; const det = `¡Es hora de practicar! Entra al ${M.MOD.es}: ${url}`;
       $('#gcal', m).href = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&details=${encodeURIComponent(det)}&dates=${st}/${en}&recur=${encodeURIComponent('RRULE:FREQ=DAILY')}`;
       return { st, en, title, det }; };
     build(); $('#rt', m).onchange = build;
@@ -1658,10 +1658,12 @@
     checkBadges();
   }
 
+  const SKIC = {"listening": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3\"/></svg>", "reading": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/></svg>", "speaking": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"9\" y=\"2\" width=\"6\" height=\"12\" rx=\"3\"/><path d=\"M5 10a7 7 0 0 0 14 0M12 17v5M8 22h8\"/></svg>", "writing": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 20h9\"/><path d=\"M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z\"/></svg>"}; // v564: íconos de línea (no emojis)
+  const BDIC = {"first": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4.5 16.5c-1.5 1.3-2 5-2 5s3.7-.5 5-2c.7-.8.7-2.1-.1-2.9a2.2 2.2 0 0 0-2.9-.1z\"/><path d=\"m12 15-3-3a22 22 0 0 1 2-3.9A12.9 12.9 0 0 1 22 2c0 2.7-.8 7.5-6 11a22.4 22.4 0 0 1-4 2z\"/><path d=\"M9 12H4s.5-3 2-4c1.6-1.1 5 0 5 0M12 15v5s3-.5 4-2c1.1-1.6 0-5 0-5\"/></svg>", "five": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><circle cx=\"12\" cy=\"12\" r=\"6\"/><circle cx=\"12\" cy=\"12\" r=\"2\"/></svg>", "perfect": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.7V17c0 .6-.5 1-1 1.2C7.9 18.8 7 20.2 7 22M14 14.7V17c0 .6.5 1 1 1.2 1.1.6 2 2 2 3.8M18 2H6v7a6 6 0 0 0 12 0V2z\"/></svg>", "streak3": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.4-.5-2-1-3-1.1-2.1-.2-4 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.2.4-2.3 1-3.4a2.5 2.5 0 0 0 2.5 2.4z\"/></svg>", "xp1000": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M13 2 3 14h9l-1 8 10-12h-9l1-8z\"/></svg>", "speaker": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"9\" y=\"2\" width=\"6\" height=\"12\" rx=\"3\"/><path d=\"M5 10a7 7 0 0 0 14 0M12 17v5M8 22h8\"/></svg>", "half": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z\"/></svg>", "grad": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M22 10 12 5 2 10l10 5 10-5z\"/><path d=\"M6 12v5c3 3 9 3 12 0v-5\"/></svg>"};
   /* ---------------- BADGES ---------------- */
   const BADGES = [
     ['first', '🚀', 'Primer paso', 'Completa tu primera lección', () => M.allParts().some(p => S.parts[p.id] && S.parts[p.id].done)],
-    ['five', '📚', 'Estudiante dedicado', 'Completa 5 lecciones', () => M.allParts().filter(p => S.parts[p.id] && S.parts[p.id].done).length >= 5],
+    ['five', '🎯', 'Estudiante dedicado', 'Completa 5 lecciones', () => M.allParts().filter(p => S.parts[p.id] && S.parts[p.id].done).length >= 5],
     ['perfect', '🏆', 'Lección perfecta', 'Obtén 3 estrellas', () => M.allParts().some(p => M.partStars(p.id) === 3)],
     ['streak3', '🔥', 'En racha', 'Estudia 3 días seguidos', () => (S.streak.n || 0) >= 3],
     ['xp1000', '⚡', '1000 puntos', 'Acumula 1000 puntos', () => S.xp >= 1000],
@@ -1679,23 +1681,24 @@
     S.badges = S.badges || [];
     const sk = SKILLS.map(([k]) => [k, M.skillPct(k), S.skills[k][1]]).filter(x => x[2]);
     const low = sk.sort((a, b) => a[1] - b[1])[0];
-    app.innerHTML = `<div class="wrap">
+    app.innerHTML = `<div class="wrap"><button type="button" class="t2-back pg-back" id="pg-back">${SVB}Volver al módulo</button>
       <div class="card"><div class="row"><div class="ring" style="--p:${M.overallPct()}"><b>${M.overallPct()}%</b></div><div class="grow"><span class="lbl">Mi progreso</span><h1 style="font-size:30px;margin-top:8px">${esc(S.name)}</h1><p class="muted" style="margin:4px 0">${M.MOD.es} · Nivel ${M.MOD.id}</p></div></div>
         <div class="stats" style="grid-template-columns:repeat(4,1fr)"><div class="stat"><b>${done}/${parts.length}</b><small>Lecciones</small></div><div class="stat"><b>${stars}/${parts.length * 3}</b><small>Estrellas</small></div><div class="stat" title="${esc(M.PTS_TIP)}"><b>${S.xp}</b><small>Puntos ⚡</small></div><div class="stat"><b>🔥 ${S.streak.n || 0}</b><small>Racha (días)</small></div></div>
         <h3 style="margin:14px 0 8px">Tus 4 habilidades</h3>
-        <div class="skills" style="margin-top:0">${SKILLS.map(([k, ic, nm]) => `<div class="skill"><div class="ic">${ic}</div><div class="nm">${nm}</div><div class="bar"><i style="width:${M.skillPct(k)}%"></i></div><small class="muted">${S.skills[k][1] ? M.skillPct(k) + '% · ' + S.skills[k][1] + ' ejercicios' : 'Sin datos aún'}</small></div>`).join('')}</div>
+        <div class="skills" style="margin-top:0">${SKILLS.map(([k, ic, nm]) => `<div class="skill pg-sk"><div class="ic">${SKIC[k] || ic}</div><div class="nm">${nm}</div><div class="bar"><i style="width:${M.skillPct(k)}%"></i></div><small class="muted">${S.skills[k][1] ? M.skillPct(k) + '% · ' + S.skills[k][1] + ' ejercicios' : 'Sin datos aún'}</small></div>`).join('')}</div>
         ${low ? `<div class="tipbox" style="margin-top:12px"><span>🎯</span><span><b>Recomendación:</b> tu habilidad para mejorar es <b>${low[0]}</b>. ${SKILL_TIPS[low[0]]}</span></div>` : ''}
       </div>
-      <div class="sect-title"><h2>🏅 Insignias</h2></div>
-      <div class="badges">${BADGES.map(([id, e, n, d]) => `<div class="bdg ${S.badges.includes(id) ? '' : 'off'}"><div class="e">${e}</div><b>${n}</b><small>${d}</small></div>`).join('')}</div>
+      <div class="sect-title"><h2>Insignias</h2></div>
+      <div class="badges">${BADGES.map(([id, e, n, d]) => `<div class="bdg pg-bd ${S.badges.includes(id) ? '' : 'off'}"><div class="e">${BDIC[id] || e}</div><b>${n}</b><small>${d}</small></div>`).join('')}</div>
       <div class="sect-title"><h2>🔁 Palabras para repasar</h2>${weak.length ? '<button class="btn sm k" id="pw">🎯 Practicar ahora</button>' : ''}</div>
       <div class="card">${weak.length ? `<div class="weak">${weak.map(([w, v], i) => `<span>${esc(w)} ${v.au ? `<button class="aud sm" data-i="${i}">🔊</button>` : ''}</span>`).join('')}</div>` : '<p class="muted" style="margin:0">¡Aún no hay palabras difíciles! Aquí aparecerán las palabras en las que te equivoques, para que las repases.</p>'}</div>
-      <div class="sect-title"><h2>📚 Temas</h2></div>
+      <div class="sect-title"><h2>Temas</h2></div>
       <div class="tlist">${D.topics.map(t => `<div class="trow"><span class="n">${t.n}</span><b>${esc(t.title)}${M.isUnlocked(t.n) ? '' : ' 🔒'}</b>${t.parts.map(p => `<span class="stars ${p.part === 2 ? 'hs' : ''}" title="${PL(p)}">L${p.part} ${[1, 2, 3].map(i => `<span class="${i <= M.partStars(p.id) ? '' : 'off'}">⭐</span>`).join('')}</span>`).join('')}</div>`).join('')}</div>
       <div class="sect-title"><h2>⚙️ Datos</h2></div>
       <div class="card"><p class="muted" style="margin-top:0">Tu progreso se guarda en este dispositivo y navegador. Puedes descargar una copia de respaldo o restaurarla en otro dispositivo.</p>
         <div class="row"><button class="btn sm w" id="exp">⬇️ Descargar respaldo</button><label class="btn sm w" style="cursor:pointer">⬆️ Restaurar respaldo<input type="file" accept=".json" id="imp" hidden></label><button class="btn sm w" id="rst" style="color:var(--bad)">🗑️ Reiniciar progreso</button></div></div>
     </div>`;
+    { const bk = $('#pg-back', app); if (bk) bk.onclick = () => { scrollTo(0, 0); route('home'); }; } // v562: botón para volver
     $$('.weak button', app).forEach(b => b.onclick = async () => { await M.loadAudio(['common', ...D.topics.map(t => M.MOD.audio + t.n)]); play(weak[+b.dataset.i][1].au, { btn: b }); });
     if ($('#pw')) $('#pw').onclick = () => practiceWeak(weak);
     $('#exp').onclick = () => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(S, null, 1)], { type: 'application/json' })); a.download = `progreso-modulo1-${S.name.replace(/\s+/g, '_')}.json`; a.click(); };
