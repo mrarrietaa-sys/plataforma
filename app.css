@@ -8333,3 +8333,23 @@ img.ld-hero-mra{background:none!important}.ld-hero-mra+.rk-sh{height:16px;backgr
 /* v545 · logo del mismo tamaño en toda la plataforma (el del portal de profes) */
 .logo-pill img.logo,header .logo,img.logo{height:46px!important;width:auto!important;max-height:none!important}
 @media (max-width:700px){.logo-pill img.logo,header .logo,img.logo,.topbar .brand .logo{height:46px!important}}
+/* v548 · reserva: pestañas de módulos y temas recomendados */
+.vb-mods{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:0 0 10px}
+.vb-m{background:#fff;border:1.5px solid #dbe3ef;border-radius:12px;padding:8px 2px 7px;display:grid;gap:3px;justify-items:center;text-align:center;color:#0B2A5B;cursor:pointer;line-height:1.1;min-width:0;font-family:inherit}
+.vb-m b{font:800 13px var(--fh);white-space:nowrap}
+.vb-m small{font:700 10.5px Inter,sans-serif;color:#64748b;display:flex;align-items:center;gap:4px;white-space:nowrap}
+.vb-m small i{width:7px;height:7px;border-radius:50%;background:#16A34A;display:inline-block}
+.vb-m.cur{border-color:#16A34A;background:#F0FDF4}.vb-m.cur small{color:#15803d}
+.vb-m.on{border-color:#0B2A5B;box-shadow:0 0 0 1.5px #0B2A5B}
+.vb-m.cur.on{border-color:#16A34A;box-shadow:0 0 0 1.5px #16A34A}
+.vb-m.vb-off{background:#F8FAFC;color:#94a3b8;border-style:dashed;cursor:not-allowed}.vb-m.vb-off small{color:#94a3b8}
+.vb-lk{background:#F1F5F9;border:1.5px solid #e2e8f0;color:#475569;border-radius:12px;padding:9px 12px;font:600 13px/1.35 Inter,sans-serif;margin-bottom:10px}
+.vb-rec{background:#FFFBEB;border:1.5px solid #fde68a;border-radius:14px;padding:10px;margin-bottom:10px}
+.vb-rec>p{margin:0 0 8px;font:800 14px var(--fh);color:#8a5a00}.vb-rec>p small{font:600 12px Inter,sans-serif;color:#a16207;display:block;margin-top:2px}
+.vb-rec .vb-topics{max-height:none;margin:0;padding:0}
+.vb-sub{font:700 12px Inter,sans-serif;color:#64748b;margin:2px 0 6px;text-transform:uppercase;letter-spacing:.04em}
+.vb-tp{align-content:start;min-width:0;overflow-wrap:anywhere}
+.vb-tp .vb-pc{font:700 12px Inter,sans-serif;color:#b45309;margin-top:2px}.vb-tp .vb-pc.g{color:#15803d}
+.vb-tp .vb-tag.sug{background:#F59E0B;color:#fff}
+.vb-tp.on .vb-pc{color:#fff}
+@media (max-width:380px){.vb-m b{font-size:12px}.vb-m small{font-size:10px}}
