@@ -8372,3 +8372,8 @@ img.ld-hero-mra{background:none!important}.ld-hero-mra+.rk-sh{height:16px;backgr
 .tp-livei .th-can .th-p{font:700 12.5px var(--fh,Poppins),sans-serif!important;color:#0B2A5B!important}
 .tp-livei .th-can .th-x{font:italic 500 12px Inter,sans-serif!important;color:#475569!important}
 .tp-livei .th-can .th-g{font:500 11px Inter,sans-serif!important;color:#64748b!important}.tp-livei .th-can .th-g span{font-weight:800!important;color:#0B2A5B!important}
+/* v550 · reserva: barra «Vas aquí» arriba del módulo actual */
+.vb-tp.vb-nowbar{display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;margin:0 0 10px;border:1.5px solid #fecaca;background:#FFF5F5;border-radius:12px}
+.vb-tp.vb-nowbar .vb-tag{margin:0;flex:none}
+.vb-tp.vb-nowbar span{font:600 13.5px Inter,sans-serif;color:#0B2A5B;line-height:1.3;min-width:0}.vb-tp.vb-nowbar span b{font:800 14px var(--fh,Poppins),sans-serif}
+.vb-tp.vb-nowbar.on{background:#0B2A5B;border-color:#0B2A5B}.vb-tp.vb-nowbar.on span,.vb-tp.vb-nowbar.on span b{color:#fff}

@@ -1366,13 +1366,13 @@
     const avgOf = (parts, i) => { const ks = Object.keys(parts).filter(k => k.indexOf('t' + (i + 1) + 'p') === 0 && parts[k] && parts[k].done); return ks.length ? Math.round(ks.reduce((a, k) => a + (+parts[k].best || 0), 0) / ks.length) : null; };
     const ordFor = (n) => { const tp = TOPICS[n] || []; try { const mod = MODN(n); const parts = ((mod && P.modState(mod.id)) || {}).parts || {}; const T = (window.MRKIDS && MRKIDS.topics && mod) ? MRKIDS.topics(mod) : [];
       const done = (i) => T[i] ? !!T[i].done : false;
-      if (n === MN) { let cur = tp.findIndex((t, i) => !done(i)); const out = []; if (cur >= 0) out.push({ i: cur, tag: 'Vas aquí', c: 'now' });
-        const dn = tp.map((t, i) => i).filter(i => done(i)); dn.filter(i => (avgOf(parts, i) || 0) < 80).forEach(i => out.push({ i, tag: 'Repasar', c: 'rev' })); dn.filter(i => (avgOf(parts, i) || 0) >= 80).forEach(i => out.push({ i, tag: 'Completo', c: 'ok' }));
-        return { all: out.length ? out : [{ i: 0, tag: 'Vas aquí', c: 'now' }], rec: [] }; }
-      const sc = tp.map((t, i) => done(i) ? avgOf(parts, i) : null);
-      const rec = tp.map((t, i) => i).filter(i => sc[i] != null && sc[i] < 80).sort((a, c) => sc[a] - sc[c]).map(i => ({ i, tag: 'Sugerido', c: 'sug', pc: sc[i] }));
-      const all = tp.map((t, i) => i).filter(i => !rec.some(r => r.i === i)).map(i => sc[i] != null ? { i, tag: 'Completo', c: 'ok', pc: sc[i] } : { i, tag: 'Repasar', c: 'rev' });
-      return { all, rec }; } catch (e) { return { all: tp.map((t, i) => ({ i, tag: n === MN && !i ? 'Vas aquí' : 'Repasar', c: n === MN && !i ? 'now' : 'rev' })), rec: [] }; } };
+      // v550: temas en el mismo orden del módulo (1, 2, 3…) · «Vas aquí» en el actual · arriba los sugeridos para repasar (menos de 80 %)
+      const sc = tp.map((t, i) => done(i) ? (avgOf(parts, i) || 0) : null);
+      const cur = n === MN ? tp.findIndex((t, i) => !done(i)) : -1;
+      const upto = n === MN ? (cur >= 0 ? cur : tp.length - 1) : tp.length - 1;
+      const rec = tp.map((t, i) => i).filter(i => i <= upto && sc[i] != null && sc[i] < 80).sort((a, c) => sc[a] - sc[c]).map(i => ({ i, tag: 'Sugerido', c: 'sug', pc: sc[i] }));
+      const all = []; for (let i = 0; i <= upto; i++) { if (i === cur) all.push({ i, tag: 'Vas aquí', c: 'now' }); else if (sc[i] != null) all.push(sc[i] < 80 ? { i, tag: 'Repasar', c: 'rev', pc: sc[i] } : { i, tag: 'Completo', c: 'ok', pc: sc[i] }); else all.push({ i, tag: 'Repasar', c: 'rev' }); }
+      return { all: all.length ? all : [{ i: 0, tag: 'Vas aquí', c: 'now' }], rec }; } catch (e) { return { all: tp.map((t, i) => ({ i, tag: n === MN && !i ? 'Vas aquí' : 'Repasar', c: n === MN && !i ? 'now' : 'rev' })), rec: [] }; } };
     const modOpen = n => { if (n === MN) return true; const m = MODN(n); if (!m || !TOPICS[n]) return false; const r = P.role(m.id); return r === 'current' || r === 'review'; };
     let MS = MN, LK = 0;
     const step = () => {
@@ -1395,6 +1395,7 @@
         ${(() => { const O = ordFor(MS), TT = TOPICS[MS] || tops; const card = ({ i, tag, c, pc }) => { const t = TT[i]; return `<button type="button" class="vb-tp${TP === i ? ' on' : ''}" data-tp="${i}"><i class="vb-tag ${c}">${tag}</i><b>${i + 1}. ${esc(t[0])}</b><small>${esc(t[1])}</small>${window.MRTH ? MRTH.html(MS, i + 1, M.ageGroup && M.ageGroup(), 's') : ''}${pc != null ? `<span class="vb-pc${pc >= 80 ? ' g' : ''}">Tu resultado: ${pc}%</span>` : ''}</button>`; };
           return `<div class="vb-mods">${[1, 2, 3, 4].map(n => { const op = modOpen(n), cur = n === MN; return `<button type="button" class="vb-m${cur ? ' cur' : ''}${op ? '' : ' vb-off'}${n === MS ? ' on' : ''}" data-m="${n}"><b>Módulo ${n}</b><small>${cur ? '<i></i>Estás aquí' : op ? '✓ Hecho' : '🔒'}</small></button>`; }).join('')}</div>`
           + (LK ? `<div class="vb-lk">🔒 El Módulo ${LK} se habilita cuando termines el Módulo ${LK - 1}.</div>` : '')
+          + (() => { const nw = MS === MN && O.all.find(x => x.c === 'now'); if (!nw) return ''; const t = TT[nw.i]; return `<button type="button" class="vb-tp vb-nowbar${TP === nw.i ? ' on' : ''}" data-tp="${nw.i}"><i class="vb-tag now">Vas aquí</i><span>Tema ${nw.i + 1} · <b>${esc(t[0])}</b></span></button>`; })()
           + (O.rec.length ? `<div class="vb-rec"><p>⭐ Te recomendamos repasar<small>Según tus resultados en el Módulo ${MS}</small></p><div class="vb-topics">${O.rec.map(card).join('')}</div></div><p class="vb-sub">Todos los temas del Módulo ${MS}</p>` : '')
           + `<div class="vb-topics">${O.all.map(card).join('')}</div>`; })()}
         <input class="inp${TP === 'o' ? '' : ' hidden'}" id="vb-topic" maxlength="180" placeholder="Ej: entrevista de trabajo en inglés" value="${esc(OT)}">
@@ -1432,7 +1433,7 @@
       const DN = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
       const grp = (lbl, ic, from, to) => { const L = hrs.filter(h => +h.slice(0, 2) >= from && +h.slice(0, 2) <= to); return L.length ? `<div class="vf-grp">${MRI(ic)}${lbl}</div><div class="vf-hrs">${L.map(h => { const hasP = FD ? match(FD, h).length > 0 : false; return `<button type="button" class="vf-chip${FH === h ? ' on' : ''}${okH(FD, h) ? '' : ' off'}${FD && okH(FD, h) ? (hasP ? ' has' : ' none') : ''}" data-h="${h}" ${okH(FD, h) ? '' : 'disabled'}>${FD && okH(FD, h) && hasP ? '<i class="vf-dot"></i>' : ''}${fmtT(h).replace(':00', '')}</button>`; }).join('')}</div>` : ''; };
       const left = `<div class="vf-left">${favX ? `<div class="vf-fav"><span class="vf-fi">${MRI('repeat')}</span><div><b>¿Tu horario de siempre?</b><small>${DN[r.fav.dow][0].toUpperCase() + DN[r.fav.dow].slice(1)} · ${fmtT(favX.time)} con ${name(favX.t)}</small></div><button type="button" class="vf-go" id="vf-fav">Reservar</button></div>` : ''}
-        <div class="vf-card"><span class="vf-lb">1. ELIGE EL DÍA</span><div class="vf-days">${days.map(d => `<button type="button" class="vf-chip vf-d${FD === d ? ' on' : ''}" data-d="${d}">${fmtD(d, { weekday: 'short' }).replace('.', '')}<small>${fmtD(d, { day: 'numeric', month: 'short' }).replace('.', '')}</small></button>`).join('')}<button type="button" class="vf-chip vf-d${FD === 'any' ? ' on' : ''}" data-d="any">Todos<small>los días</small></button></div>
+        <div class="vf-card"><span class="vf-lb">1. ELIGE EL DÍA</span><div class="vf-days">${days.map(d => `<button type="button" class="vf-chip vf-d${FD === d ? ' on' : ''}" data-d="${d}">${fmtD(d, { weekday: 'short' }).replace('.', '')}<small>${fmtD(d, { day: 'numeric', month: 'short' }).replace('.', '')}</small></button>`).join('')}<button type="button" class="vf-chip vf-d${FD === 'any' ? ' on' : ''}" data-d="any">Cualquier<small>día</small></button></div>
           <p class="vf-pol">Desde mañana hasta 5 días · sin domingos ni festivos</p></div>
         <div class="vf-card"><span class="vf-lb">2. ELIGE LA HORA</span><p class="vf-help">${FD ? '<span><i class="vf-dot"></i> hay profes libres</span><span><i class="vf-dot g"></i> sin profes</span>' : 'Elige el día y te marcamos las horas con profes libres.'}</p>${grp('Mañana', 'clock', 7, 11)}${grp('Tarde', 'clock', 12, 16)}${grp('Noche', 'clock', 17, 20)}<p class="vf-pol vf-ex"><b>10 a. m.</b> = clases que empiezan de 10:00 a 10:59</p></div>
         <div class="vf-none"><span class="vf-ni">${MRI('bell')}</span><div><b>¿Ningún horario te sirve?</b><small>Te avisamos apenas se abra un espacio.</small></div><button type="button" class="vf-btnw" id="vf-wait2">Avísame</button></div></div>`;
