@@ -2,18 +2,18 @@
 <html lang="es"><head><link rel="icon" type="image/png" href="favicon.png"><script>/* v544 · la misma pantalla del portátil, escalada a pantallas grandes */(function(){var d=document.documentElement;function f(){var w=innerWidth,h=innerHeight,z=Math.min(w/1536,h/790);z=(w>=1600&&z>1.04)?Math.min(z,2.4):1;z=Math.round(z*100)/100;if(d.style.zoom!==String(z)){d.style.zoom=z===1?"":z;d.style.setProperty("--z",z);}}f();addEventListener("resize",function(){d.style.zoom="";f();});})();</script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>Clase en vivo · mrarrieta.com</title>
 <script src="https://unpkg.com/@daily-co/daily-js@0.92.2/dist/daily.js"></script>
-<script src="clase-topics.js?v=545"></script>
-<script src="config.js?v=545"></script>
-<script src="goals.js?v=545"></script>
-<script src="goalsdata.js?v=545"></script>
-<script src="missions.js?v=545"></script><script src="ageimg.js?v=545"></script>
+<script src="clase-topics.js?v=546"></script>
+<script src="config.js?v=546"></script>
+<script src="goals.js?v=546"></script>
+<script src="goalsdata.js?v=546"></script>
+<script src="missions.js?v=546"></script><script src="ageimg.js?v=546"></script>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--n:#0B2A5B;--n2:#1e4a8f;--r:#E3242B;--y:#FFC21A;--g:#16a34a;--bd:#e3e9f3;--mu:#5b6577;--bg:#eef2f8}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Inter,Arial,sans-serif;color:#1d2b45;-webkit-tap-highlight-color:transparent}
 button{font-family:inherit;cursor:pointer}button:disabled{opacity:.45;cursor:default}
 svg.i{width:1.15em;height:1.15em;vertical-align:-.2em;flex:none}
-header{background:#fff;border-bottom:3px solid var(--r);padding:8px 16px;display:flex;align-items:center;gap:12px}header img{height:58px}@media (max-width:700px){header img{height:46px}}header h1{font:800 15px Poppins;color:var(--n);margin:0}header small{color:var(--mu);font-size:12.5px}
+header{background:#fff;border-bottom:3px solid var(--r);padding:8px 16px;display:flex;align-items:center;gap:12px}header img{height:46px}@media (max-width:700px){header img{height:46px}}header h1{font:800 15px Poppins;color:var(--n);margin:0}header small{color:var(--mu);font-size:12.5px}
 .layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;max-width:1500px;margin:12px auto 30px;padding:0 16px}
 body.only-s .layout{grid-template-columns:minmax(0,1fr);max-width:620px;padding:0 10px}
 .vset{background:linear-gradient(135deg,#0B2A5B,#1e4a8f);color:#fff;border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:10px;justify-content:center;min-height:300px}.vset b{font:800 30px Poppins;letter-spacing:6px;background:#fff;color:var(--n);border-radius:10px;padding:2px 12px;display:inline-block}
@@ -191,7 +191,7 @@ body.ag-teens #pzc{border-color:#1e3570}body.ag-teens .pzh{color:#e8eefc}
 <script>
 (function(){
 const CLOUD=(window.M1CONFIG&&M1CONFIG.CLOUD_URL)||'https://script.google.com/macros/s/AKfycbzGXtwZH_eBIPz01faL6e8cMydhW-0u2H4UtzdHQYCr8CqMG62Tdp1dNDZ4MY4khE0N/exec';
-const CV='545',SESSION_MIN=60,CLASS_MIN=50;let SNAME='Carlos',TNAME='Mrs. Jennifer';
+const CV='546',SESSION_MIN=60,CLASS_MIN=50;let SNAME='Carlos',TNAME='Mrs. Jennifer';
 const QP=new URLSearchParams(location.search),CID=(QP.get('c')||'').replace(/[^\w]/g,''),DEMO=QP.get('demo')==='1',PLATFORM=!!CID;let INFO=null,VTOKEN='',GATE=PLATFORM,TAUTH=null,SAVED=0,MARKED=0;
 const base=()=>PLATFORM&&INFO?INFO.startMs:st.started;if(DEMO)SNAME='tu estudiante';
 const TOPICS_M1=[['The Greetings','Los saludos'],['The Alphabet','El abecedario'],['The Nationalities','Las nacionalidades'],['Numbers and Colors','Números y colores'],['Verb To Be and A / An','Verbo to be y a / an'],['Jobs and Occupations','Trabajos y ocupaciones'],['Family and Animals','Familia y animales'],['The Food vs. The Fruit and Vegetables','Comida, frutas y verduras'],['Weekdays and Months of the Year','Días y meses del año'],['The Weather Forecast and the Clothes','El clima y la ropa'],['School Supplies and Parts of the House','Útiles escolares y partes de la casa'],['The Singular and the Plural Nouns','Sustantivos singulares y plurales'],['Demonstrative Pronouns','Pronombres demostrativos'],['There is and There are','There is y there are']];
