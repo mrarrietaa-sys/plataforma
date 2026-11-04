@@ -256,7 +256,7 @@
     D.topics.forEach(t => {
       const un = rev || M.isUnlocked(t.n); const dn = t.parts.filter(p => rev || (S.parts[p.id] && S.parts[p.id].done)).length, tp = Math.round(dn / t.parts.length * 100);
       const st8 = dn === t.parts.length ? 'done' : (dn || t.parts.some(p => p.id === curId)) && un ? 'cur' : 'new';
-      const card = h(`<div class="t2c${un ? '' : ' lk'}" data-st="${st8}"><div class="t2-pic" style="${bg(t, 640, 300)}"><span class="t2-n">${t.n}</span>${un ? `<span class="t2-ring" style="--p:${tp}"><b>${tp}%</b></span>` : `<span class="t2-ring lk">${SVL}</span>`}<div class="t2-pt"><h3>${esc(t.title)}</h3><small>${esc(t.es)}</small></div></div><div class="t2-ls"></div></div>`);
+      const card = h(`<div class="t2c${un ? '' : ' lk'}" data-st="${st8}"><div class="t2-pic" style="${bg(t, 640, 300)}"><span class="t2-n">${t.n}</span>${un ? `<span class="t2-ring" style="--p:${tp}"><b>${tp}%</b></span>` : `<span class="t2-ring lk">${SVL}</span>`}<div class="t2-pt"><h3>${esc(t.title)}</h3><small>${esc(t.es)}</small></div></div>${(() => { try { const x = window.MRTH && MRTH.html(+M.MOD.n || 1, t.n, M.ageGroup && M.ageGroup(), 's', { ex: 1 }); return x ? `<div class="t2-can">${x}</div>` : ''; } catch (e) { return ''; } })()}<div class="t2-ls"></div></div>`); // v549: «Vas a poder…» + ejemplo
       t.parts.forEach(p => {
         const pd = S.parts[p.id], d = rev || (pd && pd.done), stars = M.partStars(p.id), c = !rev && p.id === curId && !d;
         let right = '';
