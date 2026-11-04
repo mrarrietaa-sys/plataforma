@@ -775,7 +775,7 @@
     document.body.appendChild(e); setTimeout(() => e.remove(), 1200);
     if (!S.ptsTip) { S.ptsTip = 1; save(); setTimeout(() => toast('⚡ ' + PTS_TIP), 1300); }
   }
-  const PTS_TIP = 'Los puntos ⚡ se ganan al completar actividades, tareas y retos.';
+  const PTS_TIP = 'Los puntos ⚡ se ganan al completar actividades y retos.';
   const VIB = { ok: [35], bad: [70, 50, 70], win: [40, 60, 40, 60, 160], tap: [12], flip: [18] };
   let fxT = 0;
   function fx9(type) {

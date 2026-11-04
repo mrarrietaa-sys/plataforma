@@ -43,18 +43,13 @@
   function menu() {
     const m = M.modal(`<div class="mhead"><h3>☰ Menú</h3><button class="mclose" data-a="close" title="Cerrar">✕</button></div><div class="menu-stats"><span class="pill y">⚡ ${S.xp} puntos</span><span class="pill">🔥 ${S.streak.n || 0} días</span></div><p class="muted ce-ptsline">${esc(M.PTS_TIP)}</p><div class="mnu-g" style="display:grid;gap:10px;margin-top:10px">
       ${window.MRAP && MRAP.get() ? '<a class="btn w block" style="text-decoration:none" href="index.html">👤 Mi perfil y mis módulos</a>' : ''}
-      <button class="btn w block" data-a="home">🏠 Inicio</button>
       <button class="btn w block" data-a="progress">📊 Mi progreso</button>
       <button class="btn w block" data-a="chat">💬 Chat con mi profe</button>
       ${M.hasProfile() ? '' : '<button class="btn w block" data-a="unlock">🔑 Tengo un código de acceso</button>'}
       ${pendingHW().length ? `<button class="btn k block" data-a="hwl">📋 Mis tareas pendientes (${pendingHW().length})</button>` : ''}
-      <button class="btn w block" data-a="remind">🔔 Recordatorio diario</button>
-      <button class="btn w block" data-a="dict">${S.dictHidden ? '📌 Mostrar botón flotante del diccionario' : '🙈 Quitar botón flotante del diccionario'}</button>
-      <button class="btn w block" data-a="tour">🧭 Ver el tour guiado</button>
       ${window.MRANN && MRANN.isStaff() ? `<button class="btn w block" data-a="ann">${MRANN.isHidden() ? '✏️ Mostrar la barra del profesor' : '✏️ Abrir la barra del profesor'}</button>` : ''}
-      <button class="btn w block" data-a="name">✏️ Cambiar mi nombre</button>
       ${S.review ? '<button class="btn w block" data-a="unreview">🚪 Salir del modo revisión (profe)</button>' : ''}
-      <button class="btn w block" data-a="sound">${S.sound ? '🔔 Sonidos: activados' : '🔕 Sonidos: desactivados'}</button><button class="btn w block" data-a="vib">${S.vib !== false ? '📳 Vibración: activada' : '📴 Vibración: desactivada'}</button>
+      <button class="btn w block" data-a="sound">${S.sound ? '🔔 Sonidos: activados' : '🔕 Sonidos: desactivados'}</button>
       <button class="btn k block" data-a="close">Cerrar</button></div>`);
     $$('button', m).forEach(b => b.onclick = () => { const a = b.dataset.a; m.remove();
       if (a === 'hwl') hwList(); else if (a === 'ann') MRANN.show(); else if (a === 'chat') openChat(); else if (a === 'home' || a === 'progress') route(a); else if (a === 'unlock') unlockModal(); else if (a === 'remind') reminderModal(); else if (a === 'name') onboarding(true); else if (a === 'chath') { M.setBubbleHidden('chatHidden', !S.chatHidden); } else if (a === 'dict') { window.M1DICT && M1DICT.setHidden(!S.dictHidden); } else if (a === 'tour') { route('home'); setTimeout(tour, 400); } else if (a === 'unreview') { S.review = false; save(); M.toast('Modo revisión desactivado'); route('home'); } else if (a === 'sound') { S.sound = !S.sound; save(); M.toast(S.sound ? 'Sonidos activados 🔔' : 'Sonidos desactivados 🔕'); } else if (a === 'vib') { S.vib = S.vib === false; save(); M.toast(S.vib ? 'Vibración activada' : 'Vibración desactivada'); if (S.vib && navigator.vibrate) try { navigator.vibrate(40); } catch (e) { } } });
@@ -294,7 +289,7 @@
   function hwBadge() { try { const b = $('#menu-b'); const n = pendingHW().length; if (b && n && !b.querySelector('.hwb')) { b.style.position = 'relative'; b.insertAdjacentHTML('beforeend', `<i class="hwb">${n}</i>`); } } catch (e) { } }
   function pendingBlock() {
     const pend = pendingHW();
-    if (!pend.length) return `<div class="card remind-card"><div class="grow"><b>🔔 ¿Quieres que te recuerde practicar todos los días?</b><div class="muted" style="font-size:14px">Agrega un recordatorio diario a tu celular en 10 segundos.</div></div><button class="btn sm" id="rem-b">Activar recordatorio</button></div>`;
+    if (!pend.length) return ''; // v559: sin recordatorio diario
     return `<div class="card pending-card">${M.mascot('mascot', 'point')}<div class="grow"><span class="lbl r">Tarea pendiente</span>
       <h3 style="font-size:22px;margin:8px 0 4px">${esc(S.name.split(' ')[0])}, tienes ${pend.length} ${pend.length === 1 ? 'tarea pendiente' : 'tareas pendientes'} ✍️</h3>
       <p class="muted" style="margin:0 0 10px">Hacer tu tarea es lo que más te ayuda a recordar lo que aprendiste. ¡Solo te toma 5 minutos!</p>
