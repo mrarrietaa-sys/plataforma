@@ -1,0 +1,176 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Prueba · Ofertas de video</title><link rel="icon" type="image/png" href="favicon.png">
+<meta name="robots" content="noindex">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--y:#E3242B;--k:#0B2A5B;--mut:#4A5B78;--ok:#16A34A;--ok2:#DCFCE7;--bg:#EEF4FC;--line:#D8E2F0;--fh:'Poppins',sans-serif}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,sans-serif;color:var(--k);background:var(--bg)}
+.sim{background:#111827;color:#fff;font-size:12.5px;padding:8px 14px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.sim b{margin-right:6px;color:#FCA5A5}.sim button{font:600 12.5px Inter;border:1px solid #374151;background:#1F2937;color:#D1D5DB;padding:6px 10px;border-radius:8px;cursor:pointer}
+.sim button.on{background:#fff;color:#111827}
+.top{height:64px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 18px;gap:12px}
+.top img{height:46px}.tag{font:700 11px var(--fh);background:var(--k);color:#fff;padding:4px 9px;border-radius:6px}
+.who{margin-left:auto;font-weight:600;font-size:14px;color:var(--mut)}
+.bell{position:relative;border:1px solid var(--line);background:#fff;border-radius:10px;width:40px;height:40px;cursor:pointer;font-size:18px}
+.bell i{position:absolute;top:-6px;right:-6px;background:var(--y);color:#fff;font:700 11px Inter;border-radius:99px;padding:2px 6px;font-style:normal}
+.wrap{max-width:980px;margin:0 auto;padding:20px 16px 60px}
+h2{font:700 23px var(--fh);margin:4px 0}.sub{color:var(--mut);font-size:14px;margin:0 0 16px}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 18px rgba(11,42,91,.07);padding:18px;margin-bottom:14px}
+label{display:block;font-size:12px;font-weight:700;color:var(--mut);margin:10px 0 4px;text-transform:uppercase;letter-spacing:.4px}
+input,textarea,select{width:100%;font:500 15px Inter;color:var(--k);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+textarea{min-height:84px}
+.r3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.btn{display:inline-flex;align-items:center;gap:8px;font:700 15px var(--fh);padding:11px 18px;border-radius:12px;border:0;background:var(--y);color:#fff;cursor:pointer}
+.btn.ok{background:var(--ok)}.btn.k{background:var(--k)}.btn.g{background:#fff;color:var(--k);border:1px solid var(--line)}.btn:disabled{opacity:.45;cursor:default}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--line);font-size:14px}
+.st{font-size:12px;font-weight:700;padding:4px 10px;border-radius:99px;white-space:nowrap}
+.st.a{background:var(--ok2);color:var(--ok)}.st.p{background:#FEF3C7;color:#B45309}.st.n{background:#F1F5F9;color:#64748B}.st.r{background:#FEE2E2;color:#DC2626}.st.b{background:#E0E7FF;color:#3730A3}
+.pts{margin:8px 0 12px;padding:0;list-style:none}.pts li{padding:6px 0 6px 22px;position:relative;font-size:15px}
+.pts li:before{content:"";position:absolute;left:4px;top:13px;width:8px;height:8px;border-radius:50%;background:var(--y)}
+.modal{position:fixed;inset:0;background:rgba(11,42,91,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+.modal.on{display:flex}.mbox{background:#fff;border-radius:18px;padding:22px;max-width:540px;width:100%;max-height:92vh;overflow:auto}
+.topic{font:700 20px var(--fh);margin:0 0 6px}
+.studio{display:flex;gap:20px;flex-wrap:wrap;justify-content:center}
+.phone{width:min(300px,80vw);aspect-ratio:9/16;border-radius:20px;overflow:hidden;position:relative;background:#000}
+.phone video,.phone canvas{width:100%;height:100%;object-fit:cover;display:block}
+.recb{position:absolute;top:12px;left:12px;background:rgba(0,0,0,.55);color:#fff;font:700 13px Inter;padding:5px 10px;border-radius:99px;display:none}
+.recb.on{display:block}.recb:before{content:"● ";color:var(--y)}
+.prog{position:absolute;left:0;bottom:0;height:5px;background:var(--y);width:0}
+.side{width:min(380px,100%)}
+.tele{height:260px;overflow:hidden;position:relative;border-radius:12px;background:var(--k);color:#fff;margin:8px 0 12px}
+.tele .in{position:absolute;left:0;right:0;top:0;padding:18px;font-size:21px;line-height:1.55;font-weight:600;white-space:pre-wrap}
+.empty{text-align:center;color:var(--mut);padding:30px 10px}
+.mail{border:1px solid var(--line);border-radius:12px;overflow:hidden}.mail .h{background:#F8FAFC;padding:10px 14px;font-size:13px;color:var(--mut);border-bottom:1px solid var(--line)}
+.mail .b{padding:18px 14px;font-size:15px;line-height:1.55}
+.ntf{padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}.ntf small{color:var(--mut);display:block}
+.chk{text-transform:none;letter-spacing:0;font-weight:500;display:flex;gap:8px;align-items:flex-start;font-size:13.5px;margin:12px 0;color:var(--k)}.chk input{width:auto;margin-top:3px}
+@media(max-width:640px){.r3{grid-template-columns:1fr}.top img{height:46px}.who{display:none}.bell{margin-left:auto}}
+</style></head><body>
+<div class="sim"><b>SIMULACIÓN</b>Ver como:
+<button data-r="admin">Administración</button><button data-r="profe">Profe (tú)</button><button data-r="otro">Otro profe</button><button data-r="est">Estudiante adulto (tú)</button></div>
+<div class="top"><img src="mra-brand.png" alt="mrarrieta.com"><span class="tag" id="tag"></span><span class="who" id="who"></span><button class="bell" id="bell">🔔<i id="bn" style="display:none"></i></button></div>
+<div class="wrap" id="main"></div>
+
+<div class="modal" id="md"><div class="mbox" id="mb"></div></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const S={role:'admin',offers:[],ntf:{profe:[],otro:[],est:[]},pay:{profe:[]},cls:{est:4},seen:{}};
+let oid=0;
+const NAMES={admin:['ADMIN','John · Administración'],profe:['PORTAL PROFE','Mr. John'],otro:['PORTAL PROFE','Mrs. Jennifer'],est:['PORTAL ESTUDIANTE','John (estudiante)']};
+const aud=r=>r=='est'?'est':'profe';
+const prize=o=>o.aud=='est'?'1 clase gratis':'$'+Number(o.pay).toLocaleString('es-CO');
+const stTxt={open:['Publicada · esperando','b'],taken:['Tomada · grabando','p'],sent:['Por revisar','p'],ok:['Aprobado','a'],no:['Rechazado','r']};
+function setRole(r){S.role=r;document.querySelectorAll('.sim button').forEach(b=>b.classList.toggle('on',b.dataset.r==r));
+ $('#tag').textContent=NAMES[r][0];$('#who').textContent=NAMES[r][1];$('#bell').style.display=r=='admin'?'none':'';render();popCheck()}
+document.querySelectorAll('.sim button').forEach(b=>b.onclick=()=>{stopCam();setRole(b.dataset.r)});
+function openM(h){$('#mb').innerHTML=h;$('#md').classList.add('on')}function closeM(){$('#md').classList.remove('on')}
+$('#md').onclick=e=>{if(e.target.id=='md')closeM()};
+function badge(){const n=S.role=='admin'?0:S.ntf[S.role].filter(x=>!x.r).length;$('#bn').style.display=n?'':'none';$('#bn').textContent=n}
+$('#bell').onclick=()=>{const L=S.ntf[S.role];L.forEach(x=>x.r=1);badge();
+ openM('<div class="topic">Notificaciones</div>'+(L.length?L.slice().reverse().map(x=>`<div class="ntf">${x.t}<small>${x.d}</small></div>`).join(''):'<div class="empty">No tienes notificaciones</div>')+'<div style="margin-top:14px"><button class="btn g" onclick="closeM()">Cerrar</button></div>')};
+function now(){return new Date().toLocaleString('es-CO',{hour:'numeric',minute:'2-digit',day:'numeric',month:'short'})}
+
+/* ---------- render ---------- */
+function render(){badge();const r=S.role;
+ if(r=='admin')return admin();
+ const a=aud(r),mine=S.offers.filter(o=>o.aud==a&&o.by==r);
+ let h=`<h2>${r=='est'?'Hola, John':'Hola, '+NAMES[r][1]}</h2><p class="sub">${r=='est'?'Tu portal de estudiante':'Tu portal de profe'}</p>`;
+ const act=mine.find(o=>o.st=='taken');
+ if(act)h+=`<div class="card"><div class="row" style="border:0;padding-top:0"><b>🎬 Tienes un video pendiente por grabar</b><span class="st p">Plazo: 48 h</span></div><div style="margin:4px 0 12px">${esc(act.topic)}</div><button class="btn" onclick="studio(${act.id})">● Grabar o subir mi video</button></div>`;
+ if(r=='est')h+=`<div class="card"><div class="row" style="border:0;padding:0"><span>Clases disponibles este mes</span><b style="font:800 22px var(--fh)">${S.cls.est}</b></div></div>`;
+ if(r=='profe'||r=='otro'){const P=S.pay[r]||[],tot=P.reduce((s,x)=>s+x.v,0);
+  h+=`<div class="card"><b>Mi pago de noviembre</b><div class="row"><span>Clases dictadas · 18 × $21.800</span><b>$392.400</b></div>${P.map(x=>`<div class="row" style="background:#F0FDF4"><span>🎬 Contenido · ${esc(x.t)}</span><b style="color:var(--ok)">$${x.v.toLocaleString('es-CO')}</b></div>`).join('')}<div class="row" style="border:0"><b>Total</b><b style="font:800 17px var(--fh)">$${(392400+tot).toLocaleString('es-CO')}</b></div></div>`}
+ if(mine.length)h+=`<div class="card"><b>Mis videos</b>${mine.map(o=>`<div class="row"><span>${esc(o.topic)}</span><span class="st ${stTxt[o.st][1]}">${o.st=='sent'?'En revisión':o.st=='ok'?'Aprobado · '+prize(o):stTxt[o.st][0]}</span></div>`).join('')}</div>`;
+ $('#main').innerHTML=h}
+
+function admin(){
+ let h=`<h2>Ofertas de video</h2><p class="sub">Solo aparecen cuando tú las publicas. El primero que acepta, la graba.</p>
+ <div class="card"><b>Nueva oferta</b>
+ <label>Para</label><select id="f-aud"><option value="profe">Profesores (pago en dinero)</option><option value="est">Estudiantes adultos (1 clase gratis)</option></select>
+ <label>Tema</label><input id="f-topic" value="Error común: “I have 25 years”">
+ <label>Qué debe decir (una idea por línea)</label><textarea id="f-pts">“I have 25 years” está mal
+Se dice “I am 25 years old”
+Da 2 ejemplos más
+Invita a practicar en mrarrieta.com</textarea>
+ <div class="r3"><div id="w-pay"><label>Pago</label><input id="f-pay" type="number" value="12000"></div><div><label>Cupos</label><input value="1" disabled></div><div><label>Plazo para grabar</label><input value="48 horas" disabled></div></div>
+ <div style="margin-top:14px"><button class="btn" id="b-pub">Publicar</button></div></div>`;
+ const L=S.offers.slice().reverse();
+ h+=`<div class="card"><b>Ofertas</b>${L.length?L.map(o=>`<div class="row"><span><span class="st n">${o.aud=='est'?'Estudiantes':'Profes'}</span> ${esc(o.topic)}<br><small style="color:var(--mut)">${o.by?'Tomada por '+NAMES[o.by][1]:'Nadie la ha tomado aún'} · ${prize(o)}</small></span><span style="display:flex;gap:8px;align-items:center"><span class="st ${stTxt[o.st][1]}">${stTxt[o.st][0]}</span>${o.url?`<button class="btn k" style="padding:7px 12px;font-size:13px" onclick="review(${o.id})">▶ Ver</button>`:''}</span></div>`).join(''):'<div class="empty">Aún no has publicado ofertas</div>'}</div>`;
+ $('#main').innerHTML=h;
+ const sync=()=>{const e=$('#f-aud').value=='est';$('#w-pay').querySelector('label').textContent=e?'Premio':'Pago';const p=$('#f-pay');p.type=e?'text':'number';p.value=e?'1 clase gratis':'12000';p.disabled=e;
+  $('#f-topic').value=e?'Mi experiencia en mrarrieta.com':'Error común: “I have 25 years”';$('#f-pts').value=e?'Di tu nombre y de dónde eres\n¿Por qué elegiste mrarrieta.com?\n¿Qué has mejorado?\n¿Se lo recomendarías a alguien?':'“I have 25 years” está mal\nSe dice “I am 25 years old”\nDa 2 ejemplos más\nInvita a practicar en mrarrieta.com'};
+ $('#f-aud').onchange=sync;
+ $('#b-pub').onclick=()=>{const o={id:++oid,aud:$('#f-aud').value,topic:$('#f-topic').value.trim(),pts:$('#f-pts').value.split('\n').map(s=>s.trim()).filter(Boolean),pay:+$('#f-pay').value||0,st:'open',by:null};
+  if(!o.topic)return;S.offers.push(o);render();
+  openM(`<div class="topic">✓ Publicada</div><p class="sub" style="margin:6px 0 16px">Ahora entra arriba como <b>${o.aud=='est'?'Estudiante adulto':'Profe'}</b> para ver el aviso.</p><button class="btn" onclick="closeM()">Entendido</button>`)}}
+
+/* ---------- popup ---------- */
+function popCheck(){const r=S.role;if(r=='admin')return;const a=aud(r);
+ const o=S.offers.find(o=>o.aud==a&&o.st=='open'&&!S.seen[r+o.id]);
+ if(o){S.seen[r+o.id]=1;return openM(`<div class="topic">🎬 ${a=='est'?'Graba tu testimonio y gana <span style="color:var(--ok)">1 clase gratis</span>':'Aprovecha: graba un video y gana <span style="color:var(--ok)">'+prize(o)+'</span>'}</div>
+ <p style="color:var(--mut);margin:8px 0 4px">Tema: <b style="color:var(--k)">${esc(o.topic)}</b></p>
+ <ul class="pts"><li>Video vertical de máximo <b>1 minuto</b>: lo grabas aquí o lo subes desde tu celular</li><li>Te damos el guion en pantalla</li><li>Tienes <b>48 horas</b> para enviarlo</li><li>${a=='est'?'Cuando administración lo apruebe, la clase se suma a tu saldo':'Se paga si se aprueba · se suma a tu pago del mes'}</li></ul>
+ <div style="font-size:13px;font-weight:700;color:var(--y);margin-bottom:14px">Solo hay 1 cupo: el primero que acepte se lo gana.</div>
+ <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn ok" onclick="accept(${o.id})">Acepto, lo grabo</button><button class="btn g" onclick="closeM()">Ahora no</button></div>`)}
+ const t=S.offers.find(o=>o.aud==a&&o.by&&o.by!=r&&o.st!='ok'&&!S.seen[r+'t'+o.id]);
+ if(t){S.seen[r+'t'+t.id]=1;openM(`<div style="text-align:center"><div style="font-size:30px">🎬</div><div class="topic">Este video ya fue tomado</div><p class="sub">Otro ${a=='est'?'estudiante':'profe'} aceptó primero. Te avisaremos en la próxima oferta.</p><button class="btn g" onclick="closeM()">Cerrar</button></div>`)}}
+function accept(id){const o=S.offers.find(x=>x.id==id);
+ if(o.by){return openM(`<div class="topic">Este video ya fue tomado</div><button class="btn g" onclick="closeM()">Cerrar</button>`)}
+ o.by=S.role;o.st='taken';render();
+ openM(`<div style="text-align:center"><div style="width:64px;height:64px;border-radius:50%;background:var(--ok2);color:var(--ok);display:grid;place-items:center;margin:0 auto 10px;font-size:30px">✓</div><div class="topic">¡Es tuyo!</div><p class="sub">Tienes 48 horas para enviarlo.</p><button class="btn" onclick="studio(${id})">● Grabar ahora</button> <button class="btn g" onclick="closeM()">Más tarde</button></div>`)}
+
+/* ---------- studio ---------- */
+let cam=null,rec=null,chunks=[],tmr=null,raf=null,cur=null;
+function stopCam(){try{rec&&rec.state!='inactive'&&rec.stop()}catch(e){}clearInterval(tmr);cancelAnimationFrame(raf);if(cam){cam.getTracks().forEach(t=>t.stop());cam=null}}
+function studio(id){closeM();cur=S.offers.find(x=>x.id==id);const est=cur.aud=='est';
+ $('#main').innerHTML=`<h2>Graba tu video</h2><p class="sub">${esc(cur.topic)} · máximo 1 minuto · ${prize(cur)}</p>
+ <div class="studio"><div class="phone"><canvas id="cv" width="720" height="1280"></canvas><div class="recb" id="rb">0:00</div><div class="prog" id="pg"></div></div>
+ <div class="side"><div class="card"><b>Guion</b><div class="tele"><div class="in" id="tin">${esc(cur.pts.join('\n\n'))}</div></div>
+ <div id="ctl" style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn" id="b-go" disabled>● Grabar</button><label class="btn g" style="margin:0;text-transform:none;letter-spacing:0;font-size:15px;color:var(--k)">⬆ Subir video<input type="file" accept="video/*" id="fu" hidden></label></div>
+ <p id="msg" style="font-size:13px;color:var(--mut);margin:10px 0 0">Activando tu cámara…</p></div></div></div>`;
+ $('#fu').onchange=e=>{const f=e.target.files[0];if(!f)return;const v=document.createElement('video');v.preload='metadata';v.src=URL.createObjectURL(f);
+  v.onloadedmetadata=()=>{if(v.duration>61){$('#msg').innerHTML='<b style="color:var(--y)">Ese video dura más de 1 minuto. Recórtalo o grábalo aquí.</b>';return}stopCam();reviewMine(v.src,Math.round(v.duration))}};
+ navigator.mediaDevices.getUserMedia({video:{width:{ideal:1280},height:{ideal:720}},audio:true}).then(s=>{cam=s;const v=document.createElement('video');v.muted=true;v.playsInline=true;v.srcObject=s;v.play();
+  const cv=$('#cv'),cx=cv.getContext('2d');
+  const draw=()=>{if(v.videoWidth){const vw=v.videoWidth,vh=v.videoHeight,tr=9/16;let sw=vw,sh=vh,sx=0,sy=0;if(vw/vh>tr){sw=vh*tr;sx=(vw-sw)/2}else{sh=vw/tr;sy=(vh-sh)/2}
+   cx.save();cx.translate(720,0);cx.scale(-1,1);cx.drawImage(v,sx,sy,sw,sh,0,0,720,1280);cx.restore()}raf=requestAnimationFrame(draw)};draw();
+  $('#b-go').disabled=false;$('#msg').textContent='Lee el guion mientras grabas. Se detiene solo al llegar a 1:00.';
+  $('#b-go').onclick=()=>rec&&rec.state=='recording'?rec.stop():startRec()}).catch(()=>{$('#msg').innerHTML='<b>No se pudo activar la cámara.</b> Dale permiso al navegador o usa “Subir video”.'})}
+function startRec(){const cv=$('#cv'),out=cv.captureStream(30);cam.getAudioTracks().forEach(t=>out.addTrack(t));
+ const mt=['video/mp4;codecs=avc1','video/mp4','video/webm;codecs=vp9,opus','video/webm'].find(t=>MediaRecorder.isTypeSupported(t))||'';
+ chunks=[];rec=new MediaRecorder(out,mt?{mimeType:mt,videoBitsPerSecond:2500000}:{});rec.ondataavailable=e=>e.data.size&&chunks.push(e.data);
+ let s=0,t0=Date.now();rec.onstop=()=>{clearInterval(tmr);const b=new Blob(chunks,{type:rec.mimeType||'video/webm'});stopCam();reviewMine(URL.createObjectURL(b),Math.max(1,Math.round((Date.now()-t0)/1000)),b.type)};
+ rec.start(500);$('#b-go').textContent='■ Detener';$('#b-go').classList.add('k');$('#rb').classList.add('on');
+ const tin=$('#tin'),max=Math.max(0,tin.scrollHeight-200);
+ tmr=setInterval(()=>{s=(Date.now()-t0)/1000;$('#rb').textContent='0:'+String(Math.min(59,Math.floor(s))).padStart(2,'0');$('#pg').style.width=Math.min(100,s/60*100)+'%';tin.style.transform=`translateY(-${Math.min(max,s/55*max)}px)`;if(s>=60)rec.stop()},200)}
+function reviewMine(url,dur,type){const est=cur.aud=='est';cur._u=url;cur._d=dur;cur._t=type||'video/mp4';
+ $('#main').innerHTML=`<h2>¿Quedó bien?</h2><p class="sub">Míralo antes de enviarlo. Puedes repetirlo las veces que quieras.</p>
+ <div class="studio"><div class="phone"><video src="${url}" controls playsinline></video></div><div class="side"><div class="card">
+ <div class="row"><span>Duración</span><b>0:${String(Math.min(dur,60)).padStart(2,'0')}</b></div><div class="row"><span>${est?'Premio si se aprueba':'Pago si se aprueba'}</span><b style="color:var(--ok)">${prize(cur)}</b></div>
+ <label class="chk"><input type="checkbox" id="aut"> <span>Autorizo a MRARRIETA.COM a publicar este video en sus redes sociales y página web.</span></label>
+ <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn g" onclick="studio(${cur.id})">↺ Repetir</button><button class="btn ok" id="b-send" disabled>Enviar video</button></div></div></div></div>`;
+ $('#aut').onchange=e=>$('#b-send').disabled=!e.target.checked;
+ $('#b-send').onclick=()=>{cur.url=url;cur.dur=dur;cur.type=cur._t;cur.st='sent';render();
+  openM(`<div style="text-align:center"><div style="width:64px;height:64px;border-radius:50%;background:var(--ok2);color:var(--ok);display:grid;place-items:center;margin:0 auto 10px;font-size:30px">✓</div><div class="topic">¡Video enviado!</div><p class="sub">Tu video será revisado por administración. Cuando se apruebe, ${est?'verás tu clase gratis reflejada en tu saldo':'verás los '+prize(cur)+' en tu pago del mes'}.</p><p style="font-size:13px;color:var(--mut)">Simulación: ahora entra como <b>Administración</b> para aprobarlo.</p><button class="btn" onclick="closeM()">Entendido</button></div>`)}}
+
+/* ---------- admin review ---------- */
+function review(id){const o=S.offers.find(x=>x.id==id);const can=o.st=='sent';
+ openM(`<div class="studio" style="gap:16px"><div class="phone" style="width:220px"><video src="${o.url}" controls playsinline autoplay></video></div>
+ <div style="flex:1;min-width:200px"><div class="topic">${NAMES[o.by][1]}</div><div style="color:var(--mut);font-size:14px">${esc(o.topic)} · 0:${String(Math.min(o.dur,60)).padStart(2,'0')}</div>
+ <div style="display:flex;flex-direction:column;gap:9px;margin-top:16px">
+ ${can?`<button class="btn ok" onclick="approve(${id})">✓ Aprobar · ${prize(o)}</button>`:`<span class="st ${stTxt[o.st][1]}">${stTxt[o.st][0]}</span>`}
+ <a class="btn g" href="${o.url}" download="mrarrieta-video-${id}.${/mp4/.test(o.type)?'mp4':'webm'}">⬇ Descargar video</a>
+ ${can?`<button class="btn g" style="color:#DC2626" onclick="reject(${id})">✕ Rechazar</button>`:''}<button class="btn g" onclick="closeM()">Cerrar</button></div></div></div>`)}
+function approve(id){const o=S.offers.find(x=>x.id==id);o.st='ok';const est=o.aud=='est',w=o.by,nm=NAMES[w][1];
+ if(est){S.cls.est++;S.ntf[w].push({t:'🎁 Tu testimonio fue aprobado. Ganaste <b>1 clase gratis</b>, ya está en tu saldo.',d:now()})}
+ else{(S.pay[w]=S.pay[w]||[]).push({t:o.topic,v:o.pay});S.ntf[w].push({t:`💰 Tu video fue aprobado. Ganaste <b>${prize(o)}</b> extra, se suman a tu pago del mes.`,d:now()})}
+ render();
+ openM(`<div class="topic">✓ Aprobado</div><p class="sub" style="margin:4px 0 12px">Se envió esta notificación al portal y este correo a ${nm}:</p>
+ <div class="mail"><div class="h"><b>De:</b> mrarrieta.com · <b>Asunto:</b> ${est?'🎁 ¡Ganaste una clase gratis!':'💰 ¡Ganaste un pago extra!'}</div>
+ <div class="b"><img src="mra-brand.png" style="height:34px"><br><br>Hola ${est?'John':nm},<br><br>${est?'Gracias por compartir tu experiencia. Tu testimonio fue aprobado y ganaste <b>1 clase individual gratis</b>. Ya la puedes reservar desde tu portal.':`Tu video <b>“${esc(o.topic)}”</b> fue aprobado. Ganaste <b>${prize(o)}</b>, que se suman a tu pago de este mes.`}<br><br>¡Gracias!<br>Equipo mrarrieta.com</div></div>
+ <p style="font-size:13px;color:var(--mut)">Simulación: entra como <b>${est?'Estudiante adulto':'Profe'}</b> y mira la 🔔 ${est?'y tu saldo de clases':'y tu pago del mes'}.</p><button class="btn" onclick="closeM()">Cerrar</button>`)}
+function reject(id){const o=S.offers.find(x=>x.id==id);o.st='taken';o.url=null;S.ntf[o.by].push({t:'Tu video necesita un cambio. Grábalo de nuevo desde tu portal.',d:now()});closeM();render()}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+setRole('admin');
+</script></body></html>
