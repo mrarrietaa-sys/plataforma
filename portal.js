@@ -1359,7 +1359,7 @@
       else { bt.disabled = false; bt.textContent = 'Avísame'; M.toast('No se pudo guardar. Inténtalo de nuevo.'); } };
   }
   async function vipBooking() {
-    const m = M.modal(`<div class="vb"><h3>${MRI('calendar')} Reserva tu clase individual</h3><div id="vb-b" class="center">⏳ Buscando espacios disponibles…</div></div>`, { x: true }); m.classList.add('vb-modal', 'vb-load'); // ⏳ mientras carga, ventana pequeña
+    const m = M.modal(`<div class="vb"><h3>${MRI('calendar')} Reserva tu clase individual</h3><div id="vb-b" class="center">Abriendo la reserva…</div></div>`, { x: true }); m.classList.add('vb-modal', 'vb-load'); // ⏳ mientras carga, ventana pequeña
     const r = await MRAC.call('vipOptions', { code: MRAC.code() }); const b = $('#vb-b', m); if (!b) return;
     if (!r.ok) { b.innerHTML = `<p>${r.err === 'not_premium' ? 'Las clases individuales son parte de los planes Premium.' : 'No pudimos cargar los espacios. Revisa tu conexión.'}</p>`; return; }
     if (!r.teachers.length) { b.innerHTML = `<p class="muted">Por ahora no hay espacios libres en los próximos días. Los profes publican nuevos horarios cada semana.</p><button class="btn k block" id="vb-wait0">🔔 Avísame cuando haya espacio</button>`; $('#vb-wait0', b).onclick = () => waitAsk(m); return; }
@@ -1442,13 +1442,12 @@
       const left = `<div class="vf-left">${favX ? `<div class="vf-fav"><span class="vf-fi">${MRI('repeat')}</span><div><b>¿Tu horario de siempre?</b><small>${DN[r.fav.dow][0].toUpperCase() + DN[r.fav.dow].slice(1)} · ${fmtT(favX.time)} con ${name(favX.t)}</small></div><button type="button" class="vf-go" id="vf-fav">Reservar</button></div>` : ''}
         <div class="vf-card"><span class="vf-lb">1. ELIGE EL DÍA</span><div class="vf-days">${days.map(d => `<button type="button" class="vf-chip vf-d${FD === d ? ' on' : ''}" data-d="${d}">${fmtD(d, { weekday: 'short' }).replace('.', '')}<small>${fmtD(d, { day: 'numeric', month: 'short' }).replace('.', '')}</small></button>`).join('')}</div>
           <p class="vf-pol">${days.length ? `Puedes reservar hasta el <b>${fmtD(days[days.length - 1], { weekday: 'long', day: 'numeric', month: 'short' }).replace('.', '').replace(',', '')}</b> · sin domingos ni festivos` : 'Sin domingos ni festivos'}</p></div>
-        <div class="vf-card"><span class="vf-lb">2. ¿A QUÉ HORA QUIERES TU CLASE?</span><div class="vf-tp"><label class="vf-sel"><select id="vf-hh" aria-label="Hora">${[1,2,3,4,5,6,7,8,9,10,11,12].map(n => `<option value="${n}"${TK.h === n ? ' selected' : ''}>${n}</option>`).join('')}</select><small>HORA</small></label><span class="vf-col">:</span><label class="vf-sel"><select id="vf-mm" aria-label="Minutos">${[0,10,20,30,40,50].map(n => `<option value="${n}"${TK.m === n ? ' selected' : ''}>${String(n).padStart(2, '0')}</option>`).join('')}</select><small>MINUTOS</small></label><div class="vf-ap"><button type="button" class="${TK.p === 'a' ? 'on' : ''}" data-ap="a">a. m.</button><button type="button" class="${TK.p === 'p' ? 'on' : ''}" data-ap="p">p. m.</button></div></div>
-          <div class="vf-qk">${[['Mañana', 8, 0, 'a'], ['Mediodía', 12, 0, 'p'], ['Tarde', 3, 0, 'p'], ['Noche', 6, 0, 'p']].map(q => `<button type="button" data-qk="${q[1]}|${q[2]}|${q[3]}">${q[0]}</button>`).join('')}</div>
+        <div class="vf-card"><span class="vf-lb">2. ¿A QUÉ HORA QUIERES TU CLASE?</span><div class="vf-tp"><div class="vf-sel vf-hhw"><button type="button" class="vf-hhb" id="vf-hh" aria-label="Hora">${TK.h}</button><small>HORA</small><div class="vf-hpop" id="vf-hpop" hidden>${[1,2,3,4,5,6,7,8,9,10,11,12].map(n => `<button type="button" data-hv="${n}" class="${TK.h === n ? 'on' : ''}">${n}</button>`).join('')}</div></div><span class="vf-col">:</span><label class="vf-sel"><input id="vf-mm" inputmode="numeric" maxlength="2" autocomplete="off" aria-label="Minutos" value="${String(TK.m).padStart(2, '0')}"><small>MINUTOS</small></label><div class="vf-ap"><button type="button" class="${TK.p === 'a' ? 'on' : ''}" data-ap="a">a. m.</button><button type="button" class="${TK.p === 'p' ? 'on' : ''}" data-ap="p">p. m.</button></div></div>
           <div class="vf-gow"><button type="button" class="vf-go2" id="vf-go2">Buscar profes a esa hora</button></div></div>
         <div class="vf-none"><span class="vf-ni">${MRI('bell')}</span><div><b>¿Ningún horario te sirve?</b><small>Te avisamos apenas se abra un espacio.</small></div><button type="button" class="vf-btnw" id="vf-wait2">Avísame</button></div></div>`;
       const mins = (t) => { const p = String(t).split(':'); return (+p[0]) * 60 + (+p[1] || 0); }, dif = (x) => Math.abs(mins(x.time) - mins(FH));
       const okFH = FH && FD && mins(FH) >= 7 * 60 && Math.floor(mins(FH) / 60) <= endH(FD);
-      const tcard = (x, i, near) => `<button type="button" class="vf-tc2${near ? ' n' : ''}${r.fav && x.t.id === r.fav.teacherId ? ' best' : ''}" data-x="${i}"><span class="vf-av">${pic(x.t)}</span><span class="vf-ti">${r.fav && x.t.id === r.fav.teacherId ? '<span class="vf-badge">TU PROFE DE SIEMPRE</span>' : ''}<b>${name(x.t)}</b><small>${stars(x.t)}</small></span><span class="vf-h">${fmtT(x.time)}</span></button>`;
+      const tcard = (x, i, near) => `<button type="button" class="vf-tc2${near ? ' n' : ''}${r.fav && x.t.id === r.fav.teacherId ? ' best' : ''}" data-x="${i}"><span class="vf-av">${pic(x.t)}</span><span class="vf-ti">${r.fav && x.t.id === r.fav.teacherId ? '<span class="vf-badge">TU PROFE DE SIEMPRE</span>' : ''}<b>${name(x.t)}</b><small>${stars(x.t)}</small></span><span class="vf-h">${x.date !== FD ? (s => s[0].toUpperCase() + s.slice(1))(fmtD(x.date, { weekday: 'short', day: 'numeric' }).replace('.', '')) + ' · ' : ''}${fmtT(x.time)}</span><span class="vf-chev">›</span></button>`;
       let right, L = [];
       if (!FD || !FH) right = `<div class="vf-empty">${MRI('calendar')}<b>${!FD ? 'Elige el día' : 'Ahora elige la hora'}</b><span>${!FD ? 'Te mostramos al instante qué profes están libres.' : 'Escribe la hora que quieres y toca «Buscar profes a esa hora».'}</span></div>`;
       else if (!okFH) right = `<div class="vf-rh"><b>${esc((s => s[0].toUpperCase() + s.slice(1))(fmtD(FD, { weekday: 'long', day: 'numeric', month: 'short' }).replace('.', '')))} · ${fmtT(FH)}</b></div><div class="vf-warn">${MRI('alert')}<span><b>Esa hora está fuera del horario de clases.</b> ${dow(FD) === 6 ? 'Los sábados las clases empiezan entre las 7:00 a. m. y las 4:50 p. m.' : 'De lunes a viernes las clases empiezan entre las 7:00 a. m. y las 8:50 p. m.'}</span></div>`;
@@ -1459,21 +1458,17 @@
         const head = `<div class="vf-rh"><b>${esc((s => s[0].toUpperCase() + s.slice(1))(fmtD(FD, { weekday: 'long', day: 'numeric', month: 'short' }).replace('.', '')))} · ${fmtT(FH)}</b></div>`;
         if (ex.length) {
           L = ex.concat(nearA);
-          right = head + `<span class="vf-ok">${MRI('check')}${ex.length} ${ex.length === 1 ? 'profe disponible' : 'profes disponibles'} a tu hora</span><div class="vf-tl">${ex.map((x, i) => tcard(x, i)).join('')}</div>`
+          right = head + `<span class="vf-ok">${MRI('check')}${ex.length} ${ex.length === 1 ? 'profe disponible' : 'profes disponibles'} a tu hora</span><p class="vf-pickp">Elige el profe que te guste:</p><div class="vf-tl">${ex.map((x, i) => tcard(x, i)).join('')}</div>`
             + (nearA.length ? `<span class="vf-nr">${MRI('clock')}Cerca de tu hora</span><div class="vf-tl">${nearA.map((x, i) => tcard(x, ex.length + i, 1)).join('')}</div>` : '')
-            + `<p class="vf-hint">Toca un profe para reservar. Cada clase dura 50 minutos.</p>`;
+            + `<p class="vf-hint">Cada clase dura 50 minutos.</p>`;
         } else {
-          const close = byT(day.slice().sort((x, y) => dif(x) - dif(y) || rank(y) - rank(x))).slice(0, 4).sort((x, y) => mins(x.time) - mins(y.time));
+          const tod = (x) => mins(x.time), want = mins(FH);
+          let close = byT(day.slice().sort((x, y) => dif(x) - dif(y) || rank(y) - rank(x))).slice(0, 4);
+          if (close.length < 4) { const seen = {}; close.forEach(x => seen[x.t.id + x.date] = 1); all.filter(x => x.date !== FD).sort((x, y) => Math.abs(tod(x) - want) - Math.abs(tod(y) - want) || x.date.localeCompare(y.date)).forEach(x => { const k = x.t.id + x.date; if (close.length < 4 && !seen[k]) { seen[k] = 1; close.push(x); } }); }
+          close.sort((x, y) => (x.date === FD ? 0 : 1) - (y.date === FD ? 0 : 1) || (x.date + x.time).localeCompare(y.date + y.time));
           L = close;
           right = head + `<div class="vf-warn">${MRI('alert')}<span>A las <b>${fmtT(FH)}</b> no hay profes disponibles ese día.</span></div>`;
-          if (close.length) right += `<span class="vf-nr">${MRI('clock')}Los horarios más cercanos</span><div class="vf-tl">${close.map((x, i) => tcard(x, i, 1)).join('')}</div><p class="vf-hint">También puedes probar otro día arriba.</p>`;
-          else {
-            const hh = String(Math.floor(mins(FH) / 60)).padStart(2, '0') + ':00';
-            const other = days.filter(d => d !== FD).map(d => ({ d, h: hh, n: match(d, hh) })).filter(x => x.n.length);
-            let soon = []; if (!other.length) { const seen = {}; all.slice().sort((x, y) => (x.date + x.time).localeCompare(y.date + y.time)).forEach(x => { const k = x.date + hOf(x.time); if (!seen[k] && soon.length < 4) { seen[k] = 1; soon.push({ d: x.date, h: hOf(x.time) + ':00', n: match(x.date, hOf(x.time) + ':00') }); } }); }
-            const tile = (o, sub) => `<button type="button" class="vf-al" data-d="${o.d}" data-h="${o.h}"><b>${(s => s[0].toUpperCase() + s.slice(1))(fmtD(o.d, { weekday: 'short', day: 'numeric' }).replace('.', ''))} · ${fmtT(o.h).replace(':00', '')}</b><small>${sub}</small><span class="vf-pf">${[...new Set(o.n.map(x => x.t))].slice(0, 3).map(t => `<i>${pic(t)}</i>`).join('')}<em>${new Set(o.n.map(x => x.t.id)).size} ${new Set(o.n.map(x => x.t.id)).size === 1 ? 'profe' : 'profes'}</em></span></button>`;
-            right += other.length || soon.length ? `<div class="vf-alt2">${other.length ? `<div class="vf-ab"><span class="vf-lb">ESE DÍA NO HAY PROFES · OTROS DÍAS A ESA HORA</span><div class="vf-alt">${other.slice(0, 4).map(o => tile(o, 'misma hora')).join('')}</div></div>` : ''}${soon.length ? `<div class="vf-ab"><span class="vf-lb">LOS PRÓXIMOS ESPACIOS LIBRES</span><div class="vf-alt">${soon.map(o => tile(o, 'disponible')).join('')}</div></div>` : ''}</div>` : `<p class="vf-hint">Por ahora no hay espacios en los próximos días. Toca «Avísame» y te contamos apenas se abra uno.</p>`;
-          }
+          right += close.length ? `<span class="vf-nr">${MRI('clock')}Los horarios más cercanos</span><p class="vf-pickp">Elige el profe que te guste:</p><div class="vf-tl">${close.map((x, i) => tcard(x, i, 1)).join('')}</div>` : `<p class="vf-hint">Por ahora no hay espacios en los próximos días. Toca «Avísame» y te contamos apenas se abra uno.</p>`;
         }
         right += `<div class="vf-foot"><button type="button" class="vf-lnk" id="vf-all">${MRI('calendar')} Ver toda la disponibilidad de los profes</button><span class="vf-pol">Clase de 50 minutos · cancelación gratis hasta 12 horas antes</span></div>`;
       }
@@ -1482,10 +1477,13 @@
       const goR = () => { if (innerWidth < 900) { const rr = $('#vf-r', b); if (rr) setTimeout(() => rr.scrollIntoView({ behavior: 'smooth', block: 'start' }), 30); } };
       const to24 = () => { let h = TK.h % 12; if (TK.p === 'p') h += 12; return String(h).padStart(2, '0') + ':' + String(TK.m).padStart(2, '0'); };
       $$('[data-h]', b).forEach(x => x.onclick = () => { FD = x.dataset.d; const hh = +x.dataset.h.slice(0, 2); TK = { h: hh % 12 || 12, m: 0, p: hh >= 12 ? 'p' : 'a' }; FH = to24(); sfx('tap'); finder(); goR(); });
-      const hs = $('#vf-hh', b), ms = $('#vf-mm', b); if (hs) hs.onchange = () => { TK.h = +hs.value; }; if (ms) ms.onchange = () => { TK.m = +ms.value; };
+      const hs = $('#vf-hh', b), ms = $('#vf-mm', b), hp = $('#vf-hpop', b);
+      if (hs) hs.onclick = (e) => { e.stopPropagation(); hp.hidden = !hp.hidden; };
+      $$('[data-hv]', b).forEach(x => x.onclick = (e) => { e.stopPropagation(); TK.h = +x.dataset.hv; hs.textContent = TK.h; $$('[data-hv]', b).forEach(y => y.classList.toggle('on', y === x)); hp.hidden = true; if (ms) { ms.focus(); ms.select(); } });
+      b.addEventListener('click', (e) => { if (hp && !hp.hidden && !e.target.closest('.vf-hhw')) hp.hidden = true; });
+      if (ms) { ms.onfocus = () => ms.select(); ms.oninput = () => { ms.value = ms.value.replace(/\D/g, '').slice(0, 2); if (+ms.value > 59) ms.value = '59'; TK.m = +ms.value || 0; }; ms.onblur = () => { ms.value = String(TK.m).padStart(2, '0'); }; ms.onkeydown = (e) => { if (e.key === 'Enter') { ms.blur(); const g = $('#vf-go2', b); g && g.click(); } }; }
       $$('[data-ap]', b).forEach(x => x.onclick = () => { TK.p = x.dataset.ap; $$('[data-ap]', b).forEach(y => y.classList.toggle('on', y === x)); });
-      $$('[data-qk]', b).forEach(x => x.onclick = () => { const q = x.dataset.qk.split('|'); TK = { h: +q[0], m: +q[1], p: q[2] }; if (hs) hs.value = TK.h; if (ms) ms.value = TK.m; $$('[data-ap]', b).forEach(y => y.classList.toggle('on', y.dataset.ap === TK.p)); });
-      const g2 = $('#vf-go2', b); if (g2) g2.onclick = () => { if (!FD) { M.toast('Primero elige el día'); return; } FH = to24(); sfx('tap'); finder(); goR(); };
+      const g2 = $('#vf-go2', b); if (g2) g2.onclick = () => { if (ms) TK.m = Math.min(59, +ms.value || 0); if (!FD) { M.toast('Primero elige el día'); return; } FH = to24(); sfx('tap'); finder(); goR(); };
       $$('.vf-tc2', b).forEach(btn => btn.onclick = () => { const x = L[+btn.dataset.x]; if (!x) return; T = x.t; D = x.date; S = T.slots.find(y => y.id === x.id); sfx('tap'); step(); });
       const fv = $('#vf-fav', b); if (fv) fv.onclick = () => { T = favX.t; D = favX.date; S = T.slots.find(y => y.id === favX.id); sfx('tap'); step(); };
       const al = $('#vf-all', b); if (al) al.onclick = () => { ALL = true; step(); };

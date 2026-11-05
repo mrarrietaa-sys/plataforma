@@ -8586,3 +8586,20 @@ svg.trz [stroke="none"]{stroke-dasharray:none;opacity:0;animation:trzf2 .5s ease
 .vf-tc2.n .vf-h{background:#FFF7E0;color:#a16207}
 .vf-nr{display:flex;align-items:center;gap:6px;font:800 13.5px var(--fh,Poppins),sans-serif;color:#b45309}.vf-nr .mri{width:16px;height:16px}
 .vf-right .vf-ok{display:flex;align-items:center;gap:6px}
+/* v582 · Reserva: hora en ventanita compacta, minutos libres, botón principal claro y «Avísame» secundario */
+.vf-hhw{position:relative;cursor:default}
+.vf-hhb{display:block;width:100%;border:0;background:transparent;font:800 21px var(--fh,Poppins),sans-serif;color:#0B2A5B;cursor:pointer;padding:0 14px 0 0;line-height:1.25}
+.vf-hhw::after{content:'▾';position:absolute;right:9px;top:38%;transform:translateY(-50%);font-size:12px;color:#94a3b8;pointer-events:none}
+.vf-hpop{position:absolute;z-index:30;top:calc(100% + 6px);left:0;width:190px;display:grid;grid-template-columns:repeat(4,1fr);gap:5px;background:#fff;border:1px solid #dbe3ef;border-radius:14px;padding:8px;box-shadow:0 14px 32px rgba(11,42,91,.18)}
+.vf-hpop[hidden]{display:none}
+.vf-hpop button{border:1.5px solid #e2e8f0;background:#fff;border-radius:9px;padding:6px 0;font:800 14px var(--fh,Poppins),sans-serif;color:#0B2A5B;cursor:pointer}.vf-hpop button:hover{border-color:#0B2A5B}.vf-hpop button.on{background:#0B2A5B;border-color:#0B2A5B;color:#fff}
+.vf-sel input{border:0;background:transparent;width:100%;text-align:center;font:800 21px var(--fh,Poppins),sans-serif;color:#0B2A5B;outline:none;padding:0;line-height:1.25}
+.vf-pickp{margin:2px 0 -2px;font:700 13px Inter,sans-serif;color:#0B2A5B}
+.vf-tc2 .vf-chev{font:800 20px var(--fh,Poppins),sans-serif;color:#94a3b8;margin-left:2px}
+.vf-tc2{box-shadow:0 2px 8px rgba(11,42,91,.06)}.vf-tc2:hover .vf-chev{color:#0B2A5B}
+.vf-go2{padding:10px 30px;font-size:15px;background:linear-gradient(135deg,#E3242B,#c81e25);box-shadow:0 8px 18px rgba(227,36,43,.28)}
+.vf-none .vf-btnw,.vf-left .vf-none .vf-btnw{background:#fff!important;color:#0B2A5B!important;border:1.5px solid #0B2A5B!important;width:auto!important;margin:0 0 0 auto!important;padding:7px 16px!important;font-size:13px!important}
+.vf-none .vf-btnw:hover{background:#F1F5FB!important}
+@media(max-width:560px){.vf-none,.vf-left .vf-none{flex-wrap:nowrap!important}.vf-none>div,.vf-left .vf-none>div{flex:1 1 auto!important}}
+/* v582 · Disponibilidad del profe: botón guardar */
+.tp-wsave2{margin-top:12px;background:linear-gradient(135deg,#E3242B,#c81e25);color:#fff;border:0;border-radius:12px;padding:10px 28px;font:800 14.5px var(--fh,Poppins),sans-serif;cursor:pointer;box-shadow:0 8px 18px rgba(227,36,43,.25)}.tp-wsave2:disabled{opacity:.6}

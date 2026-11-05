@@ -394,9 +394,8 @@
     const extra = form.hours.filter((h) => HOURS.indexOf(h) < 0);
     const slots = D.slots.filter((s) => s.status !== 'deleted' && s.date >= t0 && !(s.date === t0 && s.status === 'free' && s.time <= nowHM()));
     const byDate = {}; slots.forEach((s) => (byDate[s.date] = byDate[s.date] || []).push(s));
-    el.innerHTML = `<div class="card tp-card tp-week"><div class="tp-card-h"><h2>📅 Mi disponibilidad semanal</h2></div>
-        <p class="muted tp-small">Con estas horas la plataforma publica tus espacios de las próximas <b>4 semanas</b> y los renueva cada día. Los estudiantes Premium reservan ahí. <b>Cada viernes te pediremos confirmarla.</b></p>
-        <div id="tp-wg"></div><button class="btn k lg block" id="tp-wsave" style="margin-top:12px">Guardar mi disponibilidad semanal</button></div>
+    el.innerHTML = `<div class="card tp-card tp-week"><div class="tp-card-h"><h2>📅 Mi disponibilidad</h2></div>
+        <div id="tp-wg"></div><div style="text-align:center"><button class="tp-wsave2" id="tp-wsave">Guardar mi disponibilidad</button><p class="muted tp-small" style="margin:8px 0 0">La plataforma publica tus espacios de las próximas 4 semanas. Cada viernes te pediremos confirmarla.</p></div></div>
       <div class="tp-cols1">
       <div class="card tp-card">
         <div class="tp-card-h"><h2>Mis espacios</h2><small class="muted">${slots.filter((s) => s.status === 'free').length} disponibles · ${slots.filter((s) => s.status === 'booked').length} reservados</small></div>
@@ -409,7 +408,7 @@
       </div></div>`;
     const WG = window.MRWG ? MRWG.render($('#tp-wg', el), (D.teacher && D.teacher.weekly) || {}) : null;
     $('#tp-wsave', el).onclick = async () => { const b = $('#tp-wsave', el); b.disabled = true; b.textContent = 'Guardando…';
-      const r = await api('tWeekly', { weekly: WG ? WG.get() : {} }); b.disabled = false; b.textContent = 'Guardar mi disponibilidad semanal';
+      const r = await api('tWeekly', { weekly: WG ? WG.get() : {} }); b.disabled = false; b.textContent = 'Guardar mi disponibilidad';
       if (!r.ok) { if (r.err !== 'auth') toast(errText(r.err), true); return; } D = r; toast('✅ Disponibilidad semanal guardada. Tus espacios de las próximas 4 semanas ya están publicados.'); avail(el); };
     $$('[data-del]', el).forEach((b) => b.onclick = async () => {
       const s = D.slots.find((x) => x.id === b.dataset.del); if (!s || !confirm(`¿Borrar el espacio del ${dLabel(s.date)} a las ${h12(s.time)}?`)) return;

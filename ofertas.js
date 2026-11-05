@@ -32,6 +32,7 @@ function blocked(){if(document.querySelector('.ofr-pop,.mst'))return true;const 
 function whenFree(fn,n){n=n||0;if(!blocked())return fn();if(n<150)setTimeout(()=>whenFree(fn,n+1),2000);}
 function init(cfg){C=cfg;load();}
 /* v580: abrir la oferta desde la notificación */
-async function show(){if(!C)return;const r=await C.call(C.kind==='est'?'sOffer':'tOffer',{}).catch(()=>null);if(!r||!r.ok)return;bar(r);const m=r.mine;if(m&&m.st==='taken')return studio(m);if(r.open)return pop(r.open);const el=document.querySelector(C.mount);if(el)el.scrollIntoView({behavior:'smooth',block:'center'});}
+async function show(){if(!C)return;const r=await C.call(C.kind==='est'?'sOffer':'tOffer',{}).catch(()=>null);if(!r||!r.ok)return;bar(r);const m=r.mine;if(m&&m.st==='taken')return studio(m);if(r.open)return pop(r.open);const el=document.querySelector(C.mount);if(m&&el){el.scrollIntoView({behavior:'smooth',block:'center'});return;}
+ const d=document.createElement('div');d.className='ofr-pop';d.innerHTML=`<div class="ofr-c"><span class="ofr-ic">${SVG(CAM)}</span><h3>Este video ya fue tomado</h3><p class="ofr-t">Otra persona aceptó primero. Te avisaremos en la próxima oferta.</p><div class="ofr-b" style="margin-top:16px"><button type="button" id="ofr-x">Cerrar</button></div></div>`;document.body.appendChild(d);d.querySelector('#ofr-x').onclick=()=>d.remove();}
 return {init,load,show};
 })();
