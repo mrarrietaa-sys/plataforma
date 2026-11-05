@@ -79,17 +79,17 @@ async function edit(src){
  const v=document.createElement('video');v.src=URL.createObjectURL(src);v.playsInline=true;v.preload='auto';await once(v,'loadedmetadata');
  if(!isFinite(v.duration)){v.currentTime=1e9;await once(v,'durationchange').catch(()=>{});v.currentTime=0;await once(v,'seeked')}
  const DUR=Math.min(60,v.duration||1);
- const W=1080,H=1920,cv=document.createElement('canvas');cv.width=W;cv.height=H;const cx=cv.getContext('2d');
+ const W=1080,H=1920,cv=document.createElement('canvas');cv.width=W;cv.height=H;const cx=cv.getContext('2d');cx.imageSmoothingEnabled=true;cx.imageSmoothingQuality='high';
  /* luz automática: mide la luminosidad media y ajusta brillo */
  await new Promise(r=>{v.currentTime=Math.min(1,DUR/3);v.onseeked=r});const sm=document.createElement('canvas');sm.width=48;sm.height=27;const sc=sm.getContext('2d',{willReadFrequently:true});sc.drawImage(v,0,0,48,27);
  let L=0;const d=sc.getImageData(0,0,48,27).data;for(let i=0;i<d.length;i+=4)L+=.2126*d[i]+.7152*d[i+1]+.0722*d[i+2];L/=d.length/4;
- const BR=Math.max(1,Math.min(1.45,118/Math.max(30,L)));const FIL=`brightness(${BR.toFixed(2)}) contrast(1.08) saturate(1.12)`;
+ const BR=L<70?Math.max(1,Math.min(1.12,90/Math.max(30,L))):1;const FIL=BR>1.01?`brightness(${BR.toFixed(2)})`:'none'; /* v577: imagen natural, sin filtros de belleza */
  v.currentTime=0;await once(v,'seeked');
  const ac=new (window.AudioContext||window.webkitAudioContext)();const sn=ac.createMediaElementSource(v);const hp=ac.createBiquadFilter();hp.type='highpass';hp.frequency.value=85;
  const comp=ac.createDynamicsCompressor();comp.threshold.value=-24;comp.ratio.value=3.5;const g=ac.createGain();g.gain.value=1.35;const dst=ac.createMediaStreamDestination();sn.connect(hp);hp.connect(comp);comp.connect(g);g.connect(dst);
  const out=cv.captureStream(30);dst.stream.getAudioTracks().forEach(t=>out.addTrack(t));
  const mt=['video/mp4;codecs=avc1.640028,mp4a.40.2','video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4;codecs=avc1,mp4a.40.2','video/mp4;codecs=avc1','video/mp4','video/webm;codecs=vp9,opus','video/webm'].find(t=>MediaRecorder.isTypeSupported(t))||'';
- const R=new MediaRecorder(out,mt?{mimeType:mt,videoBitsPerSecond:4000000,audioBitsPerSecond:128000}:{});const ch=[];R.ondataavailable=e=>e.data.size&&ch.push(e.data);
+ const R=new MediaRecorder(out,mt?{mimeType:mt,videoBitsPerSecond:10000000,audioBitsPerSecond:128000}:{});const ch=[];R.ondataavailable=e=>e.data.size&&ch.push(e.data);
  const fcv=document.createElement('canvas');fcv.width=270;fcv.height=480;const fc=fcv.getContext('2d');let lastFD=0,chinY=null;
  const CH=chunksOf(CAP),IN=2,OUT=2.6,KICK=est?'TESTIMONIO':'TIP DE INGLÉS',WHO=CFG.name||'',ROLE=est?'Estudiante de mrarrieta.com':'Profe en mrarrieta.com';
  const card=(t,isOut)=>{cx.fillStyle='#fff';cx.fillRect(0,0,W,H);const k=ease(t/0.7);
@@ -105,7 +105,7 @@ async function edit(src){
   const band=(col,off)=>{cx.fillStyle=col;cx.beginPath();if(cover){const R=e*(W+S+off)-off;cx.moveTo(-S,0);cx.lineTo(R+S,0);cx.lineTo(R,H);cx.lineTo(-S,H)}else{const L=e*(W+S+off)-S;cx.moveTo(L+S,0);cx.lineTo(W+S,0);cx.lineTo(W+S,H);cx.lineTo(L,H)}cx.closePath();cx.fill()};
   if(cover){band(RED,0);band(NAVY,170)}else{band(RED,-170);band(NAVY,0)}cx.restore()};
  const frame=(vt)=>{const vw=v.videoWidth,vh=v.videoHeight,tr=W/H;let sw=vw,sh=vh,sx=0,sy=0;if(vw/vh>tr){sw=vh*tr;sx=(vw-sw)/2}else{sh=vw/tr;sy=(vh-sh)*0.35}
-  const k=ci(vt);if(k!==zIdx){zIdx=k;zPrev=zCur;zCur=k%2?1.13:1;zT=vt}const zz=zPrev+(zCur-zPrev)*ease((vt-zT)/.35);if(zz>1.001){const nw=sw/zz,nh=sh/zz;sx+=(sw-nw)/2;sy+=(sh-nh)*0.38;sw=nw;sh=nh}
+  const k=ci(vt);if(k!==zIdx){zIdx=k;zPrev=zCur;zCur=k%2?1.06:1;zT=vt}const zz=zPrev+(zCur-zPrev)*ease((vt-zT)/.35);if(zz>1.001){const nw=sw/zz,nh=sh/zz;sx+=(sw-nw)/2;sy+=(sh-nh)*0.38;sw=nw;sh=nh}
   cx.filter=FIL;cx.drawImage(v,sx,sy,sw,sh,0,0,W,H);cx.filter='none';
   if(fdet&&performance.now()-lastFD>400){lastFD=performance.now();try{fc.drawImage(cv,0,0,270,480);const r=fdet.detect(fcv);const f=r.detections&&r.detections[0];if(f){const bb=f.boundingBox;const chin=(bb.originY+bb.height*1.12)*4;chinY=chinY==null?chin:chinY*.6+chin*.4}}catch(e){}}
   let gr=cx.createLinearGradient(0,0,0,560);gr.addColorStop(0,'rgba(6,16,38,.62)');gr.addColorStop(1,'rgba(6,16,38,0)');cx.fillStyle=gr;cx.fillRect(0,0,W,560);
