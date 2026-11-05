@@ -2,11 +2,11 @@
 <html lang="es"><head><link rel="icon" type="image/png" href="favicon.png"><script>/* v544 · la misma pantalla del portátil, escalada a pantallas grandes */(function(){var d=document.documentElement;function f(){var w=innerWidth,h=innerHeight,z=Math.min(w/1536,h/790);z=(w>=1600&&z>1.04)?Math.min(z,2.4):1;z=Math.round(z*100)/100;if(d.style.zoom!==String(z)){d.style.zoom=z===1?"":z;d.style.setProperty("--z",z);}}f();addEventListener("resize",function(){d.style.zoom="";f();});})();</script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>Clase en vivo · mrarrieta.com</title>
 <script src="https://unpkg.com/@daily-co/daily-js@0.92.2/dist/daily.js"></script>
-<script src="clase-topics.js?v=571"></script>
-<script src="config.js?v=571"></script>
-<script src="goals.js?v=571"></script>
-<script src="goalsdata.js?v=571"></script>
-<script src="missions.js?v=571"></script><script src="ageimg.js?v=571"></script>
+<script src="clase-topics.js?v=572"></script>
+<script src="config.js?v=572"></script>
+<script src="goals.js?v=572"></script>
+<script src="goalsdata.js?v=572"></script>
+<script src="missions.js?v=572"></script><script src="ageimg.js?v=572"></script>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--n:#0B2A5B;--n2:#1e4a8f;--r:#E3242B;--y:#FFC21A;--g:#16a34a;--bd:#e3e9f3;--mu:#5b6577;--bg:#eef2f8}
@@ -183,6 +183,17 @@ body.ag-teens .vset{background:linear-gradient(135deg,#13275a,#0b1a3e);border:1p
 body.ag-teens .agsel a{color:#e8eefc;border-color:#1e3570}body.ag-teens .agsel a.on{background:#22e58a;color:#06210f;border-color:#22e58a}
 body.ag-teens #pzc{border-color:#1e3570}body.ag-teens .pzh{color:#e8eefc}
 
+.camg{position:fixed;inset:0;z-index:9999;background:rgba(11,42,91,.6);display:flex;align-items:center;justify-content:center;padding:16px}
+.camg-c{background:#fff;border-radius:22px;max-width:760px;width:100%;padding:22px;display:grid;grid-template-columns:280px 1fr;gap:22px;box-shadow:0 20px 50px rgba(11,42,91,.3);text-align:left;color:#0B2A5B}
+.camg-v{position:relative;border-radius:16px;overflow:hidden;background:#0B2A5B;aspect-ratio:3/4}.camg-v video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+.camg-l{position:absolute;left:10px;top:10px;background:rgba(0,0,0,.55);color:#fff;font:700 12px Inter,sans-serif;padding:5px 10px;border-radius:99px}.camg-l:before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:#22c55e;margin-right:6px}.camg-l.off:before{background:#E3242B}
+.camg h3{font:800 21px Poppins,sans-serif;margin:2px 0 4px}.camg-s{font:500 14px Inter,sans-serif;color:#64748b;margin:0 0 10px}
+.camg-i{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid #eef2f8}.camg-i span{flex:none;width:38px;height:38px;border-radius:11px;background:#0B2A5B;color:#fff;display:grid;place-items:center}.camg-i svg{width:20px;height:20px}
+.camg-i b{display:block;font:800 15px Poppins,sans-serif}.camg-i small{display:block;font:500 13.5px/1.4 Inter,sans-serif;color:#475569;margin-top:2px}
+.camg-e{margin:10px 0 0;background:#FEF2F2;border:1px solid #fecaca;color:#991b1b;border-radius:12px;padding:10px 12px;font:600 13.5px/1.4 Inter,sans-serif}.camg-e button{background:none;border:0;color:#E3242B;font-weight:800;text-decoration:underline;cursor:pointer;padding:0}
+.camg-go{margin-top:14px;width:100%;background:#E3242B;color:#fff;border:0;border-radius:14px;padding:14px;font:800 16px Poppins,sans-serif;display:flex;gap:8px;justify-content:center;align-items:center;cursor:pointer}.camg-go svg{width:20px;height:20px}.camg-go:disabled{background:#cbd5e1;cursor:not-allowed}
+@media(max-width:700px){.camg-c{grid-template-columns:1fr;padding:16px;gap:12px;max-height:94vh;overflow:auto}.camg-v{aspect-ratio:16/10}}
+.camw{position:fixed;left:50%;top:14px;transform:translateX(-50%);z-index:9998;background:#E3242B;color:#fff;border-radius:14px;padding:10px 16px;box-shadow:0 10px 30px rgba(0,0,0,.25);text-align:center;font-family:Inter,sans-serif}.camw b{display:block;font:800 15px Poppins,sans-serif}.camw span{font-size:13px}
 </style></head><body>
 <canvas id="cf"></canvas><div class="cheer" id="cheer"></div>
 <header><img src="mra-brand.png" alt="mrarrieta.com" onerror="this.style.display='none'"><div style="flex:1"><h1>Clase en vivo · HABLANDO</h1><small id="hsub">mrarrieta.com</small></div><a id="hback" class="hback" hidden>← Mi portal</a></header>
@@ -355,7 +366,8 @@ function videoUI(){const vb=$('#vbox');
  if(!st.vurl){if(DEMO&&rol==='profe'){vb.innerHTML=`<div class="vset"><div class="vt">${I('book')} Modo práctica</div><p style="margin:0;opacity:.9">Recorre la clase paso a paso para prepararte. En una clase real, aquí verás el video del estudiante.</p></div>`;return;}if(rol!=='profe'||PLATFORM){vb.innerHTML='';return;}
   vb.innerHTML=`<div class="vset"><div>${I('phone')} Código de sala para el estudiante: <b>${room}</b></div><input id="v-url" value="https://mrarrieta.daily.co/prueba"><button id="v-go">Activar video de la clase</button><small style="opacity:.8">En la versión real esto es automático: no hay códigos ni enlaces.</small></div>`;
   $('#v-go').onclick=()=>{const v=$('#v-url').value.trim().replace(/\/+$/,'');if(!/^https:\/\/[a-z0-9-]+\.daily\.co\/[A-Za-z0-9_-]+$/.test(v))return alert('El enlace debe verse así: https://mrarrieta.daily.co/prueba');send({vurl:v});};return;}
- vb.innerHTML=`<div class="vc"><video id="vr" autoplay playsinline></video><div class="vlab" id="vlab">Conectando el video…</div><span class="vname" id="vname"></span><video id="vl" autoplay playsinline muted></video><audio id="ar" autoplay></audio><div class="vctl"><button id="vmic" aria-label="Micrófono">${I('mic')}</button><button id="vcam" aria-label="Cámara">${I('cam')}</button>${rol==='profe'?`<button id="vout" aria-label="Salir del video">${I('out')}</button>`:''}</div><span class="vnet" id="vnet" hidden></span><button class="vsnd" id="vsnd" hidden>${I('speaker')} Toca para activar el sonido</button></div>`;
+ if(PLATFORM&&rol==='profe'&&!CAMOK){camGate();return;} // v572: el profe entra solo con la cámara encendida
+ vb.innerHTML=`<div class="vc"><video id="vr" autoplay playsinline></video><div class="vlab" id="vlab">Conectando el video…</div><span class="vname" id="vname"></span><video id="vl" autoplay playsinline muted></video><audio id="ar" autoplay></audio><div class="vctl"><button id="vmic" aria-label="Micrófono">${I('mic')}</button>${rol==='profe'?'':`<button id="vcam" aria-label="Cámara">${I('cam')}</button>`}${rol==='profe'?`<button id="vout" aria-label="Salir del video">${I('out')}</button>`:''}</div><span class="vnet" id="vnet" hidden></span><button class="vsnd" id="vsnd" hidden>${I('speaker')} Toca para activar el sonido</button></div>`;
  $('#vsnd').onclick=()=>{const a=$('#ar');if(a)a.play().catch(()=>{});$('#vsnd').hidden=true;};
  const D=window.Daily||window.DailyIframe;if(!D){$('#vlab').textContent='No se pudo cargar el video. Recarga la página.';return;}
  try{CO=D.createCallObject();}catch(e){$('#vlab').textContent='No se pudo iniciar el video.';return;}
@@ -365,10 +377,30 @@ function videoUI(){const vb=$('#vbox');
  CO.on('app-message',e=>onAM(e&&e.data));
  CO.on('camera-error',()=>{$('#vlab').textContent='Permite el uso de la cámara y el micrófono en el navegador.';});
  CO.on('error',()=>{$('#vlab').textContent='Se perdió la conexión del video. Recarga la página.';});
- $('#vmic').onclick=()=>{autoMuted=false;CO.setLocalAudio(!CO.localAudio());setTimeout(vUpd,200);};$('#vcam').onclick=()=>{CO.setLocalVideo(!CO.localVideo());setTimeout(vUpd,200);};
+ $('#vmic').onclick=()=>{autoMuted=false;CO.setLocalAudio(!CO.localAudio());setTimeout(vUpd,200);};const vcb=$('#vcam');if(vcb)vcb.onclick=()=>{CO.setLocalVideo(!CO.localVideo());setTimeout(vUpd,200);};
  const vo=$('#vout');if(vo)vo.onclick=()=>{if(!confirm('¿Salir del video?'))return;CO.leave();COOK=false;$('#vlab').textContent='Saliste del video. Recarga la página para volver a entrar.';};
  CO.on('network-quality-change',e=>{if(mySide==='t')return;const q=e&&e.threshold||'good';if(q!==st.net){st.net=q;if(mySide==='s')push();netUI();}});
- CO.join(Object.assign({url:st.vurl,startVideoOff:false,startAudioOff:false},VTOKEN?{token:VTOKEN}:{})).then(()=>{CO.setLocalAudio(true);try{CO.updateSendSettings({video:'bandwidth-optimized'});}catch(e){}vUpd();}).catch(()=>{$('#vlab').textContent='No se pudo entrar al video. Revisa el enlace de la sala.';});}
+ CO.join(Object.assign({url:st.vurl,startVideoOff:false,startAudioOff:false},VTOKEN?{token:VTOKEN}:{})).then(()=>{CO.setLocalAudio(true);if(PLATFORM&&rol==='profe')camWatch();try{CO.updateSendSettings({video:'bandwidth-optimized'});}catch(e){}vUpd();}).catch(()=>{$('#vlab').textContent='No se pudo entrar al video. Revisa el enlace de la sala.';});}
+// ---------- v572 · cámara obligatoria para el profe ----------
+let CAMOK=false,CAMOFF=0,CAMSENT=false,CAMIV=null;
+function camGate(){if(document.querySelector('.camg'))return;const SV=p=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+ const CAM='<path d="m22 8-6 4 6 4V8z"/><rect x="2" y="6" width="14" height="12" rx="2"/>';
+ const m=document.createElement('div');m.className='camg';m.innerHTML=`<div class="camg-c"><div class="camg-v"><video id="camg-vid" autoplay playsinline muted></video><span class="camg-l" id="camg-l">Activando tu cámara…</span></div>
+ <div><h3>Antes de entrar a tu clase</h3><p class="camg-s">${SNAME?'Clase con '+esc(SNAME):'Tu clase'}${INFO&&INFO.time?' · '+esc(INFO.time):''}</p>
+ <div class="camg-i"><span>${SV(CAM)}</span><div><b>1. Enciende tu cámara</b><small>Sin cámara no podrás entrar a la clase, y debe quedar encendida toda la clase.</small></div></div>
+ <div class="camg-i"><span>${SV('<path d="M20.4 6.6 16 4l-4 2-4-2-4.4 2.6L5 11l2-.6V20h10v-9.6l2 .6z"/>')}</span><div><b>2. Usa ropa adecuada</b><small>Hombres: camisa o suéter. Mujeres: blusa decente, que no sea escotada.</small></div></div>
+ <div class="camg-i"><span>${SV('<path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="m22 9-6 6M16 9l6 6"/>')}</span><div><b>3. Ubícate en un lugar silencioso</b><small>Sin ruido, música ni televisión de fondo.</small></div></div>
+ <p class="camg-e" id="camg-e" hidden></p><button class="camg-go" id="camg-go" disabled>${SV(CAM)} Entendido, entrar a la clase</button></div></div>`;
+ document.body.appendChild(m);let S=null;const go=m.querySelector('#camg-go'),lab=m.querySelector('#camg-l'),er=m.querySelector('#camg-e');
+ const fail=(t)=>{lab.textContent='Cámara apagada';lab.classList.add('off');er.hidden=false;er.innerHTML=t+' <button type="button" id="camg-r">Intentar de nuevo</button>';go.disabled=true;const rb=m.querySelector('#camg-r');if(rb)rb.onclick=start;};
+ const start=()=>{er.hidden=true;lab.textContent='Activando tu cámara…';lab.classList.remove('off');if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)return fail('Este navegador no permite usar la cámara. Usa Chrome o Edge.');
+  navigator.mediaDevices.getUserMedia({video:true}).then(st_=>{S=st_;const v=m.querySelector('#camg-vid');v.srcObject=S;lab.textContent='Cámara encendida';go.disabled=false;}).catch(e=>fail(e&&e.name==='NotAllowedError'?'Permite el uso de la cámara en tu navegador (ícono del candado, junto a la dirección).':'No encontramos tu cámara. Conéctala y vuelve a intentar.'));};
+ go.onclick=()=>{if(S)S.getTracks().forEach(t=>t.stop());m.remove();CAMOK=true;curV=null;videoUI();};start();}
+function camWatch(){clearInterval(CAMIV);CAMIV=setInterval(()=>{if(!CO||!COOK)return;let on=false;try{on=!!CO.localVideo();}catch(e){}
+ if(on){CAMOFF=0;camWarn(false);return;}
+ try{CO.setLocalVideo(true);}catch(e){} camWarn(true);
+ if(!CAMOFF)CAMOFF=Date.now();else if(!CAMSENT&&Date.now()-CAMOFF>5*60000){CAMSENT=true;tcall('tCamOff',{classId:CID,student:SNAME||''});}},10000);}
+function camWarn(v){let w=document.querySelector('.camw');if(!v){if(w)w.remove();return;}if(w)return;w=document.createElement('div');w.className='camw';w.innerHTML='<b>Tu cámara está apagada</b><span>Enciéndela: la clase debe darse con la cámara encendida.</span>';document.body.appendChild(w);}
 // ---------- modales del profe ----------
 function modal(html){const m=document.createElement('div');m.className='mod';m.innerHTML=`<div><button class="mx" aria-label="Cerrar">✕</button>${html}</div>`;document.body.appendChild(m);m.addEventListener('click',e=>{if(e.target===m||e.target.closest('.mx'))m.remove();});return m;}
 function topicModal(sel){sel=+(sel||st.mod||1);const m=modal(`<h3>Cambiar tema</h3><p class="stt" style="margin:0">La clase cambia en las dos pantallas. El reloj sigue corriendo.</p><div class="mtabs">${MODS.map(x=>`<button data-m="${x}" class="${x===sel?'on':''}">Módulo ${x} · ${LEVELS[x]}</button>`).join('')}</div><div class="tlist">${topicsOf(sel).map((t,n)=>{n++;const cur=sel===st.mod&&n===st.topic;return `<button data-t="${n}" class="${cur?'cur':''}"><b>${n}</b><span>${esc(t[0])}<br><small class="stt">${esc(t[1])}</small></span>${sel===CHOSEN_M&&n===CHOSEN?'<em class="c">Elegido por '+esc(SNAME)+'</em>':''}${SUGGEST&&sel===1&&n===SUGGEST.n?'<em class="s">Sugerido</em>':''}</button>`;}).join('')}</div>`);
