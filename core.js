@@ -870,3 +870,26 @@
     allParts, partById, trackAudio, audioUI, floatStop, recordScore: recordScoreW, recordScoreAsr: recordScoreAsrW, listenAsr: listenAsrW, letterScorer, voiceResult, floatBubble, setBubbleHidden, prevPart, nextPart, partStars, overallPct, imgURL, photo, play, playSeq, loadAudio, stop, sfx, praise, encourage, ageGroup, brand, fbf, get canSR() { return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && (window.AudioContext || window.webkitAudioContext)); }, /* v516: basta con micrófono */ azOn: () => AZV.can(), IOS, MOBILE, listen: listenW, srSession: srSessionW, recordVoice: recordVoiceW,
     norm, words, lev, speechScore, audBusy, freeJudge, readJudge, grammarFix, spellFix, loadDict, sheet, good, bad, toast, modal, xpFly, confetti, mascot, audioSrc, audioSrcs, audioEl };
 })();
+/* v567 · sombras reales: la sombra se queda en el piso y se achica cuando Mr. Arrieta sube (no se va con él) */
+(function () {
+  const SEL = 'img.mra,img.ar-hero-mra,img.ar-res-mra,img.ld-load-mra,img.bd-mra,img.db-hero-mra,img.tn-mra';
+  function place(img) {
+    const sh = img._gsh; if (!sh || !img.isConnected) { if (sh) sh.remove(); return; }
+    if (img.offsetParent === null) { sh.style.display = 'none'; return; }
+    const cs = getComputedStyle(img); if (!cs.animationName || cs.animationName === 'none') { sh.style.display = 'none'; return; }
+    sh.style.display = ''; const pad = parseFloat(cs.paddingBottom) || 0, w = img.offsetWidth * .58;
+    sh.style.width = w + 'px'; sh.style.left = (img.offsetLeft + (img.offsetWidth - w) / 2) + 'px'; sh.style.top = (img.offsetTop + img.offsetHeight - 16) + 'px';
+    sh.style.animationDuration = cs.animationDuration; sh.classList.toggle('gone', img.classList.contains('fly'));
+  }
+  function attach(img) {
+    if (img._gsh || img.closest('.itl')) return; const cs = getComputedStyle(img); if (!cs.animationName || cs.animationName === 'none') return;
+    const p = img.parentElement; if (!p) return; if (getComputedStyle(p).position === 'static') p.style.position = 'relative';
+    const sh = document.createElement('span'); sh.className = 'gsh'; img.after(sh); img._gsh = sh; img.classList.add('gsh-on');
+    img.style.animation = 'none'; void img.offsetWidth; img.style.animation = ''; // reinicia juntos: personaje y sombra van al mismo ritmo
+    place(img); img.addEventListener('load', () => place(img));
+  }
+  let L = [];
+  function scan() { document.querySelectorAll(SEL).forEach(i => { if (!i._gsh) { attach(i); if (i._gsh) L.push(i); } }); L = L.filter(i => { place(i); return i.isConnected; }); }
+  function start() { scan(); new MutationObserver(() => { clearTimeout(start.t); start.t = setTimeout(scan, 60); }).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] }); addEventListener('resize', () => L.forEach(place)); setInterval(() => L.forEach(place), 700); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+})();

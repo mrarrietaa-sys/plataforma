@@ -181,6 +181,7 @@
   async function reload() { const r = await api('tLogin'); if (r.ok) { D = r; shell(); } else if (r.err !== 'auth') toast(errText(r.err), true); return r.ok; }
 
   /* ---------- estructura principal ---------- */
+  const TI = (n) => `<svg class="tpi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${TIP[n] || ''}</svg>`; const TIP = {"tools": "<path d=\"M14.7 6.3a4 4 0 0 0 5 5L21 13l-8 8-3-3 8-8-1.3-1.3a4 4 0 0 1-5-5L13 2\"/><path d=\"m3 21 6-6\"/>", "video": "<path d=\"m22 8-6 4 6 4V8z\"/><rect x=\"2\" y=\"6\" width=\"14\" height=\"12\" rx=\"2\"/>", "home": "<path d=\"m3 10 9-7 9 7v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z\"/><path d=\"M9 22V12h6v10\"/>", "grad": "<path d=\"M22 10 12 5 2 10l10 5 10-5z\"/><path d=\"M6 12v5c3 3 9 3 12 0v-5\"/>", "cal": "<rect x=\"3\" y=\"4\" width=\"18\" height=\"18\" rx=\"2\"/><path d=\"M16 2v4M8 2v4M3 10h18\"/>", "pay": "<rect x=\"2\" y=\"6\" width=\"20\" height=\"12\" rx=\"2\"/><circle cx=\"12\" cy=\"12\" r=\"2.5\"/><path d=\"M6 12h.01M18 12h.01\"/>", "user": "<circle cx=\"12\" cy=\"8\" r=\"4\"/><path d=\"M4 21a8 8 0 0 1 16 0\"/>", "chat": "<path d=\"M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z\"/>", "file": "<path d=\"M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z\"/><path d=\"M14 2v6h6M16 13H8M16 17H8M10 9H8\"/>", "shield": "<path d=\"M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z\"/><path d=\"m9 12 2 2 4-4\"/>", "key": "<circle cx=\"7.5\" cy=\"15.5\" r=\"5.5\"/><path d=\"m21 2-9.6 9.6M15.5 7.5l3 3L22 7l-3-3\"/>", "compass": "<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"m16.2 7.8-2.1 6.3-6.3 2.1 2.1-6.3z\"/>"}; // v568: íconos de línea (sin emojis)
   const TABS = [['home', '🏠', 'Resumen'], ['avail', '🗓️', 'Mi disponibilidad'], ['classes', '🎓', 'Mis clases'], ['pay', '💰', 'Mis pagos']];
   function shell() {
     bell();
@@ -189,19 +190,19 @@
     app.innerHTML = `<div class="tp-head">
         <div class="tp-head-txt"><h1>¡Hola, ${esc(t.hello || String(t.name || '').split(' ')[0])}!</h1><p class="muted">${dLabel(today(), true)} · <b>${h12(nowHM())}</b> hora Colombia · Código <b>${esc(t.code)}</b></p></div>
         <div class="tp-dds">
-          <div class="tp-dd"><button class="tp-ddb" data-dd="tools">🛠 Herramientas <span class="car">▾</span></button><div class="tp-ddm">
-            <button class="tp-mi" id="tp-live"><i class="ib2">🎥</i><span><b>Clases en vivo</b><small>Practica las clases de los 4 módulos</small></span></button>
+          <div class="tp-dd"><button class="tp-ddb" data-dd="tools">${TI('tools')} Herramientas <span class="car">▾</span></button><div class="tp-ddm">
+            <button class="tp-mi" id="tp-live"><i class="ib2">${TI('video')}</i><span><b>Clases en vivo</b><small>Practica las clases de los 4 módulos</small></span></button>
 </div></div>
-          <div class="tp-dd"><button class="tp-ddb" data-dd="cls">${({ home: '🏠 Resumen', avail: '🗓️ Mi disponibilidad', classes: '🎓 Mis clases', pay: '💰 Mis pagos' })[tab] || '🎓 Mis clases'} <span class="car">▾</span></button><div class="tp-ddm">
-            <button class="tp-mi tp-tab" data-tab="home"><i class="ib6">🏠</i><span><b>Resumen</b><small>Próximas clases y estadísticas</small></span></button>
-            <button class="tp-mi tp-tab" data-tab="classes"><i class="ib">🎓</i><span><b>Mis clases</b><small>Próximas y pasadas · tablero</small></span></button>
-            <button class="tp-mi tp-tab" data-tab="avail"><i class="ib2">🗓️</i><span><b>Mi disponibilidad</b><small>Tus horarios para reservar</small></span></button>
-            <button class="tp-mi tp-tab" data-tab="pay"><i class="ib4">💰</i><span><b>Mis pagos</b><small>Detalle del mes</small></span></button></div></div>
-          <div class="tp-dd"><button class="tp-ddb" data-dd="me">👤 Mi cuenta <span class="car">▾</span><i class="tp-dot" id="tp-chatdot" hidden></i></button><div class="tp-ddm">
-            <button class="tp-mi" id="tp-chat"><i class="ib4">💬</i><span><b>Chat con estudiantes</b><small>Responde dudas y tareas</small></span></button>
-            <button class="tp-mi" id="tp-ct"><i class="ib">📄</i><span><b>Mi contrato</b><small>Leído y aceptado · descargar copia</small></span></button><button class="tp-mi" id="tp-pol"><i class="ib">📌</i><span><b>Política de clases</b><small>Puntualidad, pagos y compromisos</small></span></button>
-            <button class="tp-mi" id="tp-pinch"><i class="ib3">🔑</i><span><b>Cambiar mi clave</b><small>Tu clave de acceso</small></span></button>
-            <button class="tp-mi" id="tp-tour"><i class="ib5">🧭</i><span><b>Ver el tour</b><small>Cómo funciona tu portal</small></span></button></div></div>
+          <div class="tp-dd"><button class="tp-ddb" data-dd="cls">${({ home: TI('home') + ' Resumen', avail: TI('cal') + ' Mi disponibilidad', classes: TI('grad') + ' Mis clases', pay: TI('pay') + ' Mis pagos' })[tab] || TI('grad') + ' Mis clases'} <span class="car">▾</span></button><div class="tp-ddm">
+            <button class="tp-mi tp-tab" data-tab="home"><i class="ib6">${TI('home')}</i><span><b>Resumen</b><small>Próximas clases y estadísticas</small></span></button>
+            <button class="tp-mi tp-tab" data-tab="classes"><i class="ib">${TI('grad')}</i><span><b>Mis clases</b><small>Próximas y pasadas · tablero</small></span></button>
+            <button class="tp-mi tp-tab" data-tab="avail"><i class="ib2">${TI('cal')}</i><span><b>Mi disponibilidad</b><small>Tus horarios para reservar</small></span></button>
+            <button class="tp-mi tp-tab" data-tab="pay"><i class="ib4">${TI('pay')}</i><span><b>Mis pagos</b><small>Detalle del mes</small></span></button></div></div>
+          <div class="tp-dd"><button class="tp-ddb" data-dd="me">${TI('user')} Mi cuenta <span class="car">▾</span><i class="tp-dot" id="tp-chatdot" hidden></i></button><div class="tp-ddm">
+            <button class="tp-mi" id="tp-chat"><i class="ib4">${TI('chat')}</i><span><b>Chat con estudiantes</b><small>Responde dudas y tareas</small></span></button>
+            <button class="tp-mi" id="tp-ct"><i class="ib">${TI('file')}</i><span><b>Mi contrato</b><small>Leído y aceptado · descargar copia</small></span></button><button class="tp-mi" id="tp-pol"><i class="ib">${TI('shield')}</i><span><b>Política de clases</b><small>Puntualidad, pagos y compromisos</small></span></button>
+            <button class="tp-mi" id="tp-pinch"><i class="ib3">${TI('key')}</i><span><b>Cambiar mi clave</b><small>Tu clave de acceso</small></span></button>
+            <button class="tp-mi" id="tp-tour"><i class="ib5">${TI('compass')}</i><span><b>Ver el tour</b><small>Cómo funciona tu portal</small></span></button></div></div>
         </div>
       </div>
       <section id="tp-body"></section>`;

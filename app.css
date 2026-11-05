@@ -8431,3 +8431,24 @@ img.ld-hero-mra{background:none!important}.ld-hero-mra+.rk-sh{height:16px;backgr
 @media (min-width:900px){.badges:has(.pg-bd){grid-template-columns:repeat(8,minmax(0,1fr))!important}}
 /* v566 · celular: primero los profes disponibles y después «¿Ningún horario te sirve?» */
 @media (max-width:899px){.vf-left{display:contents}.vf>.vf-left>*{order:1}.vf>.vf-right{order:2}.vf>.vf-left>.vf-none{order:3}}
+/* v567 · sombras reales */
+img.gsh-on{background:none!important}
+.gsh{position:absolute;height:14px;border-radius:50%;pointer-events:none;z-index:0;background:radial-gradient(closest-side,rgba(11,42,91,.30),rgba(11,42,91,.12) 55%,transparent);animation:gshB 3s ease-in-out infinite;transition:opacity .35s}
+@keyframes gshB{0%,100%{transform:scaleX(1);opacity:1}50%{transform:scaleX(.78);opacity:.55}}
+.gsh.gone{opacity:0!important;animation:none}
+/* escenas de transición que vuelan: sin sombra en el piso */
+.itl-up .itl-actor::after,.itl-fly .itl-actor::after,.itl-balloon .itl-actor::after,.itl-surf .itl-actor::after{display:none}
+@media (prefers-reduced-motion:reduce){.gsh{animation:none}}
+/* v568 · portal profe: íconos de línea en los menús */
+.tpi{width:18px;height:18px;flex:none;vertical-align:-3px}
+.tp-ddb .tpi{width:17px;height:17px;margin-right:4px}
+.tp-mi i,.tp-mi i.ib,.tp-mi i.ib2,.tp-mi i.ib3,.tp-mi i.ib4,.tp-mi i.ib5,.tp-mi i.ib6{background:#EEF4FC!important;color:#0B2A5B}
+.tp-mi i .tpi{width:18px;height:18px;vertical-align:0}
+.tp-mi.tp-tab.on{color:var(--k)}
+.gsh{height:16px}
+.tn-mra+.gsh{background:radial-gradient(closest-side,rgba(0,0,0,.55),rgba(0,0,0,.22) 55%,transparent)}
+.kd-mra+.gsh{background:radial-gradient(closest-side,rgba(11,42,91,.34),rgba(11,42,91,.14) 55%,transparent)}
+img.db-hero-mra.gsh-on,img.kd-mra.gsh-on,img.tn-mra.gsh-on{z-index:2}
+.db-hero-mra+.gsh,.kd-mra+.gsh,.tn-mra+.gsh{z-index:1}
+.kd-mra+.gsh{z-index:3}
+img.kd-mra{background:none!important}
