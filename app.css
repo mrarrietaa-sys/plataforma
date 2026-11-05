@@ -8532,3 +8532,39 @@ html.mst-on,html.mst-on body{overflow:hidden}
 .itl-balloon .itl-shd{animation-name:shdBal}
 @keyframes shdBal{0%,18%{opacity:0;transform:translateX(-50%) scale(.3)}35%{opacity:1;transform:translateX(-50%) scale(1)}50%{opacity:.9;transform:translateX(-50%) scale(.92)}68%{opacity:1;transform:translateX(-50%) scale(1)}80%{opacity:.4;transform:translateX(-50%) scale(.62)}92%,100%{opacity:0;transform:translateX(-50%) scale(.3)}}
 @media (prefers-reduced-motion:reduce){.itl-shd{display:none}}
+/* v575 · Administración → Videos: más angosto y campos más delgados */
+.ad-ofw{max-width:760px;margin:0 auto}.ad-ofw .card{margin-bottom:14px}.ad-ofw>p.muted{margin-top:4px!important}
+.ad-ofw .card{padding:18px 20px}
+.ad-ofw .inp{min-height:0;height:auto;padding:8px 12px;font-size:14.5px;border-radius:10px}
+.ad-ofw select.inp{height:40px;padding:0 12px}
+.ad-ofw textarea.inp{line-height:1.45}
+.ad-ofw .ad-l{margin:12px 0 5px}
+/* v575 · Pagos a profesores: ver detalle */
+.ad-pd-w{border-bottom:1px solid #e2e8f0;padding:0 0 8px}
+.ad-pd-b{background:none;border:0;color:#0B2A5B;font:700 13px Inter,sans-serif;cursor:pointer;padding:2px 0;text-decoration:underline;text-underline-offset:3px}
+.ad-pd{margin-top:8px;background:#F8FAFF;border:1px solid #e5ecf6;border-radius:12px;padding:10px 12px;overflow-x:auto}
+.ad-pd-t{width:100%;border-collapse:collapse;font:500 13.5px Inter,sans-serif;color:#0B2A5B}
+.ad-pd-t th{text-align:left;font:700 11.5px Inter,sans-serif;color:#64748b;text-transform:uppercase;letter-spacing:.04em;padding:6px 8px;border-bottom:1px solid #e2e8f0}
+.ad-pd-t td{padding:8px;border-bottom:1px solid #eef2f8;vertical-align:top}.ad-pd-t td small{display:block;color:#64748b;font-size:12px}
+.ad-pd-t .r{text-align:right;white-space:nowrap;font-weight:700}
+.ad-pd-st{display:inline-block;font:700 12px Inter,sans-serif;padding:3px 9px;border-radius:999px;background:#eef2f8;color:#475569}
+.ad-pd-st.ok{background:#E7F7EE;color:#15803d}.ad-pd-st.ns{background:#FFF7E0;color:#a16207}.ad-pd-st.bad{background:#FDECEC;color:#b91c1c}.ad-pd-st.vid{background:#E8EFFA;color:#1d4ed8}
+.ad-pd-s{margin-top:10px;display:grid;gap:4px;font:500 13.5px Inter,sans-serif;color:#334155;max-width:420px;margin-left:auto}
+.ad-pd-s>div{display:flex;justify-content:space-between;gap:12px}.ad-pd-s .tt{border-top:1px solid #dbe3ef;padding-top:6px;margin-top:2px;color:#0B2A5B;font-weight:800}
+/* v575 · Contratos: elegir a qué profes enviar */
+.ad-ctl{display:grid;gap:6px;max-height:340px;overflow:auto}
+.ad-ctl-r{display:flex;align-items:center;gap:12px;padding:9px 12px;border:1px solid #e5ecf6;border-radius:12px;background:#fff;cursor:pointer}
+.ad-ctl-r input{width:18px;height:18px;accent-color:#0B2A5B;flex:none}.ad-ctl-r b{display:block;font-size:14.5px;color:#0B2A5B}.ad-ctl-r small{color:#64748b;font-size:12px}
+.ad-ctl-r.off{opacity:.6;cursor:default;background:#F8FAFF}
+/* v575 · Íconos de Adultos y Niños: sin fondo de color, línea fina y efecto Trazo al abrir la página */
+.ld-pc2 .ic.a,.ld-pc2 .ic.k,.lp-eyi.a,.lp-eyi.k{background:none!important;box-shadow:none!important}
+.ld-pc2 .ic::after,.lp-eyi::after{display:none!important}
+.ld-pc2 .ic.a{color:#0B2A5B}.ld-pc2 .ic.k,.lp-eyi.k{color:#E3242B}.lp-eyi.a{color:#fff}
+.ld-pc2 .ic svg{width:34px!important;height:34px!important}
+@media(max-width:600px){.ld-pc2 .ic svg{width:28px!important;height:28px!important}}
+.lp-eyi{padding:2px!important}
+svg.trz *{stroke-dasharray:90;stroke-dashoffset:90;animation:trz 1.5s cubic-bezier(.45,.05,.3,1) .35s forwards}
+svg.trz [fill-opacity]{fill-opacity:0;animation:trz 1.5s cubic-bezier(.45,.05,.3,1) .35s forwards,trzf .6s ease 1.5s forwards}
+svg.trz [stroke="none"]{stroke-dasharray:none;opacity:0;animation:trzf2 .5s ease 1.6s forwards}
+@keyframes trz{to{stroke-dashoffset:0}}@keyframes trzf{to{fill-opacity:.22}}@keyframes trzf2{to{opacity:1}}
+@media (prefers-reduced-motion:reduce){svg.trz *{animation:none!important;stroke-dashoffset:0!important}svg.trz [fill-opacity]{fill-opacity:.22}svg.trz [stroke="none"]{opacity:1}}
