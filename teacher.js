@@ -537,7 +537,15 @@
   function bell() { if (bellOn || !window.MRBELL) { if (window.MRBELL && D) MRBELL.set(D.notifications || []); return; } bellOn = true;
     MRBELL.set(D.notifications || []);
     MRBELL.mount({ every: 15000, active: () => !!S, fetch: async () => { if (!S || !D) return null; const r = await api('notifs').catch(() => null); if (!r || !r.ok) return null; const had = new Set((D.notifications || []).map(n => n.id)); D.notifications = r.notifications; if ((r.notifications || []).some(n => !had.has(n.id))) popNew(); return r.notifications; },
-      markRead: (ids, all) => api('notifRead', all ? { all: true } : { ids }).catch(() => { }) }); }
+      markRead: (ids, all) => api('notifRead', all ? { all: true } : { ids }).catch(() => { }), go: (x) => { // v580: a dónde lleva cada aviso del profe
+        const t = x.type, ti = String(x.title || ''); const toTab = (k) => { tab = k; ss.set(TABKEY, tab); shell(); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+        if (t === 'contrato') { api('tContract').then((r) => { if (r && r.ok) { CT = r; contractModal(r); } }).catch(() => { }); return; }
+        if (t === 'pago') return toTab('pay');
+        if (t === 'oferta') { if (/Ganaste/i.test(ti)) return toTab('pay'); toTab('home'); setTimeout(() => window.MROFR && MROFR.show && MROFR.show(), 400); return; }
+        if (t === 'week' || /buscando horario/i.test(ti)) return toTab('avail');
+        if (t === 'vip' || t === 'club') return toTab('classes');
+        if (t === 'msg') return openChat();
+        toTab('home'); } }); }
   /* ---------- inicio ---------- */
   async function start() {
     S = ss.get(SKEY);

@@ -8568,3 +8568,21 @@ svg.trz [fill-opacity]{fill-opacity:0;animation:trz 1.5s cubic-bezier(.45,.05,.3
 svg.trz [stroke="none"]{stroke-dasharray:none;opacity:0;animation:trzf2 .5s ease 1.6s forwards}
 @keyframes trz{to{stroke-dashoffset:0}}@keyframes trzf{to{fill-opacity:.22}}@keyframes trzf2{to{opacity:1}}
 @media (prefers-reduced-motion:reduce){svg.trz *{animation:none!important;stroke-dashoffset:0!important}svg.trz [fill-opacity]{fill-opacity:.22}svg.trz [stroke="none"]{opacity:1}}
+/* v580 · Reserva por hora exacta: el estudiante escribe su hora y ve los profes */
+.vf-tp{display:flex;align-items:center;gap:8px;margin-top:6px}
+.vf-sel{position:relative;flex:1;display:block;border:1.5px solid #0B2A5B;border-radius:12px;background:#F8FAFF;text-align:center;padding:4px 6px 3px;cursor:pointer}
+.vf-sel select{appearance:none;-webkit-appearance:none;border:0;background:transparent;width:100%;text-align:center;text-align-last:center;font:800 21px var(--fh,Poppins),sans-serif;color:#0B2A5B;cursor:pointer;padding:0 14px 0 0;outline:none}
+.vf-sel::after{content:'▾';position:absolute;right:9px;top:38%;transform:translateY(-50%);font-size:12px;color:#94a3b8;pointer-events:none}
+.vf-sel small{display:block;font:700 9.5px Inter,sans-serif;color:#64748b;letter-spacing:.06em}
+.vf-col{font:800 21px var(--fh,Poppins),sans-serif;color:#0B2A5B}
+.vf-ap{display:grid;gap:5px}.vf-ap button{border:1.5px solid #dbe3ef;background:#fff;border-radius:10px;padding:4px 10px;font:700 12px var(--fh,Poppins),sans-serif;color:#0B2A5B;cursor:pointer}.vf-ap button.on{background:#0B2A5B;border-color:#0B2A5B;color:#fff}
+.vf-qk{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}.vf-qk button{border:1px solid #dbe3ef;background:#fff;border-radius:999px;padding:3px 11px;font:700 12px Inter,sans-serif;color:#475569;cursor:pointer}.vf-qk button:hover{border-color:#0B2A5B;color:#0B2A5B}
+.vf-gow{text-align:center;margin-top:12px}.vf-go2{display:inline-block;background:linear-gradient(135deg,#0B2A5B,#1d4c9c);color:#fff;border:0;border-radius:12px;padding:9px 26px;font:800 14px var(--fh,Poppins),sans-serif;cursor:pointer;box-shadow:0 6px 14px rgba(11,42,91,.2)}
+.vf-tl{display:grid;gap:8px}
+.vf-tc2{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;padding:6px 10px;cursor:pointer;font:inherit;color:#0B2A5B}
+.vf-tc2:hover{border-color:#0B2A5B}.vf-tc2.best{border-color:#16A34A}
+.vf-tc2 .vf-av{width:36px;height:36px}.vf-tc2 .vf-ti{flex:1;min-width:0}.vf-tc2 .vf-ti b{display:block;font:800 14px var(--fh,Poppins),sans-serif}.vf-tc2 .vf-ti small{font:600 12px Inter,sans-serif;color:#475569}
+.vf-tc2 .vf-h{font:800 13px var(--fh,Poppins),sans-serif;padding:5px 9px;border-radius:10px;background:#E7F7EE;color:#15803d;white-space:nowrap}
+.vf-tc2.n .vf-h{background:#FFF7E0;color:#a16207}
+.vf-nr{display:flex;align-items:center;gap:6px;font:800 13.5px var(--fh,Poppins),sans-serif;color:#b45309}.vf-nr .mri{width:16px;height:16px}
+.vf-right .vf-ok{display:flex;align-items:center;gap:6px}

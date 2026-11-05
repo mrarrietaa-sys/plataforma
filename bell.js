@@ -30,7 +30,8 @@
     panel.querySelectorAll('.mr-bp-i').forEach((el) => el.onclick = () => { const x = items.find((i) => String(i.id) === el.dataset.id); if (!x) return;
       if (!x.read) { x.read = true; paint(); try { O.markRead && O.markRead([x.id], false); } catch (e) { } }
       if (x.type === 'tema' && window.MRAP && x.data && x.data.m) { const md = MRAP.mod(+x.data.m); if (md) { close(); location.href = md.url; return; } }
-      if (x.type === 'chat') { const room = x.data && x.data.room; close(); if (window.MRCHATOPEN) window.MRCHATOPEN(room); else if (window.MRLIVE && MRLIVE.openStudent) MRLIVE.openStudent({ room }); } });
+      if (x.type === 'chat') { const room = x.data && x.data.room; close(); if (window.MRCHATOPEN) window.MRCHATOPEN(room); else if (window.MRLIVE && MRLIVE.openStudent) MRLIVE.openStudent({ room }); return; }
+      try { if (O && O.go) { close(); O.go(x); } } catch (e) { } }); // v580: al tocar la notificación, te lleva a donde está lo que dice
   }
   function toggle() { panel ? close() : open(); }
   function open() {
@@ -54,7 +55,12 @@
   const go = () => {
     const A = window.MRAC; if (!A || !A.code || !A.code()) { if (++tries < 20) setTimeout(go, 1500); return; }
     MRBELL.set(A.notifications ? A.notifications() : []);
-    MRBELL.mount({ every: 15000, active: () => !!A.code(), fetch: async () => { const r = await A.call('notifs', { code: A.code() }).catch(() => null); return r && r.ok ? (r.notifications || []) : null; }, markRead: (ids, all) => A.markRead && A.markRead(ids, all) });
+    MRBELL.mount({ every: 15000, active: () => !!A.code(), fetch: async () => { const r = await A.call('notifs', { code: A.code() }).catch(() => null); return r && r.ok ? (r.notifications || []) : null; }, markRead: (ids, all) => A.markRead && A.markRead(ids, all), go: (x) => { // v580: a dónde lleva cada aviso del estudiante
+      const t = x.type, ti = String(x.title || ''); let id = null;
+      if (t === 'vip') id = /espacio|adicional|Tienes \d|Esta semana|Pago confirmado/i.test(ti) ? 'book' : 'cls';
+      else if (t === 'club') id = 'cls'; else if (t === 'plan' || t === 'compra') id = 'me'; else if (t === 'tarea' || t === 'feedback') id = 'learn'; else if (t === 'mail') id = 'mail';
+      else if (t === 'oferta') id = /Ganaste/i.test(ti) ? 'cls' : 'oferta';
+      if (!id) return; if (window.MRSTGO) { window.MRSTGO(id); return; } try { sessionStorage.setItem('mra_go', id); } catch (e) { } location.href = 'index.html'; } });
   };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => setTimeout(go, 1200)); else setTimeout(go, 1200);
 })();

@@ -63,7 +63,9 @@
   // "Atrás": dentro del panel vuelve al Resumen (nunca saca a otra página por error)
   document.addEventListener('click', (e) => { const b = e.target.closest && e.target.closest('.tb-back'); if (!b || !key()) return; if (document.querySelector('.modal, .wa-wrap')) return; e.preventDefault(); e.stopImmediatePropagation(); if (TAB !== 'home') go('home'); else window.scrollTo(0, 0); }, true);
   async function boot() {
-    if (window.MRBELL) MRBELL.mount({ every: 15000, active: () => !!key(), fetch: async () => { const r = await api('aNotifs'); return r.ok ? r.rows : null; }, markRead: (ids, all) => api('notifRead', all ? { all: true } : { ids }) });
+    if (window.MRBELL) MRBELL.mount({ every: 15000, active: () => !!key(), fetch: async () => { const r = await api('aNotifs'); return r.ok ? r.rows : null; }, markRead: (ids, all) => api('notifRead', all ? { all: true } : { ids }), go: (x) => { // v580: a dónde lleva cada aviso de administración
+      const M2 = { camara: 'teachers', evaluacion: 'teachers', contrato: 'contracts', clave: 'students', datos: 'students', examen: 'students', mail: 'students', compra: 'buys', inscripcion: 'enroll', oferta: 'offers', opinion: 'reviews', reconocimiento: 'reviews', premio: 'prizes', reclamo: 'claims', referido: 'today', solicitud: 'today', clase: 'classes' };
+      const k = M2[x.type]; if (k) { go(k); window.scrollTo({ top: 0, behavior: 'smooth' }); } } });
     const out = $('#ad-out'); if (out) { out.classList.remove('hidden'); out.onclick = () => { try { sessionStorage.removeItem(KK); } catch (e) { } login(); }; }
     app.innerHTML = `<nav class="ad-tabs" id="tabs">${TABS.map(([k, i, n]) => `<button data-t="${k}"><span>${i}</span>${n}<i class="ad-badge" data-b="${k}"></i></button>`).join('')}</nav><div id="view" class="ad-view"><div class="ad-loading">⏳ Cargando…</div></div>`;
     $$('#tabs button').forEach(b => b.onclick = () => go(b.dataset.t));
@@ -210,7 +212,7 @@
   function ctSendAsk(ids, names, done) { // v571: enviar contrato (uno o varios)
     const m = modal(`<div class="center"><h2>¿Enviar el contrato?</h2><p class="muted">${names.slice(0, 8).map(esc).join(', ')}${names.length > 8 ? ' y ' + (names.length - 8) + ' más' : ''}.</p><p class="muted">Le llegará un aviso en su portal y un correo para que lo lea y lo acepte. Mientras no lo acepte, los estudiantes no podrán reservar clases con ${ids.length > 1 ? 'ellos' : 'este profe'}. Si ya lo había aceptado, deberá aceptarlo de nuevo.</p><div class="row" style="justify-content:center;margin-top:10px"><button class="btn w" id="cs-no">Cancelar</button><button class="btn k" id="cs-ok">Enviar contrato</button></div></div>`);
     $('#cs-no', m).onclick = () => m.remove();
-    $('#cs-ok', m).onclick = async () => { $('#cs-ok', m).disabled = true; const r = await api('aCtSend', { ids }); m.remove(); if (r && r.ok) { toast(r.sent ? `✅ Contrato enviado a ${r.sent} ${r.sent > 1 ? 'profes' : 'profe'}` : 'Ya habían aceptado su contrato'); done && done(); } else toast('No se pudo enviar. Inténtalo de nuevo.', true); }; }
+    $('#cs-ok', m).onclick = async () => { $('#cs-ok', m).disabled = true; const r = await MRAC.call('aCtSend', { key: key(), ids }, { timeout: 120000 }); m.remove(); if (r && r.ok) { toast(r.sent ? `✅ Contrato enviado a ${r.sent} ${r.sent > 1 ? 'profes' : 'profe'}` : 'Ya habían aceptado su contrato'); done && done(); } else { toast(r && r.err === 'network' ? 'La nube tardó en responder. Revisa la lista: el contrato pudo haberse enviado.' : 'No se pudo enviar' + (r && r.err ? ' (' + r.err + ')' : '') + '. Inténtalo de nuevo.', true); done && done(); } }; }
   function bulkBar(reload, cfg) { cfg = cfg || BK_ST;
     let b = $('#ad-bulk'); const ks = Object.keys(SEL);
     if (!ks.length) { if (b) b.remove(); return; }

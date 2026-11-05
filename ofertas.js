@@ -31,5 +31,7 @@ async function load(){if(!C||busy)return;busy=true;const r=await C.call(C.kind==
 function blocked(){if(document.querySelector('.ofr-pop,.mst'))return true;const W=innerWidth,H=innerHeight;return [...document.body.children].some(e=>{if(e.id==='topbar'||e.tagName==='SCRIPT')return false;const cs=getComputedStyle(e);if(cs.position!=='fixed'||cs.display==='none'||cs.visibility==='hidden'||+cs.opacity===0)return false;const b=e.getBoundingClientRect();return b.width>W*.6&&b.height>H*.6;});}
 function whenFree(fn,n){n=n||0;if(!blocked())return fn();if(n<150)setTimeout(()=>whenFree(fn,n+1),2000);}
 function init(cfg){C=cfg;load();}
-return {init,load};
+/* v580: abrir la oferta desde la notificación */
+async function show(){if(!C)return;const r=await C.call(C.kind==='est'?'sOffer':'tOffer',{}).catch(()=>null);if(!r||!r.ok)return;bar(r);const m=r.mine;if(m&&m.st==='taken')return studio(m);if(r.open)return pop(r.open);const el=document.querySelector(C.mount);if(el)el.scrollIntoView({behavior:'smooth',block:'center'});}
+return {init,load,show};
 })();
