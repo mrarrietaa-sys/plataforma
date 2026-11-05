@@ -396,16 +396,7 @@
     const byDate = {}; slots.forEach((s) => (byDate[s.date] = byDate[s.date] || []).push(s));
     el.innerHTML = `<div class="card tp-card tp-week"><div class="tp-card-h"><h2>📅 Mi disponibilidad</h2></div>
         <div id="tp-wg"></div><div style="text-align:center"><button class="tp-wsave2" id="tp-wsave">Guardar mi disponibilidad</button><p class="muted tp-small" style="margin:8px 0 0">La plataforma publica tus espacios de las próximas 4 semanas. Cada viernes te pediremos confirmarla.</p></div></div>
-      <div class="tp-cols1">
-      <div class="card tp-card">
-        <div class="tp-card-h"><h2>Mis espacios</h2><small class="muted">${slots.filter((s) => s.status === 'free').length} disponibles · ${slots.filter((s) => s.status === 'booked').length} reservados</small></div>
-        ${Object.keys(byDate).length ? Object.keys(byDate).sort().map((d) => `<div class="tp-day"><h3>${rel(d) ? `<span class="tp-rel">${rel(d)}</span> ` : ''}${dLabel(d, true)}</h3><ul>${byDate[d].map((s) => {
-          const c = s.status === 'booked' ? D.classes.find((x) => x.id === s.classId) : null;
-          return `<li class="tp-slot ${s.status}"><span class="tp-slot-t">${h12(s.time)} – ${h12(endHM(s.time, s.duration))}<small>50 min</small></span>
-            ${s.status === 'hidden' ? `<span class="tp-st hid">Oculto</span><button class="tp-del" data-del="${esc(s.id)}" title="Borrar espacio" aria-label="Borrar espacio de las ${esc(s.time)}">🗑</button>` : s.status === 'free' ? `<span class="tp-st free">Disponible</span><button class="tp-del" data-del="${esc(s.id)}" title="Borrar espacio" aria-label="Borrar espacio de las ${esc(s.time)}">🗑</button>`
-              : `<span class="tp-st booked">Reservado</span><span class="tp-slot-who">👤 ${c ? esc(studentName(c.students[0] || '')) : 'Estudiante'}</span>`}</li>`; }).join('')}</ul></div>`).join('')
-          : `<div class="tp-empty"><img src="mra-point.webp" alt="" width="110" height="110"><p>Aún no tienes espacios publicados. Agrega tus horarios con el formulario.</p></div>`}
-      </div></div>`;
+      `; // v587: «Mis espacios» quitado (estaba de más)
     const WG = window.MRWG ? MRWG.render($('#tp-wg', el), (D.teacher && D.teacher.weekly) || {}) : null;
     $('#tp-wsave', el).onclick = async () => { const b = $('#tp-wsave', el); b.disabled = true; b.textContent = 'Guardando…';
       const r = await api('tWeekly', { weekly: WG ? WG.get() : {} }); b.disabled = false; b.textContent = 'Guardar mi disponibilidad';
