@@ -8607,3 +8607,27 @@ svg.trz [stroke="none"]{stroke-dasharray:none;opacity:0;animation:trzf2 .5s ease
 .vf-tc2.n .vf-h{background:#E7F7EE!important;color:#15803d!important}
 .vf-nr{color:#15803d!important}
 @media(min-width:900px){.vf-tl{max-width:440px}.vf-right .vf-warn{max-width:520px}}
+/* v588 · Revisa tu reserva (resumen antes de confirmar) */
+.vb-cf-m .card,.vb-cf-m .mbox{max-width:440px}
+.vb-cf{text-align:left}.vb-cf h3{font:800 21px var(--fh,Poppins),sans-serif;color:#0B2A5B;margin:0 0 2px}.vb-cf-s{margin:0 0 12px;font:600 13.5px Inter,sans-serif;color:#64748b}
+.vb-cf-t{display:flex;align-items:center;gap:12px;border:1.5px solid #e2e8f0;border-radius:14px;padding:10px 12px;margin-bottom:8px}
+.vb-cf-av{width:48px;height:48px;border-radius:50%;overflow:hidden;flex:none;background:#0B2A5B;color:#fff;display:grid;place-items:center;font:800 15px var(--fh,Poppins),sans-serif}.vb-cf-av img{width:100%;height:100%;object-fit:cover}
+.vb-cf small{display:block;font:800 10.5px var(--fh,Poppins),sans-serif;letter-spacing:.1em;color:#94a3b8}
+.vb-cf-t b{display:block;font:800 16px var(--fh,Poppins),sans-serif;color:#0B2A5B}.vb-cf-t em{font-style:normal;font:700 13px Inter,sans-serif;color:#d97706}
+.vb-cf-r{border-bottom:1px solid #eef2f8;padding:9px 2px}.vb-cf-r b{display:block;font:800 15.5px var(--fh,Poppins),sans-serif;color:#0B2A5B}.vb-cf-r span{font:600 12.5px Inter,sans-serif;color:#64748b}
+.vb-cf-tp>small+b+small{letter-spacing:0;font:600 13px Inter,sans-serif;color:#64748b}
+.vb-cf-n{margin:10px 0 0;font:600 12.5px Inter,sans-serif;color:#15803d}
+.vb-cf-b{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.vb-cf-no{background:#fff;border:1.5px solid #dbe3ef;border-radius:12px;padding:10px 16px;font:700 14px var(--fh,Poppins),sans-serif;color:#475569;cursor:pointer}
+.vb-cf-ok{background:linear-gradient(135deg,#16A34A,#15803d);color:#fff;border:0;border-radius:12px;padding:10px 24px;font:800 14.5px var(--fh,Poppins),sans-serif;cursor:pointer;box-shadow:0 8px 18px rgba(22,163,74,.25)}.vb-cf-ok:disabled{opacity:.6}
+.vb-cf-t em i{font-style:normal;color:#94a3b8;font-weight:600}
+@media(max-width:560px){.vb-cf-av{width:52px;height:52px}}
+/* v589 · «Revisa tu reserva» compacta: cabe en la pantalla sin ocuparla toda */
+.vb-cf-m .card{max-width:420px!important;width:calc(100% - 40px)!important;padding:16px 16px 14px!important;max-height:calc(100dvh - 60px);overflow:auto}
+.vb-cf h3{font-size:18px}.vb-cf-s{font-size:12.5px;margin-bottom:10px}
+.vb-cf-t{padding:8px 10px;gap:10px}.vb-cf-av{width:44px!important;height:44px!important}.vb-cf-t b{font-size:15px}
+.vb-cf-r{padding:7px 2px}.vb-cf-r b{font-size:14.5px}
+.vb-cf .th-can{margin-top:4px}.vb-cf .th-can .th-p{font-size:13px}.vb-cf .th-can .th-x,.vb-cf .th-can .th-g{display:none}
+.vb-cf-n{font-size:12px;margin-top:8px}
+.vb-cf-b{margin-top:12px;gap:8px}.vb-cf-no{padding:9px 14px;font-size:13.5px}.vb-cf-ok{padding:9px 20px;font-size:14px}
+.vb-cf-b{flex-wrap:nowrap}.vb-cf-no,.vb-cf-ok{white-space:nowrap}.vb-cf-no{padding:9px 12px}.vb-cf-ok{padding:9px 16px}

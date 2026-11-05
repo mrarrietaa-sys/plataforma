@@ -1406,18 +1406,33 @@
           + (O.rec.length ? `<div class="vb-rec"><p>⭐ Te recomendamos reforzar<small>${O.rec.length > 1 ? 'Tus 2 temas con el resultado más bajo' : 'Tu tema con el resultado más bajo'} · Módulo ${MS}</small></p><div class="vb-topics">${O.rec.map(card).join('')}</div></div><p class="vb-sub">Todos los temas del Módulo ${MS}</p>` : '')
           + `<div class="vb-topics">${O.all.map(card).join('')}</div>`; })()}
         <input class="inp${TP === 'o' ? '' : ' hidden'}" id="vb-topic" maxlength="180" placeholder="Ej: entrevista de trabajo en inglés" value="${esc(OT)}">
-        <button class="btn k block lg vb-ok" id="vb-ok" ${S && TP != null ? '' : 'disabled'}>${S && TP == null ? '👆 Elige el tema de tu clase' : S ? `✅ Reservar · ${fmtD(S.date, { weekday: 'short', day: 'numeric', month: 'short' })} · ${fmtT(S.time)}` : 'Elige una hora'}</button>`;
+        <button class="btn k block lg vb-ok" id="vb-ok" ${S && TP != null ? '' : 'disabled'}>${S && TP == null ? '👆 Elige el tema de tu clase' : S ? 'Revisar mi reserva →' : 'Elige una hora'}</button>`;
       $('#vb-back', b).onclick = () => { T = null; D = null; S = null; step(); }; if (!SUM) $('#vb-back', b).textContent = PICK ? '← Profes' : '← Buscar por hora';
       $$('.vb-d', b).forEach(x => x.onclick = () => { D = x.dataset.d; S = null; step(); });
       $$('.vb-h', b).forEach(x => x.onclick = () => { S = T.slots.find(s => s.id === x.dataset.s); sfx('tap'); OT = $('#vb-topic', b).value; step(); });
       $$('.vb-m', b).forEach(x => x.onclick = () => { const n = +x.dataset.m; OT = $('#vb-topic', b).value; if (!modOpen(n)) { LK = n; step(); return; } LK = 0; if (n !== MS) { MS = n; TP = null; } sfx('tap'); step(); });
       $$('.vb-tp', b).forEach(x => x.onclick = () => { OT = $('#vb-topic', b).value; TP = x.dataset.tp === 'o' ? 'o' : +x.dataset.tp; sfx('tap'); step(); if (TP === 'o') $('#vb-topic', b).focus(); });
-      $('#vb-ok', b).onclick = async () => { const ok = $('#vb-ok', b);
+      $('#vb-ok', b).onclick = () => {
         if (TP == null) return M.toast('Elige el tema que quieres practicar 🙂');
         if (TP === 'o' && !$('#vb-topic', b).value.trim()) { $('#vb-topic', b).focus(); return M.toast('Escribe qué tema quieres practicar 🙂'); }
+        reviewAsk(); };
+      /* v588: antes de reservar, el estudiante revisa un resumen claro (como en los bancos) y confirma */
+      const reviewAsk = () => { const TT = TOPICS[MS] || tops, other = $('#vb-topic', b).value.trim();
+        const end = (() => { const p = S.time.split(':'); const mm = (+p[0]) * 60 + (+p[1] || 0) + 50; return String(Math.floor(mm / 60)).padStart(2, '0') + ':' + String(mm % 60).padStart(2, '0'); })();
+        const pic = T.photo || (window.MRPROFPIC && MRPROFPIC(T.name));
+        const tpH = TP === 'o' ? `<b>Otro tema</b><small>${esc(other)}</small>` : `<b>Módulo ${MS} · ${esc(TT[TP][0])}</b><small>${esc(TT[TP][1])}</small>${window.MRTH ? MRTH.html(MS, TP + 1, M.ageGroup && M.ageGroup(), 's') : ''}`;
+        const cm = M.modal(`<div class="vb-cf"><h3>Revisa tu reserva</h3><p class="vb-cf-s">Confirma que todo esté bien antes de reservar.</p>
+          <div class="vb-cf-t"><span class="vb-cf-av">${pic ? `<img src="${esc(pic)}" alt="">` : esc((T.name || '?').split(' ').map(x => x[0]).slice(0, 2).join(''))}</span><div><small>PROFE</small><b>${esc(T.name)}</b><em>${T.stars ? `★ ${String(T.stars).replace('.', ',')}${T.nrev ? ` <i>(${T.nrev} ${T.nrev === 1 ? 'calificación' : 'calificaciones'})</i>` : ''}` : '★ Profe nuevo en la escuela'}</em></div></div>
+          <div class="vb-cf-r"><small>FECHA</small><b>${esc((s => s[0].toUpperCase() + s.slice(1))(fmtD(S.date, { weekday: 'long', day: 'numeric', month: 'long' })))}</b></div>
+          <div class="vb-cf-r"><small>HORA</small><b>${fmtT(S.time)} – ${fmtT(end)}</b><span>50 minutos · hora Colombia</span></div>
+          <div class="vb-cf-r vb-cf-tp"><small>TEMA</small>${tpH}</div>
+          <p class="vb-cf-n">Puedes cancelar gratis hasta 12 horas antes de la clase.</p>
+          <div class="vb-cf-b"><button type="button" class="vb-cf-no" id="cf-back">← Cambiar algo</button><button type="button" class="vb-cf-ok" id="cf-ok">Confirmar reserva</button></div></div>`, { x: true });
+        cm.classList.add('vb-cf-m'); $('#cf-back', cm).onclick = () => cm.remove(); $('#cf-ok', cm).onclick = () => doBook($('#cf-ok', cm), cm); };
+      const doBook = async (ok, cm) => {
         ok.disabled = true; ok.textContent = 'Reservando…';
         const other = $('#vb-topic', b).value.trim(); const topic = TP === 'o' ? (other ? 'Otro tema: ' + other : 'Otro tema') : TP != null ? `Módulo ${MS} · Tema ${TP + 1}: ${(TOPICS[MS] || tops)[TP][0]} (${(TOPICS[MS] || tops)[TP][1]})` : '';
-        const res = await MRAC.call('vipBook', { code: MRAC.code(), slotId: S.id, topic });
+        const res = await MRAC.call('vipBook', { code: MRAC.code(), slotId: S.id, topic }); if (res.ok || res.err === 'taken' || res.err === 'clash' || res.err === 'no_credits') cm.remove();
         if (res.ok) { m.remove(); sfx('win'); M.confetti(1800); M.modal(`<div class="center">${M.mascot('mascot bounce', 'celebrate')}<h3>¡Clase reservada! 🎉</h3><p style="font-size:17px">${esc(T.name)} · <b>${fmtD(S.date, { weekday: 'long', day: 'numeric', month: 'long' })}</b> · ${fmtT(S.time)} (hora Colombia)</p><p class="muted">Te enviamos la confirmación a tu correo. El enlace de la clase aparece en “Mis próximas clases”.</p></div>`, { x: true }); await MRAC.me(true); live(); }
         else { M.toast({ taken: 'Ese espacio acaba de ser reservado. Elige otro 🙏', clash: 'Ya tienes una clase a esa hora. Elige otro horario.', window: 'Las clases se reservan desde el día siguiente y hasta 5 días adelante.', no_credits: 'Ya reservaste todas tus clases de este periodo.', holiday: 'Ese día es domingo o festivo en Colombia: no hay clases. Elige otro día 🙏', too_late: 'Ese espacio ya no se puede reservar (muy pronto).' }[res.err] || 'No se pudo reservar. Inténtalo de nuevo.');
           if (res.err === 'taken') { const rr = await MRAC.call('vipOptions', { code: MRAC.code() }); if (rr.ok) { r.teachers = rr.teachers; T = r.teachers.find(t => t.id === T.id) || null; S = null; D = null; } step(); } else { ok.disabled = false; ok.textContent = 'Reintentar'; } } };

@@ -99,6 +99,7 @@ function mraMergeKey(k, aS, bS) { /* a = lo que ya había, b = lo nuevo · nunca
     if (!now) { dirty = true; clearTimeout(timer); timer = setTimeout(() => sync(true), 15000); return true; }
     if (busy) { for (let i = 0; i < 40 && busy; i++) await new Promise(r => setTimeout(r, 250)); if (busy) { dirty = true; return false; } } busy = true; dirty = false; const ts = Date.now();
     const r = await call('sync', { code: c, ts, base: +ls.get(TS) || 0, keys: collect(), summary: summary() });
+    if (window.__mraWiped) { busy = false; return !!r.ok; } // v588: ya salió: no volver a escribir nada local
     if (!r.ok && r.err === 'reset') { busy = false; wipeLocal(true); const p0 = prof(); if (p0) { p0.module = null; p0.placement = null; ls.set('mra_profile_v1', JSON.stringify(p0)); } ls.set(TS, String(Date.now())); try { location.reload(); } catch (e) { } return false; }
     busy = false; if (r.ok) { ls.set(TS, String(ts)); if (r.student) applyStudent(r.student, r.state); }
     if (dirty) { clearTimeout(timer); timer = setTimeout(() => sync(true), 15000); }
@@ -139,7 +140,10 @@ function mraMergeKey(k, aS, bS) { /* a = lo que ya había, b = lo nuevo · nunca
   // al abrir cualquier página con sesión: refresca plan, avisos e intentos extra (máx. 1 vez por minuto)
   setTimeout(() => { if (code()) me().catch(() => { }); }, 800);
   // cerrar sesión: guarda en la nube y deja el dispositivo limpio (el siguiente que entre no ve el progreso de otro)
-  async function signOut() { if (window.MRTEACH && MRTEACH.on()) { MRTEACH.exit(); return true; } const ok = await sync(true); if (ok) { wipeLocal(true); ls.del(OWNER); ls.del(ME); try { sessionStorage.removeItem(ME); localStorage.removeItem('mra_me_last'); } catch (e) { } } return ok; }
+  async function signOut() { if (window.MRTEACH && MRTEACH.on()) { MRTEACH.exit(); return true; }
+    /* v588: salir en 1–2 segundos. Si no hay cambios nuevos, sale al instante; si los hay, intenta guardar rápido y, si la nube tarda, los envía en segundo plano (sendBeacon) y sale igual. */
+    if (code() && (dirty || !ls.get(TS))) { clearTimeout(timer); const r = await Promise.race([sync(true).catch(() => false), new Promise(res => setTimeout(() => res('slow'), 2000))]); if (r !== true) beacon(true); }
+    wipeLocal(true); ls.del(OWNER); ls.del(ME); try { sessionStorage.removeItem(ME); localStorage.removeItem('mra_me_last'); } catch (e) { } return true; }
   function setCode(nc) { const p = prof(); if (p) { p.code = nc; ls.set('mra_profile_v1', JSON.stringify(p)); } ls.set(OWNER, nc); ls.del(ME); try { sessionStorage.removeItem(ME); } catch (e) { } } // 🔑 nuevo código de acceso
   window.MRAC = { setCode, signOut, flush: () => beacon(true), examResult, requestAttempt, homework, feedbackFor, evalSave, notifications, markRead, isPremium: premium, cachedMe: () => { const c = cachedMe(); return c && c.r; }, meLast, on: !!URL_, url: URL_, call, login, me, sync, upload, saveProfile, code, toB64, applyStudent, wipeLocal,
     planName: (p) => ({ free: 'Acceso gratuito', membership: 'Plataforma', premium: 'Premium · 4 clases', premium8: 'Premium · 8 clases' }[p] || 'Acceso gratuito') };
