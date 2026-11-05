@@ -773,7 +773,7 @@
       <section class="pg" data-pgk="top">
 
       ${birthdayBanner()}
-      <div id="pt-ann"></div>
+      <div id="pt-ann"></div><div id="pt-ofr"></div>
       ${P.isExpired() || (trial && !(window.MRAC && MRAC.code())) ? `<div class="pt-trialbar">${P.isExpired() ? `⏰ <div><b>Tu plan venció.</b> Todo tu contenido está bloqueado, pero tu progreso sigue guardado. Apenas renueves, se desbloquea todo. <a href="#" class="tb-up">Ver planes →</a></div>` : `🟢 <div><b>Acceso gratuito:</b> la prueba de clasificación y los <b>2 primeros temas</b> de tu módulo. <a href="#" class="tb-up">Ver planes →</a></div>`}</div>` : ''}
       ${main}
       ${newbie ? '' : routeBar()}
@@ -1164,6 +1164,7 @@
     if (r.ok === false && (r.err === 'notfound' || r.err === 'inactive')) { M.toast('Tu acceso ya no está activo. Escríbenos por WhatsApp.'); return; }
     if (before !== sig()) { stp('perfil actualizado'); topbar(); return home(); } // el plan cambió en la nube → actualizar perfil
     const ann = r.conf && r.conf.announcement; if (ann && $('#pt-ann')) $('#pt-ann').innerHTML = `<div class="pt-ann">📣 ${esc(ann)}</div>`;
+    try { if (window.MROFR && $('#pt-ofr') && !$('#pt-ofr').dataset.on && (!M.ageGroup || M.ageGroup() === 'adult') && P.plan().premium) { $('#pt-ofr').dataset.on = '1'; const q = P.get() || {}; MROFR.init({ kind: 'est', mount: '#pt-ofr', name: ((q.first || '') + ' ' + (q.last || '')).trim(), call: (a, d) => MRAC.call(a, Object.assign({ code: MRAC.code() }, d || {})) }); } } catch (e) { } // v573: testimonios
     if (r.trialLeft != null && r.trialLeft > 0 && $('#pt-ann')) $('#pt-ann').insertAdjacentHTML('afterbegin', `<div class="pt-ann pt-trial"><span>🎁 ${r.trialLeft === 1 ? '<b>Hoy es tu último día</b> de acceso gratuito.' : 'Te quedan <b>' + r.trialLeft + ' días</b> de acceso gratuito.'}</span><a class="btn k sm" href="#" data-plans>Quiero inscribirme</a></div>`);
     refCard(); notesCard();
     if (r.mail && r.mail.bad && $('#pt-ann')) { $('#pt-ann').insertAdjacentHTML('afterbegin', `<div class="pt-ann pt-mailbad"><span>✉️ No hemos podido enviarte correos a <b>${esc(r.mail.email)}</b>. Corrígelo para recibir los avisos de tus clases.</span><button class="btn w sm" id="pt-mailfix">✏️ Corregir mi correo</button></div>`); $('#pt-mailfix').onclick = () => mailEdit(r.mail.email); }

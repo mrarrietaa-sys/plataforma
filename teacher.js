@@ -209,8 +209,9 @@
             <button class="tp-mi" id="tp-tour"><i class="ib5">${TI('compass')}</i><span><b>Ver el tour</b><small>Cómo funciona tu portal</small></span></button></div></div>
         </div>
       </div>
-      <div id="tp-ctbar"></div><section id="tp-body"></section>`;
+      <div id="tp-ctbar"></div><div id="tp-ofr"></div><section id="tp-body"></section>`;
     if (CT) setTimeout(ctBar, 0);
+    try { if (window.MROFR) setTimeout(() => MROFR.init({ kind: 'profe', mount: '#tp-ofr', name: (D.teacher.hello || D.teacher.name || ''), call: (a, d) => api(a, d) }), 1200); } catch (e) { } // v573: ofertas de video
     if ($('#tp-tour')) $('#tp-tour').onclick = () => tour();
     if ($('#tp-mat')) $('#tp-mat').onclick = material;
     if ($('#tp-pz')) $('#tp-pz').onclick = () => pzPick();
@@ -479,11 +480,11 @@
     el.innerHTML = `<div class="tp-pay-top"><label class="tp-l" for="tp-pm">Mes</label><select class="inp tp-inp" id="tp-pm">${months.map((x) => `<option value="${x.month}"${x.month === payMonth ? ' selected' : ''}>${esc(MES(x.month))} · ${COP(x.total)} · ${x.paid ? '✅ Pagado' : '⏳ Pendiente'}</option>`).join('')}</select>
         <button class="btn w sm" id="tp-pdf">⬇️ Descargar volante (PDF)</button></div>
       <div class="tp-pay-hero card"><span class="lbl">Total · ${esc(MES(P.month))}</span><b>${COP(P.total)}</b>
-        <div class="tp-pay-k"><span><b>${P.done}</b> clase${P.done === 1 ? '' : 's'} dictada${P.done === 1 ? '' : 's'} × ${COP(P.rate)}</span><span><b>${P.noshow}</b> inasistencia${P.noshow === 1 ? '' : 's'} del estudiante × ${COP(P.noshowRate)}</span>${P.tnoshow ? `<span class="tp-pen"><b>${P.tnoshow}</b> penalización${P.tnoshow === 1 ? '' : 'es'} × −${COP(P.penalty)}</span>` : ''}</div>
+        <div class="tp-pay-k"><span><b>${P.done}</b> clase${P.done === 1 ? '' : 's'} dictada${P.done === 1 ? '' : 's'} × ${COP(P.rate)}</span><span><b>${P.noshow}</b> inasistencia${P.noshow === 1 ? '' : 's'} del estudiante × ${COP(P.noshowRate)}</span>${P.tnoshow ? `<span class="tp-pen"><b>${P.tnoshow}</b> penalización${P.tnoshow === 1 ? '' : 'es'} × −${COP(P.penalty)}</span>` : ''}${(P.content || []).length ? `<span><b>${P.content.length}</b> video${P.content.length === 1 ? '' : 's'} aprobado${P.content.length === 1 ? '' : 's'} · ${COP(P.contentTotal)}</span>` : ''}</div>
         <span class="tp-paid ${paid ? 'ok' : 'pend'}">${paid ? '✅ Pagado' + (paidAt ? ' el ' + esc(dLabel(String(paidAt).slice(0, 10))) : '') : '⏳ Pendiente por pagar'}</span></div>
       <div class="tp-alert"><b>¿Cómo se calcula?</b> Se paga cada clase <b>dictada</b> (${COP(P.rate)} por clase de 50 min). Si <b>te conectas y el estudiante no asiste</b>, se pagan ${COP(P.noshowRate)}. Las clases canceladas (a tiempo o fuera de tiempo) y las no dictadas no se pagan. <b>Si no te conectas</b> y el estudiante lo reporta, se descuentan ${COP(P.penalty || 10000)} de penalización (administración puede revisarlo en casos de fuerza mayor). El pago es mensual. Recuerda <b>marcar cada clase</b> en Mis clases.</div>
       <div class="card tp-card"><div class="tp-card-h"><h2>Detalle</h2><small class="muted">hora Colombia</small></div>
-      ${P.items.length ? `<ul class="tp-list tp-pay-list">${P.items.map((x) => { const st = PST[x.status] || ['off', x.status]; return `<li class="tp-pay-row"><div><b>${dLabel(x.date)} · ${h12(x.time)}</b><small>${x.type === 'vip' ? 'Individual' : esc(x.club || 'Clase grupal')}${x.who ? ' · ' + esc(x.who) : ''}</small></div><span class="tp-pst ${st[0]}">${esc(st[1])}</span><b class="tp-amt">${COP(x.amount)}</b></li>`; }).join('')}</ul>` : '<p class="muted">No hay clases registradas en este mes.</p>'}</div>`;
+      ${P.items.length || (P.content || []).length ? `<ul class="tp-list tp-pay-list">${P.items.map((x) => { const st = PST[x.status] || ['off', x.status]; return `<li class="tp-pay-row"><div><b>${dLabel(x.date)} · ${h12(x.time)}</b><small>${x.type === 'vip' ? 'Individual' : esc(x.club || 'Clase grupal')}${x.who ? ' · ' + esc(x.who) : ''}</small></div><span class="tp-pst ${st[0]}">${esc(st[1])}</span><b class="tp-amt">${COP(x.amount)}</b></li>`; }).join('')}${(P.content || []).map((x) => `<li class="tp-pay-row"><div><b>${dLabel(x.date)}</b><small>Video aprobado · ${esc(x.topic)}</small></div><span class="tp-pst ok">Contenido</span><b class="tp-amt">${COP(x.amount)}</b></li>`).join('')}</ul>` : '<p class="muted">No hay clases registradas en este mes.</p>'}</div>`;
     $('#tp-pm', el).onchange = (e) => { payMonth = e.target.value; pay(el); };
     $('#tp-pdf', el).onclick = () => payPdf(P, paid, paidAt);
   }

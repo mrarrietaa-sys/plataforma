@@ -58,7 +58,7 @@
   }
 
   /* ======================= ESTRUCTURA ======================= */
-  const TABS = [['today', '✅', 'Tareas de hoy'], ['home', '📊', 'Resumen'], ['students', '🎓', 'Estudiantes'], ['families', '👨‍👩‍👧', 'Familias'], ['enroll', '📝', 'Inscripciones'], ['buys', '💳', 'Pagos'], ['claims', '🚩', 'Reclamos'], ['reviews', '⭐', 'Opiniones'], ['prizes', '🎁', 'Premios'], ['leads', '📣', 'Interesados'], ['placement', '🧭', 'Placement'], ['recruit', '👩‍🏫', 'Reclutamiento'], ['teachers', '🧑‍🏫', 'Profesores'], ['contracts', '📄', 'Contratos'], ['tes', '🎬', 'Testimonios'], ['boards', '📝', 'Tableros'], ['classes', '📅', 'Clases'], ['chats', '💬', 'Chats'], ['settings', '⚙️', 'Ajustes']];
+  const TABS = [['today', '✅', 'Tareas de hoy'], ['home', '📊', 'Resumen'], ['students', '🎓', 'Estudiantes'], ['families', '👨‍👩‍👧', 'Familias'], ['enroll', '📝', 'Inscripciones'], ['buys', '💳', 'Pagos'], ['claims', '🚩', 'Reclamos'], ['reviews', '⭐', 'Opiniones'], ['prizes', '🎁', 'Premios'], ['leads', '📣', 'Interesados'], ['placement', '🧭', 'Placement'], ['recruit', '👩‍🏫', 'Reclutamiento'], ['teachers', '🧑‍🏫', 'Profesores'], ['contracts', '📄', 'Contratos'], ['tes', '🎬', 'Testimonios'], ['offers', '🎥', 'Videos'], ['boards', '📝', 'Tableros'], ['classes', '📅', 'Clases'], ['chats', '💬', 'Chats'], ['settings', '⚙️', 'Ajustes']];
   let TAB = 'home', STATS = null;
   // "Atrás": dentro del panel vuelve al Resumen (nunca saca a otra página por error)
   document.addEventListener('click', (e) => { const b = e.target.closest && e.target.closest('.tb-back'); if (!b || !key()) return; if (document.querySelector('.modal, .wa-wrap')) return; e.preventDefault(); e.stopImmediatePropagation(); if (TAB !== 'home') go('home'); else window.scrollTo(0, 0); }, true);
@@ -817,6 +817,43 @@
       const m = modal(`<div class="center"><div style="font-size:44px">📢</div><h2>¿Publicar nueva versión?</h2><p class="muted">${K === 'teacher' ? 'Todos los profes' : 'Todos los estudiantes con este plan'} deberán leerla y aceptarla otra vez al entrar.</p><div class="row" style="justify-content:center"><button class="btn w" id="cp-n">Cancelar</button><button class="btn k" id="cp-y">Sí, publicar</button></div></div>`);
       $('#cp-n', m).onclick = () => m.remove(); $('#cp-y', m).onclick = async () => { $('#cp-y', m).disabled = true; const x = await api('aContractSave', { text: tx, kind: K }); m.remove(); if (x.ok) { toast('📢 Publicada la versión ' + x.version); contracts(); } else toast(x.err === 'corto' ? 'El texto es muy corto' : 'No se pudo publicar'); }; };
   }
-  const VIEWS = { families, prizes, today, contracts, boards, tes, buys, claims, reviews, home, students, enroll, leads, placement, recruit, teachers, classes, requests, chats, settings };
+  /* ======================= 🎥 VIDEOS (ofertas de video para profes y testimonios de estudiantes) · v573 ======================= */
+  async function offers() {
+    view().innerHTML = '<div class="ad-loading">⏳ Cargando videos…</div>';
+    const r = await api('aOffers'); if (TAB !== 'offers') return; if (!r.ok) return view().innerHTML = '<p class="ad-err">No se pudieron cargar los videos.</p>';
+    const ST = { open: ['Publicada · esperando', 'gold'], taken: ['Tomada · grabando', 'gold'], sent: ['Por revisar', 'p-expired'], ok: ['Aprobado', 'ct-ok'], closed: ['Cerrada', 'gray'] };
+    const L = r.offers || []; const fmt = (n) => '$' + Number(n || 0).toLocaleString('es-CO');
+    view().innerHTML = `<h2 class="ad-h">🎥 Videos para redes</h2><p class="muted" style="margin-top:-6px">Publica una oferta: les aparece a los profes (pago por video aprobado) o a los estudiantes adultos Premium (1 clase gratis). El primero que acepta la graba desde su celular y la plataforma la edita sola, lista para Reels y TikTok.</p>
+      <div class="card"><h3 style="margin-top:0">Nueva oferta</h3>
+        <label class="ad-l">Para</label><select class="inp" id="of-aud"><option value="profe">Profesores (pago en dinero)</option><option value="est">Estudiantes adultos Premium (1 clase gratis)</option></select>
+        <label class="ad-l">Tema</label><input class="inp" id="of-topic" value="Error común: “I have 25 years”">
+        <label class="ad-l">Qué debe decir (una idea por línea · sale como guion en pantalla)</label><textarea class="inp" id="of-pts" rows="4">“I have 25 years” está mal
+Se dice “I am 25 years old”
+Da 2 ejemplos más
+Invita a practicar en mrarrieta.com</textarea>
+        <div id="of-payw"><label class="ad-l">Pago por video aprobado</label><input class="inp" id="of-pay" inputmode="numeric" value="12000"></div>
+        <p class="muted" style="font-size:13px">1 cupo · plazo de 48 horas para enviarlo; si no lo envía, la oferta se abre otra vez.</p>
+        <button class="btn k" id="of-pub">Publicar oferta</button></div>
+      <div class="card"><h3 style="margin-top:0">Ofertas</h3>${L.length ? L.map(o => `<div class="ad-orow"><div class="grow"><b>${esc(o.topic)}</b> ${chip(ST[o.st] ? ST[o.st][0] : o.st, ST[o.st] ? ST[o.st][1] : 'gray')} ${chip(o.aud === 'est' ? 'Estudiantes' : 'Profes', '')}<small>${o.byName ? 'Tomada por <b>' + esc(o.byName) + '</b>' : 'Nadie la ha tomado'} · ${o.aud === 'est' ? '1 clase gratis' : fmt(o.pay)}${o.note && o.st === 'taken' ? ' · Pediste un cambio: ' + esc(o.note) : ''}</small></div>
+        <div class="ad-oact">${o.st === 'sent' || o.st === 'ok' ? `<button class="btn k sm" data-ov="${esc(o.id)}">Ver video</button>` : ''}${o.st === 'open' ? `<button class="btn w sm" data-oc="${esc(o.id)}">Cerrar oferta</button>` : ''}</div></div>`).join('') : '<p class="muted">Aún no has publicado ofertas.</p>'}</div>`;
+    const sync = () => { const e = $('#of-aud').value === 'est'; $('#of-payw').style.display = e ? 'none' : ''; $('#of-topic').value = e ? 'Mi experiencia en mrarrieta.com' : 'Error común: “I have 25 years”'; $('#of-pts').value = e ? 'Di tu nombre y de dónde eres\n¿Por qué elegiste mrarrieta.com?\n¿Qué has mejorado?\n¿Se lo recomendarías a alguien?' : '“I have 25 years” está mal\nSe dice “I am 25 years old”\nDa 2 ejemplos más\nInvita a practicar en mrarrieta.com'; };
+    $('#of-aud').onchange = sync;
+    $('#of-pub').onclick = async () => { const b = $('#of-pub'); b.disabled = true; const x = await api('aOfferNew', { aud: $('#of-aud').value, topic: $('#of-topic').value, pts: $('#of-pts').value.split('\n').map(t => t.trim()).filter(Boolean), pay: $('#of-pay').value }); b.disabled = false; if (x.ok) { toast('✅ Oferta publicada'); offers(); } else toast('Escribe el tema de la oferta', true); };
+    $$('[data-oc]').forEach(b => b.onclick = async () => { const x = await api('aOfferClose', { id: b.dataset.oc }); if (x.ok) { toast('Oferta cerrada'); offers(); } else toast('Ya la tomaron: no se puede cerrar.', true); });
+    $$('[data-ov]').forEach(b => b.onclick = () => offerVideo(L.find(o => o.id === b.dataset.ov)));
+  }
+  async function offerVideo(o) {
+    const m = modal(`<h3 style="margin-top:0">${esc(o.byName || '')}</h3><p class="muted" style="margin:0 0 10px">${esc(o.topic)}${o.dur ? ' · 0:' + String(o.dur).padStart(2, '0') : ''}</p><div class="ad-ovw"><div class="ad-ovv" id="ov-v"><div class="ad-loading" id="ov-l">⏳ Descargando el video…</div></div>
+      <div class="ad-ovb">${o.st === 'sent' ? `<button class="btn ok" id="ov-ok">✓ Aprobar · ${o.aud === 'est' ? '1 clase gratis' : '$' + Number(o.pay || 0).toLocaleString('es-CO')}</button>` : `<span class="muted">Aprobado</span>`}<a class="btn w" id="ov-dl" style="pointer-events:none;opacity:.5">⬇ Descargar video</a>${o.st === 'sent' ? '<button class="btn w" id="ov-no" style="color:#DC2626">✕ Pedir un cambio</button>' : ''}</div></div>`);
+    const parts = []; let n = 1;
+    for (let i = 0; i < n; i++) { const x = await api('aOfferPart', { id: o.id, i }); if (!x.ok) { $('#ov-l', m) && ($('#ov-l', m).textContent = 'No se pudo descargar el video.'); return; } n = x.n; const bin = atob(x.b64); const u = new Uint8Array(bin.length); for (let k = 0; k < bin.length; k++) u[k] = bin.charCodeAt(k); parts.push(u); if ($('#ov-l', m)) $('#ov-l', m).textContent = `⏳ Descargando el video… ${Math.round((i + 1) / n * 100)}%`; o.mime = x.mime; }
+    if (!document.body.contains(m)) return;
+    const blob = new Blob(parts, { type: o.mime || 'video/mp4' }), url = URL.createObjectURL(blob);
+    $('#ov-v', m).innerHTML = `<video src="${url}" controls playsinline></video>`;
+    const dl = $('#ov-dl', m); dl.href = url; dl.download = 'mrarrieta-reel-' + o.id + (/mp4/.test(o.mime || '') ? '.mp4' : '.webm'); dl.style.pointerEvents = ''; dl.style.opacity = '';
+    const ok = $('#ov-ok', m); if (ok) ok.onclick = async () => { ok.disabled = true; const x = await api('aOfferDecide', { id: o.id, ok: true }); if (x.ok) { toast(o.aud === 'est' ? '✅ Aprobado: le llegó su clase gratis' : '✅ Aprobado: se sumó a su pago del mes'); m.remove(); offers(); } else { ok.disabled = false; toast('No se pudo aprobar.', true); } };
+    const no = $('#ov-no', m); if (no) no.onclick = async () => { const note = prompt('¿Qué debe cambiar? (le llega este mensaje)', 'Graba de nuevo con más luz, por favor.'); if (note == null) return; const x = await api('aOfferDecide', { id: o.id, ok: false, note }); if (x.ok) { toast('Le pediste un cambio'); m.remove(); offers(); } };
+  }
+  const VIEWS = { offers, families, prizes, today, contracts, boards, tes, buys, claims, reviews, home, students, enroll, leads, placement, recruit, teachers, classes, requests, chats, settings };
   key() && MRAC.on ? boot() : login();
 })();
