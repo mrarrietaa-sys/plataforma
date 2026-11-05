@@ -103,22 +103,26 @@
     d.save('contrato-mrarrieta-' + String(t.name || 'profe').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-') + '.pdf');
   }
   function contractModal(c) {
+    if (!c.needs && !c.accepted) { const m0 = document.createElement('div'); m0.className = 'tp-modal'; m0.innerHTML = `<div class="tp-modal-card card" style="max-width:460px;text-align:center"><button class="tp-x" data-x aria-label="Cerrar">✕</button><h3>Mi contrato</h3><p class="muted">Aún no tienes un contrato por aceptar. Cuando la administración te lo envíe, te llegará un aviso aquí y a tu correo.</p><p class="muted" style="margin:0">Mientras tanto puedes conocer tu portal y practicar las clases en vivo. Los estudiantes podrán reservar contigo cuando aceptes tu contrato.</p></div>`; document.body.appendChild(m0); m0.addEventListener('click', (e) => { if (e.target === m0 || e.target.closest('[data-x]')) m0.remove(); }); return; } // v571
     const must = c.needs; const m = document.createElement('div'); m.className = 'tp-modal'; m.setAttribute('role', 'dialog');
-    m.innerHTML = `<div class="tp-modal-card card tp-ct">${must ? '' : '<button class="tp-x" data-x aria-label="Cerrar">✕</button>'}<h3>📄 ${must ? 'Antes de empezar: tu contrato' : 'Mi contrato'}</h3>
-      ${must ? '<p class="muted" style="margin:0 0 8px">Léelo con calma. Al aceptarlo se descarga una copia en PDF y te llega a tu correo.</p>' : `<p class="tp-ct-ok">✔ Leído y aceptado el ${fmtAcc(c.accepted.date)} · versión ${esc(c.version)}</p>`}
+    m.innerHTML = `<div class="tp-modal-card card tp-ct">${must ? '' : '<button class="tp-x" data-x aria-label="Cerrar">✕</button>'}<h3>${must ? 'Tu contrato: léelo y acéptalo' : 'Mi contrato'}</h3>
+      ${must ? '<p class="muted" style="margin:0 0 8px">La administración te envió tu contrato. Léelo con calma: al aceptarlo se descarga una copia en PDF y te llega otra a tu correo. Mientras no lo aceptes, los estudiantes no podrán reservar clases contigo.</p>' : `<p class="tp-ct-ok">✔ Leído y aceptado el ${fmtAcc(c.accepted.date)} · versión ${esc(c.version)}</p>`}
       <div class="tp-ct-doc">${mdHtml(c.text)}</div>
       ${must && c.missingDoc ? `<div class="tp-ct-id"><label>Cédula de ciudadanía<input class="inp" id="ct-doc" inputmode="numeric" placeholder="Ej: 1.127.573.975"></label><label>Lugar de expedición<input class="inp" id="ct-city" placeholder="Ej: Cartagena, Bolívar"></label></div>` : ''}
-      <div class="row" style="justify-content:center;gap:8px;margin-top:12px">${must ? '<button class="btn k" id="ct-ok">✅ Leí y acepto</button>' : '<button class="btn w" id="ct-dl">⬇️ Descargar copia (PDF)</button>'}</div></div>`;
+      <div class="row" style="justify-content:center;gap:8px;margin-top:12px">${must ? '<button class="btn k" id="ct-ok">Leí y acepto</button>' : '<button class="btn w" id="ct-dl">Descargar copia (PDF)</button>'}</div></div>`;
     document.body.appendChild(m);
     if (!must) { m.addEventListener('click', (e) => { if (e.target === m || e.target.closest('[data-x]')) m.remove(); }); $('#ct-dl', m).onclick = () => contractPdf(c); return; }
     $('#ct-ok', m).onclick = async () => { const doc = $('#ct-doc', m) ? $('#ct-doc', m).value.trim() : '', city = $('#ct-city', m) ? $('#ct-city', m).value.trim() : '';
       if ($('#ct-doc', m) && (doc.replace(/\D/g, '').length < 5 || city.length < 3)) { toast('Escribe tu cédula y el lugar de expedición', true); return; }
       const b = $('#ct-ok', m); b.disabled = true; b.textContent = 'Guardando…';
       const x = await api('tContractAccept', { version: c.version, doc, docCity: city });
-      if (x && x.ok) { CT = x; m.remove(); toast('✅ Contrato aceptado · se descargó tu copia'); contractPdf(x); }
-      else { b.disabled = false; b.textContent = '✅ Leí y acepto'; toast(x && x.err === 'version' ? 'El contrato se actualizó: recarga la página.' : errText((x && x.err) || 'network'), true); } };
+      if (x && x.ok) { CT = x; m.remove(); toast('✅ Contrato aceptado · se descargó tu copia y te llegó otra a tu correo'); contractPdf(x); ctBar(); }
+      else { b.disabled = false; b.textContent = 'Leí y acepto'; toast(x && x.err === 'version' ? 'El contrato se actualizó: recarga la página.' : errText((x && x.err) || 'network'), true); } };
   }
-  async function contractCheck() { const r = await api('tContract').catch(() => null); if (!r || !r.ok) return false; CT = r; if (r.needs) { contractModal(r); return true; } return false; }
+  function ctBar() { const el = $('#tp-ctbar'); const it = $('#tp-ct small'); if (it && CT) it.textContent = CT.accepted ? 'Leído y aceptado · descargar copia' : CT.needs ? 'Pendiente por aceptar' : 'Aún no te lo han enviado';
+    if (!el) return; el.innerHTML = CT && !CT.accepted ? `<div class="tp-ctbar"><span class="tp-ctbar-ic">${TI('file')}</span><div><b>${CT.needs ? 'Tienes un contrato pendiente por aceptar' : 'Aún no recibes clases'}</b><small>${CT.needs ? 'Acéptalo para que los estudiantes puedan reservar contigo.' : 'Los estudiantes podrán reservar contigo cuando la administración te envíe tu contrato y lo aceptes.'}</small></div>${CT.needs ? '<button class="btn k sm" id="tp-ctgo">Leer y aceptar</button>' : ''}</div>` : '';
+    const g = $('#tp-ctgo'); if (g) g.onclick = () => contractModal(CT); }
+  async function contractCheck() { const r = await api('tContract').catch(() => null); if (!r || !r.ok) return false; CT = r; ctBar(); if (r.needs) { contractModal(r); return true; } return false; }
   function firstTour() { if (D && D.teacher && D.teacher.tour) return false; try { return !localStorage.getItem(TKEY()); } catch (e) { return true; } }
   let TOUR_R = null; // tarifas reales para el tour
   async function tour() {
@@ -205,7 +209,8 @@
             <button class="tp-mi" id="tp-tour"><i class="ib5">${TI('compass')}</i><span><b>Ver el tour</b><small>Cómo funciona tu portal</small></span></button></div></div>
         </div>
       </div>
-      <section id="tp-body"></section>`;
+      <div id="tp-ctbar"></div><section id="tp-body"></section>`;
+    if (CT) setTimeout(ctBar, 0);
     if ($('#tp-tour')) $('#tp-tour').onclick = () => tour();
     if ($('#tp-mat')) $('#tp-mat').onclick = material;
     if ($('#tp-pz')) $('#tp-pz').onclick = () => pzPick();
