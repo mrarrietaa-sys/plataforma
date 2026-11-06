@@ -8865,3 +8865,19 @@ body.mr-tpr [data-rank],body.mr-tpr #pt-plans,body.mr-tpr .pt-polb,body.mr-tpr a
 .ofr-bar .ofr-acts button{width:auto!important;min-width:180px;white-space:nowrap}
 @media(max-width:640px){.ofr-bar{flex-wrap:wrap!important}.ofr-acts{width:100%!important;flex-direction:row!important}.ofr-bar .ofr-acts button{flex:1 1 0;min-width:0!important;width:auto!important;padding:9px 8px!important;font-size:13px!important}.ofr-bar .ofr-acts .ofr-no{font-size:12px!important}}
 .ofr-bar .ofr-acts{flex:0 0 auto!important}@media(max-width:640px){.ofr-bar .ofr-acts{flex:1 1 100%!important}}
+/* v600: próximas clases del profe plegables */
+.tp-acc-l{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.tp-acc{border:1.5px solid #e3e8f0;border-radius:14px;background:#fff;overflow:hidden}
+.tp-acc.today{border-color:#E3242B}
+.tp-acc-h{width:100%;display:flex;align-items:center;gap:14px;background:none;border:0;padding:11px 14px;text-align:left;cursor:pointer;font:inherit;color:#0B2A5B}
+.tp-acc-h:hover{background:#f8faff}
+.tp-acc-d{flex:none;min-width:96px}.tp-acc-d b{display:block;font:800 14.5px var(--fh,Poppins),sans-serif;text-transform:capitalize}.tp-acc-d small{display:block;font:600 12.5px Inter,sans-serif;color:#475569;white-space:nowrap}
+.tp-acc.today .tp-acc-d b{color:#E3242B}
+.tp-acc-w{flex:1;min-width:0}.tp-acc-w b{display:block;font:800 14px var(--fh,Poppins),sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tp-acc-w small{display:block;font:500 12px Inter,sans-serif;color:#64748b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tp-acc-ch{flex:none;width:30px;height:30px;border-radius:50%;background:#eef3fb;display:grid;place-items:center;color:#0B2A5B;transition:transform .2s}
+.tp-acc.open .tp-acc-ch{transform:rotate(180deg)}
+.tp-acc-b{border-top:1px solid #eef2f8;padding:0 6px 6px}.tp-acc-b .tp-list{margin:0}.tp-acc-b .tp-cls{border:0!important;box-shadow:none!important;margin:0!important}
+.tp-acc-b .tp-cls-when{display:none}
+@media(max-width:620px){.tp-acc-h{gap:10px;padding:10px 12px}.tp-acc-d{min-width:78px}.tp-acc-d b{font-size:13.5px}}
+.tp-acc-d b{text-transform:none!important}.tp-acc-d b::first-letter{text-transform:uppercase}
+@media(min-width:621px){.tp-acc-b .tp-cls{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;gap:16px;align-items:center}.tp-acc-b .tp-cls-what{min-width:0}}

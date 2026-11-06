@@ -387,11 +387,18 @@
       </div>
       ${pend.length ? `<div class="tp-alert warn"><b>📌 Tienes ${pend.length} clase${pend.length > 1 ? 's' : ''} por marcar.</b> Registra la asistencia para que el estudiante vea su progreso. <button class="btn k sm" data-go="classes">Ir a Mis clases</button></div>` : ''}
       <div class="card tp-card"><div class="tp-card-h"><h2>Próximas clases</h2><small class="muted">hora Colombia</small></div>
-        ${up.length ? `<ul class="tp-list">${up.slice(0, 8).map((c) => classRow(c)).join('')}</ul>` : `<div class="tp-empty"><img src="mra-think.webp" alt="" width="110" height="110"><p>No tienes clases programadas.${free ? '' : ' Agrega espacios en <b>Mi disponibilidad</b> para que tus estudiantes Premium reserven clases individuales.'}</p></div>`}
+        ${up.length ? `<ul class="tp-acc-l">${up.slice(0, 40).map((c) => accRow(c)).join('')}</ul>` : `<div class="tp-empty"><img src="mra-think.webp" alt="" width="110" height="110"><p>No tienes clases programadas.${free ? '' : ' Agrega espacios en <b>Mi disponibilidad</b> para que tus estudiantes Premium reserven clases individuales.'}</p></div>`}
       </div>
       ${!free ? `<div class="tp-alert"><b>🗓️ No tienes espacios disponibles.</b> Los estudiantes Premium solo pueden reservar en los horarios que publiques. <button class="btn w sm" data-go="avail">Agregar disponibilidad</button></div>` : ''}`;
     $$('[data-go]', el).forEach((b) => b.onclick = () => { tab = b.dataset.go; ss.set(TABKEY, tab); shell(); });
+    $$('.tp-acc-h', el).forEach((h) => h.onclick = () => { const li = h.closest('.tp-acc'), op = !li.classList.contains('open'); li.classList.toggle('open', op); h.setAttribute('aria-expanded', op ? 'true' : 'false'); li.querySelector('.tp-acc-b').hidden = !op; });
     bindMarks(el);
+  }
+  /* v600: próximas clases plegables: una línea por clase; al tocarla se ve toda su información (las de hoy salen abiertas) */
+  function accRow(c) {
+    const r = rel(c.date), on = r === 'Hoy', tp = String(c.topic || '').replace(/\s*\([^)]*\)\s*$/, '').replace(/^Módulo (\d+) · /, 'M$1 · ');
+    const chev = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
+    return `<li class="tp-acc${on ? ' open today' : ''}"><button type="button" class="tp-acc-h" aria-expanded="${on ? 'true' : 'false'}"><span class="tp-acc-d"><b>${r || dLabel(c.date)}</b><small>${h12(c.time)}</small></span><span class="tp-acc-w"><b>${whoOf(c)}</b><small>${esc(tp || 'Tema por definir')}</small></span><span class="tp-acc-ch">${chev}</span></button><div class="tp-acc-b"${on ? '' : ' hidden'}><ul class="tp-list">${classRow(c)}</ul></div></li>`;
   }
 
   /* ---------- 2. Mi disponibilidad ---------- */
