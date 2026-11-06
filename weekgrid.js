@@ -79,7 +79,7 @@
       w.querySelector('.wg3-ok').onclick = add; mi.onkeydown = (e) => { if (e.key === 'Enter') add(); };
       upd(); };
     el.querySelectorAll('[data-add]').forEach((b) => b.onclick = () => openPk(b.dataset.add));
-    el.querySelector('[data-a=wk]').onclick = () => { if (!v['1'].length) return alert('Primero agrega las horas del lunes.'); ['2', '3', '4', '5', '6'].forEach((d) => { v[d] = v['1'].filter((t) => fits(d, t)); paint(d); }); sum(); };
+    el.querySelector('[data-a=wk]').onclick = () => { if (!v['1'].length) { const sm = el.querySelector('.wg3-sum'); sm.textContent = 'Primero agrega las horas del lunes.'; sm.style.color = '#b91c1c'; setTimeout(() => { sm.style.color = ''; sum(); }, 2500); return; } ['2', '3', '4', '5', '6'].forEach((d) => { v[d] = v['1'].filter((t) => fits(d, t)); paint(d); }); sum(); };
     el.querySelector('[data-a=clr]').onclick = () => { if (!confirm('¿Borrar todas las horas de la semana?')) return; DAYS.forEach(([d]) => { v[d] = []; paint(d); }); closePk(); sum(); };
     function get() { const o = {}; DAYS.forEach(([d]) => { if (v[d].length) o[d] = v[d].slice().sort(); }); return o; }
     DAYS.forEach(([d]) => paint(d)); sum();
