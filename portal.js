@@ -1132,7 +1132,7 @@
 
   /* ---------- planes y clases con profes (nube) ---------- */
   const fmtD = (iso, o) => { try { return new Date(String(iso).slice(0, 10) + 'T12:00:00').toLocaleDateString('es-CO', o || { weekday: 'short', day: 'numeric', month: 'short' }); } catch (e) { return iso; } };
-  const fmtT = (t) => { const [hh, mm] = String(t || '00:00').split(':').map(Number); const ap = hh >= 12 ? 'p. m.' : 'a. m.'; return `${((hh + 11) % 12) + 1}:${String(mm || 0).padStart(2, '0')} ${ap}`; };
+  const fmtT = (t) => { const [hh, mm] = String(t || '00:00').split(':').map(Number); const ap = hh >= 12 ? 'p.\u00a0m.' : 'a.\u00a0m.'; return `${((hh + 11) % 12) + 1}:${String(mm || 0).padStart(2, '0')}\u00a0${ap}`; }; // v593: la hora nunca se parte en dos líneas
   function planSection() {
     const p = P.get(); if (!p || p.type === 'staff' || !window.MRPLANS) return '';
     const pl = P.plan(); if (pl.legacy && !P.isTrial()) return '';
@@ -1381,7 +1381,7 @@
       const all = tp.map((t, i) => i === cur ? { i, tag: 'Vas aquí', c: 'now' } : i > upto ? { i, tag: 'Próximo', c: 'nx', lk: 1 } : sc[i] != null ? (sc[i] < 80 ? { i, tag: 'Refuerza', c: 'ref', pc: sc[i] } : { i, tag: 'Dominado', c: 'dom', pc: sc[i] }) : { i, tag: 'Disponible', c: 'av' });
       return { all: all.length ? all : [{ i: 0, tag: 'Vas aquí', c: 'now' }], rec }; } catch (e) { return { all: tp.map((t, i) => ({ i, tag: n === MN && !i ? 'Vas aquí' : 'Repasar', c: n === MN && !i ? 'now' : 'rev' })), rec: [] }; } };
     const modOpen = n => { if (n === MN) return true; const m = MODN(n); if (!m || !TOPICS[n]) return false; const r = P.role(m.id); return r === 'current' || r === 'review'; };
-    let MS = MN, LK = 0;
+    let MS = MN, LK = 0, SHALL = false;
     const step = () => {
       if (!T && ALL) { // 📅 todos los horarios de todos los profes, por día
         const sl = []; r.teachers.forEach(t => t.slots.forEach(x => sl.push(Object.assign({ t }, x)))); sl.sort((a, c) => (a.date + a.time).localeCompare(c.date + c.time));
@@ -1399,18 +1399,26 @@
       b.innerHTML = `${SUM ? `<div class="vb-sum">${(() => { const u = T.photo || (window.MRPROFPIC && MRPROFPIC(T.name)); return `<span class="vb-sum-av">${u ? `<img src="${esc(u)}" alt="">` : esc((T.name || '?').split(' ').map(x => x[0]).slice(0, 2).join(''))}</span>`; })()}<div><b>${(s => s[0].toUpperCase() + s.slice(1))(fmtD(S.date, { weekday: 'short', day: 'numeric', month: 'short' }).replace(/\./g, ''))} · ${fmtT(S.time)}</b><small>Con ${esc(T.name)} · ${T.stars ? `<span class="vb-sum-st">★ ${String(T.stars).replace('.', ',')}</span>` : '<span class="vb-sum-st">★ Profe nuevo</span>'} · 50 min</small></div><button type="button" class="vb-sum-x" id="vb-back">Cambiar</button></div>` : `<button class="btn w sm" id="vb-back">← Profes</button><p class="vb-st"><i class="vb-n">2</i> ${esc(T.name)}: elige fecha y hora <small>(hora Colombia)</small></p>
         <div class="vb-dates">${dates.map(d => `<button class="vb-d${d === D ? ' on' : ''}" data-d="${d}"><small>${fmtD(d, { weekday: 'short' })}</small><b>${fmtD(d, { day: 'numeric' })}</b><small>${fmtD(d, { month: 'short' })}</small></button>`).join('')}</div>
         <div class="vb-times">${times.map(s => `<button class="vb-h${S && S.id === s.id ? ' on' : ''}" data-s="${esc(s.id)}">${fmtT(s.time)}<small>50 min</small></button>`).join('')}</div>`}
-        <p class="vb-st"><i class="vb-n">3</i> ¿Qué quieres practicar? <small>(tu profe lo recibe antes de la clase)</small></p>
-        ${(() => { const O = ordFor(MS), TT = TOPICS[MS] || tops; const card = ({ i, tag, c, pc, lk }) => { const t = TT[i]; return `<button type="button" class="vb-tp${lk ? ' nxt' : TP === i ? ' on' : ''}" data-tp="${i}"${lk ? ' disabled' : ''}><i class="vb-tag ${c}">${tag}</i><b>${c === 'sug' ? '' : (i + 1) + '. '}${esc(t[0])}</b><small>${esc(t[1])}</small>${window.MRTH ? MRTH.html(MS, i + 1, M.ageGroup && M.ageGroup(), 's') : ''}${pc != null ? `<span class="vb-pc${pc >= 80 ? ' g' : ''}">Tu resultado: ${pc}%</span>` : ''}${lk ? '<span class="vb-pc vb-lkt">🔒 Se habilita cuando llegues a este tema</span>' : ''}</button>`; };
+        <p class="vb-st"><i class="vb-n">3</i> ¿Qué quieres practicar?</p>
+        ${(() => { const O = ordFor(MS), TT = TOPICS[MS] || tops, AG = M.ageGroup && M.ageGroup(); /* v592: lista compacta · título = lo que va a poder hacer */
+          const row = ({ i, tag, c, pc, lk }, rec) => { const t = TT[i], h = window.MRTH && MRTH.get ? MRTH.get(MS, i + 1, AG) : null, on = TP === i;
+            return `<div class="vb-ri"><button type="button" class="vb-row${on ? ' on' : ''}${lk ? ' nxt' : ''}" data-tp="${i}"${lk ? ' disabled' : ''}>${rec ? '' : `<span class="vb-rn">${i + 1}</span>`}<span class="vb-rt"><b>${esc(h ? h.s : t[1])}</b><small>${esc(t[0])}</small></span><span class="vb-ch ${c}">${tag}</span>${pc != null ? `<span class="vb-rp${pc >= 80 ? ' g' : ''}">${pc}%</span>` : ''}</button>${on && h && h.ex ? `<p class="vb-rex${rec ? ' r' : ''}">Por ejemplo: <i>“${esc(h.ex)}”</i></p>` : ''}</div>`; };
+          const recOn = O.rec.length && !SHALL;
           return `<div class="vb-mods">${[1, 2, 3, 4].map(n => { const op = modOpen(n), cur = n === MN; return `<button type="button" class="vb-m${cur ? ' cur' : ''}${op ? '' : ' vb-off'}${n === MS ? ' on' : ''}" data-m="${n}"><b>Módulo ${n}</b><small>${cur ? '<i></i>Estás aquí' : op ? '✓ Hecho' : '🔒'}</small></button>`; }).join('')}</div>`
           + (LK ? `<div class="vb-lk">🔒 El Módulo ${LK} se habilita cuando termines el Módulo ${LK - 1}.</div>` : '')
-          + (O.rec.length ? `<div class="vb-rec"><p>⭐ Te recomendamos reforzar<small>${O.rec.length > 1 ? 'Tus 2 temas con el resultado más bajo' : 'Tu tema con el resultado más bajo'} · Módulo ${MS}</small></p><div class="vb-topics">${O.rec.map(card).join('')}</div></div><p class="vb-sub">Todos los temas del Módulo ${MS}</p>` : '')
-          + `<div class="vb-topics">${O.all.map(card).join('')}</div>`; })()}
+          + `<div class="vb-tw">`
+          + (recOn ? `<p class="vb-rh">★ Te recomendamos practicar</p>${O.rec.map(x => row(x, 1)).join('')}<button type="button" class="vb-more" id="vb-more">Ver los ${O.all.length} temas del módulo ▾</button>`
+            : (O.rec.length ? `<button type="button" class="vb-recb" id="vb-recb">★ Te recomendamos practicar (${O.rec.length})<span>Ver ▸</span></button>` : '')
+              + `<p class="vb-rh2">Todos los temas del Módulo ${MS}</p><div class="vb-all">${O.all.map(x => row(x, 0)).join('')}</div>${O.rec.length ? '<button type="button" class="vb-hide" id="vb-hide">Ocultar los temas ▴</button>' : ''}`)
+          + `</div>`; })()}
         <input class="inp${TP === 'o' ? '' : ' hidden'}" id="vb-topic" maxlength="180" placeholder="Ej: entrevista de trabajo en inglés" value="${esc(OT)}">
         <button class="btn k block lg vb-ok" id="vb-ok" ${S && TP != null ? '' : 'disabled'}>${S && TP == null ? '👆 Elige el tema de tu clase' : S ? 'Revisar mi reserva →' : 'Elige una hora'}</button>`;
       $('#vb-back', b).onclick = () => { T = null; D = null; S = null; step(); }; if (!SUM) $('#vb-back', b).textContent = PICK ? '← Profes' : '← Buscar por hora';
       $$('.vb-d', b).forEach(x => x.onclick = () => { D = x.dataset.d; S = null; step(); });
       $$('.vb-h', b).forEach(x => x.onclick = () => { S = T.slots.find(s => s.id === x.dataset.s); sfx('tap'); OT = $('#vb-topic', b).value; step(); });
-      $$('.vb-m', b).forEach(x => x.onclick = () => { const n = +x.dataset.m; OT = $('#vb-topic', b).value; if (!modOpen(n)) { LK = n; step(); return; } LK = 0; if (n !== MS) { MS = n; TP = null; } sfx('tap'); step(); });
+      $$('.vb-m', b).forEach(x => x.onclick = () => { const n = +x.dataset.m; OT = $('#vb-topic', b).value; if (!modOpen(n)) { LK = n; step(); return; } LK = 0; if (n !== MS) { MS = n; TP = null; SHALL = false; } sfx('tap'); step(); });
+      { const mo = $('#vb-more', b); if (mo) mo.onclick = () => { SHALL = true; OT = $('#vb-topic', b).value; step(); }; const rb = $('#vb-recb', b); if (rb) rb.onclick = () => { SHALL = false; step(); }; const hd = $('#vb-hide', b); if (hd) hd.onclick = () => { SHALL = false; step(); }; }
+      $$('.vb-row', b).forEach(x => x.onclick = () => { if (x.disabled) return; OT = $('#vb-topic', b).value; TP = +x.dataset.tp; sfx('tap'); step(); });
       $$('.vb-tp', b).forEach(x => x.onclick = () => { OT = $('#vb-topic', b).value; TP = x.dataset.tp === 'o' ? 'o' : +x.dataset.tp; sfx('tap'); step(); if (TP === 'o') $('#vb-topic', b).focus(); });
       $('#vb-ok', b).onclick = () => {
         if (TP == null) return M.toast('Elige el tema que quieres practicar 🙂');
@@ -1449,7 +1457,7 @@
       const match = (d, h) => all.filter(x => (d === 'any' || x.date === d) && hOf(x.time) === hOf(h));
       const rank = (x) => (r.fav && x.t.id === r.fav.teacherId ? 100 : 0) + (x.t.stars || 0) * 10 + Math.min(9, (x.t.done || 0) / 20);
       const name = (t) => esc(t.name), pic = (t) => { const u = t.photo || (window.MRPROFPIC && MRPROFPIC(t.name)); return u ? `<img src="${esc(u)}" alt="">` : `<span class="vf-ini">${esc((t.name || '?').split(' ').map(x => x[0]).slice(0, 2).join(''))}</span>`; };
-      const stars = (t) => t.stars ? `<span class="vf-st">★ ${String(t.stars).replace('.', ',')}</span>` : 'Profe nuevo en la escuela'; // v580: solo estrellas
+      const stars = (t) => t.stars ? `<span class="vf-st">★ ${String(t.stars).replace('.', ',')}</span>` : 'Profe nuevo'; // v580: solo estrellas
       // ⭐ mi horario de siempre (si ese mismo profe tiene libre ese día de la semana a esa hora)
       let favX = null; if (r.fav) favX = all.find(x => x.t.id === r.fav.teacherId && dow(x.date) === r.fav.dow && String(x.time).slice(0, 5) === r.fav.time);
       const DN = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];

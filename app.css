@@ -8635,3 +8635,149 @@ svg.trz [stroke="none"]{stroke-dasharray:none;opacity:0;animation:trzf2 .5s ease
 .vb-sum-av{width:46px;height:46px;border-radius:50%;overflow:hidden;flex:none;background:#0B2A5B;color:#fff;display:grid;place-items:center;font:800 15px var(--fh,Poppins),sans-serif;box-shadow:0 0 0 3px #fff,0 0 0 4.5px #dbe3ef}.vb-sum-av img{width:100%;height:100%;object-fit:cover}
 .vb-sum-st{color:#d97706;font-weight:700}
 .vb-t .vb-sum-st{display:block;font:700 12.5px Inter,sans-serif;margin:1px 0}
+/* v592 · Elegir el tema: lista compacta · título = lo que va a poder hacer */
+.vb-tw{margin-top:4px}
+.vb-rh{font:800 12.5px var(--fh,Poppins),sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#b45309;margin:4px 0 8px}
+.vb-rh2{font:800 12.5px var(--fh,Poppins),sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#0B2A5B;margin:6px 0 8px}
+.vb-row{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:#fff;border:1.5px solid #e2e8f0;border-radius:13px;padding:8px 11px;margin-bottom:6px;cursor:pointer;font:inherit;color:#0B2A5B}
+.vb-row:hover{border-color:#94a3b8}.vb-row.on{border-color:#0B2A5B;background:#F3F7FD;box-shadow:0 0 0 2px #0B2A5B inset}
+.vb-row.nxt{opacity:.55;cursor:not-allowed}
+.vb-rn{width:24px;height:24px;border-radius:7px;background:#EEF3FB;display:grid;place-items:center;font:800 12px var(--fh,Poppins),sans-serif;flex:none}
+.vb-rt{flex:1;min-width:0}.vb-rt b{display:block;font:800 13.5px var(--fh,Poppins),sans-serif;line-height:1.25}.vb-rt small{display:block;font:600 11.5px Inter,sans-serif;color:#64748b;margin-top:2px}
+.vb-ch{font:800 10.5px var(--fh,Poppins),sans-serif;border-radius:999px;padding:3px 8px;white-space:nowrap;text-transform:uppercase;background:#E8EFFA;color:#0B2A5B}
+.vb-ch.sug{background:#FEF3C7;color:#b45309}.vb-ch.ref,.vb-ch.rev{background:#FFEDD5;color:#c2410c}.vb-ch.dom{background:#DCFCE7;color:#15803d}.vb-ch.nx{background:#F1F5F9;color:#94a3b8}
+.vb-rp{font:800 12px var(--fh,Poppins),sans-serif;min-width:36px;text-align:right;color:#c2410c}.vb-rp.g{color:#15803d}
+.vb-rex{margin:-2px 0 8px 34px;font:600 12px Inter,sans-serif;color:#475569}.vb-rex.r{margin-left:12px}.vb-rex i{color:#334155}
+.vb-more{display:block;width:100%;border:1.5px dashed #c9d4e6;background:#fff;border-radius:12px;padding:8px;font:800 13px var(--fh,Poppins),sans-serif;color:#0B2A5B;cursor:pointer;margin-top:2px}
+.vb-recb{display:flex;align-items:center;gap:8px;width:100%;border:1.5px solid #fde68a;background:#FFFBEB;border-radius:12px;padding:8px 12px;font:800 12.5px var(--fh,Poppins),sans-serif;color:#b45309;cursor:pointer;margin-bottom:6px}.vb-recb span{margin-left:auto;font:700 12px Inter,sans-serif;color:#92400e}
+.vb-all{max-height:340px;overflow:auto;padding-right:2px}
+.vb-hide{display:block;margin:6px auto 0;border:0;background:none;font:800 12.5px var(--fh,Poppins),sans-serif;color:#0B2A5B;text-decoration:underline;cursor:pointer}
+@media(min-width:900px){.vb-tw{max-width:480px;margin-left:auto;margin-right:auto}.vb-rh{text-align:center}
+ .vb-tw:has(.vb-all){max-width:none}.vb-all{display:grid;grid-template-columns:1fr 1fr;gap:0 12px;max-height:none;overflow:visible}}
+/* v592: «Tu próxima clase» compacta en celular */
+@media (max-width:640px){
+.pt-nc{gap:8px 12px;padding:12px 14px;border-radius:16px;margin:0 0 12px;align-items:start}
+.pt-nc-d{width:50px;height:54px;border-radius:12px;margin-top:2px}.pt-nc-d b{font-size:21px}.pt-nc-d small{font-size:10px}
+.pt-nc-l{font-size:10px;letter-spacing:.5px}
+.pt-nc h3{font-size:16px;margin:1px 0 3px;line-height:1.25}
+.pt-nc p{font-size:13px;margin:0 0 2px;gap:6px}.pt-nc p img{width:22px;height:22px}
+.pt-nc-t .th-can{margin:3px 0 3px}.pt-nc-t .th-can .th-l{font-size:9px}.pt-nc-t .th-can .th-p{font-size:13px}
+.pt-nc-t>small.muted{font-size:11.5px;line-height:1.3;display:block}
+.pt-nc-b{flex-direction:row;flex-wrap:wrap;gap:8px;min-width:0}
+.pt-nc-b .btn{width:auto;flex:1 1 0;padding:9px 8px;font-size:13.5px;min-height:0;border-radius:11px;white-space:nowrap}
+.pt-nc-b .btn svg{width:16px;height:16px}
+.pt-nc-x{flex-basis:100%;font-size:12px;padding:2px}
+}
+/* v592: buscador de reserva — nunca se sale del recuadro + todo centrado */
+.vf{grid-template-columns:minmax(0,1fr)!important}
+@media(min-width:900px){.vf{grid-template-columns:400px minmax(0,1fr)!important}}
+.vf>*,.vf-left>*,.vf-right>*,.vf-card,.vf-tl,.vf-tc2{min-width:0;max-width:100%;box-sizing:border-box}
+.vf-lb,.vf-pol,.vf-pickp,.vf-hint{text-align:center;display:block}
+.vf-tp{justify-content:center}
+.vf-rh{justify-content:center;text-align:center}
+.vf-nr,.vf-right .vf-ok{justify-content:center}
+.vf-warn{justify-content:center;text-align:left;max-width:440px;margin:0 auto;width:100%}
+.vf-tl{max-width:440px;margin:0 auto;width:100%}
+.vf-tc2 .vf-ti b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vf-foot{flex-direction:column;justify-content:center;text-align:center;gap:6px}
+.vf-lnk{justify-content:center;flex-wrap:wrap;text-align:center}
+.vf-pick{display:block;margin:12px auto 0;text-align:center}
+@media(max-width:899px){
+ .vf-right{padding:12px 10px;gap:10px}
+ .vf-tc2{padding:6px 8px;gap:8px}.vf-tc2 .vf-h{font-size:12px;padding:4px 7px}.vf-tc2 .vf-chev{display:none}
+ .vf-tc2 .vf-ti b{font-size:13.5px}.vf-tc2 .vf-ti small{font-size:11.5px}
+ .vf-tc2 .vf-badge{font-size:8.5px!important;padding:2px 6px!important}
+ .vf-warn{padding:9px 11px;font-size:12.5px}
+ .vf-lnk{font-size:12.5px}.vf-foot .vf-pol{font-size:11.5px}
+ .vf-none{max-width:440px;margin-left:auto;margin-right:auto}
+}
+.vf-tc2 .vf-ti b{white-space:normal;overflow:visible}
+.vf-lnk{flex-wrap:nowrap}
+@media(max-width:370px){
+ .vf-tc2{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:10px;row-gap:3px;align-items:center}
+ .vf-tc2 .vf-av{grid-row:1/3}
+ .vf-tc2 .vf-h{grid-column:2;justify-self:start}
+ .vf-tc2 .vf-ti small{display:inline}
+}
+.vf-lnk{display:block!important;text-align:center;margin:0 auto}.vf-lnk .mri{display:inline-block;vertical-align:-3px;margin-right:5px}
+@media(max-width:899px){.vf-days{display:flex!important;flex-wrap:wrap;justify-content:center}.vf-days .vf-chip{flex:0 0 calc((100% - 10px)/3)}}
+@media(min-width:900px){.vf-days{display:flex!important;flex-wrap:wrap;justify-content:center}.vf-days .vf-chip{flex:0 0 58px}}
+/* v592: Mis módulos y temas del módulo — más compacto y angosto en celular (todas las edades) */
+@media (max-width:620px){
+ .wrap.t2,.wrap.db .pg[data-pgk="learn"]{padding-left:10px;padding-right:10px}
+ .wrap.t2>*,.pg[data-pgk="learn"]>*{max-width:440px;margin-left:auto;margin-right:auto}
+ .t2-head{margin:2px 2px 12px}.t2-head h1{font-size:21px}
+ .t2-stats{gap:7px}.t2-stats>div{padding:6px 4px;border-radius:12px}.t2-stats b{font-size:16px}.t2-stats span{font-size:11px}
+ .t2-cont{border-radius:18px;min-height:0}.t2-ci{height:96px}.t2-cx{padding:12px 16px 16px}.t2-end .t2-cx{padding:16px 18px}
+ .t2-cont .t2-k{font-size:10px}.t2-cont h2{font-size:18px}.t2-cont p{font-size:13px}
+ .t2-go{padding:9px 16px!important;font-size:13.5px!important;border-radius:11px!important;margin-top:10px!important}
+ .t2-cb{margin:10px 0 0!important}
+ .t2-sec{margin-top:18px!important}.t2-sec h2{font-size:18px!important}
+ .t2-tabs button{padding:6px 13px!important;font-size:12.5px!important}
+ .t2-grid{gap:12px}
+ .t2c{border-radius:15px}
+ .t2-pic{height:96px;padding:9px 12px}
+ .t2-n{top:9px;left:11px;font-size:11.5px;padding:1px 7px}
+ .t2-ring{top:8px;right:9px;width:32px;height:32px}.t2-ring b{font-size:9px!important}
+ .t2-pt h3{font-size:15px}.t2-pt small{font-size:11.5px}
+ .t2-can{padding:8px 12px}.t2-can .th-can .th-l{font-size:9px}.t2-can .th-can .th-p{font-size:13.5px}.t2-can .th-can .th-x{font-size:12.5px}
+ .t2-ls{padding:2px 8px 6px}.t2-l{padding:8px 4px;font-size:13px;gap:8px}
+ .t2-st i{font-size:10px}.t2-s{width:17px!important;height:17px!important}
+ .md3-hx{margin:2px 2px 12px}.md3-hx h1{font-size:22px!important}.md3-k{font-size:10px}
+ .md3-stats>div{padding:6px 10px;min-width:0}.md3-stats b{font-size:15px}.md3-stats small{font-size:10.5px}
+ .md3-hero{min-height:0;border-radius:18px;flex-direction:column}
+ .md3-hi{width:100%!important;height:100px!important}
+ .md3-hx2{padding:12px 16px 16px!important}.md3-ht{font-size:19px!important}.md3-hs{font-size:13px!important}
+ .md3-hb{margin:10px 0 5px!important}.md3-hm{font-size:12px!important;margin-bottom:10px!important}
+ .md3-go{padding:9px 16px!important;font-size:13.5px!important;border-radius:11px!important}
+ .md3-sec{margin:20px 2px 10px}.md3-sec h2{font-size:18px}
+ .md3-lad{gap:10px}.md3-pic{height:92px}.md3-bd{padding:9px 11px 11px;font-size:12.5px}
+ .md3-fin{padding:12px 14px;gap:12px;border-radius:15px}.md3-fi{width:40px;height:40px}
+}
+@media (max-width:620px){
+ .wrap.t2{padding-left:22px!important;padding-right:22px!important}
+ .pg[data-pgk="learn"]{padding-left:10px!important;padding-right:10px!important}
+ .t2-cont .t2-ci{height:84px!important;min-height:0!important;flex:none!important}
+ .t2-cont .t2-cx{padding:10px 16px 14px!important}
+ .md3-hero .md3-hi{height:84px!important;min-height:0!important}
+}
+/* v592: «Reserva tu clase» — todo centrado en una sola columna (celular y PC) */
+:has(>.vb-tw)>*:not(.vb-tw){max-width:480px;margin-left:auto;margin-right:auto}
+.vb-tw{max-width:480px!important;margin-left:auto!important;margin-right:auto!important}
+.vb-tw:has(.vb-all){max-width:480px!important}
+.vb-st{text-align:center;justify-content:center}
+.vb-mods{justify-content:center}
+.vb-rh,.vb-rh2{text-align:center}
+.vb-sum{margin-left:auto;margin-right:auto}
+#vb-ok.vb-ok{display:block;width:100%;max-width:480px;margin-left:auto;margin-right:auto}
+@media(min-width:900px){.vb-all{display:grid!important;grid-template-columns:1fr!important;gap:0!important;max-height:340px!important;overflow:auto!important}}
+/* v592: buscador de reserva más corto en celular */
+@media(max-width:560px){
+ .vf{gap:8px!important}
+ .vf-card{padding:8px 10px!important;margin-bottom:0!important}
+ .vf-lb{font-size:10px!important;margin-bottom:2px}
+ .vf-days{gap:4px!important;margin-top:4px!important}.vf-days .vf-chip{padding:3px 2px!important;font-size:12px!important}.vf-days .vf-chip small{font-size:9.5px!important}
+ .vf-card .vf-pol{font-size:10.5px!important;margin:4px 0 0!important;line-height:1.3}
+ .vf-tp{margin-top:4px}.vf-sel{padding:2px 6px 1px}.vf-hhb,.vf-sel input{font-size:18px}.vf-sel small{font-size:9px}
+ .vf-ap{gap:3px}.vf-ap button{padding:2px 9px;font-size:11px}
+ .vf-gow{margin-top:8px}.vf-go2{padding:7px 18px!important;font-size:13px!important}
+ .vf-right{padding:10px 9px!important;gap:7px!important;min-height:0!important;border-radius:16px}
+ .vf-rh b{font-size:14px!important}
+ .vf-warn{padding:6px 9px!important;font-size:12px!important;gap:7px;border-radius:11px}.vf-warn .mri{width:16px;height:16px}
+ .vf-nr{font-size:12.5px}.vf-pickp{font-size:12px;margin:0}
+ .vf-tl{gap:6px}
+ .vf-tc2{padding:5px 8px!important;row-gap:1px!important;border-radius:12px}
+ .vf-tc2 .vf-av{width:32px;height:32px}
+ .vf-tc2 .vf-ti b{font-size:13px}.vf-tc2 .vf-ti small{font-size:11px}
+ .vf-tc2 .vf-h{font-size:11.5px;padding:2px 7px}
+ .vf-foot{padding-top:7px;gap:3px}.vf-lnk{font-size:12px;padding:2px 0}.vf-foot .vf-pol{font-size:10.5px!important}
+ .vf-left .vf-none,.vf-none{padding:7px 9px!important;gap:8px!important;flex-wrap:nowrap!important;margin-top:0!important}
+ .vf-none>div{flex:1 1 auto!important}.vf-none b{font-size:12.5px!important}.vf-none small{font-size:11px!important}
+ .vf-none .vf-ni{width:28px;height:28px}.vf-none .vf-btnw{width:auto!important;margin:0!important;padding:6px 10px!important;font-size:12px!important}
+ .vf-pick{margin-top:6px;font-size:12.5px}
+}
+@media(max-width:560px){p.vf-pol,.vf-card p.vf-pol{font-size:10.5px!important;line-height:1.3!important;margin:4px 0 0!important}}
+@media(min-width:371px) and (max-width:560px){.vf-days{flex-wrap:nowrap!important}.vf-days .vf-chip{flex:1 1 0!important;min-width:0}.vf-days .vf-chip small{white-space:nowrap}}
+@media(max-width:560px){.vb-sum b{white-space:nowrap;font-size:14.5px!important;overflow:hidden;text-overflow:ellipsis}.vb-sum>div{min-width:0;flex:1}.vb-sum small{font-size:12px}}
+@media(max-width:560px){.vb-sum{gap:9px!important;padding:8px 10px!important}.vb-sum b{font-size:13.5px!important;text-overflow:clip;letter-spacing:-.1px}.vb-sum .vb-sum-av{width:40px!important;height:40px!important;flex:none}.vb-sum .vb-sum-x{font-size:12px!important;padding:2px 0!important;flex:none}}
+@media(max-width:400px){.vb-sum b{font-size:3.5vw!important}}
