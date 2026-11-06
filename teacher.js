@@ -40,7 +40,7 @@
   const studentName = (code) => { const s = D && D.students[String(code).toUpperCase()]; return s ? s.name || s.code : code; };
   const groupOf = (id) => (D.groups || []).find((g) => g.id === id);
   const meetOf = () => ''; // 🎥 las clases son en la clase en vivo de la plataforma (sin enlaces externos)
-  const typeBadge = (c) => c.type === 'vip' ? '<span class="tp-badge vip">Individual</span>' : (c.type === 'club' ? '<span class="tp-badge grp">Club</span>' : '<span class="tp-badge grp">Grupal</span>');
+  const typeBadge = (c) => c.type === 'vip' ? '' /* v597: todas las clases son individuales, no hace falta decirlo */ : (c.type === 'club' ? '<span class="tp-badge grp">Club</span>' : '<span class="tp-badge grp">Grupal</span>');
   const statusBadge = (c) => ({ done: '<span class="tp-st done">Dictada ✓</span>', noshow: '<span class="tp-st noshow">No asistió</span>', cancelled: '<span class="tp-st canc">Cancelada</span>', latecancel: '<span class="tp-st canc">Cancelada tarde</span>', tnoshow: '<span class="tp-st noshow">⚠️ No te conectaste</span>', tlate: '<span class="tp-st noshow">⚠️ Cancelaste tarde</span>' }[c.status] || (c.date <= today() ? '<span class="tp-st pend">Por marcar</span>' : '<span class="tp-st sch">Programada</span>'));
   const whoOf = (c) => c.type === 'vip' ? esc(studentName(c.students[0] || '')) : esc(c.type === 'club' ? (c.topic || 'Club') : ((groupOf(c.groupId) || {}).name || 'Grupo')) + ` · ${c.students.length} estudiante${c.students.length === 1 ? '' : 's'}`;
 
@@ -264,7 +264,7 @@
   function tprCard(el) {
     const x = D && D.tpr; if (!el || !x || !x.on) return;
     const ids = ['A1', 'A2', 'B2', 'B2+'], mid = ids[(+x.module || 1) - 1] || 'A1', m = (x.mods || {})[mid] || {}, tot = +m.total || 0, dn = +m.done || 0;
-    const pct = Math.max(4, Math.min(100, Math.round((30 - x.days) / 30 * 100)));
+    const T = +x.total || 7, pct = Math.max(4, Math.min(100, Math.round((T - x.days) / T * 100)));
     const cap = '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>';
     const box = document.createElement('div'); box.className = 'tpr-card';
     box.innerHTML = `<span class="tpr-badge">${cap}PRUEBA DEL PROFE</span><h3>Vive la experiencia del estudiante</h3><p>Haz las lecciones como lo hace tu estudiante, paso a paso, para que llegues a cada clase sabiendo lo que ya practicó.</p>
@@ -383,9 +383,7 @@
     const free = D.slots.filter((s) => s.status === 'free' && s.date >= t0).length;
     el.innerHTML = `<div class="tp-stats">
         <div class="tp-stat red"><b>${+D.stats.taughtMonth || 0}</b><span>clases dictadas este mes</span></div>
-        <div class="tp-stat"><b>${+D.stats.taughtTotal || 0}</b><span>clases dictadas en total</span></div>
         <div class="tp-stat"><b>${up.length}</b><span>próximas clases</span></div>
-        <div class="tp-stat"><b>${free}</b><span>espacios disponibles</span></div>
       </div>
       ${pend.length ? `<div class="tp-alert warn"><b>📌 Tienes ${pend.length} clase${pend.length > 1 ? 's' : ''} por marcar.</b> Registra la asistencia para que el estudiante vea su progreso. <button class="btn k sm" data-go="classes">Ir a Mis clases</button></div>` : ''}
       <div class="card tp-card"><div class="tp-card-h"><h2>Próximas clases</h2><small class="muted">hora Colombia</small></div>

@@ -1540,7 +1540,7 @@
   let BD_FIRST = null; const bdFirst = () => { if (BD_FIRST === null) BD_FIRST = !bdaySeen(); return BD_FIRST; }; // el saludo sale solo la primera vez que entra ese día
   // 🎂 cambio de grupo de edad (cumple 12 → Teens · cumple 18 → Adultos): felicitación una sola vez
   function agChange() {
-    const p = P.get(); if (!p || p.type === 'staff' || !M.ageGroup) return; const ag = M.ageGroup(), prev = p.agSeen, ORD = { kids: 1, teens: 2, adult: 3 };
+    const p = P.get(); if (!p || p.type === 'staff' || !M.ageGroup) return; if (p.tpr) { const a0 = M.ageGroup(); if (p.agSeen !== a0) { p.agSeen = a0; P.save(p); } return; } /* 🎓 v597: en la prueba del profe el cambio de edad no es un cumpleaños */ const ag = M.ageGroup(), prev = p.agSeen, ORD = { kids: 1, teens: 2, adult: 3 };
     if (prev === ag) return; p.agSeen = ag; P.save(p); if (!prev || !p.birth || (ORD[ag] || 0) <= (ORD[prev] || 0)) return;
     const nm = esc(P.look().nick || p.first || ''); const teen = ag === 'teens';
     setTimeout(() => { const m = M.modal(`<div class="ag-up ${teen ? 't' : 'a'}"><img src="${teen ? 'mra-x-rocket.webp' : 'mra-bday.webp'}" alt="Mr. Arrieta"><span class="ag-eye">${MRI('gift')} Feliz cumpleaños</span><h3>${teen ? `¡Ya eres Teen, ${nm}!` : `¡Feliz cumpleaños, ${nm}!`}</h3>

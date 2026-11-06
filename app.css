@@ -8837,3 +8837,17 @@ body.mr-tpr [data-rank],body.mr-tpr #pt-plans,body.mr-tpr .pt-polb,body.mr-tpr a
 .tpa-mb{height:6px;width:110px;background:#e5ecf6;border-radius:6px;overflow:hidden;display:inline-block;vertical-align:middle;margin-right:8px}.tpa-mb i{display:block;height:100%;background:#16a34a}
 .tpa-pill{font:800 10.5px Poppins,sans-serif;border-radius:20px;padding:3px 9px;white-space:nowrap}.tpa-pill.on{background:#e7f6ee;color:#127a43}.tpa-pill.w{background:#fff4e5;color:#b45309}.tpa-pill.end{background:#eef2f8;color:#64748b}
 .tpa-n{font-size:11.5px;color:#64748b;margin:10px 0 0;text-align:center}
+/* v597: franja de la prueba del profe en una sola línea, edades centradas */
+.tpr-s1{display:grid!important;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px}
+.tpr-st{display:flex;align-items:center;gap:8px;justify-self:start}
+.tpr-ages{padding-top:0!important;justify-self:center}
+#tpr-back{justify-self:end}
+@media(max-width:700px){.tpr-s1{grid-template-columns:1fr auto;row-gap:7px}.tpr-ages{grid-column:1/-1;grid-row:2}}
+/* v597: el avión de «Tu primer día» con su sombra en el piso (como el de «Tu siguiente paso») */
+.g1-ad .g1-hd img{box-sizing:content-box;padding-bottom:18px;background:radial-gradient(closest-side,rgba(11,42,91,.26),rgba(11,42,91,.10) 55%,transparent) no-repeat 50% 100%/58% 14px}
+/* v597: portal del profe — más compacto y con margen a los lados en celular (igual que el portal del estudiante) */
+@media (max-width:620px){
+ main.wrap.tp-wrap{padding-left:22px!important;padding-right:22px!important;box-sizing:border-box}
+ main.wrap.tp-wrap>.tp-head,main.wrap.tp-wrap>#tp-body>*{zoom:.9}
+}
+.tp-stats{grid-template-columns:repeat(2,minmax(0,1fr))!important} /* v598: solo 2 recuadros en el resumen del profe */

@@ -480,14 +480,18 @@
       const st = t.stars ? `★ ${String(t.stars).replace('.', ',')}` : '★ Profe nuevo';
       const pill = !x.on ? '<span class="tpa-pill end">Terminada</span>' : `<span class="tpa-pill ${x.days <= 5 ? 'w' : 'on'}">${x.days} ${x.days === 1 ? 'día' : 'días'}</span>`;
       return `<tr><td><div class="tpa-t">${pic ? `<img src="${esc(pic)}" alt="">` : `<span class="tpa-av">${esc((t.name || '?').split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase())}</span>`}<div><b>${esc(t.name)}</b><span class="tpa-st">${st}</span></div></div></td>
-        <td><span class="tpa-mb"><i style="width:${pc}%"></i></span>Módulo ${+x.module || 1} · ${tot ? dn + ' de ' + tot + ' lecciones' : 'aún no empieza'}</td><td>${ago(x.lastSeen)}</td><td>${pill}</td><td><button class="btn w sm" data-tprx="${esc(t.id)}" data-nm="${esc(t.name)}">+30 días</button></td></tr>`; };
-    const html = `<div class="card tpa" id="tpr-adm"><h3>Prueba del profe · 30 días</h3><p class="tpa-s">Cuánto ha avanzado cada profe en su experiencia como estudiante</p>
+        <td><span class="tpa-mb"><i style="width:${pc}%"></i></span>Módulo ${+x.module || 1} · ${tot ? dn + ' de ' + tot + ' lecciones' : 'aún no empieza'}</td><td>${ago(x.lastSeen)}</td><td>${pill}</td><td><button class="btn w sm" data-tprx="${esc(t.id)}" data-nm="${esc(t.name)}" data-on="${x.on ? 1 : 0}">${x.on ? 'Dar más días' : 'Dar nueva prueba'}</button></td></tr>`; };
+    const html = `<div class="card tpa" id="tpr-adm"><h3>Prueba del profe</h3><p class="tpa-s">Cuánto ha avanzado cada profe en su experiencia como estudiante</p>
       <div class="tpa-w"><table><thead><tr><th>PROFE</th><th>AVANCE</th><th>ÚLTIMA VEZ</th><th>DÍAS</th><th></th></tr></thead><tbody>${L.map(row).join('')}</tbody></table></div>
-      <p class="tpa-n">Los 30 días cuentan desde que se crea el profe. Al terminar, la prueba desaparece sola de su perfil.</p></div>`;
+      <p class="tpa-n">Cada profe nuevo recibe 7 días desde que se crea. Al terminar, la prueba desaparece sola de su perfil. Puedes darle los días que decidas.</p></div>`;
     const inp = $$('input', v).find(i => /Buscar/.test(i.placeholder || '')); let anchor = inp; while (anchor && anchor.parentElement && anchor.parentElement !== v) anchor = anchor.parentElement;
     if (anchor && anchor.parentElement === v) anchor.insertAdjacentHTML('beforebegin', html); else v.insertAdjacentHTML('afterbegin', html);
-    $$('[data-tprx]', v).forEach(b => b.onclick = async () => { b.disabled = true; b.textContent = 'Guardando…'; const r = await api('aTprExtend', { id: b.dataset.tprx });
-      if (r && r.ok) { toast('✅ +30 días para ' + b.dataset.nm); await loadRef(); const o = $('#tpr-adm'); if (o) o.remove(); tprBox(); } else { b.disabled = false; b.textContent = '+30 días'; toast('No se pudo guardar. Inténtalo de nuevo.', true); } });
+    $$('[data-tprx]', v).forEach(b => b.onclick = () => {
+      const on = b.dataset.on === '1', m = modal(`<h2>${on ? 'Dar más días' : 'Dar nueva prueba'}</h2><p class="muted">${esc(b.dataset.nm)} · ${on ? 'los días se suman a los que le quedan.' : 'la prueba empieza de nuevo hoy y conserva su avance.'}</p>
+        <div class="ad-form"><label>¿Cuántos días?<input class="inp" type="number" id="tpr-n" min="1" max="120" value="7"></label></div><div class="row" style="margin-top:12px"><button class="btn k" id="tpr-ok">Guardar</button></div>`);
+      const go = $('#tpr-ok', m); go.onclick = async () => { const n = Math.round(+$('#tpr-n', m).value || 0); if (n < 1 || n > 120) { toast('Escribe entre 1 y 120 días.'); return; }
+        go.disabled = true; go.textContent = 'Guardando…'; const r = await api('aTprExtend', { id: b.dataset.tprx, days: n });
+        if (r && r.ok) { m.remove(); toast('✅ ' + n + (n === 1 ? ' día' : ' días') + ' para ' + b.dataset.nm); await loadRef(); const o = $('#tpr-adm'); if (o) o.remove(); tprBox(); } else { go.disabled = false; go.textContent = 'Guardar'; toast('No se pudo guardar. Inténtalo de nuevo.'); } }; });
   }
   // 💰 pagos a profesores (dentro de la pestaña Profesores)
   async function payCard() {

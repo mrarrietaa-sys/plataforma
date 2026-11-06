@@ -12,11 +12,15 @@
   function strip() {
     const p = prof(); if (!p || !p.tpr) { document.body.classList.remove('mr-tpr'); const o = document.getElementById('tpr-strip'); if (o) o.remove(); return; }
     document.body.classList.add('mr-tpr');
+    /* v597: durante las lecciones y los exámenes no aparece nada arriba: el profe vive la experiencia igual que el estudiante */
+    const top0 = document.querySelector('header.topbar, .topbar, .fx-top');
+    const shown = top0 && top0.getBoundingClientRect().height > 0 && getComputedStyle(top0).display !== 'none' && getComputedStyle(top0).visibility !== 'hidden';
+    if (/examen-final|juegos/.test(location.pathname) || !shown) { const o = document.getElementById('tpr-strip'); if (o) o.remove(); return; }
     if (document.getElementById('tpr-strip')) return;
     const d = daysLeft(p.planEnd), g = group(p);
     const el = document.createElement('div'); el.id = 'tpr-strip';
-    el.innerHTML = `<div class="tpr-s1">${CAP}<span class="tpr-st"><b>Modo prueba del profe</b> · ${d} ${d === 1 ? 'día' : 'días'}</span><button type="button" id="tpr-back">← Mi portal</button></div>
-      <div class="tpr-ages">${[['adult', 'Adultos'], ['teens', 'Teens'], ['kids', 'Kids']].map(([k, l]) => `<button type="button" data-tag="${k}" class="${k === g ? 'on' : ''}">${l}</button>`).join('')}</div>`;
+    el.innerHTML = `<div class="tpr-s1"><span class="tpr-st">${CAP}<span><b>Modo prueba del profe</b> · ${d} ${d === 1 ? 'día' : 'días'}</span></span>
+      <div class="tpr-ages">${[['adult', 'Adultos'], ['teens', 'Teens'], ['kids', 'Kids']].map(([k, l]) => `<button type="button" data-tag="${k}" class="${k === g ? 'on' : ''}">${l}</button>`).join('')}</div><button type="button" id="tpr-back">← Mi portal</button></div>`;
     const top = document.querySelector('header.topbar, .topbar, .fx-top');
     if (top && top.parentNode) top.parentNode.insertBefore(el, top.nextSibling); else document.body.prepend(el);
     el.querySelector('#tpr-back').onclick = async () => { const b = el.querySelector('#tpr-back'); b.disabled = true; b.textContent = 'Volviendo…';
@@ -28,6 +32,6 @@
       try { const q = prof(); if (window.MRAC && MRAC.saveProfile) { await MRAC.saveProfile({ birth: birthFor(b.dataset.tag) }); await MRAC.login(q.code); } } catch (e) { }
       location.reload(); });
   }
-  function boot() { strip(); let t = 0; new MutationObserver(() => { clearTimeout(t); t = setTimeout(strip, 120); }).observe(document.body, { childList: true, subtree: false }); setInterval(strip, 1500); }
+  function boot() { strip(); let t = 0; new MutationObserver(() => { clearTimeout(t); t = setTimeout(strip, 60); }).observe(document.body, { childList: true, subtree: true }); setInterval(strip, 700); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 })();
