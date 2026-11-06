@@ -10,8 +10,14 @@ function left(o){const t=new Date(String(o.taken||'').replace(' ','T'));const h=
 function bar(r){const el=document.querySelector(C.mount);if(!el)return;const m=r&&r.mine;
  if(!m){el.innerHTML='';return;}
  if(m.st==='sent'){el.innerHTML=`<div class="ofr-bar"><span class="ofr-ic">${SVG(CLK)}</span><div><b>Tu video está en revisión</b><small>«${esc(m.topic)}» · cuando la administración lo apruebe te llega un aviso.</small></div></div>`;return;}
- el.innerHTML=`<div class="ofr-bar"><span class="ofr-ic">${SVG(CAM)}</span><div><b>${m.note?'Tu video necesita un cambio':'Tienes un video pendiente por grabar'}</b><small>${m.note?esc(m.note)+' · ':''}«${esc(m.topic)}» · ${prize(m)} · te quedan ${left(m)}</small></div><button type="button" id="ofr-rec">Grabar mi video</button></div>`;
- el.querySelector('#ofr-rec').onclick=()=>studio(m);}
+ el.innerHTML=`<div class="ofr-bar"><span class="ofr-ic">${SVG(CAM)}</span><div><b>${m.note?'Tu video necesita un cambio':'Tienes un video pendiente por grabar'}</b><small>${m.note?esc(m.note)+' · ':''}«${esc(m.topic)}» · ${prize(m)} · te quedan ${left(m)}</small></div><div class="ofr-acts"><button type="button" id="ofr-rec">Grabar mi video</button><button type="button" id="ofr-drop" class="ofr-no">Ya no lo quiero hacer</button></div></div>`;
+ el.querySelector('#ofr-rec').onclick=()=>studio(m);el.querySelector('#ofr-drop').onclick=()=>dropAsk(m);}
+/* v598: quien aceptó el video puede arrepentirse; el cupo queda libre para otro */
+function dropAsk(m){const est=C.kind==='est';const d=document.createElement('div');d.className='ofr-cfw';
+ d.innerHTML=`<div class="ofr-cf"><b>¿Ya no quieres grabar este video?</b><p>«${esc(m.topic)}» queda libre para ${est?'otro estudiante':'otro profe'}. No pasa nada${est?'':' y no afecta tus clases ni tus pagos'}.</p><div class="ofr-cfb"><button type="button" class="ofr-k">No, lo voy a grabar</button><button type="button" class="ofr-y">Sí, ya no lo haré</button></div></div>`;
+ document.body.appendChild(d);const close=()=>d.remove();d.onclick=(e)=>{if(e.target===d)close();};d.querySelector('.ofr-k').onclick=close;
+ const y=d.querySelector('.ofr-y');y.onclick=async()=>{y.disabled=true;y.textContent='Un momento…';const r=await C.call(est?'sOfferDrop':'tOfferDrop',{id:m.id}).catch(()=>null);
+  if(r&&r.ok){close();busy=false;await load();}else{y.disabled=false;y.textContent='Sí, ya no lo haré';const p=d.querySelector('p');if(p)p.textContent='No se pudo guardar. Revisa tu conexión e inténtalo de nuevo.';}};}
 function studio(o){if(!window.MRSTUDIO)return;MRSTUDIO.open({offer:o,kind:C.kind,name:C.name,call:C.call,onDone:()=>load()});}
 function pop(o){mark(o.id);const est=o.aud==='est';const d=document.createElement('div');d.className='ofr-pop';
  d.innerHTML=`<div class="ofr-c"><span class="ofr-ic">${SVG(CAM)}</span><h3>${est?'Graba tu testimonio y gana <em>1 clase gratis</em>':'Aprovecha: graba un video y gana <em>'+prize(o)+'</em>'}</h3>

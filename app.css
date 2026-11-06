@@ -8851,3 +8851,17 @@ body.mr-tpr [data-rank],body.mr-tpr #pt-plans,body.mr-tpr .pt-polb,body.mr-tpr a
  main.wrap.tp-wrap>.tp-head,main.wrap.tp-wrap>#tp-body>*{zoom:.9}
 }
 .tp-stats{grid-template-columns:repeat(2,minmax(0,1fr))!important} /* v598: solo 2 recuadros en el resumen del profe */
+/* v598: «Ya no lo quiero hacer» en el video pendiente (profes y estudiantes) */
+.ofr-acts{display:flex;flex-direction:column;align-items:stretch;gap:6px;flex:none}
+.ofr-bar .ofr-acts .ofr-no{background:#fff;color:#64748b;border:1.5px solid #e2e8f0;padding:7px 14px;font:700 12.5px var(--fh,Poppins),sans-serif}
+.ofr-bar .ofr-acts .ofr-no:hover{color:#b91c1c;border-color:#fecaca}
+@media(max-width:640px){.ofr-acts{width:100%}.ofr-bar .ofr-acts button{width:100%}}
+.ofr-cfw{position:fixed;inset:0;background:rgba(11,42,91,.45);z-index:200;display:grid;place-items:center;padding:22px}
+.ofr-cf{background:#fff;border-radius:18px;max-width:380px;width:100%;padding:20px 18px 16px;text-align:center;font-family:Inter,sans-serif;box-shadow:0 20px 50px rgba(11,42,91,.3)}
+.ofr-cf b{display:block;font:800 17px var(--fh,Poppins),sans-serif;color:#0B2A5B;margin-bottom:6px}.ofr-cf p{margin:0 0 14px;font-size:13.5px;color:#475569;line-height:1.45}
+.ofr-cfb{display:flex;gap:8px;justify-content:center}.ofr-cfb button{flex:1 1 0;border-radius:12px;padding:10px 8px;font:800 13.5px var(--fh,Poppins),sans-serif;cursor:pointer}
+.ofr-cfb .ofr-k{background:linear-gradient(135deg,#0B2A5B,#1d4c9c);color:#fff;border:0}.ofr-cfb .ofr-y{background:#fff;color:#b91c1c;border:1.5px solid #fecaca}
+.ofr-acts{width:auto!important;align-items:center}
+.ofr-bar .ofr-acts button{width:auto!important;min-width:180px;white-space:nowrap}
+@media(max-width:640px){.ofr-bar{flex-wrap:wrap!important}.ofr-acts{width:100%!important;flex-direction:row!important}.ofr-bar .ofr-acts button{flex:1 1 0;min-width:0!important;width:auto!important;padding:9px 8px!important;font-size:13px!important}.ofr-bar .ofr-acts .ofr-no{font-size:12px!important}}
+.ofr-bar .ofr-acts{flex:0 0 auto!important}@media(max-width:640px){.ofr-bar .ofr-acts{flex:1 1 100%!important}}
