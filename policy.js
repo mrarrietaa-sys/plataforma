@@ -5,7 +5,7 @@
   <h2 class="pol-t">Política de reservas y cancelaciones</h2>
   <p class="pol-only">Aplica para estudiantes <b>Premium</b> (4 u 8 clases al mes): las clases individuales son exclusivas de estos planes.</p>
   <section><h3>1. Reservas</h3><ul>
-    <li><b>¿Cuándo reservar?</b> Desde <b>mañana</b> y hasta <b>5 días adelante</b>. Para hoy no se puede reservar. Eliges profe, fecha y hora desde tu perfil.</li>
+    <li><b>¿Cuándo reservar?</b> Desde <b>mañana</b> y durante los <b>próximos 5 días de clase</b> (sin domingos ni festivos). Para hoy no se puede reservar. Eliges profe, fecha y hora desde tu perfil.</li>
     <li>Las clases de tu plan <b>no son acumulables</b>: úsalas dentro de tu periodo mensual; las que no uses se vencen y no se recuperan.</li>
     <li>Las <b>clases adicionales</b> que compres valen solo dentro de tu plan vigente.</li></ul></section>
   <section><h3>2. Cancelaciones</h3><ul>
@@ -30,7 +30,7 @@
   <h2 class="pol-t">Política de clases para profesores</h2>
   <section><h3>1. Disponibilidad y reservas</h3><ul>
     <li>Publica en <b>Mi disponibilidad</b> solo los horarios en los que realmente puedes dictar.</li>
-    <li>Los estudiantes reservan desde <b>mañana</b> y hasta <b>5 días adelante</b>. Nunca se reservan clases para el mismo día.</li>
+    <li>Los estudiantes reservan desde <b>mañana</b> y durante los <b>próximos 5 días de clase</b> (sin domingos ni festivos). Nunca se reservan clases para el mismo día.</li>
     <li>Los estudiantes no tienen profe fijo: cualquier estudiante Premium puede reservar contigo.</li>
     <li><b>Antes de cada clase prepárate:</b> en <b>Resumen</b> o <b>Mis clases</b>, toca <b>"📝 Tablero"</b> en la clase. Ahí verás el <b>nivel y avance</b> del estudiante, el tema que quiere reforzar y, en <b>"Clases anteriores"</b>, lo que trabajaron otros profes con él.</li></ul></section>
   <section><h3>2. Duración y puntualidad</h3><ul>
