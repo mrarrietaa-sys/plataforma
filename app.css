@@ -8781,3 +8781,11 @@ svg.trz [stroke="none"]{stroke-dasharray:none;opacity:0;animation:trzf2 .5s ease
 @media(max-width:560px){.vb-sum b{white-space:nowrap;font-size:14.5px!important;overflow:hidden;text-overflow:ellipsis}.vb-sum>div{min-width:0;flex:1}.vb-sum small{font-size:12px}}
 @media(max-width:560px){.vb-sum{gap:9px!important;padding:8px 10px!important}.vb-sum b{font-size:13.5px!important;text-overflow:clip;letter-spacing:-.1px}.vb-sum .vb-sum-av{width:40px!important;height:40px!important;flex:none}.vb-sum .vb-sum-x{font-size:12px!important;padding:2px 0!important;flex:none}}
 @media(max-width:400px){.vb-sum b{font-size:3.5vw!important}}
+/* v593: «Revisa tu reserva» centrado (celular y PC) */
+.vb-cf{text-align:center!important}
+.vb-cf h3{padding:0 34px}
+.vb-cf-t{justify-content:center}.vb-cf-t>div{text-align:left}
+.vb-cf .th-can{text-align:center!important}
+.vb-cf-b{justify-content:center!important;flex-wrap:nowrap!important}
+.vb-cf-no,.vb-cf-ok{flex:1 1 0;min-width:0;max-width:190px;text-align:center}
+@media(max-width:560px){.vb-cf-no{padding:9px 8px!important;font-size:13px!important}.vb-cf-ok{padding:9px 8px!important;font-size:13.5px!important}}
