@@ -258,6 +258,23 @@
     if (!window.__tpdd) { window.__tpdd = 1; document.addEventListener('click', (e) => { if (!e.target.closest('.tp-dd')) $$('.tp-dd').forEach((d) => d.classList.remove('open')); }); document.addEventListener('keydown', (e) => { if (e.key === 'Escape') $$('.tp-dd').forEach((d) => d.classList.remove('open')); }); }
     ({ home, avail, classes, groups, pay }[tab] || home)($('#tp-body'));
     weekBanner($('#tp-body'));
+    if (tab === 'home') tprCard($('#tp-body'));
+  }
+  /* 🎓 v596 · Prueba del profe: 30 días para vivir las lecciones como un estudiante real (desaparece sola al terminar) */
+  function tprCard(el) {
+    const x = D && D.tpr; if (!el || !x || !x.on) return;
+    const ids = ['A1', 'A2', 'B2', 'B2+'], mid = ids[(+x.module || 1) - 1] || 'A1', m = (x.mods || {})[mid] || {}, tot = +m.total || 0, dn = +m.done || 0;
+    const pct = Math.max(4, Math.min(100, Math.round((30 - x.days) / 30 * 100)));
+    const cap = '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>';
+    const box = document.createElement('div'); box.className = 'tpr-card';
+    box.innerHTML = `<span class="tpr-badge">${cap}PRUEBA DEL PROFE</span><h3>Vive la experiencia del estudiante</h3><p>Haz las lecciones como lo hace tu estudiante, paso a paso, para que llegues a cada clase sabiendo lo que ya practicó.</p>
+      <div class="tpr-days"><b>${x.days}</b><span>${x.days === 1 ? 'día' : 'días'}<br>restante${x.days === 1 ? '' : 's'}</span></div><div class="tpr-bar"><i style="width:${pct}%"></i></div>
+      <button type="button" class="tpr-go" id="tpr-go">Entrar como estudiante →</button><div class="tpr-av">${tot ? `Tu avance: Módulo ${+x.module || 1} · ${dn} de ${tot} lecciones` : 'Empiezas en el Módulo 1, como un estudiante nuevo'}</div>`;
+    el.prepend(box);
+    $('#tpr-go').onclick = () => { const b = $('#tpr-go'); b.disabled = true; b.textContent = 'Entrando…';
+      try { const p = JSON.parse(localStorage.getItem('mra_profile_v1') || 'null'); if (p && String(p.code || '').toUpperCase() !== String(x.code).toUpperCase()) localStorage.removeItem('mra_profile_v1');
+        sessionStorage.setItem('mra_autocode', x.code); sessionStorage.setItem('mra_tpr', '1'); } catch (e) { }
+      location.href = 'index.html'; };
   }
 
 

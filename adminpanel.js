@@ -464,9 +464,30 @@
         $$('[data-dl]', box).forEach(b => b.onclick = () => delAsk('Profesores', b.dataset.dl, b.dataset.nm, cfg.note + ' Si tiene grupos o clubs asignados, asígnale otro profe.', async () => { delete SEL[b.dataset.dl]; await loadRef(); reload(); }));
         $$('[data-sel]', box).forEach(c => c.onchange = () => { if (c.checked) SEL[c.dataset.sel] = c.dataset.nm; else delete SEL[c.dataset.sel]; bulkBar(reload, cfg); });
         bulkBar(reload, cfg);
+        tprBox(); // 🎓 v596
       },
       open: (id) => teacherDetail(id), empty: 'Aún no hay profesores. Crea el primero.' });
     payCard();
+  }
+  /* 🎓 v596 · Prueba del profe: avance de cada profe en su experiencia como estudiante (30 días) */
+  function tprBox() {
+    const v = view(); if (!v || $('#tpr-adm', v)) return;
+    const L = (REF.teachers || []).filter(t => t.tpr); if (!L.length) return;
+    const ids = ['A1', 'A2', 'B2', 'B2+'];
+    const ago = (iso) => { if (!iso) return 'Aún no entra'; const d = Math.round((new Date(todayISO() + 'T12:00:00') - new Date(String(iso).slice(0, 10) + 'T12:00:00')) / 864e5); return d <= 0 ? 'Hoy' : d === 1 ? 'Ayer' : 'Hace ' + d + ' días'; };
+    const row = (t) => { const x = t.tpr, mid = ids[(+x.module || 1) - 1] || 'A1', m = (x.mods || {})[mid] || {}, tot = +m.total || 0, dn = +m.done || 0, pc = tot ? Math.round(dn / tot * 100) : 0;
+      const pic = t.photo || (window.MRPROFPIC && MRPROFPIC(t.name)) || '';
+      const st = t.stars ? `★ ${String(t.stars).replace('.', ',')}` : '★ Profe nuevo';
+      const pill = !x.on ? '<span class="tpa-pill end">Terminada</span>' : `<span class="tpa-pill ${x.days <= 5 ? 'w' : 'on'}">${x.days} ${x.days === 1 ? 'día' : 'días'}</span>`;
+      return `<tr><td><div class="tpa-t">${pic ? `<img src="${esc(pic)}" alt="">` : `<span class="tpa-av">${esc((t.name || '?').split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase())}</span>`}<div><b>${esc(t.name)}</b><span class="tpa-st">${st}</span></div></div></td>
+        <td><span class="tpa-mb"><i style="width:${pc}%"></i></span>Módulo ${+x.module || 1} · ${tot ? dn + ' de ' + tot + ' lecciones' : 'aún no empieza'}</td><td>${ago(x.lastSeen)}</td><td>${pill}</td><td><button class="btn w sm" data-tprx="${esc(t.id)}" data-nm="${esc(t.name)}">+30 días</button></td></tr>`; };
+    const html = `<div class="card tpa" id="tpr-adm"><h3>Prueba del profe · 30 días</h3><p class="tpa-s">Cuánto ha avanzado cada profe en su experiencia como estudiante</p>
+      <div class="tpa-w"><table><thead><tr><th>PROFE</th><th>AVANCE</th><th>ÚLTIMA VEZ</th><th>DÍAS</th><th></th></tr></thead><tbody>${L.map(row).join('')}</tbody></table></div>
+      <p class="tpa-n">Los 30 días cuentan desde que se crea el profe. Al terminar, la prueba desaparece sola de su perfil.</p></div>`;
+    const inp = $$('input', v).find(i => /Buscar/.test(i.placeholder || '')); let anchor = inp; while (anchor && anchor.parentElement && anchor.parentElement !== v) anchor = anchor.parentElement;
+    if (anchor && anchor.parentElement === v) anchor.insertAdjacentHTML('beforebegin', html); else v.insertAdjacentHTML('afterbegin', html);
+    $$('[data-tprx]', v).forEach(b => b.onclick = async () => { b.disabled = true; b.textContent = 'Guardando…'; const r = await api('aTprExtend', { id: b.dataset.tprx });
+      if (r && r.ok) { toast('✅ +30 días para ' + b.dataset.nm); await loadRef(); const o = $('#tpr-adm'); if (o) o.remove(); tprBox(); } else { b.disabled = false; b.textContent = '+30 días'; toast('No se pudo guardar. Inténtalo de nuevo.', true); } });
   }
   // 💰 pagos a profesores (dentro de la pestaña Profesores)
   async function payCard() {
