@@ -563,8 +563,15 @@
     S = ss.get(SKEY);
     if (!S || !S.tcode || !MR.on) { S = null; loginView(); return; }
     app.innerHTML = '<div class="tp-loading">Cargando tu portal…</div>';
-    const r = await MR.call('tLogin', { tcode: S.tcode, pin: S.pin });
-    if (r.ok) { D = r; shell(); contractCheck().then((blk) => { if (!blk) setTimeout(popNew, 600); }); } else { if (r.err === 'auth') ss.del(SKEY); loginView(r.err === 'auth' ? '' : errText(r.err)); }
+    let r = await MR.call('tLogin', { tcode: S.tcode, pin: S.pin }, { timeout: 45000 });
+    if (!r.ok && r.err === 'network') { app.innerHTML = '<div class="tp-loading">Conectando con la escuela…</div>'; r = await MR.call('tLogin', { tcode: S.tcode, pin: S.pin }, { timeout: 60000 }); } // v600: la nube a veces tarda: se reintenta solo
+    if (r.ok) { D = r; shell(); contractCheck().then((blk) => { if (!blk) setTimeout(popNew, 600); }); return; }
+    if (r.err === 'auth') { ss.del(SKEY); loginView(''); return; }
+    retryView(errText(r.err)); // v600: nunca la pantalla vieja de código y PIN: un aviso con «Reintentar»
+  }
+  function retryView(msg) {
+    app.innerHTML = `<section class="card tp-retry"><img src="mra-think.webp" alt="" width="120" height="120"><h2>No pudimos cargar tu portal</h2><p class="muted">${esc(msg || 'Revisa tu internet e inténtalo de nuevo.')}</p><button class="btn k lg" id="tp-rt">Reintentar</button></section>`;
+    $('#tp-rt').onclick = () => start();
   }
   start();
 })();

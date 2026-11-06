@@ -8881,3 +8881,4 @@ body.mr-tpr [data-rank],body.mr-tpr #pt-plans,body.mr-tpr .pt-polb,body.mr-tpr a
 @media(max-width:620px){.tp-acc-h{gap:10px;padding:10px 12px}.tp-acc-d{min-width:78px}.tp-acc-d b{font-size:13.5px}}
 .tp-acc-d b{text-transform:none!important}.tp-acc-d b::first-letter{text-transform:uppercase}
 @media(min-width:621px){.tp-acc-b .tp-cls{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;gap:16px;align-items:center}.tp-acc-b .tp-cls-what{min-width:0}}
+.tp-retry{max-width:420px;margin:40px auto;text-align:center;padding:26px 20px}.tp-retry img{display:block;margin:0 auto 10px;height:120px;width:auto}.tp-retry h2{font:800 19px var(--fh,Poppins),sans-serif;color:#0B2A5B;margin:0 0 6px}.tp-retry p{margin:0 0 16px}
