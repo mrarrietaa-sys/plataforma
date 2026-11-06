@@ -8789,3 +8789,31 @@ svg.trz [stroke="none"]{stroke-dasharray:none;opacity:0;animation:trzf2 .5s ease
 .vb-cf-b{justify-content:center!important;flex-wrap:nowrap!important}
 .vb-cf-no,.vb-cf-ok{flex:1 1 0;min-width:0;max-width:190px;text-align:center}
 @media(max-width:560px){.vb-cf-no{padding:9px 8px!important;font-size:13px!important}.vb-cf-ok{padding:9px 8px!important;font-size:13.5px!important}}
+/* v594: Inicio, Clases y Cuenta — más compacto y con margen a los lados en celular (todas las edades) */
+@media (max-width:620px){
+ .wrap.db .pg:not([data-pgk="learn"]){padding-left:10px;padding-right:10px;box-sizing:border-box}
+ .wrap.db .pg:not([data-pgk="learn"])>*{zoom:.9}
+}
+/* v594: «Te avisamos cuando haya espacio» centrado y compacto */
+.card:has(>.vb-bands),.mbox:has(>.vb-bands){max-width:400px!important;text-align:center}
+:has(>.vb-bands)>h3{text-align:center;justify-content:center;padding:0 34px}
+:has(>.vb-bands)>p{text-align:center}
+.vb-bands{max-width:340px;margin:0 auto}
+:has(>.vb-bands)>#wt-go{max-width:340px;margin-left:auto;margin-right:auto}
+@media(max-width:560px){
+ :has(>.vb-bands)>h3{font-size:17px!important;line-height:1.25}
+ :has(>.vb-bands)>p{font-size:13px;line-height:1.4;margin:6px 0 10px}
+ .vb-bands{gap:6px!important}.vb-band{padding:9px 12px!important;font-size:13.5px!important;justify-content:center}
+ :has(>.vb-bands)>#wt-go{padding:10px!important;font-size:14px!important}
+}
+/* v594: «Todos los horarios disponibles» — títulos de día y horas centrados */
+.vb-day>b{text-align:center}
+.vb-day .vb-times{justify-content:center}
+.vb-day .vb-times{display:flex!important;flex-wrap:wrap}.vb-day .vb-times>.vb-h{flex:0 0 calc((100% - 16px)/3);box-sizing:border-box}
+/* v594: ventanas emergentes en celular — más pequeñas y sin tocar los bordes */
+@media (max-width:560px){
+ .modal{padding-left:22px!important;padding-right:22px!important}
+ .modal>.card{max-width:380px!important;width:100%!important;box-sizing:border-box}
+ .modal>.card:not(:has(.vf,.vb-tw,.vb-cf,.vb-day,.vb-teachers)){zoom:.88;padding:16px 16px 14px!important}
+}
+:has(>.lv-rules)>h3{text-align:center;justify-content:center;padding:0 34px}
