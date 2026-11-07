@@ -358,18 +358,19 @@
     const r = last_; const m = P.mod(r.ms.rec); const left = maxAttempts() - ST.attempts; const trial = P.isTrial();
     const waMsg = encodeURIComponent((window.MRNE || String)(`Hola, soy ${r.name}. Acabo de hacer el Placement Test en mrarrieta.com y me ubicó en el ${m.name} (${m.es}). Me interesa: ${COURSE[r.course] || 'un curso'}. Quiero más información 😊`));
     window.__pxAtt = ST.attempts; const tp0 = top(); window.__pxAtt = 0; /* v525: muestra el intento presentado */
-    shell(`${tp0}<div class="card center fx-res"><div class="px-head">${M.mascot('mascot bounce', 'celebrate')}
-      <div class="px-tx"><span class="px-eye">${window.MRI ? MRI('compass') : ''} Tu ruta de aprendizaje empieza en</span><div class="px-mod">${esc(m.name)}</div><div class="px-band">${esc(m.es)} · ${esc(m.level)}</div></div></div>
-      <p class="muted">${esc(r.name)} — ${esc(r.attemptLabel)}</p>
-      <div class="pt-mods">${[1, 2, 3, 4].map(k => { const mm = P.mod(k), x = r.ms.mods[k]; return `<div class="${k === r.ms.rec ? 'rec' : x.ok ? 'ok' : ''}"><b>${esc(mm.name)}</b><small>${esc(mm.es)}</small><span>${Math.round(x.pct * 100)}%</span><em>${k === r.ms.rec ? '📍 Empiezas aquí' : x.ok ? '✓ Dominado' : '—'}</em></div>`; }).join('')}</div>
-      <div class="fx-bars">${Object.keys(r.per).map(k => `<div><span>${EX.sections.find(s => s.key === k).icon} ${NAMES[k]}</span><div class="bar"><i style="width:${r.per[k].score * 10}%"></i></div><b>${r.per[k].score.toFixed(1)}</b></div>`).join('')}</div>
-      ${(() => { const z = window.MRSPK9 ? MRSPK9.summary(ITEMS, answers || []) : {}; return z.pron != null ? `<div class="sp9-sum"><div><b>${z.pron}</b><span>Pronunciación</span></div>${z.flu != null ? `<div><b>${z.flu}</b><span>Fluidez</span></div>` : ''}</div>` : ''; })()}<div class="fx-comment">${r.timedOut ? `<b>⏱ Se acabó el tiempo (${CFG.TIME_MIN} minutos).</b> Tu prueba se envió automáticamente con las respuestas que tenías.<br><br>` : ''}<b>Comentario:</b> ${esc(comment(r.per, r.ms))}</div>
-      ${(() => { const asg = P.assigned(); return asg && asg.n > m.n ? `<div class="pt-trial">🎓 <b>Ojo:</b> en este dispositivo ya aprobaste el examen final del ${esc(P.mod(asg.n - 1).name)}, por eso hoy tu ruta está en el <b>${esc(asg.name)} (${esc(asg.es)})</b>.</div>` : ''; })()}
-      ${trial ? `<div class="pt-trial">🟢 <b>Acceso gratuito:</b> ya puedes explorar los <b>3 primeros temas</b> del ${esc((P.trialMod() || m).name)}.</div>` : ''}
+    const SK = Object.keys(r.per).map(k => `<div><span>${EX.sections.find(s => s.key === k).icon}</span><small>${NAMES[k]}</small><b>${r.per[k].score.toFixed(1)}</b></div>`).join('');
+    const z9 = (() => { try { return window.MRSPK9 ? MRSPK9.summary(ITEMS, answers || []) : {}; } catch (e) { return {}; } })();
+    const asg0 = P.assigned();
+    shell(`${tp0}<div class="card center fx-res fxc"><div class="fxc-hd">${M.mascot('mascot bounce', 'celebrate')}
+      <div class="fxc-tx"><span class="px-eye">${window.MRI ? MRI('compass') : ''} Tu ruta empieza en</span><b class="fxc-mod">${esc(m.name)}</b><small>${esc(m.es)} · ${esc(m.level)}</small></div></div>
+      <div class="fxc-mods">${[1, 2, 3, 4].map(k => { const mm = P.mod(k), x = r.ms.mods[k]; return `<div class="${k === r.ms.rec ? 'rec' : x.ok ? 'ok' : ''}"><small>${esc(mm.name)}</small><b>${Math.round(x.pct * 100)}%</b><em>${k === r.ms.rec ? 'Empiezas aquí' : x.ok ? '✓ Dominado' : '—'}</em></div>`; }).join('')}</div>
+      <div class="fxc-sk">${SK}</div>${z9.pron != null ? `<p class="fxc-sp">Pronunciación <b>${z9.pron}</b>${z9.flu != null ? ` · Fluidez <b>${z9.flu}</b>` : ''}</p>` : ''}
+      <p class="fxc-cm">${r.timedOut ? `<b>⏱ Se acabó el tiempo (${CFG.TIME_MIN} min):</b> se envió con tus respuestas. ` : ''}${esc(comment(r.per, r.ms))}</p>
+      ${asg0 && asg0.n > m.n ? `<p class="fxc-tr">🎓 Ya aprobaste el examen final del ${esc(P.mod(asg0.n - 1).name)}: tu ruta sigue en el <b>${esc(asg0.name)}</b>.</p>` : ''}
+      ${trial ? `<p class="fxc-tr">🎁 <b>Acceso gratuito:</b> ya puedes explorar los <b>3 primeros temas</b> del ${esc((P.trialMod() || m).name)}.</p>` : ''}
       <div class="fx-notify">${cloud() ? '<div id="n0" class="pending">⏳ Enviando tu resultado a administración…</div>' : ''}<div id="n1" class="pending">⏳ Guardando resultados…</div><div id="n2" class="pending">⏳ Enviando correo con tu resultado…</div><div id="n3" class="pending">⏳ Enviando copia a administración…</div></div>
-      <div class="row" style="justify-content:center;margin-top:14px"><button class="btn k lg" id="prof">Continuar →</button>
-        ${(+ST.attempts || 0) >= 2 ? `<p class="fx-next" style="width:100%">Podrás repetirla <b>${nextTxt()}</b></p>` : '<button class="btn w" id="again">Repetir ahora</button>'}</div>
-      <p class="muted center" style="font-size:14px;margin-top:10px">¿No te sientes a gusto con tu resultado? Puedes repetir la prueba: <b>tu ruta de aprendizaje se actualiza con el nuevo resultado</b>.</p></div>`);
+      <div class="fxc-bt"><button class="btn k" id="prof">Continuar →</button>${(+ST.attempts || 0) >= 2 ? '' : '<button class="btn w" id="again">Repetir la prueba</button>'}</div>
+      <p class="fxc-ft">${esc(r.name)} · ${esc(r.attemptLabel)} · ${(+ST.attempts || 0) >= 2 ? 'Podrás repetirla ' + nextTxt() : 'si la repites, tu ruta se actualiza'}</p></div>`);
     wireExit(); sfx('win'); M.confetti(3500);
     $('#prof').onclick = () => { scrollTo(0, 0); ctx.route('home'); }; // 🧭 vuelve a su perfil: la guía marca el paso en verde y muestra el siguiente 
     if ($('#again')) $('#again').onclick = () => run(app, ctx);
