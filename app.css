@@ -8901,3 +8901,13 @@ body:has(.fx-top) .topbar,body:has(.fx-top) #topbar,body:has(.fx-top) #tpr-strip
  .m3t-v{aspect-ratio:1.55/1;width:min(100%,500px)}
 }
 .slw-w:not(.full){flex:none}
+/* 🎁 v603: clase gratis — confirmación de asistencia (sobrio, igual a Premium) */
+.fc-cf{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;gap:8px;background:#f3fcf6;border:1px solid #bbf7d0;border-radius:14px;padding:10px 12px;margin:2px 0 4px;text-align:center}
+.fc-cf>span{font:700 13px Inter,sans-serif;color:#b45309}.fc-cf.ok>span{color:#15803d;display:inline-flex;align-items:center;gap:6px}.fc-cf.ok svg{width:16px;height:16px}
+.fc-cf .fc-yes{width:100%;max-width:340px}
+.btn.fc-yes{background:#16a34a;border-color:#16a34a;color:#fff;display:inline-flex;align-items:center;justify-content:center;gap:6px}.btn.fc-yes:hover{background:#15803d}.btn.fc-yes svg{width:17px;height:17px}
+.fc-note{background:#f3fcf6;border:1px solid #bbf7d0;border-radius:12px;padding:9px 12px;margin:8px 0;text-align:center}.fc-note b{display:block;font:800 13px Poppins,sans-serif;color:#15803d}.fc-note span{font-size:12.5px;color:#334155;line-height:1.4}
+.lv-noacum.fc{background:#f3fcf6;border-left-color:#16a34a}
+.fc-okm{text-align:center}.fc-okc{width:56px;height:56px;border-radius:50%;background:#e7f6ee;color:#16a34a;display:grid;place-items:center;margin:4px auto 10px}.fc-okc svg{width:28px;height:28px}.fc-okm h3{margin:0 0 6px}.fc-okm p{color:#475569;margin:0 0 14px}
+.tp-fc{display:inline-block;margin-left:6px;font:800 9.5px Poppins,sans-serif;letter-spacing:.06em;background:#e7f6ee;color:#15803d;border-radius:20px;padding:2px 8px;vertical-align:middle}
+.tp-fcn{background:#f3fcf6;border:1px solid #bbf7d0;border-radius:10px;padding:8px 10px;margin:8px 0}.tp-fcn b{font:800 12.5px Poppins,sans-serif;color:#15803d}.tp-fcn span{display:block;font-size:12px;color:#334155;margin-top:2px}.tp-fcn.ok b{color:#15803d}

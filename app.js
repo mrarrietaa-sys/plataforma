@@ -196,7 +196,7 @@
       return `<div class="agr-tp">${th}<div class="agr-ls">${t.parts.map(p => { const d = rev || (S.parts[p.id] && S.parts[p.id].done), st = M.partStars(p.id), c = p.id === curId && !d;
         return `<button class="agr-l${d ? ' d' : ''}${c ? ' c' : ''}" data-p="${p.id}"><span class="agr-ic">${MRI(d ? 'check' : 'play')}</span><span class="agr-lx"><b>LECCIÓN ${p.part}</b><small>${esc(p.title)}</small></span>${st ? `<span class="agr-st">${[1, 2, 3].map(k => `<i class="${k <= st ? 'on' : ''}">★</i>`).join('')}</span>` : ''}</button>`; }).join('')}</div></div>`; }).join('');
     const pg = (k) => `href="index.html" data-pgo="${k}"`;
-    app.innerHTML = `<div class="agr ${AG}"><nav class="agr-side"><a ${pg('top')}>${MRI('compass')}<span>Inicio</span></a><a class="on" ${pg('learn')}>${MRI('book')}<span>Módulos</span></a>${MRAP.plan && MRAP.plan().premium ? `<a ${pg('cls')}>${MRI('video')}<span>Clases</span></a>` : ''}<a ${pg('me')}>${MRI('user')}<span>Cuenta</span></a></nav>
+    app.innerHTML = `<div class="agr ${AG}"><nav class="agr-side"><a ${pg('top')}>${MRI('compass')}<span>Inicio</span></a><a class="on" ${pg('learn')}>${MRI('book')}<span>Módulos</span></a>${MRAP.plan && MRAP.plan().cls ? `<a ${pg('cls')}>${MRI('video')}<span>Clases</span></a>` : ''}<a ${pg('me')}>${MRI('user')}<span>Cuenta</span></a></nav>
       <div class="agr-main"><section class="agr-hero ${AG}"><div class="agr-hx"><a class="agr-bk" href="index.html">${SVB}Mi perfil</a><h1>${esc(M.MOD.es)} · ${kids ? 'Mi aventura' : esc(M.MOD.levelEs || M.MOD.id)}</h1><small>${rev ? 'Superado · modo repaso' : `${doneN} de ${totP} lecciones`}${!rev && cur ? ` · ${kids ? 'Estación' : 'Tema'}: ${esc(cur.es)}` : ''}</small>
         <div class="agr-sk">${SK.map(([k, ic, nm]) => `<div>${MRI(ic)}<span>${nm}</span><i style="--w:${M.skillPct(k)}%"></i></div>`).join('')}</div>
         ${nu && !rev ? `<button class="agr-go" id="cont">${MRI('play')}${S.parts[nu.id] && S.parts[nu.id].step ? 'Continuar' : 'Empezar'}: ${esc(nu.title)}</button>` : ''}${!nu && MRAP.isTrial() ? '<button class="agr-go" id="buy3">' + MRI('unlock') + 'Desbloquear toda mi ruta</button>' : ''}</div>
@@ -205,7 +205,7 @@
         <div class="agr-sec"><h2>${kids ? 'Estaciones' : 'Temas'} del ${esc(M.MOD.es)}</h2><button class="agr-pr" id="prog">${MRI('target')}Mi progreso</button></div>
         <div class="agr-grid">${tp}</div>
         <div class="agr-ft"><span class="agr-fti">${MRI('award')}</span><div><b>Final Test</b><small>${S.final && S.final.passed ? 'Aprobado · ' + (S.final.best / 10).toFixed(1) + ' / 10' : M.finalUnlocked() ? (M.MOD.course ? '16 preguntas · 20 minutos' : '12 preguntas · 15 minutos') + ' · intentos ilimitados' : `Se abre al terminar las ${totP} lecciones`}</small></div><button class="agr-ftb" id="final-b">${M.finalUnlocked() ? 'Presentar' : SVL + ' ' + M.doneCount() + '/' + totP}</button>${S.final && S.final.passed ? `<button class="agr-ftb" id="cert-b">${MRI('grad')}Certificado</button>` : ''}</div>
-      </div><nav class="agr-tab"><a ${pg('top')}>${MRI('compass')}<span>Inicio</span></a><a class="on" ${pg('learn')}>${MRI('book')}<span>Módulos</span></a>${MRAP.plan && MRAP.plan().premium ? `<a ${pg('cls')}>${MRI('video')}<span>Clases</span></a>` : ''}<a ${pg('me')}>${MRI('user')}<span>Cuenta</span></a></nav></div>`;
+      </div><nav class="agr-tab"><a ${pg('top')}>${MRI('compass')}<span>Inicio</span></a><a class="on" ${pg('learn')}>${MRI('book')}<span>Módulos</span></a>${MRAP.plan && MRAP.plan().cls ? `<a ${pg('cls')}>${MRI('video')}<span>Clases</span></a>` : ''}<a ${pg('me')}>${MRI('user')}<span>Cuenta</span></a></nav></div>`;
     $$('[data-pgo]', app).forEach(a => a.onclick = () => { try { sessionStorage.setItem('mra_pg', a.dataset.pgo); } catch (e) { } });
     $$('.agr-l', app).forEach(b => b.onclick = () => route('class', b.dataset.p));
     $$('.agr-tp.lk', app).forEach(b => b.onclick = () => lockGate(+b.dataset.lk));
@@ -398,7 +398,7 @@
   function trialModal() {
     if (window.MRPLANS) return MRPLANS.modal(M);
     const m = M.modal(`<div class="center">${M.mascot('mascot', 'present')}</div><h3 class="center">🟢 Fin de tu acceso gratuito</h3>
-      <p class="center" style="font-size:17px">Tu acceso gratuito incluye los <b>2 primeros temas</b> de tu ruta. ¿Te gustó la experiencia? <b>Inscríbete</b> y sigue aprendiendo con todos los temas, el examen final y tu certificado 🎓</p>
+      <p class="center" style="font-size:17px">Tu acceso gratuito incluye los <b>3 primeros temas</b> de tu ruta. ¿Te gustó la experiencia? <b>Inscríbete</b> y sigue aprendiendo con todos los temas, el examen final y tu certificado 🎓</p>
       <a class="btn block" style="text-decoration:none;background:#25D366;color:#fff" target="_blank" rel="noopener" href="https://wa.me/${C.WHATSAPP}?text=${encodeURIComponent((window.MRNE || String)(`¡Hola! Soy ${S.name}. Empecé gratis en la plataforma y quiero inscribirme 🚀`))}">💬 Quiero inscribirme</a>
       <button class="btn w block" style="margin-top:8px" id="cl">Seguir explorando</button>`, { x: true });
     $('#cl', m).onclick = () => m.remove();

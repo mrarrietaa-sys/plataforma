@@ -40,6 +40,10 @@
   const studentName = (code) => { const s = D && D.students[String(code).toUpperCase()]; return s ? s.name || s.code : code; };
   const groupOf = (id) => (D.groups || []).find((g) => g.id === id);
   const meetOf = () => ''; // 🎥 las clases son en la clase en vivo de la plataforma (sin enlaces externos)
+  // 🎁 v603: clase gratis — el profe sabe que es un estudiante de clase gratis y si ya confirmó
+  const fcIs = (c) => c && c.type === 'vip' && String(c.flags || '').split(',').indexOf('gratis') >= 0;
+  const fcNote = (c) => { if (!fcIs(c)) return ''; const f = String(c.flags || '').split(','); if (c.status !== 'scheduled') return f.indexOf('noconf') >= 0 ? '<div class="tp-fcn"><b>Estudiante de clase gratis</b><span>No confirmó a tiempo: la clase se canceló sola. No tienes que conectarte.</span></div>' : '';
+    return f.indexOf('fok') >= 0 ? '<div class="tp-fcn ok"><b>Estudiante de clase gratis · ✓ Confirmó</b><span>Es su primera clase con la escuela. ¡Que viva la mejor experiencia!</span></div>' : '<div class="tp-fcn"><b>Estudiante de clase gratis</b><span>Es su primera clase con la escuela. Esperando su confirmación: si no confirma 12 horas antes, se cancela sola y te avisamos.</span></div>'; };
   const typeBadge = (c) => c.type === 'vip' ? '' /* v597: todas las clases son individuales, no hace falta decirlo */ : (c.type === 'club' ? '<span class="tp-badge grp">Club</span>' : '<span class="tp-badge grp">Grupal</span>');
   const statusBadge = (c) => ({ done: '<span class="tp-st done">Dictada ✓</span>', noshow: '<span class="tp-st noshow">No asistió</span>', cancelled: '<span class="tp-st canc">Cancelada</span>', latecancel: '<span class="tp-st canc">Cancelada tarde</span>', tnoshow: '<span class="tp-st noshow">⚠️ No te conectaste</span>', tlate: '<span class="tp-st noshow">⚠️ Cancelaste tarde</span>' }[c.status] || (c.date <= today() ? '<span class="tp-st pend">Por marcar</span>' : '<span class="tp-st sch">Programada</span>'));
   const whoOf = (c) => c.type === 'vip' ? esc(studentName(c.students[0] || '')) : esc(c.type === 'club' ? (c.topic || 'Club') : ((groupOf(c.groupId) || {}).name || 'Grupo')) + ` · ${c.students.length} estudiante${c.students.length === 1 ? '' : 's'}`;
@@ -303,7 +307,7 @@
     const r = rel(c.date), link = meetOf(c), canMark = c.status === 'scheduled' && c.date <= today();
     return `<li class="tp-cls${r === 'Hoy' ? ' today' : r === 'Mañana' ? ' tomorrow' : ''}">
       <div class="tp-cls-when"><b>${r || dLabel(c.date)}</b><span>${r ? dLabel(c.date) + ' · ' : ''}${h12(c.time)} – ${h12(endHM(c.time, c.duration))}</span></div>
-      <div class="tp-cls-what">${typeBadge(c)} ${statusBadge(c)}<div class="tp-cls-who">${whoOf(c)}</div>${c.topic && c.type !== 'club' ? `<small class="muted">Tema: ${esc(c.topic)}</small>` : ''}${(() => { const q = window.MRTH && c.type !== 'club' && c.topic && MRTH.parse(c.topic); if (!q) return ''; const st = (D && D.students[String(c.students[0] || '').toUpperCase()]) || {}; return MRTH.html(q.m, q.t, st.ag || 'adult', 't', { ex: 1, g: 1 }); })()}
+      <div class="tp-cls-what">${fcNote(c)}${typeBadge(c)} ${statusBadge(c)}<div class="tp-cls-who">${whoOf(c)}</div>${c.topic && c.type !== 'club' ? `<small class="muted">Tema: ${esc(c.topic)}</small>` : ''}${(() => { const q = window.MRTH && c.type !== 'club' && c.topic && MRTH.parse(c.topic); if (!q) return ''; const st = (D && D.students[String(c.students[0] || '').toUpperCase()]) || {}; return MRTH.html(q.m, q.t, st.ag || 'adult', 't', { ex: 1, g: 1 }); })()}
         ${c.status === 'done' ? `<small class="muted">Asistencia: ${c.students.filter((x) => (c.attendance || {})[String(x).toUpperCase()] === true || (c.attendance || {})[x] === true).length}/${c.students.length}</small>` : ''}
         ${(c.type === 'group' || c.type === 'club') && c.status === 'scheduled' ? `<small class="muted">✅ ${+c.confirmed || 0} confirmado(s)${c.flags === 'cutoff' ? '' : ' · se cierra 3 h antes'}</small>` : ''}${c.status === 'sin-asistentes' ? '<small class="tp-note">🙌 Nadie confirmó: no necesitas conectarte.</small>' : ''}
         ${c.notes && opt && opt.notes ? `<small class="tp-note">📝 ${esc(c.notes)}</small>` : ''}</div>
@@ -398,7 +402,7 @@
   function accRow(c) {
     const r = rel(c.date), on = r === 'Hoy', tp = String(c.topic || '').replace(/\s*\([^)]*\)\s*$/, '').replace(/^Módulo (\d+) · /, 'M$1 · ');
     const chev = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
-    return `<li class="tp-acc${on ? ' open today' : ''}"><button type="button" class="tp-acc-h" aria-expanded="${on ? 'true' : 'false'}"><span class="tp-acc-d"><b>${r || dLabel(c.date)}</b><small>${h12(c.time)}</small></span><span class="tp-acc-w"><b>${whoOf(c)}</b><small>${esc(tp || 'Tema por definir')}</small></span><span class="tp-acc-ch">${chev}</span></button><div class="tp-acc-b"${on ? '' : ' hidden'}><ul class="tp-list">${classRow(c)}</ul></div></li>`;
+    return `<li class="tp-acc${on ? ' open today' : ''}"><button type="button" class="tp-acc-h" aria-expanded="${on ? 'true' : 'false'}"><span class="tp-acc-d"><b>${r || dLabel(c.date)}</b><small>${h12(c.time)}</small></span><span class="tp-acc-w"><b>${whoOf(c)}</b>${fcIs(c) ? '<span class="tp-fc">CLASE GRATIS</span>' : ''}<small>${esc(tp || 'Tema por definir')}</small></span><span class="tp-acc-ch">${chev}</span></button><div class="tp-acc-b"${on ? '' : ' hidden'}><ul class="tp-list">${classRow(c)}</ul></div></li>`;
   }
 
   /* ---------- 2. Mi disponibilidad ---------- */

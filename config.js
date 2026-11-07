@@ -46,7 +46,7 @@ window.M1CONFIG = {
     { hash: "h7kthe217u", note: "Estudiante de ejemplo (ESTUDIANTE-DEMO)" },
     { hash: "h1ckadok1j3", module: 4, all: true, note: "Estudiante de REVISIÓN con todo habilitado (REVISION-TOTAL)" }
   ],
-  // Códigos de ACCESO GRATUITO ("Empieza gratis"): clasificación + solo los 2 primeros temas.
+  // Códigos de ACCESO GRATUITO ("Empieza gratis"): clasificación + solo los 3 primeros temas.
   // Código de ejemplo incluido: GRATIS-DEMO
   TRIAL_CODES: [
     { hash: "h1hi92961dc", note: "Acceso gratuito de ejemplo (GRATIS-DEMO)" },
