@@ -25,7 +25,7 @@
     if ($('#snd-b')) $('#snd-b').onclick = () => { const on = !voiceOn(); try { localStorage.setItem(VKEY, on ? '0' : '1'); } catch (e) { } if (!on) M.stop(); $('#snd-b').textContent = on ? '🔊' : '🔇'; M.toast(on ? '🔊 Voz de bienvenida activada' : '🔇 Voz de bienvenida desactivada'); };
   }
   let curRoute = 'home';
-  function route(r) { try { if (r !== 'placement') document.documentElement.classList.remove('in-place'); } catch (e) { } curRoute = r || 'home'; M.stop && M.stop(); window.scrollTo(0, 0); topbar(); const p = PAGE !== 'home' ? null : P.get();
+  function route(r) { try { if (r !== 'placement') document.documentElement.classList.remove('in-place'); } catch (e) { } try { document.body.classList.toggle('rt-home', !r || r === 'home'); } catch (e) { } /* v609 */ curRoute = r || 'home'; M.stop && M.stop(); window.scrollTo(0, 0); topbar(); const p = PAGE !== 'home' ? null : P.get();
     if (p) { const hd = document.querySelector('.lp-dock.home'); if (hd) { hd.remove(); document.body.classList.remove('home-app'); document.documentElement.classList.remove('home-lock'); } }
     if (!p) return login();
     if (!p.first && !(p.cloud && p.type === 'student')) return nameStep(); // v410: los datos (nombre, fecha de nacimiento, correo) ya se piden al inscribirse; solo se preguntan si de verdad faltan en un acceso sin nube
@@ -689,8 +689,11 @@
       <div class="g1-box"><span class="g1-lb">TU AVENTURA DE INICIO</span>${steps.map((x, i) => (i ? `<div class="g1-line${steps[i - 1].st === 'ok' ? ' ok' : ''}"></div>` : '') + row(x)).join('')}</div>
       <div class="g1-stars">Estrellas de inicio <i>${'★'.repeat(Math.min(done, base))}${'☆'.repeat(Math.max(0, base - done))}</i></div></div>`; }
     const AH = [[`¡Hola, ${nm}!`, `Solo ${n} pasos para empezar. Todo lo demás ya está abierto.`, 'mra-x-plane-red.webp'], [`¡Perfecto, ${nm}!`, `Tu objetivo: <b>${gname}</b>. Ahora descubre tu nivel.`, 'mra-x-plane-red.webp'], [`¡Muy bien, ${nm}!`, `Tu nivel es <b>${lvl}</b>. Ahora tu primera lección.`, 'mra-x-plane-red.webp']][stage];
-    return `<div class="card g1 g1-ad"><div class="g1-hd"><img src="${AH[2]}" alt="Mr. Arrieta"><div><span class="lbl db-red">Tu primer día</span><h2>${AH[0]}</h2><p>${AH[1]}</p></div></div>
-      <div class="g1-box">${steps.map(row).join('')}</div></div>`;
+    const AI = { ok: '<svg viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m8 12 3 3 5-6"/></svg>', on: '<svg viewBox="0 0 24 24" fill="none" stroke="#E3242B" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4" fill="#E3242B" stroke="none"/></svg>', off: '<svg viewBox="0 0 24 24" fill="none" stroke="#a3b1c2" stroke-width="2.2"><circle cx="12" cy="12" r="10"/></svg>' }; // v609: primer día de adultos sobrio
+    const rowA = (x) => `<div class="g1a-st ${x.st}"><span class="g1a-ic">${AI[x.st === 'ok' ? 'ok' : x.st === 'on' ? 'on' : 'off']}</span><div class="g1a-tx"><b>${x.b}${x.tag ? `<em class="g1-tag">${x.tag}</em>` : ''}</b><small>${x.s}</small></div>${x.btn ? '<div class="g1a-bt">' + x.btn + '</div>' : ''}</div>`;
+    const AS = [`Solo ${n} pasos para empezar.`, `Objetivo: <b>${gname}</b>`, `Tu nivel: <b>${lvl}</b>`][stage];
+    return `<div class="card g1 g1-ad g1-ad2"><div class="g1a-hd"><div class="ad-plane"><img src="mra-x-plane-red.webp" alt="Mr. Arrieta"><i></i></div><div><span class="ad-k">Tu primer día</span><h2>Hola, ${nm}</h2><p>${AS}</p></div></div>
+      <div class="g1a-pg">${done} de ${n} listos<i><u style="width:${Math.round(done / n * 100)}%"></u></i></div>${steps.map(rowA).join('')}</div>`;
   }
   function firstDayDone(ag) { // el día que termina la lección 1: mensaje de cierre (luego desaparece)
     let d = null; try { if (!localStorage.getItem(gK('mra_g1seen_v1'))) return ''; d = localStorage.getItem(gK(G1K)); if (!d) { d = g1Today(); localStorage.setItem(gK(G1K), d); } } catch (e) { return ''; }
@@ -718,12 +721,12 @@
         <a class="btn block pt-wa" href="#" data-plans>Renovar mi plan</a></div></div>`;
     } else if (a && a.ready && !staff) {
       const pr = P.progress(a.id), tot = trial ? 6 : a.classes; // 🎁 v603: 3 temas gratis
-      main = `<div class="card pt-mymod db-hero"><div class="db-hero-tx"><span class="lbl db-red">${pr.done ? 'Tu siguiente paso' : 'Empieza tu ruta'}</span>
-        <h2><small class="pt-here">📍 Estás aquí</small>${esc(a.name)} · ${esc(a.es)}</h2>
-        <p class="db-sub">${pr.done} de ${trial ? '6 lecciones de tu acceso gratuito' : tot + ' lecciones'} completadas${a.n > (p.module || 1) ? ' · ¡Avanzaste en tu ruta! 🎉' : ''}</p>
-        <div class="db-bar"><i style="width:${pr.pct}%"></i></div>
-        <div class="db-hero-b"><a class="btn db-wbtn lg" href="${a.url}">${MRI('video')} ${pr.done ? 'Continuar mi ruta' : 'Empezar mi ruta'}</a><button class="btn db-gbtn sm" id="pt3">¿No estás a gusto con tu nivel?</button></div></div>
-        <img class="db-hero-mra db-plane" src="mra-x-plane-red.webp" alt="Mr. Arrieta"></div>`;
+      main = `<div class="card pt-mymod db-hero ad-hero"><div class="db-hero-tx"><span class="ad-k">${pr.done ? 'Tu siguiente paso' : 'Empieza tu ruta'}</span>
+        <h2>${esc(a.name)} · ${esc(a.lv || a.id)}</h2>
+        <p class="db-sub">${esc(String(a.es || '').replace(/\s*\([^)]*\)\s*$/, ''))} · ${pr.done} de ${trial ? '6 lecciones gratis' : tot + ' lecciones'}${a.n > (p.module || 1) ? ' · ¡avanzaste de módulo!' : ''}</p>
+        <div class="db-bar"><i style="width:${pr.pct}%"></i></div><small class="ad-pct">${pr.pct} % de tu módulo</small>
+        <div class="db-hero-b"><a class="btn db-wbtn" href="${a.url}">${pr.done ? 'Continuar mi ruta' : 'Empezar mi ruta'} →</a><button class="ad-lnk" id="pt3">¿Cambiar de nivel?</button></div></div>
+        <div class="ad-plane"><img src="mra-x-plane-red.webp" alt="Mr. Arrieta"><i></i></div></div>`; // v609: banner de adultos sobrio con la avioneta flotando
       if (window.MRTEENS && MRTEENS.realLife) main += MRTEENS.realLife(); // v417: retos de la vida real para adultos
     } else if (a) {
       const ready = a && a.ready;
@@ -741,6 +744,7 @@
     if (kids && a && a.ready && !P.isExpired()) { main = MRKIDS.hero(p, a, P.look().nick || p.first || '') + MRKIDS.words(); kidsX = MRKIDS.map(a) + MRKIDS.medals(a); }
     else if (kids && newbie) main = main.replace('mra-x-plane-red.webp', 'mra-x-balloon1.webp');
     const teens = !staff && !kids && window.MRTEENS && MRTEENS.on(); document.body.classList.toggle('ag-teens', !!teens); // 🚀 perfil Teens (12 a 17 años)
+    const adult = !staff && !kids && !teens; document.body.classList.toggle('ag-adult', adult); // v609: perfil de adultos sobrio y premium
     if (teens && a && a.ready && !P.isExpired()) { main = MRTEENS.hero(p, a, P.look().nick || p.first || '') + `<div class="tn-row one">${MRTEENS.missions()}</div>` + (MRTEENS.realLife ? MRTEENS.realLife() : ''); }
     else if (teens && newbie) main = main.replace('mra-x-plane-red.webp', 'mra-x-rocket.webp');
     const g1ag = kids ? 'kids' : teens ? 'teens' : 'adult'; let g1on = false;
@@ -775,6 +779,7 @@
       <section class="pg" data-pgk="top">
 
       ${birthdayBanner()}
+      ${adult && !newbie ? `<div class="ad-hi"><div><small>${(s0 => s0[0].toUpperCase() + s0.slice(1))(new Date().toLocaleDateString('es-CO', { weekday: 'long', day: 'numeric', month: 'long' }))}</small><h1>${esc(greet)}, ${esc(P.look().nick || p.first || '')}</h1></div><span class="ad-plan">${MRI(plIc)} ${esc(plName.replace(' clases', ''))}</span></div>` : ''}
       <div id="pt-ann"></div><div id="pt-ofr"></div>
       ${P.isExpired() || (trial && !(window.MRAC && MRAC.code())) ? `<div class="pt-trialbar">${P.isExpired() ? `⏰ <div><b>Tu plan venció.</b> Todo tu contenido está bloqueado, pero tu progreso sigue guardado. Apenas renueves, se desbloquea todo. <a href="#" class="tb-up">Ver planes →</a></div>` : `🟢 <div><b>Acceso gratuito:</b> la prueba de clasificación y los <b>3 primeros temas</b> de tu módulo. <a href="#" class="tb-up">Ver planes →</a></div>`}</div>` : ''}
       ${main}
@@ -1177,7 +1182,7 @@
     if (before !== sig()) { stp('perfil actualizado'); topbar(); return home(); } // el plan cambió en la nube → actualizar perfil
     const ann = r.conf && r.conf.announcement; if (ann && $('#pt-ann')) $('#pt-ann').innerHTML = `<div class="pt-ann">📣 ${esc(ann)}</div>`;
     try { if (window.MROFR && $('#pt-ofr') && !$('#pt-ofr').dataset.on && (!M.ageGroup || M.ageGroup() === 'adult') && P.plan().premium) { $('#pt-ofr').dataset.on = '1'; const q = P.get() || {}; MROFR.init({ kind: 'est', mount: '#pt-ofr', name: ((q.first || '') + ' ' + (q.last || '')).trim(), call: (a, d) => MRAC.call(a, Object.assign({ code: MRAC.code() }, d || {})) }); } } catch (e) { } // v573: testimonios
-    if (r.trialLeft != null && r.trialLeft > 0 && $('#pt-ann')) $('#pt-ann').insertAdjacentHTML('afterbegin', `<div class="pt-ann pt-trial"><span>🎁 ${r.trialLeft === 1 ? '<b>Hoy es tu último día</b> de acceso gratuito.' : 'Te quedan <b>' + r.trialLeft + ' días</b> de acceso gratuito.'}</span><a class="btn k sm" href="#" data-plans>Quiero inscribirme</a></div>`);
+    if (r.trialLeft != null && r.trialLeft > 0 && $('#pt-ann')) $('#pt-ann').insertAdjacentHTML('afterbegin', document.body.classList.contains('ag-adult') ? `<div class="pt-ann ad-trial"><span>Acceso gratuito · ${r.trialLeft === 1 ? '<b>hoy es tu último día</b>' : 'te quedan <b>' + r.trialLeft + ' días</b>'}</span><a href="#" data-plans>Ver planes</a></div>` /* v609: adultos, franja discreta */ : `<div class="pt-ann pt-trial"><span>🎁 ${r.trialLeft === 1 ? '<b>Hoy es tu último día</b> de acceso gratuito.' : 'Te quedan <b>' + r.trialLeft + ' días</b> de acceso gratuito.'}</span><a class="btn k sm" href="#" data-plans>Quiero inscribirme</a></div>`);
     refCard(); notesCard();
     if (r.mail && r.mail.bad && $('#pt-ann')) { $('#pt-ann').insertAdjacentHTML('afterbegin', `<div class="pt-ann pt-mailbad"><span>✉️ No hemos podido enviarte correos a <b>${esc(r.mail.email)}</b>. Corrígelo para recibir los avisos de tus clases.</span><button class="btn w sm" id="pt-mailfix">✏️ Corregir mi correo</button></div>`); $('#pt-mailfix').onclick = () => mailEdit(r.mail.email); }
     stp('acuerdo'); if (window.MRAGREE && (P.get() || {}).type !== 'staff' && P.plan().paid) await MRAGREE.check(); stp('mostrando'); // 📄 acuerdo de servicio (una sola vez)
@@ -1292,6 +1297,9 @@
     if (!up.length && isF) { if (!left0 || !crF.canBook || $('.g1')) return; const e0 = document.createElement('div'); e0.id = 'pt-nc'; e0.className = 'card pt-nc empty';
       e0.innerHTML = `<div class="pt-nc-d"><b>1</b><small>clase</small></div><div class="pt-nc-t"><span class="pt-nc-l">🎁 Tu clase gratis</span><h3>Habla 50 minutos con un profe</h3><p>Elige tu profe, tu día, tu hora y tu tema. Resérvala para un día de tu acceso gratis.</p></div><div class="pt-nc-b"><button class="btn k" data-bk>${MRI('calendar')} Reservar mi clase gratis</button></div>`;
       e0.querySelector('[data-bk]').onclick = book; host.after(e0); return; }
+    if (!up.length && left0 && !$('.g1') && document.body.classList.contains('ag-adult') && !isF) { const e1 = document.createElement('div'); e1.id = 'pt-nc'; e1.className = 'card ad-book'; // v609: adultos — tarjeta compacta
+      e1.innerHTML = `<span class="ad-bki">${MRI('calendar')}</span><div class="ad-bkt"><b>Clases con profe</b><small>Te ${left0 === 1 ? 'queda <b>1 clase</b>' : 'quedan <b>' + left0 + ' clases</b>'} este mes</small></div><button class="btn k" data-bk>Reservar</button>`;
+      e1.querySelector('[data-bk]').onclick = book; host.after(e1); return; }
     if (!up.length) { if (!left0 || $('.g1')) return; /* 🧭 durante la guía del primer día no se muestra (el paso 3 la invita en su momento) */ const e0 = document.createElement('div'); e0.id = 'pt-nc'; e0.className = 'card pt-nc empty';
       e0.innerHTML = `<div class="pt-nc-d"><b>${left0}</b><small>clase${left0 === 1 ? '' : 's'}</small></div><div class="pt-nc-t"><span class="pt-nc-l">📅 Reserva tu clase</span><h3>Aún no tienes clases reservadas</h3><p>Te ${left0 === 1 ? 'queda <b>1 clase</b>' : 'quedan <b>' + left0 + ' clases</b>'} individuales en tu plan. ¡Úsalas!</p></div><div class="pt-nc-b"><button class="btn k" data-bk>${MRI('calendar')} Reservar clase</button></div>`;
       e0.querySelector('[data-bk]').onclick = book; host.after(e0); return; }
@@ -1303,7 +1311,7 @@
     const paint = () => { const ms = startMs(c) - Date.now(), min = Math.round(ms / 60000);
       const left = ms <= 0 ? '🔴 Tu clase está en curso' : min <= 5 ? '🟢 ¡Ya puedes entrar!' : min < 60 ? `Empieza en ${min} min` : min < 24 * 60 ? `Faltan ${Math.floor(min / 60)} h ${min % 60} min` : (Math.round(min / 1440) === 1 ? 'Falta 1 día' : `Faltan ${Math.round(min / 1440)} días`);
       el.innerHTML = `<div class="pt-nc-d"><b>${fmtD(c.date, { day: 'numeric' })}</b><small>${fmtD(c.date, { month: 'short' })}</small></div>
-        <div class="pt-nc-t"><span class="pt-nc-l">${c.free ? (isToday ? '📌 Hoy es tu clase gratis' : '📌 Tu clase gratis') : isToday ? '📌 Hoy tienes clase' : '📌 Tu próxima clase'}</span>
+        <div class="pt-nc-t"><span class="pt-nc-l">${(c.free ? (isToday ? '📌 Hoy es tu clase gratis' : '📌 Tu clase gratis') : isToday ? '📌 Hoy tienes clase' : '📌 Tu próxima clase').replace(document.body.classList.contains('ag-adult') ? '📌 ' : '#', '')}</span>
           <h3>${isToday ? 'Hoy' : isTom ? 'Mañana' : fmtD(c.date, { weekday: 'long', day: 'numeric', month: 'long' })} · ${fmtT(c.time)}</h3>
           <p>${pic ? `<img src="${pic}" alt="">` : ''}Con <b>${esc(c.th || c.teacher || 'tu profe')}</b>${topic ? ' · ' + esc(topic) : ''}</p>${(() => { const q = window.MRTH && c.topic && MRTH.parse(c.topic); return q ? MRTH.html(q.m, q.t, M.ageGroup && M.ageGroup(), 's') : ''; })()}
           <p class="pt-nc-c">${left}${up.length > 1 ? ` · y ${up.length - 1} clase${up.length > 2 ? 's' : ''} más reservada${up.length > 2 ? 's' : ''}` : ''}</p>

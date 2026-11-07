@@ -440,6 +440,7 @@
   function buildSteps9(p) { // orden aprobado: Goal → Speaking (repaso) → Explanation → Practice → Reading → Mission → Music → Writing
     window.__V9 = true;
     const st = [{ sec: 'Goal', k: 'goal' }];
+    if (window.MRWARM && MRWARM.has(+M.MOD.n || 1, p)) st.push({ sec: 'Warm-up', k: 'warmup' }); // v609: calentamiento de 1 minuto (Lesson 1 del primer tema)
     if (M.prevPart(p)) st.push({ sec: 'Speaking', k: 'review' });
     st.push({ sec: 'Explanation', k: 'learn' });
     const X2 = window.M2X && M2X.on(); // v519: el Módulo 2 tiene su propia experiencia
@@ -481,8 +482,8 @@
     surf: { a: 'surf', say: 'Catch the wave!' }, hero: { a: 'fly', say: 'Super English!' }, balloon1: { a: 'balloon', say: 'Up, up and away!' }, balloon2: { a: 'balloon', say: "Let's explore!" }, balloon3: { a: 'balloon', say: 'Here we go!' }, laptop: { a: 'pop', say: 'Homework time!' }, wave: { a: 'pop', say: 'Hello!' }, rocket3: { a: 'up', say: 'Full speed!' }, rocket5: { a: 'up', say: 'To the moon!' }, 'plane-red': { a: 'fly', say: 'Ready for takeoff!' }, 'plane-blue': { a: 'fly', say: 'Great job!' }, 'plane-yellow': { a: 'fly', say: 'This way!' }, 'plane-green': { a: 'fly', say: 'Keep flying!' } };
   // 🎯 misión del tema según el objetivo (solo en la última parte del tema y si el estudiante eligió objetivo)
   function missionFor(p) { try { const g = window.MRGOAL && MRGOAL.get(); if (!g || !window.MRMISSIONS) return null; const x = MRMISSIONS[(+M.MOD.n || 1) + '-' + p.topic]; const L = x && x[g.k]; if (!L) return null; const arr = Array.isArray(L) ? L : [L]; const k = Math.max(0, (+p.part || 1) - 1) * 2; const two = arr.slice(k, k + 2); return two.length ? { k: g.k, list: two } : null; } catch (e) { return null; } }
-  const SEC_IC = { Goal: '🎯', Mission: '🚀', Speaking: '🗣️', Reading: '👀', Review: '🔁', Explanation: '💡', 'Listen & practice': '🎧', Practice: '🎮', 'Oral task': '🎤', Music: '🎵', Homework: '📝' };
-  const SEC_ICO = { Writing: 'pen', Goal: 'target', Mission: 'rocket', Speaking: 'chat', Reading: 'book', Review: 'repeat', Explanation: 'bulb', 'Listen & practice': 'headphones', Practice: 'game', 'Oral task': 'mic', Music: 'music', Homework: 'pen' };
+  const SEC_IC = { 'Warm-up': '🔥', Goal: '🎯', Mission: '🚀', Speaking: '🗣️', Reading: '👀', Review: '🔁', Explanation: '💡', 'Listen & practice': '🎧', Practice: '🎮', 'Oral task': '🎤', Music: '🎵', Homework: '📝' };
+  const SEC_ICO = { 'Warm-up': 'flame', Writing: 'pen', Goal: 'target', Mission: 'rocket', Speaking: 'chat', Reading: 'book', Review: 'repeat', Explanation: 'bulb', 'Listen & practice': 'headphones', Practice: 'game', 'Oral task': 'mic', Music: 'music', Homework: 'pen' };
   const SEC_MRI = s => window.MRI ? MRI(SEC_ICO[s] || 'star') + MRI('check', 'ok') : '';
   const SEC_SC = { Reading: 'balloon2', Homework: 'laptop', Music: 'guitar', Review: 'plane-blue' };
   const FREE = ['rocket', 'balloon1', 'plane-red', 'rocket3', 'balloon3', 'plane-blue', 'drums', 'plane-yellow', 'balloon2', 'surf', 'rocket5', 'plane-green', 'hero'];
@@ -760,6 +761,7 @@
   window.M1ITL = (n, perf, info) => interlude(n, perf, info); // (pruebas)
   const STEP = {
     m2oral: (stage, p) => window.M2X.oral(stage, p), m2game: (stage, p) => window.M2X.game(stage, p), // v519 · Módulo 2
+    warmup: (stage, p) => window.MRWARM ? MRWARM.run(stage, p, { play, stop, sfx }) : Promise.resolve(null), // v609 · calentamiento
     goal: async (stage, p) => {
       const prev = M.prevPart(p);
       if (V9()) { // v461 · «Raspa y descubre»: goal corto («Hoy vas a poder…») + 2 frases; se revela en menos de 2 s
