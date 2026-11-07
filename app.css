@@ -9056,3 +9056,117 @@ body.ag-adult .ad-hero .db-hero-b{width:auto!important;max-width:none!important;
   .vb-cf-n{margin-top:10px!important}
   .vb-cf .fc-note{margin:8px 0 0}
 }
+/* ================= v611 · UN SOLO COLOR POR EDAD (solo colores: tamaños, imágenes y logos no cambian) ================= */
+/* ---------- KIDS «Sol»: crema + ámbar (el mismo de sus lecciones) ---------- */
+body.ag-kids:not(:has(.player)){background:#fff8ec!important}
+body.ag-kids .wrap.db,body.ag-kids .wrap.t2{background:transparent}
+body.ag-kids .kd-hero{background:linear-gradient(160deg,#ffe2a8 0%,#ffd27e 55%,#ffc361 100%)!important}
+body.ag-kids .kd-eye{color:#b45309!important}
+body.ag-kids .wrap.db .card:not(.kd-hero):not(.md3-hero):not(.md3-c),body.ag-kids .wrap.t2 .t2-stats>*{border-color:#fde3b4!important}
+body.ag-kids .wrap.db .btn.k:not(#pt3),body.ag-kids .kd-go,body.ag-kids .wrap.db .kd-hb .btn:not(#pt3),body.ag-kids .wrap.db .db-wbtn,body.ag-kids .md3-go,body.ag-kids .t2-go,body.ag-kids .wrap.db .g1-go:not(.g1-go2),body.ag-kids .wrap.db .pt-wa{background:#f59e0b!important;border-color:#f59e0b!important;color:#fff!important;box-shadow:0 6px 14px rgba(245,158,11,.30)!important}
+body.ag-kids .md3-hero,body.ag-kids .t2-cont{background:linear-gradient(160deg,#f59e0b,#d97706)!important}
+body.ag-kids .md3-hero .md3-go,body.ag-kids .t2-cont .t2-go{background:#fff!important;color:#b45309!important;border-color:#fff!important;box-shadow:none!important}
+body.ag-kids .md3-hero .md3-k,body.ag-kids .t2-cont .t2-k{color:#fff3d6!important}
+body.ag-kids .md3-hb i,body.ag-kids .t2-cont .t2-pr i,body.ag-kids .t2-cont [class*=bar] i,body.ag-kids .md3-hero [class*=bar] i{background:#fff!important}
+body.ag-kids .md3-c.now,body.ag-kids .md3-c:has(.md3-tag.now){border-color:#f59e0b!important;box-shadow:0 0 0 3px rgba(245,158,11,.22)!important}
+body.ag-kids .md3-tag.now,body.ag-kids .t2-tag,body.ag-kids .t2-now{background:#f59e0b!important;color:#fff!important}
+body.ag-kids .md3-ring{--c:#f59e0b}
+body.ag-kids .db-tabbar button.on,body.ag-kids .db-tabbar button.on span{color:#d97706!important}
+body.ag-kids .db-tabbar{border-top-color:#fde3b4!important}
+body.ag-kids .t2-tabs .on,body.ag-kids .t2-tabs button.on{background:#f59e0b!important;border-color:#f59e0b!important;color:#fff!important}
+body.ag-kids .t2-ring{border-color:#f59e0b!important}
+/* ---------- TEENS «Noche»: azul noche + verde menta (el mismo de sus lecciones) ---------- */
+body.ag-teens:not(:has(.player)){background:#071a3a!important}
+body.ag-teens .wrap.db,body.ag-teens .wrap.t2{color:#e6eefb}
+body.ag-teens .wrap.db .card:not(.tn-hero):not(.md3-c),body.ag-teens .wrap.db .db-side,body.ag-teens .wrap.t2 .t2-stats>*,body.ag-teens .wrap.t2 .t2-l,body.ag-teens .wrap.t2 .t2-li,body.ag-teens .md3-c,body.ag-teens .md3-bd{background:#0d2752!important;border-color:#16376e!important;color:#e6eefb!important;box-shadow:0 10px 24px rgba(0,0,0,.25)!important}
+body.ag-teens .wrap.db h1,body.ag-teens .wrap.db h2,body.ag-teens .wrap.db h3,body.ag-teens .wrap.db b,body.ag-teens .wrap.t2 h1,body.ag-teens .wrap.t2 h2,body.ag-teens .wrap.t2 h3,body.ag-teens .wrap.t2 b,body.ag-teens .md3-c b{color:#fff!important}
+body.ag-teens .wrap.db small,body.ag-teens .wrap.db p,body.ag-teens .wrap.db .muted,body.ag-teens .wrap.t2 small,body.ag-teens .wrap.t2 p,body.ag-teens .t2-k,body.ag-teens .md3-k{color:#8ea6cf!important}
+body.ag-teens .wrap.db .btn.k:not(#pt3),body.ag-teens .wrap.db .db-wbtn,body.ag-teens .tn-hb .btn:not(.w):not(#pt3),body.ag-teens .md3-go,body.ag-teens .t2-go,body.ag-teens .wrap.db .g1-go:not(.g1-go2),body.ag-teens .wrap.db .tn-go,body.ag-teens .wrap.db .pt-wa{background:#22e58a!important;border-color:#22e58a!important;color:#05213d!important;box-shadow:0 0 18px rgba(34,229,138,.30)!important}
+body.ag-teens .md3-hero,body.ag-teens .t2-cont{background:linear-gradient(160deg,#0d2752,#0a1f45)!important;border:1px solid #16376e!important}
+body.ag-teens .md3-hb i,body.ag-teens .t2-cont [class*=bar] i,body.ag-teens .md3-hero [class*=bar] i,body.ag-teens .wrap.db .db-bar i{background:#22e58a!important}
+body.ag-teens .md3-c.now,body.ag-teens .md3-c:has(.md3-tag.now){border-color:#22e58a!important;box-shadow:0 0 0 2px rgba(34,229,138,.35)!important}
+body.ag-teens .md3-tag.now,body.ag-teens .t2-tag,body.ag-teens .t2-now{background:#22e58a!important;color:#05213d!important}
+body.ag-teens .md3-tag:not(.now){background:#16376e!important;color:#8ea6cf!important}
+body.ag-teens .db-tabbar{background:#0a2147!important;border-top-color:#16376e!important}
+body.ag-teens .db-tabbar button{color:#7f97bd!important}body.ag-teens .db-tabbar button.on,body.ag-teens .db-tabbar button.on span{color:#22e58a!important}
+body.ag-teens .t2-tabs button{background:#0d2752!important;border-color:#16376e!important;color:#8ea6cf!important}body.ag-teens .t2-tabs .on,body.ag-teens .t2-tabs button.on{background:#22e58a!important;border-color:#22e58a!important;color:#05213d!important}
+body.ag-teens .t2-back,body.ag-teens .wrap.db .btn.w{background:#0d2752!important;border-color:#16376e!important;color:#fff!important}
+body.ag-teens .fx-foot,body.ag-teens .fx-foot a{color:#8ea6cf!important}
+body.ag-teens .wrap.db .pt-route,body.ag-teens .wrap.db [class*=route]{background:#0d2752!important;border-color:#16376e!important}
+body.ag-kids .t2-pr{color:#d97706!important}body.ag-teens .t2-pr{color:#22e58a!important}
+body.ag-teens .wrap.t2 .t2-cb,body.ag-teens .wrap.t2 .t2-can,body.ag-teens .wrap.t2 .t2-ls,body.ag-teens .wrap.t2 .t2-grid>*{background:#0d2752!important;border-color:#16376e!important;color:#e6eefb!important}
+body.ag-teens .wrap.t2 .t2-ls>*{border-color:#16376e!important}
+/* ---------- Página de entrada Niños y jóvenes (ninos.html): mismo «Sol» de Kids, solo colores ---------- */
+body:has(.lp-hero.lp-k){background:#fff8ec!important}
+.lp-hero.lp-k{background:linear-gradient(180deg,#ffe2a8 0%,#ffd27e 45%,#fff3dc 100%)!important}
+body:has(.lp-hero.lp-k) .btn.k{background:linear-gradient(135deg,#f59e0b,#d97706)!important;border-color:#f59e0b!important;color:#fff!important;box-shadow:0 8px 18px rgba(217,119,6,.30)!important}
+body:has(.lp-hero.lp-k) .lp-mic{background:#f59e0b!important;box-shadow:0 10px 22px rgba(245,158,11,.35)!important}
+body:has(.lp-hero.lp-k) .lp-hero h1 em,body:has(.lp-hero.lp-k) .lp-hero h1 mark,body:has(.lp-hero.lp-k) .lp-hero h1 .hl{background:#f59e0b!important;color:#fff!important}
+body:has(.lp-hero.lp-k) .lp-tag,body:has(.lp-hero.lp-k) .lp-pb{background:#d97706!important}
+body:has(.lp-hero.lp-k) .ld-cyb,body:has(.lp-hero.lp-k) .ld-wax{background:#d97706!important}
+body:has(.lp-hero.lp-k) [class*=tab] .on,body:has(.lp-hero.lp-k) nav .on{background:#f59e0b!important;color:#fff!important}
+body:has(.lp-hero.lp-k) .ld-nav .on,body:has(.lp-hero.lp-k) .ld-nav a.on,body:has(.lp-hero.lp-k) .ld-nav button.on{background:#f59e0b!important;color:#fff!important}
+body.ag-teens .wrap.t2 .t2-can,body.ag-teens .wrap.t2 .t2-can *:not(em):not(.t2-l){color:#fff!important}body.ag-teens .wrap.t2 .t2-can i{color:#8ea6cf!important}
+/* entrada Niños y jóvenes: las manchas blancas pasan a ser nubes (como en el perfil Kids) */
+.lp-k .lp-cloud{max-width:200px;height:auto!important;aspect-ratio:4/1;border-radius:999px!important;filter:none!important;background:#fff!important;opacity:.9;box-shadow:0 6px 14px rgba(11,42,91,.05)}
+.lp-k .lp-cloud:before,.lp-k .lp-cloud:after{content:'';position:absolute;background:#fff;border-radius:50%;aspect-ratio:1}
+.lp-k .lp-cloud:before{width:40%;left:16%;bottom:40%}
+.lp-k .lp-cloud:after{width:28%;left:50%;bottom:30%}
+@media(min-width:900px){.lp-k .lp-badge.b2{top:24%!important;bottom:auto!important;right:34%!important}}
+
+/* ================= v612 · Clases y Ranking con el color de cada edad (solo colores) ================= */
+/* ADULTOS: azul oscuro + rojo */
+body.ag-adult .lv-s2.s-blue,body.ag-adult .lv-s2.s-green{--ac:#0B2A5B;--bg:#eef3fb}
+body.ag-adult .lv-nag{background:#fff;border-color:#e3e8f0;border-left-color:#E3242B;color:#334155}
+body.ag-adult .lv-noacum{background:#fff6f6!important;border-left-color:#E3242B!important}
+body.ag-adult .pg-row>i{background:#eef3fb;color:#0B2A5B}
+/* KIDS: crema + ámbar */
+body.ag-kids .lv-s2{border-color:#fde3b4;--ac:#f59e0b;--bg:#fff1d6}
+body.ag-kids .lv-s2i{color:#d97706}
+body.ag-kids .lv-nag{background:#fff1d6;border-color:#fbd38d;border-left-color:#f59e0b;color:#7c4a03}
+body.ag-kids .lv-nag>.mri{color:#d97706}
+body.ag-kids .lv-noacum{background:#fff7e6!important;border-left-color:#f59e0b!important}
+body.ag-kids .lv-card,body.ag-kids .pg-rows{border-color:#fde3b4!important}
+body.ag-kids .lv-bookb,body.ag-kids [data-nagbook],body.ag-kids #lv-book{background:#f59e0b!important;border-color:#f59e0b!important;color:#fff!important}
+body.ag-kids .pg-row{border-top-color:#fdecc8}body.ag-kids .pg-row>i{background:#fff1d6;color:#d97706}
+body.ag-kids .sect-title h2 .mri,body.ag-kids .sect-title h2 svg{color:#d97706}
+/* TEENS: azul noche + verde menta */
+body.ag-teens .lv-s2{background:#0d2752!important;border-color:#16376e!important;--ac:#22e58a;--bg:rgba(34,229,138,.12);box-shadow:0 10px 24px rgba(0,0,0,.25)!important}
+body.ag-teens .lv-s2t small,body.ag-teens .lv-s2t>span{color:#8ea6cf!important}body.ag-teens .lv-s2t b{color:#fff!important}body.ag-teens .lv-s2t b em{color:#8ea6cf!important}
+body.ag-teens .lv-s2bar{background:#16376e!important}
+body.ag-teens .lv-nag{background:#0d2752!important;border-color:#16376e!important;border-left-color:#22e58a!important;color:#e6eefb!important}body.ag-teens .lv-nag b{color:#fff!important}body.ag-teens .lv-nag>.mri{color:#22e58a!important}
+body.ag-teens .lv-noacum{background:#0d2752!important;border-left-color:#22e58a!important;color:#e6eefb!important}body.ag-teens .lv-noacum b{color:#fff!important}
+body.ag-teens .lv-card,body.ag-teens .pg-rows{background:#0d2752!important;border-color:#16376e!important;color:#e6eefb!important}
+body.ag-teens .lv-card h3,body.ag-teens .lv-card b{color:#fff!important}body.ag-teens .lv-card p,body.ag-teens .lv-card small,body.ag-teens .lv-card .muted{color:#8ea6cf!important}
+body.ag-teens .lv-bookb,body.ag-teens [data-nagbook],body.ag-teens #lv-book{background:#22e58a!important;border-color:#22e58a!important;color:#05213d!important}
+body.ag-teens .lv-card .btn.w{background:#16376e!important;border-color:#1f4a8a!important;color:#fff!important}
+body.ag-teens .pg-row{color:#fff!important;border-top-color:#16376e!important}body.ag-teens .pg-row>i{background:#16376e!important;color:#22e58a!important}body.ag-teens .pg-row small{color:#8ea6cf!important}
+body.ag-teens .sect-title h2{color:#fff!important}body.ag-teens .sect-title h2 .mri,body.ag-teens .sect-title h2 svg{color:#22e58a!important}
+/* v612 · fotos en la reserva */
+/* foto del tema en «Revisa tu reserva» (color de cada edad) */
+.vb-cf-tp.vb-ph{padding:0!important;overflow:hidden;border:1.5px solid #e2e8f0;border-radius:14px;border-bottom:1.5px solid #e2e8f0!important;margin-top:6px}
+.vb-cf-tp.vb-ph>*:not(.vb-tpi){padding-left:12px;padding-right:12px}
+.vb-cf-tp.vb-ph>*:last-child{padding-bottom:12px}
+.vb-tpi{position:relative;height:118px;background:#e2e8f0 center/cover no-repeat;margin-bottom:8px}
+.vb-tpi:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,42,91,0) 35%,rgba(11,42,91,.55))}
+.vb-tpi span{position:absolute;left:10px;top:10px;z-index:1;background:#fff;color:#0B2A5B;border-radius:8px;padding:3px 9px;font:800 11.5px Poppins,sans-serif}
+body.ag-kids .vb-cf-tp.vb-ph{border-color:#fde3b4!important;background:#fffaf0}
+body.ag-kids .vb-tpi:after{background:linear-gradient(180deg,rgba(245,158,11,0) 35%,rgba(217,119,6,.55))}
+body.ag-kids .vb-tpi span{color:#b45309}
+body.ag-teens .vb-cf-tp.vb-ph{border-color:#16376e!important;background:#0d2752}
+body.ag-teens .vb-cf-tp.vb-ph b{color:#fff!important}body.ag-teens .vb-cf-tp.vb-ph small{color:#8ea6cf!important}
+body.ag-teens .vb-tpi:after{background:linear-gradient(180deg,rgba(13,39,82,0) 35%,rgba(13,39,82,.85))}
+body.ag-teens .vb-tpi span{background:#22e58a;color:#05213d}
+@media(min-width:900px){.vb-cf>.vb-cf-tp.vb-ph{justify-content:flex-start!important}.vb-tpi{height:130px}}
+body.ag-teens .vb-cf-tp.vb-ph .th-can,body.ag-teens .vb-cf-tp.vb-ph .th-can *:not(.th-l){color:#fff!important}body.ag-kids .vb-cf-tp.vb-ph .th-l,body.ag-kids .vb-cf-tp.vb-ph .th-can>span:first-child{color:#d97706!important}
+/* foto principal de cada módulo en las pestañas de la reserva */
+.vb-m.vb-mi{position:relative;overflow:hidden;background:var(--mi) center/cover no-repeat!important;min-height:64px;border:2px solid transparent!important;color:#fff!important;display:flex;flex-direction:column;justify-content:flex-end;align-items:center}
+.vb-m.vb-mi:before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,42,91,.15),rgba(11,42,91,.82));z-index:0}
+.vb-m.vb-mi>*{position:relative;z-index:1}.vb-m.vb-mi b{color:#fff!important}.vb-m.vb-mi small{color:#e6eefb!important}
+.vb-m.vb-mi.vb-off{filter:grayscale(1)}.vb-m.vb-mi.vb-off:before{background:linear-gradient(180deg,rgba(30,41,59,.35),rgba(30,41,59,.85))}
+.vb-m.vb-mi.on{border-color:#16a34a!important;box-shadow:0 0 0 3px rgba(22,163,74,.25)}
+body.ag-kids .vb-m.vb-mi:not(.vb-off):before{background:linear-gradient(180deg,rgba(217,119,6,.10),rgba(180,83,9,.82))}
+body.ag-kids .vb-m.vb-mi.on{border-color:#f59e0b!important;box-shadow:0 0 0 3px rgba(245,158,11,.30)}
+body.ag-teens .vb-m.vb-mi:not(.vb-off):before{background:linear-gradient(180deg,rgba(13,39,82,.15),rgba(7,26,58,.9))}
+body.ag-teens .vb-m.vb-mi.on{border-color:#22e58a!important;box-shadow:0 0 0 3px rgba(34,229,138,.30)}
+@media(min-width:900px){.vb-m.vb-mi{min-height:76px}}
