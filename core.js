@@ -148,7 +148,7 @@
     return new Promise(res => {
       if (!au) return res();
       const a = audioEl(au);
-      a.playbackRate = opts.rate || 1; a.preservesPitch = true;
+      a.playbackRate = opts.rate || (window.__mraSlow ? 0.75 : 1); a.preservesPitch = true; a.webkitPreservesPitch = true; /* v602: «Más lento» = mismo audio al 75 %, misma voz */
       cur = a; if (opts.btn) { curBtn = opts.btn; opts.btn.classList.add('playing'); }
       let done = false;
       const end = () => { if (done) return; done = true; if (opts.btn) opts.btn.classList.remove('playing'); if (cur === a) cur = null; if (curEnd === end) curEnd = null; audioUI(); res(); };
@@ -808,7 +808,7 @@
     if (window.MRFIX && window.MRFIX.has(au)) { const r = au + '.mp3' + q, f = 'audio/' + au + '.mp3' + q; if (window.MRFIXB === 'audio/') L.push(f, r); else L.push(r, f); }
     if (dat) L.push(dat); else if (!L.length) L.push('audio/' + au + '.mp3'); return L; }
   function audioSrc(au) { return audioSrcs(au)[0]; }
-  function audioEl(au) { const L = audioSrcs(au); let k = 0; const a = new Audio(L[0]); a.addEventListener('error', () => { if (++k < L.length) { const pr = a.playbackRate, wasPlay = a.__want; a.src = L[k]; a.playbackRate = pr; if (wasPlay) a.play().catch(() => { }); } else { a.__ex = 1; a.dispatchEvent(new Event('mrfail')); } }); const P = a.play.bind(a); a.play = () => { a.__want = 1; return P(); }; return a; }
+  function audioEl(au) { const L = audioSrcs(au); let k = 0; const a = new Audio(L[0]); if (window.__mraSlow) { a.playbackRate = 0.75; a.preservesPitch = true; a.webkitPreservesPitch = true; a.defaultPlaybackRate = 0.75; } a.addEventListener('error', () => { if (++k < L.length) { const pr = a.playbackRate, wasPlay = a.__want; a.src = L[k]; a.playbackRate = pr; if (wasPlay) a.play().catch(() => { }); } else { a.__ex = 1; a.dispatchEvent(new Event('mrfail')); } }); const P = a.play.bind(a); a.play = () => { a.__want = 1; return P(); }; return a; }
   // detecta una sola vez dónde quedaron subidos los audios corregidos (raíz o carpeta audio/)
   setTimeout(() => { try { if (!window.MRFIX || window.MRFIXB != null) return; const id = window.MRFIX.values().next().value; window.MRFIXB = ''; fetch(id + '.mp3?v=' + (window.MRFIXV || ''), { method: 'HEAD' }).then(r => { if (!r.ok) return fetch('audio/' + id + '.mp3', { method: 'HEAD' }).then(r2 => { window.MRFIXB = r2.ok ? 'audio/' : ''; }); }).catch(() => { }); } catch (e) { } }, 300);
 

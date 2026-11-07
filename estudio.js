@@ -19,7 +19,7 @@ function tips(){const est=cur.aud==='est';
  if(!IS_MOB()){M().innerHTML=`<div class="card mst-pc"><span class="mst-big">${SVG(IC.phone)}</span><div class="mst-tt">Este video se graba con tu celular</div>
   <p class="sub">La cámara del celular tiene mucha mejor calidad que la del computador. Así tu video sale nítido y profesional.</p>
   <div class="mst-steps"><b>1.</b> Abre <b>mrarrieta.com</b> en tu celular<br><b>2.</b> Entra a tu portal con tu código${est?'':' y tu clave'}<br><b>3.</b> Toca <b>«Grabar mi video»</b></div>
-  <p class="mst-note">Tienes 48 horas para enviarlo desde que aceptaste.</p></div>`;return}
+  <p class="mst-note">Tienes 24 horas para enviarlo desde que aceptaste.</p></div>`;return}
  const tip=(i,t,d)=>`<div class="tip"><span>${SVG(IC[i])}</span><div><b>${t}</b><small>${d}</small></div></div>`;
  M().innerHTML=`<h2>Antes de grabar</h2><p class="sub">${esc(cur.topic)} · máximo 1 minuto · ${PRIZE()}</p>
  <div class="card"><div class="mst-tt" style="font-size:18px">4 recomendaciones para que tu video quede profesional</div>

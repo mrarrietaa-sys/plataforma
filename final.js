@@ -84,7 +84,7 @@
   }
   function shell(html) { stopRec(); stopPoll(); app.innerHTML = `<div class="wrap fx">${html}</div>`; window.scrollTo(0, 0); }
   function top(extra = '') {
-    return `<div class="fx-top"><span class="lbl">Final test · ${MOD.es}</span><span class="fx-chip">INTENTO ${window.__fxAtt || ST.attempts + 1}</span>${extra}<div class="grow"></div><button class="btn w sm" id="fx-exit">✕ Salir</button></div>`;
+    return `<div class="fx-top">${extra}<div class="grow"></div><button class="btn w sm" id="fx-exit">✕ Salir</button></div>`;
   }
   function wireExit() { const b = $('#fx-exit'); if (b) b.onclick = () => { stopTimer(); stopRec(); ctx.route('home'); }; }
 
@@ -365,7 +365,7 @@
       listening_score: r.per.listening.score.toFixed(1), reading_score: r.per.reading.score.toFixed(1), writing_score: r.per.writing.score.toFixed(1), speaking_score: r.per.speaking.score.toFixed(1),
       final_score: r.fin.toFixed(1), performance: r.b.l.replace(/^\S+\s/, ''), status: r.passed ? 'PASSED' : 'NOT PASSED', feedback: comment(r.per, r.b),
       next_steps_display: r.passed ? 'block' : 'none',
-      next_steps_text: r.passed && MOD.course ? '¡Felicitaciones! Completaste toda tu ruta de aprendizaje en mrarrieta.com (A1 → A2 → B1 → B2+). Tu certificado de finalización ya está disponible en tu perfil. ¡Gracias por aprender inglés HABLANDO con nosotros!' : r.passed ? '¡Felicitaciones! Al aprobar, continuarás al siguiente módulo: ' + MOD.next + '. Este nuevo módulo inicia en tu próxima clase, en el mismo horario habitual.\n\nSi deseas cambiar de profesor(a) para el próximo módulo, puedes solicitarlo en las próximas 24 horas. Si no recibimos tu solicitud, continuarás con el mismo profesor(a).\n\nSi estás en un curso grupal, el cambio de profesor(a) requiere que todo el grupo esté de acuerdo.' : '' };
+      next_steps_text: r.passed && MOD.course ? '¡Felicitaciones! Completaste toda tu ruta de aprendizaje en mrarrieta.com (A1 → A2 → B1 → B2+). Tu certificado de finalización ya está disponible en tu perfil. ¡Gracias por aprender inglés HABLANDO con nosotros!' : r.passed ? '¡Felicitaciones! Aprobaste y ya puedes continuar con el siguiente módulo de tu ruta: ' + MOD.next + '. Lo encuentras abierto en tu perfil, en «Mis módulos».\n\nSi tienes plan Premium, reserva tus próximas clases individuales desde la plataforma: eliges el día, la hora y el profe que prefieras, y el tema de tu nuevo módulo.' : '' };
     // 0) ☁️ plataforma: el profe y administración reciben el resultado como notificación
     if (cloud()) {
       MRAC.examResult({ exam: EXAM_ID, attempt: r.attemptLabel, listening: params.listening_score, reading: params.reading_score, writing: params.writing_score, speaking: params.speaking_score, final: params.final_score, passed: !!r.passed })

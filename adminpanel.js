@@ -882,7 +882,7 @@ Se dice “I am 25 years old”
 Da 2 ejemplos más
 Invita a practicar en mrarrieta.com</textarea>
         <div id="of-payw"><label class="ad-l">Pago por video aprobado</label><input class="inp" id="of-pay" inputmode="numeric" value="${r.rate || 21800}"><small class="muted" style="display:block;margin-top:4px">Por defecto, el valor de una hora de clase.</small></div>
-        <p class="muted" style="font-size:13px">1 cupo · plazo de 48 horas para enviarlo; si no lo envía, la oferta se abre otra vez.</p>
+        <p class="muted" style="font-size:13px">1 cupo · plazo de 24 horas para enviarlo; si no lo envía, la oferta se abre otra vez. Si nadie la acepta en 24 horas, se cierra sola.</p>
         <button class="btn k" id="of-pub">Publicar oferta</button></div>
       <div class="card"><h3 style="margin-top:0">Ofertas</h3>${L.length ? L.map(o => `<div class="ad-orow"><div class="grow"><b>${esc(o.topic)}</b> ${chip(ST[o.st] ? ST[o.st][0] : o.st, ST[o.st] ? ST[o.st][1] : 'gray')} ${chip(o.aud === 'est' ? 'Estudiantes' : 'Profes', '')}<small>${o.byName ? 'Tomada por <b>' + esc(o.byName) + '</b>' : 'Nadie la ha tomado'} · ${o.aud === 'est' ? '1 clase gratis' : fmt(o.pay)}${o.note && o.st === 'taken' ? ' · Pediste un cambio: ' + esc(o.note) : ''}</small></div>
         <div class="ad-oact">${o.st === 'sent' || o.st === 'ok' ? `<button class="btn k sm" data-ov="${esc(o.id)}">Ver video</button>` : ''}${o.st === 'open' ? `<button class="btn w sm" data-oc="${esc(o.id)}">Cerrar oferta</button>` : ''}</div></div>`).join('') : '<p class="muted">Aún no has publicado ofertas.</p>'}</div></div>`;

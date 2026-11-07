@@ -98,7 +98,7 @@
   function saveProg() { ST.prog = { plan: PL, first, last, temail, wa, course, cur, startedAt, answers: answers.map(a => a && (a.url || a.blob) ? Object.assign({}, a, { url: null, blob: null }) : a) }; persist(); }
   function shell(html) { stopRec(); stopPoll(); app.innerHTML = `<div class="wrap fx">${html}</div>`; window.scrollTo(0, 0); }
   function top(extra = '') {
-    return `<div class="fx-top"><span class="px-ttl">${window.MRI ? MRI('compass') : ''}<b>Placement Test</b><small>Prueba de clasificación</small></span><span class="fx-chip">INTENTO ${window.__pxAtt || ST.attempts + 1}</span>${extra}<div class="grow"></div><button class="btn w sm" id="fx-exit">✕ Salir</button></div>`;
+    return `<div class="fx-top">${extra}<div class="grow"></div><button class="btn w sm" id="fx-exit">✕ Salir</button></div>`;
   }
   function wireExit() { const b = $('#fx-exit'); if (b) b.onclick = () => { stopTimer(); stopRec(); ctx.route('home'); }; }
 

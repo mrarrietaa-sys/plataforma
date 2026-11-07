@@ -8882,3 +8882,22 @@ body.mr-tpr [data-rank],body.mr-tpr #pt-plans,body.mr-tpr .pt-polb,body.mr-tpr a
 .tp-acc-d b{text-transform:none!important}.tp-acc-d b::first-letter{text-transform:uppercase}
 @media(min-width:621px){.tp-acc-b .tp-cls{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;gap:16px;align-items:center}.tp-acc-b .tp-cls-what{min-width:0}}
 .tp-retry{max-width:420px;margin:40px auto;text-align:center;padding:26px 20px}.tp-retry img{display:block;margin:0 auto 10px;height:120px;width:auto}.tp-retry h2{font:800 19px var(--fh,Poppins),sans-serif;color:#0B2A5B;margin:0 0 6px}.tp-retry p{margin:0 0 16px}
+/* v602: exámenes (módulos, curso y prueba de clasificación) a pantalla completa, como las lecciones */
+body:has(.fx-top) .topbar,body:has(.fx-top) #topbar,body:has(.fx-top) #tpr-strip,body:has(.fx-top) .db-pgnav,body:has(.fx-top) .db-tabbar,body:has(.fx-top) .db-side{display:none!important}
+.fx-top{min-height:44px}
+/* v602: botón «Más lento» (tortuga), pegado al botón de escuchar */
+.slw-w{display:inline-flex;align-items:center;gap:8px;max-width:100%;vertical-align:middle}
+.slw-w.full{display:flex;width:100%}
+.slw-b{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:#fff;color:#0B2A5B;border:1.5px solid #cfd9e8;border-radius:999px;padding:8px 13px;font:800 13px var(--fh,Poppins),sans-serif;cursor:pointer;white-space:nowrap;flex:none;line-height:1;margin:0}
+.slw-b:hover{border-color:#0B2A5B}.slw-b svg{flex:none}
+.slw-b.ic{padding:0;border-radius:50%}
+/* v602: sombra de Mr. Arrieta superhéroe: aparece cuando llega y se detiene, se desvanece cuando se va */
+.itl-fly .itl-shd.itl-shd-hero{animation-name:shdHero!important;animation-timing-function:ease-in-out!important}
+@keyframes shdHero{0%{opacity:0;transform:translateX(-50%) scale(.55)}24%{opacity:0;transform:translateX(-50%) scale(.6)}32%{opacity:1;transform:translateX(-50%) scale(1)}50%{opacity:.75;transform:translateX(-50%) scale(.86)}68%{opacity:1;transform:translateX(-50%) scale(1)}78%{opacity:0;transform:translateX(-50%) scale(.6)}100%{opacity:0;transform:translateX(-50%) scale(.55)}}
+@media (prefers-reduced-motion:reduce){.itl-shd-hero{display:none}}
+/* v602: en PC las imágenes tipo video (entrevista, graba tu video, escena en vivo, misión) mantienen la proporción del celular: se ve el rostro completo */
+@media (min-width:700px){
+ .m3i-v,.m3t-v,.m2l-sc,.ms9-sc{height:auto!important;aspect-ratio:1.9/1;width:min(100%,480px);margin-left:auto;margin-right:auto;max-height:none}
+ .m3t-v{aspect-ratio:1.55/1;width:min(100%,500px)}
+}
+.slw-w:not(.full){flex:none}
