@@ -9039,3 +9039,20 @@ body.ag-adult .ad-hero .db-hero-b{width:auto!important;max-width:none!important;
 .wu-end{text-align:center}.wu-ok{width:58px;height:58px;border-radius:50%;background:#e7f6ee;color:#16a34a;display:grid;place-items:center;margin:4px auto 10px}.wu-ok svg{width:30px;height:30px}
 .wu-go{margin-top:6px;background:#0B2A5B;color:#fff;border:0;border-radius:12px;padding:12px 22px;font:700 15px Poppins,sans-serif;cursor:pointer}
 @media(max-width:380px){.wu-pic{height:140px}.wu h2{font-size:18px}.wu-opts button{font-size:13px}}
+/* v610 · Reserva en PC: ventana más pequeña, botón «Revisar mi reserva» siempre a la vista y «Revisa tu reserva» completa sin bajar (todas las edades) */
+.modal.vb-modal:not(.vb-load)>.card{max-height:calc(100dvh - 24px)!important;overflow:auto}
+.modal.vb-modal #vb-ok{position:sticky;bottom:0;z-index:6;box-shadow:0 -10px 14px 6px #fff,0 8px 18px rgba(11,42,91,.18)}
+.vb-cf-m .card{max-height:calc(100dvh - 24px)!important;overflow:auto}
+.vb-cf-b{position:sticky;bottom:-14px;z-index:4;background:#fff;padding:10px 0 2px;margin-top:8px!important}
+@media(min-width:900px){
+  .modal.vb-modal:not(.vb-load)>.card{max-width:780px!important}
+  .vb-cf-m .card{max-width:660px!important;padding:18px 20px 16px!important}
+  .vb-cf{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:18px;align-items:start}
+  .vb-cf>h3,.vb-cf>.vb-cf-s,.vb-cf>.vb-cf-n,.vb-cf>.fc-note,.vb-cf>.vb-cf-b{grid-column:1/-1}
+  .vb-cf>.vb-cf-t{grid-column:1;grid-row:3;margin-bottom:6px}
+  .vb-cf>.vb-cf-r:not(.vb-cf-tp){grid-column:1}
+  .vb-cf>.vb-cf-r:nth-of-type(2){grid-row:4}.vb-cf>.vb-cf-r:nth-of-type(3){grid-row:5;border-bottom:0}
+  .vb-cf>.vb-cf-tp{grid-column:2;grid-row:3/6;align-self:stretch;border:1.5px solid #e2e8f0;border-radius:14px;padding:12px 12px!important;display:flex;flex-direction:column;justify-content:center}
+  .vb-cf-n{margin-top:10px!important}
+  .vb-cf .fc-note{margin:8px 0 0}
+}
