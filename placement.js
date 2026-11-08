@@ -387,8 +387,8 @@
     const res = await MRAC.call('placement', { code: prof.code || '', name: r.name, email: r.temail || prof.email || '', whatsapp: r.wa || prof.whatsapp || '', attempt: r.attemptLabel, listening: r.per.listening.score.toFixed(1), reading: r.per.reading.score.toFixed(1), writing: r.per.writing.score.toFixed(1), speaking: r.per.speaking.score.toFixed(1), final: r.fin.toFixed(1), module: r.ms.rec, moduleSet: prof.moduleSet || Date.now(), level: m.name + ' · ' + m.es, mods: Object.fromEntries(Object.entries(r.ms.mods).map(([k, v]) => [k, Math.round(v.pct * 100)])), speakingAnswers: sp, timedOut: r.timedOut });
     if (!res.ok) return;
     let n = 0; for (let i = 0; i < ITEMS.length; i++) { const a = r.answersSnap[i]; if (ITEMS[i].section !== 'speaking' || !a || !a.blob) continue; n++;
-      let up = await MRAC.upload('placement', res.id, a.blob, { name: 'speaking_' + (i + 1) + '.webm', i: i + 1, label: ITEMS[i].task, transcript: a.value || '' });
-      if (!up.ok) await MRAC.upload('placement', res.id, a.blob, { name: 'speaking_' + (i + 1) + '.webm', i: i + 1, label: ITEMS[i].task, transcript: a.value || '' }); }
+      let up = await MRAC.upload('placement', res.id, a.blob, { name: 'speaking_' + (i + 1) + '.' + (/mp4|m4a|aac/.test(a.blob.type || '') ? 'm4a' : /ogg/.test(a.blob.type || '') ? 'ogg' : 'webm'), i: i + 1, label: ITEMS[i].task, transcript: a.value || '' });
+      if (!up.ok) await MRAC.upload('placement', res.id, a.blob, { name: 'speaking_' + (i + 1) + '.' + (/mp4|m4a|aac/.test(a.blob.type || '') ? 'm4a' : /ogg/.test(a.blob.type || '') ? 'ogg' : 'webm'), i: i + 1, label: ITEMS[i].task, transcript: a.value || '' }); }
     if (window.MRAC.code()) MRAC.sync(true);
   }
   async function notify(r) {
