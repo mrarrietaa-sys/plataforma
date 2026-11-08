@@ -1034,7 +1034,7 @@
   // 🏆 v538 · Ranking de su nivel (misma edad y mismo módulo): Racha y Esta semana
   async function rankModal() {
     if (!window.MRAC || !MRAC.code()) return M.toast('Entra con tu código para ver el ranking.');
-    const m = M.modal(`<div class="r6"><h3>Ranking</h3><p class="r6p">Practica cada día y sube de puesto en tu nivel.</p><div class="r6t"><button class="on" data-rt="streak">Racha</button><button data-rt="week">Esta semana</button></div><div class="r6b"><p class="r6l">Cargando…</p></div><p class="r6f">Racha: días seguidos practicando · Esta semana: lecciones hechas</p></div>`, { x: true });
+    const m = M.modal(`<div class="r6"><div class="r6hd"><span class="r6ic">${MRI('trophy')}</span><div><h3>Ranking</h3><p class="r6p">Practica cada día y sube de puesto en tu nivel.</p></div></div><div class="r6bd"><div class="r6t"><button class="on" data-rt="streak">Racha</button><button data-rt="week">Esta semana</button></div><div class="r6b"><p class="r6l">Cargando…</p></div><p class="r6f">Racha: días seguidos practicando · Esta semana: lecciones hechas</p></div></div>`, { x: true }); m.classList.add('r6m'); // 🏆 v617: con el color de cada edad
     const box = $('.r6b', m); const r = await MRAC.call('rankAll', { code: MRAC.code() }).catch(() => null);
     if (!r || !r.ok) { box.innerHTML = '<p class="r6l">No pudimos cargar el ranking. Inténtalo de nuevo en un momento.</p>'; return; }
     const ini = (n) => esc(String(n || '?').trim().charAt(0).toUpperCase());
@@ -1158,6 +1158,11 @@
   /* ---------- planes y clases con profes (nube) ---------- */
   const fmtD = (iso, o) => { try { return new Date(String(iso).slice(0, 10) + 'T12:00:00').toLocaleDateString('es-CO', o || { weekday: 'short', day: 'numeric', month: 'short' }); } catch (e) { return iso; } };
   const fmtT = (t) => { const [hh, mm] = String(t || '00:00').split(':').map(Number); const ap = hh >= 12 ? 'p.\u00a0m.' : 'a.\u00a0m.'; return `${((hh + 11) % 12) + 1}:${String(mm || 0).padStart(2, '0')}\u00a0${ap}`; }; // v593: la hora nunca se parte en dos líneas
+  // ➕ v617: comprar clases extra desde «Mi plan» (Premium activo)
+  document.addEventListener('click', (e) => { const q = e.target.closest && e.target.closest('[data-xq]'), b = e.target.closest && e.target.closest('#pl-xb'); if (!q && !b) return; const c = e.target.closest('.pl-xc'); if (!c) return;
+    const nEl = c.querySelector('#pl-xn'); let n = +nEl.textContent || 1; const u = window.MRPLANS && MRPLANS.extra ? MRPLANS.extra() : 42900;
+    if (q) { n = Math.max(1, Math.min(10, n + +q.dataset.xq)); nEl.textContent = n; c.querySelector('#pl-xt').textContent = MRPLANS.fmt(u * n); c.querySelector('#pl-xb').textContent = 'Comprar ' + n + (n === 1 ? ' clase extra' : ' clases extra'); c.querySelectorAll('[data-xq]').forEach(x => x.disabled = (+x.dataset.xq < 0 && n <= 1) || (+x.dataset.xq > 0 && n >= 10)); return; }
+    const mo = c.closest('.modal'); if (mo) mo.remove(); if (window.MRBUY) MRBUY.extra(b.dataset.xend, n); });
   function planSection() {
     const p = P.get(); if (!p || p.type === 'staff' || !window.MRPLANS) return '';
     const pl = P.plan(); if (pl.legacy && !P.isTrial()) return '';
@@ -1170,6 +1175,9 @@
     const renew = pl.expired || (pl.paid && pl.daysLeft !== null && pl.daysLeft <= 5);
     return `<div class="sect-title" id="pt-plan"><h2>${MRI('crown')} Mi plan</h2></div>
       <div class="card pl-mine ${pl.eff}${pl.expired ? ' exp' : ''}"><div class="pl-mine-ic">${pl.expired ? MRI('clock') : ic}</div><div class="grow"><span class="lbl">Tu plan actual</span><h2>${pl.expired ? 'Plan vencido' : name}</h2><p class="muted">${sub}</p></div></div>
+      ${pl.premium && !pl.expired ? `<div class="card pl-xc"><div class="pl-xh"><span class="pl-xi">${MRI('plus')}</span><div><b>¿Quieres más clases este mes?</b><small>Clases individuales de 50 min · ${MRPLANS.fmt(MRPLANS.extra ? MRPLANS.extra() : 42900)} c/u${end ? ' · valen hasta el ' + fmtD(pl.end, { day: 'numeric', month: 'long' }) : ''}</small></div></div>
+        <div class="pl-xr"><span class="pl-xs"><button type="button" data-xq="-1" aria-label="Quitar una clase" disabled>−</button><b id="pl-xn">1</b><button type="button" data-xq="1" aria-label="Agregar una clase">+</button></span><b id="pl-xt">${MRPLANS.fmt(MRPLANS.extra ? MRPLANS.extra() : 42900)}</b></div>
+        <button class="btn k block" id="pl-xb" data-xend="${esc(pl.end)}">Comprar 1 clase extra</button><p class="pl-xp">Pagas con Mercado Pago y se suman solas a tu saldo</p></div>` : ''}
       ${pl.plan === 'premium8' && pl.eff !== 'free' && !renew ? '' : MRPLANS.cards(pl.expired ? pl.plan : (pl.plan === 'premium8' && pl.eff !== 'free' ? 'premium8' : pl.eff), renew)}`;
   }
   // sección Premium: grupo, créditos VIP, próximas clases, club — se llena con datos de la nube

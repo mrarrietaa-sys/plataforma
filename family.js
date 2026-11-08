@@ -93,30 +93,32 @@
     app.querySelectorAll('[data-in]').forEach(b => b.onclick = () => { try { sessionStorage.setItem('mra_autocode', b.dataset.in); sessionStorage.setItem('mra_from_fam', '1'); } catch (e) { } location.href = 'index.html'; });
   }
   // 💳 pago familiar: varios planes en un solo pago
-  function pay(r) {
-    const f = r.family, P = (r.cat && r.cat.prices) || {}, mp = !!(r.cat && r.cat.mp), NM = { membership: 'Plataforma', premium: 'Premium · 4 clases', premium8: 'Premium · 8 clases' };
-    const st = r.kids.map(k => ({ k, on: !!k.planEnd && /membership|premium/.test(k.planKey) && (k.expired || (k.daysLeft != null && k.daysLeft <= 7)), plan: /membership|premium/.test(k.planKey) ? k.planKey : 'membership' }));
+  function pay(r) { // 💳 v617: solo Mercado Pago · cada hijo puede llevar clases extra
+    const f = r.family, P = (r.cat && r.cat.prices) || {}, EX = +(r.cat && r.cat.extra) || 42900, NM = { membership: 'Plataforma', premium: 'Premium · 4 clases', premium8: 'Premium · 8 clases' };
+    const actP = (k) => /^premium/.test(k.planKey || '') && !k.expired && !!k.planEnd; // Premium activo: puede comprar solo clases extra
+    const due = (k) => !!k.planEnd && /membership|premium/.test(k.planKey) && (k.expired || (k.daysLeft != null && k.daysLeft <= 7));
+    const st = r.kids.map(k => ({ k, on: due(k), plan: due(k) || !actP(k) ? (/membership|premium/.test(k.planKey) ? k.planKey : 'membership') : 'extra', extra: due(k) || !actP(k) ? 0 : 1 }));
     const m = document.createElement('div'); m.className = 'modal fm-pay'; document.body.appendChild(m);
-    let method = mp ? 'mp' : 'tr', file = null;
-    const draw = () => { const sel = st.filter(x => x.on), tot = sel.reduce((t, x) => t + (P[x.plan] || 0), 0);
-      m.innerHTML = `<div class="card"><button class="fm-px" aria-label="Cerrar">×</button><h3>Planes de mis hijos</h3><p class="muted">Marca los planes que quieres pagar. Cada uno se renueva por un mes desde su fecha de vencimiento.</p>
-        <div class="fm-pl">${st.map((x, i) => { const k = x.k, w = k.expired ? 'Venció el ' + fD(k.planEnd) : k.planEnd ? (k.daysLeft != null && k.daysLeft <= 7 ? 'Vence en ' + k.daysLeft + (k.daysLeft === 1 ? ' día' : ' días') + ' · ' + fD(k.planEnd) : 'Vence el ' + fD(k.planEnd)) : 'Acceso gratuito · elige su plan';
-          return `<label class="fm-pr${x.on ? ' on' : ''}"><input type="checkbox" data-i="${i}" ${x.on ? 'checked' : ''}><span class="fm-ck">${I('check')}</span><span class="fm-pn"><b>${esc(k.first)}</b><small class="${k.expired || (k.daysLeft != null && k.daysLeft <= 7) ? 'w' : ''}">${w}</small></span><select class="inp" data-p="${i}">${Object.keys(NM).map(p => `<option value="${p}" ${x.plan === p ? 'selected' : ''}>${NM[p]}</option>`).join('')}</select><b class="fm-pp">${money(P[x.plan])}</b></label>`; }).join('')}</div>
-        <div class="fm-mt">${mp ? `<button class="${method === 'mp' ? 'on' : ''}" data-m="mp">${I('card')} Tarjeta, PSE, Nequi o Daviplata</button>` : ''}${mp ? '' : `<button class="${method === 'tr' ? 'on' : ''}" data-m="tr">${I('bank')} Transferencia</button>`}</div>
-        ${method === 'tr' ? `<div class="fm-tr"><p><b>Nequi:</b> 301 781 0841 · <b>Llave Breve-B:</b> 1047374279</p><label class="fm-up">${I('clip')} <span id="fn">${file ? esc(file.name) : 'Sube el comprobante de pago'}</span><input type="file" accept="image/*,application/pdf" id="pf" hidden></label></div>` : '<p class="fm-mpn">Pagas con tarjeta débito o crédito en Mercado Pago. Los planes se activan solos al aprobarse el pago.</p>'}
-        <div class="fm-tot"><span><small>Total a pagar · ${sel.length} ${sel.length === 1 ? 'plan' : 'planes'}</small><b>${money(tot)}</b></span><button class="btn" id="go" ${sel.length ? '' : 'disabled'}>Pagar ahora →</button></div><p class="fm-err" id="er"></p></div>`;
+    const cost = (x) => (x.plan === 'extra' ? 0 : (P[x.plan] || 0)) + (/^premium|^extra$/.test(x.plan) ? x.extra : 0) * EX;
+    const draw = () => { const sel = st.filter(x => x.on && (x.plan !== 'extra' || x.extra > 0)), tot = sel.reduce((t, x) => t + cost(x), 0);
+      const np = sel.filter(x => x.plan !== 'extra').length, nx = sel.reduce((t, x) => t + (/^premium|^extra$/.test(x.plan) ? x.extra : 0), 0);
+      const lbl = [np ? np + (np === 1 ? ' plan' : ' planes') : '', nx ? nx + (nx === 1 ? ' clase extra' : ' clases extra') : ''].filter(Boolean).join(' + ') || 'nada seleccionado';
+      m.innerHTML = `<div class="card"><button class="fm-px" aria-label="Cerrar">×</button><h3>Planes y clases de mis hijos</h3><p class="muted">Marca lo que quieres pagar. Los planes se renuevan por un mes desde su vencimiento y las clases extra valen dentro del plan vigente.</p>
+        <div class="fm-pl">${st.map((x, i) => { const k = x.k, w = k.expired ? 'Venció el ' + fD(k.planEnd) : k.planEnd ? (k.daysLeft != null && k.daysLeft <= 7 ? 'Vence en ' + k.daysLeft + (k.daysLeft === 1 ? ' día' : ' días') + ' · ' + fD(k.planEnd) : (actP(k) ? esc(k.planName) + ' · activo hasta el ' : 'Vence el ') + fD(k.planEnd)) : 'Acceso gratuito · elige su plan';
+          const opts = (actP(k) ? [['extra', 'Solo clases extra']] : []).concat(Object.keys(NM).map(p => [p, (actP(k) && p === k.planKey ? 'Renovar ' : '') + NM[p]]));
+          const showX = x.on && (/^premium/.test(x.plan) || x.plan === 'extra');
+          return `<label class="fm-pr${x.on ? ' on' : ''}"><input type="checkbox" data-i="${i}" ${x.on ? 'checked' : ''}><span class="fm-ck">${I('check')}</span><span class="fm-pn"><b>${esc(k.first)}</b><small class="${k.expired || (k.daysLeft != null && k.daysLeft <= 7) ? 'w' : ''}">${w}</small></span><select class="inp" data-p="${i}">${opts.map(([v, n]) => `<option value="${v}" ${x.plan === v ? 'selected' : ''}>${n}</option>`).join('')}</select><b class="fm-pp">${money(cost(x))}</b>
+            ${showX ? `<span class="fm-xc"><span class="fm-xt"><b>Clases extra</b><small>${money(EX)} c/u${x.plan === 'extra' && k.planEnd ? ' · valen hasta el ' + fD(k.planEnd) : ' · opcional'}</small></span><span class="fm-xs"><button type="button" data-x="${i}" data-d="-1" aria-label="Quitar una clase" ${x.extra <= (x.plan === 'extra' ? 1 : 0) ? 'disabled' : ''}>−</button><b>${x.extra}</b><button type="button" data-x="${i}" data-d="1" aria-label="Agregar una clase" ${x.extra >= 10 ? 'disabled' : ''}>+</button></span></span>` : ''}</label>`; }).join('')}</div>
+        <p class="fm-mpn">${I('card')} Pagas con tarjeta débito o crédito, PSE, Nequi o Daviplata en Mercado Pago. Todo se activa solo al aprobarse el pago.</p>
+        <div class="fm-tot"><span><small>Total a pagar · ${lbl}</small><b>${money(tot)}</b></span><button class="btn" id="go" ${sel.length ? '' : 'disabled'}>Pagar ahora →</button></div><p class="fm-err" id="er"></p></div>`;
       m.querySelector('.fm-px').onclick = () => m.remove(); m.onclick = (e) => { if (e.target === m) m.remove(); };
-      m.querySelectorAll('[data-i]').forEach(c => c.onchange = () => { st[+c.dataset.i].on = c.checked; draw(); });
-      m.querySelectorAll('[data-p]').forEach(c => { c.onclick = (e) => e.stopPropagation(); c.onchange = () => { st[+c.dataset.p].plan = c.value; st[+c.dataset.p].on = true; draw(); }; });
-      m.querySelectorAll('[data-m]').forEach(b => b.onclick = () => { method = b.dataset.m; draw(); });
-      const pf = m.querySelector('#pf'); if (pf) pf.onchange = () => { file = pf.files[0] || null; draw(); };
-      m.querySelector('#go').onclick = async () => { const er = m.querySelector('#er'), b = m.querySelector('#go'); const items = st.filter(x => x.on).map(x => ({ code: x.k.code, plan: x.plan })); if (!items.length) return;
-        const q = { fcode: f.fcode, items, method };
-        if (method === 'tr') { if (!file) return (er.textContent = 'Sube el comprobante de la transferencia.'); if (file.size > 8 * 1024 * 1024) return (er.textContent = 'El archivo es muy pesado (máximo 8 MB).'); q.data = await new Promise(res => { const rd = new FileReader(); rd.onload = () => res(rd.result); rd.readAsDataURL(file); }); q.mime = file.type; q.fname = file.name; }
-        b.disabled = true; b.textContent = 'Procesando…'; const x = await MRAC.call('famBuy', q).catch(() => null);
-        if (!x || !x.ok) { b.disabled = false; b.textContent = 'Pagar ahora →'; return (er.textContent = x && x.err === 'mp_off' ? 'El pago con tarjeta no está disponible. Usa transferencia.' : 'No se pudo procesar. Inténtalo de nuevo.'); }
-        if (x.url) { location.href = x.url; return; }
-        m.querySelector('.card').innerHTML = `<div class="center"><div class="fm-okic">${I('check')}</div><h3>¡Recibimos tu comprobante!</h3><p class="muted">Administración lo revisa y activa los planes. Te avisamos por correo.</p><button class="btn k" id="ok">Listo</button></div>`; m.querySelector('#ok').onclick = () => m.remove(); };
+      m.querySelectorAll('[data-i]').forEach(c => c.onchange = () => { const x = st[+c.dataset.i]; x.on = c.checked; if (x.on && x.plan === 'extra' && !x.extra) x.extra = 1; draw(); });
+      m.querySelectorAll('[data-p]').forEach(c => { c.onclick = (e) => e.stopPropagation(); c.onchange = () => { const x = st[+c.dataset.p]; x.plan = c.value; x.on = true; if (x.plan === 'extra' && !x.extra) x.extra = 1; if (!/^premium|^extra$/.test(x.plan)) x.extra = 0; draw(); }; });
+      m.querySelectorAll('[data-x]').forEach(b => b.onclick = (e) => { e.preventDefault(); e.stopPropagation(); const x = st[+b.dataset.x]; x.extra = Math.max(x.plan === 'extra' ? 1 : 0, Math.min(10, x.extra + +b.dataset.d)); draw(); });
+      m.querySelector('#go').onclick = async () => { const er = m.querySelector('#er'), b = m.querySelector('#go'); const items = st.filter(x => x.on && (x.plan !== 'extra' || x.extra > 0)).map(x => ({ code: x.k.code, plan: x.plan, extra: /^premium|^extra$/.test(x.plan) ? x.extra : 0 })); if (!items.length) return;
+        b.disabled = true; b.textContent = 'Procesando…'; const x = await MRAC.call('famBuy', { fcode: f.fcode, items, method: 'mp' }).catch(() => null);
+        if (!x || !x.ok) { b.disabled = false; b.textContent = 'Pagar ahora →'; return (er.textContent = x && (x.err === 'mp_off' || x.err === 'mp_error') ? 'El pago en línea no está disponible en este momento. Escríbenos por WhatsApp al 301 781 0841.' : 'No se pudo procesar. Inténtalo de nuevo.'); }
+        if (x.url) { location.href = x.url; return; } };
     };
     draw();
   }

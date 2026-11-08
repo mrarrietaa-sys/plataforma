@@ -7,19 +7,15 @@
   const M = new Proxy({}, { get: (o, k) => (window.M1 || {})[k] }); // core.js carga después
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const PLS = () => window.MRPLANS || {}; const fmt = (n) => (PLS().fmt || String)(n);
-  const ERR = { prize: 'Ese código de premio no es válido, ya venció o es de otro WhatsApp.', ref: 'El código de referido no es válido.', mp_off: 'El pago con tarjeta aún no está activo. Usa transferencia o escríbenos por WhatsApp.', mp_error: 'Mercado Pago no respondió. Inténtalo de nuevo en un momento.', proof: 'Adjunta la foto o el PDF de tu comprobante.', big: 'El archivo es muy pesado (máx. 8 MB).', too_many: 'Ya tienes comprobantes pendientes por revisar. Espera la aprobación.', not_premium: 'Las clases adicionales son para planes Premium activos.', plan: 'Plan no válido.' };
+  const ERR = { prize: 'Ese código de premio no es válido, ya venció o es de otro WhatsApp.', ref: 'El código de referido no es válido.', mp_off: 'El pago en línea no está disponible en este momento. Escríbenos por WhatsApp al 301 781 0841.', mp_error: 'Mercado Pago no respondió. Inténtalo de nuevo en un momento.', proof: 'Adjunta la foto o el PDF de tu comprobante.', big: 'El archivo es muy pesado (máx. 8 MB).', too_many: 'Ya tienes comprobantes pendientes por revisar. Espera la aprobación.', not_premium: 'Las clases adicionales son para planes Premium activos.', plan: 'Plan no válido.' };
   const CODE = () => (window.MRAC && MRAC.code && MRAC.code()) || window.__buyCode || (() => { try { return localStorage.getItem('mra_buy_code') || ''; } catch (e) { return ''; } })();
   let catOk = false;
   async function cat() { if (catOk) return; try { const r = await MRAC.call('plans', {}); if (r && r.ok) { PLS().applyCat && PLS().applyCat(r.cat); window.__mpOn = !!r.mp; catOk = true; } } catch (e) { } }
-  function payBlock(id) {
+  function payBlock(id, ok) {
     return `<div class="by-pay"><p class="by-st"><b>¿Cómo quieres pagar?</b></p>
       <button class="btn k block lg by-paybtn" data-m="mp" id="${id}-mp">${MRI('card')}<span><b>Pagar ahora</b><small>Tarjeta, PSE, Nequi o Daviplata · Mercado Pago</small></span></button>
-      <p class="muted center" style="font-size:13px;margin:4px 0 10px">Tu plan se activa solo, apenas se apruebe el pago</p>
-      ${window.__mpOn ? '' : `<button class="btn w block by-paybtn" data-m="tr" id="${id}-tr">${MRI('bank')}<span><b>Pagar por transferencia</b><small>Nequi o Llave (Breve-B)</small></span></button>
-      <div class="by-tr hidden" id="${id}-trbox"><div class="by-acc"><b>Paga en cualquiera de estas cuentas:</b><div><span>NEQUI</span><b>3017810841</b></div><div><span>LLAVE (BREVE-B)</span><b>1047374279</b></div></div>
-        <label class="by-file" for="${id}-file">${MRI('clip')}<span id="${id}-fn">Adjunta tu comprobante de pago</span><small>Foto o PDF</small></label><input type="file" id="${id}-file" accept="image/*,application/pdf" class="by-filein">
-        <button class="btn k block lg" id="${id}-send" style="margin-top:10px">${MRI('send')} Enviar comprobante</button>
-        <p class="muted center" style="font-size:13px">Administración lo revisa y, al aprobarlo, se habilita de inmediato en tu perfil.</p></div>`}</div>`; // 💳 v409: con Mercado Pago activo solo se paga por Mercado Pago (la transferencia queda de respaldo si no está configurado)
+      <p class="muted center" style="font-size:13px;margin:4px 0 10px">${ok || 'Tu plan se activa solo, apenas se apruebe el pago'}</p>
+      </div>`; // 💳 v617: solo Mercado Pago (sin transferencia)
   }
   function readFile(f) { return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(f); }); }
   async function shrink(f) { // fotos grandes → JPG de máx. 1600 px (los PDF se envían tal cual)
@@ -33,6 +29,7 @@
       const r = await MRAC.call('buyStart', Object.assign({ code: CODE(), method: 'mp' }, payload)).catch(() => ({ ok: false }));
       if (r && r.ok && r.url) { try { localStorage.setItem('mra_buy_last', r.id); localStorage.setItem('mra_buy_code', CODE()); } catch (er) { } location.href = r.url; return; }
       b.disabled = false; b.innerHTML = MRI('card') + '<span><b>Pagar con tarjeta</b><small>Mercado Pago · débito o crédito</small></span>'; M.toast(ERR[r && r.err] || 'No se pudo iniciar el pago.'); };
+    if (!m.querySelector(`#${id}-tr`)) return; // v617: ya no hay transferencia
     m.querySelector(`#${id}-tr`).onclick = () => m.querySelector(`#${id}-trbox`).classList.remove('hidden');
     m.querySelector(`#${id}-file`).onchange = (e) => { const f = e.target.files[0]; const l = m.querySelector(`#${id}-fn`); l.textContent = f ? f.name : 'Adjunta tu comprobante de pago'; l.parentNode.classList.toggle('on', !!f); };
     m.querySelector(`#${id}-send`).onclick = async (e) => { const f = m.querySelector(`#${id}-file`).files[0]; if (!f) return M.toast(ERR.proof);
@@ -65,7 +62,7 @@
   }
   function firstBuy() { const q = (window.MRAP && MRAP.get()) || {}; return !q.planStart; }
   function refSaved() { try { return localStorage.getItem('mra_ref') || ''; } catch (e) { return ''; } }
-  async function extra(cycleEnd) {
+  async function extra(cycleEnd, n0) {
     await cat(); const unit = PLS().extra ? PLS().extra() : 42900;
     const m = M.modal(`<h3 class="by-h">${MRI('plus')} Clases individuales adicionales</h3>
       <p class="muted">Cada clase dura 50 minutos y se reserva igual que las de tu plan.</p>
@@ -73,10 +70,10 @@
       <table class="by-sum"><tr><td>Precio por clase</td><td><b>${fmt(unit)}</b> COP</td></tr><tr><td>Cantidad</td><td id="bq-c">1</td></tr><tr><td><b>Total</b></td><td><b id="bq-t">${fmt(unit)}</b> COP</td></tr>
         <tr><td>Vigencia</td><td>Dentro de tu plan vigente${cycleEnd ? ' (hasta el ' + new Date(cycleEnd + 'T12:00:00').toLocaleDateString('es-CO', { day: 'numeric', month: 'long' }) + ')' : ''}. No acumulables.</td></tr></table>
       <p class="muted" style="font-size:13.5px">Comprar clases adicionales no cambia ni renueva tu membresía. Se suman a tu saldo solo cuando el pago queda confirmado.</p>
-      ${payBlock('bx')}`, { x: true });
-    let n = 1; const pay = { kind: 'extra', n: 1 };
+      ${payBlock('bx', 'Tus clases se suman solas, apenas se apruebe el pago')}`, { x: true });
+    let n = Math.max(1, Math.min(10, +n0 || 1)); const pay = { kind: 'extra', n };
     const upd = () => { m.querySelector('#bq-n').textContent = n; m.querySelector('#bq-c').textContent = n; m.querySelector('#bq-t').textContent = fmt(unit * n); pay.n = n; };
-    m.querySelector('#bq-m').onclick = () => { n = Math.max(1, n - 1); upd(); }; m.querySelector('#bq-p').onclick = () => { n = Math.min(10, n + 1); upd(); };
+    upd(); m.querySelector('#bq-m').onclick = () => { n = Math.max(1, n - 1); upd(); }; m.querySelector('#bq-p').onclick = () => { n = Math.min(10, n + 1); upd(); };
     wire(m, 'bx', pay);
   }
   // al volver de Mercado Pago (index.html?compra=ID): confirmar el pago y habilitar de una

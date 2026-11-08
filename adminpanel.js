@@ -173,9 +173,10 @@
       const filter = {}; Object.keys(L.filter).forEach(f => { if (L.filter[f]) filter[f] = L.filter[f]; });
       const r = await api('aList', { table: L.table, q: L.q, page: L.page, size: 25, filter, desc: o.desc }); if (!$('#ad-rows')) return;
       if (!r.ok) { box.innerHTML = '<p class="ad-err">No se pudo cargar.</p>'; return; }
-      box.innerHTML = r.rows.length ? r.rows.map(o.row).join('') : `<div class="card ad-empty">${o.empty || 'No hay registros.'}</div>`;
+      box.innerHTML = r.rows.length ? r.rows.map(x => { const h = o.row(x); return o.ga ? h.replace(/<\/div>\s*$/, RA(o.ga.t, o.ga.id(x), o.ga.nm(x), o.ga.opt ? o.ga.opt(x) : {}) + '</div>') : h; }).join('') : `<div class="card ad-empty">${o.empty || 'No hay registros.'}</div>`;
       $$('[data-open]', box).forEach(x => x.onclick = (e) => { if (e.target.closest('a,[data-stop]')) return; o.open(x.dataset.open, r.rows.find(y => y.id === x.dataset.open || (!y.id && y.code === x.dataset.open))); });
       if (o.after) o.after(box, r.rows);
+      if (o.ga) wireGA(box, o.ga.t, load, { edit: o.ga.edit });
       const pages = Math.ceil(r.total / r.size); $('#ad-pg').innerHTML = pages > 1 ? `<button class="btn w sm" id="pp" ${L.page ? '' : 'disabled'}>←</button><span>${L.page + 1} / ${pages} · ${r.total} registros</span><button class="btn w sm" id="pn" ${L.page + 1 < pages ? '' : 'disabled'}>→</button>` : `<span>${r.total} registro${r.total === 1 ? '' : 's'}</span>`;
       if ($('#pp')) { $('#pp').onclick = () => { L.page--; load(); }; $('#pn').onclick = () => { L.page++; load(); }; }
     }
@@ -201,7 +202,7 @@
         $$('[data-ed]', box).forEach(b => b.onclick = async () => { await studentDetail(b.dataset.ed); const c = $('#d-save'); if (c) setTimeout(() => c.closest('.card').scrollIntoView({ behavior: 'smooth', block: 'start' }), 80); });
         $$('[data-dl]', box).forEach(b => b.onclick = () => delAsk('Estudiantes', b.dataset.dl, b.dataset.nm, 'Se borra su código y sus datos. Ya no podrá entrar a la plataforma.', () => { delete SEL[b.dataset.dl]; reload(); }));
         $$('[data-sel]', box).forEach(c => c.onchange = () => { if (c.checked) SEL[c.dataset.sel] = c.dataset.nm; else delete SEL[c.dataset.sel]; bulkBar(reload); });
-        bulkBar(reload);
+        selAll(box, BK_ST, reload); bulkBar(reload);
       },
       open: (code) => studentDetail(code), empty: 'Aún no hay estudiantes. Crea el primero con “＋ Nuevo estudiante”.' });
   }
@@ -228,6 +229,65 @@
         for (let i = 0; i < ks.length; i++) { $('#bd-st', m).textContent = 'Borrando ' + (i + 1) + ' de ' + ks.length + '…'; const r = await api('aDelete', { table: cfg.table, id: ks[i] }).catch(() => null); if (r && r.ok) { ok++; delete SEL[ks[i]]; } else bad++; }
         m.remove(); toast(bad ? `Se borraron ${ok}. ${bad} no se pudieron borrar.` : `Se borraron ${ok} ${ok > 1 ? cfg.many : cfg.one}`); bulkBar(reload, cfg); if (cfg.after) await cfg.after(); reload(); };
     };
+  }
+  /* ======================= 🗂️ v617 · SELECCIONAR, EDITAR Y BORRAR EN TODAS LAS LISTAS ======================= */
+  const GT = {
+    Familias: { one: 'familia', many: 'familias', note: 'Se borra el acceso al panel de papás. Los hijos siguen como estudiantes con todo su progreso.' },
+    Inscripciones: { one: 'inscripción', many: 'inscripciones', note: 'Se borra el registro de la inscripción. Si ya se convirtió en estudiante, el estudiante no se borra.' },
+    Compras: { one: 'pago', many: 'pagos', note: 'Solo se borran pagos pendientes, cancelados o rechazados. Los aprobados tienen comprobante y no se borran.' },
+    Reclamos: { one: 'reclamo', many: 'reclamos', note: 'Se borra el reclamo de la lista.' },
+    Opiniones: { one: 'opinión', many: 'opiniones', note: 'Se borra la opinión sobre el profe.' },
+    OpinionesEscuela: { one: 'opinión', many: 'opiniones', note: 'Se borra la opinión sobre la escuela (y de la página si estaba publicada).' },
+    Premios: { one: 'premio', many: 'premios', note: 'Se borra el premio. Si no lo había usado, ya no podrá usarlo.' },
+    Interesados: { one: 'interesado', many: 'interesados', note: 'Se borra de la lista y deja de recibir correos.' },
+    Placement: { one: 'resultado', many: 'resultados', note: 'Se borra el resultado de la prueba de clasificación.' },
+    Reclutamiento: { one: 'aspirante', many: 'aspirantes', note: 'Se borra el aspirante y sus respuestas.' },
+    Testimonios: { one: 'testimonio', many: 'testimonios', note: 'Se borra el testimonio y su video de la página.' },
+    Ofertas: { one: 'video', many: 'videos', note: 'Se borra la oferta de video.' },
+    Tableros: { one: 'tablero', many: 'tableros', note: 'Se borra el tablero de la clase.' },
+    Contratos: { one: 'versión del contrato', many: 'versiones del contrato', note: 'Se borra esta versión del texto. Las aceptaciones de los profes se conservan.' },
+    Clases: { one: 'clase', many: 'clases', note: 'Si la clase ya se dictó, también sale del pago del profe y del historial del estudiante.' },
+    ChatRoom: { one: 'conversación', many: 'conversaciones', note: 'Se borran todos los mensajes de la conversación.' }
+  };
+  // agrega las acciones a filas ya dibujadas (listas con diseño propio)
+  function gaDom(rows, t, items, idf, nmf, reload, o) { o = o || {}; rows.forEach((el, i) => { const x = items[i]; if (!x || el.querySelector('.ad-gact')) return; el.insertAdjacentHTML('beforeend', RA(t, idf(x), nmf(x), o.opt ? o.opt(x) : {})); }); if (rows[0]) wireGA(rows[0].parentElement, t, reload, o); }
+  const GFEM = /^(familia|inscripción|opinión|clase|conversación|versión del contrato)$/;
+  // casilla + editar + borrar al lado de cada elemento (o.noDel: no se puede borrar · o.noEdit: sin editar)
+  function RA(t, id, nm, o) { o = o || {}; id = String(id); return `<div class="ad-ract ad-gact" data-stop>${o.noDel ? '' : `<label class="ad-rchk" title="Seleccionar"><input type="checkbox" data-sel="${esc(id)}" data-nm="${esc(nm)}"${SEL[id] ? ' checked' : ''}><span></span></label>`}${o.noEdit ? '' : `<button class="ad-rbtn" data-ged="${esc(id)}" title="Editar" aria-label="Editar">${SVG.pen}</button>`}${o.noDel ? `<span class="ad-rlock" title="${esc(o.why || 'No se puede borrar')}">🔒</span>` : `<button class="ad-rbtn del" data-gdl="${esc(id)}" data-nm="${esc(nm)}" title="Borrar" aria-label="Borrar">${SVG.trash}</button>`}</div>`; }
+  function wireGA(box, t, reload, o) { o = o || {}; if (!box) return; const cfg = Object.assign({ table: t }, GT[t] || { one: 'registro', many: 'registros', note: '' });
+    $$('[data-ged]', box).forEach(b => b.onclick = (e) => { e.stopPropagation(); o.edit ? o.edit(b.dataset.ged) : genEdit(t, b.dataset.ged, reload); });
+    $$('[data-gdl]', box).forEach(b => b.onclick = (e) => { e.stopPropagation(); gDel(cfg, b.dataset.gdl, b.dataset.nm, () => { delete SEL[b.dataset.gdl]; reload(); }); });
+    $$('[data-sel]', box).forEach(c => { c.onclick = (e) => e.stopPropagation(); c.onchange = () => { if (c.checked) SEL[c.dataset.sel] = c.dataset.nm; else delete SEL[c.dataset.sel]; selSync(box); bulkBar(reload, cfg); }; });
+    selAll(box, cfg, reload); bulkBar(reload, cfg);
+  }
+  // «Seleccionar todos» arriba de la lista
+  function selAll(box, cfg, reload) { const old = $('.ad-selall', box.parentElement); if (old) old.remove(); const cs = $$('[data-sel]', box); if (!cs.length) return;
+    const l = document.createElement('label'); l.className = 'ad-selall'; l.innerHTML = `<span class="ad-rchk"><input type="checkbox" id="ad-sa"><span></span></span><b>Seleccionar ${GFEM.test(cfg.one) ? 'todas' : 'todos'}</b><small>${cs.length} ${cs.length === 1 ? cfg.one : cfg.many}</small>`;
+    box.parentElement.insertBefore(l, box); const sa = $('#ad-sa', l);
+    sa.onchange = () => { $$('[data-sel]', box).forEach(c => { c.checked = sa.checked; if (sa.checked) SEL[c.dataset.sel] = c.dataset.nm; else delete SEL[c.dataset.sel]; }); bulkBar(reload, cfg); };
+    selSync(box); }
+  function selSync(box) { const sa = $('#ad-sa'); if (!sa) return; const cs = $$('[data-sel]', box); sa.checked = cs.length > 0 && cs.every(c => c.checked); }
+  function gDel(cfg, id, nm, after) {
+    const m = modal(`<div class="center"><div class="ad-dlic">${SVG.trash}</div><h2>¿Borrar ${GFEM.test(cfg.one) ? 'esta' : 'este'} ${esc(cfg.one)}?</h2><p><b>${esc(nm)}</b></p><p class="muted">${cfg.note}</p><p><b>Esto no se puede deshacer.</b></p><div class="row" style="justify-content:center;margin-top:10px"><button class="btn w" id="dl-no">Cancelar</button><button class="btn k ad-del" id="dl-ok">Sí, borrar</button></div></div>`);
+    $('#dl-no', m).onclick = () => m.remove();
+    $('#dl-ok', m).onclick = async () => { $('#dl-ok', m).disabled = true; const r = await api('aDelete', { table: cfg.table, id }); m.remove(); if (r.ok) { toast('Borrado'); after && after(); } else toast(r.err === 'paid' ? 'Los pagos aprobados no se borran (tienen comprobante)' : 'No se pudo borrar'); };
+  }
+  // ✏️ editor general: muestra los datos del registro y guarda los cambios
+  const GLBL = { name: 'Nombre', first: 'Nombre', last: 'Apellido', guardian: 'Papá / mamá', email: 'Correo', email2: 'Segundo correo', whatsapp: 'WhatsApp', city: 'Ciudad', status: 'Estado', note: 'Nota', notes: 'Notas', adminNote: 'Nota de administración', comments: 'Comentarios', text: 'Texto', stars: 'Estrellas', date: 'Fecha', time: 'Hora', topic: 'Tema', plan: 'Plan', amount: 'Valor', code: 'Código', studentName: 'Estudiante', teacherName: 'Profe', info: 'Descripción', active: 'Activo', ord: 'Orden', source: 'Origen', alerts: 'Alerta 7 días', reports: 'Reporte de los lunes', level: 'Nivel', module: 'Módulo', final: 'Puntaje final', phrase: 'Frase', expires: 'Vence', receipt: 'Comprobante', kind: 'Tipo', version: 'Versión', aud: 'Para', pay: 'Pago', duration: 'Duración (min)', consent: 'Autorizó publicar', tags: 'Etiquetas', birth: 'Nacimiento', experience: 'Experiencia', about: 'Sobre mí', classDate: 'Fecha de la clase', classTime: 'Hora de la clase', teacher: 'Profe', student: 'Estudiante', mname: 'Módulo', stage: 'Momento', page: 'Página', score: 'Puntaje', until: 'Vence', listening: 'Listening', reading: 'Reading', writing: 'Writing', speaking: 'Speaking', attempt: 'Intento', passed: 'Aprobó', availability: 'Disponibilidad', levels: 'Niveles', schedule: 'Horario', days: 'Días', payment: 'Medio de pago', paid: 'Pagó', ref: 'Referencia', discount: 'Descuento', unit: 'Valor unitario', n: 'Cantidad', method: 'Medio de pago', mpRef: 'Referencia Mercado Pago', pts: 'Guion', st: 'Estado', byName: 'Lo tomó', dur: 'Duración (s)', lastReport: 'Último reporte', updated: 'Actualizado', created: 'Creado', type: 'Tipo', confirmed: 'Confirmada', flags: 'Marcas', meet: 'Enlace', createdBy: 'Creada por', room: 'Conversación', from: 'De', ts: 'Hora', read: 'Leído' };
+  const GSKIP = /^(_r|id|fcode|classId|teacherId|groupId|by|usedBy|buyId|decided|decidedAt|auto|consentAt|token|progress|speakingAnswers|files|imgs|pz|parts|items|hw|mods|attendance|students|slotId|mime|proof|poster|video|clicks|lastClick|sent|lastSent|mailed|file|fmime|fname)$/;
+  async function genEdit(t, id, reload) {
+    const r = await api('aGet', { table: t, id }); if (!r.ok || !r.row) return toast('No se pudo abrir');
+    const row = r.row, key = t === 'Familias' ? 'fcode' : 'id', lock = t === 'Compras' && row.status === 'aprobado';
+    const ro = (k) => k === key || k === 'date' || k === 'created' || k === 'updated' || (lock && /^(amount|status|receipt|discount|extra|unit|n|plan|kind|code|method|mpRef)$/.test(k));
+    const ks = Object.keys(row).filter(k => !GSKIP.test(k));
+    const m = modal(`<h2 class="ad-geh">${SVG.pen} Editar ${esc((GT[t] || {}).one || 'registro')}</h2>${lock ? '<p class="muted" style="margin:0 0 8px">Pago aprobado: el valor, el estado y el comprobante no se pueden cambiar.</p>' : ''}<div class="ad-gef">${ks.map(k => { const v = row[k] == null ? '' : String(row[k]); const long = v.length > 70 || k === 'text' || k === 'note' || k === 'notes' || k === 'comments' || k === 'about';
+      return `<label><span>${esc(GLBL[k] || k)}</span>${long ? `<textarea class="inp" data-k="${esc(k)}" rows="3"${ro(k) ? ' readonly' : ''}>${esc(v)}</textarea>` : `<input class="inp" data-k="${esc(k)}" value="${esc(v)}"${ro(k) ? ' readonly' : ''}>`}</label>`; }).join('')}</div>
+      <div class="row ad-gebt"><button class="btn w" id="ge-no">Cancelar</button><button class="btn k" id="ge-ok">Guardar cambios</button></div>`);
+    m.classList.add('ad-gem');
+    $('#ge-no', m).onclick = () => m.remove();
+    $('#ge-ok', m).onclick = async () => { const ch = {}; $$('[data-k]', m).forEach(i => { if (i.readOnly) return; const k = i.dataset.k; if (String(row[k] == null ? '' : row[k]) !== i.value) ch[k] = i.value; });
+      if (!Object.keys(ch).length) { m.remove(); return; } ch[key] = id; $('#ge-ok', m).disabled = true;
+      const x = await api('aSave', { table: t, row: ch, gen: true }); if (x.ok) { m.remove(); toast('✅ Cambios guardados'); reload && reload(); } else { $('#ge-ok', m).disabled = false; toast('No se pudo guardar'); } };
   }
   function _studentsEnd() {
   }
@@ -378,7 +438,7 @@
       filters: [{ k: 'status', opts: [['', 'Todos los estados']].concat(ENR_ST) }],
       row: x => `<div class="card ad-row" data-open="${esc(x.id)}"><div class="ad-av">${esc((x.first || '?')[0].toUpperCase())}</div><div class="grow"><b>${esc(x.first)} ${esc(x.last)}</b> ${chip((ENR_ST.find(s => s[0] === x.status) || ['', x.status])[1], 'st-' + x.status)}
         <small>${planName(x.plan)} · ${fDT(x.date)}</small><div class="ad-rowstats"><span>📧 ${esc(x.email)}</span><span>📱 ${esc(x.whatsapp)}</span>${x.code ? `<span>🔑 ${esc(x.code)}</span>` : ''}</div></div></div>`,
-      open: (id, x) => enrollDetail(x), empty: 'Aún no hay inscripciones. Comparte el formulario de inscripción.' });
+      ga: { t: 'Inscripciones', id: x => x.id, nm: x => (x.first + ' ' + x.last).trim() }, open: (id, x) => enrollDetail(x), empty: 'Aún no hay inscripciones. Comparte el formulario de inscripción.' });
   }
   function enrollDetail(x) {
     view().innerHTML = `${back()}<div class="card ad-dhead"><div class="ad-av lg">${esc((x.first || '?')[0].toUpperCase())}</div><div class="grow"><h1>${esc(x.first)} ${esc(x.last)}</h1><p>${planName(x.plan)} · ${fDT(x.date)}</p></div>
@@ -414,7 +474,7 @@
     list('placement', { title: '🧭 Prueba de clasificación', sub: 'Resultados y audios de Speaking',
       row: x => `<div class="card ad-row" data-open="${esc(x.id)}"><div class="ad-av">${esc((x.name || '?')[0].toUpperCase())}</div><div class="grow"><b>${esc(x.name)}</b> ${chip(esc(x.level || ('Módulo ' + x.module)), 'p-membership')}
         <small>${fDT(x.date)} · ${esc(x.attempt)} ${x.code ? '· 🔑 ' + esc(x.code) : ''}</small><div class="ad-rowstats"><span>🎧 ${esc(x.listening)}</span><span>👀 ${esc(x.reading)}</span><span>✍️ ${esc(x.writing)}</span><span>🎤 ${esc(x.speaking)}</span><span><b>Nota ${esc(x.final)}</b></span><span>🔊 ${J(x.files, []).length} audios</span></div></div></div>`,
-      open: (id) => placementDetail(id, () => go('placement')), empty: 'Aún nadie ha tomado la prueba de clasificación con la nube activa.' });
+      ga: { t: 'Placement', id: x => x.id, nm: x => x.name || x.email || 'Resultado' }, open: (id) => placementDetail(id, () => go('placement')), empty: 'Aún nadie ha tomado la prueba de clasificación con la nube activa.' });
   }
   async function placementDetail(id, onBack) {
     view().innerHTML = '<div class="ad-loading">⏳ Cargando…</div>'; window.scrollTo(0, 0);
@@ -434,7 +494,7 @@
       filters: [{ k: 'status', opts: [['', 'Todos los estados']].concat(REC_ST) }, { k: 'passed', opts: [['', 'Aprobados y no aprobados'], ['sí', '✅ Aprobados'], ['no', '❌ No aprobados']] }],
       row: x => `<div class="card ad-row" data-open="${esc(x.id)}"><div class="ad-av">${esc((x.name || '?')[0].toUpperCase())}</div><div class="grow"><b>${esc(x.name)}</b> ${chip(x.passed === 'sí' ? '✅ Aprobó' : '❌ No aprobó', x.passed === 'sí' ? 'p-premium' : 'p-expired')} ${chip((REC_ST.find(s => s[0] === x.status) || ['', x.status])[1], 'st-' + x.status)}
         <small>${fDT(x.date)} · ${esc(x.city)} · ${esc(x.experience)}</small><div class="ad-rowstats"><span>🎧 ${esc(x.listening)}</span><span>👀 ${esc(x.reading)}</span><span>✍️ ${esc(x.writing)}</span><span>🎤 ${esc(x.speaking)}</span><span><b>Final ${esc(x.final)}</b></span><span>${J(x.cv, null) ? '📄 CV' : 'sin CV'}</span></div></div></div>`,
-      open: (id) => recruitDetail(id), empty: 'Aún no hay candidatos. Comparte el enlace del proceso de selección.' });
+      ga: { t: 'Reclutamiento', id: x => x.id, nm: x => x.name || 'Aspirante' }, open: (id) => recruitDetail(id), empty: 'Aún no hay candidatos. Comparte el enlace del proceso de selección.' });
   }
   async function recruitDetail(id) {
     view().innerHTML = '<div class="ad-loading">⏳ Cargando…</div>'; window.scrollTo(0, 0);
@@ -465,7 +525,7 @@
         $$('[data-ct]', box).forEach(b => b.onclick = () => ctSendAsk([b.dataset.ct], [b.dataset.nm], async () => { await loadRef(); reload(); })); // v571
         $$('[data-dl]', box).forEach(b => b.onclick = () => delAsk('Profesores', b.dataset.dl, b.dataset.nm, cfg.note + ' Si tiene grupos o clubs asignados, asígnale otro profe.', async () => { delete SEL[b.dataset.dl]; await loadRef(); reload(); }));
         $$('[data-sel]', box).forEach(c => c.onchange = () => { if (c.checked) SEL[c.dataset.sel] = c.dataset.nm; else delete SEL[c.dataset.sel]; bulkBar(reload, cfg); });
-        bulkBar(reload, cfg);
+        selAll(box, cfg, reload); bulkBar(reload, cfg);
         tprBox(); // 🎓 v596
       },
       open: (id) => teacherDetail(id), empty: 'Aún no hay profesores. Crea el primero.' });
@@ -532,7 +592,8 @@
       <p class="muted" style="margin:-4px 0 14px">Lo que cada profe escribió en sus clases individuales.</p><div id="bd-l"></div>`;
     const draw = (q) => { q = (q || '').toLowerCase(); const F = L.filter(b => !q || (b.student + ' ' + b.teacher + ' ' + b.code).toLowerCase().indexOf(q) >= 0);
       $('#bd-l').innerHTML = F.map(b => `<div class="card" style="margin-bottom:10px;padding:12px 14px"><b>${esc(b.student || b.code)}</b> <small class="muted">· ${esc(b.date)} ${esc(b.time)} · ${esc(b.teacher)}</small><div class="tb-board ro" style="margin-top:8px">${esc(b.text)}</div></div>`).join('') || '<p class="muted">Aún no hay tableros.</p>'; };
-    draw(''); $('#bd-q').oninput = (e) => draw(e.target.value);
+    const draw0 = draw; const drawG = (q) => { draw0(q); q = (q || '').toLowerCase(); const F = L.filter(b => !q || (b.student + ' ' + b.teacher + ' ' + b.code).toLowerCase().indexOf(q) >= 0); gaDom($$('#bd-l > .card'), 'Tableros', F, b => b.id, b => (b.student || b.code) + ' · ' + b.date, () => boards()); };
+    drawG(''); $('#bd-q').oninput = (e) => drawG(e.target.value);
   }
   /* ======================= TESTIMONIOS ======================= */
   async function tes() {
@@ -541,8 +602,9 @@
     const L = r.tes || []; const pv = (t) => MRTES.v(t.poster) || (MRTES.drive(t.video) ? 'https://drive.google.com/thumbnail?id=' + MRTES.drive(t.video) + '&sz=w400' : '');
     view().innerHTML = `<div class="ad-head"><h2>🎬 Testimonios <small class="muted">(${L.length})</small></h2><button class="btn k" id="ts-new">＋ Nuevo testimonio</button></div>
       <p class="muted" style="margin:-4px 0 14px">Aparecen en la página de inicio, en el orden que indiques. Video vertical (de celular), máximo 25 MB.</p>
-      <div class="ad-tes">${L.map((t, i) => `<div class="ad-tc${String(t.active).charAt(0) === 'n' ? ' off' : ''}"><div class="ad-tp">${pv(t) ? `<img src="${esc(pv(t))}" alt="">` : ''}<span>${esc(t.ord)}</span></div><b>${esc(t.name)}</b><small>${esc(t.info || '')}</small>${String(t.active).charAt(0) === 'n' ? '<em>Oculto</em>' : ''}<div class="row"><button class="btn w sm" data-te="${i}">✏️ Editar</button><button class="btn w sm ad-del" data-td="${i}">🗑️</button></div></div>`).join('') || '<p class="muted">Aún no hay testimonios.</p>'}</div>`;
+      <div class="ad-tes">${L.map((t, i) => `<div class="ad-tc${String(t.active).charAt(0) === 'n' ? ' off' : ''}"><div class="ad-tp">${pv(t) ? `<img src="${esc(pv(t))}" alt="">` : ''}<span>${esc(t.ord)}</span></div><b>${esc(t.name)}</b><small>${esc(t.info || '')}</small>${String(t.active).charAt(0) === 'n' ? '<em>Oculto</em>' : ''}${RA('Testimonios', t.id, t.name)}</div>`).join('') || '<p class="muted">Aún no hay testimonios.</p>'}</div>`;
     $('#ts-new').onclick = () => tesEdit(null, L.length + 1);
+    wireGA($('.ad-tes', view()), 'Testimonios', () => { try { localStorage.removeItem('mra_tes'); } catch (e) { } tes(); }, { edit: (id) => tesEdit(L.find(x => String(x.id) === String(id))) });
     $$('[data-te]').forEach(b => b.onclick = () => tesEdit(L[+b.dataset.te]));
     $$('[data-td]').forEach(b => b.onclick = () => { const t = L[+b.dataset.td]; const m = modal(`<div class="center"><h2>¿Borrar el testimonio de ${esc(t.name)}?</h2><p class="muted">Dejará de aparecer en la página de inicio.</p><div class="row" style="justify-content:center;margin-top:10px"><button class="btn w" id="dl-no">Cancelar</button><button class="btn k ad-del" id="dl-ok">🗑️ Sí, borrar</button></div></div>`);
       $('#dl-no', m).onclick = () => m.remove(); $('#dl-ok', m).onclick = async () => { $('#dl-ok', m).disabled = true; const x = await api('aTesDel', { id: t.id }); m.remove(); if (x.ok) { try { localStorage.removeItem('mra_tes'); } catch (e) { } toast('🗑️ Borrado'); tes(); } else toast('No se pudo borrar'); }; });
@@ -622,7 +684,7 @@
       filters: [{ k: 'status', opts: [['scheduled', '📅 Programadas'], ['done', '✅ Dictadas'], ['noshow', '❌ No asistió'], ['cancelled', 'Canceladas'], ['', 'Todas']] }, { k: 'type', opts: [['', 'Todas'], ['vip', '🎯 Individuales'], ['club', '🎙️ Clubs (historial)']] }],
       row: c => { const st = J(c.students, []); const att = J(c.attendance, {}); return `<div class="card ad-row ad-cl ${c.type}" data-open="${esc(c.id)}"><div class="ad-cdate"><b>${fD(c.date, { day: 'numeric' })}</b><small>${fD(c.date, { month: 'short' })}</small></div><div class="grow"><b>${c.type === 'vip' ? '🎯 Individual' : c.type === 'club' ? '🎙️ Club' : '👥 Grupal'} · ${fT(c.time)} · ${esc(tName(c.teacherId))}</b> ${chip({ scheduled: '📅 programada', done: '✅ dictada', noshow: '❌ no asistió', cancelled: 'cancelada' }[c.status] || esc(c.status), 'st-' + c.status)}
         <small>${st.length} estudiante(s)${c.status === 'done' ? ' · asistieron ' + Object.values(att).filter(Boolean).length : ''}${c.topic ? ' · ' + esc(c.topic) : ''}</small></div></div>`; },
-      open: (id, c) => classMark(c), empty: 'No hay clases con este filtro.' });
+      ga: { t: 'Clases', id: c => c.id, nm: c => fD(c.date, { day: 'numeric', month: 'short' }) + ' · ' + fT(c.time) + ' · ' + tName(c.teacherId) }, open: (id, c) => classMark(c), empty: 'No hay clases con este filtro.' });
   }
   // 🎁 regalar clases individuales adicionales (por un inconveniente o como regalo); valen solo para el ciclo actual del plan
   async function bonusModal() {
@@ -710,7 +772,8 @@
     view().innerHTML = `<div class="ad-head"><h1>💳 Pagos</h1><p class="muted">Los pagos con Mercado Pago (tarjeta, PSE, Nequi o Daviplata) <b>se aprueban solos</b> y el plan o las clases se habilitan de inmediato. Los intentos que no se completan se cancelan solos a las 48 horas.</p></div>
       <div class="ad-filters"><select class="inp" id="bf">${[['pendiente', '⏳ Pendientes'], ['aprobado', '✅ Aprobados'], ['rechazado', '❌ Rechazados'], ['cancelado', '🚫 Cancelados'], ['', 'Todos']].map(([v, n]) => `<option value="${v}" ${BUYF === v ? 'selected' : ''}>${n}</option>`).join('')}</select></div>
       <div class="card">${L.length ? `<div class="ad-mini">${L.map(b => `<div class="ad-mrow" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><div style="flex:1;min-width:220px"><b>${esc(b.name)}</b> <span class="muted">(${esc(b.code)})</span><br><small class="muted">${b.kind === 'extra' ? '➕ ' + b.n + ' clase(s) adicional(es)' : esc(b.planName || b.plan)} · <b>${money(b.amount)}</b>${b.ref ? ' (' + (b.ref === 'OFERTA' ? '⏱️ oferta 24 h' : b.ref === 'CUPON' ? '🤝 premio por recomendar' : '🎁 referido ' + esc(b.ref)) + ' · −' + money(b.discount) + ')' : ''} · ${b.method === 'mercadopago' ? '💳 Mercado Pago' : '🏦 Transferencia'} · ${esc(String(b.date).slice(0, 16).replace('T', ' '))} · ${ST[b.status] || esc(b.status)}${b.note ? ' · ' + esc(b.note) : ''}</small></div>
-        ${b.proof ? `<a class="btn w sm" target="_blank" rel="noopener" href="https://drive.google.com/file/d/${encodeURIComponent(b.proof)}/view">🧾 Ver comprobante</a>` : ''}${b.status === 'aprobado' ? `<button class="btn w sm" data-rcd="${esc(b.id)}">📄 ${esc(b.receipt || 'Comprobante de pago')} · PDF</button><button class="btn w sm" data-rcs="${esc(b.id)}">✉️ Reenviar comprobante</button>` : ''}${b.status === 'pendiente' && b.method === 'mercadopago' ? `<span class="muted" style="font-size:13px">⏳ Esperando que termine de pagar en Mercado Pago · se aprueba solo</span><button class="btn w sm" data-mp="${esc(b.id)}">🔄 Verificar ahora</button>` : b.status === 'pendiente' ? `<button class="btn k sm" data-ok="${esc(b.id)}">✅ Aprobar</button><button class="btn w sm" data-no="${esc(b.id)}">❌ Rechazar</button>` : ''}</div>`).join('')}</div>` : '<p class="muted">No hay pagos en esta lista.</p>'}</div>`;
+        ${b.proof ? `<a class="btn w sm" target="_blank" rel="noopener" href="https://drive.google.com/file/d/${encodeURIComponent(b.proof)}/view">🧾 Ver comprobante</a>` : ''}${b.status === 'aprobado' ? `<button class="btn w sm" data-rcd="${esc(b.id)}">📄 ${esc(b.receipt || 'Comprobante de pago')} · PDF</button><button class="btn w sm" data-rcs="${esc(b.id)}">✉️ Reenviar comprobante</button>` : ''}${b.status === 'pendiente' && b.method === 'mercadopago' ? `<span class="muted" style="font-size:13px">⏳ Esperando que termine de pagar en Mercado Pago · se aprueba solo</span><button class="btn w sm" data-mp="${esc(b.id)}">🔄 Verificar ahora</button>` : b.status === 'pendiente' ? `<button class="btn k sm" data-ok="${esc(b.id)}">✅ Aprobar</button><button class="btn w sm" data-no="${esc(b.id)}">❌ Rechazar</button>` : ''}${RA('Compras', b.id, (b.name || '') + ' · ' + money(b.amount), b.status === 'aprobado' ? { noDel: 1, why: 'Pago aprobado: tiene comprobante y no se borra' } : {})}</div>`).join('')}</div>` : '<p class="muted">No hay pagos en esta lista.</p>'}</div>`;
+    wireGA($('.ad-mini', view()), 'Compras', () => buys());
     $('#bf').onchange = (e) => { BUYF = e.target.value; buys(); };
     // 🧾 v615: comprobante de pago (descargar el PDF o reenviarlo al correo del estudiante)
     $$('[data-rcd]').forEach(b => b.onclick = async () => { b.disabled = true; const x = await api('aReceipt', { id: b.dataset.rcd }); b.disabled = false; if (!x.ok || !x.pdf) return toast('No se pudo generar el comprobante');
@@ -753,6 +816,7 @@
     rvSegWire();
     $$('[data-f]', view()).forEach(b => b.onclick = () => { SRF = b.dataset.f; schoolReviews(); });
     $$('[data-sr]', view()).forEach(b => b.onclick = async () => { b.disabled = true; const res = await api('aSchoolSet', { id: b.dataset.sr, status: b.dataset.s }); toast(res && res.ok ? '✅ Listo' : 'No se pudo completar'); schoolReviews(); });
+    gaDom($$('.sr-row', view()), 'OpinionesEscuela', L, x => x.id, x => (x.name || 'Estudiante') + ' · ' + x.stars + '★', () => schoolReviews());
   }
   async function teacherReviews() {
     view().innerHTML = '<div class="ad-loading">⏳ Cargando opiniones…</div>';
@@ -761,6 +825,7 @@
     view().innerHTML = `<div class="ad-head"><h1>⭐ Opiniones</h1>${rvSeg('t')}<h2 class="sr-h2">Opiniones de los profes</h2><p class="muted">Las escriben los estudiantes al terminar una clase individual. Son públicas en la página de entrada. Puedes ocultar una si es inapropiada.</p></div>
       <div class="card">${r.reviews.length ? `<div class="ad-mini">${r.reviews.map(x => `<div class="ad-mrow" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><div style="flex:1;min-width:220px"><b style="color:#f5a623">${st(x.stars)}</b> · profe <b>${esc(x.teacherName)}</b><br>${x.text ? '“' + esc(x.text) + '”<br>' : ''}<small class="muted">${esc(x.studentName)} (${esc(x.code)}) · ${esc(String(x.date).slice(0, 10))}${x.status === 'oculta' ? ' · 🙈 Oculta' : ''}</small></div><button class="btn w sm" data-rv="${esc(x.id)}" data-h="${x.status === 'oculta' ? '' : '1'}">${x.status === 'oculta' ? 'Mostrar' : 'Ocultar'}</button></div>`).join('')}</div>` : '<p class="muted">Aún no hay opiniones.</p>'}</div>`;
     $$('[data-rv]').forEach(b => b.onclick = async () => { b.disabled = true; await api('aReviewSet', { id: b.dataset.rv, hide: !!b.dataset.h }); teacherReviews(); });
+    gaDom($$('.ad-mini > .ad-mrow', view()), 'Opiniones', r.reviews, x => x.id, x => (x.studentName || 'Estudiante') + ' → ' + (x.teacherName || 'profe'), () => teacherReviews());
   }
 
 
@@ -776,10 +841,11 @@
       const rows = r.families.filter(f => (!onlyAl || f.kids.some(k => k.alert && k.idle >= 7)) && (!q || (f.fcode + ' ' + f.guardian + ' ' + f.email + ' ' + f.kids.map(k => k.name + ' ' + k.code).join(' ')).toLowerCase().indexOf(q) >= 0));
       $('#fmL', view()).innerHTML = rows.length ? rows.map(f => `<div class="sr-row"><div class="sr-rh"><b>${esc(f.guardian || '—')}</b><small>${esc(f.fcode)} · ${esc(f.email)}${f.email2 ? ' · ' + esc(f.email2) : ''}${f.whatsapp ? ' · ' + esc(f.whatsapp) : ''}</small><span class="sr-pill ${f.alerts ? 'pub' : 'hid'}" style="margin-left:auto">${f.alerts ? 'Alerta 7 días: activa' : 'Alerta apagada'}</span></div>
         <div class="fm-adk">${f.kids.map(k => { const g = AGN[k.ag] || AGN.adult; return `<div><b>${esc(k.name)}</b> <i class="${g[0]}">${g[1]}${k.age != null ? ' ' + k.age : ''}</i> <small>${esc(k.planName)} · ${esc(k.code)} · ${k.idle <= 0 ? 'activo hoy' : k.idle === 1 ? 'activo ayer' : 'hace ' + k.idle + ' días'}</small>${k.alert ? ` <span class="sr-pill alert">Alerta enviada ${fD(k.alert, { day: 'numeric', month: 'short' })}</span>` : ''}</div>`; }).join('') || '<small class="muted">Sin hijos vinculados</small>'}</div>
-        <div class="sr-ac">${f.whatsapp ? `<a class="btn sm ad-wa" target="_blank" rel="noopener" href="${waLink(f.whatsapp, 'Hola ' + String(f.guardian || '').split(' ')[0] + ', te escribimos de mrarrieta.com.')}">📲 WhatsApp</a>` : ''}${f.kids.length ? `<button class="btn w sm" data-ft="${esc(f.fcode)}">✉️ Enviar alerta de prueba</button>` : ''}${f.kids.length ? `<button class="btn w sm" data-fr="${esc(f.fcode)}">📊 Reporte de prueba</button>` : ''}<button class="btn w sm" data-fa="${esc(f.fcode)}" data-on="${f.alerts ? 0 : 1}">${f.alerts ? 'Apagar alerta' : 'Activar alerta'}</button></div></div>`).join('') : '<p class="muted">No hay familias con ese filtro.</p>';
+        <div class="sr-ac">${f.whatsapp ? `<a class="btn sm ad-wa" target="_blank" rel="noopener" href="${waLink(f.whatsapp, 'Hola ' + String(f.guardian || '').split(' ')[0] + ', te escribimos de mrarrieta.com.')}">📲 WhatsApp</a>` : ''}${f.kids.length ? `<button class="btn w sm" data-ft="${esc(f.fcode)}">✉️ Enviar alerta de prueba</button>` : ''}${f.kids.length ? `<button class="btn w sm" data-fr="${esc(f.fcode)}">📊 Reporte de prueba</button>` : ''}<button class="btn w sm" data-fa="${esc(f.fcode)}" data-on="${f.alerts ? 0 : 1}">${f.alerts ? 'Apagar alerta' : 'Activar alerta'}</button></div>${RA('Familias', f.fcode, f.guardian || f.fcode)}</div>`).join('') : '<p class="muted">No hay familias con ese filtro.</p>';
       $$('[data-fr]', view()).forEach(b => b.onclick = async () => { b.disabled = true; const x = await api('aFamReportTest', { fcode: b.dataset.fr }); b.disabled = false; toast(x && x.ok ? '✅ Reporte de prueba enviado a ' + x.to : 'No se pudo enviar'); });
       $$('[data-ft]', view()).forEach(b => b.onclick = async () => { b.disabled = true; const x = await api('aFamTest', { fcode: b.dataset.ft }); b.disabled = false; toast(x && x.ok ? '✅ Alerta de prueba enviada a ' + x.to : 'No se pudo enviar'); });
       $$('[data-fa]', view()).forEach(b => b.onclick = async () => { b.disabled = true; const x = await api('aFamSet', { fcode: b.dataset.fa, alerts: b.dataset.on === '1' }); toast(x && x.ok ? '✅ Listo' : 'No se pudo'); families(); });
+      wireGA($('#fmL', view()), 'Familias', () => families());
     };
     view().innerHTML = `<div class="ad-head"><h1>👨‍👩‍👧 Familias</h1><p class="muted">Papás y mamás con hijos en Kids (9–11) o Teens (12–17). El grupo de edad cambia solo con el cumpleaños. La alerta de 7 días se envía si un hijo no reserva clase (Premium) o no practica (Plataforma) en una semana.</p></div>
       <div class="sr-kpis fm-k4"><div><b>${r.kpi.families}</b><span>Familias</span></div><div><b>${r.kpi.kids}</b><span>Kids (9–11)</span></div><div><b>${r.kpi.teens}</b><span>Teens (12–17)</span></div><div><b class="r">${r.kpi.alerts}</b><span>Alertas esta semana</span></div></div>
@@ -797,7 +863,8 @@
       <div class="sr-kpis"><div><b>${r.n}</b><span>Ganaron el reto</span></div><div><b class="g">${r.active}</b><span>Premios activos</span></div><div><b>${r.used}</b><span>Compraron · ${pct}%</span></div></div>
       <div class="card">${r.rows.length ? r.rows.map(x => { const s = SN[x.state] || ['sr-pill', x.state]; return `<div class="sr-row${x.state === 'activo' ? '' : ''}"><div class="sr-rh"><b>${esc(x.name)}</b><small>${esc(x.code)} · ${x.page === 'ninos' ? 'Niños y jóvenes' : 'Adultos'} · ${fD(x.date, { day: 'numeric', month: 'short' })}</small><span class="${s[0]}" style="margin-left:auto">${s[1]}</span></div>
         <p style="font-size:13px;color:#475569">Vence: <b>${esc(x.until)}</b>${x.usedBy ? ` · lo usó <b>${esc(x.usedBy)}</b>` : ''}</p>
-        <div class="sr-ac">${x.whatsapp ? `<a class="btn sm ad-wa" target="_blank" rel="noopener" href="${waLink(x.whatsapp, `Hola ${String(x.name).split(' ')[0]}, ¡felicitaciones por tu pronunciación! Tu código ${x.code} te da 10% en tu primer mes en mrarrieta.com, válido hasta el ${x.until}. Elige tu plan aquí: ${location.href.replace(/[#?].*$/, '').replace(/[^/]*$/, '')}adultos.html#ld-planes`)}">📲 WhatsApp</a>` : ''}${x.state === 'activo' || x.state === 'vencido' ? `<button class="btn w sm" data-pz="${esc(x.id)}" data-a="extender">+1 día</button>` : ''}${x.state === 'activo' ? `<button class="btn w sm" data-pz="${esc(x.id)}" data-a="anular">Anular</button>` : ''}</div></div>`; }).join('') : '<p class="muted">Aún nadie ha ganado el reto.</p>'}</div>`;
+        <div class="sr-ac">${x.whatsapp ? `<a class="btn sm ad-wa" target="_blank" rel="noopener" href="${waLink(x.whatsapp, `Hola ${String(x.name).split(' ')[0]}, ¡felicitaciones por tu pronunciación! Tu código ${x.code} te da 10% en tu primer mes en mrarrieta.com, válido hasta el ${x.until}. Elige tu plan aquí: ${location.href.replace(/[#?].*$/, '').replace(/[^/]*$/, '')}adultos.html#ld-planes`)}">📲 WhatsApp</a>` : ''}${x.state === 'activo' || x.state === 'vencido' ? `<button class="btn w sm" data-pz="${esc(x.id)}" data-a="extender">+1 día</button>` : ''}${x.state === 'activo' ? `<button class="btn w sm" data-pz="${esc(x.id)}" data-a="anular">Anular</button>` : ''}</div>${RA('Premios', x.id, x.name + ' · ' + x.code)}</div>`; }).join('') : '<p class="muted">Aún nadie ha ganado el reto.</p>'}</div>`;
+    wireGA($('.ad-head', view()).nextElementSibling.nextElementSibling, 'Premios', () => prizes());
     $$('[data-pz]', view()).forEach(b => b.onclick = async () => { b.disabled = true; const res = await api('aPrizeSet', { id: b.dataset.pz, act: b.dataset.a }); toast(res && res.ok ? '✅ Listo' : 'No se pudo'); prizes(); });
   }
   /* ======================= 🚩 RECLAMOS (profe no se conectó) ======================= */
@@ -808,7 +875,8 @@
     const pend = r.claims.filter(x => x.status === 'pendiente').length; const bd = $('[data-b="claims"]'); if (bd) { bd.textContent = pend || ''; bd.style.display = pend ? '' : 'none'; }
     view().innerHTML = `<div class="ad-head"><h1>🚩 Reclamos</h1><p class="muted">El estudiante reporta que su profe no se conectó (de 15 min a 24 h después de la clase). Si el profe <b>no había marcado</b> la clase, se aplica de una: la clase vuelve al estudiante y se descuenta la penalización al profe. Si el profe <b>ya la había marcado</b>, queda pendiente: resuélvelo en máximo 24 horas.</p></div>
       <div class="card">${r.claims.length ? `<div class="ad-mini">${r.claims.map(x => `<div class="ad-mrow" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><div style="flex:1;min-width:220px"><b>${esc(x.studentName)}</b> <span class="muted">(${esc(x.code)})</span> → profe <b>${esc(x.teacherName)}</b><br><small class="muted">Clase: ${esc(fD(x.classDate))} · ${esc(fT(x.classTime))} · ${ST[x.status] || esc(x.status)}${x.auto ? ' · automático' : ''}${x.note ? '<br>💬 ' + esc(x.note) : ''}${x.adminNote ? '<br>📝 ' + esc(x.adminNote) : ''}</small></div>
-        ${x.status === 'pendiente' ? `<button class="btn k sm" data-ca="approve" data-id="${esc(x.id)}">✅ Aprobar</button><button class="btn w sm" data-ca="reject" data-id="${esc(x.id)}">❌ Rechazar</button>` : x.status === 'aprobado' ? `<button class="btn w sm" data-ca="revert" data-id="${esc(x.id)}">↩️ Revertir (fuerza mayor)</button>` : ''}</div>`).join('')}</div>` : '<p class="muted">No hay reclamos. 🙌</p>'}</div>`;
+        ${x.status === 'pendiente' ? `<button class="btn k sm" data-ca="approve" data-id="${esc(x.id)}">✅ Aprobar</button><button class="btn w sm" data-ca="reject" data-id="${esc(x.id)}">❌ Rechazar</button>` : x.status === 'aprobado' ? `<button class="btn w sm" data-ca="revert" data-id="${esc(x.id)}">↩️ Revertir (fuerza mayor)</button>` : ''}${RA('Reclamos', x.id, x.studentName + ' → ' + x.teacherName)}</div>`).join('')}</div>` : '<p class="muted">No hay reclamos. 🙌</p>'}</div>`;
+    wireGA($('.ad-mini', view()), 'Reclamos', () => claims());
     $$('[data-ca]').forEach(b => b.onclick = async () => { const act = b.dataset.ca; const Q = { approve: ['¿Aprobar? La clase vuelve al estudiante y se descuenta la penalización al profe.', ''], reject: ['Motivo del rechazo (lo verá el estudiante):', 'Según el registro, la clase sí se dictó.'], revert: ['Motivo (fuerza mayor). Se quita la penalización al profe; la clase sigue devuelta al estudiante:', 'Fuerza mayor'] }[act];
       let note = ''; if (act === 'approve') { if (!confirm(Q[0])) return; } else { note = prompt(Q[0], Q[1]); if (note === null) return; }
       b.disabled = true; const x = await api('aClaimDecide', { id: b.dataset.id, act, note }); toast(x.ok ? '✅ Listo' : 'No se pudo'); claims(); });
@@ -825,24 +893,29 @@
         <div style="display:flex;flex-wrap:wrap;gap:8px"><input class="inp" id="ld-n" placeholder="Nombre" style="flex:1 1 180px"><input class="inp" id="ld-e" type="email" placeholder="Correo" style="flex:1 1 220px"><button class="btn k" id="ld-add">➕ Agregar</button></div></div>
       <div class="ad-kpis">${kpi(S.active, '🟢 Recibiendo correos')}${kpi(S.newWeek, '🆕 Nuevos', 'últimos 7 días')}${kpi(S.clickersWeek, '🔥 Dieron clic', S.clicksWeek + ' clics esta semana', 'prem')}${kpi(S.students, '🎓 Ya son estudiantes', '', 'free')}${kpi(S.unsub, '🚫 Se dieron de baja', '', 'exp')}${kpi(S.total, 'Total registrados')}</div>
       <div class="card"><h3 style="margin-top:0">Lista (${r.leads.length})</h3>${r.leads.length ? `<div class="ad-mini">${r.leads.map(l => `<div class="ad-mrow" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><div style="flex:1;min-width:200px"><b>${esc(l.name)}</b> <span class="muted">${esc(l.email)}</span><br><small class="muted">${(ST[l.status] || ['', l.status]).join(' ')} · ${l.source === 'popup' ? 'Se registró en la plataforma' : l.source === 'trial' ? 'Terminó su acceso gratuito' : 'Agregado por administración'} · ${esc(String(l.date).slice(0, 10))} · ✉️ ${l.sent} enviados · 👆 ${l.clicks} clic(s)</small></div>
-        ${l.status === 'activo' ? `<button class="btn w sm" data-ls="${l.id}" data-st="pausado">⏸️ Pausar</button>` : l.status === 'pausado' || l.status === 'baja' ? `<button class="btn w sm" data-ls="${l.id}" data-st="activo">▶️ Activar</button>` : ''}<button class="btn w sm" data-le="${l.id}" title="Corregir nombre o correo">✏️</button><button class="btn w sm" data-ld="${l.id}" title="Borrar">🗑️</button></div>`).join('')}</div>` : '<p class="muted">Todavía no hay interesados. Agrega el primero arriba 👆</p>'}</div>`;
+        ${l.status === 'activo' ? `<button class="btn w sm" data-ls="${l.id}" data-st="pausado">⏸️ Pausar</button>` : l.status === 'pausado' || l.status === 'baja' ? `<button class="btn w sm" data-ls="${l.id}" data-st="activo">▶️ Activar</button>` : ''}${RA('Interesados', l.id, l.name + ' · ' + l.email)}</div>`).join('')}</div>` : '<p class="muted">Todavía no hay interesados. Agrega el primero arriba 👆</p>'}</div>`;
     $('#ld-add').onclick = async () => { const name = $('#ld-n').value.trim(), email = $('#ld-e').value.trim(); if (!name || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return toast('Escribe un nombre y un correo válido');
       $('#ld-add').disabled = true; const x = await api('aLeadAdd', { name, email }); $('#ld-add').disabled = false;
       if (!x.ok) return toast('No se pudo agregar'); toast(x.student ? '🎓 Ese correo ya es de un estudiante' : x.exists ? 'Ese correo ya estaba en la lista' : '✅ Agregado · le enviamos el correo de bienvenida'); leads(); };
     $$('[data-ls]').forEach(b => b.onclick = async () => { await api('aLeadSet', { id: b.dataset.ls, status: b.dataset.st }); leads(); });
-    $$('[data-le]').forEach(b => b.onclick = () => { const l = r.leads.find(x => x.id === b.dataset.le); if (!l) return;
+    const leEdit = (id) => { const l = r.leads.find(x => x.id === id); if (!l) return;
       const m = modal(`<h3>✏️ Corregir interesado</h3><label class="ad-lab">Nombre</label><input class="inp" id="le-n" value="${esc(l.name)}"><label class="ad-lab">Correo</label><input class="inp" id="le-e" type="email" value="${esc(l.email)}"><button class="btn k block" id="le-sv" style="margin-top:12px">💾 Guardar</button>`) || document.querySelector('.ad-modal:last-child');
       m.querySelector('#le-sv').onclick = async () => { const name = m.querySelector('#le-n').value.trim(), email = m.querySelector('#le-e').value.trim();
         if (!name || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return toast('Escribe un nombre y un correo válido');
         const x = await api('aLeadSet', { id: l.id, name, email }); if (!x.ok) return toast(x.err === 'dup' ? 'Ese correo ya está en la lista' : 'No se pudo guardar');
-        m.remove(); toast('✅ Datos corregidos'); leads(); }; });
-    $$('[data-ld]').forEach(b => b.onclick = async () => { if (!confirm('¿Borrar este interesado?')) return; await api('aLeadSet', { id: b.dataset.ld, del: true }); leads(); });
+        m.remove(); toast('✅ Datos corregidos'); leads(); }; };
+    wireGA($('.ad-mini', view()), 'Interesados', () => leads(), { edit: leEdit });
   }
 
   function chats() {
     view().innerHTML = `<div class="ad-head"><h1>💬 Chats profe ↔ estudiante</h1></div><div class="card"><p class="muted">Aquí puedes leer todas las conversaciones entre profes y estudiantes (solo lectura). En el chat se les informa que administración puede revisar las conversaciones.</p><button class="btn k lg" id="ch-open">💬 Abrir conversaciones</button></div>`;
     const go = () => window.MRLIVE && MRLIVE.open({ title: 'Chats (solo lectura)', roomsAction: 'aChats', getAction: 'aChatGet', readOnly: true, empty: 'Todavía no hay conversaciones.', call: (a, d) => api(a, d) });
-    $('#ch-open').onclick = go; go();
+    $('#ch-open').onclick = go;
+    // 🗂️ v617: lista de conversaciones para seleccionar o borrar
+    view().insertAdjacentHTML('beforeend', '<div class="card"><h3 style="margin-top:0">Conversaciones</h3><div class="ad-mini" id="chL"><div class="ad-loading">⏳ Cargando…</div></div></div>');
+    api('aChats').then(r => { const L = $('#chL'); if (!L) return; const rooms = (r && r.ok && r.rooms) || [];
+      L.innerHTML = rooms.length ? rooms.map(x => `<div class="ad-mrow" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><div style="flex:1;min-width:200px"><b>${esc(x.title)}</b><br><small class="muted">${esc(x.sub)} · ${esc(String((x.last && x.last.text) || '').slice(0, 70))}</small></div>${RA('ChatRoom', x.room, x.title, { noEdit: 1 })}</div>`).join('') : '<p class="muted">Todavía no hay conversaciones.</p>';
+      wireGA(L, 'ChatRoom', () => chats()); });
   }
   // 📄 contratos de los profes: editar el texto, publicar nueva versión y ver quién aceptó
   let CTK = 'teacher';
@@ -898,6 +971,7 @@ Invita a practicar en mrarrieta.com</textarea>
     $('#of-pub').onclick = async () => { const b = $('#of-pub'); b.disabled = true; const x = await api('aOfferNew', { aud: $('#of-aud').value, topic: $('#of-topic').value, pts: $('#of-pts').value.split('\n').map(t => t.trim()).filter(Boolean), pay: $('#of-pay').value }); b.disabled = false; if (x.ok) { toast('✅ Oferta publicada'); offers(); } else toast('Escribe el tema de la oferta', true); };
     $$('[data-oc]').forEach(b => b.onclick = async () => { const x = await api('aOfferClose', { id: b.dataset.oc }); if (x.ok) { toast('Oferta cerrada'); offers(); } else toast('Ya la tomaron: no se puede cerrar.', true); });
     $$('[data-ov]').forEach(b => b.onclick = () => offerVideo(L.find(o => o.id === b.dataset.ov)));
+    gaDom($$('.ad-orow', view()), 'Ofertas', L, o => o.id, o => o.topic, () => offers());
   }
   async function offerVideo(o) {
     const m = modal(`<h3 style="margin-top:0">${esc(o.byName || '')}</h3><p class="muted" style="margin:0 0 10px">${esc(o.topic)}${o.dur ? ' · 0:' + String(o.dur).padStart(2, '0') : ''}</p><div class="ad-ovw"><div class="ad-ovv" id="ov-v"><div class="ad-loading" id="ov-l">⏳ Descargando el video…</div></div>

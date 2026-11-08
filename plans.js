@@ -79,7 +79,7 @@
     const order = ['membership', 'premium', 'premium8'], i = order.indexOf(current);
     const ks = order.filter((k, j) => j > i || (renew && j === i));
     if (!ks.length) return '';
-    return `<div class="lp-pg pl-in n${ks.length}">${ks.map(k => lpCard(k, { current, renew })).join('')}</div>${ks.length > 1 ? '<p class="lp-swipe">Desliza para ver todos los planes →</p>' : ''}${trust()}<p class="pl-note">${window.MRI ? MRI('card') : ''} Paga con tarjeta (Mercado Pago) o por transferencia (Nequi / Llave Breve-B). Todas las membresías se cobran mes a mes. <a href="politica.html" target="_blank" rel="noopener">Política de reservas y cancelaciones</a></p>`;
+    return `<div class="lp-pg pl-in n${ks.length}">${ks.map(k => lpCard(k, { current, renew })).join('')}</div>${ks.length > 1 ? '<p class="lp-swipe">Desliza para ver todos los planes →</p>' : ''}${trust()}<p class="pl-note">${window.MRI ? MRI('card') : ''} Paga con tarjeta débito o crédito, PSE, Nequi o Daviplata (Mercado Pago). Tu plan se activa solo. Todas las membresías se cobran mes a mes. <a href="politica.html" target="_blank" rel="noopener">Política de reservas y cancelaciones</a></p>`;
   }
   // los botones "Elegir este plan" abren la compra
   document.addEventListener('click', (e) => { const b = e.target.closest && e.target.closest('[data-buy]'); if (!b || !window.MRBUY) return; e.preventDefault(); const mo = b.closest('.modal'); if (mo) mo.remove(); MRBUY.plan(b.dataset.buy); });

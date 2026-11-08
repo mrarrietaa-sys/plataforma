@@ -9320,3 +9320,98 @@ body.fm-t .fm-pnow{background:rgba(34,229,138,.1);border-color:rgba(34,229,138,.
 body.fm-t .fm-pnote{color:#cfe0ff}body.fm-t .fm-pnote b{color:#fff}
 body.fm-t .fm-cl{border-color:#1f4584}body.fm-t .fm-dt{background:#16376e;color:#fff}body.fm-t .fm-cl i{background:rgba(34,229,138,.15);color:#22e58a}
 body.fm-t .fm-note{background:rgba(255,181,71,.1);border-color:rgba(255,181,71,.3);color:#ffe2b0}body.fm-t .fm-note b{color:#fff}
+/* ================= v617 · administración: seleccionar, editar y borrar en todas las listas ================= */
+body:not(:has(#ad-rows)) .ad-bulk{display:flex}
+body:not(:has([data-sel])) .ad-bulk{display:none!important}
+.ad-selall{display:flex;align-items:center;gap:10px;padding:10px 12px;margin:0 0 10px;background:#f4f7fb;border:1.5px solid #e3e9f2;border-radius:12px;font-size:14px;color:#0e2a5c;cursor:pointer}
+.ad-selall small{margin-left:auto;color:#64748b;font-size:12.5px}
+.ad-gact{flex-shrink:0}
+.sr-row>.ad-gact,.ad-tc>.ad-gact,#bd-l>.card>.ad-gact,.ad-orow>.ad-gact{justify-content:flex-end;margin:10px 0 0 auto;padding-top:10px;border-top:1px solid #eef2f7;width:100%}
+.ad-orow{flex-wrap:wrap}
+.ad-mrow>.ad-gact{margin-left:auto}
+.ad-rlock{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-size:15px;background:#f4f7fb;border:1.5px dashed #d6dfeb;cursor:help}
+.ad-dlic{width:56px;height:56px;margin:0 auto 6px;border-radius:50%;background:#fdecec;color:#c81e1e;display:grid;place-items:center}.ad-dlic svg{width:26px;height:26px}
+.ad-gem .ad-mcard{max-width:560px!important;width:calc(100vw - 32px)}
+.ad-geh{display:flex;align-items:center;gap:8px;margin:0 0 10px;font-size:20px}.ad-geh svg{width:20px;height:20px}
+.ad-gef{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px;max-height:min(60vh,520px);overflow:auto;padding:2px 2px 4px}
+.ad-gef label{display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:#64748b;font-weight:600;min-width:0}
+.ad-gef label:has(textarea){grid-column:1/-1}
+.ad-gef .inp{margin:0;width:100%;box-sizing:border-box;font-size:14px}.ad-gef .inp[readonly]{background:#f4f7fb;color:#64748b}
+.ad-gebt{justify-content:flex-end;gap:8px;margin-top:14px}
+@media(max-width:560px){.ad-gef{grid-template-columns:1fr}.ad-bulk{width:calc(100vw - 32px);justify-content:center;bottom:12px;box-sizing:border-box}}
+/* v617 · panel de papás: clases extra por hijo */
+.fm-xc{grid-column:2/-1;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:2px;padding:9px 10px;border-radius:12px;background:#fff;border:1.5px dashed #c9d6ea;min-width:0}
+.fm-xt{min-width:0}.fm-xt b{display:block;font:700 13.5px var(--fh,Poppins),sans-serif;color:#0B2A5B}.fm-xt small{display:block;font-size:11.5px;color:#64748b;line-height:1.3}
+.fm-xs{display:flex;align-items:center;gap:10px;flex:none}.fm-xs button{width:34px;height:34px;border-radius:10px;border:1.5px solid #cfd9e8;background:#fff;color:#0B2A5B;font:800 17px Inter,sans-serif;cursor:pointer;display:grid;place-items:center;padding:0}.fm-xs button:disabled{opacity:.35;cursor:default}
+.fm-xs b{min-width:18px;text-align:center;font:800 16px var(--fh,Poppins),sans-serif;color:#0B2A5B}
+.fm-mpn{display:flex;gap:8px;align-items:flex-start}.fm-mpn .mri{width:18px;height:18px;flex:none;margin-top:1px;color:#0B2A5B}
+.fm-pay .fm-tot small{white-space:normal}
+/* v617 · Mi plan: comprar clases extra (Premium activo) */
+.pl-xc{margin-top:12px!important;padding:16px!important;border-radius:18px!important;border:1.5px solid #e3e8f0;background:#fff;text-align:left}
+.pl-xh{display:flex;gap:12px;align-items:center}.pl-xi{width:44px;height:44px;border-radius:13px;background:#fff1f1;color:#E3242B;display:grid;place-items:center;flex:none}.pl-xi .mri{width:22px;height:22px}
+.pl-xh b{display:block;font:700 16px var(--fh,Poppins),sans-serif;color:#0B2A5B}.pl-xh small{display:block;color:#64748b;font-size:13px;line-height:1.35;margin-top:2px}
+.pl-xr{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;padding:10px 12px;border-radius:12px;background:#f8faff;border:1px solid #e5ecf6}
+.pl-xs{display:flex;align-items:center;gap:12px}.pl-xs button{width:36px;height:36px;border-radius:10px;border:1.5px solid #cfd9e8;background:#fff;color:#0B2A5B;font:800 18px Inter,sans-serif;display:grid;place-items:center;padding:0;cursor:pointer}.pl-xs button:disabled{opacity:.35;cursor:default}
+.pl-xs b,#pl-xt{font:800 18px var(--fh,Poppins),sans-serif;color:#0B2A5B}
+#pl-xb{margin-top:12px}.pl-xp{margin:8px 0 0;text-align:center;font-size:12px;color:#94a3b8}
+body.ag-kids .pl-xi{background:#fff1d6;color:#d97706}body.ag-kids .pl-xc{border-color:#f6e3c2}body.ag-kids .pl-xr{background:#fffaf0;border-color:#f6e3c2}
+body.ag-teens .pl-xi{background:rgba(34,229,138,.14);color:#22e58a}
+/* ================= v617 · RANKING con el color y el diseño de cada edad ================= */
+/* ===== Ranking por edad (base común) ===== */
+.modal>.card:has(.r6){padding:0!important;overflow:hidden;max-width:440px!important}
+.modal>.card:has(.r6)>.mx{z-index:3;background:rgba(255,255,255,.18)!important;border:0!important;color:#fff!important}
+.r6{padding:0!important}
+.r6hd{position:relative;display:flex;align-items:center;gap:12px;padding:20px 20px 18px;overflow:hidden}
+.r6hd .r6ic{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;flex:none}.r6hd .r6ic .mri{width:23px;height:23px}
+.r6hd h3{margin:0!important}.r6hd .r6p{margin:2px 0 0!important}
+.r6hd:after{content:'';position:absolute;right:-40px;top:-60px;width:170px;height:170px;border-radius:50%;opacity:.5;pointer-events:none}
+.r6bd{padding:14px 18px 18px}
+.r6t{border:0!important;gap:4px!important;padding:4px;border-radius:12px;margin-bottom:10px!important}
+.r6t button{flex:1;padding:8px 0!important;border-radius:9px;box-shadow:none!important;font:600 13.5px Inter!important;transition:background .2s,color .2s}
+.r6r{border-bottom:0!important;border-radius:12px;padding:9px 8px!important;margin-top:4px}
+.r6n{width:26px!important;height:26px;border-radius:50%;display:grid;place-items:center;font:700 12.5px Inter!important}
+.r6r:nth-child(1) .r6n.top{background:linear-gradient(145deg,#ffe08a,#f5b81c);color:#5c3d00!important}
+.r6r:nth-child(2) .r6n.top{background:linear-gradient(145deg,#eef2f7,#c4ccd8);color:#334155!important}
+.r6r:nth-child(3) .r6n.top{background:linear-gradient(145deg,#f6c9a0,#d98b4f);color:#4a2306!important}
+.r6tip,.r6me{border-radius:14px!important}
+/* ===== ADULTOS: azul oscuro sobrio + rojo ===== */
+body.ag-adult .r6hd{background:linear-gradient(150deg,#0B2A5B,#163f80)}
+body.ag-adult .r6hd:after{background:radial-gradient(circle,rgba(227,36,43,.35),transparent 70%)}
+body.ag-adult .r6hd h3{color:#fff!important}body.ag-adult .r6hd .r6p{color:#c9d6ea!important}
+body.ag-adult .r6ic{background:rgba(255,255,255,.12);color:#ffd7da}
+body.ag-adult .r6t{background:#eef2f8}body.ag-adult .r6t button{color:#64748b!important}body.ag-adult .r6t button.on{background:#fff!important;color:#0B2A5B!important;box-shadow:0 2px 6px rgba(11,42,91,.12)!important}
+body.ag-adult .r6r.me{background:#f1f5fb!important;box-shadow:inset 3px 0 0 #E3242B}
+body.ag-adult .r6tip,body.ag-adult .r6me{background:#0B2A5B!important}
+/* ===== KIDS: crema + ámbar ===== */
+body.ag-kids .modal>.card:has(.r6){background:#fffaf0!important}
+body.ag-kids .r6hd{background:linear-gradient(135deg,#fff3d6,#ffd98a)}
+body.ag-kids .r6hd:after{background:radial-gradient(circle,rgba(255,255,255,.7),transparent 70%)}
+body.ag-kids .modal>.card:has(.r6)>.mx{background:rgba(255,255,255,.7)!important;color:#0B2A5B!important}
+body.ag-kids .r6hd h3{color:#0B2A5B!important}body.ag-kids .r6hd .r6p{color:#7c5a1a!important}
+body.ag-kids .r6ic{background:#fff;color:#d97706;box-shadow:0 4px 10px rgba(217,119,6,.18)}
+body.ag-kids .r6t{background:#fff1d6}body.ag-kids .r6t button{color:#a16207!important}body.ag-kids .r6t button.on{background:#f59e0b!important;color:#fff!important}
+body.ag-kids .r6a{background:#fff1d6!important;color:#b45309!important}
+body.ag-kids .r6r.me{background:#fff4dc!important;box-shadow:inset 3px 0 0 #f59e0b}body.ag-kids .r6r.me .r6m{color:#d97706!important}
+body.ag-kids .r6tip,body.ag-kids .r6me{background:#f59e0b!important;color:#fff!important}
+/* ===== TEENS: azul noche + verde menta ===== */
+body.ag-teens .modal>.card:has(.r6){background:#0b2148!important;border:1px solid #1f4584!important}
+body.ag-teens .r6hd{background:linear-gradient(140deg,#0d2752,#16376e)}
+body.ag-teens .r6hd:after{background:radial-gradient(circle,rgba(34,229,138,.28),transparent 70%)}
+body.ag-teens .r6hd h3{color:#fff!important}body.ag-teens .r6hd .r6p{color:#9fb6dd!important}
+body.ag-teens .r6ic{background:rgba(34,229,138,.14);color:#22e58a}
+body.ag-teens .r6t{background:rgba(255,255,255,.06)}body.ag-teens .r6t button{color:#9fb6dd!important}body.ag-teens .r6t button.on{background:#22e58a!important;color:#04122b!important}
+body.ag-teens .r6a{background:#16376e!important;color:#fff!important}
+body.ag-teens .r6m,body.ag-teens .r6v{color:#fff!important}body.ag-teens .r6n{color:#9fb6dd}
+body.ag-teens .r6r.me{background:#16376e!important;box-shadow:inset 3px 0 0 #22e58a}body.ag-teens .r6r.me .r6m{color:#22e58a!important}
+body.ag-teens .r6tip,body.ag-teens .r6me{background:#22e58a!important;color:#04122b!important}
+body.ag-teens .r6me .r6n,body.ag-teens .r6me .r6m,body.ag-teens .r6me .r6v{color:#04122b!important}body.ag-teens .r6me small{color:#0b5a37!important}body.ag-teens .r6me .r6a{background:rgba(4,18,43,.12)!important;color:#04122b!important}
+body.ag-teens .r6f,body.ag-teens .r6l{color:#7f97c2!important}
+body.ag-kids .r6me small{color:#fff4dc!important}body.ag-kids .r6me .r6a{background:rgba(255,255,255,.25)!important;color:#fff!important}
+body.ag-teens .pt-plmodal .sect-title h2{color:#0B2A5B!important}body.ag-teens .pt-plmodal .sect-title h2 .mri{color:#22b573}
+#pl-xb{width:100%}
+.fm-pay .card{max-height:calc(100dvh - 32px);overflow-y:auto;overscroll-behavior:contain}
+.fm-pay .fm-pr{grid-template-columns:auto minmax(0,1fr) auto!important;row-gap:8px}
+.fm-pay .fm-pr select{grid-column:2/3!important;width:100%;max-width:260px}
+.fm-pay .fm-pp{grid-row:1;grid-column:3}
+.fm-pay .fm-pr select.inp{width:100%!important;max-width:280px!important;min-width:0!important}
+.fm-pay .fm-pr select.inp{grid-column:2/-1!important;font-size:14.5px!important}
