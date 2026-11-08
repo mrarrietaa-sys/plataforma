@@ -763,7 +763,7 @@
     const prem = !staff && P.plan().cls; // 🎁 v603: la clase gratis también ve «Clases»
     const MENU = { // 📂 todo el perfil organizado en 3 grupos
       learn: ['💻', 'Mis módulos', [['route', 'ib', '🧭', 'Mi ruta de aprendizaje', 'Módulos, lecciones y progreso'], ['notes', 'ib3', '✏️', 'Mis apuntes', 'Tu cuaderno personal'], ['place', 'ib2', '📝', 'Prueba de clasificación', 'Ubica tu nivel']]],
-      cls: ['🧑‍🏫', 'Mis clases', [['book', 'ib', '📅', 'Reservar clase', 'Elige profe, día y hora'], ['next', 'ib2', '🗓️', 'Mis próximas clases', 'Enlace y cancelación'], ['extra', 'ib5', '➕', 'Comprar más clases', 'Se suman a tu saldo'], ['hist', 'ib6', '🗂️', 'Historial y tableros', 'Lo que vio cada profe'], ['claim', 'ib3', '🚩', '¿Mi profe no se conectó?', 'Repórtalo aquí'], ['chat', 'ib4', '💬', 'Chat con mi profe', 'Escríbele en vivo']]],
+      cls: ['🧑‍🏫', 'Mis clases', [['book', 'ib', '📅', 'Reservar clase', 'Elige profe, día y hora'], ['next', 'ib2', '🗓️', 'Mis próximas clases', 'Enlace y cancelación'], ['extra', 'ib5', '➕', 'Comprar más clases', 'Se suman a tu saldo'], ['pays', 'ib4', '🧾', 'Mis pagos', 'Lo que pagaste y tus comprobantes'], ['hist', 'ib6', '🗂️', 'Historial y tableros', 'Lo que vio cada profe'], ['claim', 'ib3', '🚩', '¿Mi profe no se conectó?', 'Repórtalo aquí'], ['chat', 'ib4', '💬', 'Chat con mi profe', 'Escríbele en vivo']]],
       me: ['👤', 'Mi cuenta', [].concat(staff ? [] : [['plan', 'ib', '👑', 'Mi plan', 'Planes y renovación'], ['pays', 'ib4', '🧾', 'Mis pagos', 'Tus comprobantes de pago']], [['perso', 'ib5', '🎨', 'Personalizar perfil', 'Tu foto o tu Mr. Arrieta']], staff ? [] : [['mail', 'ib4', '✉️', 'Mi correo', 'Donde te llegan los avisos'], ['priv', 'ib', '🔐', 'Privacidad y mis datos', 'Tu autorización y tus derechos']], staff ? [] : [['pass', 'ib3', '🔑', 'Cambiar mi código', 'Tu clave de acceso'], ['ref', 'ib4', '🎁', 'Invitar a un amigo', 'Gana clases o días']], (!staff && P.plan().paid ? [['agree', 'ib', '📄', 'Mi acuerdo', 'Leído y aceptado · copia PDF']] : []).concat([['pol', 'ib6', '📌', 'Política', 'Reservas y cancelaciones'], ['tour', 'ib2', '🧭', 'Ver el tour', 'Cómo funciona tu perfil']]))],
     };
     if (!prem) delete MENU.cls;
@@ -941,21 +941,22 @@
   // ✉️ el estudiante corrige su correo (si rebotó o si se equivocó al escribirlo)
   // 🧾 v615: Mis pagos — comprobantes de pago para descargar en PDF
   async function payList() {
-    const m = M.modal(`<div class="rc-m"><h3>${MRI('receipt')} Mis pagos</h3><p class="muted">Tus comprobantes de pago. Tócalos para descargarlos en PDF.</p><div class="rc-l"><p class="muted">Cargando…</p></div></div>`, { x: true });
+    const m = M.modal(`<div class="rc-m"><h3>${MRI('receipt')} Mis pagos</h3><p class="muted">Aquí ves todo lo que ya pagaste. Toca uno para descargar su comprobante en PDF.</p><div class="rc-l"><p class="muted">Cargando…</p></div></div>`, { x: true });
     const r = await MRAC.call('myBuys', { code: MRAC.code() }).catch(() => null); const L = $('.rc-l', m); if (!L) return;
     const list = r && r.ok ? (r.buys || []).filter(b => b.status === 'aprobado' && b.receipt) : null;
     if (!list) { L.innerHTML = '<p class="muted">No se pudieron cargar tus pagos. Intenta de nuevo.</p>'; return; }
-    if (!list.length) { L.innerHTML = `<div class="rc-e">${MRI('receipt')}<p>Aquí aparecerán tus comprobantes cuando hagas un pago.</p></div>`; return; }
-    const what = (b) => b.kind === 'extra' ? b.n + (b.n == 1 ? ' clase adicional' : ' clases adicionales') : b.kind === 'fam' ? 'Planes de familia' : ((window.MRPLANS && MRPLANS.PL[b.plan] || {}).name || b.plan);
-    L.innerHTML = list.map(b => `<button type="button" class="rc-i" data-id="${esc(b.id)}"><span class="rc-ic">${MRI('receipt')}</span><span class="grow"><b>${esc(what(b))}</b><small>${esc(b.receipt)} · ${fmtD(String(b.decidedAt || b.date).slice(0, 10))}</small></span><span class="rc-v">${window.MRPLANS ? MRPLANS.fmt(b.amount) : b.amount}<small>PDF</small></span></button>`).join('');
-    $$('.rc-i', m).forEach(bt => bt.onclick = async () => {
-      if (bt.disabled) return; bt.disabled = true; bt.classList.add('ld');
-      const x = await MRAC.call('myReceipt', { code: MRAC.code(), id: bt.dataset.id }).catch(() => null); bt.disabled = false; bt.classList.remove('ld');
-      if (!x || !x.ok || !x.pdf) return M.toast('No se pudo descargar. Intenta de nuevo.');
-      try { const bin = atob(x.pdf), u8 = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
-        const url = URL.createObjectURL(new Blob([u8], { type: 'application/pdf' })), a = document.createElement('a'); a.href = url; a.download = x.name || 'Comprobante.pdf'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 4000);
-        M.toast('✅ Comprobante descargado'); } catch (e) { M.toast('No se pudo descargar. Intenta de nuevo.'); }
-    });
+    if (!list.length) { L.innerHTML = `<div class="rc-e">${MRI('receipt')}<p>Aún no tienes pagos. Cuando pagues, aquí verás cada pago con su comprobante.</p></div>`; return; }
+    const what = (b) => b.kind === 'extra' ? b.n + (b.n == 1 ? ' clase adicional' : ' clases adicionales') : b.kind === 'fam' ? 'Pago de tu familia' : ((window.MRPLANS && MRPLANS.PL[b.plan] || {}).name || b.plan) + (+b.extra ? ' + ' + b.extra + (+b.extra === 1 ? ' clase extra' : ' clases extra') : '');
+    L.innerHTML = list.map(b => `<button type="button" class="rc-i" data-id="${esc(b.id)}"><span class="rc-ic">${MRI('receipt')}</span><span class="grow"><b>${esc(what(b))}</b><small>${esc(b.receipt)} · ${fmtD(String(b.decidedAt || b.date).slice(0, 10))}</small></span><span class="sp-r"><i class="sp-ok">✓ Pagado</i><b>${window.MRPLANS ? MRPLANS.fmt(b.amount) : b.amount}</b><small>PDF</small></span></button>`).join('');
+    $$('.rc-i', m).forEach(bt => bt.onclick = () => rcDown(bt));
+  }
+  async function rcDown(bt) {
+    if (bt.disabled) return; bt.disabled = true; bt.classList.add('ld');
+    const x = await MRAC.call('myReceipt', { code: MRAC.code(), id: bt.dataset.id }).catch(() => null); bt.disabled = false; bt.classList.remove('ld');
+    if (!x || !x.ok || !x.pdf) return M.toast('No se pudo descargar. Intenta de nuevo.');
+    try { const bin = atob(x.pdf), u8 = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+      const url = URL.createObjectURL(new Blob([u8], { type: 'application/pdf' })), a = document.createElement('a'); a.href = url; a.download = x.name || 'Comprobante.pdf'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 4000);
+      M.toast('✅ Comprobante descargado'); } catch (e) { M.toast('No se pudo descargar. Intenta de nuevo.'); }
   }
   async function mailEdit(cur) {
     if (cur === undefined) { const me = await MRAC.me().catch(() => null); cur = (me && me.mail && me.mail.email) || (P.get() || {}).email || ''; }
@@ -1283,11 +1284,15 @@
     w.document.write(`<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Certificado de Embajador · ${esc(name)}</title><style>@page{size:landscape;margin:0}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#fff}.c{box-sizing:border-box;width:100vw;height:100vh;padding:40px;display:flex;align-items:center;justify-content:center}.in{border:10px solid #0B2A5B;outline:4px solid #E3242B;outline-offset:-22px;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px;box-sizing:border-box}img{height:80px}h1{color:#0B2A5B;font-size:40px;margin:18px 0 6px;letter-spacing:.04em}h2{color:#E3242B;font-size:20px;margin:0 0 20px;letter-spacing:.2em}.n{font-size:38px;font-weight:800;color:#0B2A5B;border-bottom:3px solid #E3242B;padding:0 30px 6px;margin:6px 0 16px}p{font-size:17px;color:#333;max-width:640px;line-height:1.5}.f{margin-top:26px;font-size:14px;color:#333}.f b{display:block;font-size:16px;color:#0B2A5B}</style></head><body><div class="c"><div class="in"><img src="${base}mra-brand.png" alt="mrarrieta.com"><h1>CERTIFICADO</h1><h2>EMBAJADOR MRARRIETA.COM</h2><p>Se otorga a</p><div class="n">${esc(name)}</div><p>por recomendar mrarrieta.com y ayudar a otras personas a aprender inglés HABLANDO. ¡Gracias por ser parte de nuestra comunidad! 🏅</p><div class="f"><b>John Jairo Arrieta Jaramillo</b>Director de mrarrieta.com · ${esc(d)}</div></div></div><script>setTimeout(()=>print(),600)<\/script></body></html>`); w.document.close();
   }
   // 🧾 estado de mis compras (pendiente / aprobado / rechazado / cancelado)
+  // 🧾 v619: «Mis pagos» en Clases: solo lo que el estudiante SÍ pagó, con su comprobante (los intentos sin pagar no se muestran)
   async function myBuys() {
     const el = $('#lv-buys'); if (!el) return;
-    const r = await MRAC.call('myBuys', { code: MRAC.code() }).catch(() => null); if (!r || !r.ok || !(r.buys || []).length || !document.body.contains(el)) return;
-    const ST = { pendiente: '⏳ Pendiente', aprobado: '✅ Aprobado', rechazado: '❌ Rechazado', cancelado: '🚫 Cancelado' };
-    el.innerHTML = `<details class="lv-buys" style="margin-top:12px"><summary><b>${MRI('receipt')} Mis compras</b></summary><div class="lv-list">${r.buys.slice(0, 8).map(b => `<div class="lv-cl"><div class="grow"><b>${b.kind === 'extra' ? '➕ ' + b.n + ' clase' + (b.n == 1 ? '' : 's') + ' adicional' + (b.n == 1 ? '' : 'es') : esc((window.MRPLANS && MRPLANS.PL[b.plan] || {}).name || b.plan)}</b><small>${fmtD(String(b.date).slice(0, 10))} · ${window.MRPLANS ? MRPLANS.fmt(b.amount) : b.amount} COP · ${b.method === 'mercadopago' ? 'Mercado Pago' : 'Transferencia'}</small></div><span class="lv-${b.status === 'aprobado' ? 'ok' : 'pend'}">${ST[b.status] || esc(b.status)}</span></div>`).join('')}</div></details>`;
+    const r = await MRAC.call('myBuys', { code: MRAC.code() }).catch(() => null); if (!r || !r.ok || !document.body.contains(el)) return;
+    const L = (r.buys || []).filter(b => b.status === 'aprobado'); if (!L.length) { el.innerHTML = ''; return; }
+    const what = (b) => b.kind === 'extra' ? (+b.n === 1 ? '1 clase adicional' : b.n + ' clases adicionales') : b.kind === 'fam' ? 'Pago de tu familia' : ((window.MRPLANS && MRPLANS.PL[b.plan] || {}).name || b.plan) + (+b.extra ? ' + ' + b.extra + (+b.extra === 1 ? ' clase extra' : ' clases extra') : '');
+    el.innerHTML = `<details class="sp-pay"><summary><span class="sp-ic">${MRI('receipt')}</span><span class="sp-st"><b>Mis pagos</b><small>${L.length} ${L.length === 1 ? 'pago confirmado' : 'pagos confirmados'} · toca para ver tus comprobantes</small></span></summary>
+      <div class="sp-l">${L.slice(0, 12).map(b => `<button type="button" class="rc-i sp-i" data-id="${esc(b.id)}"><span class="grow"><b>${esc(what(b))}</b><small>${fmtD(String(b.decidedAt || b.date).slice(0, 10))}${b.receipt ? ' · ' + esc(b.receipt) : ''}</small></span><span class="sp-r"><i class="sp-ok">✓ Pagado</i><b>${window.MRPLANS ? MRPLANS.fmt(b.amount) : b.amount}</b><small>PDF</small></span></button>`).join('')}</div></details>`;
+    $$('.sp-i', el).forEach(bt => bt.onclick = () => rcDown(bt));
   }
   // ⭐ al terminar una clase individual: pedirle su opinión del profe (pública)
   function askReview(list) {

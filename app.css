@@ -9415,3 +9415,45 @@ body.ag-teens .pt-plmodal .sect-title h2{color:#0B2A5B!important}body.ag-teens .
 .fm-pay .fm-pp{grid-row:1;grid-column:3}
 .fm-pay .fm-pr select.inp{width:100%!important;max-width:280px!important;min-width:0!important}
 .fm-pay .fm-pr select.inp{grid-column:2/-1!important;font-size:14.5px!important}
+/* ================= v619 · pagos claros: Pagado / Intento sin pagar / Rechazado ================= */
+.bz{display:inline-flex;align-items:center;gap:4px;font:700 11.5px Inter,sans-serif;font-style:normal;border-radius:99px;padding:3px 10px;white-space:nowrap;vertical-align:1px}
+.bz-ok{background:#e7f6ee;color:#15803d}.bz-p{background:#f1f5f9;color:#64748b}.bz-no{background:#fdecec;color:#c81e1e}
+.bz-row.bz-aprobado{border-left:4px solid #16a34a!important}.bz-row.bz-pendiente,.bz-row.bz-cancelado{opacity:.78}.bz-row.bz-rechazado{border-left:4px solid #ef4444!important}
+.bz-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0 0 14px}
+.bz-kpis>div{background:#fff;border:1.5px solid #e3e8f0;border-radius:16px;padding:12px 14px;min-width:0}
+.bz-kpis small{display:block;font:600 12px Inter,sans-serif;color:#64748b}.bz-kpis b{display:block;font:800 22px var(--fh,Poppins),sans-serif;color:#0B2A5B;margin:2px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.bz-kpis span{font-size:12px;color:#94a3b8}
+.bz-kpis>.ok{background:linear-gradient(150deg,#0B2A5B,#163f80);border-color:#0B2A5B}.bz-kpis>.ok small,.bz-kpis>.ok span{color:#c9d6ea}.bz-kpis>.ok b{color:#fff}
+@media(max-width:620px){.bz-kpis{grid-template-columns:1fr 1fr}.bz-kpis>.ok{grid-column:1/-1}.bz-kpis b{font-size:20px}}
+/* ficha del estudiante: clases adicionales y compras (desplegable) */
+.hx{margin-top:12px;border:1.5px solid #e3e8f0;border-radius:16px;padding:0;background:#fff;overflow:hidden}
+.hx>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:13px 16px;background:#f8faff}
+.hx>summary::-webkit-details-marker{display:none}
+.hx>summary::after{content:'';margin-left:auto;width:9px;height:9px;border-right:2px solid #0B2A5B;border-bottom:2px solid #0B2A5B;transform:rotate(45deg);transition:transform .2s;flex:none}
+.hx[open]>summary::after{transform:rotate(-135deg)}
+.hx-st b{display:block;font:700 15px var(--fh,Poppins),sans-serif;color:#0B2A5B}.hx-st small{display:block;color:#64748b;font-size:12.5px}
+.hx[open]>summary{border-bottom:1px solid #eef2f7}
+.hx>:not(summary){margin-left:16px;margin-right:16px}.hx>.hx-h:first-of-type{margin-top:12px}.hx>:last-child{margin-bottom:12px}
+.hx-h{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px}.hx-h b{font:700 14.5px var(--fh,Poppins),sans-serif;color:#0B2A5B}
+.hx-tot{font:700 12px Inter,sans-serif;color:#64748b;background:#f1f5f9;border-radius:99px;padding:3px 10px;white-space:nowrap}
+.hx-r{display:flex;align-items:center;gap:10px;padding:9px 2px;border-top:1px solid #f0f3f7;flex-wrap:wrap}
+.hx-g{flex:1;min-width:150px}.hx-g b{display:block;font:600 14px Inter,sans-serif;color:#0B2A5B;overflow-wrap:anywhere}.hx-g small{color:#64748b;font-size:12.5px;overflow-wrap:anywhere}
+.hx-n{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;font:800 14px var(--fh,Poppins),sans-serif;flex:none}
+.hx-n.buy{background:#e8f0fe;color:#1d4ed8}.hx-n.gift{background:#fff1d6;color:#b45309}.hx-n.fam{background:#e7f6ee;color:#15803d}
+.hx-pdf{display:inline-flex;align-items:center;gap:5px;border:1.5px solid #dfe5ef;background:#fff;border-radius:10px;padding:6px 10px;font:700 12px Inter,sans-serif;color:#0B2A5B;cursor:pointer;white-space:nowrap}.hx-pdf:hover{border-color:#0B2A5B}
+.hx-e{margin:6px 0 4px;font-size:13px;color:#94a3b8}
+/* v619 · estudiante: «Mis pagos» desplegable (solo pagos confirmados) */
+.sp-pay{margin-top:14px;border:1.5px solid #e3e8f0;border-radius:18px;background:#fff;overflow:hidden;box-shadow:0 6px 18px rgba(11,42,91,.05)}
+.sp-pay>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:12px;padding:14px 16px}
+.sp-pay>summary::-webkit-details-marker{display:none}
+.sp-pay>summary::after{content:'';margin-left:auto;width:9px;height:9px;border-right:2px solid #0B2A5B;border-bottom:2px solid #0B2A5B;transform:rotate(45deg);transition:transform .2s;flex:none}
+.sp-pay[open]>summary::after{transform:rotate(-135deg)}.sp-pay[open]>summary{border-bottom:1px solid #eef2f7}
+.sp-ic{width:42px;height:42px;border-radius:12px;background:#e7f6ee;color:#15803d;display:grid;place-items:center;flex:none}.sp-ic .mri{width:21px;height:21px}
+.sp-st{min-width:0}.sp-st b{display:block;font:700 16px var(--fh,Poppins),sans-serif;color:#0B2A5B}.sp-st small{display:block;font-size:12.5px;color:#64748b;line-height:1.35}
+.sp-l{display:flex;flex-direction:column;gap:8px;padding:12px}
+.sp-i{display:flex;align-items:center;gap:12px}.sp-i .grow{min-width:0}.sp-i small{overflow-wrap:anywhere}
+.sp-r{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex:none;text-align:right}.sp-r b{font:800 14.5px var(--fh,Poppins),sans-serif;color:#0B2A5B}.sp-r small{font:700 10.5px Inter,sans-serif;letter-spacing:.08em;color:#E3242B}
+.sp-ok{font:700 11px Inter,sans-serif;font-style:normal;color:#15803d;background:#e7f6ee;border-radius:99px;padding:2px 8px;white-space:nowrap}
+body.ag-teens .sp-pay{background:#0d2752;border-color:#1f4584}body.ag-teens .sp-pay>summary::after{border-color:#22e58a}body.ag-teens .sp-pay[open]>summary{border-color:#1f4584}
+body.ag-teens .sp-st b,body.ag-teens .sp-r b{color:#fff}body.ag-teens .sp-st small{color:#9fb6dd}body.ag-teens .sp-ic{background:rgba(34,229,138,.14);color:#22e58a}
+body.ag-teens .sp-i{background:#0b2148;border-color:#1f4584}body.ag-teens .sp-i b{color:#fff}body.ag-teens .sp-i small{color:#9fb6dd}body.ag-teens .sp-r small{color:#22e58a}
+body.ag-kids .sp-pay{border-color:#f6e3c2}body.ag-kids .sp-ic{background:#fff1d6;color:#d97706}
