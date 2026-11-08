@@ -9170,3 +9170,61 @@ body.ag-kids .vb-m.vb-mi.on{border-color:#f59e0b!important;box-shadow:0 0 0 3px 
 body.ag-teens .vb-m.vb-mi:not(.vb-off):before{background:linear-gradient(180deg,rgba(13,39,82,.15),rgba(7,26,58,.9))}
 body.ag-teens .vb-m.vb-mi.on{border-color:#22e58a!important;box-shadow:0 0 0 3px rgba(34,229,138,.30)}
 @media(min-width:900px){.vb-m.vb-mi{min-height:76px}}
+/* ================= v613 · botones que no caben: «Más lento» + otros botones en una fila → pasan a la línea de abajo, nunca se aprietan ================= */
+:has(> .slw-w){flex-wrap:wrap;row-gap:10px}
+:has(> .slw-w) > button,:has(> .slw-w) > .btn{flex-shrink:0}
+.g9-ctl{flex-wrap:wrap;row-gap:14px}.g9-ctl>*{flex-shrink:0}
+/* 🚀 Teens: «Are you ready?» y el conteo en blanco · GO! en rojo */
+body.ag-teens .ld-load h2.ld-ready{color:#fff!important}
+body.ag-teens .ld-count{color:#fff!important}body.ag-teens .ld-count.go{color:#E3242B!important}
+body.ag-teens .ld-load .ld-load-t{color:#cfe0ff!important}
+.player .stage .ce-ltools:has(.slw-w){flex-wrap:wrap!important;overflow:visible!important;row-gap:8px}
+.slw-w{min-width:0}.slw-w>:first-child{min-width:0;flex:0 1 auto}
+/* ================= v613 · TEENS: sin cuadros blancos (todo en azul noche) ================= */
+/* 🎯 Mi objetivo */
+body.ag-teens .gl-card{background:linear-gradient(160deg,#123063,#0b2148)!important;border:1px solid #1f4584!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 10px 26px rgba(0,0,0,.28)!important}
+body.ag-teens .gl-card .gl-tt small{color:#22e58a!important;letter-spacing:.12em!important}
+body.ag-teens .gl-card .gl-tt b,body.ag-teens .gl-card .gl-eh b{color:#fff!important}
+body.ag-teens .gl-card .gl-ic,body.ag-teens .gl-card .gl-top>span:first-child{background:rgba(34,229,138,.14)!important;color:#22e58a!important}
+body.ag-teens .gl-card .gl-ch{background:transparent!important;border:1.5px solid #22e58a!important;color:#22e58a!important}
+body.ag-teens .gl-card .gl-meta span{background:rgba(255,255,255,.08)!important;color:#dce6f8!important;border-color:transparent!important}
+body.ag-teens .gl-card .gl-bar{background:rgba(255,255,255,.12)!important}
+body.ag-teens .gl-card .gl-bar i{background:linear-gradient(90deg,#16c172,#22e58a)!important}
+body.ag-teens .gl-card .gl-prog b{color:#22e58a!important}
+body.ag-teens .gl-card .gl-s,body.ag-teens .gl-card small{color:#9fb6dd!important}
+/* ⭕ anillo del perfil */
+body.ag-teens .db-ring{background:conic-gradient(#22e58a calc(var(--p)*1%),rgba(255,255,255,.12) 0)!important}
+body.ag-teens .db-ring>div{background:#0b2148!important}
+body.ag-teens .wrap.db .db-ring b{color:#fff!important}body.ag-teens .wrap.db .db-ring small{color:#9fb6dd!important}
+/* 🗺️ ruta A1 → B2+ */
+body.ag-teens .pt-routebar .st b{background:#16376e!important;border-color:#2b5294!important;color:#cfe0ff!important}
+body.ag-teens .pt-routebar .st.soon b,body.ag-teens .pt-routebar .st.locked b{opacity:1!important;background:#102b57!important;border:1.5px dashed #3d64a8!important;color:#9fb6dd!important}
+body.ag-teens .pt-routebar .st.current b{background:#22e58a!important;border-color:#22e58a!important;color:#04122b!important;box-shadow:0 0 0 5px rgba(34,229,138,.22)!important}
+body.ag-teens .pt-routebar .st small{color:#cfe0ff!important}
+body.ag-teens .pt-routebar .ln{background:repeating-linear-gradient(90deg,#3d64a8 0 10px,transparent 10px 16px)!important}
+body.ag-teens .pt-routebar .ln.on{background:#22e58a!important}
+body.ag-teens .pt-routebar .st.fin b{background:rgba(255,181,71,.16)!important;border-color:#ffb547!important;color:#ffb547!important}
+/* 💬 frases de la semana */
+body.ag-teens .rl-f{color:#9fb6dd!important;border-color:#16376e!important}body.ag-teens .rl-f b{color:#fff!important}
+/* 🏆 examen final del curso / Final Test del módulo */
+body.ag-teens .md3-fin,body.ag-teens .t2-ft{background:linear-gradient(160deg,#123063,#0b2148)!important;border:1px solid #1f4584!important;color:#fff!important}
+body.ag-teens .md3-fin b,body.ag-teens .t2-ft b{color:#fff!important}
+body.ag-teens .md3-fin small,body.ag-teens .t2-ft small{color:#9fb6dd!important}
+body.ag-teens .md3-fi,body.ag-teens .t2-fti{background:rgba(255,181,71,.15)!important;color:#ffb547!important}
+body.ag-teens .md3-pips i{background:rgba(255,255,255,.15)!important}body.ag-teens .md3-pips i.on{background:#22e58a!important}
+/* 🚀 Are you ready? 1-2-3 GO! */
+body.ag-teens .ld-load h2.ld-ready{color:#fff!important}
+body.ag-teens .ld-count{color:#fff!important}body.ag-teens .ld-count.go{color:#E3242B!important}
+body.ag-teens .ld-load-t{color:#cfe0ff!important}
+body.ag-teens .t2-ftb{background:rgba(34,229,138,.14)!important;color:#22e58a!important;border:1px solid rgba(34,229,138,.4)!important}body.ag-teens .t2-ftb.w{background:transparent!important;color:#cfe0ff!important;border-color:#2b5294!important}
+body.ag-teens .gl-card .gl-meta svg,body.ag-teens .gl-card .gl-meta .mri{color:#22e58a!important}
+/* ================= v615 · 🧾 Mis pagos (comprobantes) ================= */
+.rc-m h3{display:flex;align-items:center;gap:8px;margin:0 0 4px}.rc-m h3 .mri{width:22px;height:22px;color:#E3242B}
+.rc-m>p{margin:0 0 12px}
+.rc-l{display:flex;flex-direction:column;gap:8px;max-height:60vh;overflow:auto}
+.rc-i{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:#fff;border:1px solid #e3e8f0;border-radius:14px;padding:11px 12px;cursor:pointer;font:inherit;color:#0B2A5B;transition:border-color .15s,box-shadow .15s}
+.rc-i:hover{border-color:#0B2A5B;box-shadow:0 6px 16px rgba(11,42,91,.08)}.rc-i.ld{opacity:.55;pointer-events:none}
+.rc-ic{width:40px;height:40px;border-radius:11px;background:#fff1f1;color:#E3242B;display:grid;place-items:center;flex:none}.rc-ic .mri{width:20px;height:20px}
+.rc-i .grow{flex:1;min-width:0}.rc-i b{display:block;font:700 14.5px var(--fh,Poppins),sans-serif}.rc-i small{display:block;color:#64748b;font-size:12px;margin-top:2px}
+.rc-v{text-align:right;font:800 14px var(--fh,Poppins),sans-serif;white-space:nowrap}.rc-v small{font:700 10.5px Inter,sans-serif;letter-spacing:.08em;color:#E3242B}
+.rc-e{text-align:center;color:#64748b;padding:14px 6px}.rc-e .mri{width:34px;height:34px;color:#94a3b8}.rc-e p{margin:8px 0 0}

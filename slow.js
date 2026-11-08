@@ -25,7 +25,7 @@
     el.dataset.slw = '1';
     const cs = getComputedStyle(el); if (cs.position === 'absolute' || cs.position === 'fixed') return;
     const r0 = el.getBoundingClientRect(), p0 = el.parentElement ? el.parentElement.getBoundingClientRect() : r0;
-    const t = label(el), icon = el.id === 'rp' || el.classList.contains('rd-pp') || t.length < 3 || t.length > 16 || (p0.width - r0.width < 130 && r0.width < p0.width - 24), b = document.createElement('button');
+    const pd = el.parentElement ? getComputedStyle(el.parentElement).display : '', t = label(el), icon = /grid/.test(pd) || el.id === 'rp' || el.classList.contains('rd-pp') || t.length < 3 || t.length > 16 || (p0.width - r0.width < 130 && r0.width < p0.width - 24), b = document.createElement('button');
     b.type = 'button'; b.className = 'slw-b' + (icon ? ' ic' : ''); b.title = 'Escuchar más lento'; b.setAttribute('aria-label', 'Escuchar más lento');
     b.innerHTML = TUR + (icon ? '' : '<span>Más lento</span>');
     const r = el.getBoundingClientRect(), par = el.parentElement, pr = par ? par.getBoundingClientRect() : r;

@@ -764,14 +764,14 @@
     const MENU = { // 📂 todo el perfil organizado en 3 grupos
       learn: ['💻', 'Mis módulos', [['route', 'ib', '🧭', 'Mi ruta de aprendizaje', 'Módulos, lecciones y progreso'], ['notes', 'ib3', '✏️', 'Mis apuntes', 'Tu cuaderno personal'], ['place', 'ib2', '📝', 'Prueba de clasificación', 'Ubica tu nivel']]],
       cls: ['🧑‍🏫', 'Mis clases', [['book', 'ib', '📅', 'Reservar clase', 'Elige profe, día y hora'], ['next', 'ib2', '🗓️', 'Mis próximas clases', 'Enlace y cancelación'], ['extra', 'ib5', '➕', 'Comprar más clases', 'Se suman a tu saldo'], ['hist', 'ib6', '🗂️', 'Historial y tableros', 'Lo que vio cada profe'], ['claim', 'ib3', '🚩', '¿Mi profe no se conectó?', 'Repórtalo aquí'], ['chat', 'ib4', '💬', 'Chat con mi profe', 'Escríbele en vivo']]],
-      me: ['👤', 'Mi cuenta', [].concat(staff ? [] : [['plan', 'ib', '👑', 'Mi plan', 'Planes y renovación']], [['perso', 'ib5', '🎨', 'Personalizar perfil', 'Tu foto o tu Mr. Arrieta']], staff ? [] : [['mail', 'ib4', '✉️', 'Mi correo', 'Donde te llegan los avisos'], ['priv', 'ib', '🔐', 'Privacidad y mis datos', 'Tu autorización y tus derechos']], staff ? [] : [['pass', 'ib3', '🔑', 'Cambiar mi código', 'Tu clave de acceso'], ['ref', 'ib4', '🎁', 'Invitar a un amigo', 'Gana clases o días']], (!staff && P.plan().paid ? [['agree', 'ib', '📄', 'Mi acuerdo', 'Leído y aceptado · copia PDF']] : []).concat([['pol', 'ib6', '📌', 'Política', 'Reservas y cancelaciones'], ['tour', 'ib2', '🧭', 'Ver el tour', 'Cómo funciona tu perfil']]))],
+      me: ['👤', 'Mi cuenta', [].concat(staff ? [] : [['plan', 'ib', '👑', 'Mi plan', 'Planes y renovación'], ['pays', 'ib4', '🧾', 'Mis pagos', 'Tus comprobantes de pago']], [['perso', 'ib5', '🎨', 'Personalizar perfil', 'Tu foto o tu Mr. Arrieta']], staff ? [] : [['mail', 'ib4', '✉️', 'Mi correo', 'Donde te llegan los avisos'], ['priv', 'ib', '🔐', 'Privacidad y mis datos', 'Tu autorización y tus derechos']], staff ? [] : [['pass', 'ib3', '🔑', 'Cambiar mi código', 'Tu clave de acceso'], ['ref', 'ib4', '🎁', 'Invitar a un amigo', 'Gana clases o días']], (!staff && P.plan().paid ? [['agree', 'ib', '📄', 'Mi acuerdo', 'Leído y aceptado · copia PDF']] : []).concat([['pol', 'ib6', '📌', 'Política', 'Reservas y cancelaciones'], ['tour', 'ib2', '🧭', 'Ver el tour', 'Cómo funciona tu perfil']]))],
     };
     if (!prem) delete MENU.cls;
     if (prem && !P.plan().premium && MENU.cls) MENU.cls[2] = MENU.cls[2].filter(x => x[0] !== 'extra'); // 🎁 v603: clase gratis: sin «Comprar más clases»
     if (newbie) MENU.learn[2] = MENU.learn[2].filter(x => x[0] === 'place' || x[0] === 'games').reverse(); // recién llegado: primero la prueba de clasificación
     // 📄 v390: el perfil se divide en páginas (Inicio · Módulos · Clases · Cuenta)
     const PGI = { top: 'compass', learn: 'book', cls: 'video', me: 'user' };
-    const RIC = { games: 'game', notes: 'pen', place: 'file', book: 'calendar', next: 'clock', extra: 'plus', hist: 'book', claim: 'flag', chat: 'chat', plan: 'crown', perso: 'user', mail: 'mail', pass: 'unlock', ref: 'gift', agree: 'file', pol: 'clip', tour: 'compass', priv: 'shield' };
+    const RIC = { games: 'game', notes: 'pen', place: 'file', book: 'calendar', next: 'clock', extra: 'plus', hist: 'book', claim: 'flag', chat: 'chat', plan: 'crown', pays: 'receipt', perso: 'user', mail: 'mail', pass: 'unlock', ref: 'gift', agree: 'file', pol: 'clip', tour: 'compass', priv: 'shield' };
     const pgRows = (k) => { if (!MENU[k]) return ''; const it = MENU[k][2].filter(x => x[0] !== 'route'); return it.length ? `<div class="card pg-rows">${it.map(([id, , , b, sm]) => `<button class="pg-row" data-act="${id}"><i>${MRI(RIC[id] || 'chev')}</i><span><b>${b}</b><small>${sm}</small></span>${MRI('chev', 'pg-ar')}</button>`).join('')}</div>` : ''; };
     const PGN = { top: 'Inicio', learn: 'Mis módulos', cls: 'Mis clases', me: 'Mi cuenta' };
     const ddHTML = (k) => { const [ic, t, items] = MENU[k]; return `<div class="sd-dd" data-k="${k}"><button class="sd-ddb">${ic} ${t} <span class="car">▾</span></button><div class="sd-ddm">${items.map(([id, cl, i2, b, sm]) => `<button class="sd-mi" data-act="${id}"><i class="${cl}">${i2}</i><span><b>${b}</b><small>${sm}</small></span></button>`).join('')}</div></div>`; };
@@ -827,7 +827,7 @@
       const open = (sel, click) => { const el = $(sel); if (!el) return M.toast('Esta sección aún no está disponible.'); const pk = pgOf(el); if (pk && pk !== PG) setPg(pk, true); sdShow(el); if (el.tagName === 'DETAILS') el.open = true; el.scrollIntoView({ behavior: 'smooth', block: 'start' }); if (click) setTimeout(() => { const c = $(click); c && c.click(); }, 450); };
       ({ route: () => setPg('learn'), games: () => { location.href = 'juegos.html'; }, notes: () => open('#pt-notes'), place: () => route('placement'),
         book: () => { const c = $('#lv-book'); if (c && !c.disabled) c.click(); else if (c && c.disabled) open('.lv-vip'); else if (P.plan().cls) bookStart(); else plans(); }, next: () => open('.lv-next'), extra: () => { const x = $('#lv-extra'); if (x) x.click(); else if (window.MRBUY) { const q = (MRAC.meLast && MRAC.meLast()) || (MRAC.cachedMe && MRAC.cachedMe()) || {}; MRBUY.extra(q.premium && q.premium.credits ? q.premium.credits.cycleEnd : undefined); } else open('.lv-vip'); }, hist: () => open('.lv-hist'), claim: () => open('.lv-claim'), chat: () => { const c = $('#lv-msg'); if (c) c.click(); else if (window.MRLIVE) MRLIVE.openStudent(); else open('#pt-live'); },
-        plan: () => plans(), perso: () => route('me'), pass: () => { const b = $('#pt-pass'); b ? b.click() : null; }, ref: () => open('#pt-ref'), pol: () => window.MRPOLICY && MRPOLICY.show(), agree: () => window.MRAGREE && MRAGREE.open(), mail: () => mailEdit(), priv: () => privModal(), tour: () => { window.scrollTo(0, 0); portalTour(true); } }[id] || (() => { }))(); };
+        plan: () => plans(), pays: () => payList(), perso: () => route('me'), pass: () => { const b = $('#pt-pass'); b ? b.click() : null; }, ref: () => open('#pt-ref'), pol: () => window.MRPOLICY && MRPOLICY.show(), agree: () => window.MRAGREE && MRAGREE.open(), mail: () => mailEdit(), priv: () => privModal(), tour: () => { window.scrollTo(0, 0); portalTour(true); } }[id] || (() => { }))(); };
     const closeAll = () => { $$('.sd-dd').forEach(d => d.classList.remove('open')); const sh = $('.sd-sheet'); if (sh) sh.remove(); };
     window.MRSTGO = (id) => { // v580: las notificaciones de la campana llevan directo a su lugar
       if (id === 'book') return act('book'); if (id === 'mail') return act('mail');
@@ -939,6 +939,24 @@
     MRPOLICY.show({ first: true, onClose: () => { const p = P.get(); if (p && !p.pol1) { p.pol1 = Date.now(); P.save(p); try { window.MRAC && MRAC.code() && MRAC.sync(true); } catch (e) { } } } });
   }
   // ✉️ el estudiante corrige su correo (si rebotó o si se equivocó al escribirlo)
+  // 🧾 v615: Mis pagos — comprobantes de pago para descargar en PDF
+  async function payList() {
+    const m = M.modal(`<div class="rc-m"><h3>${MRI('receipt')} Mis pagos</h3><p class="muted">Tus comprobantes de pago. Tócalos para descargarlos en PDF.</p><div class="rc-l"><p class="muted">Cargando…</p></div></div>`, { x: true });
+    const r = await MRAC.call('myBuys', { code: MRAC.code() }).catch(() => null); const L = $('.rc-l', m); if (!L) return;
+    const list = r && r.ok ? (r.buys || []).filter(b => b.status === 'aprobado' && b.receipt) : null;
+    if (!list) { L.innerHTML = '<p class="muted">No se pudieron cargar tus pagos. Intenta de nuevo.</p>'; return; }
+    if (!list.length) { L.innerHTML = `<div class="rc-e">${MRI('receipt')}<p>Aquí aparecerán tus comprobantes cuando hagas un pago.</p></div>`; return; }
+    const what = (b) => b.kind === 'extra' ? b.n + (b.n == 1 ? ' clase adicional' : ' clases adicionales') : b.kind === 'fam' ? 'Planes de familia' : ((window.MRPLANS && MRPLANS.PL[b.plan] || {}).name || b.plan);
+    L.innerHTML = list.map(b => `<button type="button" class="rc-i" data-id="${esc(b.id)}"><span class="rc-ic">${MRI('receipt')}</span><span class="grow"><b>${esc(what(b))}</b><small>${esc(b.receipt)} · ${fmtD(String(b.decidedAt || b.date).slice(0, 10))}</small></span><span class="rc-v">${window.MRPLANS ? MRPLANS.fmt(b.amount) : b.amount}<small>PDF</small></span></button>`).join('');
+    $$('.rc-i', m).forEach(bt => bt.onclick = async () => {
+      if (bt.disabled) return; bt.disabled = true; bt.classList.add('ld');
+      const x = await MRAC.call('myReceipt', { code: MRAC.code(), id: bt.dataset.id }).catch(() => null); bt.disabled = false; bt.classList.remove('ld');
+      if (!x || !x.ok || !x.pdf) return M.toast('No se pudo descargar. Intenta de nuevo.');
+      try { const bin = atob(x.pdf), u8 = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+        const url = URL.createObjectURL(new Blob([u8], { type: 'application/pdf' })), a = document.createElement('a'); a.href = url; a.download = x.name || 'Comprobante.pdf'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 4000);
+        M.toast('✅ Comprobante descargado'); } catch (e) { M.toast('No se pudo descargar. Intenta de nuevo.'); }
+    });
+  }
   async function mailEdit(cur) {
     if (cur === undefined) { const me = await MRAC.me().catch(() => null); cur = (me && me.mail && me.mail.email) || (P.get() || {}).email || ''; }
     const m = M.modal(`<h3>✉️ Mi correo</h3><p class="muted">Aquí te enviamos los avisos de tus clases, pagos y tu acuerdo.</p><input class="inp" id="me-mail" type="email" value="${esc(cur || '')}" placeholder="tucorreo@ejemplo.com" style="width:100%;box-sizing:border-box"><button class="btn k block" id="me-ms" style="margin-top:12px">Guardar mi correo</button>`, { x: true });
