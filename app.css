@@ -9228,3 +9228,95 @@ body.ag-teens .gl-card .gl-meta svg,body.ag-teens .gl-card .gl-meta .mri{color:#
 .rc-i .grow{flex:1;min-width:0}.rc-i b{display:block;font:700 14.5px var(--fh,Poppins),sans-serif}.rc-i small{display:block;color:#64748b;font-size:12px;margin-top:2px}
 .rc-v{text-align:right;font:800 14px var(--fh,Poppins),sans-serif;white-space:nowrap}.rc-v small{font:700 10.5px Inter,sans-serif;letter-spacing:.08em;color:#E3242B}
 .rc-e{text-align:center;color:#64748b;padding:14px 6px}.rc-e .mri{width:34px;height:34px;color:#94a3b8}.rc-e p{margin:8px 0 0}
+
+/* ================= v616 · PANEL DE PAPÁS con el color de los hijos (solo Kids · solo Teens · mixto) + brillo y sombra de Mr. Arrieta ================= */
+/* ===== KIDS (solo niños): crema + ámbar, como el perfil de los niños ===== */
+body.fm-k{background:#fff8ec!important}
+body.fm-k .fm-hero{background:linear-gradient(135deg,#fffaf0 0%,#fff1d6 60%,#ffe2a8 100%)!important;border:1.5px solid #f6dca8!important;box-shadow:0 8px 22px rgba(217,119,6,.10)!important}
+body.fm-k .fm-hb1{background:radial-gradient(circle at 40% 40%,rgba(245,158,11,.22),rgba(245,158,11,.05) 70%,transparent 72%)}
+body.fm-k .fm-hdots{background-image:radial-gradient(rgba(217,119,6,.35) 1.6px,transparent 1.7px)}
+body.fm-k .fm-hst span{border-color:#f6dca8}
+body.fm-k .fm-hst i,body.fm-k .fm-ali{background:#fff1d6!important;color:#d97706!important}
+body.fm-k .card,body.fm-k .fm-al,body.fm-k .fm-code{border-color:#f6e3c2!important}
+body.fm-k .fm-code,body.fm-k .fm-add{border-color:#f0c879!important}
+body.fm-k .fm-al{border-left-color:#f59e0b!important}
+body.fm-k .fm-cp,body.fm-k .fm-go{background:#fff1d6!important;color:#b45309!important}
+body.fm-k .fm-mini{background:#fffaf0}
+body.fm-k .fm-payb{background:#f59e0b!important;border-color:#f59e0b!important;color:#fff!important}
+/* ===== TEENS (solo jóvenes): azul noche + verde menta, como el perfil de los Teens ===== */
+body.fm-t{background:#071a3a!important}
+body.fm-t .fm-hero{background:linear-gradient(140deg,#0d2752,#16376e)!important;border:1px solid #1f4584!important;box-shadow:0 10px 26px rgba(0,0,0,.3)!important}
+body.fm-t .fm-hero h1{color:#fff!important}body.fm-t .fm-hero p{color:#cfe0ff!important}
+body.fm-t .fm-hb1{background:radial-gradient(circle at 40% 40%,rgba(34,229,138,.20),rgba(34,229,138,.04) 70%,transparent 72%)}
+body.fm-t .fm-hb2{background:radial-gradient(circle,rgba(255,255,255,.06),transparent 70%)}
+body.fm-t .fm-hdots{background-image:radial-gradient(rgba(34,229,138,.4) 1.6px,transparent 1.7px)}
+body.fm-t .fm-hst span{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.12);box-shadow:none}
+body.fm-t .fm-hst b{color:#fff}body.fm-t .fm-hst small{color:#9fb6dd}
+body.fm-t .fm-hst i,body.fm-t .fm-ali{background:rgba(34,229,138,.14)!important;color:#22e58a!important}
+body.fm-t .card,body.fm-t .fm-al,body.fm-t .fm-code{background:#0d2752!important;border-color:#1f4584!important;color:#e6eefc}
+body.fm-t .fm-code,body.fm-t .fm-add{border-color:#2b5294!important;border-style:dashed!important}
+body.fm-t .fm-add{background:rgba(255,255,255,.03)!important;color:#cfe0ff!important}
+body.fm-t .fm-al{border-left-color:#22e58a!important;border-style:solid!important}
+body.fm-t .fm-code b,body.fm-t .fm-kn b,body.fm-t .fm-al b,body.fm-t .fm-mini b,body.fm-t .fm-st h2{color:#fff!important}
+body.fm-t .fm-code small,body.fm-t .fm-kn>span,body.fm-t .fm-mini small,body.fm-t .fm-st small,body.fm-t .fm-help,body.fm-t .fm-al{color:#9fb6dd!important}
+body.fm-t .fm-help a,body.fm-t .fm-tourb{color:#fff!important}
+body.fm-t .fm-cp,body.fm-t .fm-go{background:rgba(34,229,138,.14)!important;color:#22e58a!important}
+body.fm-t .fm-mini{background:#0b2148}
+body.fm-t .fm-row{border-color:#1f4584}
+body.fm-t .fm-tag.t{background:rgba(34,229,138,.15);color:#22e58a}
+body.fm-t .fm-payb{background:#22e58a!important;border-color:#22e58a!important;color:#04122b!important}
+body.fm-t .fm-sw.on{background:#22e58a}
+/* ===== MIXTO (niño + joven): base de la escuela y cada hijo con su color ===== */
+body.fm-mx{background:#EEF3FB!important}
+body.fm-mx .fm-hero{background:linear-gradient(135deg,#0B2A5B,#1B4A9B)!important;border:0!important}
+body.fm-mx .fm-hero h1{color:#fff!important}body.fm-mx .fm-hero p{color:#dbe6f7!important}
+body.fm-mx .fm-hb1{background:radial-gradient(circle at 40% 40%,rgba(245,158,11,.30),rgba(245,158,11,.06) 70%,transparent 72%)}
+body.fm-mx .fm-hb2{background:radial-gradient(circle,rgba(34,229,138,.22),transparent 70%)}
+body.fm-mx .fm-hdots{background-image:radial-gradient(rgba(255,255,255,.35) 1.6px,transparent 1.7px)}
+body.fm-mx .fm-hst span{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.18);box-shadow:none}
+body.fm-mx .fm-hst b{color:#fff}body.fm-mx .fm-hst small{color:#c9d6ea}
+body.fm-mx .fm-hst i{background:rgba(255,255,255,.14)!important;color:#fff!important}
+/* tarjeta de cada hijo en el color de su edad */
+.fm-kid.ag-k{background:linear-gradient(180deg,#fff7e6,#fff)!important;border:1.5px solid #f6dca8!important;border-top:4px solid #f59e0b!important}
+.fm-kid.ag-k .fm-go{background:#fff1d6;color:#b45309}.fm-kid.ag-k .fm-mini{background:#fffaf0}
+.fm-kid.ag-t{background:linear-gradient(180deg,#0d2752,#0b2148)!important;border:1px solid #1f4584!important;border-top:4px solid #22e58a!important;color:#e6eefc}
+.fm-kid.ag-t .fm-kn b,.fm-kid.ag-t .fm-mini b{color:#fff!important}.fm-kid.ag-t .fm-kn>span,.fm-kid.ag-t .fm-mini small{color:#9fb6dd!important}
+.fm-kid.ag-t .fm-mini{background:rgba(255,255,255,.06)}.fm-kid.ag-t .fm-row{border-color:#1f4584}
+.fm-kid.ag-t .fm-go{background:rgba(34,229,138,.14);color:#22e58a}.fm-kid.ag-t .fm-tag.t{background:rgba(34,229,138,.15);color:#22e58a}
+body.fm-t .fm-hst b,body.fm-mx .fm-hst b{color:#fff!important}
+body.fm-t .fm-hst small,body.fm-mx .fm-hst small{color:#c9d6ea!important}
+body.fm-t .fm-help,body.fm-t .fm-help *{color:#cfe0ff!important}
+body.fm-t .fm-hst span::after,body.fm-mx .fm-hst span::after{color:#c9d6ea!important}
+/* brillo suave detrás de Mr. Arrieta en los fondos oscuros */
+body.fm-t .fm-hart::before,body.fm-mx .fm-hart::before{content:'';position:absolute;left:50%;top:50%;width:150%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.34) 0%,rgba(190,215,255,.16) 42%,transparent 68%);pointer-events:none;z-index:-1}
+body.fm-t .fm-hart img,body.fm-mx .fm-hart img{filter:drop-shadow(0 0 1px rgba(255,255,255,.55)) drop-shadow(0 10px 14px rgba(0,0,0,.35))!important}
+/* brillo un poco más visible */
+body.fm-t .fm-hart::before,body.fm-mx .fm-hart::before{background:radial-gradient(circle,rgba(255,255,255,.42) 0%,rgba(190,215,255,.2) 40%,transparent 66%)!important}
+/* 🌑 sombra en el piso, que se encoge cuando él sube (igual que la avioneta) */
+body.fm-page .fm-hart::after{content:'';position:absolute;left:50%;bottom:-6px;width:70%;height:10px;margin-left:-35%;border-radius:50%;background:radial-gradient(ellipse,rgba(11,42,91,.38),rgba(11,42,91,0) 70%);filter:blur(1px);animation:fmSh 3.4s ease-in-out infinite;pointer-events:none;z-index:-1}
+body.fm-t .fm-hart::after,body.fm-mx .fm-hart::after{background:radial-gradient(ellipse,rgba(0,0,0,.55),rgba(0,0,0,0) 70%)}
+@keyframes fmSh{0%,100%{transform:scaleX(1);opacity:.9}50%{transform:scaleX(.72);opacity:.5}}
+@media(max-width:899px){body.fm-page .fm-hart::after{width:86%;margin-left:-43%;background:radial-gradient(ellipse,rgba(11,42,91,.5),rgba(11,42,91,0) 72%)}body.fm-t .fm-hart::after,body.fm-mx .fm-hart::after{background:radial-gradient(ellipse,rgba(0,0,0,.7),rgba(0,0,0,0) 72%)!important}}
+/* celular: los 3 cuadros bajan un poquito para que la sombra de Mr. Arrieta quepa sin tocarlos */
+@media(max-width:899px){body.fm-page .fm-hst{margin-top:26px!important}body.fm-page .fm-hart::after{top:72px!important;height:7px}}
+
+body.fm-t .fm-pc>p,body.fm-t .fm-add small{color:#9fb6dd!important}
+body.fm-t .fm-add .mri{background:rgba(34,229,138,.14)!important;color:#22e58a!important}
+body.fm-t .fm-more,body.fm-t .fm-more p,.fm-kid.ag-t .fm-more,.fm-kid.ag-t .fm-more p{color:#cfe0ff}
+/* v616 · detalle de cada hijo en el color de su edad */
+body.fm-k .fm-dback{border-color:#f0c879}
+body.fm-k .fm-wk div,body.fm-k .fm-cl{border-color:#f6e3c2}
+body.fm-k .fm-kv div{background:#fffaf0}
+body.fm-k .fm-dt{background:#fff1d6;color:#b45309}
+body.fm-t .fm-dback{background:#0d2752;border-color:#1f4584;color:#fff}
+body.fm-t .fm-who h2,body.fm-t .fm-dh h3,body.fm-t .fm-wk b,body.fm-t .fm-kv b,body.fm-t .fm-pnow b,body.fm-t .fm-cl span:nth-child(2) b{color:#fff!important}
+body.fm-t .fm-who p,body.fm-t .fm-kv span,body.fm-t .fm-wk small,body.fm-t .fm-dh small,body.fm-t .fm-pnow small,body.fm-t .fm-cl small,body.fm-t .fm-empty,body.fm-t .fm-wks{color:#9fb6dd!important}
+body.fm-t .fm-ring{background:conic-gradient(#22e58a calc(var(--p)*1%),rgba(255,255,255,.12) 0)}body.fm-t .fm-ring>div{background:#0b2148}body.fm-t .fm-ring b{color:#fff}body.fm-t .fm-ring small{color:#9fb6dd}
+body.fm-t .fm-kv div{background:rgba(255,255,255,.06)}
+body.fm-t .fm-who .btn.w{background:transparent!important;border:1.5px solid #22e58a!important;color:#22e58a!important}
+body.fm-t .fm-wk div{background:#0d2752;border-color:#1f4584}
+body.fm-t .fm-pbar{background:rgba(255,255,255,.12)}body.fm-t .fm-pbar i{background:linear-gradient(90deg,#16c172,#22e58a)}
+body.fm-t .fm-pnow{background:rgba(34,229,138,.1);border-color:rgba(34,229,138,.3)}body.fm-t .fm-pnow .mri{background:#22e58a;color:#04122b}
+body.fm-t .fm-pnote{color:#cfe0ff}body.fm-t .fm-pnote b{color:#fff}
+body.fm-t .fm-cl{border-color:#1f4584}body.fm-t .fm-dt{background:#16376e;color:#fff}body.fm-t .fm-cl i{background:rgba(34,229,138,.15);color:#22e58a}
+body.fm-t .fm-note{background:rgba(255,181,71,.1);border-color:rgba(255,181,71,.3);color:#ffe2b0}body.fm-t .fm-note b{color:#fff}

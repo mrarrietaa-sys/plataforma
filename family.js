@@ -28,13 +28,15 @@
     const mini = prem
       ? `<div class="fm-mini"><small>Próxima clase</small><b>${I('calendar')}${k.next ? esc(k.next.nice) : 'Sin reservar'}</b></div><div class="fm-mini"><small>Clases del mes</small><b>${k.credits ? k.credits.used + ' de ' + k.credits.total : '—'}</b></div>`
       : `<div class="fm-mini${k.idle >= 5 ? ' w' : ''}"><small>Última práctica</small><b>${I('clock')}${ago(k.idle)}</b></div><div class="fm-mini"><small>Su nivel</small><b>${k.module ? LV[k.module] : 'Por definir'}</b></div>`;
-    return `<article class="card fm-kid" data-i="${i}"><button class="fm-kh" data-tg="${i}"><span class="fm-kn"><b>${esc(k.first)} ${esc(k.lastName || '')}</b><span><i class="fm-tag ${g[0]}">${g[1]}${k.age != null ? ' · ' + k.age + ' AÑOS' : ''}</i>${esc(k.planName)}</span></span><span class="fm-go">${I('chev')}</span></button>
+    return `<article class="card fm-kid ag-${g[0]}" data-i="${i}"><button class="fm-kh" data-tg="${i}"><span class="fm-kn"><b>${esc(k.first)} ${esc(k.lastName || '')}</b><span><i class="fm-tag ${g[0]}">${g[1]}${k.age != null ? ' · ' + k.age + ' AÑOS' : ''}</i>${esc(k.planName)}</span></span><span class="fm-go">${I('chev')}</span></button>
       <div class="fm-row">${mini}</div>
       <div class="fm-more" hidden><p>Código de ${esc(k.first)}: <b>${esc(k.code)}</b></p><button class="btn w sm" data-in="${esc(k.code)}">Entrar como ${esc(k.first)}</button></div></article>`;
   }
 
   function render(r) {
     F = r; topRight(true); const f = r.family, kids = r.kids || [];
+    { const gs = kids.map(k => (AG[k.ag] || AG.adult)[0]), hk = gs.includes('k'), ht = gs.includes('t'); // 🎨 v616: el panel toma el color de los hijos (Kids · Teens · mixto)
+      document.body.classList.remove('fm-k', 'fm-t', 'fm-mx'); if (hk || ht) document.body.classList.add(hk && ht ? 'fm-mx' : hk ? 'fm-k' : 'fm-t'); }
     const first = String(f.guardian || '').split(' ')[0] || 'familia';
     const ini = String(f.guardian || 'F').split(' ').filter(Boolean).slice(0, 2).map(x => x.charAt(0)).join('').toUpperCase();
     app.innerHTML = `<div class="fm-grid"><aside class="fm-side">
@@ -74,6 +76,7 @@
   // 👧 detalle de un hijo: avance, semana, camino, próximas clases y comentario del profe
   function detail(r, i) {
     const k = r.kids[i], d = k.detail || {}, w = d.week || {}, g = AG[k.ag] || AG.adult, prem = /^premium/.test(k.plan);
+    document.body.classList.remove('fm-k', 'fm-t', 'fm-mx'); if (g[0] === 'k' || g[0] === 't') document.body.classList.add('fm-' + g[0]); // 🎨 v616: al abrir un hijo, el panel toma el color de su edad
     app.innerHTML = `<div class="fm-det"><aside class="fm-dside"><button class="fm-dback" id="back">${I('chev')} Mis hijos</button>
         <div class="card fm-who"><span class="fm-dav ${g[0]}">${esc((k.first || '?').charAt(0))}</span><h2>${esc(k.first)} ${esc(k.lastName || '')}</h2><p>${esc(k.planName)}${k.module ? ' · ' + LVN[k.module] : ''}</p><i class="fm-tag ${g[0]}">${g[1]}${k.age != null ? ' · ' + k.age + ' AÑOS' : ''}</i>
           <div class="fm-ring" style="--p:${d.pct || 0}"><div><b>${d.pct || 0}%</b><small>${k.module ? 'Módulo ' + k.module : 'Su módulo'}</small></div></div>
