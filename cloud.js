@@ -28,7 +28,7 @@
   const code = () => { if (window.MRTEACH && MRTEACH.on()) return ''; const p = prof(); return p && p.cloud && p.code ? p.code : ''; };
 
   // ---------- perfil local a partir de los datos de la nube ----------
-  function typeFor(st, state) { const eff = state ? state.eff : (st.plan || 'free'); return eff === 'membership' || /^premium(8|12)?$/.test(eff) ? 'student' : 'trial'; }
+  function typeFor(st, state) { const eff = state ? state.eff : (st.plan || 'free'); return eff === 'membership' || /^premium\d*$/.test(eff) ? 'student' : 'trial'; }
   function applyStudent(st, state, base) {
     const p = Object.assign({ created: Date.now() }, base || prof() || {});
     Object.assign(p, { cloud: true, code: st.code, plan: st.plan || 'free', planStart: st.planStart || '', planEnd: st.planEnd || '', paceStart: st.paceStart || '', paceMod: +st.paceMod || 0, type: typeFor(st, state), expired: !!(state && state.expired), groupId: st.groupId || '' });
@@ -125,7 +125,7 @@ function mraMergeKey(k, aS, bS) { /* a = lo que ya había, b = lo nuevo · nunca
     return call('upload', Object.assign({ kind, id, b64, mime: (blob.type || 'application/octet-stream').split(';')[0] }, meta || {}), { timeout: 90000 });
   }
   // ---------- avisos a profes / administración ----------
-  const premium = () => { const p = prof() || {}; return p.cloud && /^premium(8|12)?$/.test(p.plan || '') && !(p.planEnd && p.planEnd < new Date().toISOString().slice(0, 10)); };
+  const premium = () => { const p = prof() || {}; return p.cloud && /^premium\d*$/.test(p.plan || '') && !(p.planEnd && p.planEnd < new Date().toISOString().slice(0, 10)); };
   // resultado de cualquier examen (módulos, final del curso, clasificación) → notificación al profe y a administración
   async function examResult(o) { const c = code(); if (!c) return { ok: false, err: 'offline' }; return call('examResult', Object.assign({ code: c }, o)); }
   // solicitud de intento extra (solo cuando agotó sus intentos)
@@ -149,5 +149,5 @@ function mraMergeKey(k, aS, bS) { /* a = lo que ya había, b = lo nuevo · nunca
     wipeLocal(true); ls.del(OWNER); ls.del(ME); try { sessionStorage.removeItem(ME); localStorage.removeItem('mra_me_last'); } catch (e) { } return true; }
   function setCode(nc) { const p = prof(); if (p) { p.code = nc; ls.set('mra_profile_v1', JSON.stringify(p)); } ls.set(OWNER, nc); ls.del(ME); try { sessionStorage.removeItem(ME); } catch (e) { } } // 🔑 nuevo código de acceso
   window.MRAC = { setCode, signOut, flush: () => beacon(true), examResult, requestAttempt, homework, feedbackFor, evalSave, notifications, markRead, isPremium: premium, cachedMe: () => { const c = cachedMe(); return c && c.r; }, meLast, on: !!URL_, url: URL_, call, login, me, sync, upload, saveProfile, code, toB64, applyStudent, wipeLocal,
-    planName: (p) => ({ free: 'Acceso gratuito', membership: 'Plataforma', premium: 'Premium · 4 clases', premium8: 'Premium · 8 clases', premium12: 'Premium · 12 clases' }[p] || 'Acceso gratuito') };
+    planName: (p) => (/^premium\d*$/.test(p || '') ? 'Premium · ' + (+(String(p).slice(7)) || 4) + ' clases' : { free: 'Acceso gratuito', membership: 'Plataforma' }[p] || 'Acceso gratuito') };
 })();

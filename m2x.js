@@ -1,5 +1,5 @@
 /* v519 · MÓDULO 2 · experiencia propia (distinta del Módulo 1)
-   - Práctica oral: Adultos = llamada telefónica · Teens = responder en un live · Kids = walkie-talkie con Mr. Arrieta
+   - Práctica oral: Adultos = llamada telefónica · Teens = responder en una transmisión en vivo · Kids = walkie-talkie con Mr. Arrieta
    - Juego propio: Tema 1 (la hora) = agenda / speed clock / reloj mágico · Temas 2-11 = termina el correo / fact check / la carrera
    - Lectura en formato podcast · Misión con palabra oculta (+ pista) · Karaoke de la canción con melodía
    Todo sin reconocimiento de voz: motor de melodía (ritmo y entonación vs. el audio modelo). */
@@ -86,7 +86,7 @@
   /* ---------- 🔴 Teens · responder en un live ---------- */
   async function live(stage, p) {
     const Q = KQ(p); if (!Q.length) return null; let c = 0; const NK = ['nico_gg', 'vale.art', 'sam_plays', 'lu.dance'];
-    const body = frame(stage, 'Practice', 'Responde en el live', 'Tus seguidores te preguntan en el chat. Responde en voz alta.');
+    const body = frame(stage, 'Practice', 'Responde en la transmisión', 'Tus seguidores te preguntan en el chat. Responde en voz alta.');
     body.insertAdjacentHTML('beforeend', `<div class="m2l"><div class="m2l-sc" style="background-image:url('${M().imgURL('u:photo-1542751371-adc38448a05e', 900, 520)}')"><span class="m2l-badge"><i></i>LIVE</span><span class="m2l-v">1.2K</span><div class="m2l-cm"></div></div><div class="m2l-turn"></div></div>`);
     const cm = body.querySelector('.m2l-cm'), turn = body.querySelector('.m2l-turn'), vw = body.querySelector('.m2l-v'); let views = 1200;
     const iv = setInterval(() => { if (!stage.isConnected) return clearInterval(iv); views += Math.floor(Math.random() * 9); vw.textContent = (views / 1000).toFixed(1) + 'K'; }, 1200);
@@ -101,7 +101,7 @@
     }
     clearInterval(iv); if (!stage.isConnected) return A().result(c, Q.length, 'speaking');
     turn.innerHTML = `<div class="m2-sum"><b>${c} de ${Q.length}</b><span>comentarios respondidos</span></div>`; sfx(c === Q.length ? 'win' : 'ok');
-    await A().waitNext(stage, 'Terminar el live'); return A().result(c, Q.length, 'speaking');
+    await A().waitNext(stage, 'Terminar la transmisión'); return A().result(c, Q.length, 'speaking');
   }
 
   /* ---------- 📻 Kids · walkie-talkie con Mr. Arrieta ---------- */

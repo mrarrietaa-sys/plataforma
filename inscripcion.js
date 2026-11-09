@@ -10,7 +10,7 @@ if (!window.M1) window.M1 = {
    · Elige plan (Acceso gratuito / Membership / Premium) + datos.
    · Envía a la nube: MRAC.call('enroll', {...}).
    · Sin nube o con error: ofrece enviar los datos por WhatsApp.
-   · ?plan=premium | premium8 | premium12 | membership | free  → preselecciona el plan.
+   · ?plan=premium (4) | premium5 … premium20 | membership | free  → preselecciona el plan.
    ===================================================================== */
 (function () {
   const C = window.M1CONFIG || {}, MR = window.MRAC || { on: false, call: async () => ({ ok: false, err: 'offline' }) };
@@ -25,12 +25,6 @@ if (!window.M1) window.M1 = {
       perks: ['Descubre tu nivel en 10 minutos', 'Tu ruta personalizada', 'Habla y la plataforma te corrige'], note: 'No incluye clases individuales.' },
     Object.assign({ id: 'membership', tag: 'Aprende a tu ritmo', icon: '🖥️',
       perks: ['Habla desde el día 1: te escucha y te corrige', 'Del A1 al B2+, a tu ritmo, 24/7', 'Certificado por cada módulo'], note: 'No incluye clases individuales.' }, pp('membership', '🖥️ PLATAFORMA', '$64.900')),
-    Object.assign({ id: 'premium', tag: '+ 4 clases con profe', icon: '👑',
-      perks: ['Todo lo de Plataforma', '4 clases 1 a 1 con profe al mes', 'Tú eliges profe, día y hora', 'Clases no acumulables: úsalas en tu periodo mensual'] }, pp('premium', '👑 PREMIUM · 4 CLASES', '$149.900')),
-    Object.assign({ id: 'premium8', tag: '+ 8 clases con profe', icon: '💎', best: true,
-      perks: ['Todo lo de Plataforma', '8 clases 1 a 1: 2 por semana', 'Gana fluidez real, más rápido', 'Clases no acumulables: úsalas en tu periodo mensual'] }, pp('premium8', '💎 PREMIUM · 8 CLASES', '$249.900')),
-    Object.assign({ id: 'premium12', tag: '+ 12 clases con profe', icon: '⭐', strip: true,
-      perks: ['Todo lo de Plataforma', '12 clases 1 a 1: 3 por semana', 'El mejor precio por clase', 'Clases no acumulables: úsalas en tu periodo mensual'] }, pp('premium12', '⭐ PREMIUM · 12 CLASES', '$349.900')),
   ];
   const XP = () => { const P = window.MRPLANS; const n = P && P.extra ? P.extra() : 32900; return '$' + String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.'); };
   function stCount() { const el = document.querySelector('[data-stc]'); if (!el) return; const run = (N) => { const t0 = performance.now(); const fr = (t) => { const k = Math.min(1, (t - t0) / 1400); el.textContent = '+' + Math.round(N * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(fr); }; requestAnimationFrame(fr); };
@@ -46,15 +40,15 @@ if (!window.M1) window.M1 = {
   const qs = new URLSearchParams(location.search);
   const REF = String(qs.get('ref') || (() => { try { return localStorage.getItem('mra_ref') || ''; } catch (e) { return ''; } })()).trim().toUpperCase().replace(/[^A-Z0-9-]/g, '').slice(0, 20);
   if (REF) { try { localStorage.setItem('mra_ref', REF); } catch (e) { } }
-  const st = { plan: ['free', 'membership', 'premium', 'premium8', 'premium12'].indexOf(qs.get('plan')) >= 0 ? qs.get('plan') : '', schedule: '', days: [], level: '', source: '', busy: false, extra: Math.max(0, Math.min(10, +qs.get('extra') || 0)) };
+  const st = { plan: /^(free|membership|premium\d*)$/.test(qs.get('plan') || '') ? qs.get('plan') : '', schedule: '', days: [], level: '', source: '', busy: false, extra: Math.max(0, Math.min(10, +qs.get('extra') || 0)) };
   document.addEventListener('mra-extra', (e) => { st.extra = e.detail.n; if (e.detail.plan !== st.plan) { st.extraPlan = e.detail.plan; } else st.extraPlan = st.plan; try { summary(); } catch (er) { } });
-  const planOf = (id) => PLANS.find((p) => p.id === id);
+  const planOf = (id) => PLANS.find((p) => p.id === id) || (/^premium\d*$/.test(id || '') && window.MRPLANS ? (() => { const n = MRPLANS.pnum(id), P = MRPLANS.PL[id] || {}; return { id, name: 'PREMIUM · ' + n + ' CLASES', price: P.price || '', per: 'COP/mes', tag: '+ ' + n + ' clases con profe', icon: '👑' }; })() : null); // 👑 v626
 
   /* ---------------- vista principal ---------------- */
   function render() {
     const DIRECT = !!st.plan && st.plan !== 'free' && !st.pickAll; const SP = planOf(st.plan) || {};
     app.innerHTML = `
-    ${DIRECT ? `<section class="card in-direct"><span class="in-plan-ic" aria-hidden="true">${window.MRI ? MRI({ free: "gift", membership: "monitor", premium: "crown", premium8: "gem", premium12: "star" }[SP.id] || "gift") : SP.icon}</span><div class="grow"><span class="lbl">Tu plan</span><h1>${esc(SP.name)}</h1><p><b>${esc(SP.price)}</b> ${esc(SP.per || '')} · ${esc(SP.tag || '')}</p></div><button type="button" class="btn w sm" id="in-chg">Cambiar plan</button>${/^premium/.test(st.plan) && window.MRPLANS && MRPLANS.xbox ? `<div class="in-dx">${MRPLANS.xbox(st.plan)}</div>` : ''}</section>` : ''}
+    ${DIRECT ? `<section class="card in-direct"><span class="in-plan-ic" aria-hidden="true">${window.MRI ? MRI(/^premium/.test(SP.id || "") ? "crown" : ({ free: "gift", membership: "monitor" }[SP.id] || "gift")) : SP.icon}</span><div class="grow"><span class="lbl">Tu plan</span><h1>${esc(SP.name)}</h1><p><b>${esc(SP.price)}</b> ${esc(SP.per || '')} · ${esc(SP.tag || '')}</p></div><button type="button" class="btn w sm" id="in-chg">Cambiar plan</button></section>` : ''}
     <section class="in-hero"${DIRECT ? ' hidden' : ''}>
       <div class="in-hero-txt">
         
@@ -69,12 +63,12 @@ if (!window.M1) window.M1 = {
       ${REF && !/^HABLA-/.test(REF) ? `<p class="pt-ann in-gift">${window.MRI ? MRI('gift') : '🎁'} <span>Te invitó un amigo (código <b>${esc(REF)}</b>): te regalamos <b>1 clase con profe</b> en tu primer mes de cualquier plan pago.</span></p>` : ''}
       <div${DIRECT ? ' hidden' : ''}><h2 class="in-step"><span>1</span> Elige tu plan</h2>
       <div class="in-plans lp-pg pl-in n4" role="radiogroup" aria-label="Plan">
-        ${PLANS.filter((p) => !p.strip).map((p) => `
+        ${PLANS.filter((p) => !/^premium/.test(p.id)).map((p) => `
         <button type="button" class="in-plan ${MRPLANS.lpCls(p.id)}${st.plan === p.id ? ' on' : ''}" role="radio" aria-checked="${st.plan === p.id}" data-plan="${p.id}">
           ${MRPLANS.lpCard(p.id, { pick: st.plan === p.id ? '✓ Seleccionado' : 'Elegir este plan' })}
-        </button>`).join('')}
+        </button>`).join('')}${MRPLANS.pbCard({ mode: 'pick', cls: 'in-plan in-pb', n0: MRPLANS.pnum(st.plan) || 4 })}
       </div>
-      <p class="lp-swipe">Desliza para ver todos los planes →</p>${p12Pick()}<div id="in-px"></div>${MRPLANS.trust ? MRPLANS.trust() : ''}<p class="in-err" id="err-plan" hidden>Elige un plan para continuar.</p></div>
+      <p class="lp-swipe">Desliza para ver todos los planes →</p><div id="in-px"></div>${MRPLANS.trust ? MRPLANS.trust() : ''}<p class="in-err" id="err-plan" hidden>Elige un plan para continuar.</p></div>
 
       <h2 class="in-step"><span>${DIRECT ? 1 : 2}</span> Tus datos</h2>
       <div class="card in-card">
@@ -131,7 +125,8 @@ if (!window.M1) window.M1 = {
   function isoToday() { const d = new Date(Date.now() - 5 * 36e5); return d.toISOString().slice(0, 10); }
 
   function bind() {
-    $$('.in-plan').forEach((b) => b.onclick = () => { st.plan = b.dataset.plan; syncPlan(); $('#err-plan').hidden = true; });
+    $$('.in-plan').forEach((b) => b.onclick = (e) => { if (e.target.closest('[data-pbs]')) return; st.plan = b.classList.contains('in-pb') ? MRPLANS.pkey(+b.dataset.pb || 4) : b.dataset.plan; syncPlan(); $('#err-plan').hidden = true; });
+    document.addEventListener('mra-pb', (e) => { const c = e.detail.card; if (!c || !c.classList.contains('in-pb')) return; c.dataset.plan = e.detail.plan; if (/^premium/.test(st.plan) || !st.plan) { st.plan = e.detail.plan; syncPlan(); } }); // 👑 v626: al subir o bajar clases, el plan elegido cambia
     if ($('#in-chg')) $('#in-chg').onclick = () => { st.pickAll = true; render(); setTimeout(() => { const g = $('.in-plans'); if (g) g.scrollIntoView({ behavior: 'smooth' }); }, 50); };
     $$('.in-chip').forEach((b) => b.onclick = () => {
       const g = b.dataset.g, v = b.dataset.v;
@@ -143,17 +138,13 @@ if (!window.M1) window.M1 = {
     $$('#in-form input, #in-form select, #in-form textarea').forEach((el) => el.addEventListener('input', () => { const er = el.closest('.in-f') && el.closest('.in-f').querySelector('.in-err'); if (er) er.hidden = true; el.classList.remove('in-bad'); summary(); }));
     $('#in-ok').onchange = () => { $('#err-ok').hidden = true; };
   }
-  // ⭐ v623: Premium 12 como franja debajo de las tarjetas (se elige igual que un plan)
-  function p12Pick() { const P = (window.MRPLANS && MRPLANS.PL && MRPLANS.PL.premium12) || { price: '$349.900', n: 349900 }; const pc = '$' + String(Math.round(P.n / 1200) * 100).replace(/\B(?=(\d{3})+(?!\d))/g, '.'); const on = st.plan === 'premium12';
-    return `<button type="button" class="p12 in-p12 in-plan${on ? ' on' : ''}" role="radio" aria-checked="${on}" data-plan="premium12"><span class="p12-ic">${window.MRI ? MRI('star') : '⭐'}</span><span class="p12-t"><b>¿Clases 3 veces por semana?</b><span>Premium 12 · <b>${esc(P.price)}</b>/mes · solo ${pc} por clase</span></span><span class="p12-b in-plan-pick">${on ? '✓ Seleccionado' : 'Elegir'}</span></button>`; }
   function syncPlan() {
-    $$('.in-plan').forEach((b) => { const on = b.dataset.plan === st.plan; b.classList.toggle('on', on); b.setAttribute('aria-checked', on); b.querySelector('.in-plan-pick').textContent = on ? '✓ Seleccionado' : b.classList.contains('in-p12') ? 'Elegir' : 'Elegir este plan'; });
+    $$('.in-plan').forEach((b) => { const on = b.classList.contains('in-pb') ? /^premium/.test(st.plan) : b.dataset.plan === st.plan; b.classList.toggle('on', on); b.setAttribute('aria-checked', on); b.querySelector('.in-plan-pick').textContent = on ? '✓ Seleccionado' : 'Elegir este plan'; });
     const free = st.plan === 'free' || !st.plan; $$('.in-xtra').forEach(x => x.hidden = st.plan === 'free');
     const sb = $('#in-send'); if (sb) sb.textContent = st.plan === 'free' ? 'Crear mi acceso gratis →' : st.plan ? 'Continuar al pago →' : 'Enviar mi inscripción';
     const pn = $('#in-paynote'); if (pn) pn.hidden = free;
     const px = $('#in-px'); if (px) { // ➕ eligiendo entre todos los planes: la caja de clases extra aparece debajo para el plan Premium seleccionado
-      if (/^premium/.test(st.plan) && window.MRPLANS && MRPLANS.xbox) { if (px.dataset.k !== st.plan) { px.dataset.k = st.plan; px.innerHTML = MRPLANS.xbox(st.plan); if (st.extra) MRPLANS.xset(px.querySelector('.ipx'), st.extra); } }
-      else { px.dataset.k = ''; px.innerHTML = ''; } }
+      px.dataset.k = ''; px.innerHTML = ''; st.extra = 0; } // 👑 v626: el estudiante ya eligió cuántas clases quiere (sin caja de extras aquí)
     summary();
   }
   function syncChips() {

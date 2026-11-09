@@ -1,0 +1,28 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="app.css?v=627"><script src="icons.js"></script>
+<style>
+body{margin:0;background:#fff}
+.itl9 .itl-mid{position:relative}
+.itl-shd{position:absolute;left:50%;height:22px;border-radius:50%;background:radial-gradient(closest-side,rgba(11,42,91,.5),rgba(11,42,91,.24) 58%,transparent);transform:translateX(-50%);pointer-events:none;opacity:0;animation:2.3s linear forwards;z-index:0}
+.itl9 .itl-actor{position:relative;z-index:1}
+.itl-up .itl-shd{animation-name:shdUp}
+@keyframes shdUp{0%,22%{opacity:0;transform:translateX(-50%) scale(.35)}35%{opacity:1;transform:translateX(-50%) scale(1)}50%{opacity:1;transform:translateX(-50%) scale(1)}70%{opacity:.85;transform:translateX(-50%) scale(.88)}78%{opacity:.35;transform:translateX(-50%) scale(.6)}88%,100%{opacity:0;transform:translateX(-50%) scale(.3)}}
+.itl-fly .itl-shd{animation-name:shdFly;opacity:1;animation-timing-function:cubic-bezier(.45,.05,.55,.95)}
+@keyframes shdFly{0%{transform:translateX(calc(-50% - 120vw)) scale(1)}30%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(.86);opacity:.8}72%{transform:translateX(-50%) scale(1);opacity:1}100%{transform:translateX(calc(-50% + 130vw)) scale(1)}}
+.itl-balloon .itl-shd{animation-name:shdBal}
+@keyframes shdBal{0%,18%{opacity:0;transform:translateX(-50%) scale(.3)}35%{opacity:1;transform:translateX(-50%) scale(1)}50%{opacity:.9;transform:translateX(-50%) scale(.92)}68%{opacity:1;transform:translateX(-50%) scale(1)}80%{opacity:.4;transform:translateX(-50%) scale(.62)}92%,100%{opacity:0;transform:translateX(-50%) scale(.3)}}
+#cap{position:fixed;left:12px;right:12px;bottom:14px;text-align:center;white-space:normal!important;z-index:99999;background:#0B2A5B;color:#fff;font:800 15px Poppins,sans-serif;padding:9px 18px;border-radius:12px;white-space:nowrap}
+</style></head><body><div id="cap"></div>
+<script>
+const SC={rocket:['up','Blast off!'],'plane-red':['fly','Ready for takeoff!'],balloon1:['balloon','Up, up and away!']};
+window.play=(k,cap)=>new Promise(res=>{document.querySelectorAll('.itl').forEach(x=>x.remove());const [a,say]=SC[k];
+ document.getElementById('cap').textContent=cap;
+ const d=document.createElement('div');d.innerHTML=`<div class="itl itl9 itl-${a}" role="status"><div class="itl-top"><div class="itl-say"><b>${say}</b><small>4 de 5 en Practice</small></div></div>
+ <div class="itl-mid"><span class="itl-shd"></span><div class="itl-actor itl-k-${k}"><img class="itl-img" src="mra-x-${k}.webp?v=7"></div></div>
+ <div class="itl-next"><small>NEXT</small><b>${MRI('headphones')} LISTEN &amp; PRACTICE</b><i>Toca para continuar</i></div></div>`;
+ const ov=d.firstElementChild,act=ov.querySelector('.itl-actor'),img=ov.querySelector('img'),sh=ov.querySelector('.itl-shd');
+ act.style.animationPlayState='paused';sh.style.animationPlayState='paused';document.body.appendChild(ov);
+ const go=()=>{const b=act.offsetTop+img.offsetTop+img.offsetHeight;const fl=a==='fly'?40:0;sh.style.top=(b-14+fl)+'px';sh.style.width=Math.round(img.offsetWidth*(a==='fly'?.5:.62))+'px';
+  act.style.animationPlayState='running';sh.style.animationPlayState='running';setTimeout(res,2600)};
+ img.complete?go():img.onload=go;});
+</script></body></html>

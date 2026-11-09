@@ -1,0 +1,16 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="app.css?v=627">
+<style>body{background:#EEF4FC}.vb-tp .vb-tag.dom{background:#e3f6ea;color:#11683a}.vb-tp .vb-tag.ref{background:#fff4d6;color:#8a5a00}.vb-tp .vb-tag.nx{background:#eef2f8;color:#64748b}
+.vb-tp.nxt{background:#F8FAFC;border-style:dashed;cursor:not-allowed}.vb-tp.nxt b,.vb-tp.nxt small,.vb-tp.nxt .th-p{color:#94a3b8!important}.vb-tp.nxt .th-l{color:#cbd5e1!important}</style></head><body>
+<div class="modal vb-modal"><div class="card"><button class="mx">✕</button><div class="vb"><h3>📅 Reserva tu clase individual</h3><div id="b"></div></div></div></div>
+<script>
+const T=[["Telling the Time","Decir la hora","Decir la hora y hablar de tus horarios"],["The Simple Present","El presente simple","Contar tu rutina y lo que no haces"],["The Human Body","El cuerpo humano","Nombrar las partes del cuerpo y decir qué te duele"],["Physical Appearance Vocabulary","La apariencia física","Describir cómo es alguien físicamente"],["Personalities Adjectives","Adjetivos de personalidad","Describir la personalidad de alguien"],["The Simple Past Tense","El pasado simple","Contar lo que hiciste ayer y en el pasado"],["Present/Past Continuous","Presente y pasado continuo","Decir qué estás haciendo ahora y qué estabas haciendo"],["Adverbs of Frequency","Adverbios de frecuencia","Decir y preguntar cada cuánto haces algo"]];
+const SC=[79,83,92,88,78,62,null,null];const cur=6;
+const card=(i,tag,c,pc,nx)=>`<button type="button" class="vb-tp${nx?' nxt':''}"><i class="vb-tag ${c}">${tag}</i><b>${i+1}. ${T[i][0]}</b><small>${T[i][1]}</small><span class="th-can"><span class="th-l">Vas a poder</span><span class="th-p">${T[i][2]}</span></span>${pc!=null?`<span class="vb-pc${pc>=80?' g':''}">Tu resultado: ${pc}%</span>`:''}${nx?'<span class="vb-pc" style="color:#94a3b8">🔒 Se habilita cuando llegues a este tema</span>':''}</button>`;
+const rec=[5,4];
+document.getElementById('b').innerHTML=`<p class="vb-st">3️⃣ ¿Qué quieres practicar? <small>(tu profe lo recibe antes de la clase)</small></p>
+<div class="vb-mods"><button class="vb-m"><b>Módulo 1</b><small>✓ Hecho</small></button><button class="vb-m cur on"><b>Módulo 2</b><small><i></i>Estás aquí</small></button><button class="vb-m vb-off"><b>Módulo 3</b><small>🔒</small></button><button class="vb-m vb-off"><b>Módulo 4</b><small>🔒</small></button></div>
+<button type="button" class="vb-tp vb-nowbar"><i class="vb-tag now">Vas aquí</i><span>Tema 7 · <b>Present/Past Continuous</b></span></button>
+<div class="vb-rec"><p>⭐ Te recomendamos reforzar<small>Tus 2 temas con el resultado más bajo</small></p><div class="vb-topics">${rec.map(i=>card(i,'Sugerido','sug',SC[i])).join('')}</div></div>
+<p class="vb-sub">Todos los temas del Módulo 2</p><div class="vb-topics" style="max-height:none">${T.map((t,i)=>i===cur?card(i,'Vas aquí','now'):SC[i]!=null?card(i,SC[i]>=80?'Dominado':'Refuerza',SC[i]>=80?'dom':'ref',SC[i]):card(i,'Próximo','nx',null,1)).join('')}</div>
+<button class="btn k block lg vb-ok" disabled>👆 Elige el tema de tu clase</button>`;
+</script></body></html>

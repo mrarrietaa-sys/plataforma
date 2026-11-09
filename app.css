@@ -9490,3 +9490,16 @@ button.p12.in-p12{flex-direction:row;gap:12px;padding:11px 12px 11px 14px;font-s
 /* v624 · al practicar una frase, la gráfica va debajo a todo el ancho (en iPhone el texto quedaba en una columna angosta) */
 .rl-p .rl-mel{grid-column:1/-1!important;grid-row:auto!important;min-width:0;margin-top:2px}
 .rl-p .rl-mel canvas,.rl-p .rl-mel svg{max-width:100%}
+/* ===== v626 · «Crea tu plan» Premium (4 a 20 clases al mes) ===== */
+.pb .pbk{font:800 14px var(--fh);color:#0B2A5B;text-align:center;margin:8px 0 2px;line-height:1.3}.pb .pbq{font:700 12px var(--fb);color:#64748b;text-align:center;margin:4px 0 6px}
+.pb .pbn{display:flex;align-items:center;justify-content:center;gap:18px;margin:2px 0}.pb .pbx{width:44px;height:44px;border-radius:50%;border:1.5px solid #0B2A5B;background:#fff;font:800 22px var(--fh);color:#0B2A5B;cursor:pointer;transition:transform .1s;display:grid;place-items:center;padding:0;line-height:1}.pb .pbx:active{transform:scale(.92)}.pb .pbx:disabled{opacity:.3;cursor:default}
+.pb .pbN{font:800 36px var(--fh);color:#0B2A5B;text-align:center;line-height:1;min-width:64px}.pb .pbN small{display:block;font:600 12px var(--fb);color:#64748b;margin-top:2px}
+.pb .pbs{margin:10px 0 6px;background:#f4f7fd;border-radius:14px;padding:10px 12px;text-align:center}.pb .pbs .pr{display:flex;align-items:baseline;justify-content:center;gap:6px}.pb .pbs .pr strong{font:800 28px var(--fh);color:#0B2A5B}.pb .pbs .pr small{color:#64748b;font-size:12px}
+.pb .pbs .pc{display:inline-block;margin-top:4px;background:#dcfce7;color:#15803d;font:800 11.5px var(--fh);border-radius:99px;padding:3px 9px}.pb .pbs .pw{display:block;font-size:11.5px;color:#64748b;margin-top:4px}
+.pb ul li{font-size:13px}.pb button.lp-pb{border:0;cursor:pointer;width:100%}.pb button.lp-pb:disabled{opacity:.6;cursor:default}
+.lp-pg.n3{grid-template-columns:repeat(3,minmax(0,1fr));max-width:1000px;margin-left:auto;margin-right:auto}
+@media(min-width:900px){.lp-pg.pl-in.n1{grid-template-columns:minmax(0,380px);justify-content:center}.lp-pg.pl-in.n2{grid-template-columns:repeat(2,minmax(0,1fr));max-width:720px;margin:0 auto}}
+.in-plan.in-pb{cursor:pointer}.in-plan.in-pb.on{outline:3px solid #0B2A5B;outline-offset:2px}
+
+/* v627: cohete celular al 85 %, mismo lugar (apoyado abajo) */
+@media(max-width:980px){body.home-app .ld-hero-mra{scale:.85;transform-origin:50% 100%}}
