@@ -142,3 +142,17 @@
     document.dispatchEvent(new CustomEvent('mra-extra', { detail: { plan: k, n } })); }
   window.MRPLANS = { pbCard, pbSet, pbInit, PREM, pkey, pnum, p12, per, NM, lpCard, lpCls, v2, trust, hot, xbox, xset, PL, FREE, BEN, IC, noEmo, card, cards, modal, payInfo, badge, WA, waMsg, applyCat, extra: () => EXTRA, fmt };
 })();
+/* v629 · aviso «Desliza» del celular: dice hacia dónde hay más planes y muestra en cuál vas (puntos) */
+(function () {
+  if (window.__swW) return; window.__swW = 1;
+  const upd = (g) => { const sw = g.nextElementSibling; if (!sw || !sw.classList.contains('lp-swipe')) return; if (!g.clientWidth) return; const max = g.scrollWidth - g.clientWidth;
+    if (max < 8) { sw.style.visibility = 'hidden'; return; } sw.style.visibility = '';
+    const cards = [...g.children], gl = g.getBoundingClientRect(), mid = gl.left + gl.width / 2; let i = 0, best = 1e9; cards.forEach((c, k) => { const r = c.getBoundingClientRect(), d = Math.abs(r.left + r.width / 2 - mid); if (d < best) { best = d; i = k; } });
+    const n = cards.length, L = i > 0, R = i < n - 1;
+    const txt = L && R ? '← Desliza: hay planes a ambos lados →' : R ? 'Desliza: hay más planes a la derecha →' : '← Desliza: hay más planes a la izquierda';
+    sw.innerHTML = `<span class="sw-d">${cards.map((_, k) => `<i class="${k === i ? 'on' : ''}"></i>`).join('')}</span><span class="sw-t">${txt}</span>`; };
+  const all = () => document.querySelectorAll('.lp-pg').forEach(upd);
+  document.addEventListener('scroll', (e) => { const g = e.target; if (g && g.classList && g.classList.contains('lp-pg')) { cancelAnimationFrame(g.__sw); g.__sw = requestAnimationFrame(() => upd(g)); } }, true);
+  new MutationObserver(() => { clearTimeout(all.t); all.t = setTimeout(all, 150); }).observe(document.documentElement, { childList: true, subtree: true });
+  addEventListener('resize', all); setTimeout(all, 300); document.addEventListener('click', () => setTimeout(all, 450), true);
+})();

@@ -245,7 +245,10 @@
     const msOpen = (on) => { ms.hidden = !on; dock.querySelector('.lp-more').classList.toggle('on', on); };
     dock.querySelector('.lp-more').onclick = (e) => { e.stopPropagation(); msOpen(ms.hidden); };
     ms.addEventListener('click', (e) => { if (e.target === ms || e.target.closest('a,button')) msOpen(false); });
-    const go = (k) => { if (!box.querySelector(`[data-p="${k}"]`)) return; $$('.lp-panel', box).forEach(p => p.classList.toggle('on', p.dataset.p === k)); $$('[data-tab]').forEach(b => b.classList.toggle('on', b.dataset.tab === k)); const cur = box.querySelector(`[data-p="${k}"]`); cur.scrollTop = 0;
+    // v629: los planes siempre caben completos en la pantalla (PC y celular), sin subir ni bajar
+    const plFit = () => { const pn = box.querySelector('.lp-panel.on'); if (!pn) return; const pf = pn.querySelector('#ld-profes'); if (pf) { const cy = pf.querySelector('.ld-cyl'); if (cy && !cy.classList.contains('lp-car')) { pf.style.zoom = ''; pf.style.setProperty('--pfh', '0px'); const H = Math.max(0, ...[...cy.children].map(d => d.scrollHeight)); if (H) pf.style.setProperty('--pfh', (H + 10) + 'px'); } const av = pn.clientHeight - 6, need = pf.offsetHeight + 4; if (need > av) pf.style.zoom = Math.max(.6, av / need).toFixed(3); /* v629: la info de los profes nunca se corta y todo cabe en pantalla */ } const sc = pn.querySelector('#ld-planes'); if (!sc) return; sc.style.zoom = ''; const av = pn.clientHeight - 6, need = sc.offsetHeight + 4; if (need > av) sc.style.zoom = Math.max(.6, av / need).toFixed(3); };
+    addEventListener('resize', () => { clearTimeout(plFit.t); plFit.t = setTimeout(plFit, 120); });
+    const go = (k) => { if (!box.querySelector(`[data-p="${k}"]`)) return; $$('.lp-panel', box).forEach(p => p.classList.toggle('on', p.dataset.p === k)); requestAnimationFrame(plFit); setTimeout(plFit, 400); $$('[data-tab]').forEach(b => b.classList.toggle('on', b.dataset.tab === k)); const cur = box.querySelector(`[data-p="${k}"]`); cur.scrollTop = 0;
       if (k === 'profes') { const fx = () => { try { cylWire.fit && cylWire.fit(); } catch (e) { } }; fx(); setTimeout(fx, 60); setTimeout(fx, 400); } if (k === 'opin') { const t = $('#ld-testimonios'); if (t) t.hidden = false; } };
     window.__lpTab = go;
     dock.addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (b) go(b.dataset.tab); });
@@ -270,7 +273,7 @@
     lpPanels();
   }
   function lpChallengeWire() {
-    const box = $('#lp-demo'); if (!box) return; const ph = LP_PH[PAGE]; const res = $('#lp-res'), mic = $('#lp-mic');
+    const box = $('#lp-demo'); if (!box) return; const ph = LP_PH[PAGE]; const res = $('#lp-res'), mic = $('#lp-mic'); /* v629: el resultado flota sin mover nada; si no cabe arriba del menú, sube y tapa la franja de abajo (nunca el micrófono) */ const resPlace = () => { if (res.hidden || !res.innerHTML) return; res.style.top = ''; const op = res.offsetParent; if (!op) return; const z = parseFloat(document.documentElement.style.zoom) || 1, dk = $('.lp-dock'), lim = (dk && dk.getClientRects().length ? dk.getBoundingClientRect().top : innerHeight) - 8, r = res.getBoundingClientRect(), hb = res.closest('.lp-hero'), lm = Math.min(lim, hb ? hb.getBoundingClientRect().bottom - 8 : lim); if (r.bottom > lm) { const nt = Math.max(mic.getBoundingClientRect().bottom + 6, lm - r.height); res.style.top = ((nt - op.getBoundingClientRect().top) / z) + 'px'; } }; new MutationObserver(() => requestAnimationFrame(resPlace)).observe(res, { childList: true, attributes: true, attributeFilter: ['hidden'] }); addEventListener('resize', resPlace);
     M.loadAudio(['promo']);
     $('#lp-ex').onclick = () => M.play(ph.au);
     let busy = false, tries = 0; // v623: el reto es solo práctica (sin premio) y termina invitando a la prueba gratis
