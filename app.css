@@ -9502,4 +9502,22 @@ button.p12.in-p12{flex-direction:row;gap:12px;padding:11px 12px 11px 14px;font-s
 .in-plan.in-pb{cursor:pointer}.in-plan.in-pb.on{outline:3px solid #0B2A5B;outline-offset:2px}
 
 /* v627: cohete celular al 85 %, mismo lugar (apoyado abajo) */
-@media(max-width:980px){body.home-app .ld-hero-mra{scale:.85;transform-origin:50% 100%}}
+@media(max-width:980px){body.home-app .ld-hero-mra{scale:.85;translate:0 7.5%}} /* v628: gira desde el centro como antes (mismo recorrido) */
+/* v628: planes caben en pantalla (PC y celular): sin espacios estirados y Premium más compacto */
+#ld-planes .lp-pl ul{align-content:start;flex:0 0 auto}#ld-planes .lp-pl .lp-pn{margin-top:auto}
+#ld-planes .pb .pbk{font-size:13px;margin:4px 0 0;line-height:1.25}#ld-planes .pb .pbq{margin:2px 0 2px;font-size:11.5px}
+#ld-planes .pb .pbn{gap:14px;margin:0}#ld-planes .pb .pbx{width:36px;height:36px;font-size:19px}#ld-planes .pb .pbN{font-size:28px}#ld-planes .pb .pbN small{font-size:11px;margin-top:0}
+#ld-planes .pb .pbs{margin:6px 0 6px;padding:6px 10px}#ld-planes .pb .pbs .pr strong{font-size:24px}#ld-planes .pb .pbs .pc{margin-top:2px}#ld-planes .pb .pbs .pw{margin-top:2px}
+#ld-planes .pb ul{gap:3px!important;margin-bottom:6px!important}
+/* v628: todo centrado en las tarjetas de planes (celular igual que PC) */
+.lp-pl{text-align:center;align-items:center}.lp-plh{justify-content:center}.lp-pr{justify-content:center}.lp-ppc{align-self:center}.lp-pl ul{justify-items:center}.lp-pl li{justify-content:center;text-align:left}.lp-pb{width:100%}.lp-pl .lp-pn{text-align:center}
+@media(max-width:899px) and (max-height:620px){#ld-planes .lp-ph p{display:none}#ld-planes .lp-ph h2{margin:2px 0 0!important;font-size:18px!important}#ld-planes .lp-seg{padding:3px 10px;font-size:10px}#ld-planes .pb .pbk{font-size:12px}#ld-planes .pb .pbs .pw{display:none}#ld-planes .lp-pl{min-height:0!important;padding:12px 13px!important}}
+@media(max-width:899px) and (max-height:620px){#ld-planes .lp-pg{padding-top:10px!important}#ld-planes .lp-ph{margin-bottom:0!important}#ld-planes .pb .pbx{width:32px;height:32px}#ld-planes .pb .pbN{font-size:24px}#ld-planes .pb ul{margin-bottom:3px!important}#ld-planes .pb .pbs{margin:4px 0}#ld-planes .lp-pl .lp-pn{margin-bottom:4px}#ld-planes .lp-pb{padding:8px!important}}
+@media(max-width:899px) and (max-height:620px){#ld-planes .lp-plh .ic{width:24px!important;height:24px!important}#ld-planes .pb .pbk{margin-top:2px}#ld-planes .lp-tag{top:-9px}}
+/* v628: inscripción · 3 planes centrados, compactos y a la vista */
+@media(min-width:900px){.in-plans.lp-pg.n3{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;width:min(1000px,calc(100vw - 48px))!important;max-width:none!important;margin-left:auto!important;margin-right:auto!important;left:auto!important;right:auto!important;transform:none!important}}
+.in-plans .lp-pl ul{align-content:start;flex:0 0 auto}.in-plans .lp-pl .lp-pn{margin-top:auto}.in-plans .lp-hook{text-align:center}
+.in-plans .pb .pbk{font-size:13px;margin:4px 0 0;line-height:1.25}.in-plans .pb .pbq{margin:2px 0;font-size:11.5px}
+.in-plans .pb .pbn{gap:14px;margin:0}.in-plans .pb .pbx{width:36px;height:36px;font-size:19px}.in-plans .pb .pbN{font-size:28px}.in-plans .pb .pbN small{font-size:11px;margin-top:0}
+.in-plans .pb .pbs{margin:6px 0;padding:6px 10px}.in-plans .pb .pbs .pr strong{font-size:24px}.in-plans .pb .pbs .pc,.in-plans .pb .pbs .pw{margin-top:2px}
+.in-plans .pb ul{gap:3px!important;margin-bottom:6px!important}

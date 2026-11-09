@@ -62,7 +62,7 @@ if (!window.M1) window.M1 = {
     <form id="in-form" class="in-form" novalidate>
       ${REF && !/^HABLA-/.test(REF) ? `<p class="pt-ann in-gift">${window.MRI ? MRI('gift') : '🎁'} <span>Te invitó un amigo (código <b>${esc(REF)}</b>): te regalamos <b>1 clase con profe</b> en tu primer mes de cualquier plan pago.</span></p>` : ''}
       <div${DIRECT ? ' hidden' : ''}><h2 class="in-step"><span>1</span> Elige tu plan</h2>
-      <div class="in-plans lp-pg pl-in n4" role="radiogroup" aria-label="Plan">
+      <div class="in-plans lp-pg pl-in n3" role="radiogroup" aria-label="Plan">
         ${PLANS.filter((p) => !/^premium/.test(p.id)).map((p) => `
         <button type="button" class="in-plan ${MRPLANS.lpCls(p.id)}${st.plan === p.id ? ' on' : ''}" role="radio" aria-checked="${st.plan === p.id}" data-plan="${p.id}">
           ${MRPLANS.lpCard(p.id, { pick: st.plan === p.id ? '✓ Seleccionado' : 'Elegir este plan' })}
