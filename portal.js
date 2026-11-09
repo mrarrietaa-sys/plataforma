@@ -197,10 +197,10 @@
       { k: 'premium', ic: 'crown', c: 'y', name: 'Premium · 4 clases', price: f(n('premium', 149900)), per: 'COP/mes', hook: kid ? 'Pierde el miedo a hablar con un profe que lo corrige en vivo.' : 'Pierde el miedo a hablar con un profe que te corrige en vivo.', b: ['4 clases 1 a 1 de 50 min al mes', 'Eliges profe, día y hora', 'Todo lo de Plataforma'], note: 'Clases no acumulables.', tag: 'Más elegido', pc: f(Math.round(n('premium', 149900) / 400) * 100), btn: 'Empezar con Premium 4' },
       { k: 'premium8', ic: 'gem', c: 'v', name: 'Premium · 8 clases', price: f(n('premium8', 249900)), per: 'COP/mes', hook: 'Gana fluidez real: habla inglés 2 veces por semana.', b: ['8 clases 1 a 1: 2 por semana', 'El mejor precio por clase', 'Todo lo de Plataforma'], note: 'Clases no acumulables.', tag: 'Mejor precio por clase', pc: f(Math.round(n('premium8', 249900) / 800) * 100), btn: 'Empezar con Premium 8' }];
     return `<section class="lp-plans" id="ld-planes"><div class="lp-ph">${lpSeg()}<h2>${kid ? 'Elige el plan para tu hijo(a)' : 'Elige tu plan'}</h2><p>Mes a mes · sin permanencia · tarjeta, PSE, Nequi o Daviplata</p></div>
-      <div class="lp-pg">${C.map(p => `<a class="lp-pl c-${p.c}${p.tag ? ' hot' : ''}" ${p.k === 'free' ? `href="#" data-trial${kid ? ' data-kid' : ''}` : `href="inscripcion.html?plan=${p.k}"`}>${p.tag ? `<span class="lp-tag">${p.tag}</span>` : ''}
+      <div class="lp-pg n3">${C.filter(p => !/^premium/.test(p.k)).map(p => `<a class="lp-pl c-${p.c}${p.tag ? ' hot' : ''}" ${p.k === 'free' ? `href="#" data-trial${kid ? ' data-kid' : ''}` : `href="inscripcion.html?plan=${p.k}"`}>${p.tag ? `<span class="lp-tag">${p.tag}</span>` : ''}
         <div class="lp-plh"><span class="ic">${MRI(p.ic)}</span><b>${p.name}</b></div><div class="lp-pr"><strong>${p.price}</strong><small>${p.per}</small></div>${p.pc ? `<span class="lp-ppc">Solo ${p.pc} por clase</span>` : '<span class="lp-ppc gh">COP</span>'}
-        <p class="lp-hook">${p.hook}</p><ul>${p.b.map(x => `<li>${MRI('check')}<span>${x}</span></li>`).join('')}</ul><small class="lp-pn">${p.note}</small><span class="lp-pb"><span class="lg">${p.btn}</span><span class="sh">${p.k === 'free' ? 'Empezar gratis' : 'Lo quiero'}</span></span></a>`).join('')}</div>
-      <p class="lp-swipe">Desliza para ver todos los planes →</p>${window.MRPLANS && MRPLANS.p12 ? MRPLANS.p12({ href: 'inscripcion.html?plan=premium12' }) : ''}<p class="lp-pnote"><a href="politica.html" data-cond>Ver condiciones</a></p></section>`;
+        <p class="lp-hook">${p.hook}</p><ul>${p.b.map(x => `<li>${MRI('check')}<span>${x}</span></li>`).join('')}</ul><small class="lp-pn">${p.note}</small><span class="lp-pb"><span class="lg">${p.btn}</span><span class="sh">${p.k === 'free' ? 'Empezar gratis' : 'Lo quiero'}</span></span></a>`).join('')}${window.MRPLANS && MRPLANS.pbCard ? MRPLANS.pbCard({ mode: 'link', kid }) : ''}</div>
+      <p class="lp-swipe">Desliza para ver todos los planes →</p><p class="lp-pnote"><a href="politica.html" data-cond>Ver condiciones</a></p></section>`;
   }
 
   // 🏷️ etiqueta de sección: el cliente siempre sabe si está en Adultos o en Niños y jóvenes
@@ -312,7 +312,7 @@
     const SEC_PLANES = `<section class="ld-sec" id="ld-planes"><h2>Elige tu plan</h2><p class="ld-sub">Pagos mes a mes · tarjeta, PSE, Nequi o Daviplata</p><div class="pv-grid n4">${['free', 'membership', 'premium', 'premium8'].map(k => `<a class="pv${PL.hot ? PL.hot(k) : ''}" ${k === 'free' ? 'href="#" data-trial' : `href="inscripcion.html?plan=${k}"`}>${PL.v2 ? PL.v2(k) : ''}</a>`).join('')}</div>${PL.p12 ? PL.p12({ href: 'inscripcion.html?plan=premium12' }) : ''}${PL.trust ? PL.trust() : ''}</section>`, SEC_PROFES = PROF_ON ? `<section class="ld-sec" id="ld-profes">${lpSeg()}<h2>${PAGE === 'ninos' ? 'Los profes de tu hijo(a)' : 'Conoce a tus profes'}</h2><p class="ld-sub">${PAGE === 'ninos' ? 'Profesionales bilingües que también enseñan a niños y jóvenes · formación en la enseñan' : 'Profesionales bilingües con formación en la enseñan'}za del inglés</p><div class="ld-cylw"><div class="ld-pf ld-cyl">${pfGrid()}</div></div><div class="ld-cyln"><button class="ld-cyb" data-cy="-1" aria-label="Anterior">‹</button><div class="ld-cyd"></div><button class="ld-cyb" data-cy="1" aria-label="Siguiente">›</button></div></section>` : '';
     wrap.innerHTML = PAGE === 'home' ? `<section class="ld-hero"><div class="ld-copy"><h1>Aprende inglés <em>HABLANDO</em></h1>${pathCards()}<p class="ld-lead">La escuela donde <b>no eres un número</b>: <b>eliges tu profe</b>, clases <b>solo contigo</b> y practicas <b>a tu ritmo</b> con una plataforma que <b>te corrige</b>.</p>
         <div class="ld-cta"><button class="btn k lg" data-trial>${MRI('gift')} Prueba gratis 3 días</button></div><p class="ld-count-st"><b data-stc>+300</b> estudiantes ya hablan inglés con nosotros</p>
-        <img class="ld-hero-mra" src="mra-x-rocket4.webp?v=2" alt="Mr. Arrieta"></div><div class="ld-login"></div></section>`
+        <img class="ld-hero-mra" src="mra-x-rocket2.webp?v=2" alt="Mr. Arrieta"></div><div class="ld-login"></div></section>`
       : PAGE === 'ninos' ? heroKids() + kidsSections() + SEC_PROFES + `<section class="ld-final card lp-final-k"><div><h2>Que tu hijo(a) pruebe gratis</h2><p>3 días · sin tarjeta · sin compromiso.</p></div><button class="btn r lg" data-trial data-kid>${MRI('gift')} Crear su acceso gratis</button></section>`
       : heroAdult() + `
       <section class="ld-sec" id="ld-planes"><h2>Elige tu plan</h2><p class="ld-sub">Pagos mes a mes · tarjeta, PSE, Nequi o Daviplata</p><div class="pv-grid n4">${['free', 'membership', 'premium', 'premium8'].map(k => `<a class="pv${PL.hot ? PL.hot(k) : ''}" ${k === 'free' ? 'href="#" data-trial' : `href="inscripcion.html?plan=${k}"`}>${PL.v2 ? PL.v2(k) : ''}</a>`).join('')}</div>${PL.p12 ? PL.p12({ href: 'inscripcion.html?plan=premium12' }) : ''}${PL.trust ? PL.trust() : ''}</section>
@@ -395,7 +395,7 @@
   if (!window.__plansWired) { window.__plansWired = true; document.addEventListener('click', plansClick); }
   // 💳 si ya tiene cuenta (sesión iniciada) y toca un plan en la página, paga ahí mismo con su cuenta: así se aplican solos sus descuentos (oferta de fin de prueba, referidos, cupones)
   document.addEventListener('click', (e) => { try { const a = e.target.closest && e.target.closest('a[href^="inscripcion.html?plan="]'); if (!a) return; const code = window.MRAC && MRAC.code && MRAC.code(), pr = P.get();
-    if (!code || !pr || pr.type === 'staff' || !window.MRBUY) return; const k = new URLSearchParams(a.getAttribute('href').split('?')[1]).get('plan'); if (!/^(membership|premium|premium8|premium12)$/.test(k)) return;
+    if (!code || !pr || pr.type === 'staff' || !window.MRBUY) return; const k = new URLSearchParams(a.getAttribute('href').split('?')[1]).get('plan'); if (!/^(membership|premium\d*)$/.test(k)) return;
     e.preventDefault(); e.stopPropagation(); MRBUY.plan(k); } catch (er) { } }, true);
   // enlaces de los correos: ?pagar=CÓDIGO abre los planes y pagos · ?gratis=1 abre la prueba gratis
   // ✉️ botón "Confirmar mi correo" de los correos de bienvenida
@@ -406,7 +406,7 @@
     if (pc || gr) history.replaceState(null, '', location.pathname);
     const pk = q.get('plan');
     if (pc && /^PG-/.test(pc) && !pk) offerPage(pc);
-    else if (pc) { if (window.MRAC && MRAC.code && MRAC.code() && MRAC.code().toUpperCase() === pc) { if (window.MRPLANS) MRPLANS.modal(M); } else { trialOver(pc, true); if (pk && window.MRBUY && /^(membership|premium|premium8|premium12)$/.test(pk)) setTimeout(() => { document.querySelectorAll('.modal').forEach(m => m.remove()); MRBUY.plan(pk, { extra: +q.get('extra') || 0 }); }, 300); } }
+    else if (pc) { if (window.MRAC && MRAC.code && MRAC.code() && MRAC.code().toUpperCase() === pc) { if (window.MRPLANS) MRPLANS.modal(M); } else { trialOver(pc, true); if (pk && window.MRBUY && /^(membership|premium\d*)$/.test(pk)) setTimeout(() => { document.querySelectorAll('.modal').forEach(m => m.remove()); MRBUY.plan(pk, { extra: +q.get('extra') || 0 }); }, 300); } }
     else if (gr && $('.ld')) trialForm(); } catch (er) { } }, 1600);
   // ⭐ opiniones públicas de los profes en la página de entrada
   const nrm = (t) => String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/^(mr|mrs|ms|teacher)\.?\s+/, '').trim();
@@ -602,14 +602,14 @@
     const r = window.MRAC ? await MRAC.call('offerInfo', { code: tok }).catch(() => null) : null;
     if (!r || !r.ok || !r.gift) return trialOver(tok, !r || !r.ok);
     window.__buyCode = tok; const PLx = (window.MRPLANS && MRPLANS.PL) || {}, fmt = (window.MRPLANS && MRPLANS.fmt) || String, nm = esc(r.first || '');
-    const rows = [['membership', 'Plataforma', 'Toda la plataforma + 1 clase de regalo', 'monitor'], ['premium', 'Premium · 4', '4 clases al mes + 1 de regalo', 'crown'], ['premium8', 'Premium · 8', '8 clases al mes + 1 de regalo', 'gem'], ['premium12', 'Premium · 12', '12 clases al mes + 1 de regalo', 'star']].filter(x => PLx[x[0]]);
+    const rows = [['membership', 'Plataforma', 'Toda la plataforma + 1 clase de regalo', 'monitor'], ['pb', 'Premium · Crea tu plan', 'Tú eliges de 4 a 20 clases al mes + 1 de regalo', 'crown']].filter(x => x[0] === 'pb' || PLx[x[0]]); // v626
     const m = M.modal(`<div class="of-c"><span class="of-bd">${MRI('gift')}1 CLASE DE REGALO · SOLO HOY</span><h3>${nm ? nm + ', sigue' : 'Sigue'} aprendiendo</h3><p>Tu progreso está guardado. Inscríbete hoy en cualquier plan y te regalamos <b>1 clase de 50 minutos con profe</b>. Se agrega sola.</p><div class="of-tm" id="of-tm"></div></div>
-      <div class="of-pl">${rows.map(([k, t, d, ic], i) => { const n = PLx[k].n; return `<button type="button" class="of-r${i === 1 ? ' best' : ''}" data-k="${k}"><span class="of-ic">${MRI(ic)}</span><span class="of-t"><b>${t}</b><small>${d}</small></span><span class="of-p"><b>${fmt(n)} COP</b><small>al mes</small></span></button>`; }).join('')}</div>
+      <div class="of-pl">${rows.map(([k, t, d, ic], i) => { const n = k === 'pb' ? (PLx.premium || {}).n : PLx[k].n; return `<button type="button" class="of-r${i === 1 ? ' best' : ''}" data-k="${k}"><span class="of-ic">${MRI(ic)}</span><span class="of-t"><b>${t}</b><small>${d}</small></span><span class="of-p"><b>${k === 'pb' ? 'desde ' : ''}${fmt(n)} COP</b><small>al mes</small></span></button>`; }).join('')}</div>
       <p class="of-f">Un toque → Mercado Pago (tarjeta, PSE, Nequi o Daviplata) → tu plan se activa al instante.</p>`, { x: true }); m.classList.add('of-m');
     const off = (r.now || Date.now()) - Date.now(), tm = m.querySelector('#of-tm');
     const tick = () => { if (!tm.isConnected) return clearInterval(iv); const left = Math.max(0, r.end - (Date.now() + off)); const H = Math.floor(left / 36e5), Mi = Math.floor(left % 36e5 / 6e4), Se = Math.floor(left % 6e4 / 1e3); tm.innerHTML = [[H, 'horas'], [Mi, 'min'], [Se, 'seg']].map(([v, l]) => `<div><b>${String(v).padStart(2, '0')}</b><small>${l}</small></div>`).join(''); if (!left) { clearInterval(iv); m.remove(); trialOver(tok, true); } };
     const iv = setInterval(tick, 1000); tick();
-    m.querySelectorAll('.of-r').forEach(b => b.onclick = () => { m.remove(); window.MRBUY && MRBUY.plan(b.dataset.k); });
+    m.querySelectorAll('.of-r').forEach(b => b.onclick = () => { m.remove(); if (b.dataset.k === 'pb') { const mm = M.modal(`<h3 class="center">${MRI('crown')} Crea tu plan Premium</h3><div class="lp-pg pl-in n1">${MRPLANS.pbCard({ mode: 'buy', n0: 8 })}</div>`, { x: true }); return; } window.MRBUY && MRBUY.plan(b.dataset.k); }); // v626
   }
   function trialOver(code, generic) {
     window.__buyCode = code || ''; // permite pagar desde aquí aunque el acceso gratuito haya terminado
@@ -636,7 +636,7 @@
   function firstDay(p, a, ag) { // ag: 'kids' | 'teens' | 'adult' · pasos: objetivo → nivel → lección 1 → (Premium) clase en vivo
     const placed = !!p.module, url = a && a.ready ? a.url : (P.isTrial() && P.trialMod() ? P.trialMod().url : '');
     if (placed && !url) return '';
-    const prem = !!P.plan().premium, nv = P.plan().eff === 'premium' ? ({ premium8: 8, premium12: 12 }[P.plan().plan] || 4) : 4;
+    const prem = !!P.plan().premium, nv = P.plan().eff === 'premium' ? ((window.MRPLANS && MRPLANS.pnum(P.plan().plan)) || 4) : 4;
     const nm = esc(P.look().nick || p.first || ''), lvl = a ? esc(a.name + (a.lv ? ' · ' + a.lv : '')) : '';
     const GL = window.MRGOAL, gk = GL ? GL.get() : null, hasG = !GL || !!gk, gname = gk && GL.G[gk.k] ? esc(GL.G[gk.k].short) : '';
     const S0 = GL ? { st: gk ? 'ok' : 'on', b: 'Elige tu objetivo', s: gk ? 'Listo · ' + gname : ag === 'kids' ? 'Un toque · ¡muy rápido!' : 'Un toque · menos de 20 segundos', btn: gk ? '' : `<button class="g1-go" data-goal>${gi('target')}${ag === 'kids' ? '¡Elegir!' : 'Elegir'}</button>` } : null;
@@ -720,8 +720,8 @@
       if (!tdn) { const g = firstDay(p, a, g1ag); if (g) { main = g; g1on = true; } }
       else main = firstDayDone(g1ag) + main; }
     const curMod = a && a.ready && !staff ? P.progress(a.id) : null;
-    const plNow = P.plan(); const plName = staff ? 'Profesor' : P.isExpired() ? 'Plan vencido' : (plNow.eff === 'premium' && /^premium(8|12)$/.test(plNow.plan) ? 'Premium · ' + plNow.plan.slice(7) + ' clases' : { free: 'Acceso gratuito', membership: 'Plataforma', premium: 'Premium · 4 clases' }[plNow.eff] || 'Acceso gratuito');
-    const plIc = staff ? 'user' : P.isExpired() ? 'clock' : plNow.eff === 'premium' && /^premium(8|12)$/.test(plNow.plan) ? (plNow.plan === 'premium12' ? 'star' : 'gem') : ({ free: 'gift', membership: 'monitor', premium: 'crown' }[plNow.eff] || 'gift');
+    const plNow = P.plan(); const plName = staff ? 'Profesor' : P.isExpired() ? 'Plan vencido' : (plNow.eff === 'premium' && /^premium\d+$/.test(plNow.plan) ? 'Premium · ' + plNow.plan.slice(7) + ' clases' : { free: 'Acceso gratuito', membership: 'Plataforma', premium: 'Premium · 4 clases' }[plNow.eff] || 'Acceso gratuito');
+    const plIc = staff ? 'user' : P.isExpired() ? 'clock' : plNow.eff === 'premium' ? 'crown' : ({ free: 'gift', membership: 'monitor', premium: 'crown' }[plNow.eff] || 'gift');
     const pct = curMod ? curMod.pct : 0;
     const side = `<aside class="db-side card">
         <div class="db-me"><button class="pt-avwrap" id="me-av" title="Personaliza tu foto">${P.avHTML('pt-av')}<i class="pt-pen">✏️</i></button>
@@ -1135,8 +1135,8 @@
   function planSection() {
     const p = P.get(); if (!p || p.type === 'staff' || !window.MRPLANS) return '';
     const pl = P.plan(); if (pl.legacy && !P.isTrial()) return '';
-    const name = (pl.eff === 'premium' && /^premium(8|12)$/.test(pl.plan) ? 'Premium · ' + pl.plan.slice(7) + ' clases' : { free: 'Acceso gratuito', membership: 'Plataforma', premium: 'Premium · 4 clases' }[pl.eff]) || 'Acceso gratuito';
-    const ic = MRI(pl.eff === 'premium' && /^premium(8|12)$/.test(pl.plan) ? (pl.plan === 'premium12' ? 'star' : 'gem') : ({ free: 'gift', membership: 'monitor', premium: 'crown' }[pl.eff] || 'gift'));
+    const name = (pl.eff === 'premium' && /^premium\d+$/.test(pl.plan) ? 'Premium · ' + pl.plan.slice(7) + ' clases' : { free: 'Acceso gratuito', membership: 'Plataforma', premium: 'Premium · 4 clases' }[pl.eff]) || 'Acceso gratuito';
+    const ic = MRI(pl.eff === 'premium' ? 'crown' : ({ free: 'gift', membership: 'monitor', premium: 'crown' }[pl.eff] || 'gift'));
     const end = pl.end ? fmtD(pl.end, { day: 'numeric', month: 'long', year: 'numeric' }) : '';
     const sub = pl.expired ? `Tu plan ${esc(MRPLANS.PL[pl.plan] ? MRPLANS.PL[pl.plan].name : '')} venció el ${end}. Tu progreso sigue guardado.`
       : pl.eff === 'free' ? 'Prueba de clasificación, tu ruta de aprendizaje y los 3 primeros temas.'
@@ -1147,7 +1147,7 @@
       ${pl.premium && !pl.expired ? `<div class="card pl-xc"><div class="pl-xh"><span class="pl-xi">${MRI('plus')}</span><div><b>¿Quieres más clases este mes?</b><small>Clases individuales de 50 min · ${MRPLANS.fmt(MRPLANS.extra ? MRPLANS.extra() : 32900)} c/u${end ? ' · valen hasta el ' + fmtD(pl.end, { day: 'numeric', month: 'long' }) : ''}</small></div></div>
         <div class="pl-xr"><span class="pl-xs"><button type="button" data-xq="-1" aria-label="Quitar una clase" disabled>−</button><b id="pl-xn">1</b><button type="button" data-xq="1" aria-label="Agregar una clase">+</button></span><b id="pl-xt">${MRPLANS.fmt(MRPLANS.extra ? MRPLANS.extra() : 32900)}</b></div>
         <button class="btn k block" id="pl-xb" data-xend="${esc(pl.end)}">Comprar 1 clase extra</button><p class="pl-xp">Pagas con Mercado Pago y se suman solas a tu saldo</p></div>` : ''}
-      ${pl.plan === 'premium12' && pl.eff !== 'free' && !renew ? '' : MRPLANS.cards(pl.expired ? pl.plan : (/^premium(8|12)$/.test(pl.plan) && pl.eff !== 'free' ? pl.plan : pl.eff), renew)}`;
+      ${MRPLANS.cards(pl.expired ? pl.plan : (pl.eff === 'premium' ? pl.plan : pl.eff), renew)}`;
   }
   // sección Premium: grupo, créditos VIP, próximas clases, club — se llena con datos de la nube
   function bookStart() { if (!P.plan().premium && P.plan().fc) { const mm = M.modal(`<h3>🎁 Antes de reservar tu clase gratis</h3><ul class="lv-rules">

@@ -40,7 +40,7 @@
   function plan() {
     const p = get() || {}; if (p.type === 'staff') return { plan: 'staff', eff: 'staff', paid: true };
     if (!p.cloud) return { plan: p.type === 'trial' ? 'free' : 'legacy', eff: p.type === 'trial' ? 'free' : 'legacy', paid: p.type !== 'trial', legacy: true };
-    const pl = p.plan || 'free', paidPlan = pl === 'membership' || /^premium(8|12)?$/.test(pl);
+    const pl = p.plan || 'free', paidPlan = pl === 'membership' || /^premium\d*$/.test(pl);
     const expired = paidPlan && !!p.planEnd && p.planEnd < todayISO();
     const eff = paidPlan && !expired ? (/^premium/.test(pl) ? 'premium' : pl) : 'free';
     const daysLeft = paidPlan && p.planEnd ? Math.round((new Date(p.planEnd + 'T00:00:00') - new Date(todayISO() + 'T00:00:00')) / 864e5) : null;
