@@ -51,11 +51,11 @@
   async function take0(au, v, opts) {
     opts = opts || {}; stop(); const m = await model(au); v.setModel(m);
     let stream; try { stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } }); } catch (e) { return { err: 'mic' }; }
-    const ctx = new (window.AudioContext || window.webkitAudioContext)(); try { ctx.resume && ctx.resume(); } catch (e) { } const src = ctx.createMediaStreamSource(stream), /* v518: contexto propio para grabar, se cierra al terminar (en Android un contexto abierto deja el sonido en «modo llamada») */ pr = ctx.createScriptProcessor(2048, 1, 1), raw = []; let pend = new Float32Array(0), frames = [], noise = [], thr = 0.02, onset = -1, lastV = -1; const stu = [], t0 = performance.now();
+    const ctx = new (window.AudioContext || window.webkitAudioContext)(); const st0 = ctx.state; try { ctx.resume && ctx.resume(); } catch (e) { } const DG = window.__melDiag = { au, st0, tr: (stream.getAudioTracks()[0] && JSON.stringify(stream.getAudioTracks()[0].getSettings ? stream.getAudioTracks()[0].getSettings() : {})) || '', t0: Date.now() }; const src = ctx.createMediaStreamSource(stream), /* v518: contexto propio para grabar, se cierra al terminar (en Android un contexto abierto deja el sonido en «modo llamada») */ pr = ctx.createScriptProcessor(2048, 1, 1), raw = []; let pend = new Float32Array(0), frames = [], noise = [], thr = 0.02, onset = -1, lastV = -1; const stu = [], t0 = performance.now(); /* v625: diagnóstico de voz (iPhone) */
     const maxMs = Math.max(4000, m.dur * 2200 + 2500); opts.onStart && opts.onStart();
     /* v518: sin MRAWAVE.stream (dejaba un contexto de audio abierto y el sonido quedaba bajito en Android) */
     return new Promise(res => {
-      const fin = () => { if (!REC) return; REC = null; try { pr.disconnect(); src.disconnect(); } catch (e) { } stream.getTracks().forEach(t => t.stop()); const rate = ctx.sampleRate; try { ctx.close(); } catch (e) { } res(Object.assign(score(raw, rate, m, v), { _raw: raw, _rate: rate })); };
+      const fin = () => { if (!REC) return; REC = null; try { pr.disconnect(); src.disconnect(); } catch (e) { } stream.getTracks().forEach(t => t.stop()); const rate = ctx.sampleRate; DG.st1 = ctx.state; DG.wall = Date.now() - DG.t0; DG.fr = frames.length; DG.thrL = Math.round(thr * 1e4) / 1e4; DG.on = onset; DG.lastV = lastV; try { ctx.close(); } catch (e) { } res(Object.assign(score(raw, rate, m, v), { _raw: raw, _rate: rate })); };
       REC = fin;
       pr.onaudioprocess = e => { if (!REC) return; const d = e.inputBuffer.getChannelData(0); raw.push(new Float32Array(d)); const y = down(d, ctx.sampleRate), z = new Float32Array(pend.length + y.length); z.set(pend); z.set(y, pend.length); pend = z;
         while (pend.length >= FR) { const f = frame(pend, 0); frames.push(f); pend = pend.slice(HOP); const tms = frames.length * HOP / R * 1000;
@@ -88,13 +88,18 @@
     const words = norm(ref).split(' '); const miss = om[0] || mis.sort((a, b) => a.a - b.a)[0];
     return { ok, miss: miss ? miss.w : '', extra: !miss && (ins.length > 0 || tail), n: words.length };
   }
-  async function take(au, v, opts) {
+  const IOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (/Macintosh/.test(navigator.userAgent) && 'ontouchend' in document);
+  function diagSend(r) { try { if (!IOS && !/[?&]diag=1/.test(location.search) && !localStorage.getItem('mra_diag')) return; const D = Object.assign({}, window.__melDiag || {}, { res: r ? (r.err ? 'err' : r.silent ? 'silent' : (r.ok ? 'ok' : 'no') + (r.unv ? '-unv' : '')) : 'null', R: r && r.r, IT: r && r.it, w: r && r.words ? JSON.stringify(r.words) : '', ua: navigator.userAgent.slice(0, 160) }); delete D.t0;
+      if (window.MRAC && MRAC.call && MRAC.code && MRAC.code()) MRAC.call('voiceDiag', { code: MRAC.code(), d: D }).catch(() => { }); } catch (e) { } } // v625: datos técnicos de la grabación (solo iPhone)
+  async function take(au, v, opts) { const r = await take1(au, v, opts); diagSend(r); return r; }
+  async function take1(au, v, opts) {
     opts = opts || {}; const r = await take0(au, v, opts); if (!r || r.err || r.silent) return r;
     const raw = r._raw, rate = r._rate; delete r._raw; delete r._rate;
     const ref = String(opts.ref || refOf(au) || '').replace(/_{2,}/g, ' ').trim(); if (!ref || opts.noWords) return r;
     if (!r.ok) return r; // si la melodía no se parece, ni se gasta la revisión de palabras
     const Z = window.M1 && M1.AZV; if (!Z || !Z.can()) { r.ok = false; r.unv = 1; r.tip = 'No pudimos revisar tus palabras en este momento. Escucha el modelo e inténtalo otra vez.'; return r; }
     let az = null; try { const wav = Z.toWav({ bufs: raw, rate }); az = wav ? await Z.assess(wav, ref) : null; } catch (e) { az = null; }
+    try { Object.assign(window.__melDiag || {}, { az: az ? JSON.stringify({ s: az.silent ? 1 : 0, p: az.pron, a: az.acc, c: az.comp, f: az.flu, sec: az.sec, end: az.end, w: (az.words || []).map(x => x.w + ':' + x.a + (x.e && x.e !== 'None' ? ':' + x.e : '')).join(' ') }) : 'null' }); } catch (e) { }
     if (!az) { r.ok = false; r.unv = 1; r.tip = 'No pudimos revisar tus palabras en este momento. Inténtalo otra vez.'; return r; }
     if (az.silent) { r.ok = false; r.tip = 'No entendimos las palabras. Dila otra vez, clara y completa.'; return r; }
     const j = strict(az, ref); r.words = j;
@@ -105,9 +110,10 @@
     const n = raw.reduce((a, b) => a + b.length, 0), all = new Float32Array(n); let o = 0; raw.forEach(b => { all.set(b, o); o += b.length; });
     const F = analyze(down(all, rate)).slice(15), thr = voiceThr(F), sp = span(F, thr);
     const voiced = sp ? F.slice(sp[0], sp[1] + 1).filter(f => f.rms > thr).length : 0;
-    if (!sp || voiced < 5 || Math.max(0, ...F.map(f => f.rms)) < 0.02) { v.draw(null); return { silent: true }; }
+    if (!sp || voiced < 5 || Math.max(0, ...F.map(f => f.rms)) < 0.02) { try { Object.assign(window.__melDiag || {}, { rate, secs: Math.round(n / rate * 100) / 100, F: F.length, silent: 1, voiced, maxRms: Math.round(Math.max(0, ...F.map(f => f.rms)) * 1e4) / 1e4 }); } catch (e) { } v.draw(null); return { silent: true }; }
     const con = contour(F, sp), N = 60, eM = resample(m.con, 'e', N), eS = resample(con, 'e', N), pM = smooth(fill(resample(m.con, 's', N))), pS = smooth(fill(resample(con, 's', N)));
     const dur = (sp[1] - sp[0] + 1) * HOP / R, ratio = dur / m.dur, cr = pearS(eM, eS), ci = pearS(pM, pS);
+    try { const D = window.__melDiag || {}; const r2 = (x) => Math.round(x * 100) / 100; Object.assign(D, { rate, secs: r2(n / rate), F: F.length, sp: sp.join('-'), voiced, maxRms: r2(Math.max(0, ...F.map(f => f.rms)) * 100) / 100, thr: Math.round(thr * 1e4) / 1e4, mdur: r2(m.dur), dur: r2(dur), ratio: r2(ratio), cr: r2(cr), ci: r2(ci), pv: F.filter(f => f.f0).length }); } catch (e) { }
     const r = (cr > 0.55 && ratio > 0.7 && ratio < 1.5) ? 3 : (cr > 0.3 && ratio > 0.55 && ratio < 1.9) ? 2 : 1, it = ci > 0.45 ? 3 : ci > 0.15 ? 2 : 1;
     const fin = a => a.slice(-12).reduce((s, x, i, arr) => i ? s + (x - arr[i - 1]) : 0, 0), fm = fin(pM), fs = fin(pS);
     let tip = '¡Suena muy natural!';

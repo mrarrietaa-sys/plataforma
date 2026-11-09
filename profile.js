@@ -40,11 +40,11 @@
   function plan() {
     const p = get() || {}; if (p.type === 'staff') return { plan: 'staff', eff: 'staff', paid: true };
     if (!p.cloud) return { plan: p.type === 'trial' ? 'free' : 'legacy', eff: p.type === 'trial' ? 'free' : 'legacy', paid: p.type !== 'trial', legacy: true };
-    const pl = p.plan || 'free', paidPlan = pl === 'membership' || pl === 'premium' || pl === 'premium8';
+    const pl = p.plan || 'free', paidPlan = pl === 'membership' || /^premium(8|12)?$/.test(pl);
     const expired = paidPlan && !!p.planEnd && p.planEnd < todayISO();
-    const eff = paidPlan && !expired ? (pl === 'premium8' ? 'premium' : pl) : 'free';
+    const eff = paidPlan && !expired ? (/^premium/.test(pl) ? 'premium' : pl) : 'free';
     const daysLeft = paidPlan && p.planEnd ? Math.round((new Date(p.planEnd + 'T00:00:00') - new Date(todayISO() + 'T00:00:00')) / 864e5) : null;
-    return { plan: pl, eff, paid: eff !== 'free', expired, end: p.planEnd || '', daysLeft, premium: eff === 'premium', fc: eff === 'free' && !!p.fc, cls: eff === 'premium' || (eff === 'free' && !!p.fc) }; // 🎁 v603: cls = ve «Clases» (Premium o clase gratis)
+    return { plan: pl, eff, paid: eff !== 'free', expired, end: p.planEnd || '', daysLeft, premium: eff === 'premium', fc: eff === 'free' && !!p.fc, gift: eff === 'membership' && !!p.gc, cls: eff === 'premium' || (eff === 'free' && !!p.fc) || (eff === 'membership' && !!p.gc) }; // 🎁 v623: gift = Plataforma con clase de regalo // 🎁 v603: cls = ve «Clases» (Premium o clase gratis)
   }
   const isTrial = () => { const p = get(); if (!p) return false; if (p.type === 'trial') return true; return !!(p.cloud && plan().eff === 'free' && !plan().expired); };
   // ⏰ plan vencido: puede entrar a su perfil, pero TODO queda bloqueado hasta que administración registre la renovación

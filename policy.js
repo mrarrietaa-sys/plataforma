@@ -47,10 +47,14 @@
     <li>Cada clase <b>dictada</b> (50 minutos) se paga a <b>{RATE}</b>.</li>
     <li>Si te conectas, esperas los 15 minutos y el estudiante no asiste, se pagan <b>{NOSHOW}</b>.</li>
     <li>Las clases canceladas (a tiempo o tarde) y las no dictadas no se pagan. Consulta tu detalle en <b>Mis pagos</b>.</li></ul></section>
-  <section><h3>6. Horario de la escuela</h3><p><b>Lunes a viernes:</b> 7:00 a. m. a 9:00 p. m. · <b>Sábados:</b> 7:00 a. m. a 5:00 p. m. · <b>Domingos y festivos de Colombia:</b> no hay clases. (Hora Colombia)</p></section>
+  <section><h3>6. Bonos</h3><ul>
+    <li><b>Bono por inscripción: {CONV}</b> por cada estudiante que tome contigo su <b>clase de prueba gratis</b> y se inscriba en un plan <b>Premium</b> dentro de los 30 días siguientes. Se suma solo a tu pago del mes y lo ves en <b>Mis pagos</b>.</li>
+    <li><b>Prioridad por calificación:</b> los profes con mejor calificación promedio aparecen <b>primero</b> en la lista cuando el estudiante reserva. Consulta tu calificación y tu puesto en tu portal.</li>
+    <li>Los bonos son un beneficio adicional al valor por clase. La escuela puede ajustarlos avisando con 15 días de anticipación, sin afectar los bonos ya ganados.</li></ul></section>
+  <section><h3>7. Horario de la escuela</h3><p><b>Lunes a viernes:</b> 7:00 a. m. a 9:00 p. m. · <b>Sábados:</b> 7:00 a. m. a 5:00 p. m. · <b>Domingos y festivos de Colombia:</b> no hay clases. (Hora Colombia)</p></section>
 </div>`;
   function showTeacher(R) { R = R || {}; const cop = (n) => '$' + Number(n).toLocaleString('es-CO') + ' COP';
-    const html = THTML.replace('{RATE}', cop(R.rate || 21800)).replace('{NOSHOW}', cop(R.noshow || 10000)).replace(/{PEN}/g, cop(R.penalty || 10000));
+    const html = THTML.replace('{RATE}', cop(R.rate || 21800)).replace('{NOSHOW}', cop(R.noshow || 10000)).replace(/{PEN}/g, cop(R.penalty || 10000)).replace('{CONV}', cop(R.conv || 10000));
     const m = document.createElement('div'); m.className = 'modal pol-modal'; m.setAttribute('role', 'dialog'); m.innerHTML = `<div class="modal-card card pol-card">${html}<div style="text-align:center;margin-top:12px"><button class="btn k" id="pol-ok" style="padding:10px 26px;font-size:15px">✅ Leí y acepto</button></div></div>`; document.body.appendChild(m); m.querySelector('#pol-ok').onclick = () => { m.remove(); R.onAccept && R.onAccept(); }; return m; }
   function show(opts) {
     opts = opts || {};

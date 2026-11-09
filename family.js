@@ -94,7 +94,7 @@
   }
   // 💳 pago familiar: varios planes en un solo pago
   function pay(r) { // 💳 v617: solo Mercado Pago · cada hijo puede llevar clases extra
-    const f = r.family, P = (r.cat && r.cat.prices) || {}, EX = +(r.cat && r.cat.extra) || 42900, NM = { membership: 'Plataforma', premium: 'Premium · 4 clases', premium8: 'Premium · 8 clases' };
+    const f = r.family, P = (r.cat && r.cat.prices) || {}, EX = +(r.cat && r.cat.extra) || 32900, NM = { membership: 'Plataforma', premium: 'Premium · 4 clases', premium8: 'Premium · 8 clases', premium12: 'Premium · 12 clases' };
     const actP = (k) => /^premium/.test(k.planKey || '') && !k.expired && !!k.planEnd; // Premium activo: puede comprar solo clases extra
     const due = (k) => !!k.planEnd && /membership|premium/.test(k.planKey) && (k.expired || (k.daysLeft != null && k.daysLeft <= 7));
     const st = r.kids.map(k => ({ k, on: due(k), plan: due(k) || !actP(k) ? (/membership|premium/.test(k.planKey) ? k.planKey : 'membership') : 'extra', extra: due(k) || !actP(k) ? 0 : 1 }));

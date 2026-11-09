@@ -80,7 +80,7 @@
       const res = m.querySelector('#tn-res'), b = m.querySelector('#tn-mic');
       if (!M1.canSR) { res.innerHTML = '<p class="tn-bad">Tu navegador no permite usar el micrófono para el reto. Ábrelo en Google Chrome.</p>'; return; }
       b.disabled = true; b.innerHTML = I('mic') + ' Te escucho…'; res.innerHTML = '<div class="tn-wave"><i></i><i></i><i></i><i></i><i></i></div>';
-      let r, melS = null; if (window.MRMEL && MRMEL.can()) { await load(); res.innerHTML = ''; const ms = await MRMEL.score(key, res, ph); r = ms.score != null ? { alts: [ph] } : { alts: [], error: ms.err ? 'not-allowed' : 'no-speech' }; melS = ms.score; } else r = await M1.listen(9000, { quick: true, target: ph }); /* v517 melodía */
+      let r, melS = null, mtip = ''; if (window.MRMEL && MRMEL.can()) { await load(); res.innerHTML = ''; const ms = await MRMEL.score(key, res, ph); r = ms.score != null ? { alts: [ph] } : { alts: [], error: ms.err ? 'not-allowed' : 'no-speech' }; melS = ms.score; mtip = (ms.r && ms.r.tip) || ''; } else r = await M1.listen(9000, { quick: true, target: ph }); /* v517 melodía */
       b.disabled = false; b.innerHTML = I('mic') + ' Decirla otra vez';
       if (!r.alts || !r.alts.length) { res.innerHTML = `<p class="tn-bad">${/not-allowed|service-not-allowed|audio-capture/.test(r.error || '') ? 'Permite el uso del micrófono en tu navegador (ícono del candado junto a la dirección) e inténtalo de nuevo.' : 'No te escuché. Habla un poco más fuerte e inténtalo de nuevo.'}</p>`; return; }
       const sc = melS != null ? melS : M1.speechScore(ph, r.alts).score; const s = state(); const first80 = sc >= 80 && (s.ch || 0) < 80; if (sc > (s.ch || 0)) { s.ch = sc; save(s); }
@@ -130,7 +130,7 @@
       const i = +b.dataset.rlm, row = b.closest('.rl-p'), scEl = row.querySelector('.rl-sc');
       if (!M1.canSR) { M1.toast('Tu navegador no permite usar el micrófono. Ábrelo en Google Chrome.'); return; }
       b.classList.add('on'); scEl.innerHTML = '<span class="rl-wv"><i></i><i></i><i></i></span>';
-      let r, melS = null; if (window.MRMEL && MRMEL.can()) { await load(); let hb = row.querySelector('.rl-mel'); if (!hb) { hb = document.createElement('div'); hb.className = 'rl-mel'; row.appendChild(hb); } const ms = await MRMEL.score('rl' + P0 + g + i, hb, (RLX()[g][i] || [])[0]); r = ms.score != null ? { alts: ['x'] } : { alts: [], error: ms.err ? 'not-allowed' : 'no-speech' }; melS = ms.score; } else r = await M1.listen(8000, { quick: true, target: RLX()[g][i][0].replace('…', '') }); /* v517 */
+      let r, melS = null, mtip = ''; if (window.MRMEL && MRMEL.can()) { await load(); let hb = row.querySelector('.rl-mel'); if (!hb) { hb = document.createElement('div'); hb.className = 'rl-mel'; row.appendChild(hb); } const ms = await MRMEL.score('rl' + P0 + g + i, hb, (RLX()[g][i] || [])[0]); r = ms.score != null ? { alts: ['x'] } : { alts: [], error: ms.err ? 'not-allowed' : 'no-speech' }; melS = ms.score; mtip = (ms.r && ms.r.tip) || ''; } else r = await M1.listen(8000, { quick: true, target: RLX()[g][i][0].replace('…', '') }); /* v517 */
       b.classList.remove('on');
       if (!r.alts || !r.alts.length) { scEl.textContent = ''; M1.toast(/not-allowed|service-not-allowed|audio-capture/.test(r.error || '') ? 'Permite el micrófono en tu navegador e inténtalo de nuevo.' : 'No te escuché. Inténtalo de nuevo.'); return; }
       const sc = melS != null ? melS : M1.speechScore(RLX()[g][i][0].replace('…', ''), r.alts).score, x = rlState(), k = P0 + g + i, was = x.m[k] || 0;
@@ -138,7 +138,7 @@
       try { if (sc >= 80) { M1.sfx('win'); M1.praise(); if (was < 80) M1.confetti(1200); } else { M1.sfx('bad'); M1.encourage(); } } catch (e) { }
       const kt = root.querySelector('.tn-k div:nth-child(3) b'); if (kt) kt.innerHTML = I('globe') + rlDone() + '<span>/3</span>';
       const box = root.querySelector('.rl'); if (box) { const t = document.createElement('div'); t.innerHTML = realLife(); box.replaceWith(t.firstElementChild); rlWire(root); }
-      if (sc < 80) M1.toast(`${sc}%: escúchala otra vez e inténtalo. La meta es 80%.`);
+      if (sc < 80) M1.toast(mtip && /exacta|palabra|revisar|parece|entendimos/.test(mtip) ? mtip : `${sc}%: escúchala otra vez e inténtalo. La meta es 80%.`); // v624: dice por qué no pasó
       try { window.MRAC && MRAC.sync && MRAC.sync(); } catch (e) { }
     });
     const mn = root.querySelector('#rl-mine'); if (mn) mn.onclick = () => {

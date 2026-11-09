@@ -28,11 +28,14 @@
   async function review(stage, p) {
     const pv = M().prevPart(p); if (!pv) return null;
     const pool = uniq(pv.vocab || []).filter(x => x.au); if (pool.length < 3) return null;
+    try { const k = 'mra_rev_miss_' + String((M().code && M().code()) || (window.MRAC && MRAC.code && MRAC.code()) || ''), ms = JSON.parse(localStorage.getItem(k) || '[]'); // v625: las frases que no logró al repetir salen primero en el repaso
+      if (ms.length) { const hit = pool.filter(x => ms.indexOf(x.au) >= 0); if (hit.length) { pool.__first = hit.slice(0, 3); localStorage.setItem(k, JSON.stringify(ms.filter(a => !hit.some(x => x.au === a)))); } } } catch (e) { }
     return ag() === 'kids' ? chests(stage, pv, pool) : swipe(stage, pv, pool); // v415: adultos también tienen el swipe (versión sobria)
   }
+  function pick(pool, n) { const F = pool.__first || []; return shuffle(F.concat(shuffle(pool.filter(x => F.indexOf(x) < 0))).slice(0, n)); } // v625
   // 👧 Cofre de recuerdos
   async function chests(stage, pv, pool) {
-    const items = shuffle(pool).slice(0, Math.min(window.__V9 ? 3 : 6, pool.length)); let cur = 0, c = 0; const missed = [], res = [];
+    const items = pick(pool, Math.min(window.__V9 ? 3 : 6, pool.length)); let cur = 0, c = 0; const missed = [], res = [];
     const body = frame(stage, 'Review', 'Cofre de recuerdos', `Abre cada cofre: hay una palabra de <b>${esc(pv._t ? pv._t.title : 'la lección pasada')}</b>.`);
     body.innerHTML = `<div class="as-chests">${items.map((_, i) => `<button type="button" class="as-ch" data-i="${i}" disabled>${SV(I.chest)}<span>?</span></button>`).join('')}</div>
       <div class="as-kbar"><img class="as-mr" src="mra-wink.webp" alt="Mr. Arrieta"><div class="as-say" id="as-say">¡Toca el cofre que brilla!</div></div><div class="as-stars" id="as-st"></div><div id="as-open"></div>`;
@@ -68,7 +71,7 @@
   }
   // 🧑‍🎤 Swipe
   async function swipe(stage, pv, pool) {
-    const items = shuffle(pool).slice(0, Math.min(window.__V9 ? 3 : 6, pool.length)).map(it => { const tr = Math.random() < .5; const o = tr ? it : shuffle(pool.filter(x => x.en !== it.en && x.es && x.es !== it.es))[0] || it; return { it, shown: o.es, truth: tr || o === it }; });
+    const items = pick(pool, Math.min(window.__V9 ? 3 : 6, pool.length)).map(it => { const tr = Math.random() < .5; const o = tr ? it : shuffle(pool.filter(x => x.en !== it.en && x.es && x.es !== it.es))[0] || it; return { it, shown: o.es, truth: tr || o === it }; });
     let i = 0, c = 0, streak = 0, best = 0; const missed = [];
     const body = frame(stage, 'Review', ag() === 'adult' ? 'Repaso rápido' : 'Recap', `Repaso de <b>${esc(pv._t ? pv._t.title : 'la lección pasada')}</b>. ¿La traducción es correcta? Desliza a la derecha si sí, a la izquierda si no.`);
     body.innerHTML = `<div class="as-sbar">${items.map(() => '<i></i>').join('')}</div><div class="as-deck" id="as-deck"></div>

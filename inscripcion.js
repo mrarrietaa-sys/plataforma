@@ -10,7 +10,7 @@ if (!window.M1) window.M1 = {
    · Elige plan (Acceso gratuito / Membership / Premium) + datos.
    · Envía a la nube: MRAC.call('enroll', {...}).
    · Sin nube o con error: ofrece enviar los datos por WhatsApp.
-   · ?plan=premium | premium8 | membership | free  → preselecciona el plan.
+   · ?plan=premium | premium8 | premium12 | membership | free  → preselecciona el plan.
    ===================================================================== */
 (function () {
   const C = window.M1CONFIG || {}, MR = window.MRAC || { on: false, call: async () => ({ ok: false, err: 'offline' }) };
@@ -26,25 +26,27 @@ if (!window.M1) window.M1 = {
     Object.assign({ id: 'membership', tag: 'Aprende a tu ritmo', icon: '🖥️',
       perks: ['Habla desde el día 1: te escucha y te corrige', 'Del A1 al B2+, a tu ritmo, 24/7', 'Certificado por cada módulo'], note: 'No incluye clases individuales.' }, pp('membership', '🖥️ PLATAFORMA', '$64.900')),
     Object.assign({ id: 'premium', tag: '+ 4 clases con profe', icon: '👑',
-      perks: ['Todo lo de Plataforma', '4 clases 1 a 1 con profe al mes', 'Tú eliges profe, día y hora', 'Clases no acumulables: úsalas en tu periodo mensual'] }, pp('premium', '👑 PREMIUM · 4 CLASES', '$179.900')),
+      perks: ['Todo lo de Plataforma', '4 clases 1 a 1 con profe al mes', 'Tú eliges profe, día y hora', 'Clases no acumulables: úsalas en tu periodo mensual'] }, pp('premium', '👑 PREMIUM · 4 CLASES', '$149.900')),
     Object.assign({ id: 'premium8', tag: '+ 8 clases con profe', icon: '💎', best: true,
-      perks: ['Todo lo de Plataforma', '8 clases 1 a 1: 2 por semana', 'Gana fluidez real, más rápido', 'Clases no acumulables: úsalas en tu periodo mensual'] }, pp('premium8', '💎 PREMIUM · 8 CLASES', '$299.900')),
+      perks: ['Todo lo de Plataforma', '8 clases 1 a 1: 2 por semana', 'Gana fluidez real, más rápido', 'Clases no acumulables: úsalas en tu periodo mensual'] }, pp('premium8', '💎 PREMIUM · 8 CLASES', '$249.900')),
+    Object.assign({ id: 'premium12', tag: '+ 12 clases con profe', icon: '⭐', strip: true,
+      perks: ['Todo lo de Plataforma', '12 clases 1 a 1: 3 por semana', 'El mejor precio por clase', 'Clases no acumulables: úsalas en tu periodo mensual'] }, pp('premium12', '⭐ PREMIUM · 12 CLASES', '$349.900')),
   ];
-  const XP = () => { const P = window.MRPLANS; const n = P && P.extra ? P.extra() : 42900; return '$' + String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.'); };
+  const XP = () => { const P = window.MRPLANS; const n = P && P.extra ? P.extra() : 32900; return '$' + String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.'); };
   function stCount() { const el = document.querySelector('[data-stc]'); if (!el) return; const run = (N) => { const t0 = performance.now(); const fr = (t) => { const k = Math.min(1, (t - t0) / 1400); el.textContent = '+' + Math.round(N * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(fr); }; requestAnimationFrame(fr); };
     if (window.MR && MR.on) MR.call('pubStats', {}).then(r => run(r && r.students ? r.students : 300)).catch(() => run(300)); else run(300); }
   setTimeout(stCount, 400);
   setTimeout(() => { if (!st.extra || !/^premium/.test(st.plan)) return; const n = st.extra; const box = document.querySelector('.ipx[data-xk="' + st.plan + '"]'); if (box && window.MRPLANS && MRPLANS.xset) MRPLANS.xset(box, n); }, 500); // ➕ trae las clases extra elegidas en la página de entrada
   const DAYS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
   const SCHED = [['Mañana', '🌅', '7:00 a. m. – 12:00 m.'], ['Tarde', '☀️', '12:00 m. – 6:00 p. m.'], ['Noche', '🌙', '6:00 p. m. – 9:00 p. m.']];
-  const PAY = ['Nequi', 'Llave (Breve-B)', 'Tarjeta (Mercado Pago)'];
+  const PAY = ['Tarjeta (Mercado Pago)'];
   const SRC = ['Instagram', 'Facebook', 'TikTok', 'Google', 'Recomendación', 'Otro'];
   const LEVELS = [['No sé', 'No sé mi nivel'], ['Básico', 'Básico'], ['Intermedio', 'Intermedio'], ['Avanzado', 'Avanzado']];
 
   const qs = new URLSearchParams(location.search);
   const REF = String(qs.get('ref') || (() => { try { return localStorage.getItem('mra_ref') || ''; } catch (e) { return ''; } })()).trim().toUpperCase().replace(/[^A-Z0-9-]/g, '').slice(0, 20);
   if (REF) { try { localStorage.setItem('mra_ref', REF); } catch (e) { } }
-  const st = { plan: ['free', 'membership', 'premium', 'premium8'].indexOf(qs.get('plan')) >= 0 ? qs.get('plan') : '', schedule: '', days: [], level: '', source: '', busy: false, extra: Math.max(0, Math.min(10, +qs.get('extra') || 0)) };
+  const st = { plan: ['free', 'membership', 'premium', 'premium8', 'premium12'].indexOf(qs.get('plan')) >= 0 ? qs.get('plan') : '', schedule: '', days: [], level: '', source: '', busy: false, extra: Math.max(0, Math.min(10, +qs.get('extra') || 0)) };
   document.addEventListener('mra-extra', (e) => { st.extra = e.detail.n; if (e.detail.plan !== st.plan) { st.extraPlan = e.detail.plan; } else st.extraPlan = st.plan; try { summary(); } catch (er) { } });
   const planOf = (id) => PLANS.find((p) => p.id === id);
 
@@ -52,7 +54,7 @@ if (!window.M1) window.M1 = {
   function render() {
     const DIRECT = !!st.plan && st.plan !== 'free' && !st.pickAll; const SP = planOf(st.plan) || {};
     app.innerHTML = `
-    ${DIRECT ? `<section class="card in-direct"><span class="in-plan-ic" aria-hidden="true">${window.MRI ? MRI({ free: "gift", membership: "monitor", premium: "crown", premium8: "gem" }[SP.id] || "gift") : SP.icon}</span><div class="grow"><span class="lbl">Tu plan</span><h1>${esc(SP.name)}</h1><p><b>${esc(SP.price)}</b> ${esc(SP.per || '')} · ${esc(SP.tag || '')}</p></div><button type="button" class="btn w sm" id="in-chg">Cambiar plan</button>${/^premium/.test(st.plan) && window.MRPLANS && MRPLANS.xbox ? `<div class="in-dx">${MRPLANS.xbox(st.plan)}</div>` : ''}</section>` : ''}
+    ${DIRECT ? `<section class="card in-direct"><span class="in-plan-ic" aria-hidden="true">${window.MRI ? MRI({ free: "gift", membership: "monitor", premium: "crown", premium8: "gem", premium12: "star" }[SP.id] || "gift") : SP.icon}</span><div class="grow"><span class="lbl">Tu plan</span><h1>${esc(SP.name)}</h1><p><b>${esc(SP.price)}</b> ${esc(SP.per || '')} · ${esc(SP.tag || '')}</p></div><button type="button" class="btn w sm" id="in-chg">Cambiar plan</button>${/^premium/.test(st.plan) && window.MRPLANS && MRPLANS.xbox ? `<div class="in-dx">${MRPLANS.xbox(st.plan)}</div>` : ''}</section>` : ''}
     <section class="in-hero"${DIRECT ? ' hidden' : ''}>
       <div class="in-hero-txt">
         
@@ -64,15 +66,15 @@ if (!window.M1) window.M1 = {
     </section>
 
     <form id="in-form" class="in-form" novalidate>
-      ${REF ? `<p class="pt-ann" style="margin:0 0 14px">🎁 Te invitó un amigo (código <b>${esc(REF)}</b>): tienes <b>10% de descuento</b> en tu primer mes de cualquier plan pago.</p>` : ''}
+      ${REF && !/^HABLA-/.test(REF) ? `<p class="pt-ann in-gift">${window.MRI ? MRI('gift') : '🎁'} <span>Te invitó un amigo (código <b>${esc(REF)}</b>): te regalamos <b>1 clase con profe</b> en tu primer mes de cualquier plan pago.</span></p>` : ''}
       <div${DIRECT ? ' hidden' : ''}><h2 class="in-step"><span>1</span> Elige tu plan</h2>
       <div class="in-plans lp-pg pl-in n4" role="radiogroup" aria-label="Plan">
-        ${PLANS.map((p) => `
+        ${PLANS.filter((p) => !p.strip).map((p) => `
         <button type="button" class="in-plan ${MRPLANS.lpCls(p.id)}${st.plan === p.id ? ' on' : ''}" role="radio" aria-checked="${st.plan === p.id}" data-plan="${p.id}">
           ${MRPLANS.lpCard(p.id, { pick: st.plan === p.id ? '✓ Seleccionado' : 'Elegir este plan' })}
         </button>`).join('')}
       </div>
-      <p class="lp-swipe">Desliza para ver todos los planes →</p><div id="in-px"></div>${MRPLANS.trust ? MRPLANS.trust() : ''}<p class="in-err" id="err-plan" hidden>Elige un plan para continuar.</p></div>
+      <p class="lp-swipe">Desliza para ver todos los planes →</p>${p12Pick()}<div id="in-px"></div>${MRPLANS.trust ? MRPLANS.trust() : ''}<p class="in-err" id="err-plan" hidden>Elige un plan para continuar.</p></div>
 
       <h2 class="in-step"><span>${DIRECT ? 1 : 2}</span> Tus datos</h2>
       <div class="card in-card">
@@ -141,8 +143,11 @@ if (!window.M1) window.M1 = {
     $$('#in-form input, #in-form select, #in-form textarea').forEach((el) => el.addEventListener('input', () => { const er = el.closest('.in-f') && el.closest('.in-f').querySelector('.in-err'); if (er) er.hidden = true; el.classList.remove('in-bad'); summary(); }));
     $('#in-ok').onchange = () => { $('#err-ok').hidden = true; };
   }
+  // ⭐ v623: Premium 12 como franja debajo de las tarjetas (se elige igual que un plan)
+  function p12Pick() { const P = (window.MRPLANS && MRPLANS.PL && MRPLANS.PL.premium12) || { price: '$349.900', n: 349900 }; const pc = '$' + String(Math.round(P.n / 1200) * 100).replace(/\B(?=(\d{3})+(?!\d))/g, '.'); const on = st.plan === 'premium12';
+    return `<button type="button" class="p12 in-p12 in-plan${on ? ' on' : ''}" role="radio" aria-checked="${on}" data-plan="premium12"><span class="p12-ic">${window.MRI ? MRI('star') : '⭐'}</span><span class="p12-t"><b>¿Clases 3 veces por semana?</b><span>Premium 12 · <b>${esc(P.price)}</b>/mes · solo ${pc} por clase</span></span><span class="p12-b in-plan-pick">${on ? '✓ Seleccionado' : 'Elegir'}</span></button>`; }
   function syncPlan() {
-    $$('.in-plan').forEach((b) => { const on = b.dataset.plan === st.plan; b.classList.toggle('on', on); b.setAttribute('aria-checked', on); b.querySelector('.in-plan-pick').textContent = on ? '✓ Seleccionado' : 'Elegir este plan'; });
+    $$('.in-plan').forEach((b) => { const on = b.dataset.plan === st.plan; b.classList.toggle('on', on); b.setAttribute('aria-checked', on); b.querySelector('.in-plan-pick').textContent = on ? '✓ Seleccionado' : b.classList.contains('in-p12') ? 'Elegir' : 'Elegir este plan'; });
     const free = st.plan === 'free' || !st.plan; $$('.in-xtra').forEach(x => x.hidden = st.plan === 'free');
     const sb = $('#in-send'); if (sb) sb.textContent = st.plan === 'free' ? 'Crear mi acceso gratis →' : st.plan ? 'Continuar al pago →' : 'Enviar mi inscripción';
     const pn = $('#in-paynote'); if (pn) pn.hidden = free;
@@ -157,7 +162,7 @@ if (!window.M1) window.M1 = {
   function summary() {
     const p = planOf(st.plan), el = $('#in-summary'); if (!el) return;
     const PLx = window.MRPLANS || {}, n = /^premium/.test(st.plan) && (st.extraPlan || st.plan) === st.plan ? (+st.extra || 0) : 0;
-    const unit = PLx.extra ? PLx.extra() : 42900, f = PLx.fmt || ((v) => '$' + v), base = (PLx.PL && PLx.PL[st.plan]) ? PLx.PL[st.plan].n : 0;
+    const unit = PLx.extra ? PLx.extra() : 32900, f = PLx.fmt || ((v) => '$' + v), base = (PLx.PL && PLx.PL[st.plan]) ? PLx.PL[st.plan].n : 0;
     el.innerHTML = !p ? 'Aún no has elegido un plan.' : `Plan elegido: <b>${esc(p.name)}</b> · ${esc(p.price)} ${esc(p.per || '')}` + (n && base ? `<br>+ <b>${n} clase${n === 1 ? '' : 's'} extra</b> (${f(n * unit)}) · <b>Valor total: ${f(base + n * unit)} COP</b>` : '');
   }
 
@@ -216,7 +221,7 @@ if (!window.M1) window.M1 = {
       <img src="mra-celebrate.webp" alt="Mr. Arrieta celebrando" class="in-done-img" width="240" height="240">
       <span class="lbl">${dup ? 'Ya estás en nuestra base' : 'Inscripción recibida'}</span>
       <h1>${dup ? 'Hola, ' + esc(d.first) : '¡Bienvenido(a), ' + esc(d.first) + '! 🎉'}</h1>
-      ${dup ? `<p>${paid ? 'Ya tienes una cuenta en mrarrieta.com. <b>Entra con tu código de acceso</b> y elige tu plan desde tu perfil: tu progreso sigue guardado y, si tienes un descuento activo (por ejemplo, el 10% del día siguiente a tu prueba gratis), <b>se aplica solo al pagar</b>.' : 'Estos datos ya están en mrarrieta.com y el acceso gratuito se da <b>una sola vez</b> por persona. Si quieres continuar, escríbenos y te ayudamos a elegir tu plan.'}</p>${paid ? `<a class="btn k lg block" href="index.html?ingresar=1">Entrar con mi código y pagar →</a><a class="btn w block" style="margin-top:8px" target="_blank" rel="noopener" href="${waQ}">¿No recuerdas tu código? Escríbenos</a>` : `<a class="btn k lg block" target="_blank" rel="noopener" href="${waQ}">Escribir por WhatsApp →</a>`}` : code ? `<p>Tu código de acceso es</p><div class="in-code" style="font:800 28px Poppins,sans-serif;color:#0B2A5B;letter-spacing:.06em;background:#EEF3FB;border:2px dashed #9fb3d6;border-radius:14px;padding:8px 18px;display:inline-block;margin:6px 0">${esc(code)}</div><p class="muted">También te lo enviamos a <b>${esc(d.email)}</b>.</p>
+      ${dup ? `<p>${paid ? 'Ya tienes una cuenta en mrarrieta.com. <b>Entra con tu código de acceso</b> y elige tu plan desde tu perfil: tu progreso sigue guardado y, si te inscribes el día siguiente a tu prueba gratis, <b>te regalamos 1 clase con profe</b> (se agrega sola al pagar).' : 'Estos datos ya están en mrarrieta.com y el acceso gratuito se da <b>una sola vez</b> por persona. Si quieres continuar, escríbenos y te ayudamos a elegir tu plan.'}</p>${paid ? `<a class="btn k lg block" href="index.html?ingresar=1">Entrar con mi código y pagar →</a><a class="btn w block" style="margin-top:8px" target="_blank" rel="noopener" href="${waQ}">¿No recuerdas tu código? Escríbenos</a>` : `<a class="btn k lg block" target="_blank" rel="noopener" href="${waQ}">Escribir por WhatsApp →</a>`}` : code ? `<p>Tu código de acceso es</p><div class="in-code" style="font:800 28px Poppins,sans-serif;color:#0B2A5B;letter-spacing:.06em;background:#EEF3FB;border:2px dashed #9fb3d6;border-radius:14px;padding:8px 18px;display:inline-block;margin:6px 0">${esc(code)}</div><p class="muted">También te lo enviamos a <b>${esc(d.email)}</b>.</p>
       ${paid ? '' : '<a class="btn k lg block" href="index.html" style="margin-top:10px">Entrar a la plataforma →</a>'}` : `<p>Recibimos tus datos para el plan <b>${esc(p.name)}</b>. Te enviamos un correo de confirmación a <b>${esc(d.email)}</b>.</p><a class="btn k lg block" href="index.html">Ir a la plataforma</a>`}
       <p style="margin-top:14px;font-size:14px"><a href="${waQ}" target="_blank" rel="noopener" style="color:#16A34A;font-weight:800">¿Dudas? Escríbenos por WhatsApp</a></p>
     </section>`;

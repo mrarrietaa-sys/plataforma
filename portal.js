@@ -130,7 +130,7 @@
     return `<div class="lp-demo" id="lp-demo"><div class="lp-demo-in"><button class="lp-mic" id="lp-mic" aria-label="Toca y habla">${LI(LP.mic)}</button>
       <div class="lp-demo-tx"><small id="lp-dl">RETO · TOCA EL MICRÓFONO Y DI</small><b>“${ph.t}${page === 'ninos' ? '!' : ''}”</b><span class="lp-es">${ph.es}</span><div class="lp-wave" id="lp-wave">${[8, 14, 20, 12, 18, 10, 16, 22, 12, 8, 15, 19, 11, 7].map(x => `<i style="height:${x}px"></i>`).join('')}</div></div>
       <button class="lp-ex" id="lp-ex" aria-label="Escuchar el ejemplo" title="Escuchar el ejemplo">${LI(LP.vol)}</button></div>
-      <div class="lp-gift">${MRI('gift')} Pronúncialo bien y gana <b>10% en tu primer mes</b></div><div class="lp-res" id="lp-res" hidden></div></div>`;
+      <div class="lp-gift">${MRI('mic')} Práctica gratis: pronúncialo y mira tu resultado al instante</div><div class="lp-res" id="lp-res" hidden></div></div>`;
   }
   function lpGoalBar() {
     return `<div class="lp-gbar" id="lp-gbar"><div class="lp-ghd"><b>${LI(LP.star)} Personaliza tus lecciones</b><small>¿Para qué quieres el inglés?</small></div><div class="lp-gtabs">${Object.keys(LP_GOALS).map((k, i) => `<button type="button" data-goal="${k}" class="${i ? '' : 'on'}"><span class="lp-gfill"></span><span class="lp-gl">${LI(LP[LP_GOALS[k][0]])} ${LP_GOALS[k][1]}</span></button>`).join('')}</div>
@@ -194,13 +194,13 @@
     const C = [
       { k: 'free', ic: 'gift', c: 'g', name: 'Acceso gratuito', price: '$0', per: '· 3 días', hook: kid ? 'Descubre su nivel y prueba la plataforma sin pagar nada.' : 'Descubre tu nivel y prueba la plataforma sin pagar nada.', b: ['Prueba de nivel en 10 minutos', 'Habla y la plataforma lo corrige', kid ? 'Su ruta personalizada' : 'Tu ruta personalizada'], note: 'No incluye clases con profe.', btn: 'Empezar gratis' },
       { k: 'membership', ic: 'monitor', c: 'b', name: 'Plataforma', price: f(n('membership', 64900)), per: 'COP/mes', hook: kid ? 'Aprende a su ritmo, cuando quiera, desde el celular.' : 'Aprende a tu ritmo, cuando quieras, desde el celular.', b: ['Habla desde el día 1: te escucha y te corrige', 'Ruta completa del A1 al B2+', 'Certificado por cada módulo'], note: 'No incluye clases con profe.', btn: 'Empezar con Plataforma' },
-      { k: 'premium', ic: 'crown', c: 'y', name: 'Premium · 4 clases', price: f(n('premium', 179900)), per: 'COP/mes', hook: kid ? 'Pierde el miedo a hablar con un profe que lo corrige en vivo.' : 'Pierde el miedo a hablar con un profe que te corrige en vivo.', b: ['4 clases 1 a 1 de 50 min al mes', 'Eliges profe, día y hora', 'Todo lo de Plataforma'], note: 'Clases no acumulables.', tag: 'Más elegido', pc: f(Math.round(n('premium', 179900) / 400) * 100), btn: 'Empezar con Premium 4' },
-      { k: 'premium8', ic: 'gem', c: 'v', name: 'Premium · 8 clases', price: f(n('premium8', 299900)), per: 'COP/mes', hook: 'Gana fluidez real: habla inglés 2 veces por semana.', b: ['8 clases 1 a 1: 2 por semana', 'El mejor precio por clase', 'Todo lo de Plataforma'], note: 'Clases no acumulables.', tag: 'Mejor precio por clase', pc: f(Math.round(n('premium8', 299900) / 800) * 100), btn: 'Empezar con Premium 8' }];
+      { k: 'premium', ic: 'crown', c: 'y', name: 'Premium · 4 clases', price: f(n('premium', 149900)), per: 'COP/mes', hook: kid ? 'Pierde el miedo a hablar con un profe que lo corrige en vivo.' : 'Pierde el miedo a hablar con un profe que te corrige en vivo.', b: ['4 clases 1 a 1 de 50 min al mes', 'Eliges profe, día y hora', 'Todo lo de Plataforma'], note: 'Clases no acumulables.', tag: 'Más elegido', pc: f(Math.round(n('premium', 149900) / 400) * 100), btn: 'Empezar con Premium 4' },
+      { k: 'premium8', ic: 'gem', c: 'v', name: 'Premium · 8 clases', price: f(n('premium8', 249900)), per: 'COP/mes', hook: 'Gana fluidez real: habla inglés 2 veces por semana.', b: ['8 clases 1 a 1: 2 por semana', 'El mejor precio por clase', 'Todo lo de Plataforma'], note: 'Clases no acumulables.', tag: 'Mejor precio por clase', pc: f(Math.round(n('premium8', 249900) / 800) * 100), btn: 'Empezar con Premium 8' }];
     return `<section class="lp-plans" id="ld-planes"><div class="lp-ph">${lpSeg()}<h2>${kid ? 'Elige el plan para tu hijo(a)' : 'Elige tu plan'}</h2><p>Mes a mes · sin permanencia · tarjeta, PSE, Nequi o Daviplata</p></div>
       <div class="lp-pg">${C.map(p => `<a class="lp-pl c-${p.c}${p.tag ? ' hot' : ''}" ${p.k === 'free' ? `href="#" data-trial${kid ? ' data-kid' : ''}` : `href="inscripcion.html?plan=${p.k}"`}>${p.tag ? `<span class="lp-tag">${p.tag}</span>` : ''}
         <div class="lp-plh"><span class="ic">${MRI(p.ic)}</span><b>${p.name}</b></div><div class="lp-pr"><strong>${p.price}</strong><small>${p.per}</small></div>${p.pc ? `<span class="lp-ppc">Solo ${p.pc} por clase</span>` : '<span class="lp-ppc gh">COP</span>'}
         <p class="lp-hook">${p.hook}</p><ul>${p.b.map(x => `<li>${MRI('check')}<span>${x}</span></li>`).join('')}</ul><small class="lp-pn">${p.note}</small><span class="lp-pb"><span class="lg">${p.btn}</span><span class="sh">${p.k === 'free' ? 'Empezar gratis' : 'Lo quiero'}</span></span></a>`).join('')}</div>
-      <p class="lp-swipe">Desliza para ver todos los planes →</p><p class="lp-pnote"><a href="politica.html" data-cond>Ver condiciones</a></p></section>`;
+      <p class="lp-swipe">Desliza para ver todos los planes →</p>${window.MRPLANS && MRPLANS.p12 ? MRPLANS.p12({ href: 'inscripcion.html?plan=premium12' }) : ''}<p class="lp-pnote"><a href="politica.html" data-cond>Ver condiciones</a></p></section>`;
   }
 
   // 🏷️ etiqueta de sección: el cliente siempre sabe si está en Adultos o en Niños y jóvenes
@@ -257,7 +257,7 @@
   }
   // ---------- comportamiento de las páginas de Adultos y de Niños y jóvenes ----------
   const PZK = 'mra_prize_v1';
-  const prizeGet = () => { try { const x = JSON.parse(localStorage.getItem(PZK) || 'null'); return x && x.code ? x : null; } catch (e) { return null; } };
+  try { localStorage.removeItem(PZK); if (/^HABLA-/i.test(localStorage.getItem('mra_ref') || '')) localStorage.removeItem('mra_ref'); } catch (e) { } // v623: ya no hay premios del reto
   function lpWire() {
     { const gb = $('#lp-gbar'); if (gb) { const K = Object.keys(LP_GOALS); let gi = 0, auto = true, tm = null;
       const pick = (k) => { gi = K.indexOf(k); $$('[data-goal]', gb).forEach(x => { x.classList.toggle('on', x.dataset.goal === k); x.classList.remove('run'); }); const a = $('#lp-ans'); a.querySelector('span').textContent = LP_GOALS[k][2]; a.classList.remove('pop'); void a.offsetWidth; a.classList.add('pop');
@@ -273,49 +273,17 @@
     const box = $('#lp-demo'); if (!box) return; const ph = LP_PH[PAGE]; const res = $('#lp-res'), mic = $('#lp-mic');
     M.loadAudio(['promo']);
     $('#lp-ex').onclick = () => M.play(ph.au);
-    const have = prizeGet(); if (have && Date.parse(have.expires + '-05:00') > Date.now()) { showOwned(have); }
-    let busy = false, tries = 0;
+    let busy = false, tries = 0; // v623: el reto es solo práctica (sin premio) y termina invitando a la prueba gratis
+    const cta = () => `<div class="lp-cta"><span>${MRI('gift')} <b>¿Te gustó?</b> Pruébalo gratis 3 días, con una clase con profe incluida.</span><button type="button" class="btn r sm" data-trial${PAGE === 'ninos' ? ' data-kid' : ''}>Probar gratis</button></div>`;
     mic.onclick = async () => {
-      if (busy) return; const h0 = prizeGet(); if (h0) return showOwned(h0, true);
+      if (busy) return;
       if (!M.canSR) { res.hidden = false; res.innerHTML = `<p class="lp-rmsg">Para el reto, abre esta página en <b>Google Chrome</b> y permite el micrófono.</p>`; return; }
       busy = true; tries++; box.classList.add('rec'); $('#lp-dl').textContent = 'TE ESTAMOS ESCUCHANDO…'; res.hidden = true;
       let r, melS = null; if (window.MRMEL && MRMEL.can() && ph.au) { let hb = box.querySelector('.lp-mel'); const wv = box.querySelector('#lp-wave'); if (!hb) { hb = document.createElement('div'); hb.className = 'lp-mel'; (wv || box).insertAdjacentElement(wv ? 'afterend' : 'beforeend', hb); } if (wv) wv.style.display = 'none'; hb.style.display = ''; /* v520: la melodía va dentro de la tarjeta (compacta): nada empuja el botón de la prueba gratis */ const ms = await MRMEL.score(ph.au, hb); hb.style.display = 'none'; if (wv) wv.style.display = ''; r = ms.score != null ? { alts: [ph.t] } : { alts: [], error: ms.err ? 'not-allowed' : 'no-speech' }; melS = ms.score; window.__lpMel = ms.r || null; } else r = await M.listen(9000, { quick: true, target: ph.t }); /* v517 */ busy = false; box.classList.remove('rec'); $('#lp-dl').textContent = 'RETO · TOCA EL MICRÓFONO Y DI';
       if (!r.alts || !r.alts.length) { res.hidden = false; res.innerHTML = `<p class="lp-rmsg">${r.error === 'not-allowed' || r.error === 'service-not-allowed' ? 'Permite el micrófono para jugar el reto.' : 'No te escuchamos. Toca el micrófono y habla un poco más fuerte.'}</p>`; return; }
       const sc = melS != null ? { score: melS, hit: ph.t.split(' ').map(() => melS >= 80), heard: '' } : M.speechScore(ph.t, r.alts); const W = ph.t.split(' ');
-      if (sc.score >= 100) return prizeWin(sc.score);
-      res.hidden = false; const mr = melS != null && window.__lpMel; res.innerHTML = mr ? `<div class="lp-almost cmp"><b>¡Casi! ${sc.score}%</b><span class="lp-st">Ritmo ${MRMEL.stars(mr.r)} · Entonación ${MRMEL.stars(mr.it)}</span><p>${esc(mr.tip || '')} Escucha el ejemplo ${LI(LP.vol)} y vuelve a intentarlo.</p></div>` : `<div class="lp-almost"><b>¡Casi! ${sc.score}%</b><div class="lp-wd">${W.map((w, k) => `<span class="${sc.hit[k] ? 'ok' : 'bad'}">${esc(w)}</span>`).join('')}</div><p>Escucha el ejemplo ${LI(LP.vol)} y vuelve a intentarlo. ${tries >= 3 ? '¡Tú puedes!' : ''}</p></div>`;
-    };
-    function showOwned(x, toast) { const st = Date.parse(x.expires + '-05:00') > Date.now();
-      res.hidden = false; res.innerHTML = st ? `<div class="lp-own">${MRI('gift')} <span>Ya ganaste tu premio: <b>${esc(x.code)}</b> · 10% en tu primer mes · válido hasta el ${esc(x.until || '')}</span></div>` : `<div class="lp-own off">Tu premio ${esc(x.code)} ya venció.</div>`; if (toast) M.toast('Ya ganaste tu premio: es uno por persona.'); }
-  }
-  function prizeWin(score) {
-    try { M.confetti && M.confetti(2600); } catch (e) { } sfx('win'); setTimeout(() => { try { M.play('prcongrats'); } catch (e) { } }, 450); // 🔊 una voz real dice «Congratulations!»
-    const m = M.modal(`<div class="lp-win"><div class="lp-win-top"><img src="mra-celebrate.webp" alt="Mr. Arrieta"></div><span class="lp-sc">${LI(LP.ok)} PRONUNCIACIÓN ${score}% · ¡EXCELENTE!</span>
-      <h3>¡Ganaste <b>10%</b> en tu primer mes!</h3><p>Déjanos tus datos para guardar tu premio. Te lo enviamos por WhatsApp.</p>
-      <input class="inp" id="pz-n" placeholder="${PAGE === 'ninos' ? 'Nombre del papá o la mamá' : 'Tu nombre y apellido'}" autocomplete="name"><input class="inp" id="pz-w" type="tel" placeholder="WhatsApp" autocomplete="tel">
-      <label class="tf-ok"><input type="checkbox" id="pz-c"> <span>Autorizo a mrarrieta.com a contactarme por WhatsApp y a tratar mis datos según su <a href="privacidad.html" target="_blank" rel="noopener">política de privacidad</a>.</span></label>
-      <button class="btn r block lg" id="pz-go">Guardar mi premio →</button><p class="muted center" id="pz-m" style="font-size:13px;margin:6px 0 0"></p>
-      <p class="lp-terms">Un premio por persona · válido 3 días · solo para clientes nuevos · no se suma con otros descuentos.</p></div>`, { x: true }); m.classList.add('lp-winm');
-    const msg = (t) => { $('#pz-m', m).textContent = t; };
-    $('#pz-go', m).onclick = async () => {
-      const name = $('#pz-n', m).value.trim(), wa = $('#pz-w', m).value.trim();
-      if (name.split(/\s+/).length < 2) return msg('Escribe nombre y apellido.'); if (wa.replace(/\D/g, '').length < 10) return msg('Revisa el número de WhatsApp (10 dígitos).'); if (!$('#pz-c', m).checked) return msg('Marca la casilla para continuar.');
-      const b = $('#pz-go', m); b.disabled = true; b.textContent = 'Guardando…';
-      const r = await MRAC.call('prizeClaim', { name, whatsapp: wa, score, phrase: LP_PH[PAGE].t, page: PAGE }).catch(() => null);
-      if (!r || !r.ok) { b.disabled = false; b.textContent = 'Guardar mi premio →'; return msg(r && r.err === 'not_new' ? 'Este premio es solo para clientes nuevos. ¡Gracias por ser parte de mrarrieta.com!' : 'No se pudo guardar. Revisa tu conexión e inténtalo de nuevo.'); }
-      try { localStorage.setItem(PZK, JSON.stringify({ code: r.code, expires: r.expires, until: r.until })); if (r.state === 'activo') localStorage.setItem('mra_ref', r.code); } catch (e) { }
-      const left = () => { const ms = new Date(r.expires + '-05:00').getTime() - Date.now(); if (ms <= 0) return [0, 0, 0]; return [Math.floor(ms / 864e5), Math.floor(ms / 36e5) % 24, Math.floor(ms / 6e4) % 60]; };
-      m.querySelector('.card').innerHTML = r.state !== 'activo' ? `<div class="lp-win"><h3>Tu premio ya venció</h3><p>El código ${esc(r.code)} venció el ${esc(r.until)}. El premio es uno por persona.</p><button class="btn k block" id="pz-x">Entendido</button></div>`
-        : `<div class="lp-win"><span class="lp-sc">${LI(LP.ok)} ${r.existing ? 'YA TENÍAS UN PREMIO' : '¡PREMIO GUARDADO!'}</span><h3>Tu 10% en el primer mes</h3>
-        <div class="lp-cp"><small>TU CÓDIGO</small><b>${esc(r.code)}</b><button class="lp-cpb" id="pz-cp" aria-label="Copiar">${LI(LP.copy)}</button><span class="lp-pc">−10%</span></div>
-        <p class="lp-val">${LI(LP.cal)} Válido hasta el <b>${esc(r.until)}</b></p><div class="lp-cd" id="pz-cd"></div>
-        <p class="muted" style="font-size:13px">Úsalo al pagar tu primer mes con el mismo WhatsApp. Ya quedó guardado en este equipo.</p>
-        <a class="btn r block lg" href="#ld-planes" id="pz-pl">Usarlo ahora: ver planes</a><button class="btn w block" id="pz-x" style="margin-top:8px">Cerrar</button></div>`;
-      const cd = $('#pz-cd', m); const tick = () => { if (!document.body.contains(cd)) return clearInterval(tm); const [d, hh, mm] = left(); cd.innerHTML = `<span>${d}<small>DÍAS</small></span><span>${hh}<small>HORAS</small></span><span>${mm}<small>MIN</small></span>`; }; let tm; if (cd) { tick(); tm = setInterval(tick, 30000); }
-      const cp = $('#pz-cp', m); if (cp) cp.onclick = () => { try { navigator.clipboard.writeText(r.code); M.toast('Código copiado'); } catch (e) { } };
-      const pl = $('#pz-pl', m); if (pl) pl.onclick = (e) => { e.preventDefault(); m.remove(); if (window.__lpTab) window.__lpTab('planes'); };
-      $('#pz-x', m).onclick = () => m.remove();
-      const res = $('#lp-res'); if (res && r.state === 'activo') { res.hidden = false; res.innerHTML = `<div class="lp-own">${MRI('gift')} <span>Ganaste tu premio: <b>${esc(r.code)}</b> · 10% en tu primer mes · válido hasta el ${esc(r.until)}</span></div>`; }
+      if (sc.score >= 100) { try { M.confetti && M.confetti(1800); } catch (e) { } sfx('win'); setTimeout(() => { try { M.play('prcongrats'); } catch (e) { } }, 450); res.hidden = false; res.innerHTML = `<div class="lp-almost ok"><b>${LI(LP.ok)} ¡Excelente! ${sc.score}%</b><p>Lo dijiste muy bien. Imagina lo que logras practicando todos los días.</p>${cta()}</div>`; return; }
+      res.hidden = false; const mr = melS != null && window.__lpMel; res.innerHTML = (mr ? `<div class="lp-almost cmp"><b>¡Casi! ${sc.score}%</b><span class="lp-st">Ritmo ${MRMEL.stars(mr.r)} · Entonación ${MRMEL.stars(mr.it)}</span><p>${esc(mr.tip || '')} Escucha el ejemplo ${LI(LP.vol)} y vuelve a intentarlo.</p></div>` : `<div class="lp-almost"><b>¡Casi! ${sc.score}%</b><div class="lp-wd">${W.map((w, k) => `<span class="${sc.hit[k] ? 'ok' : 'bad'}">${esc(w)}</span>`).join('')}</div><p>Escucha el ejemplo ${LI(LP.vol)} y vuelve a intentarlo. ${tries >= 3 ? '¡Tú puedes!' : ''}</p></div>`); { const al = res.querySelector('.lp-almost'); if (al) al.insertAdjacentHTML('beforeend', cta()); }
     };
   }
   // 🌟 página de entrada: hero con el ingreso, planes, testimonios, beneficios y cómo funciona
@@ -331,25 +299,25 @@
       const y = scrollY + r.top - bar - (r.height < vh ? Math.max(12, (vh - r.height) / 2) : 12);
       scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
       setTimeout(() => { const r2 = sec.getBoundingClientRect(), b2 = (document.getElementById('topbar') || { offsetHeight: 0 }).offsetHeight; if (r2.top < b2 + 4 || (r2.height < innerHeight - b2 && r2.bottom > innerHeight)) scrollTo({ top: Math.max(0, scrollY + r2.top - b2 - 12), behavior: 'smooth' }); }, 900); }); } // ✅ corrige si algo cambió de tamaño mientras bajaba
-    const XP = () => { const n = (window.MRPLANS && MRPLANS.extra) ? MRPLANS.extra() : 42900; return '$' + String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.'); };
+    const XP = () => { const n = (window.MRPLANS && MRPLANS.extra) ? MRPLANS.extra() : 32900; return '$' + String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.'); };
     const PL = window.MRPLANS || {}; const T = window.MRTESTIMONIOS || []; const pp = (k) => (PL.PL || {})[k] || {};
     const CARDS = [
       { id: 'free', icon: '🎁', name: 'ACCESO GRATUITO', price: '$0', per: 'COP · sin costo', tag: 'Pruébalo gratis · 3 días', perks: ['Descubre tu nivel en 10 minutos', 'Tu ruta personalizada', 'Habla y la plataforma te corrige'], note: 'No incluye clases individuales.', btn: 'Empezar gratis' },
       { id: 'membership', icon: '🖥️', name: 'PLATAFORMA', price: pp('membership').price || '$64.900', per: 'COP/mes', tag: 'Aprende a tu ritmo', perks: (PL.BEN || {}).membership ? PL.BEN.membership.filter(b => !/^No incluye/.test(b)) : [], note: 'No incluye clases individuales.' },
-      { id: 'premium', icon: '👑', name: 'PREMIUM · 4 CLASES', price: pp('premium').price || '$179.900', per: 'COP/mes', tag: '+ 4 clases con profe', perks: (PL.BEN || {}).premium || [] },
-      { id: 'premium8', icon: '💎', name: 'PREMIUM · 8 CLASES', price: pp('premium8').price || '$299.900', per: 'COP/mes', tag: '+ 8 clases con profe', perks: (PL.BEN || {}).premium8 || [], best: true }];
+      { id: 'premium', icon: '👑', name: 'PREMIUM · 4 CLASES', price: pp('premium').price || '$149.900', per: 'COP/mes', tag: '+ 4 clases con profe', perks: (PL.BEN || {}).premium || [] },
+      { id: 'premium8', icon: '💎', name: 'PREMIUM · 8 CLASES', price: pp('premium8').price || '$249.900', per: 'COP/mes', tag: '+ 8 clases con profe', perks: (PL.BEN || {}).premium8 || [], best: true }];
     const GAN = [['check', 'r', 'Hablas desde el día 1', 'La plataforma te escucha y te corrige'], ['user', 'b', 'Clases 1 a 1 con profes reales', 'Tú eliges profe, día y hora'], ['award', 'g', 'Del A1 al B2+ con certificado', 'Una ruta clara para cada nivel'], ['clock', 'y', '100% online, a tu ritmo', 'Desde tu celular, cuando quieras']];
     const wrap = document.createElement('div'); wrap.className = 'ld';
     const PROF_ON = (window.MRPROFES || []).length;
-    const SEC_PLANES = `<section class="ld-sec" id="ld-planes"><h2>Elige tu plan</h2><p class="ld-sub">Pagos mes a mes · tarjeta, PSE, Nequi o Daviplata</p><div class="pv-grid n4">${['free', 'membership', 'premium', 'premium8'].map(k => `<a class="pv${PL.hot ? PL.hot(k) : ''}" ${k === 'free' ? 'href="#" data-trial' : `href="inscripcion.html?plan=${k}"`}>${PL.v2 ? PL.v2(k) : ''}</a>`).join('')}</div>${PL.trust ? PL.trust() : ''}</section>`, SEC_PROFES = PROF_ON ? `<section class="ld-sec" id="ld-profes">${lpSeg()}<h2>${PAGE === 'ninos' ? 'Los profes de tu hijo(a)' : 'Conoce a tus profes'}</h2><p class="ld-sub">${PAGE === 'ninos' ? 'Profesionales bilingües que también enseñan a niños y jóvenes · formación en la enseñan' : 'Profesionales bilingües con formación en la enseñan'}za del inglés</p><div class="ld-cylw"><div class="ld-pf ld-cyl">${pfGrid()}</div></div><div class="ld-cyln"><button class="ld-cyb" data-cy="-1" aria-label="Anterior">‹</button><div class="ld-cyd"></div><button class="ld-cyb" data-cy="1" aria-label="Siguiente">›</button></div></section>` : '';
+    const SEC_PLANES = `<section class="ld-sec" id="ld-planes"><h2>Elige tu plan</h2><p class="ld-sub">Pagos mes a mes · tarjeta, PSE, Nequi o Daviplata</p><div class="pv-grid n4">${['free', 'membership', 'premium', 'premium8'].map(k => `<a class="pv${PL.hot ? PL.hot(k) : ''}" ${k === 'free' ? 'href="#" data-trial' : `href="inscripcion.html?plan=${k}"`}>${PL.v2 ? PL.v2(k) : ''}</a>`).join('')}</div>${PL.p12 ? PL.p12({ href: 'inscripcion.html?plan=premium12' }) : ''}${PL.trust ? PL.trust() : ''}</section>`, SEC_PROFES = PROF_ON ? `<section class="ld-sec" id="ld-profes">${lpSeg()}<h2>${PAGE === 'ninos' ? 'Los profes de tu hijo(a)' : 'Conoce a tus profes'}</h2><p class="ld-sub">${PAGE === 'ninos' ? 'Profesionales bilingües que también enseñan a niños y jóvenes · formación en la enseñan' : 'Profesionales bilingües con formación en la enseñan'}za del inglés</p><div class="ld-cylw"><div class="ld-pf ld-cyl">${pfGrid()}</div></div><div class="ld-cyln"><button class="ld-cyb" data-cy="-1" aria-label="Anterior">‹</button><div class="ld-cyd"></div><button class="ld-cyb" data-cy="1" aria-label="Siguiente">›</button></div></section>` : '';
     wrap.innerHTML = PAGE === 'home' ? `<section class="ld-hero"><div class="ld-copy"><h1>Aprende inglés <em>HABLANDO</em></h1>${pathCards()}<p class="ld-lead">La escuela donde <b>no eres un número</b>: <b>eliges tu profe</b>, clases <b>solo contigo</b> y practicas <b>a tu ritmo</b> con una plataforma que <b>te corrige</b>.</p>
         <div class="ld-cta"><button class="btn k lg" data-trial>${MRI('gift')} Prueba gratis 3 días</button></div><p class="ld-count-st"><b data-stc>+300</b> estudiantes ya hablan inglés con nosotros</p>
         <img class="ld-hero-mra" src="mra-x-rocket4.webp?v=2" alt="Mr. Arrieta"></div><div class="ld-login"></div></section>`
       : PAGE === 'ninos' ? heroKids() + kidsSections() + SEC_PROFES + `<section class="ld-final card lp-final-k"><div><h2>Que tu hijo(a) pruebe gratis</h2><p>3 días · sin tarjeta · sin compromiso.</p></div><button class="btn r lg" data-trial data-kid>${MRI('gift')} Crear su acceso gratis</button></section>`
       : heroAdult() + `
-      <section class="ld-sec" id="ld-planes"><h2>Elige tu plan</h2><p class="ld-sub">Pagos mes a mes · tarjeta, PSE, Nequi o Daviplata</p><div class="pv-grid n4">${['free', 'membership', 'premium', 'premium8'].map(k => `<a class="pv${PL.hot ? PL.hot(k) : ''}" ${k === 'free' ? 'href="#" data-trial' : `href="inscripcion.html?plan=${k}"`}>${PL.v2 ? PL.v2(k) : ''}</a>`).join('')}</div>${PL.trust ? PL.trust() : ''}</section>
+      <section class="ld-sec" id="ld-planes"><h2>Elige tu plan</h2><p class="ld-sub">Pagos mes a mes · tarjeta, PSE, Nequi o Daviplata</p><div class="pv-grid n4">${['free', 'membership', 'premium', 'premium8'].map(k => `<a class="pv${PL.hot ? PL.hot(k) : ''}" ${k === 'free' ? 'href="#" data-trial' : `href="inscripcion.html?plan=${k}"`}>${PL.v2 ? PL.v2(k) : ''}</a>`).join('')}</div>${PL.p12 ? PL.p12({ href: 'inscripcion.html?plan=premium12' }) : ''}${PL.trust ? PL.trust() : ''}</section>
       <section class="ld-sec ld-tesbox card" id="ld-testimonios"${T.length ? '' : ' hidden'}>${lpSeg()}<h2>Lo que dicen nuestros estudiantes</h2><p class="ld-sub">Testimonios reales en video</p><div class="ld-tes">${tesGrid()}</div></section>
-      ${(window.MRPROFES || []).length ? `<section class="ld-ref" id="ld-ref"><div class="grow"><span><b class="ld-ref-k">Recomiéndanos:</b> tu amigo recibe <b>10% de descuento</b> y tú ganas <b>15%</b> en tu primer mes si luego te inscribes.</span></div><a class="btn r" href="recomienda.html">Quiero recomendar →</a></section>
+      ${(window.MRPROFES || []).length ? `<section class="ld-ref" id="ld-ref"><div class="grow"><span><b class="ld-ref-k">Recomiéndanos:</b> tu amigo recibe <b>1 clase con profe de regalo</b> y tú también ganas una cuando se inscriba.</span></div><a class="btn r" href="recomienda.html">Quiero recomendar →</a></section>
       <section class="ld-sec" id="ld-profes">${lpSeg()}<h2>Conoce a tus profes</h2><p class="ld-sub">Profesionales bilingües con formación en la enseñanza del inglés</p><div class="ld-cylw"><div class="ld-pf ld-cyl">${pfGrid()}</div></div><div class="ld-cyln"><button class="ld-cyb" data-cy="-1" aria-label="Anterior">‹</button><div class="ld-cyd"></div><button class="ld-cyb" data-cy="1" aria-label="Siguiente">›</button></div></section>` : ''}
       <section class="ld-sec" id="ld-ganas"><h2>¿Qué ganas con nosotros?</h2><p class="ld-sub">Todo lo que necesitas para hablar inglés con confianza</p><div class="card ld-glist">${GAN.map(([i, c, t, d]) => `<div class="ld-gi"><span class="ld-ic ${c}">${MRI(i)}</span><div><b>${t}</b><small>${d}</small></div></div>`).join('')}</div><div class="ld-note3">${MRI('calendar')}<p><b>Tú eliges cuándo tomar tus clases.</b> Reservas profe, día y hora desde tu perfil. Sin horarios fijos.</p></div></section>
       
@@ -386,7 +354,7 @@
       else { b.disabled = false; b.textContent = 'Quiero recibirlos'; msg('No se pudo guardar. Inténtalo de nuevo.'); } };
     profReviews();
     { // 🧮 calculadora de clases extra + 👥 contador de estudiantes
-      const xc = $('#ld-xcalc'); if (xc) { let n = 1; const pr = () => (window.MRPLANS && MRPLANS.extra) ? MRPLANS.extra() : 42900; const f = (v) => '$' + String(v).replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' COP';
+      const xc = $('#ld-xcalc'); if (xc) { let n = 1; const pr = () => (window.MRPLANS && MRPLANS.extra) ? MRPLANS.extra() : 32900; const f = (v) => '$' + String(v).replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' COP';
         const draw = () => { $('[data-xn]', xc).textContent = n; $('[data-xl]', xc).textContent = n + (n === 1 ? ' clase extra' : ' clases extra'); $('[data-xt]', xc).textContent = f(pr() * n); };
         $$('[data-x]', xc).forEach(b => b.onclick = () => { n = Math.max(1, Math.min(10, n + +b.dataset.x)); draw(); }); draw(); }
       countUp();
@@ -427,7 +395,7 @@
   if (!window.__plansWired) { window.__plansWired = true; document.addEventListener('click', plansClick); }
   // 💳 si ya tiene cuenta (sesión iniciada) y toca un plan en la página, paga ahí mismo con su cuenta: así se aplican solos sus descuentos (oferta de fin de prueba, referidos, cupones)
   document.addEventListener('click', (e) => { try { const a = e.target.closest && e.target.closest('a[href^="inscripcion.html?plan="]'); if (!a) return; const code = window.MRAC && MRAC.code && MRAC.code(), pr = P.get();
-    if (!code || !pr || pr.type === 'staff' || !window.MRBUY) return; const k = new URLSearchParams(a.getAttribute('href').split('?')[1]).get('plan'); if (!/^(membership|premium|premium8)$/.test(k)) return;
+    if (!code || !pr || pr.type === 'staff' || !window.MRBUY) return; const k = new URLSearchParams(a.getAttribute('href').split('?')[1]).get('plan'); if (!/^(membership|premium|premium8|premium12)$/.test(k)) return;
     e.preventDefault(); e.stopPropagation(); MRBUY.plan(k); } catch (er) { } }, true);
   // enlaces de los correos: ?pagar=CÓDIGO abre los planes y pagos · ?gratis=1 abre la prueba gratis
   // ✉️ botón "Confirmar mi correo" de los correos de bienvenida
@@ -438,7 +406,7 @@
     if (pc || gr) history.replaceState(null, '', location.pathname);
     const pk = q.get('plan');
     if (pc && /^PG-/.test(pc) && !pk) offerPage(pc);
-    else if (pc) { if (window.MRAC && MRAC.code && MRAC.code() && MRAC.code().toUpperCase() === pc) { if (window.MRPLANS) MRPLANS.modal(M); } else { trialOver(pc, true); if (pk && window.MRBUY && /^(membership|premium|premium8)$/.test(pk)) setTimeout(() => { document.querySelectorAll('.modal').forEach(m => m.remove()); MRBUY.plan(pk, { extra: +q.get('extra') || 0 }); }, 300); } }
+    else if (pc) { if (window.MRAC && MRAC.code && MRAC.code() && MRAC.code().toUpperCase() === pc) { if (window.MRPLANS) MRPLANS.modal(M); } else { trialOver(pc, true); if (pk && window.MRBUY && /^(membership|premium|premium8|premium12)$/.test(pk)) setTimeout(() => { document.querySelectorAll('.modal').forEach(m => m.remove()); MRBUY.plan(pk, { extra: +q.get('extra') || 0 }); }, 300); } }
     else if (gr && $('.ld')) trialForm(); } catch (er) { } }, 1600);
   // ⭐ opiniones públicas de los profes en la página de entrada
   const nrm = (t) => String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/^(mr|mrs|ms|teacher)\.?\s+/, '').trim();
@@ -629,14 +597,14 @@
       route('home'); };
   }
   // el acceso gratuito (3 días) terminó → invitación a inscribirse
-  // 🎁 v415: botón "Usar mi 10% ahora" del correo → página de la oferta con su nombre, cuenta regresiva y precios ya descontados
+  // 🎁 v623: botón «Inscribirme y recibir mi clase» del correo → página de la oferta con su nombre, cuenta regresiva y 1 clase de regalo (sin descuentos)
   async function offerPage(tok) {
     const r = window.MRAC ? await MRAC.call('offerInfo', { code: tok }).catch(() => null) : null;
-    if (!r || !r.ok || !r.pct) return trialOver(tok, !r || !r.ok);
+    if (!r || !r.ok || !r.gift) return trialOver(tok, !r || !r.ok);
     window.__buyCode = tok; const PLx = (window.MRPLANS && MRPLANS.PL) || {}, fmt = (window.MRPLANS && MRPLANS.fmt) || String, nm = esc(r.first || '');
-    const rows = [['membership', 'Plataforma', 'Lecciones ilimitadas', 'monitor'], ['premium', 'Premium · 4', '+ 4 clases en vivo al mes', 'crown'], ['premium8', 'Premium · 8', '+ 8 clases en vivo al mes', 'gem']].filter(x => PLx[x[0]]);
-    const m = M.modal(`<div class="of-c"><span class="of-bd">${MRI('gift')}${r.pct}% SOLO HOY</span><h3>${nm ? nm + ', sigue' : 'Sigue'} aprendiendo</h3><p>Tu progreso está guardado. Elige tu plan: el descuento se aplica solo.</p><div class="of-tm" id="of-tm"></div></div>
-      <div class="of-pl">${rows.map(([k, t, d, ic], i) => { const n = PLx[k].n, dn = Math.round(n * (100 - r.pct) / 100 / 100) * 100; return `<button type="button" class="of-r${i === 1 ? ' best' : ''}" data-k="${k}"><span class="of-ic">${MRI(ic)}</span><span class="of-t"><b>${t}</b><small>${d}</small></span><span class="of-p"><s>${fmt(n)}</s><b>${fmt(dn)} COP</b></span></button>`; }).join('')}</div>
+    const rows = [['membership', 'Plataforma', 'Toda la plataforma + 1 clase de regalo', 'monitor'], ['premium', 'Premium · 4', '4 clases al mes + 1 de regalo', 'crown'], ['premium8', 'Premium · 8', '8 clases al mes + 1 de regalo', 'gem'], ['premium12', 'Premium · 12', '12 clases al mes + 1 de regalo', 'star']].filter(x => PLx[x[0]]);
+    const m = M.modal(`<div class="of-c"><span class="of-bd">${MRI('gift')}1 CLASE DE REGALO · SOLO HOY</span><h3>${nm ? nm + ', sigue' : 'Sigue'} aprendiendo</h3><p>Tu progreso está guardado. Inscríbete hoy en cualquier plan y te regalamos <b>1 clase de 50 minutos con profe</b>. Se agrega sola.</p><div class="of-tm" id="of-tm"></div></div>
+      <div class="of-pl">${rows.map(([k, t, d, ic], i) => { const n = PLx[k].n; return `<button type="button" class="of-r${i === 1 ? ' best' : ''}" data-k="${k}"><span class="of-ic">${MRI(ic)}</span><span class="of-t"><b>${t}</b><small>${d}</small></span><span class="of-p"><b>${fmt(n)} COP</b><small>al mes</small></span></button>`; }).join('')}</div>
       <p class="of-f">Un toque → Mercado Pago (tarjeta, PSE, Nequi o Daviplata) → tu plan se activa al instante.</p>`, { x: true }); m.classList.add('of-m');
     const off = (r.now || Date.now()) - Date.now(), tm = m.querySelector('#of-tm');
     const tick = () => { if (!tm.isConnected) return clearInterval(iv); const left = Math.max(0, r.end - (Date.now() + off)); const H = Math.floor(left / 36e5), Mi = Math.floor(left % 36e5 / 6e4), Se = Math.floor(left % 6e4 / 1e3); tm.innerHTML = [[H, 'horas'], [Mi, 'min'], [Se, 'seg']].map(([v, l]) => `<div><b>${String(v).padStart(2, '0')}</b><small>${l}</small></div>`).join(''); if (!left) { clearInterval(iv); m.remove(); trialOver(tok, true); } };
@@ -649,7 +617,7 @@
     M.modal(`<div class="center"><div class="to-ic">${MRI('gift')}</div><h3>${generic ? 'Elige tu plan' : 'Tu acceso gratuito terminó'}</h3><p>${generic ? 'Paga con tarjeta, PSE, Nequi o Daviplata y tu plan se activa solo en tu perfil.' : 'Gracias por conocer <b>mrarrieta.com</b>. Tu progreso está guardado: <b>elige tu plan</b> y continúa justo donde lo dejaste.'}</p></div>
       ${PL ? PL.cards('free') : ''}
       ${PL && PL.payInfo ? PL.payInfo() : ''}`, { x: true });
-    if (code && window.MRAC) MRAC.call('myCoupon', { code }).then(r => { if (!r || !r.pct) return; const m = [...document.querySelectorAll('.modal')].pop(); const h3 = m && m.querySelector('h3'); if (h3) h3.insertAdjacentHTML('afterend', `<p class="to-offer">🎁 <b>Solo hoy: ${r.pct}% de descuento</b> en tu primer mes. Se aplica solo al pagar (hasta las 11:59 p. m.).</p>`); }).catch(() => { }); // ⏱️ oferta de 24 h
+    if (code && window.MRAC) MRAC.call('myCoupon', { code }).then(r => { if (!r || !r.gift) return; const m = [...document.querySelectorAll('.modal')].pop(); const h3 = m && m.querySelector('h3'); if (h3) h3.insertAdjacentHTML('afterend', `<p class="to-offer">${MRI('gift')} <span><b>${esc(r.why || 'Tienes 1 clase de regalo')}</b>. Es una clase de 50 minutos con profe y se agrega sola al pagar.</span></p>`); }).catch(() => { }); // 🎁 v623: clase de regalo
   }
   function logout() {
     const m = M.modal(`<h3>¿Salir de tu perfil?</h3><p class="muted">Tu progreso queda guardado${window.MRAC && MRAC.code() ? ' en la nube: puedes continuar desde cualquier dispositivo' : ' en este dispositivo'}. Para volver a entrar necesitarás tu código.</p><div class="row"><button class="btn k" id="y">Sí, salir</button><button class="btn w" id="n">Cancelar</button></div>`, { x: true });
@@ -668,7 +636,7 @@
   function firstDay(p, a, ag) { // ag: 'kids' | 'teens' | 'adult' · pasos: objetivo → nivel → lección 1 → (Premium) clase en vivo
     const placed = !!p.module, url = a && a.ready ? a.url : (P.isTrial() && P.trialMod() ? P.trialMod().url : '');
     if (placed && !url) return '';
-    const prem = !!P.plan().premium, nv = P.plan().plan === 'premium8' && P.plan().eff === 'premium' ? 8 : 4;
+    const prem = !!P.plan().premium, nv = P.plan().eff === 'premium' ? ({ premium8: 8, premium12: 12 }[P.plan().plan] || 4) : 4;
     const nm = esc(P.look().nick || p.first || ''), lvl = a ? esc(a.name + (a.lv ? ' · ' + a.lv : '')) : '';
     const GL = window.MRGOAL, gk = GL ? GL.get() : null, hasG = !GL || !!gk, gname = gk && GL.G[gk.k] ? esc(GL.G[gk.k].short) : '';
     const S0 = GL ? { st: gk ? 'ok' : 'on', b: 'Elige tu objetivo', s: gk ? 'Listo · ' + gname : ag === 'kids' ? 'Un toque · ¡muy rápido!' : 'Un toque · menos de 20 segundos', btn: gk ? '' : `<button class="g1-go" data-goal>${gi('target')}${ag === 'kids' ? '¡Elegir!' : 'Elegir'}</button>` } : null;
@@ -752,8 +720,8 @@
       if (!tdn) { const g = firstDay(p, a, g1ag); if (g) { main = g; g1on = true; } }
       else main = firstDayDone(g1ag) + main; }
     const curMod = a && a.ready && !staff ? P.progress(a.id) : null;
-    const plNow = P.plan(); const plName = staff ? 'Profesor' : P.isExpired() ? 'Plan vencido' : (plNow.plan === 'premium8' && plNow.eff === 'premium' ? 'Premium · 8 clases' : { free: 'Acceso gratuito', membership: 'Plataforma', premium: 'Premium · 4 clases' }[plNow.eff] || 'Acceso gratuito');
-    const plIc = staff ? 'user' : P.isExpired() ? 'clock' : plNow.plan === 'premium8' && plNow.eff === 'premium' ? 'gem' : ({ free: 'gift', membership: 'monitor', premium: 'crown' }[plNow.eff] || 'gift');
+    const plNow = P.plan(); const plName = staff ? 'Profesor' : P.isExpired() ? 'Plan vencido' : (plNow.eff === 'premium' && /^premium(8|12)$/.test(plNow.plan) ? 'Premium · ' + plNow.plan.slice(7) + ' clases' : { free: 'Acceso gratuito', membership: 'Plataforma', premium: 'Premium · 4 clases' }[plNow.eff] || 'Acceso gratuito');
+    const plIc = staff ? 'user' : P.isExpired() ? 'clock' : plNow.eff === 'premium' && /^premium(8|12)$/.test(plNow.plan) ? (plNow.plan === 'premium12' ? 'star' : 'gem') : ({ free: 'gift', membership: 'monitor', premium: 'crown' }[plNow.eff] || 'gift');
     const pct = curMod ? curMod.pct : 0;
     const side = `<aside class="db-side card">
         <div class="db-me"><button class="pt-avwrap" id="me-av" title="Personaliza tu foto">${P.avHTML('pt-av')}<i class="pt-pen">✏️</i></button>
@@ -1161,14 +1129,14 @@
   const fmtT = (t) => { const [hh, mm] = String(t || '00:00').split(':').map(Number); const ap = hh >= 12 ? 'p.\u00a0m.' : 'a.\u00a0m.'; return `${((hh + 11) % 12) + 1}:${String(mm || 0).padStart(2, '0')}\u00a0${ap}`; }; // v593: la hora nunca se parte en dos líneas
   // ➕ v617: comprar clases extra desde «Mi plan» (Premium activo)
   document.addEventListener('click', (e) => { const q = e.target.closest && e.target.closest('[data-xq]'), b = e.target.closest && e.target.closest('#pl-xb'); if (!q && !b) return; const c = e.target.closest('.pl-xc'); if (!c) return;
-    const nEl = c.querySelector('#pl-xn'); let n = +nEl.textContent || 1; const u = window.MRPLANS && MRPLANS.extra ? MRPLANS.extra() : 42900;
+    const nEl = c.querySelector('#pl-xn'); let n = +nEl.textContent || 1; const u = window.MRPLANS && MRPLANS.extra ? MRPLANS.extra() : 32900;
     if (q) { n = Math.max(1, Math.min(10, n + +q.dataset.xq)); nEl.textContent = n; c.querySelector('#pl-xt').textContent = MRPLANS.fmt(u * n); c.querySelector('#pl-xb').textContent = 'Comprar ' + n + (n === 1 ? ' clase extra' : ' clases extra'); c.querySelectorAll('[data-xq]').forEach(x => x.disabled = (+x.dataset.xq < 0 && n <= 1) || (+x.dataset.xq > 0 && n >= 10)); return; }
     const mo = c.closest('.modal'); if (mo) mo.remove(); if (window.MRBUY) MRBUY.extra(b.dataset.xend, n); });
   function planSection() {
     const p = P.get(); if (!p || p.type === 'staff' || !window.MRPLANS) return '';
     const pl = P.plan(); if (pl.legacy && !P.isTrial()) return '';
-    const name = (pl.plan === 'premium8' && pl.eff === 'premium' ? 'Premium · 8 clases' : { free: 'Acceso gratuito', membership: 'Plataforma', premium: 'Premium · 4 clases' }[pl.eff]) || 'Acceso gratuito';
-    const ic = MRI(pl.plan === 'premium8' && pl.eff === 'premium' ? 'gem' : ({ free: 'gift', membership: 'monitor', premium: 'crown' }[pl.eff] || 'gift'));
+    const name = (pl.eff === 'premium' && /^premium(8|12)$/.test(pl.plan) ? 'Premium · ' + pl.plan.slice(7) + ' clases' : { free: 'Acceso gratuito', membership: 'Plataforma', premium: 'Premium · 4 clases' }[pl.eff]) || 'Acceso gratuito';
+    const ic = MRI(pl.eff === 'premium' && /^premium(8|12)$/.test(pl.plan) ? (pl.plan === 'premium12' ? 'star' : 'gem') : ({ free: 'gift', membership: 'monitor', premium: 'crown' }[pl.eff] || 'gift'));
     const end = pl.end ? fmtD(pl.end, { day: 'numeric', month: 'long', year: 'numeric' }) : '';
     const sub = pl.expired ? `Tu plan ${esc(MRPLANS.PL[pl.plan] ? MRPLANS.PL[pl.plan].name : '')} venció el ${end}. Tu progreso sigue guardado.`
       : pl.eff === 'free' ? 'Prueba de clasificación, tu ruta de aprendizaje y los 3 primeros temas.'
@@ -1176,10 +1144,10 @@
     const renew = pl.expired || (pl.paid && pl.daysLeft !== null && pl.daysLeft <= 5);
     return `<div class="sect-title" id="pt-plan"><h2>${MRI('crown')} Mi plan</h2></div>
       <div class="card pl-mine ${pl.eff}${pl.expired ? ' exp' : ''}"><div class="pl-mine-ic">${pl.expired ? MRI('clock') : ic}</div><div class="grow"><span class="lbl">Tu plan actual</span><h2>${pl.expired ? 'Plan vencido' : name}</h2><p class="muted">${sub}</p></div></div>
-      ${pl.premium && !pl.expired ? `<div class="card pl-xc"><div class="pl-xh"><span class="pl-xi">${MRI('plus')}</span><div><b>¿Quieres más clases este mes?</b><small>Clases individuales de 50 min · ${MRPLANS.fmt(MRPLANS.extra ? MRPLANS.extra() : 42900)} c/u${end ? ' · valen hasta el ' + fmtD(pl.end, { day: 'numeric', month: 'long' }) : ''}</small></div></div>
-        <div class="pl-xr"><span class="pl-xs"><button type="button" data-xq="-1" aria-label="Quitar una clase" disabled>−</button><b id="pl-xn">1</b><button type="button" data-xq="1" aria-label="Agregar una clase">+</button></span><b id="pl-xt">${MRPLANS.fmt(MRPLANS.extra ? MRPLANS.extra() : 42900)}</b></div>
+      ${pl.premium && !pl.expired ? `<div class="card pl-xc"><div class="pl-xh"><span class="pl-xi">${MRI('plus')}</span><div><b>¿Quieres más clases este mes?</b><small>Clases individuales de 50 min · ${MRPLANS.fmt(MRPLANS.extra ? MRPLANS.extra() : 32900)} c/u${end ? ' · valen hasta el ' + fmtD(pl.end, { day: 'numeric', month: 'long' }) : ''}</small></div></div>
+        <div class="pl-xr"><span class="pl-xs"><button type="button" data-xq="-1" aria-label="Quitar una clase" disabled>−</button><b id="pl-xn">1</b><button type="button" data-xq="1" aria-label="Agregar una clase">+</button></span><b id="pl-xt">${MRPLANS.fmt(MRPLANS.extra ? MRPLANS.extra() : 32900)}</b></div>
         <button class="btn k block" id="pl-xb" data-xend="${esc(pl.end)}">Comprar 1 clase extra</button><p class="pl-xp">Pagas con Mercado Pago y se suman solas a tu saldo</p></div>` : ''}
-      ${pl.plan === 'premium8' && pl.eff !== 'free' && !renew ? '' : MRPLANS.cards(pl.expired ? pl.plan : (pl.plan === 'premium8' && pl.eff !== 'free' ? 'premium8' : pl.eff), renew)}`;
+      ${pl.plan === 'premium12' && pl.eff !== 'free' && !renew ? '' : MRPLANS.cards(pl.expired ? pl.plan : (/^premium(8|12)$/.test(pl.plan) && pl.eff !== 'free' ? pl.plan : pl.eff), renew)}`;
   }
   // sección Premium: grupo, créditos VIP, próximas clases, club — se llena con datos de la nube
   function bookStart() { if (!P.plan().premium && P.plan().fc) { const mm = M.modal(`<h3>🎁 Antes de reservar tu clase gratis</h3><ul class="lv-rules">
@@ -1273,8 +1241,8 @@
     const r = await MRAC.call('refInfo', { code: MRAC.code() }).catch(() => null); if (!r || !r.ok || !r.eligible || !document.body.contains(el)) return;
     const link = location.href.replace(/[^/]*$/, '') + 'inscripcion.html?ref=' + encodeURIComponent(r.code);
     const prem = P.plan().premium; const n = r.count || 0;
-    const msg = `¡Hola! Estoy aprendiendo inglés HABLANDO en mrarrieta.com y me encanta. Inscríbete con mi código *${r.code}* y obtienes ${r.pct}% de descuento en tu primer mes: ${link}`;
-    el.innerHTML = `<div class="pt-refline"><span class="grow">${MRI('gift')} <b>Invita a un amigo:</b> recibe ${r.pct}% en su primer mes y tú ganas ${prem ? '1 clase individual' : '3 días más de Plataforma'}.${n ? ` <small>· ${n} confirmado${n === 1 ? '' : 's'}</small>` : ''}</span><button class="btn w sm" id="rf-cp">${MRI('copy')} Copiar enlace</button>${n >= 5 ? `<button class="btn k sm" id="rf-cert">${MRI('award')} Certificado</button>` : ''}</div>`;
+    const msg = `¡Hola! Estoy aprendiendo inglés HABLANDO en mrarrieta.com y me encanta. Inscríbete con mi código *${r.code}* y te regalan 1 clase con profe en tu primer mes: ${link}`;
+    el.innerHTML = `<div class="pt-refline"><span class="grow">${MRI('gift')} <b>Invita a un amigo:</b> recibe 1 clase con profe de regalo y tú ganas otra cuando se inscriba.${n ? ` <small>· ${n} confirmado${n === 1 ? '' : 's'}</small>` : ''}</span><button class="btn w sm" id="rf-cp">${MRI('copy')} Copiar enlace</button>${n >= 5 ? `<button class="btn k sm" id="rf-cert">${MRI('award')} Certificado</button>` : ''}</div>`;
     $('#rf-cp').onclick = () => { try { navigator.clipboard.writeText(link); M.toast('✅ Enlace copiado'); } catch (e) { prompt('Copia tu enlace:', link); } };
     if ($('#rf-cert')) $('#rf-cert').onclick = () => ambassador();
   }
@@ -1367,7 +1335,7 @@
     box.innerHTML = `<div class="sect-title"><h2>${MRI('video')} Mis clases con profes</h2></div>${nag}<div class="lv-wrap">
       <div class="lv-stats2">
         <div class="lv-s2 s-red"><span class="lv-s2i">${MRI('calendar')}</span><div class="lv-s2t"><small>${FR ? 'Tu clase gratis' : 'Clases disponibles'}</small><b>${cr.vipLeft}<em>/ ${cr.vipTotal}</em></b><div class="lv-s2bar"><i style="width:${cr.vipTotal ? Math.round(cr.vipLeft / cr.vipTotal * 100) : 0}%"></i></div><span>${FR ? (cr.vipLeft && cr.canBook ? 'Resérvala dentro de tu acceso' : cr.vipLeft ? 'Ya pasó el tiempo para reservarla' : 'Ya la reservaste') : `Periodo: ${fmtD(cr.cycleStart, { day: 'numeric', month: 'short' })} – ${fmtD(cr.cycleEnd, { day: 'numeric', month: 'short' })}`}</span></div></div>
-        <div class="lv-s2 s-blue"><span class="lv-s2i">${MRI('check')}</span><div class="lv-s2t"><small>Clases usadas</small><b>${cr.vipUsed}</b><span>${FR ? 'Incluida en tu acceso gratis: ' + (cr.vipIncluded || 1) : 'Incluidas en tu plan: ' + (cr.vipIncluded || 0)}${cr.vipBonus ? ' · + ' + cr.vipBonus + ' adicional' + (cr.vipBonus === 1 ? '' : 'es') : ''}</span></div></div>
+        <div class="lv-s2 s-blue"><span class="lv-s2i">${MRI('check')}</span><div class="lv-s2t"><small>Clases usadas</small><b>${cr.vipUsed}</b><span>${FR ? 'Incluida en tu acceso gratis: ' + (cr.vipIncluded || 1) : !cr.vipIncluded && cr.vipBonus ? (cr.vipBonus === 1 ? '1 clase de regalo' : cr.vipBonus + ' clases de regalo o adicionales') : 'Incluidas en tu plan: ' + (cr.vipIncluded || 0) + (cr.vipBonus ? ' · + ' + cr.vipBonus + ' adicional' + (cr.vipBonus === 1 ? '' : 'es') : '')}</span></div></div>
         <div class="lv-s2 s-green"><span class="lv-s2i">${MRI('award')}</span><div class="lv-s2t"><small>Clases asistidas</small><b>${r.attendedTotal || 0}</b><span>Desde que empezaste</span></div></div></div>
       <div class="card lv-card lv-vip"><div class="lv-h"><span class="lv-ic ic-vip">${MRI('user')}</span><div><h3>Reserva tu clase individual</h3></div></div>
         ${FR ? `<p class="lv-noacum fc">${cr.vipLeft ? '🎁 Tu clase gratis dura <b>50 minutos</b> con un profe real. Resérvala para un día de tu acceso gratis; cerca de la clase te pediremos confirmarla.' : '🎁 Ya reservaste tu clase gratis. Cerca de la clase te pediremos <b>confirmarla</b> con un toque.'}</p>` : `<p class="lv-noacum">⚠️ Tus clases <b>no son acumulables</b>: resérvalas antes del <b>${fmtD(cr.cycleEnd, { day: 'numeric', month: 'long' })}</b>: después se vencen y no se recuperan.</p>`}
@@ -1528,7 +1496,11 @@
       let favX = null; if (r.fav) favX = all.find(x => x.t.id === r.fav.teacherId && dow(x.date) === r.fav.dow && String(x.time).slice(0, 5) === r.fav.time);
       const DN = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
       const grp = (lbl, ic, from, to) => { const L = hrs.filter(h => +h.slice(0, 2) >= from && +h.slice(0, 2) <= to); return L.length ? `<div class="vf-grp">${MRI(ic)}${lbl}</div><div class="vf-hrs">${L.map(h => { const hasP = FD ? match(FD, h).length > 0 : false; return `<button type="button" class="vf-chip${FH === h ? ' on' : ''}${okH(FD, h) ? '' : ' off'}${FD && okH(FD, h) ? (hasP ? ' has' : ' none') : ''}" data-h="${h}" ${okH(FD, h) ? '' : 'disabled'}>${FD && okH(FD, h) && hasP ? '<i class="vf-dot"></i>' : ''}${fmtT(h).replace(':00', '')}</button>`; }).join('')}</div>` : ''; };
-      const left = `<div class="vf-left">${favX ? `<div class="vf-fav"><span class="vf-fi">${MRI('repeat')}</span><div><b>¿Tu horario de siempre?</b><small>${DN[r.fav.dow][0].toUpperCase() + DN[r.fav.dow].slice(1)} · ${fmtT(favX.time)} con ${name(favX.t)}</small></div><button type="button" class="vf-go" id="vf-fav">Reservar</button></div>` : ''}
+      // 🔁 v623 · «Repetir con mi profe»: el último profe con quien tomó clase y sus próximos horarios (un toque)
+      const LT = r.last && r.teachers.find(t => t.id === r.last.teacherId), LS = LT ? LT.slots.slice().sort((a, c) => (a.date + a.time).localeCompare(c.date + c.time)).slice(0, 3) : [];
+      if (LT && LS.length) favX = null;
+      const rep = LT && LS.length ? `<div class="vf-rep"><span class="vf-rl">REPETIR CON MI PROFE</span><div class="vf-rt"><span class="vf-av">${pic(LT)}</span><div><b>${name(LT)}</b><small>Tu última clase${LT.stars ? ' · <span class="vf-st">★ ' + String(LT.stars).replace('.', ',') + '</span>' : ''} · ${r.last.n} ${r.last.n === 1 ? 'clase' : 'clases'} contigo</small></div></div><div class="vf-rs">${LS.map(x => `<button type="button" class="vf-rb" data-rs="${esc(x.id)}">${(s => s[0].toUpperCase() + s.slice(1))(fmtD(x.date, { weekday: 'short', day: 'numeric' }).replace('.', ''))} · ${fmtT(x.time)}</button>`).join('')}</div><p class="vf-ro">O elige otro profe abajo ↓</p></div>` : '';
+      const left = `<div class="vf-left">${rep}${favX ? `<div class="vf-fav"><span class="vf-fi">${MRI('repeat')}</span><div><b>¿Tu horario de siempre?</b><small>${DN[r.fav.dow][0].toUpperCase() + DN[r.fav.dow].slice(1)} · ${fmtT(favX.time)} con ${name(favX.t)}</small></div><button type="button" class="vf-go" id="vf-fav">Reservar</button></div>` : ''}
         <div class="vf-card"><span class="vf-lb">1. ELIGE EL DÍA</span><div class="vf-days">${days.map(d => `<button type="button" class="vf-chip vf-d${FD === d ? ' on' : ''}" data-d="${d}">${fmtD(d, { weekday: 'short' }).replace('.', '')}<small>${fmtD(d, { day: 'numeric', month: 'short' }).replace('.', '')}</small></button>`).join('')}</div>
           <p class="vf-pol">${days.length ? `Puedes reservar hasta el <b>${fmtD(days[days.length - 1], { weekday: 'long', day: 'numeric', month: 'short' }).replace('.', '').replace(',', '')}</b> · ${r.credits && r.credits.free ? 'dentro de tu acceso gratis' : 'sin domingos ni festivos'}` : 'Sin domingos ni festivos'}</p></div>
         <div class="vf-card"><span class="vf-lb">2. ¿A QUÉ HORA QUIERES TU CLASE?</span><div class="vf-tp"><div class="vf-sel vf-hhw"><button type="button" class="vf-hhb" id="vf-hh" aria-label="Hora">${TK.h}</button><small>HORA</small><div class="vf-hpop" id="vf-hpop" hidden>${[1,2,3,4,5,6,7,8,9,10,11,12].map(n => `<button type="button" data-hv="${n}" class="${TK.h === n ? 'on' : ''}">${n}</button>`).join('')}</div></div><span class="vf-col">:</span><label class="vf-sel"><input id="vf-mm" inputmode="numeric" maxlength="2" autocomplete="off" aria-label="Minutos" value="${String(TK.m).padStart(2, '0')}"><small>MINUTOS</small></label><div class="vf-ap"><button type="button" class="${TK.p === 'a' ? 'on' : ''}" data-ap="a">a. m.</button><button type="button" class="${TK.p === 'p' ? 'on' : ''}" data-ap="p">p. m.</button></div></div>
@@ -1574,6 +1546,7 @@
       $$('[data-ap]', b).forEach(x => x.onclick = () => { TK.p = x.dataset.ap; $$('[data-ap]', b).forEach(y => y.classList.toggle('on', y === x)); });
       const g2 = $('#vf-go2', b); if (g2) g2.onclick = () => { if (ms) TK.m = Math.min(59, +ms.value || 0); if (!FD) { M.toast('Primero elige el día'); return; } FH = to24(); sfx('tap'); finder(); goR(); };
       $$('.vf-tc2', b).forEach(btn => btn.onclick = () => { const x = L[+btn.dataset.x]; if (!x) return; T = x.t; D = x.date; S = T.slots.find(y => y.id === x.id); sfx('tap'); step(); });
+      $$('[data-rs]', b).forEach(x => x.onclick = () => { T = LT; S = T.slots.find(y => y.id === x.dataset.rs); D = S && S.date; sfx('tap'); step(); }); // 🔁 v623
       const fv = $('#vf-fav', b); if (fv) fv.onclick = () => { T = favX.t; D = favX.date; S = T.slots.find(y => y.id === favX.id); sfx('tap'); step(); };
       const al = $('#vf-all', b); if (al) al.onclick = () => { ALL = true; step(); };
       const wt = $('#vf-wait', b); if (wt) wt.onclick = () => waitAsk(m); const wt2 = $('#vf-wait2', b); if (wt2) wt2.onclick = () => waitAsk(m, FH ? (+FH.slice(0, 2) < 12 ? 'manana' : +FH.slice(0, 2) < 18 ? 'tarde' : 'noche') : ''); // v580: hora exacta

@@ -1,12 +1,12 @@
 <!doctype html>
-<html lang="es">
-<head><script>/* v544 · la misma pantalla del portátil, escalada a pantallas grandes */(function(){var d=document.documentElement;function f(){var w=innerWidth,h=innerHeight,z=Math.min(w/1536,h/790);z=(w>=1600&&z>1.04)?Math.min(z,2.4):1;z=Math.round(z*100)/100;if(d.style.zoom!==String(z)){d.style.zoom=z===1?"":z;d.style.setProperty("--z",z);}}f();addEventListener("resize",function(){d.style.zoom="";f();});})();</script>
+<html lang="es" translate="no">
+<head><meta name="google" content="notranslate"><script>/* v544 · la misma pantalla del portátil, escalada a pantallas grandes */(function(){var d=document.documentElement;function f(){var w=innerWidth,h=innerHeight,z=Math.min(w/1536,h/790);z=(w>=1600&&z>1.04)?Math.min(z,2.4):1;z=Math.round(z*100)/100;if(d.style.zoom!==String(z)){d.style.zoom=z===1?"":z;d.style.setProperty("--z",z);}}f();addEventListener("resize",function(){d.style.zoom="";f();});})();</script>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Recomienda y gana · mrarrieta.com</title>
 <link rel="icon" type="image/png" href="favicon.png">
-<meta name="description" content="Recomienda mrarrieta.com: tus amigos reciben 10% de descuento y tú ganas 15%.">
+<meta name="description" content="Recomienda mrarrieta.com: tu amigo recibe 1 clase con profe de regalo y tú también ganas una.">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="app.css?v=622">
+<link rel="stylesheet" href="app.css?v=625">
 <style>
 .rc-hero{display:flex;gap:18px;align-items:center}.rc-hero img{height:150px;flex:none}
 .rc-steps{display:grid;gap:10px;margin:16px 0}.rc-steps div{display:flex;gap:12px;align-items:flex-start;background:#f4f6fa;border-radius:14px;padding:12px 14px}
@@ -26,8 +26,8 @@
     <div class="rc-hero"><div><h1 style="margin:0 0 4px">¿Conoces a alguien que quiera aprender inglés?</h1><p class="muted">No necesitas ser estudiante para recomendarnos.</p></div></div>
     <div class="rc-steps">
       <div><b class="n">1</b><span>Escribe tus datos y recibe <b>tu código</b> al instante.</span></div>
-      <div><b class="n">2</b><span>Compártelo: tu amigo(a) recibe <b>10% de descuento</b> en su primer mes.</span></div>
-      <div><b class="n">3</b><span>Cuando tu amigo(a) se inscriba y pague, tú ganas <b>15% de descuento en tu primer mes</b> cuando decidas inscribirte (se aplica solo con tu correo).</span></div>
+      <div><b class="n">2</b><span>Compártelo: tu amigo(a) recibe <b>1 clase con profe de regalo</b> en su primer mes.</span></div>
+      <div><b class="n">3</b><span>Cuando tu amigo(a) se inscriba y pague, tú ganas <b>1 clase con profe de regalo</b> para cuando decidas inscribirte (se aplica sola con tu correo).</span></div>
     </div>
     <div class="rc-f">
       <input class="inp" id="rn" placeholder="Tu nombre completo" autocomplete="name">
@@ -38,8 +38,8 @@
     </div>
   </div>
 </main>
-<script src="config.js?v=622"></script><script src="emo2.js?v=622"></script><script src="emo.js?v=622"></script>
-<script src="cloud.js?v=622"></script>
+<script src="config.js?v=625"></script><script src="emo2.js?v=625"></script><script src="emo.js?v=625"></script>
+<script src="cloud.js?v=625"></script>
 <script>
 (function () {
   const $ = (s) => document.querySelector(s);
@@ -52,13 +52,13 @@
     let r = null; try { r = await MRAC.call('refJoin', { name, email, whatsapp }); } catch (e) { }
     if (!r || !r.ok) { b.disabled = false; b.textContent = 'Quiero mi código →'; return alertBox('No se pudo crear tu código. Inténtalo de nuevo.'); }
     const link = location.href.replace(/[^/]*$/, '') + 'inscripcion.html?ref=' + encodeURIComponent(r.code);
-    const msg = '¡Hola! Te recomiendo aprender inglés HABLANDO en mrarrieta.com. Inscríbete con mi código ' + r.code + ' y obtienes 10% de descuento en tu primer mes: ' + link;
+    const msg = '¡Hola! Te recomiendo aprender inglés HABLANDO en mrarrieta.com. Inscríbete con mi código ' + r.code + ' y te regalan 1 clase con profe en tu primer mes: ' + link;
     $('#box').innerHTML = `<div class="center"><img src="mra-celebrate.webp" alt="" style="height:150px"><h1 style="margin:8px 0">¡Listo, ${esc(r.name)}! 🎉</h1>
       <p class="muted">${r.student ? 'Ya eres estudiante: este es tu código de referido (también lo ves en tu perfil).' : 'Este es tu código. También te lo enviamos a tu correo.'}</p>
       <div class="rc-code">${esc(r.code)}</div>
       <div style="display:grid;gap:8px;margin-top:10px"><a class="btn block lg pt-wa" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(msg)}">Compartir por WhatsApp</a>
       <button class="btn w block" id="cp">Copiar mi enlace</button></div>
-      <p class="muted" style="font-size:13.5px;margin-top:12px">Por cada amigo(a) que se inscriba y pague, ganas <b>15% de descuento</b> en tu primer mes cuando te inscribas con el correo <b>${esc(email)}</b>.</p></div>`;
+      <p class="muted" style="font-size:13.5px;margin-top:12px">Cuando un amigo(a) se inscriba y pague, ganas <b>1 clase con profe de regalo</b> para cuando te inscribas con el correo <b>${esc(email)}</b>.</p></div>`;
     $('#cp').onclick = () => { try { navigator.clipboard.writeText(link); $('#cp').textContent = '✅ Enlace copiado'; } catch (e) { prompt('Copia tu enlace:', link); } };
   };
   function alertBox(t) { let n = document.getElementById('rc-msg'); if (!n) { n = document.createElement('p'); n.id = 'rc-msg'; n.className = 'center'; n.style.cssText = 'color:#b91c1c;font-weight:700'; $('#go').after(n); } n.textContent = t; }

@@ -63,10 +63,11 @@
     const grid = h(`<div class="lrc"><div class="lrc-card"><div class="lrc-ph"></div><div class="lrc-bd"><div class="lrc-w"><b class="lrc-en"></b><span class="lrc-es"></span><div class="lrc-res"></div></div>
       <div class="lrc-ctr"><button type="button" class="lrc-au"><i>${window.MRI ? MRI('vol') : '🔊'}</i><small>Escuchar</small></button>${canRec ? `<button type="button" class="lrc-mic"><i>${window.MRI ? MRI('mic') : '🎙️'}</i><small>Repetir</small></button>` : ''}</div></div></div>
       <div class="lrc-nav"><button type="button" class="lrc-ar lrc-pv" aria-label="Anterior">‹</button><div class="lrc-th"></div><button type="button" class="lrc-ar lrc-nx" aria-label="Siguiente">›</button></div><p class="lrc-need" hidden></p></div>`); body.appendChild(grid); tools.classList.add('lrc-tools');
-    const needN = canRec && !(window.MRTEACH && MRTEACH.on()) ? Math.min(3, p.vocab.length) : 0;
+    const needN = canRec && !(window.MRTEACH && MRTEACH.on()) ? Math.min(1, p.vocab.length) : 0; // v625: con 1 frase lograda ya avanza (nunca es un bloqueo)
+    let tries = 0; const triedNo = new Set(); // v625: intentos reales con voz · frases que intentó y no logró
     const heard = new Set(), said = new Set(); const n = p.vocab.length; let cur = 0; const st = {};
     const upd = () => { $('#cnt', tools).textContent = `👂 ${heard.size} / ${n} escuchadas`; if (canRec) $('#cnt2', tools).textContent = `🎙️ ${said.size} / ${n} repetidas`;
-      { const nd = $('.lrc-need', grid); if (nd && needN) { const okN = said.size >= needN; nd.hidden = false; nd.classList.toggle('ok', okN); nd.textContent = okN ? '✓ ¡Listo! Ya puedes avanzar' : `Repite por lo menos ${needN} para avanzar`; } }
+      { const nd = $('.lrc-need', grid); if (nd && needN) { const okN = said.size >= needN; nd.hidden = false; nd.classList.toggle('ok', okN); nd.textContent = okN ? '✓ ¡Listo! Ya puedes avanzar' : tries >= 3 ? '✓ ¡Buen esfuerzo! Ya puedes avanzar' : `Repite ${needN === 1 ? 'una frase' : 'por lo menos ' + needN} para avanzar`; nd.classList.toggle('ok', okN || tries >= 3); } }
       $$('.lrc-t', grid).forEach((t, j) => { t.classList.toggle('lrc-on', j === cur); t.classList.toggle('lrc-dn', said.has(j)); t.classList.toggle('lrc-hd', heard.has(j)); }); };
     const ph = $('.lrc-ph', grid), enEl = $('.lrc-en', grid), esEl = $('.lrc-es', grid), res = $('.lrc-res', grid), mic = $('.lrc-mic', grid), card = $('.lrc-card', grid);
     $('.lrc-th', grid).innerHTML = p.vocab.map((it, i) => `<button type="button" class="lrc-t" aria-label="${esc(it.en)}">${String(it.img || '').startsWith('#') ? `<span>${esc(it.img.slice(1))}</span>` : `<img loading="lazy" alt="" src="${M.imgURL(it.img, 160, 120)}" onerror="this.style.opacity=0">`}</button>`).join('');
@@ -91,7 +92,8 @@
       v.el.insertAdjacentHTML('afterend', MRMEL.resultHTML(r) + '<div class="mel9-bt"><button type="button" class="btn w sm mel9-me">▶ Tu voz</button><button type="button" class="btn w sm ce-mo">▶ Modelo</button></div>');
       res.querySelector('.mel9-me').onclick = (ev) => { ev.stopPropagation(); stop(); MRMEL.play(r.buf); };
       res.querySelector('.ce-mo').onclick = (ev) => { ev.stopPropagation(); MRMEL.stop(); play(it.au); };
-      st[i] = { html: MRMEL.resultHTML(r), cls }; if (r.unv) { markOk(i); return; } /* v520: si la revisión de palabras no está disponible, cuenta como practicada (sin marcarla correcta) para no bloquear */ if (!r.ok) { sfx('bad'); return; } sfx(cls === 'ce-st-ok' ? 'ok' : 'tap'); markOk(i);
+      tries++; // v625: cuenta el intento (aunque no lo apruebe)
+      st[i] = { html: MRMEL.resultHTML(r), cls }; if (r.unv) { markOk(i); return; } /* v520: si la revisión de palabras no está disponible, cuenta como practicada (sin marcarla correcta) para no bloquear */ if (!r.ok) { triedNo.add(i); upd(); sfx('bad'); return; } sfx(cls === 'ce-st-ok' ? 'ok' : 'tap'); triedNo.delete(i); markOk(i);
     };
     if (mic) mic.onclick = (e) => { e.stopPropagation(); sfx('tap'); doRec(); };
     $('.lrc-au', grid).onclick = () => { stop(); sayIt(cur); };
@@ -121,14 +123,16 @@
       $('.ml9-x', ml).onclick = () => { sfx('tap'); if (si < SL.length - 1) { si++; draw(); } else { ml.classList.add('done'); tools.scrollIntoView({ behavior: 'smooth', block: 'start' }); } };
       body.insertBefore(ml, tools); draw();
     }
-    // 🎙️ obligatorio: repetir con su voz al menos 3 palabras antes de continuar (no aplica en modo profe)
-    const need = canRec && !(window.MRTEACH && MRTEACH.on()) ? Math.min(3, n) : 0;
+    // 🎙️ v625: repetir con su voz UNA frase para continuar; si después de 3 intentos no lo logra, avanza igual (nunca es un bloqueo) y esas frases vuelven en el repaso
+    const need = needN;
+    const saveMiss = () => { try { const L = [...triedNo].filter(j => !said.has(j)).map(j => p.vocab[j] && p.vocab[j].au).filter(Boolean); if (!L.length) return; const k = 'mra_rev_miss_' + String((M.code && M.code()) || (window.MRAC && MRAC.code && MRAC.code()) || ''); const old = JSON.parse(localStorage.getItem(k) || '[]'); localStorage.setItem(k, JSON.stringify([...new Set(L.concat(old))].slice(0, 20))); } catch (e) { } };
     await waitNext(stage, 'Ya practiqué, ¡continuar!', () => {
-      if (said.size >= need) return true;
+      if (said.size >= need) { saveMiss(); return true; }
+      if (tries >= 3) { saveMiss(); M.toast('¡Buen esfuerzo! Estas frases volverán en tu repaso para que las sigas practicando.'); return true; }
       const falta = need - said.size;
       const m = M.modal(`<div class="center">${M.mascot('mascot', 'point')}</div><h3 class="center">🎙️ ¡Primero practica con tu voz!</h3>
-        <p class="center" style="font-size:17px">Para continuar, <b>repite con tu voz al menos ${need} palabras</b> tocando <b>🎙️ Repetir</b> en las tarjetas.</p>
-        <p class="center muted">Llevas <b>${said.size} de ${need}</b>. ${falta === 1 ? '¡Te falta solo 1!' : 'Te faltan ' + falta + '.'} Aquí aprendes inglés HABLANDO 💪</p>
+        <p class="center" style="font-size:17px">Para continuar, <b>repite con tu voz una frase</b> tocando <b>🎙️ Repetir</b> en las tarjetas.</p>
+        <p class="center muted">Llevas <b>${tries} de 3</b> intentos. Si no te sale, después de 3 intentos puedes continuar igual. Aquí aprendes inglés HABLANDO 💪</p>
         <p class="center muted" style="font-size:13px">Si no te deja grabar, permite el uso del micrófono en tu navegador (ícono 🔒 junto a la dirección).</p>
         <button class="btn k block lg" id="mk">¡Entendido, voy a repetir!</button>`, { x: true });
       $('#mk', m).onclick = () => { m.remove(); let j = 0; while (j < n && said.has(j)) j++; if (j < n && j !== cur) show(j, false); grid.scrollIntoView({ block: 'center', behavior: 'smooth' }); };

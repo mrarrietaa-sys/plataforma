@@ -11,8 +11,9 @@ window.M1CONFIG = {
   // PLANES (se muestran a los estudiantes)
   PLANS: {
     membership: { name: "🖥️ PLATAFORMA", price: "$64.900", per: "COP/mes" },
-    premium: { name: "👑 PREMIUM · 4 CLASES", price: "$179.900", per: "COP/mes" },
-    premium8: { name: "💎 PREMIUM · 8 CLASES", price: "$299.900", per: "COP/mes" }
+    premium: { name: "👑 PREMIUM · 4 CLASES", price: "$149.900", per: "COP/mes" },
+    premium8: { name: "💎 PREMIUM · 8 CLASES", price: "$249.900", per: "COP/mes" },
+    premium12: { name: "⭐ PREMIUM · 12 CLASES", price: "$349.900", per: "COP/mes" }
   },
 
   // MODO REVISIÓN GLOBAL: true = TODAS las clases y el examen abiertos para TODOS (no usar con estudiantes).

@@ -94,7 +94,7 @@
       const i = +b.dataset.kwm, card = b.closest('.kw-c'), scEl = card.querySelector('.kw-sc');
       if (!M1.canSR) { M1.toast('Tu navegador no permite usar el micrófono. Ábrelo en Google Chrome.'); return; }
       b.classList.add('on'); scEl.innerHTML = '<span class="rl-wv"><i></i><i></i><i></i></span>';
-      let r, melS = null; if (window.MRMEL && MRMEL.can()) { await load(); let hb = card.querySelector('.kw-mel'); if (!hb) { hb = document.createElement('div'); hb.className = 'kw-mel'; card.appendChild(hb); } const ms = await MRMEL.score(KW[g][i][3], hb, KW[g][i][0]); r = ms.score != null ? { alts: ['x'] } : { alts: [], error: ms.err ? 'not-allowed' : 'no-speech' }; melS = ms.score; } else r = await M1.listen(7000, { quick: true, target: KW[g][i][0] }); /* v517 */
+      let r, melS = null, mtip = ''; if (window.MRMEL && MRMEL.can()) { await load(); let hb = card.querySelector('.kw-mel'); if (!hb) { hb = document.createElement('div'); hb.className = 'kw-mel'; card.appendChild(hb); } const ms = await MRMEL.score(KW[g][i][3], hb, KW[g][i][0]); r = ms.score != null ? { alts: ['x'] } : { alts: [], error: ms.err ? 'not-allowed' : 'no-speech' }; melS = ms.score; mtip = (ms.r && ms.r.tip) || ''; } else r = await M1.listen(7000, { quick: true, target: KW[g][i][0] }); /* v517 */
       b.classList.remove('on');
       if (!r.alts || !r.alts.length) { scEl.textContent = ''; M1.toast(/not-allowed|service-not-allowed|audio-capture/.test(r.error || '') ? 'Permite el micrófono en tu navegador e inténtalo de nuevo.' : 'No te escuché. Inténtalo de nuevo.'); return; }
       const w = KW[g][i], sc = melS != null ? melS : M1.speechScore(w[0], r.alts).score, x = kwSt(), k = g + i, was = x.m[k] || 0;
@@ -105,7 +105,7 @@
       const md = root.querySelector('.kd-meds'); if (md && a) { const t = document.createElement('div'); t.innerHTML = medals(a); const nm = t.querySelector('.kd-meds'), st = md.previousElementSibling, nst = t.querySelector('.kd-st'); md.replaceWith(nm); if (st && nst) st.replaceWith(nst); }
       const ch = root.querySelector('.kd-chips .y'); if (ch) ch.innerHTML = I('star') + ' ' + kwDone() + ' de 3 palabras';
       const mc = root.querySelector('.kd-chips .o'); if (mc && a) { const T = topics(a); const n = T.filter(t => t.done).length + kwAll().length; mc.innerHTML = I('medal') + ' ' + n + (n === 1 ? ' medalla' : ' medallas'); }
-      kwWire(root); if (sc < 80) M1.toast(`${sc}%: escúchala otra vez e inténtalo. La meta es 80%.`);
+      kwWire(root); if (sc < 80) M1.toast(mtip && /exacta|palabra|revisar|parece|entendimos/.test(mtip) ? mtip : `${sc}%: escúchala otra vez e inténtalo. La meta es 80%.`); // v624: dice por qué no pasó
       try { window.MRAC && MRAC.sync && MRAC.sync(); } catch (e) { }
     });
   }
