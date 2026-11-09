@@ -50,7 +50,7 @@ window.MRGOALWHY = {
 "4-11": { v: "Entiende avisos: “Breakfast is served at seven.”", t: "Redacta informes: “The order was shipped yesterday.”", e: "Escribe formal: “The study was published in 2020.”" },
 "4-12": { v: "Resuelve trámites: “I need to get my visa renewed.”", t: "Delega tareas: “I’ll have the report checked.”", e: "Usa estructuras avanzadas: “I had my car repaired.”" },
 "4-13": { v: "Planea tu itinerario: “This time tomorrow I’ll be flying.”", t: "Fija plazos: “I’ll have finished it by Monday.”", e: "Habla del futuro: “By 2030, I’ll have graduated.”" },
-"4-14": { v: "Cuenta tu tiempo afuera: “I’ll have been living here a year.”", t: "Destaca tu trayectoria: “I’ll have been working here ten years.”", e: "Domina tiempos avanzados: “I’ll have been studying for hours.”" },
+"4-14": { v: "Cuenta tu tiempo afuera: “I’ll have been working here a year.”", t: "Destaca tu trayectoria: “I’ll have been working here ten years.”", e: "Domina tiempos avanzados: “I’ll have been studying for hours.”" },
 "4-15": { v: "Habla de apps al viajar: “AI apps are changing travel.”", t: "Debate el futuro laboral: “AI will replace some jobs.”", e: "Argumenta en tu ensayo: “AI creates new kinds of jobs.”" },
 "4-16": { v: "Comenta lo que ves afuera: “Global brands are everywhere.”", t: "Debate mercados globales: “Trade opens new markets.”", e: "Analiza pros y contras: “On the one hand, it creates jobs.”" },
 "4-17": { v: "Habla del tema con amigos: “I spend too much time online.”", t: "Debate el bienestar: “Constant notifications cause stress.”", e: "Argumenta con evidencia: “Studies link social media to anxiety.”" },

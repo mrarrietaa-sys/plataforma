@@ -7,9 +7,9 @@
 (function () {
   const G = { // 3 objetivos (los antiguos «exterior» y «conversar» pasan a Viajar / Trabajo)
     v: { mi: 'plane', col: 'r', name: 'Viajar y vivir afuera', short: 'Viajar', desc: 'Aeropuerto, hotel, restaurantes y el día a día afuera', meta: 'viajar con confianza', ready: 'listo para tu viaje',
-      q: ['Where would you like to travel? Why?', 'Have you ever lost your luggage or missed a flight?', 'What do you say at hotel check-in?', 'What is the best trip you have taken?', 'How do you order food in a restaurant abroad?', 'Which country would you like to live in? Why?'] },
+      q: ['Where would you like to travel? Why?', 'Have you ever lost your luggage or missed a flight?', 'What do you say at hotel check-in?', 'What is the best trip you have taken?', 'How do you order food in a restaurant abroad?', 'Which country would you like to visit? Why?'] },
     t: { mi: 'briefcase', col: 'b', name: 'Trabajo', short: 'Trabajo', desc: 'Entrevistas, reuniones, correos y clientes', meta: 'usar el inglés en tu trabajo', ready: 'listo para tu trabajo',
-      q: ['What do you do for a living?', 'Tell me about your work experience.', 'How do you introduce yourself in a job interview?', 'What are your strengths at work?', 'How often do you use English at work?', 'Describe a typical day at your job.'] },
+      q: ['What do you do for work?', 'Tell me about your work experience.', 'How do you introduce yourself in a job interview?', 'What are your strengths at work?', 'How often do you use English at work?', 'Describe a typical day at your job.'] },
     e: { mi: 'grad', col: 'g', name: 'Estudios y exámenes', short: 'Estudios', desc: 'Universidad, becas y certificaciones', meta: 'lograr tu meta académica', ready: 'listo para tu meta académica',
       q: ['What would you like to study? Why?', 'Are you preparing for an English exam?', 'How do you usually study?', 'Describe a chart or a graph you saw recently.', 'What is your opinion about online learning?', 'Where would you like to study abroad?'] }
   };
