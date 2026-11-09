@@ -9457,3 +9457,6 @@ body.ag-teens .sp-pay{background:#0d2752;border-color:#1f4584}body.ag-teens .sp-
 body.ag-teens .sp-st b,body.ag-teens .sp-r b{color:#fff}body.ag-teens .sp-st small{color:#9fb6dd}body.ag-teens .sp-ic{background:rgba(34,229,138,.14);color:#22e58a}
 body.ag-teens .sp-i{background:#0b2148;border-color:#1f4584}body.ag-teens .sp-i b{color:#fff}body.ag-teens .sp-i small{color:#9fb6dd}body.ag-teens .sp-r small{color:#22e58a}
 body.ag-kids .sp-pay{border-color:#f6e3c2}body.ag-kids .sp-ic{background:#fff1d6;color:#d97706}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%} /* v621: Chrome/Android no agranda letras por su cuenta */
+.lp-hero.lp-fit h1{font-size:30.5px!important} /* v621: mismo tamaño que en un celular de 412 px (luego se escala completo) */
+.lp-hero .lp-star{z-index:0;pointer-events:none}.lp-a .lp-demo{position:relative;z-index:1;background:rgba(18,44,96,.72)!important;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)} /* v621: las estrellas del fondo nunca quedan encima del reto */

@@ -1659,3 +1659,13 @@
   }
   route('home');
 })();
+
+/* 📱 v621: la portada se ve IGUAL en todos los celulares: en pantallas más angostas que 412 px se escala completa (como una foto), así nada se corre ni cambia de lugar */
+(function () {
+  const fit = () => { const w = window.innerWidth || document.documentElement.clientWidth; const z = w < 412 && w >= 280 ? +(w / 412).toFixed(4) : 1;
+    document.querySelectorAll('.lp-hero').forEach(h => { const v = z === 1 ? '' : String(z); if (h.style.zoom !== v) h.style.zoom = v; h.classList.toggle('lp-fit', z !== 1); }); };
+  let t = 0; const run = () => { clearTimeout(t); t = setTimeout(fit, 30); };
+  window.addEventListener('resize', run); window.addEventListener('orientationchange', run);
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => { fit(); new MutationObserver(run).observe(document.body, { childList: true, subtree: true }); });
+  else { fit(); new MutationObserver(run).observe(document.body, { childList: true, subtree: true }); }
+})();
