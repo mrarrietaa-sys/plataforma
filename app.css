@@ -9529,3 +9529,6 @@ button.p12.in-p12{flex-direction:row;gap:12px;padding:11px 12px 11px 14px;font-s
 .lp-hero .lp-res .lp-almost{margin:0!important;box-shadow:0 14px 34px rgba(11,42,91,.35)}
 .lp-swipe .sw-d{display:flex;justify-content:center;gap:6px;margin:2px 0 4px}.lp-swipe .sw-d i{width:7px;height:7px;border-radius:99px;background:#cbd5e1;transition:all .2s}.lp-swipe .sw-d i.on{width:20px;background:#0B2A5B}.lp-swipe .sw-t{display:block}
 .lp-k ~ * .lp-swipe .sw-d i.on,body.pg-ninos .lp-swipe .sw-d i.on{background:#f59e0b}
+
+/* v630: niños · barra de avance blanca en la tarjeta naranja */
+body.ag-kids .wrap.t2 .t2-cb i{background:#fff!important}
