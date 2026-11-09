@@ -5748,8 +5748,8 @@ html.home-lock body.home-app .pt-wrap{margin-bottom:0!important;padding-bottom:0
 /* ===== v341 ===== */
 @media(min-width:900px){html.home-lock body.home-app .ld-hero{min-height:0!important;height:calc(calc(100vh / var(--z, 1)) - 110px);align-items:center}html.home-lock body.home-app #app,html.home-lock body.home-app .pt-wrap{padding-top:0!important;margin-top:0!important}}
 /* profes: cilindro centrado y con flechas siempre visibles */
-.lp-panel #ld-profes .ld-cylw{height:clamp(250px,calc(calc(100svh / var(--z, 1)) - 380px),360px)!important}
-.lp-panel #ld-profes .ld-pf.ld-cyl{height:calc(clamp(250px,calc(calc(100svh / var(--z, 1)) - 380px),360px) - 34px)!important;top:14px!important}
+.lp-panel #ld-profes .ld-cylw{height:max(clamp(250px,calc(calc(100svh / var(--z, 1)) - 380px),360px),calc(var(--pfh,0px) + 34px))!important}
+.lp-panel #ld-profes .ld-pf.ld-cyl{height:max(calc(clamp(250px,calc(calc(100svh / var(--z, 1)) - 380px),360px) - 34px),var(--pfh,0px))!important;top:14px!important}
 .lp-panel #ld-profes .ld-cyl>.ld-pc{height:100%!important;overflow:hidden!important}
 .lp-panel #ld-profes h2{margin:0 0 2px!important}
 .lp-panel #ld-profes .ld-sub{margin:0 0 4px!important}
@@ -9521,3 +9521,11 @@ button.p12.in-p12{flex-direction:row;gap:12px;padding:11px 12px 11px 14px;font-s
 .in-plans .pb .pbn{gap:14px;margin:0}.in-plans .pb .pbx{width:36px;height:36px;font-size:19px}.in-plans .pb .pbN{font-size:28px}.in-plans .pb .pbN small{font-size:11px;margin-top:0}
 .in-plans .pb .pbs{margin:6px 0;padding:6px 10px}.in-plans .pb .pbs .pr strong{font-size:24px}.in-plans .pb .pbs .pc,.in-plans .pb .pbs .pw{margin-top:2px}
 .in-plans .pb ul{gap:3px!important;margin-bottom:6px!important}
+/* v629: sin fondo blanco detrás de «Prueba gratis» (queda el color de la pantalla) */
+.lp-hero .lp-cta{background:transparent!important;box-shadow:none!important;border:0!important;padding-left:0!important;padding-right:0!important}
+/* v629: cuando sale el resultado del reto (ya trae «Probar gratis»), se ocultan el botón grande y la fila de abajo para que todo quepa */
+/* v629: el resultado del reto flota encima (no empuja ni mueve nada de la pantalla) */
+.lp-hero .lp-demo{position:relative;z-index:4}.lp-hero .lp-res{position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:8;margin:0!important}
+.lp-hero .lp-res .lp-almost{margin:0!important;box-shadow:0 14px 34px rgba(11,42,91,.35)}
+.lp-swipe .sw-d{display:flex;justify-content:center;gap:6px;margin:2px 0 4px}.lp-swipe .sw-d i{width:7px;height:7px;border-radius:99px;background:#cbd5e1;transition:all .2s}.lp-swipe .sw-d i.on{width:20px;background:#0B2A5B}.lp-swipe .sw-t{display:block}
+.lp-k ~ * .lp-swipe .sw-d i.on,body.pg-ninos .lp-swipe .sw-d i.on{background:#f59e0b}
