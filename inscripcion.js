@@ -22,7 +22,7 @@ if (!window.M1) window.M1 = {
   const pp = (k, n, pr) => ({ name: ((P[k] && P[k].name) || n).replace(/^[^A-Za-zÁÉÍÓÚÑ]+/, ''), price: (P[k] && P[k].price) || pr, per: 'COP/mes' });
   const PLANS = [
     { id: 'free', name: 'ACCESO GRATUITO', price: '$0', per: 'COP · sin costo', tag: 'Pruébalo gratis · 3 días', icon: '🎁',
-      perks: ['Descubre tu nivel en 10 minutos', 'Tu ruta personalizada', 'Habla y la plataforma te corrige'], note: 'No incluye clases individuales.' },
+      perks: ['Descubre tu nivel en 10 minutos', 'Tu ruta personalizada', 'Habla y la plataforma te corrige'], note: 'Incluye 1 clase gratis con profe.' },
     Object.assign({ id: 'membership', tag: 'Aprende a tu ritmo', icon: '🖥️',
       perks: ['Habla desde el día 1: te escucha y te corrige', 'Del A1 al B2+, a tu ritmo, 24/7', 'Certificado por cada módulo'], note: 'No incluye clases individuales.' }, pp('membership', '🖥️ PLATAFORMA', '$64.900')),
   ];
@@ -46,6 +46,7 @@ if (!window.M1) window.M1 = {
 
   /* ---------------- vista principal ---------------- */
   function render() {
+    const KEEP = {}; $$('#in-form input, #in-form textarea').forEach((el) => { KEEP[el.id] = el.type === 'checkbox' ? el.checked : el.value; });
     const DIRECT = !!st.plan && st.plan !== 'free' && !st.pickAll; const SP = planOf(st.plan) || {};
     app.innerHTML = `
     ${DIRECT ? `<section class="card in-direct"><span class="in-plan-ic" aria-hidden="true">${window.MRI ? MRI(/^premium/.test(SP.id || "") ? "crown" : ({ free: "gift", membership: "monitor" }[SP.id] || "gift")) : SP.icon}</span><div class="grow"><span class="lbl">Tu plan</span><h1>${esc(SP.name)}</h1><p><b>${esc(SP.price)}</b> ${esc(SP.per || '')} · ${esc(SP.tag || '')}</p></div><button type="button" class="btn w sm" id="in-chg">Cambiar plan</button></section>` : ''}
@@ -115,6 +116,49 @@ if (!window.M1) window.M1 = {
       </div>
     </form>`;
     bind(); syncPlan();
+    Object.keys(KEEP).forEach((id) => { const el = document.getElementById(id); if (!el) return; if (el.type === 'checkbox') el.checked = KEEP[id]; else el.value = KEEP[id]; }); syncChips(); summary();
+    wiz();
+  }
+  /* ---------------- v635 · inscripción por pasos (todo a la vista, con Atrás y Editar) ---------------- */
+  function wiz() {
+    const form = $('#in-form'); if (!form) return; form.classList.add('in-wiz'); const hero = $('.in-hero'); if (hero) hero.hidden = true;
+    const DIRECT = !!$('.in-direct'); const card = $('.in-card', form), grid = $('.in-grid', card), more = $$('.in-xtra', card).find((x) => x.querySelector('.in-fs'));
+    const mk = (cls) => { const d = document.createElement('section'); d.className = 'in-pane ' + cls; return d; };
+    const panes = [];
+    if (!DIRECT) { const p1 = mk('p-plan'); const blk = $('.in-step', form).parentElement; p1.appendChild(blk); panes.push({ el: p1, t: 'Elige tu plan' }); }
+    const p2 = mk('p-datos'); if ($('.in-direct')) p2.appendChild($('.in-direct')); p2.appendChild(grid); panes.push({ el: p2, t: 'Tus datos' });
+    const p3 = mk('p-mas'); if (more) p3.appendChild(more); $$('.in-consent', card).forEach((x) => p3.appendChild(x)); p3.appendChild($('#err-ok')); panes.push({ el: p3, t: 'Un poco más de ti' });
+    { const cm = $('#in-comments', p3); const f = cm && cm.closest('.in-f'); if (f) { f.classList.add('in-cm'); const lb = $('label', f); if (lb) lb.addEventListener('click', (e) => { if (innerWidth < 900 && !f.classList.contains('op')) { e.preventDefault(); f.classList.add('op'); setTimeout(() => cm.focus(), 50); } }); } }
+    const p4 = mk('p-ok'); p4.innerHTML = '<div class="in-rev" id="in-rev"></div>'; [$('#in-summary'), $('#in-send'), $('#in-paynote')].forEach((x) => x && p4.appendChild(x)); const wa = [...card.querySelectorAll('p.in-small')].pop(); if (wa) p4.appendChild(wa); panes.push({ el: p4, t: 'Revisa y confirma' });
+    panes.forEach((p) => $$('.in-step', p.el).forEach((h) => h.remove())); $$('.in-step', form).forEach((h) => h.remove());
+    const N = panes.length; const top = document.createElement('div'); top.className = 'in-wtop';
+    top.innerHTML = `<div class="in-prog">${panes.map((_, i) => `<button type="button" data-go="${i}" aria-label="Paso ${i + 1}"></button>`).join('')}</div><h2 class="in-wt"><span></span> <b></b> <small></small></h2>`;
+    card.innerHTML = ''; card.appendChild(top); panes.forEach((p) => card.appendChild(p.el));
+    const nav = document.createElement('div'); nav.className = 'in-nav'; nav.innerHTML = '<button type="button" class="btn w in-back">← Atrás</button><button type="button" class="btn k in-next">Continuar →</button>'; card.appendChild(nav);
+    let cur = 0, max = 0; const name = (i) => panes[i].t;
+    const review = () => { const v = (id) => ($('#in-' + id) ? $('#in-' + id).value.trim() : ''); const p = planOf(st.plan); const pi = DIRECT ? -1 : 0, di = DIRECT ? 0 : 1, mi = di + 1;
+      const row = (k, val, go) => `<div class="in-rr"><span><small>${k}</small><b>${esc(val || '—')}</b></span>${go >= 0 ? `<button type="button" class="in-ed" data-go="${go}">Editar</button>` : ''}</div>`;
+      $('#in-rev').innerHTML = row('Plan', p ? p.name : '', pi) + row('Nombre', (v('first') + ' ' + v('last')).trim(), di) + row('Correo', v('email'), di) + row('WhatsApp', v('whatsapp'), di) + (st.level || st.source ? row('Nivel · nos conociste por', [st.level, st.source].filter(Boolean).join(' · '), mi) : '');
+      if (DIRECT) { const e = $('#in-rev .in-rr'); if (e && !e.querySelector('.in-ed')) e.insertAdjacentHTML('beforeend', '<button type="button" class="in-ed" data-chg="1">Editar</button>'); } };
+    const okStep = (i) => { const el = panes[i].el; const bad = (id, ok) => { const x = $('#in-' + id); if (!x || x.closest('[hidden]')) return true; const er = x.closest('.in-f').querySelector('.in-err'); if (er) er.hidden = ok; x.classList.toggle('in-bad', !ok); return ok; };
+      if (el.classList.contains('p-plan')) { if (!st.plan) { $('#err-plan').hidden = false; return false; } return true; }
+      if (el.classList.contains('p-datos')) { const d = data(); let ok = true; ok = bad('first', d.first.length >= 2) && ok; ok = bad('last', d.last.length >= 2) && ok; ok = bad('email', /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(d.email)) && ok; ok = bad('whatsapp', d.whatsapp.replace(/\D/g, '').length >= 7) && ok;
+        if (d.plan !== 'free') { ok = bad('birth', /^\d{4}-\d{2}-\d{2}$/.test(d.birth) && d.birth <= isoToday() && d.birth >= '1930-01-01') && ok; ok = bad('city', d.city.length >= 2) && ok; } if (!ok) { const f = $('.in-bad', el); if (f) f.focus(); } return ok; }
+      if (el.classList.contains('p-mas')) { const ok = $('#in-ok').checked; $('#err-ok').hidden = ok; return ok; }
+      return true; };
+    const show = (i) => { cur = i; max = Math.max(max, i); panes.forEach((p, k) => { p.el.hidden = k !== i; p.el.classList.toggle('in-in', k === i); });
+      $('.in-wt span', top).textContent = i + 1; $('.in-wt b', top).textContent = name(i); $('.in-wt small', top).textContent = `· Paso ${i + 1} de ${N}`;
+      $$('.in-prog button', top).forEach((b, k) => { b.classList.toggle('on', k <= i); b.disabled = k > max; });
+      $('.in-back', nav).style.display = i === 0 ? 'none' : ''; const nx = $('.in-next', nav); nx.hidden = i === N - 1;
+      if (panes[i].el.classList.contains('p-plan')) { const p = planOf(st.plan); nx.textContent = p && innerWidth >= 900 ? 'Continuar con ' + p.name.charAt(0) + p.name.slice(1).toLowerCase() + ' →' : 'Continuar →'; } else nx.textContent = 'Continuar →';
+      if (i === N - 1) review(); window.scrollTo({ top: 0, behavior: 'smooth' }); setTimeout(fit, 30); };
+    const fit = () => { };
+    $('.in-next', nav).onclick = () => { if (!okStep(cur)) return; show(Math.min(N - 1, cur + 1)); };
+    $('.in-back', nav).onclick = () => show(Math.max(0, cur - 1));
+    card.addEventListener('click', (e) => { const g = e.target.closest('[data-go]'); if (g && !g.disabled) { const k = +g.dataset.go; if (k > cur) { for (let j = cur; j < k; j++) if (!okStep(j)) return show(j); } show(k); } if (e.target.closest('[data-chg]')) { const c = $('#in-chg'); if (c) c.click(); } });
+    document.addEventListener('mra-pb', () => { if (panes[cur] && panes[cur].el.classList.contains('p-plan')) show(cur); });
+    $$('.in-plan', card).forEach((b) => b.addEventListener('click', () => setTimeout(() => show(cur), 0)));
+    show(0);
   }
   function field(id, label, type, ac, ph) {
     return `<div class="in-f"><label for="in-${id}">${label}</label>

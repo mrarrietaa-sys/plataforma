@@ -27,7 +27,7 @@
   const WA = (t) => `https://wa.me/${C.WHATSAPP}?text=${encodeURIComponent((window.MRNE || String)(t))}`;
   const who = () => { const p = prof(); return (p.name || p.first || '') + (p.code ? ` (código ${p.code})` : ''); };
   const BEN = {
-    free: ['Descubre tu nivel en 10 minutos', 'Tu ruta personalizada', 'Habla y la plataforma te corrige', 'No incluye clases individuales'],
+    free: ['Descubre tu nivel en 10 minutos', 'Tu ruta personalizada', 'Habla y la plataforma te corrige', 'Incluye 1 clase gratis con profe'],
     membership: ['Habla desde el día 1: te escucha y te corrige', 'Del A1 al B2+, a tu ritmo, 24/7', 'Certificado por cada módulo', 'No incluye clases individuales'],
     premium: ['Todo lo de Plataforma', '4 clases 1 a 1 con profe al mes', 'Tú eliges profe, día y hora', 'Clases no acumulables: úsalas en tu periodo mensual'],
     premium8: ['Todo lo de Plataforma', '8 clases 1 a 1: 2 por semana', 'Gana fluidez real, más rápido', 'Clases no acumulables: úsalas en tu periodo mensual'],
@@ -67,7 +67,7 @@
   const per = (k) => PL[k] && PL[k].classes ? Math.round(PL[k].n / PL[k].classes / 100) * 100 : 0;
   const best8 = () => per('premium8') && per('premium8') < per('premium');
   const V2 = () => ({
-    free: { out: 'Descubre tu nivel y prueba la plataforma sin pagar nada.', li: ['Prueba de nivel en 10 minutos', 'Tu ruta personalizada', 'Hablas y la plataforma te corrige'], note: 'No incluye clases con profe.', bt: 'Empezar gratis' },
+    free: { out: 'Descubre tu nivel y prueba la plataforma sin pagar nada.', li: ['Prueba de nivel en 10 minutos', 'Tu ruta personalizada', 'Hablas y la plataforma te corrige'], note: 'Incluye 1 clase gratis con profe.', bt: 'Empezar gratis' },
     membership: { out: 'Aprende a tu ritmo, cuando quieras, desde el celular.', li: ['Habla desde el día 1: te escucha y te corrige', 'Ruta completa del A1 al B2+', 'Certificado por cada módulo'], note: 'No incluye clases con profe.', bt: 'Empezar con Plataforma' },
     premium: { out: 'Pierde el miedo a hablar con un profe que te corrige en vivo.', li: ['Todo lo de Plataforma', '4 clases 1 a 1 de 50 min al mes', 'Tú eliges profe, día y hora'], rib: 'Más elegido', hot: 1, bt: 'Empezar con Premium 4' },
     premium8: { out: 'Gana fluidez real: habla inglés 2 veces por semana.', li: ['Todo lo de Plataforma', '8 clases 1 a 1: 2 por semana', best8() ? 'El mejor precio por clase' : 'Gana fluidez real, más rápido'], rib: best8() ? 'Mejor precio por clase' : 'Más avance', bt: 'Empezar con Premium 8' },
