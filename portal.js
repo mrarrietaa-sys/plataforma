@@ -122,7 +122,7 @@
       <a class="ld-pc2" href="ninos.html"><span class="ic k">${LPI.kids}</span><span class="tx"><b>Niños y jóvenes</b><small>De 9 a 17 años</small></span><span class="ar">›</span></a></div>`;
   }
   const LP_GOALS = { v: ['plane', 'Viajar', 'Tus lecciones y misiones: aeropuerto, hotel y restaurantes.'], t: ['brief', 'Trabajo', 'Tus lecciones y misiones: entrevistas, reuniones y correos.'], e: ['grad', 'Estudios', 'Tus lecciones y misiones: universidad, becas y exámenes.'] };
-  const LP_PH = { adultos: { t: 'Nice to meet you', es: 'Mucho gusto en conocerte', au: 'prnicetomeet' }, ninos: { t: 'I love English', es: '¡Me encanta el inglés!', au: 'priloveeng' } };
+  const LP_PH = { home: { t: 'How are you?', es: '¿Cómo estás?', au: 'prhowareyou' }, adultos: { t: 'Nice to meet you', es: 'Mucho gusto en conocerte', au: 'prnicetomeet' }, ninos: { t: 'I love English', es: '¡Me encanta el inglés!', au: 'priloveeng' } };
   const lpSky = (n) => { let h = ''; for (let k = 0; k < n; k++) h += `<span class="lp-star" style="left:${(k * 37) % 100}%;top:${(k * 53) % 62}%;opacity:${(.3 + (k % 5) / 8).toFixed(2)}"></span>`; return h; };
   const lpClouds = () => [[-8, 78, 260, 90], [52, 84, 320, 110], [18, 92, 380, 120], [72, 30, 160, 50]].map(([l, t, w, h], i) => `<span class="lp-cloud${i === 3 ? ' big' : ''}" style="left:${l}%;top:${t}%;width:${w}px;height:${h}px"></span>`).join('');
   function lpChallenge(page) {
@@ -432,6 +432,9 @@
     if (m && bub) { const orig = m.animate.bind(m); m.animate = function (k, o) { hide(); const a = orig(k, o); a.addEventListener('finish', () => setTimeout(() => { if (window.rkShadow) { } show(); }, 150)); return a; }; setTimeout(() => { if (bub.hidden && !(m.getAnimations && m.getAnimations().some(a => a.playState === 'running' && a.effect && a.effect.getKeyframes().length > 3))) show(); }, 6500); }
     const pay = () => { const lc = $('.ld-login .pt-login'); if (lc && !lc.querySelector('.ld-pay')) lc.insertAdjacentHTML('beforeend', '<p class="ld-pay"><svg class="mri" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Pagos seguros con <b>Mercado Pago</b> · tarjeta, PSE, Nequi</p>'); };
     pay(); setTimeout(pay, 800); setTimeout(pay, 2500);
+    // 🖥️ PC: si la pantalla es baja (portátil con zoom), la portada se escala para que TODO quepa sin bajar
+    const pcFit = () => { if (!hero.isConnected || innerWidth <= 899) { if (hero.style.zoom) hero.style.zoom = ''; return; } hero.style.zoom = ''; const top = hero.getBoundingClientRect().top; const els = [...hero.querySelectorAll('.ld-copy>*,.ld-login .pt-login')].filter(e => e.offsetHeight && getComputedStyle(e).position !== 'absolute'); if (!els.length) return; const bot = Math.max(...els.map(e => e.getBoundingClientRect().bottom)); const room = innerHeight - 26; if (bot <= room) return; const z = Math.max(.6, (room - top) / (bot - top)); hero.style.zoom = z.toFixed(3); };
+    pcFit(); [200, 800, 2000, 4000].forEach(t => setTimeout(pcFit, t)); addEventListener('resize', pcFit); if (window.MRPROFREADY && MRPROFREADY.then) MRPROFREADY.then(() => setTimeout(pcFit, 50));
     fit(); setTimeout(fit, 300); setTimeout(fit, 1200); addEventListener('resize', () => { fit(); if (bub && !bub.hidden) place(); });
   }
   function hPlans() {
@@ -441,34 +444,12 @@
     try { if (window.MRPLANS && MRPLANS.pbInit) MRPLANS.pbInit(bg); } catch (e) { }
     const g = bg.querySelector('.lp-pg'); if (g) { g.scrollLeft = 0; setTimeout(() => g.dispatchEvent(new Event('scroll')), 60); }
   }
-  function hDemo() {
-    const old = $('.hdm-bg'); if (old) old.remove(); M.loadAudio && M.loadAudio(['promo']);
-    const T = 'How are you?', AU = 'prhowareyou';
-    const bg = document.createElement('div'); bg.className = 'hdm-bg'; bg.innerHTML = `<div class="hdm" role="dialog" aria-label="Reto de pronunciación"><button type="button" class="hdm-x" aria-label="Cerrar">✕</button><small>Reto · habla y te corrijo</small><h3>“${T}”</h3><button type="button" class="hdm-es">¿Cómo estás? <i>${MRI('vol')}</i></button><div class="hdm-body"><button type="button" class="hdm-mic">${MRI('mic')}</button><p class="hdm-lb">Toca el micrófono y dilo en voz alta</p></div></div>`;
+  function hDemo() { // v641: el mismo reto (y el mismo reconocimiento de voz) de las páginas de Adultos y Niños y jóvenes
+    const old = $('.hdm-bg'); if (old) old.remove(); if (M.loadAudio) M.loadAudio(['promo']);
+    const bg = document.createElement('div'); bg.className = 'hdm-bg'; bg.innerHTML = `<div class="hdm2" role="dialog" aria-label="Reto de pronunciación"><button type="button" class="hdm-x" aria-label="Cerrar">✕</button><div class="lp-hero lp-a hdm-lp">${lpChallenge('home')}<button type="button" class="btn r lg block hdm-go" data-trial>${MRI('gift')} Prueba gratis 3 días</button><p class="hdm-inc">+ 1 clase gratis con profe · sin tarjeta</p></div></div>`;
     document.body.appendChild(bg); const close = () => bg.remove(); bg.querySelector('.hdm-x').onclick = close; bg.addEventListener('click', (e) => { if (e.target === bg) close(); });
-    bg.querySelector('.hdm-es').onclick = () => { try { M.play(AU); } catch (e) { } };
-    const body = bg.querySelector('.hdm-body'); let busy = false;
-    const wire = () => { const mic = body.querySelector('.hdm-mic'); if (mic) mic.onclick = go; const ag = body.querySelector('.hdm-ag'); if (ag) ag.onclick = () => { body.innerHTML = `<button type="button" class="hdm-mic">${MRI('mic')}</button><p class="hdm-lb">Toca el micrófono y dilo en voz alta</p>`; wire(); }; };
-    const go = async () => {
-      if (busy) return; busy = true; const W = T.replace(/[?!.]/g, '').split(' ');
-      body.innerHTML = `<button type="button" class="hdm-mic rec">${MRI('mic')}</button><p class="hdm-lb">Te escucho…</p><div class="hdm-mel"></div>`;
-      let sc = null, err = '';
-      try {
-        if (M.canSR) { const r = await M.listen(6000, { quick: true, target: T }); if (r.alts && r.alts.length) sc = M.speechScore(T, r.alts); else err = r.error || 'no'; }
-        else if (window.MRMEL && MRMEL.can()) { const ms = await MRMEL.score(AU, body.querySelector('.hdm-mel')); if (ms.score != null) sc = { score: ms.score, hit: W.map(() => ms.score >= 70) }; else err = ms.err ? 'not-allowed' : 'no'; }
-        else err = 'nosr';
-      } catch (e) { err = 'no'; }
-      busy = false;
-      if (!sc) { body.innerHTML = `<p class="hdm-msg">${err === 'not-allowed' || err === 'service-not-allowed' ? 'Permite el micrófono para hacer el reto.' : err === 'nosr' ? 'Para el reto, abre esta página en Google Chrome y permite el micrófono.' : 'No te escuché bien. Acércate al micrófono y dilo un poco más fuerte.'}</p><button type="button" class="hdm-ag">↻ Intentar otra vez</button>`; wire(); return; }
-      const good = sc.score >= 80; const hit = sc.hit || W.map(() => good);
-      const miss = W.find((w, k) => !hit[k]);
-      if (good) { try { M.confetti && M.confetti(1400); } catch (e) { } }
-      body.innerHTML = `<div class="hdm-sc ${good ? 'ok' : 'mid'}">${good ? '¡Muy bien!' : '¡Casi!'} ${sc.score}%</div><div class="hdm-ws">${W.map((w, k) => `<span class="${hit[k] ? 'ok' : 'm'}">${esc(w)} ${hit[k] ? '✓' : '~'}</span>`).join('')}</div>
-        <p class="hdm-tip">${good ? 'Lo dijiste muy bien.' : `Revisa la palabra <b>${esc(miss || W[0])}</b>: escucha el ejemplo y repítelo.`} En la prueba gratis practicas así todos los días.</p>
-        <button type="button" class="btn k block hdm-go" data-trial>${MRI('gift')} Prueba gratis 3 días</button><button type="button" class="hdm-ag">↻ Intentar otra vez</button>`;
-      body.querySelector('.hdm-go').addEventListener('click', () => setTimeout(close, 0)); wire();
-    };
-    wire(); setTimeout(() => { try { M.play(AU); } catch (e) { } }, 350);
+    bg.querySelector('.hdm-go').addEventListener('click', () => setTimeout(close, 0));
+    lpChallengeWire();
   }
   function countUp() { const els = $$('[data-stc]'); if (!els.length) return; const run = (N) => els.forEach(el => { const t0 = performance.now(); const fr = (t) => { const k = Math.min(1, (t - t0) / 1400); el.textContent = '+' + Math.round(N * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(fr); }; requestAnimationFrame(fr); });
     if (window.MRAC && MRAC.on) MRAC.call('pubStats', {}).then(r => run(Math.max(500, r && r.students ? r.students : 0))).catch(() => run(500)); else run(500); }

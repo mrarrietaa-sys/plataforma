@@ -9850,3 +9850,12 @@ body.ag-kids .player .stage .lrt button.on{background:#f59e0b}body.ag-teens .pla
 .slw-w:has(>.ml10-ok)>.slw-b{flex:none;width:36px!important;height:36px!important;background:#fff!important;border-color:#bbf7d0!important}
 html body .slw-w:has(>.ml10-ok)>.slw-b{background:#fff!important;color:#0B2A5B!important}
 .pod9-pl{width:100%!important;box-sizing:border-box}.pod9-pl>.slw-w{flex:none!important;width:auto!important;min-width:max-content!important}
+/* v641 · reto de la entrada = mismo reto de Adultos (mismo diseño y reconocimiento de voz) */
+.hdm2{position:relative;width:min(460px,100%);animation:hplU .35s cubic-bezier(.3,1.4,.5,1)}
+.hdm2 .hdm-lp{display:block!important;height:auto!important;min-height:0!important;margin:0!important;padding:46px 16px 18px!important;border-radius:24px!important;box-shadow:0 30px 60px -20px rgba(0,0,0,.5)}
+.hdm2 .hdm-x{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.25);color:#fff;z-index:5}
+.hdm2 .lp-demo{margin:0!important;width:auto!important;max-width:none!important}
+.hdm2 .hdm-go{margin-top:14px;width:100%;min-height:50px}
+.hdm2 .hdm-inc{margin:8px 0 0;text-align:center;color:#86efac;font-weight:700;font-size:13.5px}
+.hdm2 .lp-res:not([hidden]){position:static!important}
+@media(max-width:899px){.hdm2{width:100%}.hdm2 .hdm-lp{border-radius:24px 24px 0 0!important;padding-bottom:24px!important}}
