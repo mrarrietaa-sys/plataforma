@@ -9763,3 +9763,7 @@ body.lp-teen .lp-hero.lp-k .lp-trust span,body.lp-teen .lp-hero.lp-k .lp-trust a
 .modal:has(.to-new) #tf-go{padding:12px!important}
 .tf-kidm .to-new .to-pills,.tf-kidm .to-new .to-sm2{display:none}.tf-kidm .to-new .to-off{margin-bottom:4px}.tf-kidm .tf-bd small{display:none}
 @media(max-width:380px){.to-new .to-pills span{font-size:12px;padding:4px 9px}}
+/* v638 · celular: portada de Niños y jóvenes sin nubes abajo (Niños sin nube) y sellos de Jóvenes dentro de la tarjeta */
+@media(max-width:899px){.lp-hero.lp-k .lp-cloud:not(.big){display:none!important}}
+@media(max-width:420px){html body.lp-teen .lp-hero.lp-k .lp-trust{gap:5px!important}html body.lp-teen .lp-hero.lp-k .lp-trust>*{font-size:10.5px!important;padding:2px 8px 2px 3px!important}html body.lp-teen .lp-hero.lp-k .lp-trust i{width:18px!important;height:18px!important}}
+@media(max-width:370px){html body.lp-teen .lp-hero.lp-k .lp-trust>*{font-size:10px!important;padding:2px 7px 2px 3px!important}}
