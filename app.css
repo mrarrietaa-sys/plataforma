@@ -9632,3 +9632,13 @@ body.lp-teen .lp-hero .lp-res .lp-almost{background:#13233f;color:#e8eef7}
 @media (prefers-reduced-motion:reduce){.pz-c,.pz-k,.pz-c li,.pz-k .it>div{animation:none!important;opacity:1!important}}
 @media(max-width:380px){.pz-k .it>div{padding:6px 5px;gap:5px}.pz-k .it small{font-size:9px;letter-spacing:-.25px}.pz-k .it b{font-size:11.5px}}
 body.lp-teen:has(.lp-hero.lp-k) .ld-nav .btn.k,body.lp-teen:has(.lp-hero.lp-k) .lp-hero .lp-cta .btn.k{background:linear-gradient(135deg,#22c55e,#16a34a)!important;border-color:#22c55e!important;color:#06210f!important;box-shadow:0 8px 18px rgba(22,163,74,.30)!important}body.lp-teen:has(.lp-hero.lp-k) .ld-nav .btn.k svg,body.lp-teen:has(.lp-hero.lp-k) .ld-nav .btn.k .mri{color:#06210f!important}
+/* v633 · página de entrada: clase incluida + 4,9 en Google (enlace a las opiniones) */
+.ld-hero .ld-cta2{display:flex!important;flex-direction:column!important;align-items:flex-start!important}
+.ld-hero .ld-inc{display:block;margin-top:8px;white-space:nowrap;font-size:13.5px;color:#16a34a;font-weight:700}
+.ld-hero .ld-trust2{display:flex!important;align-items:center;flex-wrap:wrap;gap:4px 10px;margin-top:12px;font-size:15px;color:#33415c}
+.ld-hero .ld-trust2 b{color:#e63946}
+.ld-hero .ld-g{display:inline-flex;align-items:center;gap:6px;color:#0B2A5B;text-decoration:none;font-weight:700}
+.ld-hero .ld-g:hover{text-decoration:underline}.ld-hero .ld-st{color:#f5b301;letter-spacing:1px}.ld-hero .ld-dot{color:#c3cad6}
+@media(max-width:899px){.ld-hero .ld-trust2{font-size:13.5px}body.home-app .ld-hero .ld-hero-mra{width:230px!important;height:auto!important;scale:1!important;translate:none!important;margin:18px auto 0!important;display:block}}
+@media(max-width:360px){.ld-hero .ld-inc{font-size:12.5px}}
+.ld-hero .ld-trust2 b{font-size:inherit!important;font-weight:800}.ld-hero .ld-trust2 .ld-st{font-size:14px}
