@@ -156,3 +156,7 @@
 @media(max-width:380px){.rto{padding:8px 8px 10px}.rto-ask b{font-size:14px}.rto-bag{width:84px;height:108px}.rto-bag span{width:104px;font-size:12px}}
 
 .rto-au.sm2{width:30px;height:30px}.rto-au.sm2 svg{width:15px;height:15px}.rto-fb .slw-w{gap:4px}.rto-fb .slw-b{width:30px!important;height:30px!important}
+/* v639 · Mr. Arrieta flota en el inicio y el final de cada juego */
+.rto-start img,.rto-end img{animation:rtoFl 2.8s ease-in-out infinite;filter:drop-shadow(0 14px 10px rgba(0,0,0,.22))}
+@keyframes rtoFl{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@media(prefers-reduced-motion:reduce){.rto-start img,.rto-end img{animation:none}}

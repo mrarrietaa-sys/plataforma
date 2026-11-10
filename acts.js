@@ -67,7 +67,7 @@
     let tries = 0; const triedNo = new Set(); // v625: intentos reales con voz · frases que intentó y no logró
     const heard = new Set(), said = new Set(); const n = p.vocab.length; let cur = 0; const st = {};
     const upd = () => { $('#cnt', tools).textContent = `👂 ${heard.size} / ${n} escuchadas`; if (canRec) $('#cnt2', tools).textContent = `🎙️ ${said.size} / ${n} repetidas`;
-      { const nd = $('.lrc-need', grid); if (nd && needN) { const okN = said.size >= needN; nd.hidden = false; nd.classList.toggle('ok', okN); nd.textContent = okN ? '✓ ¡Listo! Ya puedes avanzar' : tries >= 3 ? '✓ ¡Buen esfuerzo! Ya puedes avanzar' : `Repite ${needN === 1 ? 'una frase' : 'por lo menos ' + needN} para avanzar`; nd.classList.toggle('ok', okN || tries >= 3); } }
+      { const nd = $('.lrc-need', grid); if (nd && needN) { const okN = said.size >= needN; nd.hidden = false; nd.classList.toggle('ok', okN); nd.textContent = okN ? '✓ ¡Listo! Ya puedes avanzar' : tries >= 2 ? '✓ ¡Buen esfuerzo! Ya puedes avanzar' : tries === 1 ? 'Un intento más y puedes seguir, aunque no salga perfecta' : `Repite ${needN === 1 ? 'una frase' : 'por lo menos ' + needN} para avanzar`; nd.classList.toggle('ok', okN || tries >= 3); } }
       $$('.lrc-t', grid).forEach((t, j) => { t.classList.toggle('lrc-on', j === cur); t.classList.toggle('lrc-dn', said.has(j)); t.classList.toggle('lrc-hd', heard.has(j)); }); };
     const ph = $('.lrc-ph', grid), enEl = $('.lrc-en', grid), esEl = $('.lrc-es', grid), res = $('.lrc-res', grid), mic = $('.lrc-mic', grid), card = $('.lrc-card', grid);
     $('.lrc-th', grid).innerHTML = p.vocab.map((it, i) => `<button type="button" class="lrc-t" aria-label="${esc(it.en)}">${String(it.img || '').startsWith('#') ? `<span>${esc(it.img.slice(1))}</span>` : `<img loading="lazy" alt="" src="${M.imgURL(it.img, 160, 120)}" onerror="this.style.opacity=0">`}</button>`).join('');
@@ -87,7 +87,7 @@
       let r = null; try { r = await MRMEL.take(it.au, v); } catch (e) { r = { err: 'x' }; }
       mic.classList.remove('rec'); mic.disabled = false; $('small', mic).textContent = 'Otra vez'; if (cur !== i) return;
       if (r.err) { res.innerHTML = ''; $('small', mic).textContent = 'Repetir'; M.toast('Permite el acceso al micrófono'); return; }
-      if (r.silent) { v.el.insertAdjacentHTML('afterend', '<div class="lrc-fb"><b>No te escuché.</b> Acércate al micrófono y repite.</div>'); $('small', mic).textContent = 'Repetir'; return; }
+      if (r.silent) { v.el.insertAdjacentHTML('afterend', '<div class="lrc-fb"><b>No te escuché bien.</b> Acércate al micrófono y dilo un poco más fuerte.</div>'); $('small', mic).textContent = 'Repetir'; if (r.quiet) { tries++; upd(); } return; }
       const cls = r.unv ? 'ce-st-mid' : !r.ok ? 'ce-st-bad' : r.r + r.it >= 5 ? 'ce-st-ok' : 'ce-st-mid'; card.classList.add(cls);
       v.el.insertAdjacentHTML('afterend', MRMEL.resultHTML(r) + '<div class="mel9-bt"><button type="button" class="btn w sm mel9-me">▶ Tu voz</button><button type="button" class="btn w sm ce-mo">▶ Modelo</button></div>');
       res.querySelector('.mel9-me').onclick = (ev) => { ev.stopPropagation(); stop(); MRMEL.play(r.buf); };
@@ -108,8 +108,11 @@
       hideF(); const done = k >= n; b._i = done ? 0 : b._i; b._run = false; b.textContent = done ? '▶ Escuchar todo' : '▶ Continuar'; };
     // mini lesson + tips
     // v428: mini lección ARRIBA y dinámica (diapositivas con Mr. Arrieta), luego se practican las palabras
-    const ml10el = !o.noTip ? ml10(p, () => { const el = body.querySelector('.ml10'); if (el) { el.classList.add('ml10-min'); const hd = el.querySelector('.ml10-h'); if (hd && !hd._v) { hd._v = 1; hd.addEventListener('click', ev => { if (ev.target.closest('.ml10-au')) return; el.classList.toggle('ml10-min'); }); } } try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { } }) : null; // v484: al terminar la regla se pliega y las tarjetas quedan a la vista
-    if (ml10el) { body.insertBefore(ml10el, tools);
+    const ml10el = !o.noTip ? ml10(p, () => { if (stage._lrtSet) { stage._lrtSet('p'); return; } const el = body.querySelector('.ml10'); if (el) { el.classList.add('ml10-min'); const hd = el.querySelector('.ml10-h'); if (hd && !hd._v) { hd._v = 1; hd.addEventListener('click', ev => { if (ev.target.closest('.ml10-au')) return; el.classList.toggle('ml10-min'); }); } } try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { } }) : null; // v484: al terminar la regla se pliega y las tarjetas quedan a la vista
+    const lrTabs = (mlEl) => { /* v639: la regla y las frases en pestañas: todo cabe en pantalla sin bajar */ if (!mlEl || !grid) return; const tb = h(`<div class="lrt"><button type="button" data-t="r">1 · La regla</button><button type="button" data-t="p">2 · Repite las frases</button></div>`); body.insertBefore(tb, mlEl);
+      const set = (t) => { stage.classList.toggle('lrt-r', t === 'r'); stage.classList.toggle('lrt-p', t === 'p'); $$('button', tb).forEach(b => b.classList.toggle('on', b.dataset.t === t)); };
+      $$('button', tb).forEach(b => b.onclick = () => { sfx('tap'); set(b.dataset.t); }); set('r'); stage._lrtSet = set; };
+    if (ml10el) { body.insertBefore(ml10el, tools); lrTabs(ml10el);
     } else
     if (!o.noTip && (p.tip || (p.tips && p.tips.length))) {
       const P = String(p.tip || '').split(/<\/p>/i).map(x => x.replace(/<p[^>]*>/gi, '').trim()).filter(x => x.replace(/<[^>]+>/g, '').trim().length > 2);
@@ -120,19 +123,19 @@
       const draw = () => { const x = SL[si]; $('.ml9-n', ml).textContent = `${si + 1} de ${SL.length}`; $('.ml9-k', ml).textContent = x.k; const t = $('.ml9-t', ml); t.innerHTML = x.t; t.classList.remove('in'); void t.offsetWidth; t.classList.add('in');
         $('.ml9-m', ml).src = 'mra-' + POSE[si % POSE.length] + '.webp'; $$('.ml9-d i', ml).forEach((d, j) => d.className = j < si ? 'ok' : j === si ? 'on' : ''); $('.ml9-p', ml).disabled = !si; $('.ml9-x', ml).textContent = si < SL.length - 1 ? 'Siguiente' : '¡Entendido! A practicar'; };
       $('.ml9-p', ml).onclick = () => { if (si) { si--; draw(); } };
-      $('.ml9-x', ml).onclick = () => { sfx('tap'); if (si < SL.length - 1) { si++; draw(); } else { ml.classList.add('done'); tools.scrollIntoView({ behavior: 'smooth', block: 'start' }); } };
-      body.insertBefore(ml, tools); draw();
+      $('.ml9-x', ml).onclick = () => { sfx('tap'); if (si < SL.length - 1) { si++; draw(); } else { ml.classList.add('done'); if (stage._lrtSet) stage._lrtSet('p'); else tools.scrollIntoView({ behavior: 'smooth', block: 'start' }); } };
+      body.insertBefore(ml, tools); draw(); lrTabs(ml);
     }
     // 🎙️ v625: repetir con su voz UNA frase para continuar; si después de 3 intentos no lo logra, avanza igual (nunca es un bloqueo) y esas frases vuelven en el repaso
     const need = needN;
     const saveMiss = () => { try { const L = [...triedNo].filter(j => !said.has(j)).map(j => p.vocab[j] && p.vocab[j].au).filter(Boolean); if (!L.length) return; const k = 'mra_rev_miss_' + String((M.code && M.code()) || (window.MRAC && MRAC.code && MRAC.code()) || ''); const old = JSON.parse(localStorage.getItem(k) || '[]'); localStorage.setItem(k, JSON.stringify([...new Set(L.concat(old))].slice(0, 20))); } catch (e) { } };
     await waitNext(stage, 'Ya practiqué, ¡continuar!', () => {
       if (said.size >= need) { saveMiss(); return true; }
-      if (tries >= 3) { saveMiss(); M.toast('¡Buen esfuerzo! Estas frases volverán en tu repaso para que las sigas practicando.'); return true; }
+      if (tries >= 2) { saveMiss(); M.toast('¡Buen esfuerzo! Estas frases volverán en tu repaso para que las sigas practicando.'); return true; }
       const falta = need - said.size;
       const m = M.modal(`<div class="center">${M.mascot('mascot', 'point')}</div><h3 class="center">🎙️ ¡Primero practica con tu voz!</h3>
         <p class="center" style="font-size:17px">Para continuar, <b>repite con tu voz una frase</b> tocando <b>🎙️ Repetir</b> en las tarjetas.</p>
-        <p class="center muted">Llevas <b>${tries} de 3</b> intentos. Si no te sale, después de 3 intentos puedes continuar igual. Aquí aprendes inglés HABLANDO 💪</p>
+        <p class="center muted">Llevas <b>${tries} de 2</b> intentos. Si no te sale, después de 2 intentos puedes continuar igual. Aquí aprendes inglés HABLANDO 💪</p>
         <p class="center muted" style="font-size:13px">Si no te deja grabar, permite el uso del micrófono en tu navegador (ícono 🔒 junto a la dirección).</p>
         <button class="btn k block lg" id="mk">¡Entendido, voy a repetir!</button>`, { x: true });
       $('#mk', m).onclick = () => { m.remove(); let j = 0; while (j < n && said.has(j)) j++; if (j < n && j !== cur) show(j, false); grid.scrollIntoView({ block: 'center', behavior: 'smooth' }); };

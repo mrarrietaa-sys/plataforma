@@ -328,9 +328,9 @@
     const wrap = document.createElement('div'); wrap.className = 'ld';
     const PROF_ON = (window.MRPROFES || []).length;
     const SEC_PLANES = `<section class="ld-sec" id="ld-planes"><h2>Elige tu plan</h2><p class="ld-sub">Pagos mes a mes · tarjeta, PSE, Nequi o Daviplata</p><div class="pv-grid n4">${['free', 'membership', 'premium', 'premium8'].map(k => `<a class="pv${PL.hot ? PL.hot(k) : ''}" ${k === 'free' ? 'href="#" data-trial' : `href="inscripcion.html?plan=${k}"`}>${PL.v2 ? PL.v2(k) : ''}</a>`).join('')}</div>${PL.p12 ? PL.p12({ href: 'inscripcion.html?plan=premium12' }) : ''}${PL.trust ? PL.trust() : ''}</section>`, SEC_PROFES = PROF_ON ? `<section class="ld-sec" id="ld-profes">${lpSeg()}<h2>${PAGE === 'ninos' ? 'Los profes de tu hijo(a)' : 'Conoce a tus profes'}</h2><p class="ld-sub">${PAGE === 'ninos' ? 'Profesionales bilingües que también enseñan a niños y jóvenes · formación en la enseñan' : 'Profesionales bilingües con formación en la enseñan'}za del inglés</p><div class="ld-cylw"><div class="ld-pf ld-cyl">${pfGrid()}</div></div><div class="ld-cyln"><button class="ld-cyb" data-cy="-1" aria-label="Anterior">‹</button><div class="ld-cyd"></div><button class="ld-cyb" data-cy="1" aria-label="Siguiente">›</button></div></section>` : '';
-    wrap.innerHTML = PAGE === 'home' ? `<section class="ld-hero"><div class="ld-copy"><h1>Aprende inglés <em>HABLANDO</em></h1>${pathCards()}<p class="ld-lead">La escuela donde <b>no eres un número</b>: <b>eliges tu profe</b>, clases <b>solo contigo</b> y practicas <b>a tu ritmo</b> con una plataforma que <b>te corrige</b>.</p>
-        <div class="ld-cta ld-cta2"><button class="btn k lg" data-trial>${MRI('gift')} Prueba gratis 3 días</button><span class="ld-inc">+ 1 clase gratis con profe · sin tarjeta</span></div><p class="ld-count-st ld-trust2"><a class="ld-g" href="https://g.page/r/CSz_ib_w-ctREAE" target="_blank" rel="noopener" aria-label="Ver las opiniones en Google"><span class="ld-st">★★★★★</span>4,9 en Google ›</a><span class="ld-dot">·</span><span><b data-stc>+300</b> estudiantes</span></p>
-        <img class="ld-hero-mra" src="mra-x-rocket2.webp?v=2" alt="Mr. Arrieta"></div><div class="ld-login"></div></section>`
+    wrap.innerHTML = PAGE === 'home' ? `<section class="ld-hero"><div class="ld-copy"><h1>Aprende inglés <em>HABLANDO</em></h1>${pathCards()}<p class="ld-lead">Escuela <b>100% virtual</b>: <b>reservas con tu profe</b> cuando quieras, <b>clases solo contigo</b> y practicas <b>a tu ritmo</b> con una plataforma que <b>te corrige</b>.</p>
+        <div class="ld-cta ld-cta2"><div class="ld-cr"><button class="btn k lg" data-trial>${MRI('gift')} Prueba gratis 3 días</button><button type="button" class="ld-try" data-hdemo><i>${MRI('mic')}</i>Pruébalo: habla y te corrige</button></div><span class="ld-inc">+ 1 clase gratis con profe · sin tarjeta</span></div><p class="ld-faces" id="ld-faces" hidden><span class="ld-fc"></span><span class="ld-ft"><b>Profes reales</b> · elige el tuyo</span></p><p class="ld-count-st ld-trust2"><a class="ld-g" href="https://g.page/r/CSz_ib_w-ctREAE" target="_blank" rel="noopener" aria-label="Ver las opiniones en Google"><span class="ld-st">★★★★★</span>4,9 en Google ›</a><span class="ld-dot">·</span><span class="ld-stu"><b data-stc>+500</b> estudiantes</span><span class="ld-dot ld-dp">·</span><button type="button" class="ld-price" data-hplans><span class="ld-pl1">Planes desde </span><span class="ld-pl2">Desde </span><b data-minp>$64.900</b><b>/mes</b></button></p><p class="ld-virt">Clases en vivo por internet desde cualquier lugar</p>
+        <img class="ld-hero-mra" src="mra-x-rocket2.webp?v=2" alt="Mr. Arrieta"><button type="button" class="ld-bub" data-hdemo hidden><i>${MRI('mic')}</i><span>Dime<br><b>“How are you?”</b><br>y te corrijo</span></button></div><div class="ld-login"></div></section>`
       : PAGE === 'ninos' ? heroKids() + kidsSections() + SEC_PROFES + `<section class="ld-final card lp-final-k"><div><h2>Que tu hijo(a) pruebe gratis</h2><p>3 días · sin tarjeta · sin compromiso.</p></div><button class="btn r lg" data-trial data-kid>${MRI('gift')} Crear su acceso gratis</button></section>`
       : heroAdult() + `
       <section class="ld-sec" id="ld-planes"><h2>Elige tu plan</h2><p class="ld-sub">Pagos mes a mes · tarjeta, PSE, Nequi o Daviplata</p><div class="pv-grid n4">${['free', 'membership', 'premium', 'premium8'].map(k => `<a class="pv${PL.hot ? PL.hot(k) : ''}" ${k === 'free' ? 'href="#" data-trial' : `href="inscripcion.html?plan=${k}"`}>${PL.v2 ? PL.v2(k) : ''}</a>`).join('')}</div>${PL.p12 ? PL.p12({ href: 'inscripcion.html?plan=premium12' }) : ''}${PL.trust ? PL.trust() : ''}</section>
@@ -375,7 +375,7 @@
       const xc = $('#ld-xcalc'); if (xc) { let n = 1; const pr = () => (window.MRPLANS && MRPLANS.extra) ? MRPLANS.extra() : 32900; const f = (v) => '$' + String(v).replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' COP';
         const draw = () => { $('[data-xn]', xc).textContent = n; $('[data-xl]', xc).textContent = n + (n === 1 ? ' clase extra' : ' clases extra'); $('[data-xt]', xc).textContent = f(pr() * n); };
         $$('[data-x]', xc).forEach(b => b.onclick = () => { n = Math.max(1, Math.min(10, n + +b.dataset.x)); draw(); }); draw(); }
-      countUp();
+      countUp(); if (PAGE === 'home') homeX();
     }
     if (!window.__trialWired) { window.__trialWired = true; document.addEventListener('click', trialClick); }
   }
@@ -406,8 +406,72 @@
       const r = await MRAC.call('myCodeChange', { code: o, newCode: n }).catch(() => null);
       if (r && r.ok) { MRAC.setCode(r.code); m.querySelector('.card').innerHTML = `<div class="center"><div class="to-ic">${MRI('check')}</div><h3>¡Listo! Tu código cambió</h3><p>Desde ahora entra con tu nuevo código. Te enviamos una confirmación a tu correo.</p><button class="btn k block lg" onclick="location.reload()">Entendido</button></div>`; return; }
       b.disabled = false; b.textContent = 'Guardar nuevo código'; msg.textContent = !r ? 'No hay conexión. Inténtalo de nuevo.' : r.err === 'taken' ? 'Ese código ya está en uso. Elige otro.' : r.err === 'same' ? 'El nuevo código es igual al actual.' : r.err === 'format' ? 'Usa de 4 a 20 letras o números.' : 'No se pudo cambiar. Inténtalo de nuevo.'; }; }); }
+
+  // v639 · entrada: profes rotando (máx. 5, desde Administración), precio más bajo automático → planes, reto "How are you?"
+  function homeX() {
+    const hero = $('.ld-hero'); if (!hero || hero._hx) return; hero._hx = 1;
+    // 👩‍🏫 profes: los que tienen foto en Administración; si hay más de 5, rotan uno por uno
+    const faces = () => { const box = $('#ld-faces'); if (!box) return; const fc = box.querySelector('.ld-fc'); const L = (window.MRPROFES || []).filter(p => p && p.img && !/^data:/.test(p.img)); if (!L.length) { box.hidden = true; return; } box.hidden = false;
+      const N = Math.min(5, L.length); const sig = L.map(p => p.img).join('|'); if (fc._sig === sig) return; fc._sig = sig; clearInterval(fc._iv); fc.innerHTML = L.slice(0, N).map(p => `<img src="${esc(p.img)}" alt="${esc(p.name || '')}" loading="lazy">`).join('');
+      if (L.length > N) { let k = N, slot = 0; fc._iv = setInterval(() => { if (document.hidden || !fc.isConnected) return; const im = fc.children[slot]; if (!im) return; im.classList.add('out'); setTimeout(() => { im.src = L[k % L.length].img; im.alt = L[k % L.length].name || ''; k++; im.classList.remove('out'); im.classList.add('in'); setTimeout(() => im.classList.remove('in'), 500); }, 300); slot = (slot + 1) % N; }, 1800); } };
+    faces(); if (window.MRPROFREADY && MRPROFREADY.then) MRPROFREADY.then(faces);
+    // 💲 "Desde $…": el plan pagado más económico configurado en Administración
+    const minP = () => { const P = (window.MRPLANS && MRPLANS.PL) || {}; let m = 0; Object.keys(P).forEach(k => { const v = +(P[k] && P[k].n) || 0; if (v > 0 && (!m || v < m)) m = v; }); if (!m) return; const t = '$' + String(m).replace(/\B(?=(\d{3})+(?!\d))/g, '.'); $$('[data-minp]').forEach(e => { e.textContent = t; }); };
+    minP(); let tk = 0; const iv = setInterval(() => { minP(); if (++tk > 12) clearInterval(iv); }, 1000);
+    // 📋 planes en ventana (se abren al tocar el precio)
+    document.addEventListener('click', (e) => { const b = e.target.closest && e.target.closest('[data-hplans]'); if (!b) return; e.preventDefault(); hPlans(); });
+    // 🎙️ reto "How are you?" (botón en PC · globo de Mr. Arrieta en celular)
+    document.addEventListener('click', (e) => { const b = e.target.closest && e.target.closest('[data-hdemo]'); if (!b) return; e.preventDefault(); hDemo(); });
+    // 🚀 celular: el cohete se acomoda al espacio libre y el globo aparece cuando aterriza
+    const m = $('.ld-hero-mra'), bub = $('.ld-bub');
+    const fit = () => { if (!m || !m.isConnected || !hero.isConnected || innerWidth > 899) return; const tr = $('.ld-virt') && $('.ld-virt').offsetParent ? $('.ld-virt') : $('.ld-trust2'); if (!tr) return; const hb = hero.getBoundingClientRect(); const nb = [...document.querySelectorAll('.ld-dock,.mb-nav,nav')].map(x => x.getBoundingClientRect()).filter(r => r.top > innerHeight * .6 && r.height > 20 && r.height < 120)[0];
+      const lim = Math.min(hb.bottom, nb ? nb.top : innerHeight) - 18, top = tr.getBoundingClientRect().bottom + 2; const w = Math.max(150, Math.min(240, (lim - top - 22) * 1.04, hb.width * .6)); m.style.setProperty('width', w + 'px', 'important'); m.style.setProperty('height', 'auto', 'important'); };
+    const place = () => { if (!bub || !m || !bub.isConnected || innerWidth > 899) return; const r = m.getBoundingClientRect(), op = bub.offsetParent; if (!op) return; const o = op.getBoundingClientRect(); const face = r.left + r.width * .34; bub.style.left = '0px'; bub.style.maxWidth = Math.max(118, face - o.left - 22) + 'px'; bub.style.top = (r.top - o.top + (r.width / 1.04) * .14) + 'px'; };
+    const show = () => { if (!bub || innerWidth > 899 || document.querySelector('.modal')) return; bub.hidden = false; place(); bub.classList.remove('hide'); void bub.offsetWidth; bub.classList.add('show'); };
+    const hide = () => { if (!bub || bub.hidden) return; bub.classList.remove('show'); bub.classList.add('hide'); };
+    if (m && bub) { const orig = m.animate.bind(m); m.animate = function (k, o) { hide(); const a = orig(k, o); a.addEventListener('finish', () => setTimeout(() => { if (window.rkShadow) { } show(); }, 150)); return a; }; setTimeout(() => { if (bub.hidden && !(m.getAnimations && m.getAnimations().some(a => a.playState === 'running' && a.effect && a.effect.getKeyframes().length > 3))) show(); }, 6500); }
+    const pay = () => { const lc = $('.ld-login .pt-login'); if (lc && !lc.querySelector('.ld-pay')) lc.insertAdjacentHTML('beforeend', '<p class="ld-pay"><svg class="mri" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Pagos seguros con <b>Mercado Pago</b> · tarjeta, PSE, Nequi</p>'); };
+    pay(); setTimeout(pay, 800); setTimeout(pay, 2500);
+    fit(); setTimeout(fit, 300); setTimeout(fit, 1200); addEventListener('resize', () => { fit(); if (bub && !bub.hidden) place(); });
+  }
+  function hPlans() {
+    const old = $('.hpl-bg'); if (old) old.remove();
+    const bg = document.createElement('div'); bg.className = 'hpl-bg'; bg.innerHTML = `<div class="hpl" role="dialog" aria-label="Nuestros planes"><button type="button" class="hpl-x" aria-label="Cerrar">✕</button><h3>Nuestros planes</h3><p class="hpl-sb"><b>Mismo precio para adultos, niños y jóvenes</b> · mes a mes, sin permanencia</p><div class="lp-panel on">${lpPlans()}</div><p class="hpl-ft"><svg class="mri" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Pagos seguros con <b>Mercado Pago</b> · tarjeta, PSE, Nequi</p></div>`;
+    document.body.appendChild(bg); const close = () => bg.remove(); bg.querySelector('.hpl-x').onclick = close; bg.addEventListener('click', (e) => { if (e.target === bg) close(); });
+    try { if (window.MRPLANS && MRPLANS.pbInit) MRPLANS.pbInit(bg); } catch (e) { }
+    const g = bg.querySelector('.lp-pg'); if (g) { g.scrollLeft = 0; setTimeout(() => g.dispatchEvent(new Event('scroll')), 60); }
+  }
+  function hDemo() {
+    const old = $('.hdm-bg'); if (old) old.remove(); M.loadAudio && M.loadAudio(['promo']);
+    const T = 'How are you?', AU = 'prhowareyou';
+    const bg = document.createElement('div'); bg.className = 'hdm-bg'; bg.innerHTML = `<div class="hdm" role="dialog" aria-label="Reto de pronunciación"><button type="button" class="hdm-x" aria-label="Cerrar">✕</button><small>Reto · habla y te corrijo</small><h3>“${T}”</h3><button type="button" class="hdm-es">¿Cómo estás? <i>${MRI('vol')}</i></button><div class="hdm-body"><button type="button" class="hdm-mic">${MRI('mic')}</button><p class="hdm-lb">Toca el micrófono y dilo en voz alta</p></div></div>`;
+    document.body.appendChild(bg); const close = () => bg.remove(); bg.querySelector('.hdm-x').onclick = close; bg.addEventListener('click', (e) => { if (e.target === bg) close(); });
+    bg.querySelector('.hdm-es').onclick = () => { try { M.play(AU); } catch (e) { } };
+    const body = bg.querySelector('.hdm-body'); let busy = false;
+    const wire = () => { const mic = body.querySelector('.hdm-mic'); if (mic) mic.onclick = go; const ag = body.querySelector('.hdm-ag'); if (ag) ag.onclick = () => { body.innerHTML = `<button type="button" class="hdm-mic">${MRI('mic')}</button><p class="hdm-lb">Toca el micrófono y dilo en voz alta</p>`; wire(); }; };
+    const go = async () => {
+      if (busy) return; busy = true; const W = T.replace(/[?!.]/g, '').split(' ');
+      body.innerHTML = `<button type="button" class="hdm-mic rec">${MRI('mic')}</button><p class="hdm-lb">Te escucho…</p><div class="hdm-mel"></div>`;
+      let sc = null, err = '';
+      try {
+        if (M.canSR) { const r = await M.listen(6000, { quick: true, target: T }); if (r.alts && r.alts.length) sc = M.speechScore(T, r.alts); else err = r.error || 'no'; }
+        else if (window.MRMEL && MRMEL.can()) { const ms = await MRMEL.score(AU, body.querySelector('.hdm-mel')); if (ms.score != null) sc = { score: ms.score, hit: W.map(() => ms.score >= 70) }; else err = ms.err ? 'not-allowed' : 'no'; }
+        else err = 'nosr';
+      } catch (e) { err = 'no'; }
+      busy = false;
+      if (!sc) { body.innerHTML = `<p class="hdm-msg">${err === 'not-allowed' || err === 'service-not-allowed' ? 'Permite el micrófono para hacer el reto.' : err === 'nosr' ? 'Para el reto, abre esta página en Google Chrome y permite el micrófono.' : 'No te escuché bien. Acércate al micrófono y dilo un poco más fuerte.'}</p><button type="button" class="hdm-ag">↻ Intentar otra vez</button>`; wire(); return; }
+      const good = sc.score >= 80; const hit = sc.hit || W.map(() => good);
+      const miss = W.find((w, k) => !hit[k]);
+      if (good) { try { M.confetti && M.confetti(1400); } catch (e) { } }
+      body.innerHTML = `<div class="hdm-sc ${good ? 'ok' : 'mid'}">${good ? '¡Muy bien!' : '¡Casi!'} ${sc.score}%</div><div class="hdm-ws">${W.map((w, k) => `<span class="${hit[k] ? 'ok' : 'm'}">${esc(w)} ${hit[k] ? '✓' : '~'}</span>`).join('')}</div>
+        <p class="hdm-tip">${good ? 'Lo dijiste muy bien.' : `Revisa la palabra <b>${esc(miss || W[0])}</b>: escucha el ejemplo y repítelo.`} En la prueba gratis practicas así todos los días.</p>
+        <button type="button" class="btn k block hdm-go" data-trial>${MRI('gift')} Prueba gratis 3 días</button><button type="button" class="hdm-ag">↻ Intentar otra vez</button>`;
+      body.querySelector('.hdm-go').addEventListener('click', () => setTimeout(close, 0)); wire();
+    };
+    wire(); setTimeout(() => { try { M.play(AU); } catch (e) { } }, 350);
+  }
   function countUp() { const els = $$('[data-stc]'); if (!els.length) return; const run = (N) => els.forEach(el => { const t0 = performance.now(); const fr = (t) => { const k = Math.min(1, (t - t0) / 1400); el.textContent = '+' + Math.round(N * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(fr); }; requestAnimationFrame(fr); });
-    if (window.MRAC && MRAC.on) MRAC.call('pubStats', {}).then(r => run(r && r.students ? r.students : 300)).catch(() => run(300)); else run(300); }
+    if (window.MRAC && MRAC.on) MRAC.call('pubStats', {}).then(r => run(Math.max(500, r && r.students ? r.students : 0))).catch(() => run(500)); else run(500); }
   window.MRCOUNTUP = countUp;
   function plansClick(e) { const b = e.target.closest && e.target.closest('[data-plans]'); if (!b) return; e.preventDefault(); const mo = b.closest('.modal'); if (mo) mo.remove(); if (window.MRPLANS) MRPLANS.modal(M); }
   if (!window.__plansWired) { window.__plansWired = true; document.addEventListener('click', plansClick); }

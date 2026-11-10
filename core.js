@@ -300,6 +300,7 @@ window.MRMOOD = function (c, t) { const r = t ? c / t : 1, pk = (a) => a[Math.fl
       let f = E.findIndex(v => v > thr); if (f < 0) return null; let l = E.length - 1; while (l > f && E[l] <= thr) l--;
       f = Math.max(0, f - 8); l = Math.min(E.length - 1, l + 10); // recorta silencios: deja 0,16 s antes y 0,2 s después
       let seg = x.subarray(f * W, (l + 1) * W); if (seg.length > R * 8) seg = seg.subarray(0, R * 8);
+      { let pk = 0; for (let i = 0; i < seg.length; i++) { const a = Math.abs(seg[i]); if (a > pk) pk = a; } const g = pk > 0 ? Math.min(8, 0.9 / pk) : 1; if (g > 1.05) { const t = new Float32Array(seg.length); for (let i = 0; i < seg.length; i++) t[i] = seg[i] * g; seg = t; } } // v639: sube el volumen (iPhone graba bajo) antes de revisar
       const buf = new ArrayBuffer(44 + seg.length * 2), v = new DataView(buf), ws = (p, t) => { for (let i = 0; i < t.length; i++) v.setUint8(p + i, t.charCodeAt(i)); };
       ws(0, 'RIFF'); v.setUint32(4, 36 + seg.length * 2, true); ws(8, 'WAVE'); ws(12, 'fmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true); v.setUint32(24, R, true); v.setUint32(28, R * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true); ws(36, 'data'); v.setUint32(40, seg.length * 2, true);
       for (let i = 0; i < seg.length; i++) { const q = Math.max(-1, Math.min(1, seg[i])); v.setInt16(44 + i * 2, q < 0 ? q * 0x8000 : q * 0x7FFF, true); }

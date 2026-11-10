@@ -1,12 +1,12 @@
-/* v632 · Reto de 60 segundos: un juego propio por módulo y edad.
-   Usa SOLO frases de la lección con su audio aprobado (texto = audio). Duración: 60 s.
+/* v632 · Reto de 40 segundos: un juego propio por módulo y edad.
+   Usa SOLO frases de la lección con su audio aprobado (texto = audio). Duración: 40 s.
    M1: Adultos Maletas · Teens Ritmo · Kids Burbujas
    M2: Adultos Reloj · Teens Corte ninja · Kids Pesca
    M3: Adultos Clasificador · Teens Carrera · Kids Canasta
    M4: Adultos Rascacielos · Teens Penalti · Kids Ranita */
 (function () {
   try { if (!document.querySelector('link[href^="retos.css"]')) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'retos.css?v=632'; document.head.appendChild(l); } } catch (e) { }
-  const T = window.__rtT || 60, IMG = 'retos/';
+  const T = window.__rtT || 40, IMG = 'retos/';
   const M = () => window.M1, A = () => window.M1A;
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const shuf = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
