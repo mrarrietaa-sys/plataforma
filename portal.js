@@ -144,23 +144,37 @@
       <div class="lp-cta"><button class="btn r lg" data-trial>${MRI('gift')} Prueba gratis 3 días</button></div><div class="lp-trust"><span><i>${LI(LP.nocard)}</i>Sin tarjeta</span><span><i>${LI(LP.users)}</i>+300 estudiantes</span><span><i>${LI(LP.repeat)}</i>Mes a mes</span></div></div></div></section>`;
   }
   const LP_AGE = (a) => a < 12 ? ['k', 'Experiencia Kids', 'Camino de aventuras, medallas y juegos. Reserva sus clases y tú ves todo su progreso.'] : ['t', 'Experiencia Teens', 'Misiones, puntos y ranking con temas de su mundo. Reserva sus clases y tú ves todo.'];
-  function heroKids() {
-    return `<section class="lp-hero lp-k"><span class="lp-sun"></span>${lpClouds()}<span class="lp-badge b1"><i class="r">${LI(LP.medal)}</i>Medallas y misiones</span><span class="lp-badge b2"><i class="n">${LI(LP.pad)}</i>Juegos con voces reales</span>
-      <div class="lp-in"><div class="lp-copy"><span class="lp-ey"><i class="lp-eyi k">${LPI.kids}</i>NIÑOS Y JÓVENES · 9 A 17 AÑOS</span>
-      <div class="lp-hrow"><h1>El inglés que tus hijos <em>sí quieren</em> practicar</h1><img class="lp-bal" src="mra-x-balloon2.webp" alt="Mr. Arrieta" draggable="false"></div>
+  function heroKids() { // v632: selector Niños / Jóvenes (cada edad con su color)
+    return `<section class="lp-hero lp-k"><span class="lp-sun"></span>${lpClouds()}<span class="lp-badge b1"><i class="r">${LI(LP.medal)}</i><span class="lp-b1t">Medallas y misiones</span></span><span class="lp-badge b2"><i class="n">${LI(LP.pad)}</i>Juegos con voces reales</span>
+      <div class="lp-in"><div class="lp-copy"><span class="tc-sw" role="tablist" aria-label="Edad"><button type="button" role="tab" data-ag="k" class="on">Niños 9–11</button><button type="button" role="tab" data-ag="t">Jóvenes 12–17</button></span>
+      <div class="lp-hrow"><h1><span class="lp-h1k">El inglés que tus hijos <em>sí quieren</em> practicar</span><span class="lp-h1t">El inglés que <em>sí quieren</em> practicar</span></h1><img class="lp-bal" src="mra-x-balloon2.webp" alt="Mr. Arrieta" draggable="false"></div>
       <p class="lp-lead">Hablan, juegan y ganan medallas con clases solo con su profe. Tú ves todo su progreso.</p>
       ${lpChallenge('ninos')}
       <div class="lp-cta"><button class="btn k lg" data-trial data-kid>${MRI('gift')} <span class="lp-ctxt">Prueba gratis para mi hijo(a)</span></button></div><div class="lp-trust"><span><i>${LI(LP.shield)}</i>Sin grabación</span><span><i>${LI(LP.mail)}</i>Reporte cada lunes</span><span><i>${LI(LP.nocard)}</i>Sin tarjeta</span></div></div></div></section>`;
   }
-  function kidsSections() {
-    const it = (ic, t) => `<li><i>${LI(LP[ic])}</i>${t}</li>`;
-    const ct = (ic, t, d) => `<div class="lp-ct"><span class="ic">${LI(LP[ic])}</span><b>${t}</b><small>${d}</small></div>`;
-    return `<section class="lp-papas"><div class="lp-ph">${lpSeg()}<h2>Hecho para cada edad</h2><p>Mismos niveles A1 a B2+, con temas de su mundo</p></div>
-      <div class="lp-agrid"><article class="lp-ag k"><div class="lp-agi" style="background-image:url('https://images.unsplash.com/photo-1623076189461-f7706b741c04?w=640&h=420&fit=crop&crop=faces&q=80&auto=format')"><span>9 a 11 años</span></div><div class="lp-agb"><b>Kids</b><ul>${it('medal', 'Aventuras y medallas')}${it('pad', 'Juegos con voces reales')}${it('star', 'Familia, mascotas, colegio')}</ul></div></article>
-        <article class="lp-ag t"><div class="lp-agi" style="background-image:url('https://images.unsplash.com/photo-1758612214848-04e700d192ce?w=640&h=420&fit=crop&crop=faces&q=80&auto=format')"><span>12 a 17 años</span></div><div class="lp-agb"><b>Teens</b><ul>${it('star', 'Chats, notas de voz y retos')}${it('pad', 'Series, juegos, deportes')}${it('cal', 'Reservan sus clases solos')}</ul></div></article></div>
-      <div class="lp-ph2" id="lp-control"><b>Tú tienes el control</b><small>Panel de papás incluido en todos los planes</small></div>
-      <div class="lp-cts">${ct('chart', 'Progreso en vivo', 'Temas, práctica y notas')}${ct('mail', 'Alerta de 7 días', 'Si no reserva o no practica')}${ct('check', 'Reservan solos', 'Kids y Teens')}${ct('shield', 'Seguro', 'Sin grabación')}</div></section>`;
+  // v632: cambia la portada entre Niños (naranja) y Jóvenes (azul y verde)
+  function kidsAgeSwitch() {
+    const sw = $('.tc-sw'); if (!sw || sw.dataset.on) return; sw.dataset.on = '1';
+    const K = { t: 'I love English', es: '¡Me encanta el inglés!', au: 'priloveeng' }, Tn = { t: 'See you tomorrow', es: '¡Nos vemos mañana!', au: 'prseeyou' };
+    const set = (a, first) => { const teen = a === 't'; document.body.classList.toggle('lp-teen', teen); sw.querySelectorAll('button').forEach(b => { const on = b.dataset.ag === a; b.classList.toggle('on', on); b.setAttribute('aria-selected', on); });
+      Object.assign(LP_PH.ninos, teen ? Tn : K); const d = $('#lp-demo'); if (d) { const bq = d.querySelector('.lp-demo-tx b'), es2 = d.querySelector('.lp-es'), rs = $('#lp-res'); if (bq) bq.textContent = '“' + LP_PH.ninos.t + '!”'; if (es2) es2.textContent = LP_PH.ninos.es; if (rs && !first) { rs.hidden = true; rs.innerHTML = ''; } }
+      const b1 = $('.lp-b1t'); if (b1) b1.textContent = teen ? 'Retos y ranking' : 'Medallas y misiones'; const ct = $('.lp-hero .lp-ctxt'); if (ct) ct.textContent = teen ? 'Prueba gratis 3 días' : 'Prueba gratis para mi hijo(a)';
+      try { localStorage.setItem('mra_lp_ag', a); } catch (e) { } };
+    sw.addEventListener('click', e => { const b = e.target.closest('[data-ag]'); if (b) set(b.dataset.ag); });
+    let a0 = 'k'; try { a0 = localStorage.getItem('mra_lp_ag') === 't' ? 't' : 'k'; } catch (e) { } set(a0, true);
   }
+  function kidsSections() { // v632: «Hecho para cada edad» · Kids entra por la izquierda, Teens por la derecha, todo a la vista
+    const it = (ic, t) => `<li><i>${LI(LP[ic])}</i><span>${t}</span></li>`;
+    const ct = (ic, t, d) => `<div><i>${LI(LP[ic])}</i><span><b>${t}</b><small>${d}</small></span></div>`;
+    return `<section class="lp-papas pzs"><div class="pz"><div class="pz-h"><h2>Hecho para cada edad</h2><p>Mismos niveles A1 a B2+, con temas de su mundo</p></div>
+      <div class="pz-g"><article class="pz-c k"><div class="im" style="background-image:url('https://images.unsplash.com/photo-1623076189461-f7706b741c04?w=900&q=80&auto=format')"></div><span class="ag">9 a 11 años</span><div class="tx"><b class="n">Kids</b><ul>${it('medal', 'Aventuras y medallas')}${it('pad', 'Juegos con voces reales')}${it('star', 'Familia, mascotas, colegio')}</ul></div></article>
+        <article class="pz-c t"><div class="im" style="background-image:url('https://images.unsplash.com/photo-1758612214848-04e700d192ce?w=900&q=80&auto=format')"></div><span class="ag">12 a 17 años</span><div class="tx"><b class="n">Teens</b><ul>${it('star', 'Chats, notas de voz y retos')}${it('pad', 'Series, juegos, deportes')}${it('cal', 'Reservan sus clases solos')}</ul></div></article></div>
+      <div class="pz-k" id="lp-control"><div class="hd"><b>Tú tienes el control</b><small>Panel de papás incluido en todos los planes</small></div><div class="it">${ct('chart', 'Progreso en vivo', 'Temas, práctica y notas')}${ct('mail', 'Alerta de 7 días', 'Si no reserva o no practica')}${ct('check', 'Reservan solos', 'Kids y Teens')}${ct('shield', 'Seguro', 'Sin grabación')}</div></div></div></section>`;
+  }
+  // v632: la sección de papás ocupa justo la pantalla (sin bajar ni subir)
+  window.__pzFit = () => { const z = document.querySelector('.lp-panel.on .pz'); if (!z) return; const zz = parseFloat(document.documentElement.style.zoom) || 1, d = document.querySelector('.lp-dock'); const lim = (d && d.getClientRects().length ? d.getBoundingClientRect().top : innerHeight) - 10; const h = (lim - z.getBoundingClientRect().top) / zz; z.style.height = Math.max(420, Math.min(760, h)) + 'px'; };
+  addEventListener('resize', () => { clearTimeout(window.__pzT); window.__pzT = setTimeout(() => window.__pzFit && window.__pzFit(), 120); });
+
 
 
 
@@ -248,7 +262,7 @@
     // v629: los planes siempre caben completos en la pantalla (PC y celular), sin subir ni bajar
     const plFit = () => { const pn = box.querySelector('.lp-panel.on'); if (!pn) return; const pf = pn.querySelector('#ld-profes'); if (pf) { const cy = pf.querySelector('.ld-cyl'); if (cy && !cy.classList.contains('lp-car')) { pf.style.zoom = ''; pf.style.setProperty('--pfh', '0px'); const H = Math.max(0, ...[...cy.children].map(d => d.scrollHeight)); if (H) pf.style.setProperty('--pfh', (H + 10) + 'px'); } const av = pn.clientHeight - 6, need = pf.offsetHeight + 4; if (need > av) pf.style.zoom = Math.max(.6, av / need).toFixed(3); /* v629: la info de los profes nunca se corta y todo cabe en pantalla */ } const sc = pn.querySelector('#ld-planes'); if (!sc) return; sc.style.zoom = ''; const av = pn.clientHeight - 6, need = sc.offsetHeight + 4; if (need > av) sc.style.zoom = Math.max(.6, av / need).toFixed(3); };
     addEventListener('resize', () => { clearTimeout(plFit.t); plFit.t = setTimeout(plFit, 120); });
-    const go = (k) => { if (!box.querySelector(`[data-p="${k}"]`)) return; $$('.lp-panel', box).forEach(p => p.classList.toggle('on', p.dataset.p === k)); requestAnimationFrame(plFit); setTimeout(plFit, 400); $$('[data-tab]').forEach(b => b.classList.toggle('on', b.dataset.tab === k)); const cur = box.querySelector(`[data-p="${k}"]`); cur.scrollTop = 0;
+    const go = (k) => { if (!box.querySelector(`[data-p="${k}"]`)) return; $$('.lp-panel', box).forEach(p => p.classList.toggle('on', p.dataset.p === k)); requestAnimationFrame(plFit); setTimeout(plFit, 400); requestAnimationFrame(() => window.__pzFit && window.__pzFit()); $$('[data-tab]').forEach(b => b.classList.toggle('on', b.dataset.tab === k)); const cur = box.querySelector(`[data-p="${k}"]`); cur.scrollTop = 0;
       if (k === 'profes') { const fx = () => { try { cylWire.fit && cylWire.fit(); } catch (e) { } }; fx(); setTimeout(fx, 60); setTimeout(fx, 400); } if (k === 'opin') { const t = $('#ld-testimonios'); if (t) t.hidden = false; } };
     window.__lpTab = go;
     dock.addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (b) go(b.dataset.tab); });
@@ -269,6 +283,7 @@
       pick(K[0]); } }
     const ar = $('#lp-ar'); if (ar) { const paint = () => { const v = +ar.value, A = LP_AGE(v); $('#lp-av').textContent = v + ' años'; $('#lp-pt').textContent = A[1]; $('#lp-pd').textContent = A[2]; $('#lp-pi').className = 'pi ' + A[0]; const cb = $('.lp-k [data-kid] .lp-ctxt'); if (cb) cb.textContent = 'Prueba gratis para mi hijo(a) · ' + v + ' años'; try { sessionStorage.setItem('mra_kid_age', v); } catch (e) { } ar.style.setProperty('--p', ((v - 9) / 8 * 100) + '%'); }; ar.oninput = paint; paint(); }
     // 📱 en celular el globo va al lado del título
+    if (PAGE === 'ninos') kidsAgeSwitch();
     lpChallengeWire();
     lpPanels();
   }

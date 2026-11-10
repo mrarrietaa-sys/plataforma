@@ -447,7 +447,7 @@
     if (p.keyq) st.push({ sec: 'Practice', k: X2 ? 'm2oral' : 'keyq' });
     const acts = (C.PLAN || PLAN)[p.id] || p.acts;
     const AGG = M.ageGroup() !== 'adult' && window.MRAGE2 ? MRAGE2.gamesFor(p) : []; // Kids/Teens: su juego propio de la edad
-    const g = (X2 && M2X.gameFor(p)) || (window.MRAGE2 && MRAGE2.game9For && MRAGE2.game9For(p)) || AGG[0] || acts.find(a => !['learn', 'speak', 'speakWords'].includes(a)); if (g) st.push({ sec: 'Practice', k: g }); // v435: juego corto y divertido de su edad
+    const g = (X2 && M2X.gameFor(p)) || (window.MRAGE2 && MRAGE2.game9For && MRAGE2.game9For(p)) || AGG[0] || acts.find(a => !['learn', 'speak', 'speakWords'].includes(a)); if (window.MRRETO && MRRETO.has(p)) st.push({ sec: 'Practice', k: 'reto' }); else if (g) st.push({ sec: 'Practice', k: g }); // v632: reto de 60 s propio del módulo y la edad · v435: juego corto y divertido de su edad
     if (p.reading) st.push({ sec: 'Reading', k: 'reading' });
     if (missionFor(p)) st.push({ sec: 'Mission', k: 'mission' });
     if (songFor(p) || (M.ageGroup() !== 'adult' && window.MRAGE2 && MRAGE2.musicFor(p))) st.push({ sec: 'Music', k: 'music' });
