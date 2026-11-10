@@ -497,7 +497,7 @@
   function interlude(next, perf, info) { /* v482 · transición mejorada: resultado real, avance, mitad/última, sin tocar la cabeza ni las letras */
     return new Promise(res => {
       const k = SEC_SC[next] || FREE[sceneN++ % FREE.length], sc0 = SCENES[k];
-      const band = perf == null ? null : perf >= .8 ? 'hi' : perf >= .5 ? 'mid' : 'lo';
+      const band = perf == null ? null : perf >= .8 ? 'hi' : perf >= .6 ? 'mid' : 'lo'; // v630: con menos del 60 % nunca dice «Well done» ni «Nice work»
       let fbx = null; if (band) { const L = ITL_FB[band].filter(x => x[0] !== itlLast); fbx = (L.length ? L : ITL_FB[band])[Math.floor(Math.random() * (L.length || ITL_FB[band].length))]; itlLast = fbx[0]; }
       const sad = band === 'lo' ? 'mra-sad' + (1 + Math.floor(Math.random() * 3)) + '.webp' : null;
       const sc = fbx ? Object.assign({}, sad ? { a: 'pop' } : sc0, { say: fbx[0] }) : sc0;
@@ -598,7 +598,7 @@
       $('.resume', app).classList.toggle('hidden', i >= run.max);
       $$('.secbar span', app).forEach(e => { const k = secs.indexOf(e.dataset.s), ck = secs.indexOf(s.sec); e.className = k === ck ? 'on' : k < ck ? 'ok' : ''; const ln = e.previousElementSibling; if (ln && ln.classList.contains('rt-ln')) ln.classList.toggle('ok', k <= ck); if (k === ck) e.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' }); });
       window.scrollTo({ top: 0, behavior: 'smooth' });
-      const back = new Promise(res => { navBack = () => res('__back'); navJump = () => res('__jump'); });
+      const back = new Promise(res => { navBack = () => res('__back'); navJump = () => res('__jump');  });
       let r;
       const AGS = M.ageGroup() !== 'adult' && window.MRAGE2 && MRAGE2[s.k]; // 👧🧑‍🎤 v406: Kids y Teens viven el repaso y la explicación a su manera
       const runIt = () => Promise.race([(AGS ? (st2, pp) => Promise.resolve(MRAGE2[s.k](st2, pp)).then(r => r === null ? (STEP[s.k] || ((a2, b2) => A[s.k](a2, b2)))(st2, pp) : r) : (STEP[s.k] || ((st2, pp) => A[s.k](st2, pp))))(stage, p), back]);
@@ -978,7 +978,7 @@
             if (r.silent) { st.textContent = 'No te escuché'; st2.textContent = 'Acércate al micrófono y toca otra vez.'; return; }
             if (!r.ok) { fails++; sfx('bad'); st.textContent = 'Otra toma'; st2.textContent = 'Escucha el modelo y dila igual';
               res.innerHTML = MRMEL.resultHTML(r) + (fails >= 3 || r.unv ? `<div class="ms9-bt"><button type="button" class="btn w sm ms9-sk">Seguir sin estrellas →</button></div>` : '');
-              const sk = res.querySelector('.ms9-sk'); if (sk) sk.onclick = () => done(null); return; } // v517: hablar no basta
+              const sk = res.querySelector('.ms9-sk'); if (sk) sk.onclick = () => done(r.buf ? { r: Math.max(1, r.r || 1), it: Math.max(1, r.it || 1), buf: r.buf, fail: 1 } : null); return; } // v517: hablar no basta · v630: si sigue, en «Escuchar mi escena» se oye SU voz (no cuenta como acierto)
             if (turn.dataset.peek) r.it = Math.max(1, r.it - 1); /* v523: miró el texto en la misión eco → −1 estrella */ cur = r; sfx(r.r + r.it >= 5 ? 'ok' : 'tap'); st.textContent = 'Otra toma'; st2.textContent = 'Si quieres, grábala otra vez';
             res.innerHTML = MRMEL.resultHTML(r) + `<div class="ms9-bt"><button type="button" class="btn w sm ms9-me">▶ Tu toma</button><button type="button" class="btn k sm ms9-ok">Usar esta toma →</button></div>`;
             res.querySelector('.ms9-me').onclick = () => { stop(); MRMEL.play(r.buf); }; res.querySelector('.ms9-ok').onclick = () => done(cur); };
@@ -988,7 +988,7 @@
       }
       if (!stage.isConnected) return A.result(c, N, 'speaking');
       // 3) el estreno: la escena completa con su voz
-      const T = takes.filter(Boolean), sr = T.length ? Math.round(T.reduce((a, t) => a + t.r, 0) / T.length) : 0, si = T.length ? Math.round(T.reduce((a, t) => a + t.it, 0) / T.length) : 0;
+      const T = takes.filter(t => t && !t.fail), sr = T.length ? Math.round(T.reduce((a, t) => a + t.r, 0) / T.length) : 0, si = T.length ? Math.round(T.reduce((a, t) => a + t.it, 0) / T.length) : 0;
       $e('.ms9-sit').textContent = '';
       turn.innerHTML = `<div class="ms9-fin"><b>¡Misión cumplida!</b>${T.length ? `<span>Ritmo <i>${MRMEL.stars(sr)}</i> · Entonación <i>${MRMEL.stars(si)}</i></span>` : ''}</div><div class="ms9-bt"><button type="button" class="btn k ms9-all">▶ Escuchar mi escena</button><button type="button" class="btn w ms9-nx">Continuar →</button></div>`;
       if (sr + si >= 5) { try { M.confetti(900); } catch (e) { } sfx('win'); }
@@ -1195,7 +1195,7 @@
       await A.waitNext(stage, 'Continuar'); return A.result(c, rounds.length, 'listening');
     },
 
-    music: async (stage, p) => { const r = await playLearn(stage, p); if (window.M2X && M2X.on() && stage.isConnected) { try { stage.innerHTML = ''; await M2X.karaoke(stage, p); } catch (e) { console.error(e); } } return r; }, // v519: + karaoke en el Módulo 2
+    music: async (stage, p) => { let r = await playLearn(stage, p); if (window.M2X && M2X.on() && stage.isConnected) { try { stage.innerHTML = ''; const k = await M2X.karaoke(stage, p); r = window.MRMERGE ? MRMERGE(r, k) : r; } catch (e) { console.error(e); } } return r; }, // v630: el resultado del dictado/karaoke SÍ cuenta (si falla, no dice «Well done») // v519: + karaoke en el Módulo 2
 
     hw: async (stage, p) => homework(stage, p),
     game9: async (stage, p) => { const pv = M.prevPart(p); const old = pv ? sample((pv.vocab || []).filter(v => v && v.en && !(p.vocab || []).some(x => x.en === v.en)), 2) : []; const fn = STEP[p._g9] || A[p._g9]; return fn(stage, Object.assign({}, p, { vocab: (p.vocab || []).concat(old) })); },

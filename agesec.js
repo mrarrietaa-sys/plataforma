@@ -52,7 +52,7 @@
         box.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); await sleep(250); play(it.au);
         box.querySelector('#as-ls').onclick = () => play(it.au);
         const finish = (ok) => { res[i] = ok; if (ok) { c++; b.classList.add('ok'); b.innerHTML = `<span class="as-chp">${M().photo(it.img)}</span><span>${esc(it.en)}</span>`; } else { missed.push(it); b.classList.add('miss'); b.innerHTML = `<span class="as-chp">${M().photo(it.img)}</span><span>${esc(it.en)}</span>`; }
-          weak(it, ok); stars(); cur++; box.innerHTML = ''; if (cur >= items.length) { say(c === items.length ? '¡Abriste todos los cofres! ¡Excelente!' : `¡Muy bien! ${c} de ${items.length} tesoros.`); body.querySelector('.as-mr').src = 'mra-celebrate.webp'; sfx('win'); done(); } else { say(ok ? '¡Perfecto! Toca el siguiente cofre.' : 'Sigue con el siguiente cofre. ¡Tú puedes!'); glow(); } };
+          weak(it, ok); stars(); cur++; box.innerHTML = ''; if (cur >= items.length) { { const md = MRMOOD(c, items.length); say(c === items.length ? '¡Abriste todos los cofres! ¡Excelente!' : md.k === 'lo' ? `Try again! Solo ${c} de ${items.length} tesoros. Repasa estas palabras.` : `¡Bien! ${c} de ${items.length} tesoros.`); body.querySelector('.as-mr').src = md.img; sfx(md.k === 'lo' ? 'bad' : 'win'); } done(); } else { say(ok ? '¡Perfecto! Toca el siguiente cofre.' : 'Sigue con el siguiente cofre. ¡Tú puedes!'); glow(); } };
         box.querySelector('#as-say2').onclick = async (e) => {
           const bt = e.currentTarget; if (!M().canSR) { sfx('ok'); finish(true); return; }
           bt.disabled = true; const tr = box.querySelector('#as-tr'); tr.textContent = 'Te escucho…';
@@ -143,7 +143,7 @@
       });
     };
     let fin; await new Promise(r => { fin = r; draw(); });
-    body.querySelector('.as-say').innerHTML = c === F.length ? '¡Todos los stickers perfectos!' : `¡Bien hecho! ${c} de ${F.length} a la primera.`; body.querySelector('.as-mr').src = 'mra-celebrate.webp'; sfx('win');
+    { const md = MRMOOD(c, F.length); body.querySelector('.as-say').innerHTML = c === F.length ? '¡Todos los stickers perfectos!' : md.k === 'lo' ? `Try again! Solo ${c} de ${F.length} a la primera. Repásalos.` : `¡Bien! ${c} de ${F.length} a la primera.`; body.querySelector('.as-mr').src = md.img; sfx(md.k === 'lo' ? 'bad' : 'win'); }
     await A().waitNext(stage, 'Continuar'); return { c, n: F.length };
   }
   // 🧑‍🎤 Historias (stories)
@@ -228,7 +228,7 @@
       if (ok) c++;
     }
     const body = frame(stage, 'Listen & practice', '¡Entrevista terminada!', '');
-    body.innerHTML = `<div class="as-tre"><img src="mra-celebrate.webp" alt="Mr. Arrieta" style="height:150px"><div class="as-tw">${c} de ${Q.length}</div><div class="as-te">respuestas correctas</div><div class="as-stars" style="justify-content:center">${Q.map((_, j) => `<i class="${j < c ? 'on' : ''}">${SV(I.star)}</i>`).join('')}</div></div>`; sfx('win');
+    const md = MRMOOD(c, Q.length); body.innerHTML = `<div class="as-tre"><img src="${md.img}" alt="Mr. Arrieta" style="height:150px"><div class="as-tw">${c} de ${Q.length}</div><div class="as-te">respuestas correctas</div>${md.k !== 'hi' ? `<div class="as-mood ${md.k}"><b>${md.t}</b> ${md.s}</div>` : ''}<div class="as-stars" style="justify-content:center">${Q.map((_, j) => `<i class="${j < c ? 'on' : ''}">${SV(I.star)}</i>`).join('')}</div></div>`; sfx(md.k === 'lo' ? 'bad' : 'win');
     await A().waitNext(stage, 'Continuar'); return A().result(c, Q.length, 'speaking');
   }
   // 🧑‍🎤 Notas de voz

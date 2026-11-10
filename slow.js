@@ -26,10 +26,10 @@
     const cs = getComputedStyle(el); if (cs.position === 'absolute' || cs.position === 'fixed') return;
     const r0 = el.getBoundingClientRect(), p0 = el.parentElement ? el.parentElement.getBoundingClientRect() : r0;
     const pd = el.parentElement ? getComputedStyle(el.parentElement).display : '', t = label(el), icon = /grid/.test(pd) || el.id === 'rp' || el.classList.contains('rd-pp') || t.length < 3 || t.length > 16 || (p0.width - r0.width < 130 && r0.width < p0.width - 24), b = document.createElement('button');
-    b.type = 'button'; b.className = 'slw-b' + (icon ? ' ic' : ''); b.title = 'Escuchar más lento'; b.setAttribute('aria-label', 'Escuchar más lento');
-    b.innerHTML = TUR + (icon ? '' : '<span>Más lento</span>');
+    b.type = 'button'; b.className = 'slw-b ic'; b.title = 'Escuchar más lento'; b.setAttribute('aria-label', 'Escuchar más lento');
+    b.innerHTML = TUR; /* v630: siempre solo la tortuga, sin el texto «Más lento» (todas las edades) */
     const r = el.getBoundingClientRect(), par = el.parentElement, pr = par ? par.getBoundingClientRect() : r;
-    if (icon) { const sz = Math.max(30, Math.min(44, Math.round(Math.min(r.height || 34, 44)))); b.style.width = b.style.height = sz + 'px'; }
+    { const sz = Math.max(30, Math.min(44, Math.round(Math.min(r.height || 34, 44)))); b.style.width = b.style.height = sz + 'px'; }
     // la tortuga va pegada al botón, en la misma línea; el diseño alrededor no cambia
     const w = document.createElement('span'); w.className = 'slw-w';
     const full = r.width > 0 && pr.width > 0 && r.width >= pr.width - 24 && (cs.display === 'block' || cs.display === 'flex' || cs.display === 'grid' || /100%/.test(el.style.width || ''));

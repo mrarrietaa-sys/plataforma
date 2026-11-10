@@ -79,7 +79,7 @@
     }
     clearInterval(tick); if (!stage.isConnected) return A().result(c, Q.length, 'speaking');
     el.classList.remove('live'); el.classList.add('ended'); tl.textContent = 'Llamada finalizada'; qn.innerHTML = ''; el.querySelectorAll('.m2c-dots i').forEach(d => d.className = 'ok');
-    turn.innerHTML = `<div class="m2-sum"><b>${c} de ${Q.length}</b><span>respuestas con buena melodía</span></div>`; sfx(c === Q.length ? 'win' : 'ok');
+    turn.innerHTML = `<div class="m2-sum"><b>${c} de ${Q.length}</b><span>respuestas con buena melodía</span>${MRMOOD(c, Q.length).k === "lo" ? `<em class="m2-mood">Try again! Repasa y vuelve a intentarlo.</em>` : ""}</div>`; sfx(c === Q.length ? 'win' : 'ok');
     await A().waitNext(stage, 'Continuar'); return A().result(c, Q.length, 'speaking');
   }
 
@@ -100,7 +100,7 @@
       await sleep(500);
     }
     clearInterval(iv); if (!stage.isConnected) return A().result(c, Q.length, 'speaking');
-    turn.innerHTML = `<div class="m2-sum"><b>${c} de ${Q.length}</b><span>comentarios respondidos</span></div>`; sfx(c === Q.length ? 'win' : 'ok');
+    turn.innerHTML = `<div class="m2-sum"><b>${c} de ${Q.length}</b><span>comentarios respondidos</span>${MRMOOD(c, Q.length).k === "lo" ? `<em class="m2-mood">Try again! Repasa y vuelve a intentarlo.</em>` : ""}</div>`; sfx(c === Q.length ? 'win' : 'ok');
     await A().waitNext(stage, 'Terminar la transmisión'); return A().result(c, Q.length, 'speaking');
   }
 
@@ -118,7 +118,7 @@
       if (r.ok) { c++; mr.src = 'mra-thumbs.webp'; } body.querySelectorAll('.m2w-st i')[i].className = r.ok ? 'on' : 'off'; await sleep(400);
     }
     if (!stage.isConnected) return A().result(c, Q.length, 'speaking');
-    mr.src = 'mra-celebrate.webp'; b.innerHTML = `<b>Over and out!</b><small>Fin de la transmisión</small>`; turn.innerHTML = `<div class="m2-sum"><b>${c} de ${Q.length}</b><span>mensajes enviados</span></div>`; sfx('win');
+    mr.src = MRMOOD(c, Q.length).img; b.innerHTML = `<b>Over and out!</b><small>Fin de la transmisión</small>`; turn.innerHTML = `<div class="m2-sum"><b>${c} de ${Q.length}</b><span>mensajes enviados</span>${MRMOOD(c, Q.length).k === "lo" ? `<em class="m2-mood">Try again! Repasa y vuelve a intentarlo.</em>` : ""}</div>`; sfx('win');
     await A().waitNext(stage, 'Continuar'); return A().result(c, Q.length, 'speaking');
   }
   function oral(stage, p) { const a = ag(); if (mod() === 4) return a === 'teens' ? M4.podcast(stage, p) : a === 'kids' ? M4.control(stage, p) : M4.board(stage, p); if (mod() === 3) return a === 'teens' ? M3.prompter(stage, p) : a === 'kids' ? M3.news(stage, p) : M3.interview(stage, p); return a === 'teens' ? live(stage, p) : a === 'kids' ? walkie(stage, p) : call(stage, p); }
@@ -325,7 +325,7 @@
         const r = await voiceTurn(turn, k, { lbl: 'TU RESPUESTA', mode: 'tap' }); if (r.ok) c++;
       }
       clearInterval(tick); if (!stage.isConnected) return A().result(c, Q.length, 'speaking');
-      qn.innerHTML = ''; turn.innerHTML = `<div class="m2-sum"><b>${c} de ${Q.length}</b><span>respuestas con buena melodía · entrevista terminada</span></div>`; sfx(c === Q.length ? 'win' : 'ok');
+      qn.innerHTML = ''; turn.innerHTML = `<div class="m2-sum"><b>${c} de ${Q.length}</b><span>respuestas con buena melodía · entrevista terminada</span>${MRMOOD(c, Q.length).k === "lo" ? `<em class="m2-mood">Try again! Repasa y vuelve a intentarlo.</em>` : ""}</div>`; sfx(c === Q.length ? 'win' : 'ok');
       await A().waitNext(stage, 'Continuar'); return A().result(c, Q.length, 'speaking');
     }
     /* ---------- 🎬 Teens · graba tu video con teleprompter ---------- */
@@ -341,7 +341,7 @@
         const r = await voiceTurn(turn, k, { lbl: 'LEE EL TELEPROMPTER', mode: 'tap', compact: 1 }); if (r.ok) c++;
       }
       if (!stage.isConnected) return A().result(c, Q.length, 'speaking');
-      tp.innerHTML = `<b>That's a wrap!</b>`; turn.innerHTML = `<div class="m2-sum"><b>${c} de ${Q.length}</b><span>tomas aprobadas</span></div>`; sfx(c === Q.length ? 'win' : 'ok');
+      tp.innerHTML = `<b>That's a wrap!</b>`; turn.innerHTML = `<div class="m2-sum"><b>${c} de ${Q.length}</b><span>tomas aprobadas</span>${MRMOOD(c, Q.length).k === "lo" ? `<em class="m2-mood">Try again! Repasa y vuelve a intentarlo.</em>` : ""}</div>`; sfx(c === Q.length ? 'win' : 'ok');
       await A().waitNext(stage, 'Publicar y continuar'); return A().result(c, Q.length, 'speaking');
     }
     /* ---------- 📺 Kids · reportero de noticias ---------- */
@@ -357,7 +357,7 @@
         const r = await voiceTurn(turn, k, { lbl: 'TU REPORTE', mode: 'tap' }); if (r.ok) { c++; mr.src = 'mra-thumbs.webp'; } await sleep(300);
       }
       if (!stage.isConnected) return A().result(c, Q.length, 'speaking');
-      mr.src = 'mra-celebrate.webp'; qn.innerHTML = `<div><b>That's all for today!</b><small>Fin del noticiero</small></div>`; turn.innerHTML = `<div class="m2-sum"><b>${c} de ${Q.length}</b><span>reportes en vivo</span></div>`; sfx('win');
+      mr.src = MRMOOD(c, Q.length).img; qn.innerHTML = `<div><b>That's all for today!</b><small>Fin del noticiero</small></div>`; turn.innerHTML = `<div class="m2-sum"><b>${c} de ${Q.length}</b><span>reportes en vivo</span>${MRMOOD(c, Q.length).k === "lo" ? `<em class="m2-mood">Try again! Repasa y vuelve a intentarlo.</em>` : ""}</div>`; sfx('win');
       await A().waitNext(stage, 'Continuar'); return A().result(c, Q.length, 'speaking');
     }
     /* ---------- 🎲 Adultos · apuesta tu seguridad ---------- */
@@ -478,7 +478,7 @@
         const r = await voiceTurn(turn, k, { lbl: 'TU RESPUESTA A LA JUNTA', mode: 'tap' }); if (r.ok) c++;
       }
       if (!stage.isConnected) return A().result(c, Q.length, 'speaking');
-      sl.innerHTML = 'Thank you. Great presentation.'; avs.forEach(a => a.classList.add('on')); turn.innerHTML = `<div class="m2-sum"><b>${c} de ${Q.length}</b><span>respuestas aprobadas por la junta</span></div>`; sfx(c === Q.length ? 'win' : 'ok');
+      sl.innerHTML = 'Thank you. Great presentation.'; avs.forEach(a => a.classList.add('on')); turn.innerHTML = `<div class="m2-sum"><b>${c} de ${Q.length}</b><span>respuestas aprobadas por la junta</span>${MRMOOD(c, Q.length).k === "lo" ? `<em class="m2-mood">Try again! Repasa y vuelve a intentarlo.</em>` : ""}</div>`; sfx(c === Q.length ? 'win' : 'ok');
       await A().waitNext(stage, 'Continuar'); return A().result(c, Q.length, 'speaking');
     }
     /* ---------- 🎙️ Teens · podcast ON AIR ---------- */
@@ -495,7 +495,7 @@
         const r = await voiceTurn(turn, k, { lbl: 'TU RESPUESTA AL AIRE', mode: 'tap' }); if (r.ok) c++;
       }
       clearInterval(tick); if (!stage.isConnected) return A().result(c, Q.length, 'speaking');
-      qn.innerHTML = `<div><b>That's a wrap for today!</b><span>Fin del episodio</span></div>`; turn.innerHTML = `<div class="m2-sum"><b>${c} de ${Q.length}</b><span>respuestas al aire</span></div>`; sfx(c === Q.length ? 'win' : 'ok');
+      qn.innerHTML = `<div><b>That's a wrap for today!</b><span>Fin del episodio</span></div>`; turn.innerHTML = `<div class="m2-sum"><b>${c} de ${Q.length}</b><span>respuestas al aire</span>${MRMOOD(c, Q.length).k === "lo" ? `<em class="m2-mood">Try again! Repasa y vuelve a intentarlo.</em>` : ""}</div>`; sfx(c === Q.length ? 'win' : 'ok');
       await A().waitNext(stage, 'Terminar el episodio'); return A().result(c, Q.length, 'speaking');
     }
     /* ---------- 🚀 Kids · control de misión ---------- */
@@ -511,7 +511,7 @@
         const r = await voiceTurn(turn, k, { lbl: 'RESPONDE A LA BASE', mode: 'tap' }); if (r.ok) c++; cnt.textContent = Q.length - i - 1;
       }
       if (!stage.isConnected) return A().result(c, Q.length, 'speaking');
-      sp.classList.add('go'); qn.innerHTML = `<div><b>Liftoff!</b><small>¡Despegue!</small></div>`; turn.innerHTML = `<div class="m2-sum"><b>${c} de ${Q.length}</b><span>mensajes a la base</span></div>`; sfx('win'); try { M().confetti(1000); } catch (e) { }
+      sp.classList.add('go'); qn.innerHTML = `<div><b>Liftoff!</b><small>¡Despegue!</small></div>`; turn.innerHTML = `<div class="m2-sum"><b>${c} de ${Q.length}</b><span>mensajes a la base</span>${MRMOOD(c, Q.length).k === "lo" ? `<em class="m2-mood">Try again! Repasa y vuelve a intentarlo.</em>` : ""}</div>`; sfx('win'); try { M().confetti(1000); } catch (e) { }
       await A().waitNext(stage, 'Continuar'); return A().result(c, Q.length, 'speaking');
     }
     /* ---------- 🧱 Adultos · arma la frase por bloques (uno sobra) ---------- */
@@ -604,7 +604,7 @@
       }
       try { A0.pause(); } catch (e) { } if (!stage.isConnected) return A().result(c, n, 'reading');
       body.querySelectorAll('.m4l-st i').forEach(d => d.className = 'd'); parts.querySelectorAll('.m4l-p').forEach(x => x.classList.remove('past'));
-      parts.insertAdjacentHTML('beforeend', `<div class="m2-sum"><b>${c} de ${n}</b><span>respuestas correctas</span></div>`); sfx(c === n ? 'win' : 'ok');
+      parts.insertAdjacentHTML('beforeend', `<div class="m2-sum"><b>${c} de ${n}</b><span>respuestas correctas</span>${MRMOOD(c, n).k === 'lo' ? '<em class="m2-mood">Try again! Repasa y vuelve a intentarlo.</em>' : ''}</div>`); sfx(c === n ? 'win' : 'ok');
       await A().waitNext(stage, `${c}/${n} correctas — Continuar`); return A().result(c, n, 'reading');
     }
     /* ---------- 🔁 Misión eco · sin texto ---------- */
@@ -629,7 +629,9 @@
   })();
 
   // Kids y Teens: su canción propia también termina con el karaoke
-  const wrapMusic = () => { const G = window.MRAGE2; if (!G || !G.music || G.music.__m2) return; const om = G.music; G.music = async (st, p) => { const r = await om(st, p); if (on() && r !== null && r !== undefined && st.isConnected) { try { st.innerHTML = ''; await karaoke(st, p); } catch (e) { console.error(e); } } return r; }; G.music.__m2 = 1; };
+  // v630: une el resultado de dos partes de una misma sección (ej. canción + dictado): los errores siempre cuentan
+  window.MRMERGE = (a, b) => { if (!b || typeof b !== 'object' || !(b.t > 0)) return a; if (!a || typeof a !== 'object' || !(a.t > 0)) return Object.assign({ skill: 'listening' }, b); return Object.assign({}, a, { c: (a.c || 0) + (b.c || 0), t: a.t + b.t, missed: [...(a.missed || []), ...(b.missed || [])] }); };
+  const wrapMusic = () => { const G = window.MRAGE2; if (!G || !G.music || G.music.__m2) return; const om = G.music; G.music = async (st, p) => { let r = await om(st, p); if (on() && r !== null && r !== undefined && st.isConnected) { try { st.innerHTML = ''; const k = await karaoke(st, p); r = MRMERGE(r, k); } catch (e) { console.error(e); } } return r; }; G.music.__m2 = 1; };
   wrapMusic(); document.addEventListener('DOMContentLoaded', wrapMusic);
   window.M2X = { readParts: (st, p) => M4.readParts(st, p), mod, on, oral, game, gameFor, podBox, podWatch, hide, bindHint, karaoke, parseTime, timePool, fillPool, focusOf, theme };
 })();

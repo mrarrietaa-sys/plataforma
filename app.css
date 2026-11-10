@@ -9532,3 +9532,35 @@ button.p12.in-p12{flex-direction:row;gap:12px;padding:11px 12px 11px 14px;font-s
 
 /* v630: niños · barra de avance blanca en la tarjeta naranja */
 body.ag-kids .wrap.t2 .t2-cb i{background:#fff!important}
+/* v630: Listen and repeat · la etiqueta de la foto (ej. «cerca») no queda debajo del contador 1/6 */
+.lrc-ph .ph .badge{left:auto!important;right:10px;top:10px}
+/* v630: celular · el resultado (Ritmo/Entonación) va debajo, a todo el ancho: nunca se monta sobre «Escuchar» */
+@media(max-width:899px){.lrc-bd{display:grid!important;grid-template-columns:minmax(0,1fr) auto;column-gap:12px;row-gap:2px;align-items:center}
+ .lrc-w{display:contents}.lrc-en{grid-column:1;grid-row:1}.lrc-es{grid-column:1;grid-row:2;align-self:start}
+ .lrc-ctr{grid-column:2;grid-row:1/3;align-self:center}.lrc-res{grid-column:1/-1;grid-row:3;min-width:0}
+ .lrc-res .ce-l2 button{white-space:nowrap}}
+.lrc-ctr .slw-b{width:40px!important;height:40px!important;background:#fff!important;border:1.5px solid #cfd9e8!important;border-radius:50%!important;align-self:center;margin-top:-18px}
+@media(max-width:899px){.lrc-res .ce-l2>button,.lrc-res .ce-l2>.slw-w{flex:1 1 0;min-width:0}.lrc-res .ce-l2>.slw-w>button:first-child{flex:1 1 auto}}
+/* v630: «Mis 3 palabras» (Kids) y reto semanal (Teens): la gráfica de voz va debajo a todo el ancho, nunca apretada debajo de la foto */
+.kw-mel,.rl-mel{grid-column:1/-1;width:100%;min-width:0;margin-top:8px}
+.mel9-lg{flex-wrap:wrap}.mel9-lg span,.mel9-lg>*{white-space:nowrap}
+/* v630: con la tortuga al lado, el botón (ej. «Escuchar») nunca se encoge más que su texto: nada se sale de su cuadro */
+.slw-w>:first-child:not(.ml10-ok):not(.ml10-no){min-width:max-content!important}.slw-w>.ml10-ok:first-child{min-width:0!important;flex:1 1 auto!important;white-space:normal!important;text-align:left}
+/* v630: mensaje cuando no le fue bien (resultado de actividades) */
+.as-mood{margin:8px auto 0;max-width:320px;font-size:14px;line-height:1.35;color:#7c2d12;background:#fff7ed;border:1.5px solid #fed7aa;border-radius:12px;padding:8px 12px;text-align:center}.as-mood b{display:block;color:#c2410c}
+.as-mood.mid{color:#14532d;background:#f0fdf4;border-color:#bbf7d0}.as-mood.mid b{color:#15803d}
+.m2-mood{display:block;margin-top:6px;font-style:normal;font-size:13.5px;color:#c2410c;font-weight:700}
+/* v630: Entrevista con Mr. Arrieta · la burbuja de la pregunta nunca se sale de la tarjeta */
+.as-iv{min-width:0;max-width:100%}.as-ivb{min-width:0;max-width:100%;box-sizing:border-box;overflow-wrap:anywhere}
+.as-ivb b{font-size:clamp(17px,4.4vw,24px)!important;overflow-wrap:anywhere}
+.as-ivb .slw-w{display:flex;justify-content:center;align-items:center;gap:8px;flex-wrap:wrap;max-width:100%}
+@media(max-width:600px){.as-ivm{height:120px!important;max-width:28%;object-fit:contain}.as-iv{gap:6px}.as-ivb{padding:12px 10px}}
+/* v630: Kids · textos de las tarjetas naranjas en blanco para que se lean bien */
+body.ag-kids .md3-hs,body.ag-kids .md3-hm,body.ag-kids .wrap.t2 .t2-cx{color:#fff!important;opacity:1!important;text-shadow:0 1px 2px rgba(120,53,15,.35)}
+/* v631: dock "Niños y jóvenes" en 2 líneas, sin desbordar */
+.lp-dock>.lp-dx span{white-space:normal!important;text-align:center;line-height:1.02;font-size:9.5px!important;letter-spacing:-.1px}
+.lp-dock>.lp-dx{gap:1px!important;justify-content:center}
+@media(min-width:600px){.lp-dock>.lp-dx br{display:none}.lp-dock>.lp-dx span{white-space:nowrap!important;font-size:10.5px!important}}
+.rl-mel .mel9-res span{background:rgba(255,255,255,.1)!important;color:#c9d6ea!important}body .wrap .rl-mel .mel9-res b,body.ag-teens .wrap.db .rl-mel .mel9-res b{color:#f59e0b!important}.rl-mel .mel9-res i{color:rgba(255,255,255,.32)!important}
+/* v631: la etiqueta de la estrella nunca se sale de la estrella */
+.g9-star span{max-width:100%!important;box-sizing:border-box}.g9-star span.sm{white-space:normal!important;text-align:center;line-height:1.15;padding:3px 6px;border-radius:12px;width:max-content}.g9-star span.xs{width:100%!important;padding:4px 5px}
