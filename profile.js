@@ -77,6 +77,11 @@
     const m = mod(id), s = modState(id); const done = Object.values(s.parts || {}).filter(x => x && x.done).length;
     return { done, total: m.classes, pct: m.classes ? Math.round(done / m.classes * 100) : 0 };
   }
+  // v648 · 🎁 prueba gratis: 3 temas EN TOTAL aunque cambie de nivel (cada tema cuenta apenas lo empieza)
+  const startedTopics = (id) => { const st = modState(id), P = st.parts || {}, T = {}; Object.keys(P).forEach(k => { const m = /^t(\d+)p\d+$/.exec(k), x = P[k]; if (m && x && (x.done || x.step || x.run)) T[m[1]] = 1; }); return Object.keys(T).length; };
+  const trialUsedOut = (id) => MODS.filter(m => m.id !== id).reduce((a, m) => a + startedTopics(m.id), 0);
+  const trialFreeIn = (id) => Math.max(0, 3 - trialUsedOut(id)); // temas gratis que quedan en este módulo (los primeros del módulo)
+  const trialLeft = () => Math.max(0, 3 - MODS.reduce((a, m) => a + startedTopics(m.id), 0));
   // al aprobar la clasificación: guarda el módulo recomendado (1-4)
   function setPlacement(n, extra) { const p = get() || {}; p.assignedBy = null; p.module = Math.min(4, Math.max(1, n || 1)); p.moduleSet = Date.now(); p.placement = Object.assign({ module: p.module, date: new Date().toISOString() }, extra || {}); return save(p); }
   // personalización: foto / avatar / iniciales, apodo, color del encabezado, guía personalizada
@@ -95,5 +100,5 @@
     const st = new Date(p.paceStart.slice(0, 10) + 'T00:00:00'), en = new Date(st); en.setMonth(en.getMonth() + PACE_MONTHS);
     const span = Math.round((en - st) / 864e5), d = new Date(st); d.setDate(d.getDate() + Math.floor(k * span / N)); return isoD(d);
   }
-  window.MRAP = { KEY, MODS, get, save, clear, mod, modState, passed, assigned, role, progress, isStaff, isTrial, plan, isBirthday, todayISO, setPlacement, trialMod, TRIAL_TOPICS: 3, look, pic, avHTML, setLook, initials, isBack, lastUser, paceOn, paceDate, PACE_MIN, isExpired };
+  window.MRAP = { trialFreeIn, trialLeft, startedTopics, KEY, MODS, get, save, clear, mod, modState, passed, assigned, role, progress, isStaff, isTrial, plan, isBirthday, todayISO, setPlacement, trialMod, TRIAL_TOPICS: 3, look, pic, avHTML, setLook, initials, isBack, lastUser, paceOn, paceDate, PACE_MIN, isExpired };
 })();

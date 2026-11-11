@@ -9885,3 +9885,28 @@ html body .slw-w:has(>.ml10-ok)>.slw-b{background:#fff!important;color:#0B2A5B!i
   body.home-app .ld-login .pt-rkt{height:96px!important}
 }
 .ld-hero.ld-zm .ld-login .rk-sh{display:none!important}
+/* v648 · elegir / cambiar nivel (prueba gratis) */
+.nv-bg{position:fixed;inset:0;z-index:9500;background:rgba(11,42,91,.5);display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;animation:hplF .25s}
+.nv{position:relative;width:min(540px,100%);max-height:100%;overflow:auto;background:#fff;border-radius:22px;padding:20px 20px 16px;box-sizing:border-box;box-shadow:0 30px 70px -20px rgba(0,0,0,.45);animation:hplU .35s cubic-bezier(.3,1.4,.5,1)}
+.nv .nv-hd{text-align:center;margin-bottom:8px}.nv .nv-hd small{display:block;font:800 11px var(--fh);letter-spacing:.12em;color:#16a34a;text-transform:uppercase}.nv .nv-hd h3{margin:2px 0 0;font:800 21px var(--fh);color:#0B2A5B}
+.nv .nv-sb{margin:0 0 10px;text-align:center;font-size:13.5px;color:#475569}.nv .nv-sb b{color:#0B2A5B}
+.nv .nv-ctr{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 10px;padding:9px 12px;border-radius:12px;background:#f0f7ff;border:1px solid #bfdbfe;font-size:13px;color:#0B2A5B}.nv .nv-dots{display:flex;gap:5px}.nv .nv-dots i{width:10px;height:10px;border-radius:50%;background:#16a34a}.nv .nv-dots i.u{background:#cbd5e1}
+.nv .nv-op{display:flex;flex-direction:column;gap:8px}
+.nv .nv-o{position:relative;display:flex;align-items:center;gap:12px;border:1.5px solid #e2e8f0;border-radius:14px;padding:10px 12px;background:#fff;text-align:left;cursor:pointer;font:inherit;width:100%;box-sizing:border-box}
+.nv .nv-o i{flex:none;width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font:800 13px/1 var(--fh);font-style:normal;color:#fff}
+.nv .nv-o div{min-width:0}.nv .nv-o b{display:block;font:800 14.5px var(--fh);color:#0B2A5B}.nv .nv-o span{display:block;font-size:12.5px;color:#64748b;margin-top:1px}
+.nv .nv-o em{margin-left:auto;flex:none;font:800 11px var(--fh);font-style:normal;color:#64748b;background:#f1f5f9;border-radius:99px;padding:3px 9px;white-space:nowrap}
+.nv .nv-o.on{border-color:#0B2A5B;box-shadow:0 0 0 3px rgba(11,42,91,.12);background:#f8fafc}.nv .nv-o.nv-t{border-style:dashed;border-color:#93c5fd;background:#f0f7ff}
+.nv .nv-o.cur:after{content:'Tu nivel actual';position:absolute;right:10px;top:-8px;background:#0B2A5B;color:#fff;font:800 10px var(--fh);border-radius:99px;padding:2px 8px}
+.nv .nv-go{margin-top:12px;width:100%;height:48px;border:0;border-radius:14px;background:#0B2A5B;color:#fff;font:800 15px var(--fh);cursor:pointer}.nv .nv-go:disabled{opacity:.5;cursor:default}
+.nv .nv-ft{margin:8px 0 0;text-align:center;font-size:12px;color:#64748b}
+.nv .nv-x{position:absolute;right:12px;top:12px;width:32px;height:32px;border-radius:50%;border:1px solid #e2e8f0;background:#fff;color:#0B2A5B;cursor:pointer}
+.nv.k .nv-o.on{border-color:#f59e0b;box-shadow:0 0 0 3px rgba(245,158,11,.18)}.nv.k .nv-go{background:#e63946}
+@media(max-width:600px){.nv-bg{align-items:flex-end;padding:0}.nv{border-radius:22px 22px 0 0;width:100%;padding:16px 14px 18px}.nv .nv-hd h3{font-size:18px}.nv .nv-o{padding:8px 10px}.nv .nv-o i{width:34px;height:34px}.nv .nv-o b{font-size:13.5px}.nv .nv-o span{font-size:11.5px}}
+@media(max-width:380px){.nv .nv-o span{display:none}.nv .nv-sb{font-size:12.5px}.nv .nv-o em{font-size:10px;padding:2px 7px}}
+.g1-chlb{display:flex;width:max-content;align-items:center;gap:6px;margin-top:8px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);color:#fff!important;border-radius:99px;padding:5px 12px;font:800 12.5px var(--fh);text-decoration:none}
+.g1-chl,.ad-chl{font-weight:800;color:#2563eb!important;text-decoration:underline}
+body.ag-teens .pt-ann.pt-trial span{color:#0B2A5B!important}body.ag-teens .pt-ann.pt-trial span b{color:#0B2A5B!important}
+/* v650 · objetivo: título centrado, sin fecha meta ni minutos */
+.gl-modal .card>h3,.gl-modal .card>p.muted{text-align:center}
+.gl-modal .gl-act{justify-content:center}

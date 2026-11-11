@@ -454,6 +454,31 @@
     bg.querySelector('.hdm-go').addEventListener('click', () => setTimeout(close, 0));
     lpChallengeWire();
   }
+
+  // v648 · 🎯 elegir / cambiar el nivel (prueba gratis): 3 temas en total aunque cambie
+  const LVL = [{ n: 1, lv: 'A1', c: '#16a34a', b: 'Nada o casi nada', s: ['Empiezo desde cero', 'Empieza desde cero'] }, { n: 2, lv: 'A2', c: '#2563eb', b: 'Lo básico', s: ['Me presento y entiendo frases simples', 'Se presenta y entiende frases simples'] }, { n: 3, lv: 'B1', c: '#7c3aed', b: ['Me defiendo', 'Se defiende'], s: ['Hablo, pero me cuesta', 'Habla, pero le cuesta'] }, { n: 4, lv: 'B2', c: '#e63946', b: 'Bastante', s: ['Quiero hablar con fluidez', 'Quiere hablar con fluidez'] }];
+  function lvlPick(o) { // o: { mode: 'start'|'change', kid, cur, onPick(n|'test') }
+    o = o || {}; const K = o.kid ? 1 : 0, ch = o.mode === 'change', tx = (v) => Array.isArray(v) ? v[K] : v;
+    const left = ch && P.trialLeft ? P.trialLeft() : 3;
+    const CMP = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m16.2 7.8-2.1 6.3-6.3 2.1 2.1-6.3z"/></svg>';
+    const bg = document.createElement('div'); bg.className = 'nv-bg'; bg.innerHTML = `<div class="nv${o.kid || o.ks ? ' k' : ''}" role="dialog"><div class="nv-hd"><small>${ch ? 'Cambiar mi nivel' : 'Último paso · 5 segundos'}</small><h3>${ch ? (K ? '¿En qué nivel quiere seguir?' : '¿En qué nivel quieres seguir?') : (K ? '¿Cuánto inglés sabe tu hijo(a)?' : '¿Cuánto inglés sabes?')}</h3></div>
+      ${ch ? `<p class="nv-sb">Hoy ${K ? 'está' : 'estás'} en <b>${esc((P.mod(o.cur) || {}).name || '')} · ${esc((P.mod(o.cur) || {}).lv || '')}</b>.</p><div class="nv-ctr"><span>Temas gratis: ${K ? 'le' : 'te'} quedan <b>${left} de 3</b></span><span class="nv-dots">${[0, 1, 2].map(i => `<i class="${i < 3 - left ? 'u' : ''}"></i>`).join('')}</span></div>` : `<p class="nv-sb">Así ${K ? 'empieza' : 'empiezas'} en el nivel justo. ${K ? 'Puede' : 'Puedes'} cambiarlo cuando ${K ? 'quiera' : 'quieras'}.</p>`}
+      <div class="nv-op">${LVL.map(x => `<button type="button" class="nv-o${ch && x.n === o.cur ? ' cur' : ''}" data-n="${x.n}"><i style="background:${x.c}">${x.lv}</i><div><b>${tx(x.b)}</b><span>${tx(x.s)}</span></div><em>${(P.mod(x.n) || {}).name || 'Módulo ' + x.n}</em></button>`).join('')}
+      ${ch ? '' : `<button type="button" class="nv-o nv-t" data-n="test"><i style="background:#0B2A5B">${CMP}</i><div><b>No sé · ${K ? 'que haga' : 'hago'} la prueba de nivel</b><span>10 minutos y ${K ? 'queda ubicado(a)' : 'quedas ubicado'} solo</span></div><em>Recomendado</em></button>`}</div>
+      <button type="button" class="nv-go" disabled>Elige una opción</button><p class="nv-ft">${ch ? 'Cambiar de nivel no reinicia tus 3 temas ni tus 3 días' : (K ? 'Sus' : 'Tus') + ' 3 temas gratis y ' + (K ? 'su' : 'tu') + ' clase con profe serán de este nivel'}</p>${ch ? '<button type="button" class="nv-x" aria-label="Cerrar">✕</button>' : ''}</div>`;
+    document.body.appendChild(bg); let sel = null; const go = bg.querySelector('.nv-go');
+    bg.querySelectorAll('.nv-o').forEach(b => b.onclick = () => { bg.querySelectorAll('.nv-o').forEach(x => x.classList.remove('on')); b.classList.add('on'); sel = b.dataset.n === 'test' ? 'test' : +b.dataset.n; go.disabled = false;
+      go.textContent = sel === 'test' ? 'Hacer la prueba de nivel →' : ch && sel === o.cur ? 'Seguir en el ' + ((P.mod(sel) || {}).name || '') : (ch ? 'Cambiar al ' : 'Empezar en el ') + ((P.mod(sel) || {}).name || '') + ' →'; });
+    const x = bg.querySelector('.nv-x'); if (x) x.onclick = () => bg.remove();
+    go.onclick = () => { if (!sel) return; bg.remove(); o.onPick && o.onPick(sel); };
+  }
+  window.MRLVL = { pick: lvlPick };
+  function lvlChange() {
+    const p = P.get(); if (!p || !p.module) return; const kid = document.body.classList.contains('ag-kids');
+    lvlPick({ mode: 'change', kid: false, ks: kid, cur: p.module, onPick: (n) => { if (n === p.module) return; P.setPlacement(n, { by: 'self' }); try { window.MRAC && MRAC.sync && MRAC.sync(true); } catch (e) { }
+      const m = P.mod(n) || {}; M.toast('Listo: ahora estás en el ' + m.name + ' · ' + m.lv); home(); } });
+  }
+  document.addEventListener('click', (e) => { const b = e.target.closest && e.target.closest('[data-chlvl]'); if (!b) return; e.preventDefault(); lvlChange(); });
   function countUp() { const els = $$('[data-stc]'); if (!els.length) return; const run = (N) => els.forEach(el => { const t0 = performance.now(); const fr = (t) => { const k = Math.min(1, (t - t0) / 1400); el.textContent = '+' + Math.round(N * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(fr); }; requestAnimationFrame(fr); });
     if (window.MRAC && MRAC.on) MRAC.call('pubStats', {}).then(r => run(Math.max(500, r && r.students ? r.students : 0))).catch(() => run(500)); else run(500); }
   window.MRCOUNTUP = countUp;
@@ -550,7 +575,8 @@
       if (!r || !r.ok) { b.disabled = false; b.textContent = 'Crear mi acceso gratis →'; return msg(r && r.err === 'family' ? 'Esta familia ya tiene 3 pruebas gratis. Para otro hijo(a), escríbenos por WhatsApp o elige un plan.' : r && r.err === 'busy' ? 'Hay muchas solicitudes en este momento. Inténtalo en unos minutos.' : 'No se pudo crear tu acceso. Revisa tus datos e inténtalo de nuevo.'); }
       if (r.exists) { m.querySelector('.card').innerHTML = `<div class="center"><div class="to-ic">${MRI('clock')}</div><h3>Estos datos ya están registrados</h3><p>El acceso gratuito de 3 días es <b>solo una vez por persona</b>. Si ya eres estudiante, entra con tu código en "Ingresa a tu perfil". Si quieres continuar, elige tu plan.</p><a class="btn k block lg" href="#ld-planes" id="tf-pl">Ver planes →</a></div>`; $('#tf-pl', m).onclick = () => m.remove(); return; }
       m.querySelector('.card').innerHTML = `<div class="center">${M.mascot('mascot bounce', 'celebrate')}<h3>¡Listo, ${esc(r.first)}! 🎉</h3><p>Tu código de acceso es</p><div class="rc-code" style="font:800 28px Poppins,sans-serif;color:#0B2A5B;letter-spacing:.06em;background:#EEF3FB;border:2px dashed #9fb3d6;border-radius:14px;padding:8px 18px;display:inline-block;margin:6px 0">${esc(r.code)}</div><p class="muted">${kid ? 'También lo enviamos ' + (email2 ? 'a los dos correos' : 'al correo') + ' de los padres.' : 'También te lo enviamos al correo.'} Guárdalo para entrar después.</p>${kid && r.fcode ? `<div class="tf-fam">${MRI('users')}<span>Código de familia: <b>${esc(r.fcode)}</b><small>Con él, papá y mamá ven cómo va su hijo(a). Llegó a su correo.</small></span></div>` : ''}<button class="btn r block lg" id="tf-in">Entrar a mi prueba gratis →</button></div>`;
-      $('#tf-in', m).onclick = () => { m.remove(); if (PAGE !== 'home') { try { sessionStorage.setItem('mra_autocode', r.code); } catch (e) { } location.href = 'index.html'; return; } const i = $('#cd'); if (i) { i.value = r.code; $('#ok').click(); } };
+      $('#tf-in', m).onclick = () => { m.remove(); lvlPick({ mode: 'start', kid, onPick: (n) => { try { sessionStorage.setItem('mra_lvl_pick', String(n)); } catch (e) { } tfEnter(); } }); };
+      const tfEnter = () => { if (PAGE !== 'home') { try { sessionStorage.setItem('mra_autocode', r.code); } catch (e) { } location.href = 'index.html'; return; } const i = $('#cd'); if (i) { i.value = r.code; $('#ok').click(); } };
     };
   }
   // ✨ bienvenida en la página de entrada: lluvia de estrellas doradas y destellos (1 vez por visita) → luego vuela Mr. Arrieta
@@ -708,7 +734,7 @@
     const nm = esc(P.look().nick || p.first || ''), lvl = a ? esc(a.name + (a.lv ? ' · ' + a.lv : '')) : '';
     const GL = window.MRGOAL, gk = GL ? GL.get() : null, hasG = !GL || !!gk, gname = gk && GL.G[gk.k] ? esc(GL.G[gk.k].short) : '';
     const S0 = GL ? { st: gk ? 'ok' : 'on', b: 'Elige tu objetivo', s: gk ? 'Listo · ' + gname : ag === 'kids' ? 'Un toque · ¡muy rápido!' : 'Un toque · menos de 20 segundos', btn: gk ? '' : `<button class="g1-go" data-goal>${gi('target')}${ag === 'kids' ? '¡Elegir!' : 'Elegir'}</button>` } : null;
-    const S1 = { st: placed ? 'ok' : hasG ? 'on' : 'off', b: 'Descubre tu nivel', s: placed ? 'Listo · ' + lvl : ag === 'kids' ? 'Un juego de preguntas · 10 min' : 'Prueba corta · unos 10 minutos', btn: !placed && hasG ? `<button class="g1-go" id="pt">${gi(ag === 'kids' ? 'play' : 'pen')}${ag === 'kids' ? '¡Vamos!' : 'Empezar'}</button>` : '' };
+    const S1 = { st: placed ? 'ok' : hasG ? 'on' : 'off', b: 'Descubre tu nivel', s: placed ? 'Listo · ' + lvl + (P.isTrial() ? ' · <a href="#" class="g1-chl" data-chlvl>Cambiar</a>' : '') : ag === 'kids' ? 'Un juego de preguntas · 10 min' : 'Prueba corta · unos 10 minutos', btn: !placed && hasG ? `<button class="g1-go" id="pt">${gi(ag === 'kids' ? 'play' : 'pen')}${ag === 'kids' ? '¡Vamos!' : 'Empezar'}</button>` : '' };
     const S2 = { st: placed ? 'on' : 'off', b: ag === 'kids' ? 'Tu primera lección' : 'Empieza tu ruta', s: 'Lección 1 · unos 15 minutos', btn: placed ? `<a class="g1-go" href="${url}">${gi('play')}${ag === 'kids' ? '¡Empezar!' : ag === 'teens' ? 'Empezar' : 'Empezar lección 1'}</a>` : '' };
     let bk = false; try { bk = !!localStorage.getItem(gK('mra_g1book_v1')); } catch (e) { }
     const fcg = !prem && !!P.plan().fc; // 🎁 v603: clase gratis
@@ -727,7 +753,7 @@
     const AH = [[`¡Hola, ${nm}!`, `Solo ${n} pasos para empezar. Todo lo demás ya está abierto.`, 'mra-x-plane-red.webp'], [`¡Perfecto, ${nm}!`, `Tu objetivo: <b>${gname}</b>. Ahora descubre tu nivel.`, 'mra-x-plane-red.webp'], [`¡Muy bien, ${nm}!`, `Tu nivel es <b>${lvl}</b>. Ahora tu primera lección.`, 'mra-x-plane-red.webp']][stage];
     const AI = { ok: '<svg viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m8 12 3 3 5-6"/></svg>', on: '<svg viewBox="0 0 24 24" fill="none" stroke="#E3242B" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4" fill="#E3242B" stroke="none"/></svg>', off: '<svg viewBox="0 0 24 24" fill="none" stroke="#a3b1c2" stroke-width="2.2"><circle cx="12" cy="12" r="10"/></svg>' }; // v609: primer día de adultos sobrio
     const rowA = (x) => `<div class="g1a-st ${x.st}"><span class="g1a-ic">${AI[x.st === 'ok' ? 'ok' : x.st === 'on' ? 'on' : 'off']}</span><div class="g1a-tx"><b>${x.b}${x.tag ? `<em class="g1-tag">${x.tag}</em>` : ''}</b><small>${x.s}</small></div>${x.btn ? '<div class="g1a-bt">' + x.btn + '</div>' : ''}</div>`;
-    const AS = [`Solo ${n} pasos para empezar.`, `Objetivo: <b>${gname}</b>`, `Tu nivel: <b>${lvl}</b>`][stage];
+    const AS = [`Solo ${n} pasos para empezar.`, `Objetivo: <b>${gname}</b>`, `Tu nivel: <b>${lvl}</b>${P.isTrial() ? '<a href="#" class="g1-chlb" data-chlvl><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>Cambiar mi nivel</a>' : ''}`][stage];
     return `<div class="card g1 g1-ad g1-ad2"><div class="g1a-hd"><div class="ad-plane"><img src="mra-x-plane-red.webp" alt="Mr. Arrieta"><i></i></div><div><span class="ad-k">Tu primer día</span><h2>Hola, ${nm}</h2><p>${AS}</p></div></div>
       <div class="g1a-pg">${done} de ${n} listos<i><u style="width:${Math.round(done / n * 100)}%"></u></i></div>${steps.map(rowA).join('')}</div>`;
   }
@@ -738,6 +764,8 @@
     return `<div class="g1-done g1-done-${ag}">${gi('ck')}<div><b>${t}</b><small>${ag === 'kids' ? 'Ganaste tus estrellas de inicio. ¡Sigue con la próxima lección!' : 'Tu siguiente lección te espera abajo. Puedes seguir hoy mismo, sin límite por día.'}</small></div>${ag === 'kids' ? '<button class="g1-spk" data-kg="kg3">' + gi('vol') + 'Escuchar</button>' : ''}</div>`;
   }
   function home() {
+    { let pk = null; try { pk = sessionStorage.getItem('mra_lvl_pick'); } catch (e) { } const p0 = P.get(); // v648: nivel elegido al crear la prueba gratis
+      if (pk && p0 && p0.type !== 'staff') { try { sessionStorage.removeItem('mra_lvl_pick'); } catch (e) { } if (pk === 'test') { if (!p0.module) return route('placement'); } else if (!p0.module && +pk) { P.setPlacement(+pk, { by: 'self' }); try { window.MRAC && MRAC.sync && MRAC.sync(true); } catch (e) { } } } }
     const p = P.get(); const a = P.assigned(); const staff = p.type === 'staff', trial = P.isTrial();
     const ini = ((p.first || '?')[0] + (p.last || '')[0]).toUpperCase();
     const pst = window.MRAPLACE ? MRAPLACE.status() : { attempts: 0, max: 2 };
@@ -759,9 +787,9 @@
       const pr = P.progress(a.id), tot = trial ? 6 : a.classes; // 🎁 v603: 3 temas gratis
       main = `<div class="card pt-mymod db-hero ad-hero"><div class="db-hero-tx"><span class="ad-k">${pr.done ? 'Tu siguiente paso' : 'Empieza tu ruta'}</span>
         <h2>${esc(a.name)} · ${esc(a.lv || a.id)}</h2>
-        <p class="db-sub">${esc(String(a.es || '').replace(/\s*\([^)]*\)\s*$/, ''))} · ${pr.done} de ${trial ? '6 lecciones gratis' : tot + ' lecciones'}${a.n > (p.module || 1) ? ' · ¡avanzaste de módulo!' : ''}</p>
+        <p class="db-sub">${esc(String(a.es || '').replace(/\s*\([^)]*\)\s*$/, ''))} · ${pr.done} de ${trial ? ((P.trialFreeIn ? P.trialFreeIn(a.id) : 3) * 2) + ' lecciones gratis' : tot + ' lecciones'}${a.n > (p.module || 1) ? ' · ¡avanzaste de módulo!' : ''}</p>
         <div class="db-bar"><i style="width:${pr.pct}%"></i></div><small class="ad-pct">${pr.pct} % de tu módulo</small>
-        <div class="db-hero-b"><a class="btn db-wbtn" href="${a.url}">${pr.done ? 'Continuar mi ruta' : 'Empezar mi ruta'} →</a><button class="ad-lnk" id="pt3">¿Cambiar de nivel?</button></div></div>
+        <div class="db-hero-b"><a class="btn db-wbtn" href="${a.url}">${pr.done ? 'Continuar mi ruta' : 'Empezar mi ruta'} →</a><button class="ad-lnk" id="pt3"${trial ? ' data-chlvl' : ''}>¿Cambiar de nivel?</button></div></div>
         <div class="ad-plane"><img src="mra-x-plane-red.webp" alt="Mr. Arrieta"><i></i></div></div>`; // v609: banner de adultos sobrio con la avioneta flotando
       if (window.MRTEENS && MRTEENS.realLife) main += MRTEENS.realLife(); // v417: retos de la vida real para adultos
     } else if (a) {
@@ -891,7 +919,7 @@
     if (!tourSeenK(tourKind())) setTimeout(portalTour, 900);
     $('#me-av').onclick = () => route('me'); if ($('#me-go')) $('#me-go').onclick = () => route('me');
     const retake = () => { if (staff) return route('placement'); const m = M.modal(`<h3>¿No estás a gusto con tu nivel?</h3><p>Si gustas, puedes <b>volver a tomar la prueba de clasificación</b>. Tu ruta de aprendizaje se actualizará con el nuevo resultado.</p><p class="muted">Puedes repetirla de inmediato una vez; después hay 12 horas entre intentos. Tu módulo se basa en tu resultado más reciente.</p><div class="row"><button class="btn k" id="y">Sí, repetir</button><button class="btn w" id="n">Cancelar</button></div>`, { x: true }); $('#n', m).onclick = () => m.remove(); $('#y', m).onclick = () => { m.remove(); route('placement'); }; };
-    ['#pt2', '#pt3'].forEach(id => { if ($(id)) $(id).onclick = retake; });
+    ['#pt2', '#pt3'].forEach(id => { const b = $(id); if (b && !b.hasAttribute('data-chlvl')) b.onclick = P.isTrial() && !staff ? (e) => { e.preventDefault(); lvlChange(); } : retake; }); // v648: en la prueba gratis cambia de nivel con el contador de 3 temas
     $$('.pt-mod,.md3-c,.md3-hero').forEach(el => el.onclick = () => openMod(el.dataset.id));
   }
   function routeBar() {

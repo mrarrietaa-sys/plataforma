@@ -56,7 +56,7 @@ window.MRMOOD = function (c, t) { const r = t ? c / t : 1, pk = (a) => a[Math.fl
   function lockReason(n) {
     if (review()) return null; try { const pp = PF && PF.get && PF.get(); if (pp && pp.allOpen) return null; } catch (e) { }
     if (hasProfile()) { const r = PF.role(MID); if (r === 'review') return null; if (r !== 'current') return 'module';
-      if (PF.isTrial() && n > PF.TRIAL_TOPICS) return 'trial'; if (!progressOpen(n)) return 'progress'; return paceReason(n); }
+      if (PF.isTrial() && n > (PF.trialFreeIn ? PF.trialFreeIn(MID) : PF.TRIAL_TOPICS)) return 'trial'; if (!progressOpen(n)) return 'progress'; return paceReason(n); }
     if (!progressOpen(n)) return 'progress'; if (!hasAccess(n)) return 'access'; return null; }
   // 📅 ritmo del curso: el tema se abre en su fecha y si aprobó el anterior con 80% (lo que ya empezó nunca se bloquea)
   const topicStarted = (n) => { const t = D.topics.find(x => x.n === n); return !!(t && t.parts.some(p => S.parts[p.id] && (S.parts[p.id].done || S.parts[p.id].step))); };

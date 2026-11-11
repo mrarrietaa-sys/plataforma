@@ -67,12 +67,10 @@
   function ask(opts) {
     opts = opts || {}; const cur = get() || { k: '', months: 3, min: 20 };
     return new Promise(res => {
-      const st = { k: cur.k, months: cur.months == null ? 3 : +cur.months, min: +cur.min || 20 };
+      const st = { k: cur.k, months: cur.months == null ? null : +cur.months, min: +cur.min || 20 }; // v650: ya no se pregunta fecha meta ni minutos
       const m = document.createElement('div'); m.className = 'modal gl-modal';
       m.innerHTML = `<div class="card"><h3>${AG() === 'kids' ? '¿Qué te gustaría hacer con el inglés?' : '¿Para qué quieres aprender inglés?'}</h3><p class="muted">Así adaptamos la plataforma a ti. Puedes cambiarlo cuando quieras.</p>
         <div class="gl-opts${AG() !== 'adult' ? ' two' : ''}">${optsFor().map(([k, d]) => `<button type="button" class="gl-o${st.k === k ? ' on' : ''}" data-k="${k}">${icon(k)}<div><b>${esc(d.name)}</b><small>${esc(d.desc)}</small></div></button>`).join('')}</div>
-        <p class="gl-q">¿Tienes una fecha meta? <small>(opcional)</small></p><div class="gl-chips" data-f="months">${MONTHS.map(([v, t]) => `<button type="button" class="gl-c${st.months === v ? ' on' : ''}" data-v="${v}">${t}</button>`).join('')}</div>
-        <p class="gl-q">¿Cuánto tiempo al día?</p><div class="gl-chips" data-f="min">${MINS.map(v => `<button type="button" class="gl-c${st.min === v ? ' on' : ''}" data-v="${v}">${v} min</button>`).join('')}</div>
         <div class="gl-act"><button class="btn k" id="gl-ok" ${st.k ? '' : 'disabled'}>Guardar mi objetivo</button>${opts.noSkip ? '' : '<button class="btn w sm" id="gl-no">Ahora no</button>'}</div></div>`;
       document.body.appendChild(m);
       const ok = m.querySelector('#gl-ok');

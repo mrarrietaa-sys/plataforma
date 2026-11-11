@@ -398,7 +398,7 @@
   function trialModal() {
     if (window.MRPLANS) return MRPLANS.modal(M);
     const m = M.modal(`<div class="center">${M.mascot('mascot', 'present')}</div><h3 class="center">🟢 Fin de tu acceso gratuito</h3>
-      <p class="center" style="font-size:17px">Tu acceso gratuito incluye los <b>3 primeros temas</b> de tu ruta. ¿Te gustó la experiencia? <b>Inscríbete</b> y sigue aprendiendo con todos los temas, el examen final y tu certificado 🎓</p>
+      <p class="center" style="font-size:17px">Tu acceso gratuito incluye <b>3 temas</b> en total${window.MRAP && MRAP.trialLeft && MRAP.trialLeft() === 0 ? ' y ya los usaste' : ''}. ¿Te gustó la experiencia? <b>Inscríbete</b> y sigue aprendiendo con todos los temas, el examen final y tu certificado 🎓</p>
       <a class="btn block" style="text-decoration:none;background:#25D366;color:#fff" target="_blank" rel="noopener" href="https://wa.me/${C.WHATSAPP}?text=${encodeURIComponent((window.MRNE || String)(`¡Hola! Soy ${S.name}. Empecé gratis en la plataforma y quiero inscribirme 🚀`))}">💬 Quiero inscribirme</a>
       <button class="btn w block" style="margin-top:8px" id="cl">Seguir explorando</button>`, { x: true });
     $('#cl', m).onclick = () => m.remove();
