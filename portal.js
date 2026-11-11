@@ -479,6 +479,7 @@
   function tesWire() {
     const box = $('#ld-testimonios'); if (!box) return; const T = window.MRTESTIMONIOS || [];
     box.hidden = !T.length && !box.querySelector('.ld-srv-c'); const g = $('.ld-tes', box); if (g) g.innerHTML = tesGrid();
+    if (window.MRTES && MRTES.pre && T.length) { const go = () => MRTES.pre(T); if ('IntersectionObserver' in window) { const io = new IntersectionObserver((en) => { if (en.some(x => x.isIntersecting)) { io.disconnect(); go(); } }); io.observe(box); } setTimeout(go, 6000); } // v645: los videos se descargan antes de tocar ▶
     box.onclick = (e) => { const f = e.target.closest('.ld-t'); if (!f || f.classList.contains('on')) return; const t = T[+f.dataset.tes]; if (!t) return; // ▶️ se reproduce en su propio lugar
       box.querySelectorAll('.ld-t.on').forEach(o => { o.classList.remove('on'); const v = o.querySelector('video'); if (v) v.pause(); const x = T[+o.dataset.tes]; o.querySelector('.ld-tv').innerHTML = (MRTES.poster(x) ? `<img src="${esc(MRTES.poster(x))}" alt="">` : '') + '<button class="ld-play"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg></button>'; });
       f.classList.add('on'); f.querySelector('.ld-tv').innerHTML = MRTES.player(t); };
