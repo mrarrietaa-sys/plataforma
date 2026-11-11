@@ -59,9 +59,8 @@
     const g = get(); if (!g) return `<div class="gl-card gl-empty"><div class="gl-eh">${window.MRI ? `<span class="gl-ic r">${MRI('target')}</span>` : ''}<div><b>${AG() === 'kids' ? '¿Qué te gustaría hacer con el inglés?' : '¿Para qué quieres aprender inglés?'}</b><small>Adaptamos la plataforma a tu meta</small></div></div><button class="btn k sm" data-goal>Elegir mi objetivo</button></div>`;
     const d = G[g.k], w = weeksLeft(g), mo = MONTHS.find(x => x[0] === +g.months), p = Math.round(Math.max(0, Math.min(100, pct || 0)));
     return `<div class="gl-card"><div class="gl-top">${icon(g.k)}<div class="gl-tt"><small>Mi objetivo</small><b>${esc(d.short)}</b></div><button class="gl-ch" data-goal aria-label="Cambiar mi objetivo">Cambiar</button></div>
-      <div class="gl-meta"><span>${window.MRI ? MRI('calendar') : ''}${g.months ? 'Meta: ' + mo[1] : 'A tu ritmo'}</span><span>${window.MRI ? MRI('clock') : ''}${g.min} min al día</span></div>
       <div class="gl-prog"><div class="gl-bar"><i style="width:${Math.max(4, p)}%"></i></div><b>${p}%</b></div>
-      <p class="gl-s">${esc(d.ready.charAt(0).toUpperCase() + d.ready.slice(1))}${w != null ? ` · ${w ? 'faltan ' + w + ' semana' + (w === 1 ? '' : 's') : '¡llegó tu fecha meta!'}` : ''}</p></div>`;
+      <p class="gl-s">${esc(d.ready.charAt(0).toUpperCase() + d.ready.slice(1))}</p></div>`;
   }
   // ventana para elegir el objetivo
   function ask(opts) {
