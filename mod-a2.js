@@ -1,6 +1,6 @@
 /* Módulo 2 (A2 · Pre-intermediate) — datos propios del módulo */
 Object.assign(window.M1CONFIG, {
-  MOD: { id: 'A2', n: 2, es: 'Módulo 2', en: 'Module 2', level: 'Pre-intermediate A2', levelEs: 'Básico (A2)', classes: 22, topics: 11,
+  MOD: { id: 'A2', n: 2, es: 'Módulo 2', en: 'Module 2', level: 'Basic A2', levelEs: 'Básico (A2)', classes: 22, topics: 11,
     stateKey: 'mra_m2_progress_v1', examKey: 'mra_m2_exam_v1', audio: 'b', games: 'g4', examAudio: 'exam2', next: 'Module 3' },
   // Cada clase tiene su propia combinación de juegos (incluye 1 juego único por clase)
   PLAN: {

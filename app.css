@@ -9919,3 +9919,7 @@ body.ag-teens .pt-ann.pt-trial span{color:#0B2A5B!important}body.ag-teens .pt-an
 .me-plat h3{text-align:center;display:block}.me-plat h3>svg{display:inline-block;vertical-align:-3px;margin-right:6px}
 body.ag-teens .me-top h1{color:#fff}body.ag-teens .me-top p{color:rgba(255,255,255,.75)}
 @media (max-width:560px){.me-tabs{overflow:visible;gap:6px}.me-tabs button{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:8px 4px;font-size:13px;line-height:1.15;white-space:normal;text-align:center}}
+
+/* v657: chips de confianza con «+500 estudiantes» nunca se salen en celular */
+@media (max-width:600px){.lp-trust{flex-wrap:nowrap!important;justify-content:center!important;overflow:visible!important}}
+@media (max-width:400px){body.lp-teen .lp-hero.lp-k .lp-trust{gap:4px!important}body.lp-teen .lp-hero.lp-k .lp-trust span,body.lp-teen .lp-hero.lp-k .lp-trust a{padding:2px 6px 2px 2px!important}}
