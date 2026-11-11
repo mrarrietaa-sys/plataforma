@@ -1209,11 +1209,9 @@
           <div class="me-radios">${opt('', `<span class="pt-av sm">${esc(P.initials())}</span> Mis iniciales`)}${opt('photo', `${L.photo ? `<span class="pt-av sm has"><img src="${L.photo}"></span>` : '📸'} Mi foto`, !L.photo)}${opt('avatar', `${L.head ? `<span class="pt-av sm has"><img src="${L.head}"></span>` : '🧑‍🏫'} Mi Mr. Arrieta`, !L.head)}</div>
           <h3>👋 Nickname · ¿Cómo quieres que te salude?</h3><input class="inp" id="nick" maxlength="20" placeholder="${esc(p.first)}" value="${esc(L.nick || '')}">
           <p class="muted pt-small">Tu nombre completo se sigue usando en certificados y reportes.</p>
-          <h3>🎨 My color · Color de mi perfil</h3><div class="me-sws">${BANNERS.map(([k, en, c]) => `<button class="me-sw${(L.banner || 'w') === k ? ' on' : ''}" data-b="${k}"><i style="background:${c}"></i><small>${en}</small></button>`).join('')}</div>
           <label class="me-chk"><input type="checkbox" id="guide2" ${L.guide ? 'checked' : ''} ${L.av ? '' : 'disabled'}><span>Que <b>mi Mr. Arrieta personalizado</b> me acompañe en todas mis lecciones${L.av ? '' : ' <small class="muted">(primero crea tu Mr. Arrieta)</small>'}</span></label>
           <button class="btn k block lg" id="svp">✅ Guardar</button></div>`;
         let ban = L.banner || 'w';
-        $$('[data-b]', body).forEach(b => b.onclick = () => { ban = b.dataset.b; $$('[data-b]', body).forEach(x => x.classList.toggle('on', x === b)); sfx('tap'); });
         $('#svp').onclick = () => { const r = $('input[name=pic]:checked', body); const guide = $('#guide2').checked;
           P.setLook({ pic: r ? r.value : '', nick: $('#nick').value.trim(), banner: ban, guide: !!(guide && L.av) }); MRAV.applyGuide(guide && L.av ? L.av : null); done('¡Cambios guardados! ✅'); route('home'); };
       }

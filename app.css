@@ -9914,3 +9914,8 @@ body.ag-teens .pt-ann.pt-trial span{color:#0B2A5B!important}body.ag-teens .pt-an
 .ld-hero a.ld-faces{text-decoration:none;color:inherit;cursor:pointer;width:max-content;max-width:100%}.ld-hero a.ld-faces[hidden]{display:none!important}
 .ld-hero a.ld-faces .ld-fa{font-style:normal;font-weight:800;color:#0B2A5B;margin-left:6px}
 .ld-hero a.ld-faces:hover .ld-ft b{text-decoration:underline}
+
+/* v655: Mi plataforma sin color · títulos centrados · pestañas caben en celular */
+.me-plat h3{text-align:center;display:block}.me-plat h3>svg{display:inline-block;vertical-align:-3px;margin-right:6px}
+body.ag-teens .me-top h1{color:#fff}body.ag-teens .me-top p{color:rgba(255,255,255,.75)}
+@media (max-width:560px){.me-tabs{overflow:visible;gap:6px}.me-tabs button{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:8px 4px;font-size:13px;line-height:1.15;white-space:normal;text-align:center}}
