@@ -1,7 +1,7 @@
 /* =====================================================================
    PRUEBA DE CLASIFICACIÓN (Placement Test) — ADAPTATIVA
    · Evalúa las 4 habilidades (Listening, Reading, Writing, Speaking) en CADA nivel
-   · Nivel por nivel (A1 → A2 → B1 → B2+): 4 preguntas por nivel, una de cada habilidad
+   · Nivel por nivel (A1 → A2 → B1 → B2): 4 preguntas por nivel, una de cada habilidad
      - 3/3 en Listening+Reading+Writing → sube de nivel
      - 2/3 → 2 preguntas de confirmación del mismo nivel (precisión)
      - 0-1/3 → se detiene: ese es su módulo
@@ -123,7 +123,7 @@
   function welcome() {
     // portada (ID de Unsplash verificado en build/imgmap3.json: 'road signs two directions')
     shell(`${top()}<div class="card center fx-welcome">${extraNotice()}
-      <figure class="ex-cover"><div class="ex-cimg"><img src="https://images.unsplash.com/photo-1583125320604-8245f1e50c1e?w=1200&h=600&fit=crop&crop=entropy&q=80&auto=format" alt="Find your starting point" onerror="this.style.opacity=0"><span class="ex-cbadge">🧭 A1 → B2+</span></div></figure>
+      <figure class="ex-cover"><div class="ex-cimg"><img src="https://images.unsplash.com/photo-1583125320604-8245f1e50c1e?w=1200&h=600&fit=crop&crop=entropy&q=80&auto=format" alt="Find your starting point" onerror="this.style.opacity=0"><span class="ex-cbadge">🧭 A1 → B2</span></div></figure>
       <h1 style="font-size:clamp(24px,5vw,32px);margin:12px 0 4px">Placement Test</h1>
       <p class="muted" style="margin:0 0 14px">Descubre en qué módulo empiezas</p>
       <button class="btn k lg" id="go">Continuar →</button></div>`);

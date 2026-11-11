@@ -14,7 +14,7 @@
   const PLAN = { free: ['🎁', 'ACCESO GRATUITO'], membership: ['🖥️', 'PLATAFORMA'], premium: ['👑', 'PREMIUM · 4 CLASES'], premium8: ['💎', 'PREMIUM · 8 CLASES'], premium12: ['⭐', 'PREMIUM · 12 CLASES'], expired: ['⏰', 'Vencido'] };
   for (let n = 4; n <= 20; n++) PLAN[n === 4 ? 'premium' : 'premium' + n] = ['👑', 'PREMIUM · ' + n + ' CLASES']; // 👑 v626: Premium de 4 a 20 clases
   const PREMK = (n) => (+n === 4 ? 'premium' : 'premium' + n);
-  const MODN = { 1: 'A1', 2: 'A2', 3: 'B1', 4: 'B2+' };
+  const MODN = { 1: 'A1', 2: 'A2', 3: 'B1', 4: 'B2' };
   const PRICE = { membership: 64900, premium: 349000 };
   const money = (n) => '$' + Math.round(+n || 0).toLocaleString('es-CO');
   const fD = (iso, o) => { if (!iso) return '—'; try { return new Date(String(iso).slice(0, 10) + 'T12:00:00').toLocaleDateString('es-CO', o || { day: 'numeric', month: 'short', year: 'numeric' }); } catch (e) { return iso; } };
@@ -802,7 +802,7 @@
     const m = modal(`<h2>＋ Programar clase individual</h2><p class="muted" style="margin:0 0 8px">Útil para clases de prueba o para programar una clase a mano. El profe y el estudiante entran desde «Mis clases → Entrar a la clase» (5 min antes).</p><div class="ad-form"><input type="hidden" name="type" value="vip">
       <label>Profe<select class="inp" name="teacherId">${teacherOpts()}</select></label><label>Fecha<input class="inp" type="date" name="date" value="${todayISO()}"></label><label>Hora (Colombia)<input class="inp" type="time" name="time" step="300" value="18:00"></label>
       <label>Código del estudiante<input class="inp" name="students" placeholder="LAURA-4062" style="text-transform:uppercase"></label>
-      <label class="full">Tema<select class="inp" name="topic"><option value="">— Sin tema —</option>${[1, 2, 3, 4].map((md) => `<optgroup label="Módulo ${md} · ${({ 1: 'A1', 2: 'A2', 3: 'B1', 4: 'B2+' })[md]}">${((window.CLASE_TOPICS || {})[md] || []).map((t, k) => `<option value="Módulo ${md} · Tema ${k + 1}: ${esc(t[0])}">Tema ${k + 1}: ${esc(t[0])}</option>`).join('')}</optgroup>`).join('')}</select></label></div><button class="btn k block lg" id="cn-ok">Programar</button>`);
+      <label class="full">Tema<select class="inp" name="topic"><option value="">— Sin tema —</option>${[1, 2, 3, 4].map((md) => `<optgroup label="Módulo ${md} · ${({ 1: 'A1', 2: 'A2', 3: 'B1', 4: 'B2' })[md]}">${((window.CLASE_TOPICS || {})[md] || []).map((t, k) => `<option value="Módulo ${md} · Tema ${k + 1}: ${esc(t[0])}">Tema ${k + 1}: ${esc(t[0])}</option>`).join('')}</optgroup>`).join('')}</select></label></div><button class="btn k block lg" id="cn-ok">Programar</button>`);
     $('#cn-ok', m).onclick = async () => { const d = formData(m); if (!d.teacherId || !d.date || !d.time) return toast('Completa profe, fecha y hora');
       d.students = d.students.toUpperCase().split(/[,\s]+/).filter(Boolean); if (!d.students.length) return toast('Escribe el código del estudiante'); d.duration = '50'; d.status = 'scheduled'; d.type = 'vip'; d.created = todayISO();
       const r = await api('aSave', { table: 'Clases', row: d }); m.remove(); if (r.ok) { toast('✅ Clase programada'); classes(); } };

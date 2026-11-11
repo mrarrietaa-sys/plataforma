@@ -111,7 +111,7 @@
   function welcome() { /* v460: una sola pantalla corta (sin datos ni correo del profesor) */
     const cv = COVERS[EXAM_ID] || COVERS.A1, I = n => window.MRI ? MRI(n) : '';
     shell(`${top()}<div class="card center fx-welcome fx9w">${extraNotice()}
-      <figure class="ex-cover"><div class="ex-cimg"><img src="https://images.unsplash.com/${cv[0]}?w=1200&h=500&fit=crop&crop=entropy&q=80&auto=format" alt="${esc(cv[1])}" onerror="this.style.opacity=0"><span class="ex-cbadge">${MOD.course ? 'A1 → B2+' : esc(MOD.id)}</span></div></figure>
+      <figure class="ex-cover"><div class="ex-cimg"><img src="https://images.unsplash.com/${cv[0]}?w=1200&h=500&fit=crop&crop=entropy&q=80&auto=format" alt="${esc(cv[1])}" onerror="this.style.opacity=0"><span class="ex-cbadge">${MOD.course ? 'A1 → B2' : esc(MOD.id)}</span></div></figure>
       <h1 class="fx9-t">${MOD.course ? 'Examen final del curso' : 'Examen final · ' + MOD.es}</h1>
       <ul class="fx9-ul"><li>${I('clock')}<span><b>${N} preguntas · ${CFG.TIME_MIN} minutos</b></span></li><li>${I('check')}<span>Ves al instante si acertaste</span></li><li>${I('award')}<span>Apruebas con <b>${(C.PASS_SCORE / 10).toFixed(1)}</b> y recibes tu certificado</span></li><li>${I('repeat')}<span>Intentos ilimitados · 12 horas entre un intento y otro</span></li></ul>
       <button class="btn k lg" id="go">Comenzar examen</button></div>`);
@@ -365,7 +365,7 @@
       listening_score: r.per.listening.score.toFixed(1), reading_score: r.per.reading.score.toFixed(1), writing_score: r.per.writing.score.toFixed(1), speaking_score: r.per.speaking.score.toFixed(1),
       final_score: r.fin.toFixed(1), performance: r.b.l.replace(/^\S+\s/, ''), status: r.passed ? 'PASSED' : 'NOT PASSED', feedback: comment(r.per, r.b),
       next_steps_display: r.passed ? 'block' : 'none',
-      next_steps_text: r.passed && MOD.course ? '¡Felicitaciones! Completaste toda tu ruta de aprendizaje en mrarrieta.com (A1 → A2 → B1 → B2+). Tu certificado de finalización ya está disponible en tu perfil. ¡Gracias por aprender inglés HABLANDO con nosotros!' : r.passed ? '¡Felicitaciones! Aprobaste y ya puedes continuar con el siguiente módulo de tu ruta: ' + MOD.next + '. Lo encuentras abierto en tu perfil, en «Mis módulos».\n\nSi tienes plan Premium, reserva tus próximas clases individuales desde la plataforma: eliges el día, la hora y el profe que prefieras, y el tema de tu nuevo módulo.' : '' };
+      next_steps_text: r.passed && MOD.course ? '¡Felicitaciones! Completaste toda tu ruta de aprendizaje en mrarrieta.com (A1 → A2 → B1 → B2). Tu certificado de finalización ya está disponible en tu perfil. ¡Gracias por aprender inglés HABLANDO con nosotros!' : r.passed ? '¡Felicitaciones! Aprobaste y ya puedes continuar con el siguiente módulo de tu ruta: ' + MOD.next + '. Lo encuentras abierto en tu perfil, en «Mis módulos».\n\nSi tienes plan Premium, reserva tus próximas clases individuales desde la plataforma: eliges el día, la hora y el profe que prefieras, y el tema de tu nuevo módulo.' : '' };
     // 0) ☁️ plataforma: el profe y administración reciben el resultado como notificación
     if (cloud()) {
       MRAC.examResult({ exam: EXAM_ID, attempt: r.attemptLabel, listening: params.listening_score, reading: params.reading_score, writing: params.writing_score, speaking: params.speaking_score, final: params.final_score, passed: !!r.passed })
@@ -419,7 +419,7 @@
       <div class="c3" id="cert"><div class="c3-in"><div class="c3-fr"><img class="c3-logo" src="mra-logo-cert.png" alt="mrarrieta.com">
         <div class="c3-t">CERTIFICATE</div><div class="c3-st">${MOD.course ? 'of Achievement' : 'of Completion'}</div><div class="c3-orn"><i></i><b></b><i></i></div>
         <p class="c3-s">This is to certify that</p><div class="c3-n">${esc(nm)}</div>
-        <p class="c3-p">${MOD.course ? 'has successfully completed the entire' : 'has satisfactorily completed'}</p><p class="c3-m">${MOD.course ? 'English Learning Path · A1 → B2+' : esc(MOD.en + ' · ' + MOD.level)}</p><p class="c3-lv">${MOD.course ? 'Final Course Exam · mrarrieta.com' : 'English Program · mrarrieta.com'}</p>
+        <p class="c3-p">${MOD.course ? 'has successfully completed the entire' : 'has satisfactorily completed'}</p><p class="c3-m">${MOD.course ? 'English Learning Path · A1 → B2' : esc(MOD.en + ' · ' + MOD.level)}</p><p class="c3-lv">${MOD.course ? 'Final Course Exam · mrarrieta.com' : 'English Program · mrarrieta.com'}</p>
         ${r.fin ? `<div class="c3-sc">Final score <b>${Number(r.fin).toFixed(1)} / 10</b></div>` : ''}
         <div class="c3-f"><div class="c3-col"><div class="c3-v">${esc(date)}</div><div class="c3-ln">Date of issue</div><div class="c3-lb">mrarrieta.com</div></div><div class="c3-col"><div class="c3-v"><img src="mra-signature.png" alt="Firma"></div><div class="c3-ln">John Jairo Arrieta Jaramillo</div><div class="c3-lb">Director</div></div></div></div></div></div>
       <div class="row noprint" style="justify-content:center;margin-top:16px"><button class="btn k lg" id="dl">⬇️ Descargar certificado (PDF)</button><button class="btn w" id="pr">🖨️ Imprimir</button>
@@ -441,7 +441,7 @@
       d.setFont('times', 'italic'); d.setFontSize(40); d.setTextColor(...NV); d.text(nm, C, 272, { align: 'center' });
       d.setDrawColor(...NV); d.setLineWidth(.8); d.line(C - 190, 286, C + 190, 286);
       d.setFont('helvetica', 'normal'); d.setFontSize(13); d.setTextColor(51, 65, 92); d.text(MOD.course ? 'has successfully completed the entire' : 'has satisfactorily completed', C, 314, { align: 'center' });
-      d.setFont('helvetica', 'bold'); d.setFontSize(21); d.setTextColor(...NV); d.text(MOD.course ? 'English Learning Path · A1 > B2+' : MOD.en + ' · ' + MOD.level, C, 342, { align: 'center' });
+      d.setFont('helvetica', 'bold'); d.setFontSize(21); d.setTextColor(...NV); d.text(MOD.course ? 'English Learning Path · A1 > B2' : MOD.en + ' · ' + MOD.level, C, 342, { align: 'center' });
       d.setFont('helvetica', 'normal'); d.setFontSize(12); d.setTextColor(...MU); d.text(MOD.course ? 'Final Course Exam · mrarrieta.com' : 'English Program · mrarrieta.com', C, 360, { align: 'center' });
       if (r.fin) { const t1 = 'FINAL SCORE', t2 = Number(r.fin).toFixed(1) + ' / 10'; d.setFont('helvetica', 'normal'); d.setFontSize(9.5); const w1 = d.getTextWidth(t1) + 1.2 * (t1.length - 1); d.setFont('helvetica', 'bold'); d.setFontSize(14); const w2 = d.getTextWidth(t2), bw = w1 + w2 + 34;
         d.setDrawColor(...LN); d.setLineWidth(.8); d.roundedRect(C - bw / 2, 374, bw, 26, 13, 13); d.setFont('helvetica', 'normal'); d.setFontSize(9.5); d.setTextColor(...MU); d.text(t1, C - bw / 2 + 14, 391, { charSpace: 1.2 }); d.setFont('helvetica', 'bold'); d.setFontSize(14); d.setTextColor(...NV); d.text(t2, C - bw / 2 + 20 + w1, 392); }

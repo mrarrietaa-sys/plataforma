@@ -222,7 +222,7 @@
     if ($('#tp-live')) $('#tp-live').onclick = () => { // 🎥 práctica de las clases en vivo de los 4 módulos
       const AGF = { 1: ['age_a1.js', 'M1AGE'], 2: ['age_a2.js', 'M2AGE'], 3: ['age_b2.js', 'MYAGE3'], 4: ['age_b2p.js', 'MYAGE4'] };
       const ld = (f, ok) => { const a = document.createElement('script'); a.src = 'js/' + f + '?v=' + Date.now().toString().slice(0, 7); a.onload = ok; a.onerror = () => { const b = document.createElement('script'); b.src = f; b.onload = ok; b.onerror = ok; document.head.appendChild(b); }; document.head.appendChild(a); };
-      const show = (mod, ag) => { ag = ag || 'adult'; const T = (window.CLASE_TOPICS || {})[mod] || []; const LV = { 1: 'A1', 2: 'A2', 3: 'B1', 4: 'B2+' }; const AQ = ag === 'adult' ? '' : '&ag=' + ag;
+      const show = (mod, ag) => { ag = ag || 'adult'; const T = (window.CLASE_TOPICS || {})[mod] || []; const LV = { 1: 'A1', 2: 'A2', 3: 'B1', 4: 'B2' }; const AQ = ag === 'adult' ? '' : '&ag=' + ag;
         { const need = []; if (ag === 'adult') { if (!window.MRADLIVE) need.push('adultlive.js'); } else { if (!window.MRAGEIMG) need.push('ageimg.js'); if (!window[AGF[mod][1]]) need.push(AGF[mod][0]); } if (need.length) { let n = need.length; need.forEach((f) => ld(f, () => { if (--n === 0) show(mod, ag); })); return; } } // v539: fotos y lecturas de su edad
         const G = ag === 'adult' ? null : ((window[AGF[mod][1]] || {})[ag] || {}), IM = ag === 'adult' ? null : ((window.MRAGEIMG || {})[ag] || {}).topics || {}, AD = window.MRADLIVE || {};
         const rd = (n) => { if (!G) return (AD[mod + '-' + n] || {}).r || ''; const x = (G['t' + n + 'p1'] || {}).reading || (G['t' + n + 'p2'] || {}).reading; return x && x.title ? x.title : ''; };

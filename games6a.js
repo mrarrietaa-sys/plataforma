@@ -1,5 +1,5 @@
 /* =====================================================================
-   JUEGOS ÚNICOS DEL MÓDULO 4 (B2+) · TEMAS 1–7 — una dinámica distinta en cada clase
+   JUEGOS ÚNICOS DEL MÓDULO 4 (B2) · TEMAS 1–7 — una dinámica distinta en cada clase
    t1p1 fc1DominoChain · t1p2 fc2DealNegotiator · t2p1 sc1ParallelPortal · t2p2 sc2AdviceColumn
    t3p1 tc1TimeRewind · t3p2 tc2StartupPostmortem · t4p1 vg1VerbSwipe · t4p2 vg2MeaningTwins
    t5p1 snMatchmaker · t5p2 snAuxRadar · t6p1 ppcSherlock · t6p2 ppcMarathonApp

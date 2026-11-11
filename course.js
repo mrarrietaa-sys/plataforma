@@ -1,5 +1,5 @@
 /* =====================================================================
-   EXAMEN FINAL DEL CURSO — se habilita al aprobar los 4 módulos (A1, A2, B2, B2+)
+   EXAMEN FINAL DEL CURSO — se habilita al aprobar los 4 módulos (A1, A2, B2, B2)
    ===================================================================== */
 (function () {
   const M = window.M1, P = window.MRAP, C = window.M1CONFIG;

@@ -4,7 +4,7 @@
   const app = $('#app'), I = (n) => window.MRI ? MRI(n) : '';
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const LS = { get: (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch (e) { } } };
-  const LV = ['', 'A1 · Elemental', 'A2 · Básico', 'B1 · Intermedio', 'B2+ · Avanzado'];
+  const LV = ['', 'A1 · Elemental', 'A2 · Básico', 'B1 · Intermedio', 'B2 · Avanzado'];
   const AG = { kids: ['k', 'KIDS'], teens: ['t', 'TEENS'], adult: ['a', 'ADULTOS'] };
   const ago = (d) => d <= 0 ? 'Hoy' : d === 1 ? 'Ayer' : 'Hace ' + d + ' días';
   let F = null;
@@ -67,7 +67,7 @@
       const x = await MRAC.call('famAlerts', { fcode: f.fcode, on }).catch(() => null); if (!x || !x.ok) { $('#sw').classList.toggle('on', !on); } };
   }
 
-  const LVN = ['', 'A1 Elemental', 'A2 Básico', 'B1 Intermedio', 'B2+ Avanzado'];
+  const LVN = ['', 'A1 Elemental', 'A2 Básico', 'B1 Intermedio', 'B2 Avanzado'];
   const GOALN = { kc: 'Ir bien en el colegio', kj: 'Jugar y ver videos', kv: 'Viajar en familia', km: 'Música y canciones', tc: 'Colegio y exámenes', ts: 'Series, música y redes', tg: 'Videojuegos y amigos', tx: 'Viajar o estudiar afuera', v: 'Viajar', t: 'Trabajo', e: 'Estudios' };
   const MES = ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];
   const fD = (iso) => { if (!iso) return '—'; const d = new Date(iso + 'T12:00:00'); return d.getDate() + ' de ' + ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'][d.getMonth()]; };

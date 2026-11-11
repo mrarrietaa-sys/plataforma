@@ -1,6 +1,6 @@
 /* =====================================================================
    ZONA DE JUEGOS (arcade) — juegos para aprender inglés jugando
-   · Contenido por nivel (A1 · A2 · B2 · B2+) desde js/arcadedata.js
+   · Contenido por nivel (A1 · A2 · B2 · B2) desde js/arcadedata.js
    · Puntaje total, récords, medallas y racha en localStorage 'mra_arcade_v1'
    · Efectos con WebAudio; voces naturales (audio/arcade*.js)
    · Acceso gratuito: 2 juegos abiertos; el resto con Membership o Premium

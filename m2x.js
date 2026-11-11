@@ -463,7 +463,7 @@
     return { interview, prompter, news, bet, path, map, magBox, magBind, initials, bindIni, dictation };
   })();
 
-  /* =================== v523 · MÓDULO 4 (B2+) · experiencia propia =================== */
+  /* =================== v523 · MÓDULO 4 (B2) · experiencia propia =================== */
   const M4 = (function () {
     /* ---------- 🏛️ Adultos · presentación en la junta ---------- */
     async function board(stage, p) {

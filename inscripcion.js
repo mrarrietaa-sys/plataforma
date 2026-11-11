@@ -24,7 +24,7 @@ if (!window.M1) window.M1 = {
     { id: 'free', name: 'ACCESO GRATUITO', price: '$0', per: 'COP · sin costo', tag: 'Pruébalo gratis · 3 días', icon: '🎁',
       perks: ['Descubre tu nivel en 10 minutos', 'Tu ruta personalizada', 'Habla y la plataforma te corrige'], note: 'Incluye 1 clase gratis con profe.' },
     Object.assign({ id: 'membership', tag: 'Aprende a tu ritmo', icon: '🖥️',
-      perks: ['Habla desde el día 1: te escucha y te corrige', 'Del A1 al B2+, a tu ritmo, 24/7', 'Certificado por cada módulo'], note: 'No incluye clases individuales.' }, pp('membership', '🖥️ PLATAFORMA', '$64.900')),
+      perks: ['Habla desde el día 1: te escucha y te corrige', 'Del A1 al B2, a tu ritmo, 24/7', 'Certificado por cada módulo'], note: 'No incluye clases individuales.' }, pp('membership', '🖥️ PLATAFORMA', '$64.900')),
   ];
   const XP = () => { const P = window.MRPLANS; const n = P && P.extra ? P.extra() : 32900; return '$' + String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.'); };
   function stCount() { const el = document.querySelector('[data-stc]'); if (!el) return; const run = (N) => { const t0 = performance.now(); const fr = (t) => { const k = Math.min(1, (t - t0) / 1400); el.textContent = '+' + Math.round(N * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(fr); }; requestAnimationFrame(fr); };
@@ -54,7 +54,7 @@ if (!window.M1) window.M1 = {
       <div class="in-hero-txt">
         
         <h1>Aprende inglés <span class="in-hl">HABLANDO</span>, a tu ritmo y con tu propia ruta.</h1>
-        <p>Tu nivel en 10 minutos, tu ruta del A1 al B2+ y una plataforma que <b>te escucha y te corrige</b>. Súmale clases 1 a 1 con profes reales. <b>100% virtual.</b></p>
+        <p>Tu nivel en 10 minutos, tu ruta del A1 al B2 y una plataforma que <b>te escucha y te corrige</b>. Súmale clases 1 a 1 con profes reales. <b>100% virtual.</b></p>
         
       </div>
       <img class="in-hero-img" src="mra-welcome.webp" alt="Mr. Arrieta te da la bienvenida" width="300" height="300">

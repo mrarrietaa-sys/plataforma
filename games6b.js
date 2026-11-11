@@ -1,5 +1,5 @@
 /* =====================================================================
-   JUEGOS ÚNICOS DEL MÓDULO 4 (B2+) — temas 8 a 14
+   JUEGOS ÚNICOS DEL MÓDULO 4 (B2) — temas 8 a 14
    t8p1 tagPingPong · t8p2 tagPitchDetective · t9p1 reportedGossipChain · t9p2 reportingVerbCourtroom
    t10p1 politeConciergeDesk · t10p2 whetherEscapeLock · t11p1 passiveNewsroomTicker · t11p2 passiveFactoryConveyor
    t12p1 causativeServiceCity · t12p2 causativeInsuranceClaim · t13p1 futureTimelineRadar · t13p2 deadlineKanbanSprint

@@ -7,7 +7,7 @@
 (function () {
   'use strict';
   const GOOGLE = 'https://g.page/r/CSz_ib_w-ctREAE/review';
-  const MODN = { A1: 'Módulo 1 · A1', A2: 'Módulo 2 · A2', B2: 'Módulo 3 · B1', 'B2+': 'Módulo 4 · B2+' };
+  const MODN = { A1: 'Módulo 1 · A1', A2: 'Módulo 2 · A2', B2: 'Módulo 3 · B1', 'B2+': 'Módulo 4 · B2' };
   const TAGS = ['Los profes', 'Practicar con voz', 'Las clases', 'Los juegos', 'Los horarios', 'La plataforma', 'Los temas', 'El precio'];
   const LAB = ['', 'Muy mala', 'Mala', 'Regular', 'Buena', '¡Excelente!'];
   const PEND = 'mra_srv_pending';
