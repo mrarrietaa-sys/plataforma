@@ -615,18 +615,58 @@
     drawG(''); $('#bd-q').oninput = (e) => drawG(e.target.value);
   }
   /* ======================= TESTIMONIOS ======================= */
+  /* v647 · 🎬 los videos de testimonios se optimizan solos antes de guardarse (más livianos = cargan rápido en la página)
+     Se reproduce el video por dentro (sin sonido para ti) y se graba de nuevo en 540 px y calidad web. Tarda lo mismo que dura el video. */
+  const VZ = {
+    mime: () => { const L = ['video/mp4;codecs=avc1.42E01E,mp4a.40.2', 'video/mp4;codecs=avc1,mp4a.40.2', 'video/mp4;codecs=avc1,opus', 'video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm']; return window.MediaRecorder ? L.find(x => { try { return MediaRecorder.isTypeSupported(x); } catch (e) { return false; } }) || '' : ''; },
+    can: () => !!(window.MediaRecorder && HTMLCanvasElement.prototype.captureStream && (window.AudioContext || window.webkitAudioContext) && VZ.mime()),
+    run: (src, onP) => new Promise((ok, ko) => {
+      const v = document.createElement('video'); v.playsInline = true; v.preload = 'auto'; v.crossOrigin = 'anonymous'; v.src = src; let done = false, rec = null, raf = 0, ac = null;
+      const fail = (e) => { if (done) return; done = true; try { rec && rec.state !== 'inactive' && rec.stop(); } catch (er) { } cancelAnimationFrame(raf); try { ac && ac.close(); } catch (er) { } ko(e || new Error('vz')); };
+      v.onerror = () => fail(new Error('video')); setTimeout(() => { if (!rec) fail(new Error('timeout')); }, 30000);
+      v.onloadedmetadata = async () => { try {
+        const W0 = v.videoWidth || 540, H0 = v.videoHeight || 960, sc = Math.min(1, 540 / Math.min(W0, H0)); const W = Math.round(W0 * sc / 2) * 2, H = Math.round(H0 * sc / 2) * 2;
+        const c = document.createElement('canvas'); c.width = W; c.height = H; const g = c.getContext('2d'); const vs = c.captureStream(30);
+        ac = new (window.AudioContext || window.webkitAudioContext)(); const sn = ac.createMediaElementSource(v), dst = ac.createMediaStreamDestination(); sn.connect(dst); // el sonido va al archivo, no a tus parlantes
+        const st = new MediaStream([...vs.getVideoTracks(), ...dst.stream.getAudioTracks()]); const mt = VZ.mime(); const ch = [];
+        rec = new MediaRecorder(st, { mimeType: mt, videoBitsPerSecond: 900000, audioBitsPerSecond: 64000 }); rec.ondataavailable = (e) => { if (e.data && e.data.size) ch.push(e.data); };
+        rec.onstop = () => { if (done) return; done = true; cancelAnimationFrame(raf); try { ac.close(); } catch (er) { } ok({ blob: new Blob(ch, { type: mt.split(';')[0] }), mime: mt.split(';')[0] }); };
+        const draw = () => { if (done) return; try { g.drawImage(v, 0, 0, W, H); } catch (er) { } if (v.duration) onP && onP(Math.min(99, Math.round(v.currentTime / v.duration * 100))); raf = requestAnimationFrame(draw); };
+        v.onended = () => { try { g.drawImage(v, 0, 0, W, H); } catch (er) { } setTimeout(() => { try { rec.stop(); } catch (er) { } }, 250); };
+        await ac.resume(); rec.start(1000); draw(); await v.play();
+      } catch (e) { fail(e); } };
+    }),
+    // devuelve el archivo optimizado; si no se puede (navegador viejo) o no ahorra, devuelve el original
+    opt: async (blobOrFile, onP) => { if (!VZ.can()) return null; const u = URL.createObjectURL(blobOrFile); try { const r = await VZ.run(u, onP); if (!r.blob.size || r.blob.size > blobOrFile.size * .9) return null; return r; } catch (e) { return null; } finally { URL.revokeObjectURL(u); } },
+  };
   async function tes() {
     view().innerHTML = '<div class="ad-loading">⏳ Cargando testimonios…</div>';
     const r = await api('aTesList'); if (TAB !== 'tes') return; if (!r.ok) return view().innerHTML = '<p class="ad-err">No se pudieron cargar los testimonios.</p>';
     const L = r.tes || []; const pv = (t) => MRTES.v(t.poster) || (MRTES.drive(t.video) ? 'https://drive.google.com/thumbnail?id=' + MRTES.drive(t.video) + '&sz=w400' : '');
     view().innerHTML = `<div class="ad-head"><h2>🎬 Testimonios <small class="muted">(${L.length})</small></h2><button class="btn k" id="ts-new">＋ Nuevo testimonio</button></div>
-      <p class="muted" style="margin:-4px 0 14px">Aparecen en la página de inicio, en el orden que indiques. Video vertical (de celular), máximo 25 MB.</p>
+      <p class="muted" style="margin:-4px 0 14px">Aparecen en la página de inicio, en el orden que indiques. Video vertical (de celular): se optimiza solo para que cargue rápido.</p>
       <div class="ad-tes">${L.map((t, i) => `<div class="ad-tc${String(t.active).charAt(0) === 'n' ? ' off' : ''}"><div class="ad-tp">${pv(t) ? `<img src="${esc(pv(t))}" alt="">` : ''}<span>${esc(t.ord)}</span></div><b>${esc(t.name)}</b><small>${esc(t.info || '')}</small>${String(t.active).charAt(0) === 'n' ? '<em>Oculto</em>' : ''}${RA('Testimonios', t.id, t.name)}</div>`).join('') || '<p class="muted">Aún no hay testimonios.</p>'}</div>`;
     $('#ts-new').onclick = () => tesEdit(null, L.length + 1);
+    tesAutoOpt(L); // v647: los videos pesados que ya estaban se optimizan solos
     wireGA($('.ad-tes', view()), 'Testimonios', () => { try { localStorage.removeItem('mra_tes'); } catch (e) { } tes(); }, { edit: (id) => tesEdit(L.find(x => String(x.id) === String(id))) });
     $$('[data-te]').forEach(b => b.onclick = () => tesEdit(L[+b.dataset.te]));
     $$('[data-td]').forEach(b => b.onclick = () => { const t = L[+b.dataset.td]; const m = modal(`<div class="center"><h2>¿Borrar el testimonio de ${esc(t.name)}?</h2><p class="muted">Dejará de aparecer en la página de inicio.</p><div class="row" style="justify-content:center;margin-top:10px"><button class="btn w" id="dl-no">Cancelar</button><button class="btn k ad-del" id="dl-ok">🗑️ Sí, borrar</button></div></div>`);
       $('#dl-no', m).onclick = () => m.remove(); $('#dl-ok', m).onclick = async () => { $('#dl-ok', m).disabled = true; const x = await api('aTesDel', { id: t.id }); m.remove(); if (x.ok) { try { localStorage.removeItem('mra_tes'); } catch (e) { } toast('🗑️ Borrado'); tes(); } else toast('No se pudo borrar'); }; });
+  }
+  let tesOptRun = false;
+  async function tesAutoOpt(L) {
+    if (tesOptRun || !VZ.can()) return; const heavy = L.filter(t => MRTES.drive(t.video) && +t.vsize > 6 * 1048576); if (!heavy.length) return; tesOptRun = true;
+    const bar = document.createElement('div'); bar.className = 'ad-vz'; bar.style.cssText = 'margin:0 0 14px;padding:10px 14px;border-radius:12px;background:#eef6ff;color:#0B2A5B;font-weight:700;font-size:14px';
+    const head = view().querySelector('.ad-head'); if (head) head.after(bar);
+    for (let i = 0; i < heavy.length; i++) { const t = heavy[i]; if (TAB !== 'tes') break;
+      bar.textContent = `⏳ Optimizando el video de ${t.name} para que cargue rápido (${i + 1} de ${heavy.length})… no cierres esta pestaña`;
+      try { const r = await MRAC.call('tesVideo', { id: MRTES.drive(t.video) }, { timeout: 300000 }); if (!r || !r.ok) continue;
+        const bin = atob(r.b64), u8 = new Uint8Array(bin.length); for (let k = 0; k < bin.length; k++) u8[k] = bin.charCodeAt(k); const src = new Blob([u8], { type: r.mime || 'video/mp4' });
+        const o = await VZ.opt(src, (p) => { bar.textContent = `⏳ Optimizando el video de ${t.name} (${i + 1} de ${heavy.length})… ${p} % · no cierres esta pestaña`; }); if (!o) continue;
+        const b64 = await new Promise((ok, ko) => { const rd = new FileReader(); rd.onload = () => ok(String(rd.result).split(',')[1]); rd.onerror = ko; rd.readAsDataURL(o.blob); });
+        await api('aTesSave', { id: t.id, video: b64, vmime: o.mime }).catch(() => null);
+      } catch (e) { } }
+    tesOptRun = false; try { localStorage.removeItem('mra_tes'); } catch (e) { } bar.textContent = '✅ Videos optimizados: ya cargan rápido en la página.'; setTimeout(() => { if (TAB === 'tes') tes(); }, 2500);
   }
   function tesEdit(t, ord) {
     t = t || {}; const fileTo64 = (f) => new Promise((ok, ko) => { const rd = new FileReader(); rd.onload = () => ok(String(rd.result).split(',')[1]); rd.onerror = ko; rd.readAsDataURL(f); });
@@ -635,10 +675,10 @@
       <label>Detalle <small>(opcional)</small><input class="inp" name="info" maxlength="80" value="${esc(t.info)}" placeholder="Ej: 4 meses en la plataforma"></label>
       <label>Orden<input class="inp" name="ord" inputmode="numeric" value="${esc(t.ord || ord || 1)}"></label>
       <label>Visible<select class="inp" name="active"><option value="sí" ${String(t.active || 'sí').charAt(0) !== 'n' ? 'selected' : ''}>Sí, mostrar</option><option value="no" ${String(t.active).charAt(0) === 'n' ? 'selected' : ''}>No, ocultar</option></select></label>
-      <div class="full ad-photo"><span class="ad-tp sm" id="ts-pv">${t.poster ? `<img src="${esc(MRTES.v(t.poster))}" alt="">` : ''}</span><div><b>Video ${t.id ? '' : '<small class="muted">(obligatorio)</small>'}</b><br><small class="muted">Vertical, de celular · máximo 25 MB · la portada se crea sola</small><br><label class="btn w sm" style="margin-top:6px;cursor:pointer">🎥 ${t.id ? 'Cambiar video' : 'Elegir video'}<input type="file" id="ts-v" accept="video/*" hidden></label> <span class="muted" id="ts-vn" style="font-size:13px"></span></div></div></div>
+      <div class="full ad-photo"><span class="ad-tp sm" id="ts-pv">${t.poster ? `<img src="${esc(MRTES.v(t.poster))}" alt="">` : ''}</span><div><b>Video ${t.id ? '' : '<small class="muted">(obligatorio)</small>'}</b><br><small class="muted">Vertical, de celular · se optimiza solo para que cargue rápido · la portada se crea sola</small><br><label class="btn w sm" style="margin-top:6px;cursor:pointer">🎥 ${t.id ? 'Cambiar video' : 'Elegir video'}<input type="file" id="ts-v" accept="video/*" hidden></label> <span class="muted" id="ts-vn" style="font-size:13px"></span></div></div></div>
       <button class="btn k block lg" id="ts-ok">💾 Guardar</button><p class="muted center hidden" id="ts-st" style="margin-top:8px"></p>`);
     let VF = null, POS = null;
-    $('#ts-v', m).onchange = (e) => { const f = e.target.files[0]; if (!f) return; if (f.size > 25 * 1024 * 1024) { e.target.value = ''; return toast('⚠️ El video pesa más de 25 MB. Envíatelo por WhatsApp para comprimirlo y vuelve a intentarlo.'); }
+    $('#ts-v', m).onchange = (e) => { const f = e.target.files[0]; if (!f) return; if (f.size > (VZ.can() ? 300 : 25) * 1024 * 1024) { e.target.value = ''; return toast('⚠️ El video es demasiado pesado. Usa uno más corto (máximo 2 minutos).'); }
       VF = f; $('#ts-vn', m).textContent = f.name + ' · ' + (f.size / 1048576).toFixed(1) + ' MB';
       const v = document.createElement('video'); v.muted = true; v.playsInline = true; v.preload = 'auto'; v.src = URL.createObjectURL(f);
       v.onloadeddata = () => { try { v.currentTime = Math.min(1.2, (v.duration || 2) / 3); } catch (er) { } };
@@ -646,7 +686,8 @@
     $('#ts-ok', m).onclick = async () => { const d = formData(m); if (!d.name) return toast('Escribe el nombre'); if (!t.id && !VF) return toast('Elige el video');
       const b = $('#ts-ok', m), st = $('#ts-st', m); b.disabled = true; st.classList.remove('hidden'); st.textContent = VF ? '⏳ Subiendo video… no cierres esta ventana' : '⏳ Guardando…';
       const req = { name: d.name, info: d.info, ord: d.ord, active: d.active }; if (t.id) req.id = t.id;
-      if (VF) { req.video = await fileTo64(VF); req.vmime = VF.type || 'video/mp4'; if (POS) req.poster = POS.split(',')[1]; }
+      if (VF) { let up = VF, um = VF.type || 'video/mp4'; st.textContent = '⏳ Optimizando el video para que cargue rápido… 0 %'; const o = await VZ.opt(VF, (p) => { st.textContent = `⏳ Optimizando el video para que cargue rápido… ${p} %`; }); if (o) { up = o.blob; um = o.mime; } st.textContent = '⏳ Subiendo video… no cierres esta ventana';
+        req.video = await fileTo64(up); req.vmime = um; if (POS) req.poster = POS.split(',')[1]; }
       const r = await api('aTesSave', req).catch(() => null);
       if (!r || !r.ok) { b.disabled = false; st.textContent = ''; return toast('No se pudo guardar. Revisa tu conexión e inténtalo de nuevo.'); }
       try { localStorage.removeItem('mra_tes'); } catch (e) { } m.remove(); toast('✅ Testimonio guardado'); tes(); };

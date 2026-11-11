@@ -8,6 +8,9 @@
   const app = $('#app');
   const WA = (t) => `https://wa.me/${C.WHATSAPP}?text=${encodeURIComponent((window.MRNE || String)(t))}`;
   const PAGE = (document.body && document.body.dataset.page) || 'home';
+  /* v646: las páginas públicas (Adultos · Niños y jóvenes) son de visitantes: si quedó una sesión de estudiante abierta, se cierra (se guarda el progreso)
+     y para volver a su perfil el estudiante debe escribir su código otra vez. Nunca hay "Atrás" hacia un perfil. */
+  if (PAGE !== 'home') { try { const pp = P.get(); if (pp && pp.type !== 'staff' && !(window.MRTEACH && MRTEACH.on && MRTEACH.on())) { if (window.MRAC && MRAC.signOut) MRAC.signOut().catch(() => { }); P.clear(); try { sessionStorage.removeItem('mra_me_cache'); } catch (e) { } const kill = () => document.querySelectorAll('.mr-bell,.mr-bp').forEach(x => x.remove()); kill(); setTimeout(kill, 300); setTimeout(kill, 1500); } } catch (e) { } }
   window.__goIn = /[?&]ingresar=1/.test(location.search) && !(() => { try { return performance.getEntriesByType('navigation')[0].type !== 'navigate'; } catch (e) { return false; } })(); // abrir «Ingresar» solo si llegó por el botón (no al recargar ni al volver) // 🏠 entrada · 'adultos' · 'ninos'
   const U = (id, w = 800, hh = 450) => `https://images.unsplash.com/${id}?w=${w}&h=${hh}&fit=crop&crop=entropy&q=80&auto=format`;
 
@@ -16,7 +19,7 @@
     $('#topbar').innerHTML = `<div class="brand" id="go-home"><span class="logo-pill"><img class="logo" src="mra-brand.png" alt="mrarrieta.com"></span></div><div class="sp"></div><button class="tb-back" type="button" id="tb-back" title="Regresar">← Atrás</button><span class="tb-tag">MI PERFIL</span>
       ${p ? `<span class="pill hide-s">${window.MRPLANS ? MRPLANS.badge() : p.type === 'staff' ? '👨‍🏫 Profe' : p.type === 'trial' ? '🟢 Acceso gratis' : '🎓 Estudiante'}</span>${p.first ? `<button class="tb-avbtn" id="me-b" title="Personaliza tu perfil">${P.avHTML('tb-av')}</button>` : ''}<button class="iconbtn" id="snd-b" title="Activar / quitar la voz de bienvenida">${voiceOn() ? '🔊' : '🔇'}</button><button class="iconbtn" id="out" title="Salir" aria-label="Salir"><svg class="pw-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 3v8"/><path d="M6.3 6.8a8 8 0 1 0 11.4 0"/></svg></button>` : ''}`;
     $('#go-home').onclick = () => route('home');
-    if (!P.get() && $('#tb-back')) $('#tb-back').remove(); // en la pantalla de ingreso no hay a dónde regresar
+    if ((!P.get() || PAGE !== 'home') && $('#tb-back')) $('#tb-back').remove(); // en la pantalla de ingreso y en las páginas públicas no hay a dónde regresar
     if ($('#tb-back')) $('#tb-back').onclick = () => { if (curRoute && curRoute !== 'home') return route('home'); if ((() => { try { return sessionStorage.getItem('mra_from_fam') === '1'; } catch (e) { return false; } })()) { location.href = 'familia.html'; return; } /* 👨‍👩‍👧 el papá entró desde su portal: regresa a su portal */ const r = document.referrer; if (r && r.indexOf(location.origin) === 0 && !/\/(index\.html)?(\?|#|$)/.test(r.replace(location.origin, '').replace(/^\/[^/]*\//, '/')) && history.length > 1) history.back(); else { route('home'); window.scrollTo(0, 0); } };
     if ($('#me-b')) $('#me-b').onclick = () => route('me');
     if ($('#ann-b')) $('#ann-b').onclick = () => { MRANN.show(); topbar(); };
