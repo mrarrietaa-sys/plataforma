@@ -268,7 +268,7 @@ window.MRMOOD = function (c, t) { const r = t ? c / t : 1, pk = (a) => a[Math.fl
     let offAll = false, offDay = '';
     try { offDay = localStorage.getItem('mra_azoff2') || ''; } catch (e) { }
     const today = () => new Date().toDateString();
-    const can = () => !offAll && offDay !== today() && !!(window.MRAC && MRAC.on && MRAC.code && MRAC.code()) && !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) && !!(window.AudioContext || window.webkitAudioContext);
+    const can = () => !offAll && offDay !== today() && !!(window.MRAC && MRAC.on && ((MRAC.code && MRAC.code()) || window.__azDemo)) && !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) && !!(window.AudioContext || window.webkitAudioContext);
     function capture(o) {
       let stopFn = null, pending = false;
       const done = new Promise(async (res) => {
@@ -309,7 +309,7 @@ window.MRMOOD = function (c, t) { const r = t ? c / t : 1, pk = (a) => a[Math.fl
     }
     function waitOn(on) { try { let d = document.getElementById('azwait'); if (!on) { if (d) d.remove(); return; } if (!d) { d = document.createElement('div'); d.id = 'azwait'; d.setAttribute('role', 'status'); d.innerHTML = '<i></i>Revisando…'; document.body.appendChild(d); } } catch (e) { } }
     async function assess(wav, ref) {
-      waitOn(true); try { const r = await MRAC.call('azPron', { code: MRAC.code(), text: ref || '', audio: wav.b64 }, { timeout: 15000 }).finally(() => waitOn(false));
+      waitOn(true); try { const r = await ((!(MRAC.code && MRAC.code()) && window.__azDemo) ? MRAC.call('azDemo', { text: ref || '', audio: wav.b64 }, { timeout: 15000 }) : MRAC.call('azPron', { code: MRAC.code(), text: ref || '', audio: wav.b64 }, { timeout: 15000 })).finally(() => waitOn(false));
         try { localStorage.removeItem('mra_vozdebug'); if (/[?&]vozdebug=1/.test(location.search)) { const W = (r && r.words || []).map(w => w.w + ':' + w.a + (w.e !== 'None' ? '(' + w.e + ')' : '')).join(' '); setTimeout(() => { let d = document.getElementById('azdbg'); if (!d) { d = document.createElement('div'); d.id = 'azdbg'; d.style.cssText = 'position:fixed;left:8px;right:8px;bottom:8px;z-index:99999;background:#111;color:#fff;font:13px/1.4 monospace;padding:10px;border-radius:10px;opacity:.92'; d.onclick = () => d.remove(); document.body.appendChild(d); } d.textContent = (r && r.ok ? `🔧 Azure · reconoció «${r.text || '—'}» · pron ${r.pron} · precisión ${r.acc} · completa ${r.comp} · ${W}` : `🔧 Azure no respondió: ${(r && r.err) || 'error'}`); }, 50); } } catch (er) { } // 🔧 solo para pruebas del administrador (?vozdebug=1)
         if (!r || !r.ok) { const e = r && r.err; if (e === 'quota') { offDay = today(); try { localStorage.setItem('mra_azoff2', offDay); } catch (er) { } } if (e === 'cap' || e === 'nokey' || e === 'unknown_action') offAll = true; return null; }
         return r; } catch (e) { waitOn(false); return null; }

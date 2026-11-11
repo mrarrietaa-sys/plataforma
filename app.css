@@ -9859,3 +9859,29 @@ html body .slw-w:has(>.ml10-ok)>.slw-b{background:#fff!important;color:#0B2A5B!i
 .hdm2 .hdm-inc{margin:8px 0 0;text-align:center;color:#86efac;font-weight:700;font-size:13.5px}
 .hdm2 .lp-res:not([hidden]){position:static!important}
 @media(max-width:899px){.hdm2{width:100%}.hdm2 .hdm-lp{border-radius:24px 24px 0 0!important;padding-bottom:24px!important}}
+/* v644 · PC con pantalla baja (portátil con zoom de Windows): se compactan los espacios, NO las letras */
+@media(min-width:900px) and (max-height:720px){
+  body.home-app .ld-hero{padding-top:10px!important;padding-bottom:6px!important}
+  body.home-app .ld-hero h1{margin-top:0!important}
+  body.home-app .ld-hero .ld-path{margin-top:16px!important;margin-bottom:10px!important}
+  body.home-app .ld-hero .ld-lead{margin-top:8px!important;margin-bottom:14px!important}
+  body.home-app .ld-hero .ld-faces{margin-top:8px!important}
+  body.home-app .ld-hero .ld-trust2{margin-top:6px!important}
+  body.home-app .ld-hero .ld-virt{margin-top:3px!important}
+  body.home-app .ld-login .pt-login{padding-top:14px!important;padding-bottom:12px!important}
+  body.home-app .ld-login .pt-rkt{height:140px!important}
+  body.home-app .ld-login .pt-login h1{margin-top:8px!important}
+}
+@media(min-width:900px) and (max-height:620px){
+  body.home-app .ld-hero .ld-path{margin-top:10px!important;margin-bottom:6px!important}
+  body.home-app .ld-hero .ld-lead{margin-bottom:10px!important}
+  body.home-app .ld-login .pt-rkt{height:118px!important}
+  body.home-app .ld-login .pt-login .ld-pay{margin-top:8px!important;padding-top:6px!important}
+}
+@media(min-width:900px) and (max-height:560px){
+  body.home-app .ld-hero .ld-path{margin-top:8px!important;margin-bottom:4px!important}
+  body.home-app .ld-hero .ld-lead{margin-top:4px!important;margin-bottom:8px!important}
+  body.home-app .ld-hero .ld-faces{margin-top:5px!important}
+  body.home-app .ld-login .pt-rkt{height:96px!important}
+}
+.ld-hero.ld-zm .ld-login .rk-sh{display:none!important}

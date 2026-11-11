@@ -101,7 +101,7 @@
     if (!Z || !Z.can()) { r.ok = false; r.unv = 1; r.tip = 'No pudimos revisar tus palabras en este momento. Escucha el modelo e inténtalo otra vez.'; return r; }
     let az = null; try { const wav = Z.toWav({ bufs: raw, rate }); az = wav ? await Z.assess(wav, ref) : null; } catch (e) { az = null; }
     try { Object.assign(window.__melDiag || {}, { az: az ? JSON.stringify({ s: az.silent ? 1 : 0, p: az.pron, a: az.acc, c: az.comp, f: az.flu, sec: az.sec, end: az.end, w: (az.words || []).map(x => x.w + ':' + x.a + (x.e && x.e !== 'None' ? ':' + x.e : '')).join(' ') }) : 'null' }); } catch (e) { }
-    if (!az) { r.ok = false; r.unv = 1; r.tip = 'No pudimos revisar tus palabras en este momento. Inténtalo otra vez.'; return r; }
+    if (!az) { r.ok = r.melOk != null ? r.melOk : false; r.unv = 1; if (!r.ok) r.tip = 'No pudimos revisar tus palabras en este momento. Inténtalo otra vez.'; return r; } /* v642: sin revisión de palabras vale la melodía */
     if (az.silent || (az.words && az.words.length && az.words.every(w => w.e === 'Omission'))) { /* v639: hubo voz pero no se reconoció ninguna palabra (micrófono bajo): no cuenta como error */ return { silent: true, quiet: true }; }
     const j = strict(az, ref); r.words = j;
     if (!j.ok) { r.ok = false; r.tip = j.miss ? `No es la frase exacta. Revisa la palabra: “${j.miss}”. Escucha el modelo y dila completa.` : j.extra ? 'Dijiste palabras de más. Di solo la frase, igual al modelo.' : 'No es la frase exacta. Escucha el modelo y dila completa.'; }
