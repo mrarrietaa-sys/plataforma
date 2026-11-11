@@ -29,7 +29,7 @@
   async function copy(t) { try { await navigator.clipboard.writeText(t); } catch (e) { const ta = document.createElement('textarea'); ta.value = t; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); } toast('📋 Copiado'); }
 
   async function api(action, data) {
-    const r = await MRAC.call(action, Object.assign({ key: key() }, data || {}), action === 'aTesSave' ? { timeout: 300000 } : undefined);
+    const r = await MRAC.call(action, Object.assign({ key: key() }, data || {}), (action === 'aTesSave' || action === 'aTesFile') ? { timeout: 300000 } : undefined);
     if (!r.ok && r.err === 'auth') { try { sessionStorage.removeItem(KK); } catch (e) { } toast('Tu sesión expiró. Vuelve a entrar.'); login(); }
     if (!r.ok && r.err === 'network') toast('Sin conexión con la nube 😕');
     return r;
@@ -622,7 +622,7 @@
     can: () => !!(window.MediaRecorder && HTMLCanvasElement.prototype.captureStream && (window.AudioContext || window.webkitAudioContext) && VZ.mime()),
     run: (src, onP) => new Promise((ok, ko) => {
       const v = document.createElement('video'); v.playsInline = true; v.preload = 'auto'; v.crossOrigin = 'anonymous'; v.src = src; let done = false, rec = null, raf = 0, ac = null;
-      const fail = (e) => { if (done) return; done = true; try { rec && rec.state !== 'inactive' && rec.stop(); } catch (er) { } cancelAnimationFrame(raf); try { ac && ac.close(); } catch (er) { } ko(e || new Error('vz')); };
+      const fail = (e) => { if (done) return; done = true; try { rec && rec.state !== 'inactive' && rec.stop(); } catch (er) { } clearTimeout(raf); try { ac && ac.close(); } catch (er) { } ko(e || new Error('vz')); };
       v.onerror = () => fail(new Error('video')); setTimeout(() => { if (!rec) fail(new Error('timeout')); }, 30000);
       v.onloadedmetadata = async () => { try {
         const W0 = v.videoWidth || 540, H0 = v.videoHeight || 960, sc = Math.min(1, 540 / Math.min(W0, H0)); const W = Math.round(W0 * sc / 2) * 2, H = Math.round(H0 * sc / 2) * 2;
@@ -630,14 +630,24 @@
         ac = new (window.AudioContext || window.webkitAudioContext)(); const sn = ac.createMediaElementSource(v), dst = ac.createMediaStreamDestination(); sn.connect(dst); // el sonido va al archivo, no a tus parlantes
         const st = new MediaStream([...vs.getVideoTracks(), ...dst.stream.getAudioTracks()]); const mt = VZ.mime(); const ch = [];
         rec = new MediaRecorder(st, { mimeType: mt, videoBitsPerSecond: 900000, audioBitsPerSecond: 64000 }); rec.ondataavailable = (e) => { if (e.data && e.data.size) ch.push(e.data); };
-        rec.onstop = () => { if (done) return; done = true; cancelAnimationFrame(raf); try { ac.close(); } catch (er) { } ok({ blob: new Blob(ch, { type: mt.split(';')[0] }), mime: mt.split(';')[0] }); };
-        const draw = () => { if (done) return; try { g.drawImage(v, 0, 0, W, H); } catch (er) { } if (v.duration) onP && onP(Math.min(99, Math.round(v.currentTime / v.duration * 100))); raf = requestAnimationFrame(draw); };
+        rec.onstop = () => { if (done) return; done = true; clearTimeout(raf); try { ac.close(); } catch (er) { } ok({ blob: new Blob(ch, { type: mt.split(';')[0] }), mime: mt.split(';')[0] }); };
+        const paint = () => { try { g.drawImage(v, 0, 0, W, H); } catch (er) { } if (v.duration) onP && onP(Math.min(99, Math.round(v.currentTime / v.duration * 100))); };
+        const vis = () => { if (document.hidden) fail(new Error('hidden')); }; document.addEventListener('visibilitychange', vis); // v657: si la pestaña queda atrás, se cancela (antes la imagen se congelaba)
+        const draw = () => { if (done) { document.removeEventListener('visibilitychange', vis); return; } paint(); if (v.requestVideoFrameCallback) v.requestVideoFrameCallback(draw); else raf = setTimeout(draw, 33); };
         v.onended = () => { try { g.drawImage(v, 0, 0, W, H); } catch (er) { } setTimeout(() => { try { rec.stop(); } catch (er) { } }, 250); };
-        await ac.resume(); rec.start(1000); draw(); await v.play();
+        if (document.hidden) return fail(new Error('hidden')); await ac.resume(); rec.start(1000); await v.play(); draw();
       } catch (e) { fail(e); } };
     }),
     // devuelve el archivo optimizado; si no se puede (navegador viejo) o no ahorra, devuelve el original
-    opt: async (blobOrFile, onP) => { if (!VZ.can()) return null; const u = URL.createObjectURL(blobOrFile); try { const r = await VZ.run(u, onP); if (!r.blob.size || r.blob.size > blobOrFile.size * .9) return null; return r; } catch (e) { return null; } finally { URL.revokeObjectURL(u); } },
+    opt: async (blobOrFile, onP) => { if (!VZ.can() || document.hidden) return null; const u = URL.createObjectURL(blobOrFile); try { const d0 = (await VZ.probe(blobOrFile)).dur; const r = await VZ.run(u, onP); if (!r.blob.size || r.blob.size > blobOrFile.size * .9) return null;
+      const q = await VZ.probe(r.blob, true); if (!q.moves || (d0 && Math.abs(q.dur - d0) > 1.5)) return null; return r; } catch (e) { return null; } finally { URL.revokeObjectURL(u); } }, // v657: solo se guarda si la imagen se mueve y dura lo mismo
+    /* revisa un video: duración y si la imagen realmente se mueve (cuenta cuadros reales mientras suena) */
+    probe: (blob, frames) => new Promise((ok) => { const u = URL.createObjectURL(blob); const v = document.createElement('video'); v.muted = true; v.playsInline = true; v.preload = 'auto'; v.style.cssText = 'position:fixed;left:0;top:0;width:2px;height:2px;opacity:.01;pointer-events:none'; document.body.appendChild(v);
+      let end = false; const fin = (o) => { if (end) return; end = true; try { v.pause(); v.remove(); } catch (e) { } URL.revokeObjectURL(u); ok(o); };
+      setTimeout(() => fin({ dur: v.duration || 0, moves: null }), 15000); v.onerror = () => fin({ dur: 0, moves: false });
+      v.onloadedmetadata = async () => { const dur = isFinite(v.duration) ? v.duration : 0; if (!frames) return fin({ dur, moves: null }); if (!v.videoWidth) return fin({ dur, moves: false });
+        try { v.currentTime = Math.max(0, dur * .35); await new Promise(r => { v.onseeked = r; setTimeout(r, 3000); }); let n = 0; if (v.requestVideoFrameCallback) { const cb = () => { n++; v.requestVideoFrameCallback(cb); }; v.requestVideoFrameCallback(cb); }
+          await v.play(); await new Promise(r => setTimeout(r, 1600)); const q = v.getVideoPlaybackQuality ? v.getVideoPlaybackQuality().totalVideoFrames : n; fin({ dur, moves: Math.max(n, q) >= 8 }); } catch (e) { fin({ dur, moves: null }); } }; v.src = u; }),
   };
   async function tes() {
     view().innerHTML = '<div class="ad-loading">⏳ Cargando testimonios…</div>';
@@ -647,11 +657,28 @@
       <p class="muted" style="margin:-4px 0 14px">Aparecen en la página de inicio, en el orden que indiques. Video vertical (de celular): se optimiza solo para que cargue rápido.</p>
       <div class="ad-tes">${L.map((t, i) => `<div class="ad-tc${String(t.active).charAt(0) === 'n' ? ' off' : ''}"><div class="ad-tp">${pv(t) ? `<img src="${esc(pv(t))}" alt="">` : ''}<span>${esc(t.ord)}</span></div><b>${esc(t.name)}</b><small>${esc(t.info || '')}</small>${String(t.active).charAt(0) === 'n' ? '<em>Oculto</em>' : ''}${RA('Testimonios', t.id, t.name)}</div>`).join('') || '<p class="muted">Aún no hay testimonios.</p>'}</div>`;
     $('#ts-new').onclick = () => tesEdit(null, L.length + 1);
-    tesAutoOpt(L); // v647: los videos pesados que ya estaban se optimizan solos
+    tesRepair(L).then(fx => { if (fx) { try { localStorage.removeItem('mra_tes'); } catch (e) { } if (TAB === 'tes') tes(); } else tesAutoOpt(L); }); // v657: primero recupera los videos dañados; luego optimiza los pesados //: los videos pesados que ya estaban se optimizan solos
     wireGA($('.ad-tes', view()), 'Testimonios', () => { try { localStorage.removeItem('mra_tes'); } catch (e) { } tes(); }, { edit: (id) => tesEdit(L.find(x => String(x.id) === String(id))) });
     $$('[data-te]').forEach(b => b.onclick = () => tesEdit(L[+b.dataset.te]));
     $$('[data-td]').forEach(b => b.onclick = () => { const t = L[+b.dataset.td]; const m = modal(`<div class="center"><h2>¿Borrar el testimonio de ${esc(t.name)}?</h2><p class="muted">Dejará de aparecer en la página de inicio.</p><div class="row" style="justify-content:center;margin-top:10px"><button class="btn w" id="dl-no">Cancelar</button><button class="btn k ad-del" id="dl-ok">🗑️ Sí, borrar</button></div></div>`);
       $('#dl-no', m).onclick = () => m.remove(); $('#dl-ok', m).onclick = async () => { $('#dl-ok', m).disabled = true; const x = await api('aTesDel', { id: t.id }); m.remove(); if (x.ok) { try { localStorage.removeItem('mra_tes'); } catch (e) { } toast('🗑️ Borrado'); tes(); } else toast('No se pudo borrar'); }; });
+  }
+  /* v657 · recupera los videos dañados (suenan pero la imagen queda quieta): busca en la carpeta de Drive el original que dura lo mismo y lo vuelve a poner */
+  let tesFixRun = false;
+  async function tesRepair(L) {
+    if (tesFixRun || document.hidden || !window.MediaRecorder) return 0; tesFixRun = true; let fixed = 0, bar = null; const say = (t) => { if (!bar) { bar = document.createElement('div'); bar.className = 'ad-vz'; bar.style.cssText = 'margin:0 0 14px;padding:10px 14px;border-radius:12px;background:#eef6ff;color:#0B2A5B;font-weight:700;font-size:14px'; const h = view().querySelector('.ad-head'); if (h) h.after(bar); } bar.textContent = t; };
+    const toBlob = (r) => { const bin = atob(r.b64), u8 = new Uint8Array(bin.length); for (let k = 0; k < bin.length; k++) u8[k] = bin.charCodeAt(k); return new Blob([u8], { type: r.mime || 'video/mp4' }); };
+    try { const bad = [];
+      let OK = {}; try { OK = JSON.parse(localStorage.getItem('mra_vzok') || '{}'); } catch (e) { }
+      for (const t of L) { const d = MRTES.drive(t.video); if (!d || OK[d] || TAB !== 'tes' || document.hidden) continue; say(`🔎 Revisando el video de ${t.name}…`);
+        const r = await MRAC.call('tesVideo', { id: d }, { timeout: 300000 }).catch(() => null); if (!r || !r.ok) continue; const q = await VZ.probe(toBlob(r), true); if (q.moves === false) bad.push(Object.assign({ dur: q.dur }, t)); else if (q.moves) { OK[d] = 1; try { localStorage.setItem('mra_vzok', JSON.stringify(OK)); } catch (e) { } } }
+      if (bad.length) { const o = await api('aTesOrigs').catch(() => null); const F = (o && o.files) || []; const used = {};
+        for (const t of bad) { if (TAB !== 'tes' || document.hidden) break; say(`🛠️ Recuperando el video original de ${t.name}…`);
+          for (const f of F) { if (used[f.id]) continue; const r = await api('aTesFile', { id: f.id }).catch(() => null); if (!r || !r.ok) continue; const q = await VZ.probe(toBlob(r), true); f.dur = q.dur; f.moves = q.moves;
+            if (q.moves !== false && q.dur && Math.abs(q.dur - t.dur) <= 1.2) { used[f.id] = 1; const s = await api('aTesSave', { id: t.id, vid: f.id }).catch(() => null); if (s && s.ok) fixed++; break; } } }
+        say(fixed ? `✅ Recuperé ${fixed} de ${bad.length} video(s): ya se ven y se escuchan bien.` : `⚠️ Hay ${bad.length} video(s) que suenan pero no se ven (${bad.map(x => x.name).join(', ')}). Vuelve a subirlos desde Editar.`); }
+      else if (bar) bar.remove();
+    } catch (e) { } tesFixRun = false; return fixed;
   }
   let tesOptRun = false;
   async function tesAutoOpt(L) {
