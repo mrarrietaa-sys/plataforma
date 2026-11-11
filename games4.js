@@ -81,8 +81,8 @@
       const btns = $$('button', brd);
       const i = await new Promise(res => btns.forEach(b => b.onclick = () => res(+b.dataset.i)));
       const ci = board.indexOf(r); btns.forEach(b => b.disabled = true); btns[ci].classList.add('right'); const ok = i === ci; if (!ok) btns[i].classList.add('wrong');
-      if (ok) c++; else missed.push({ en: `The bus to ${r.to} leaves at ${r.say}.`, au: r.au });
-      await say(body, ok, `The bus to ${r.to} leaves at ${r.say}.`, `Sale a las ${r.t}`, r.au);
+      if (ok) c++; else missed.push({ en: `The bus to ${r.to} departs at ${r.say}.`, au: r.au });
+      await say(body, ok, `The bus to ${r.to} departs at ${r.say}.`, `Sale a las ${r.t}`, r.au);
     }
     return finish(c, asks.length, 'listening', missed, '🚌 Buses', '¡Nunca vas a perder un bus! 🎫');
   }

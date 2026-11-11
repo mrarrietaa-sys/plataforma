@@ -89,7 +89,7 @@ window.MRHW9 = {
 '4-t6p1': ['Escribe 2 frases con present perfect continuous.', "I've been working in Miami since 2019. I've been studying English for a year.", ['been']],
 '4-t6p2': ['Cuenta un logro con had been + -ing.', 'I had been practicing for months. Finally, I passed the test.', ['had been']],
 '4-t7p1': ['Escribe 2 definiciones con who o which.', 'A landlord is a person who rents a house. A charger is a device which gives power.', []],
-'4-t7p2': ['Describe tu ciudad en 2 frases con which o who entre comas.', 'Chicago, which is on Lake Michigan, is beautiful. My cousin, who lives there, is an architect.', []],
+'4-t7p2': ['Describe tu ciudad en 2 frases con which o who entre comas.', 'Chicago, which is on Lake Michigan, is beautiful. My cousin, who works there, is an architect.', []],
 '4-t8p1': ['Escribe 2 frases de small talk con tag questions.', "Busy morning, isn't it? You've seen the new schedule, haven't you?", []],
 '4-t8p2': ["Escribe 2 frases con coletillas especiales (I am, let's, nobody…).", "Let's order pizza, shall we? Nobody saw the email, did they?", []],
 '4-t9p1': ['Reporta lo que te dijo alguien con said y told.', 'My boss said the client was happy. She told me I would lead the project.', []],
