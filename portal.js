@@ -817,7 +817,7 @@
       if (!tdn) { const g = firstDay(p, a, g1ag); if (g) { main = g; g1on = true; } }
       else main = firstDayDone(g1ag) + main; }
     const curMod = a && a.ready && !staff ? P.progress(a.id) : null;
-    const plNow = P.plan(); const plName = staff ? 'Profesor' : P.isExpired() ? 'Plan vencido' : (plNow.eff === 'premium' && /^premium\d+$/.test(plNow.plan) ? 'Premium · ' + plNow.plan.slice(7) + ' clases' : { free: 'Acceso gratuito', membership: 'Plataforma', premium: 'Premium · 4 clases' }[plNow.eff] || 'Acceso gratuito');
+    const plNow = P.plan(); const plName = staff ? 'Profesor' : P.isExpired() ? 'Plan vencido' : ({ free: 'Acceso gratuito', membership: 'Plataforma', premium: 'Premium' }[plNow.eff] || 'Acceso gratuito');
     const plIc = staff ? 'user' : P.isExpired() ? 'clock' : plNow.eff === 'premium' ? 'crown' : ({ free: 'gift', membership: 'monitor', premium: 'crown' }[plNow.eff] || 'gift');
     const pct = curMod ? curMod.pct : 0;
     const side = `<aside class="db-side card">
@@ -1232,7 +1232,7 @@
   function planSection() {
     const p = P.get(); if (!p || p.type === 'staff' || !window.MRPLANS) return '';
     const pl = P.plan(); if (pl.legacy && !P.isTrial()) return '';
-    const name = (pl.eff === 'premium' && /^premium\d+$/.test(pl.plan) ? 'Premium · ' + pl.plan.slice(7) + ' clases' : { free: 'Acceso gratuito', membership: 'Plataforma', premium: 'Premium · 4 clases' }[pl.eff]) || 'Acceso gratuito';
+    const name = ({ free: 'Acceso gratuito', membership: 'Plataforma', premium: 'Premium' }[pl.eff]) || 'Acceso gratuito';
     const ic = MRI(pl.eff === 'premium' ? 'crown' : ({ free: 'gift', membership: 'monitor', premium: 'crown' }[pl.eff] || 'gift'));
     const end = pl.end ? fmtD(pl.end, { day: 'numeric', month: 'long', year: 'numeric' }) : '';
     const sub = pl.expired ? `Tu plan ${esc(MRPLANS.PL[pl.plan] ? MRPLANS.PL[pl.plan].name : '')} venció el ${end}. Tu progreso sigue guardado.`
