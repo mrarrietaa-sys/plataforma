@@ -9950,7 +9950,7 @@ body.ag-teens .me-top h1{color:#fff}body.ag-teens .me-top p{color:rgba(255,255,2
 /* v665: en la lectura con viñetas, ninguna viñeta queda cortada arriba al desplazarse */
 .player .reading .txt{scroll-snap-type:y proximity;scroll-padding-top:2px}.player .reading .rd-pan{scroll-snap-align:start}
 /* v666: reserva — ventana más pequeña (sin tocar bordes) + «Que mi profe elija el tema» */
-.modal.vb-modal:not(.vb-load)>.card{max-height:min(84dvh,820px)!important;width:calc(100% - 36px)!important;max-width:620px!important}
+.modal.vb-modal:not(.vb-load)>.card{max-height:min(86dvh,860px)!important;width:calc(100% - 36px)!important}.modal.vb-modal.vb-nw:not(.vb-load)>.card{max-width:620px!important} /* v667: angosta solo al elegir hora y tema */
 .vb-pk{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;text-align:center;position:relative;background:#fff;border:2px dashed #0B2A5B33;border-radius:14px;padding:12px 42px;margin:2px 0 8px;font:inherit;color:#0B2A5B;cursor:pointer}
 .vb-pk.on{border:2px solid #16A34A;background:#effaf3}
 .vb-pk i{width:34px;height:34px;border-radius:50%;background:#0B2A5B;color:#fff;display:grid;place-items:center}.vb-pk i .mri,.vb-pk i svg{width:18px;height:18px}
@@ -9964,3 +9964,22 @@ body.ag-teens .me-top h1{color:#fff}body.ag-teens .me-top p{color:rgba(255,255,2
 .vb-ddl{padding:0 10px 8px}
 .tp-pk{background:#fff7ed;border:1.5px solid #fdba74;border-radius:12px;padding:10px 12px;margin:6px 0;text-align:left}.tp-pk p{margin:0 0 6px!important;font:800 14px var(--fh,Poppins),sans-serif;color:#9a3412}
 .tp-pk-r{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-top:1px solid #fde4c8;font-size:14px;color:#0B2A5B}.tp-pk-r:first-of-type{border-top:0}.tp-pk-r small{display:block;color:#64748b;font-size:12.5px}.tp-pk-r b{color:#E3242B;flex:none}.tp-pk>small{display:block;color:#64748b;font-size:13px;margin-top:6px}
+
+/* v667: título centrado + dos opciones de tema + niños */
+.modal.vb-modal .vb h3{justify-content:center!important;text-align:center;padding:0 46px!important}
+.vb-c2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:6px 0 10px}.vb-c2.tn{margin-top:20px}
+.vb-c2b{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;background:#fff;border:2px solid #d5deeb;border-radius:14px;padding:14px 8px;font:inherit;color:#0B2A5B;cursor:pointer;min-height:118px;min-width:0}
+.vb-c2b i{width:38px;height:38px;border-radius:50%;background:#eef3fb;display:grid;place-items:center;color:#0B2A5B}.vb-c2b i .mri,.vb-c2b i svg{width:20px;height:20px}
+.vb-c2b b{font:800 15px var(--fh,Poppins),sans-serif;line-height:1.2}.vb-c2b small{font-size:13px;color:#64748b;line-height:1.3}
+.vb-c2b.on{border-color:#16A34A;background:#effaf3}.vb-c2b.on i{background:#16A34A;color:#fff}
+.vb-rec{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:#16A34A;color:#fff;font:800 11px var(--fh,Poppins),sans-serif;letter-spacing:.05em;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.vb-c2p{border:1px solid #e2e8f0;border-radius:14px;background:#f8fafc;padding:12px 14px;margin:0 0 10px}
+.vb-c2p h4{margin:0 0 8px;text-align:center;font:800 13px var(--fh,Poppins),sans-serif;letter-spacing:.05em;color:#b45309;text-transform:uppercase}
+.vb-c2p .r{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-top:1px solid #e9eef5;font-size:14.5px;color:#0B2A5B;text-align:left}.vb-c2p .r:first-of-type{border-top:0}.vb-c2p .r b{color:#E3242B;flex:none}
+.vb-c2p p{margin:8px 0 0;font-size:13.5px;color:#475569;text-align:center}
+.vb-kc{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;background:#fff7ed;border:2px solid #fdba74;border-radius:16px;padding:16px 14px;margin:4px 0 10px}
+.vb-kc img{width:118px;height:118px;object-fit:contain;animation:vbFly 2.6s ease-in-out infinite}
+@keyframes vbFly{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-10px) rotate(2deg)}}
+.vb-kc b{font:800 17px var(--fh,Poppins),sans-serif;color:#0B2A5B}.vb-kc span{font-size:15px;color:#475569;line-height:1.4}
+@media(max-width:480px){.modal.vb-modal .vb h3{padding:0 40px!important;font-size:15.5px!important;white-space:nowrap!important}.modal.vb-modal .vb h3 svg,.modal.vb-modal .vb h3 .mri{display:none}}
+@media(max-width:359px){.modal.vb-modal .vb h3{white-space:normal!important;padding:0 38px!important}}

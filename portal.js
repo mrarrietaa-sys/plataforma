@@ -1513,6 +1513,7 @@
     const modOpen = n => { if (n === MN) return true; const m = MODN(n); if (!m || !TOPICS[n]) return false; const r = P.role(m.id); return r === 'current' || r === 'review'; };
     let MS = MN, LK = 0, SHALL = false;
     const step = () => {
+      try { if (M.ageGroup && M.ageGroup() === 'kids' && TP == null) TP = 'p'; m.classList.toggle('vb-nw', !!T); } catch (e) { } // v667: niños → el profe elige · ventana angosta solo con profe elegido
       if (!T && ALL) { // 📅 todos los horarios de todos los profes, por día
         const sl = []; r.teachers.forEach(t => t.slots.forEach(x => sl.push(Object.assign({ t }, x)))); sl.sort((a, c) => (a.date + a.time).localeCompare(c.date + c.time));
         const days = [...new Set(sl.map(x => x.date))];
@@ -1529,33 +1530,33 @@
       b.innerHTML = `${SUM ? `<div class="vb-sum">${(() => { const u = T.photo || (window.MRPROFPIC && MRPROFPIC(T.name)); return `<span class="vb-sum-av">${u ? `<img src="${esc(u)}" alt="">` : esc((T.name || '?').split(' ').map(x => x[0]).slice(0, 2).join(''))}</span>`; })()}<div><b>${(s => s[0].toUpperCase() + s.slice(1))(fmtD(S.date, { weekday: 'short', day: 'numeric', month: 'short' }).replace(/\./g, ''))} · ${fmtT(S.time)}</b><small>Con ${esc(T.name)} · ${T.stars ? `<span class="vb-sum-st">★ ${String(T.stars).replace('.', ',')}</span>` : '<span class="vb-sum-st">★ Profe nuevo</span>'} · 50 min</small></div><button type="button" class="vb-sum-x" id="vb-back">Cambiar</button></div>` : `<button class="btn w sm" id="vb-back">← Profes</button><p class="vb-st"><i class="vb-n">2</i> ${esc(T.name)}: elige fecha y hora <small>(hora Colombia)</small></p>
         <div class="vb-dates">${dates.map(d => `<button class="vb-d${d === D ? ' on' : ''}" data-d="${d}"><small>${fmtD(d, { weekday: 'short' })}</small><b>${fmtD(d, { day: 'numeric' })}</b><small>${fmtD(d, { month: 'short' })}</small></button>`).join('')}</div>
         <div class="vb-times">${times.map(s => `<button class="vb-h${S && S.id === s.id ? ' on' : ''}" data-s="${esc(s.id)}">${fmtT(s.time)}<small>50 min</small></button>`).join('')}</div>`}
-        <p class="vb-st"><i class="vb-n">3</i> ¿Qué quieres practicar?</p>
+        <p class="vb-st"><i class="vb-n">3</i> ${M.ageGroup && M.ageGroup() === 'kids' ? 'Tu clase' : '¿Qué quieres practicar?'}</p>
         ${(() => { const O = ordFor(MS), TT = TOPICS[MS] || tops, AG = M.ageGroup && M.ageGroup(); /* v592: lista compacta · título = lo que va a poder hacer */
           const row = ({ i, tag, c, pc, lk }, rec) => { const t = TT[i], h = window.MRTH && MRTH.get ? MRTH.get(MS, i + 1, AG) : null, on = TP === i;
             return `<div class="vb-ri"><button type="button" class="vb-row${on ? ' on' : ''}${lk ? ' nxt' : ''}" data-tp="${i}"${lk ? ' disabled' : ''}>${rec ? '' : `<span class="vb-rn">${i + 1}</span>`}<span class="vb-rt"><b>${esc(h ? h.s : t[1])}</b><small>${esc(t[0])}</small></span><span class="vb-ch ${c}">${tag}</span>${pc != null ? `<span class="vb-rp${pc >= 80 ? ' g' : ''}">${pc}%</span>` : ''}</button>${on && h && h.ex ? `<p class="vb-rex${rec ? ' r' : ''}">Por ejemplo: <i>“${esc(h.ex)}”</i></p>` : ''}</div>`; };
           const recOn = O.rec.length && !SHALL;
-          return `<div class="vb-mods">${[1, 2, 3, 4].map(n => { const op = modOpen(n), cur = n === MN; return `<button type="button" class="vb-m${cur ? ' cur' : ''}${op ? '' : ' vb-off'}${n === MS ? ' on' : ''}${vbImg('m', String(n), 360, 200) ? ' vb-mi' : ''}" data-m="${n}" style="--mi:url('${vbImg('m', String(n), 360, 200)}')"><b>Módulo ${n}</b><small>${cur ? '<i></i>Estás aquí' : op ? '✓ Hecho' : '🔒'}</small></button>`; }).join('')}</div>`
-          + (LK ? `<div class="vb-lk">🔒 El Módulo ${LK} se habilita cuando termines el Módulo ${LK - 1}.</div>` : '')
-          + `<div class="vb-tw">` + (() => { /* v666: «Que mi profe elija el tema» + listas desplegables */
-            const WK = O.all.filter(x => x.pc != null && x.pc < 80 && !x.lk).sort((a, c) => a.pc - c.pc).slice(0, 3);
-            const wl = WK.length ? WK.map(x => `<div><span>${esc((window.MRTH && MRTH.get && MRTH.get(MS, x.i + 1, AG) || {}).s || TT[x.i][1])}</span><b>${x.pc}%</b></div>`).join('') : `<p class="vb-pkn">Aún no tienes temas por reforzar: tu profe elegirá entre los primeros temas de tu módulo.</p>`;
-            const elo = ELO || (TP != null && TP !== 'p');
-            return `<button type="button" class="vb-pk${TP === 'p' ? ' on' : ''}" id="vb-pk"><i>${MRI('user')}</i><b>Que mi profe elija el tema</b><small>Mi profe elige según lo que más necesito reforzar.</small><em></em></button>
-              <details class="vb-dd" id="vb-dd1"${PKO ? ' open' : ''}><summary>${WK.length ? `Ver mis temas por reforzar (${WK.length})` : 'Ver mis temas por reforzar'}</summary><div class="vb-pkw">${wl}</div></details>
-              <details class="vb-dd" id="vb-dd2"${elo ? ' open' : ''}><summary>O elijo yo el tema</summary><div class="vb-ddl">`; })()
-          + (recOn ? `<p class="vb-rh">★ Te recomendamos practicar</p>${O.rec.map(x => row(x, 1)).join('')}<button type="button" class="vb-more" id="vb-more">Ver los ${O.all.length} temas del módulo ▾</button>`
+          const MODS = `<div class="vb-mods">${[1, 2, 3, 4].map(n => { const op = modOpen(n), cur = n === MN; return `<button type="button" class="vb-m${cur ? ' cur' : ''}${op ? '' : ' vb-off'}${n === MS ? ' on' : ''}${vbImg('m', String(n), 360, 200) ? ' vb-mi' : ''}" data-m="${n}" style="--mi:url('${vbImg('m', String(n), 360, 200)}')"><b>Módulo ${n}</b><small>${cur ? '<i></i>Estás aquí' : op ? '✓ Hecho' : '🔒'}</small></button>`; }).join('')}</div>`
+          + (LK ? `<div class="vb-lk">🔒 El Módulo ${LK} se habilita cuando termines el Módulo ${LK - 1}.</div>` : '');
+          const LIST = (recOn ? `<p class="vb-rh">★ Te recomendamos practicar</p>${O.rec.map(x => row(x, 1)).join('')}<button type="button" class="vb-more" id="vb-more">Ver los ${O.all.length} temas del módulo ▾</button>`
             : (O.rec.length ? `<button type="button" class="vb-recb" id="vb-recb">★ Te recomendamos practicar (${O.rec.length})<span>Ver ▸</span></button>` : '')
-              + `<p class="vb-rh2">Todos los temas del Módulo ${MS}</p><div class="vb-all">${O.all.map(x => row(x, 0)).join('')}</div>${O.rec.length ? '<button type="button" class="vb-hide" id="vb-hide">Ocultar los temas ▴</button>' : ''}`)
-          + `</div></details></div>`; })()}
+              + `<p class="vb-rh2">Todos los temas del Módulo ${MS}</p><div class="vb-all">${O.all.map(x => row(x, 0)).join('')}</div>${O.rec.length ? '<button type="button" class="vb-hide" id="vb-hide">Ocultar los temas ▴</button>' : ''}`);
+          /* v667: dos opciones claras (adultos y jóvenes) · niños: el profe prepara la clase */
+          if (AG === 'kids') return `<div class="vb-kc"><img src="mra-x-hero.webp?v=7" alt="Mr. Arrieta"><b>¡Tu profe prepara tu clase!</b><span>Practicarás lo que más necesitas. Tú solo llega con ganas de hablar inglés.</span></div>`;
+          const WK = O.all.filter(x => x.pc != null && x.pc < 80 && !x.lk).sort((a, c) => a.pc - c.pc).slice(0, 3);
+          const wl = WK.length ? WK.map(x => `<div class="r"><span>${esc((window.MRTH && MRTH.get && MRTH.get(MS, x.i + 1, AG) || {}).s || TT[x.i][1])}</span><b>${x.pc}%</b></div>`).join('') + '<p>Son tus temas con el puntaje más bajo.</p>' : '<p>Aún no tienes temas por reforzar: tu profe elegirá entre los primeros temas de tu módulo.</p>';
+          const CH = TP === 'p' ? 'p' : (ELO || TP != null) ? 'y' : '';
+          return `<div class="vb-c2${AG === 'teens' ? ' tn' : ''}"><button type="button" class="vb-c2b${CH === 'p' ? ' on' : ''}" id="vb-chp">${AG === 'teens' ? '<span class="vb-rec">RECOMENDADO</span>' : ''}<i>${MRI('user')}</i><b>Que mi profe elija el tema</b><small>Elige según lo que necesito reforzar</small></button><button type="button" class="vb-c2b${CH === 'y' ? ' on' : ''}" id="vb-chy"><i>${MRI('book')}</i><b>Prefiero escoger mi tema</b><small>Veo los temas de mi módulo</small></button></div>`
+            + (CH === 'p' ? `<div class="vb-c2p"><h4>Tu profe elegirá uno de estos</h4>${wl}</div>` : '')
+            + (CH === 'y' ? MODS + `<div class="vb-tw">` + LIST + `</div>` : ''); })()}
         <input class="inp${TP === 'o' ? '' : ' hidden'}" id="vb-topic" maxlength="180" placeholder="Ej: entrevista de trabajo en inglés" value="${esc(OT)}">
-        <button class="btn k block lg vb-ok" id="vb-ok" ${S && TP != null ? '' : 'disabled'}>${S && TP == null ? '👆 Elige el tema de tu clase' : S ? 'Revisar mi reserva →' : 'Elige una hora'}</button>`;
+        <button class="btn k block lg vb-ok" id="vb-ok" ${S && TP != null ? '' : 'disabled'}>${S && TP == null ? 'Elige una opción' : S ? 'Revisar mi reserva →' : 'Elige una hora'}</button>`;
       $('#vb-back', b).onclick = () => { T = null; D = null; S = null; step(); }; if (!SUM) $('#vb-back', b).textContent = PICK ? '← Profes' : '← Buscar por hora';
       $$('.vb-d', b).forEach(x => x.onclick = () => { D = x.dataset.d; S = null; step(); });
       $$('.vb-h', b).forEach(x => x.onclick = () => { S = T.slots.find(s => s.id === x.dataset.s); sfx('tap'); OT = $('#vb-topic', b).value; step(); });
       $$('.vb-m', b).forEach(x => x.onclick = () => { const n = +x.dataset.m; OT = $('#vb-topic', b).value; if (!modOpen(n)) { LK = n; step(); return; } LK = 0; if (n !== MS) { MS = n; TP = null; SHALL = false; } sfx('tap'); step(); });
       { const mo = $('#vb-more', b); if (mo) mo.onclick = () => { SHALL = true; OT = $('#vb-topic', b).value; step(); }; const rb = $('#vb-recb', b); if (rb) rb.onclick = () => { SHALL = false; step(); }; const hd = $('#vb-hide', b); if (hd) hd.onclick = () => { SHALL = false; step(); }; }
       $$('.vb-row', b).forEach(x => x.onclick = () => { if (x.disabled) return; OT = $('#vb-topic', b).value; TP = +x.dataset.tp; sfx('tap'); step(); });
-      { const pk = $('#vb-pk', b); if (pk) pk.onclick = () => { OT = $('#vb-topic', b).value; TP = 'p'; ELO = false; sfx('tap'); step(); }; const d1 = $('#vb-dd1', b), d2 = $('#vb-dd2', b); if (d1) d1.ontoggle = () => { PKO = d1.open; }; if (d2) d2.ontoggle = () => { ELO = d2.open; }; } // v666
+      { const cp = $('#vb-chp', b), cy = $('#vb-chy', b); if (cp) cp.onclick = () => { OT = ($('#vb-topic', b) || {}).value || ''; TP = 'p'; ELO = false; sfx('tap'); step(); }; if (cy) cy.onclick = () => { OT = ($('#vb-topic', b) || {}).value || ''; if (TP === 'p') TP = null; ELO = true; sfx('tap'); step(); }; } // v667
       $$('.vb-tp', b).forEach(x => x.onclick = () => { OT = $('#vb-topic', b).value; TP = x.dataset.tp === 'o' ? 'o' : +x.dataset.tp; sfx('tap'); step(); if (TP === 'o') $('#vb-topic', b).focus(); });
       $('#vb-ok', b).onclick = () => {
         if (TP == null) return M.toast('Elige el tema que quieres practicar 🙂');
