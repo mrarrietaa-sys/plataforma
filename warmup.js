@@ -19,6 +19,26 @@
     4: { kind: 'match', t: 'Une la causa con su resultado', s: 'Toca una frase y luego su pareja.', img: '1519692933481-e162a57d6721',
       P: [['If it rains,', "we'll stay home.", 'wu4a'], ['If you study,', "you'll pass the test.", 'wu4b'], ["If I'm late,", "I'll call you.", 'wu4c'], ['If she calls,', "tell her I'm out.", 'wu4d']] }
   };
+
+  /* v662 · calentamiento = repaso corto del módulo ANTERIOR (A1: palabras que ya conoces). 3 rondas, por edad */
+  const P = (img, q, opts, a, en, au) => ({ img, q, opts, a, en, au });
+  const IMG = { pizza: '1604382354936-07c5d9983bd3', hello: '1758600435233-258658d68648', airport: '1553619948-505cc1cdc320', games: '1554410637-1a8267402b57', cat: '1478098711619-5ab0b478d6e6', dog: '1534822916-212967756e82', mother: '1638581925480-ebc84a2c3ab2', grandma: '1663429122432-c2769373768f', zoo: '1585468274952-66591eb14165', homework: '1522202176988-66273c2fd55f', clouds: '1595661671412-e20c4a3e65cc', soccer: '1622659097509-4d56de14539e', guitar: '1632164815269-fb4cd5ced785', home: '1495654794940-1c0cd2aeedc1', phone: '1691380302295-b19eda6ae52b' };
+  const W2 = {
+    1: { t: 'Escucha y toca la palabra', s: '¡Ya conoces estas palabras en inglés!', adult: [P(IMG.hello, 'Hello!', ['Hello', 'Pizza', 'Airport'], 0, 'Hello!', 'wv1a1'), P(IMG.pizza, 'Pizza', ['Taxi', 'Pizza', 'Hotel'], 1, 'Pizza', 'wv1a2'), P(IMG.airport, 'Airport', ['Hello', 'Banana', 'Airport'], 2, 'Airport', 'wv1a3')],
+      teens: [P(IMG.hello, 'Hello!', ['Hello', 'Pizza', 'Music'], 0, 'Hello!', 'wv1t1'), P(IMG.pizza, 'Pizza', ['Phone', 'Pizza', 'Soccer'], 1, 'Pizza', 'wv1t2'), P(IMG.games, 'Video games', ['Music', 'Pizza', 'Video games'], 2, 'Video games', 'wv1t3')],
+      kids: [P(IMG.hello, 'Hello!', ['Hello', 'Cat', 'Pizza'], 0, 'Hello!', 'wv1k1'), P(IMG.cat, 'Cat', ['Dog', 'Cat', 'Ball'], 1, 'Cat', 'wv1k2'), P(IMG.pizza, 'Pizza', ['Banana', 'Cake', 'Pizza'], 2, 'Pizza', 'wv1k3')] },
+    2: { t: 'Repaso rápido del Módulo 1', s: 'Escucha y elige la palabra que falta.', adult: [P(IMG.mother, 'This is my ___.', ['mother', 'father', 'brother'], 0, 'This is my mother.', 'wv2a1'), P(IMG.grandma, 'She ___ my grandmother.', ['am', 'is', 'are'], 1, 'She is my grandmother.', 'wv2a2'), P(IMG.hello, "I'm ___ years old.", ['52', '15', '25'], 2, "I'm twenty-five years old.", 'wv2a3')],
+      teens: [P(IMG.hello, 'He ___ my best friend.', ['is', 'am', 'are'], 0, 'He is my best friend.', 'wv2t1'), P(IMG.mother, 'This is my ___.', ['sister', 'mother', 'brother'], 1, 'This is my mother.', 'wv2t2'), P(IMG.games, "I'm ___ years old.", ['50', '13', '15'], 2, "I'm fifteen years old.", 'wv2t3')],
+      kids: [P(IMG.grandma, 'This is my ___.', ['grandmother', 'sister', 'teacher'], 0, 'This is my grandmother.', 'wv2k1'), P(IMG.cat, 'The cat ___ small.', ['am', 'is', 'are'], 1, 'The cat is small.', 'wv2k2'), P(IMG.hello, "I'm ___ years old.", ['2', '12', '10'], 2, "I'm ten years old.", 'wv2k3')] },
+    3: { t: 'Repaso rápido del Módulo 2', s: 'Escucha y elige la palabra que falta.', adult: [P(IMG.airport, 'My flight is at ___.', ['2:30', '3:30', '2:15'], 0, 'My flight is at half past two.', 'wv3a1'), P(IMG.guitar, 'She ___ the guitar every day.', ['play', 'plays', 'playing'], 1, 'She plays the guitar every day.', 'wv3a2'), P(IMG.home, 'Yesterday I ___ from home.', ['work', 'works', 'worked'], 2, 'Yesterday I worked from home.', 'wv3a3')],
+      teens: [P(IMG.games, 'Yesterday I ___ video games.', ['played', 'play', 'plays'], 0, 'Yesterday I played video games.', 'wv3t1'), P(IMG.soccer, 'He ___ soccer every Saturday.', ['play', 'plays', 'playing'], 1, 'He plays soccer every Saturday.', 'wv3t2'), P(IMG.phone, 'The game starts at ___.', ['7:13', '3:30', '7:30'], 2, 'The game starts at seven thirty.', 'wv3t3')],
+      kids: [P(IMG.zoo, 'Yesterday we ___ to the zoo.', ['went', 'go', 'goes'], 0, 'Yesterday we went to the zoo.', 'wv3k1'), P(IMG.dog, 'My dog ___ every morning.', ['run', 'runs', 'running'], 1, 'My dog runs every morning.', 'wv3k2'), P(IMG.homework, 'School starts at ___.', ['9:00', '8:30', '8:00'], 2, "School starts at eight o'clock.", 'wv3k3')] },
+    4: { t: 'Repaso rápido del Módulo 3', s: 'Escucha y elige la palabra que falta.', adult: [P(IMG.clouds, "Look at those clouds! It's ___ rain.", ['going to', 'will', "won't"], 0, "Look at those clouds! It's going to rain.", 'wv4a1'), P(IMG.airport, "I've never ___ to Canada.", ['go', 'been', 'gone'], 1, "I've never been to Canada.", 'wv4a2'), P(IMG.home, 'I think more people ___ work from home.', ['are', 'going', 'will'], 2, 'I think more people will work from home.', 'wv4a3')],
+      teens: [P(IMG.clouds, "Look at those clouds! It's ___ rain.", ['going to', 'will', "won't"], 0, "Look at those clouds! It's going to rain.", 'wv4t1'), P(IMG.games, 'Have you ever ___ this game?', ['play', 'played', 'playing'], 1, 'Have you ever played this game?', 'wv4t2'), P(IMG.soccer, "I'm ___ join the soccer team.", ['will', 'going', 'going to'], 2, "I'm going to join the soccer team.", 'wv4t3')],
+      kids: [P(IMG.clouds, "Look at the clouds! It's ___ rain.", ['going to', 'will', "won't"], 0, "Look at the clouds! It's going to rain.", 'wv4k1'), P(IMG.zoo, 'Have you ever ___ to the zoo?', ['go', 'been', 'gone'], 1, 'Have you ever been to the zoo?', 'wv4k2'), P(IMG.cat, "I've ___ fed the cat.", ['yet', 'ever', 'already'], 2, "I've already fed the cat.", 'wv4k3')] }
+  };
+  const ageOf = () => { try { const g = window.M1 && M1.ageGroup && M1.ageGroup(); return g === 'kids' || g === 'teens' ? g : 'adult'; } catch (e) { return 'adult'; } };
+  Object.keys(W2).forEach(n => { W[n] = { kind: 'pick', t: W2[n].t, s: W2[n].s, byAge: W2[n] }; });
   const IDS = ['wu1a', 'wu1b', 'wu1c', 'wu1d', 'wu2a', 'wu2b', 'wu2c', 'wu2d', 'wu2e', 'wu3a', 'wu3b', 'wu3c', 'wu3d', 'wu3e', 'wu4a', 'wu4b', 'wu4c', 'wu4d'];
   try { if (window.MRFIX) IDS.forEach(i => MRFIX.add(i)); } catch (e) { }
   const shuffle = (a) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
@@ -34,7 +54,7 @@
       <line x1="50" y1="50" x2="${hx}" y2="${hy}" stroke="#0B2A5B" stroke-width="5" stroke-linecap="round"/><line x1="50" y1="50" x2="${mx}" y2="${my}" stroke="#0B2A5B" stroke-width="3.2" stroke-linecap="round"/><circle cx="50" cy="50" r="3.4" fill="#E3242B"/><circle cx="50" cy="50" r="1.4" fill="#fff"/></svg>`; }
   function has(n, p) { return !!W[n] && p && +p.topic === 1 && +(p.part || 1) === 1; }
   function run(stage, p, X) {
-    const n = +((window.M1 && M1.MOD && M1.MOD.n) || 1), cfg = W[n]; if (!cfg) return Promise.resolve(null);
+    const n = +((window.M1 && M1.MOD && M1.MOD.n) || 1); let cfg = W[n]; if (!cfg) return Promise.resolve(null); if (cfg.kind === 'pick') cfg = Object.assign({}, cfg, { R: cfg.byAge[ageOf()] || cfg.byAge.adult });
     const play = (au) => { try { X.stop && X.stop(); return X.play ? X.play(au) : null; } catch (e) { return null; } };
     const sfx = (k) => { try { X.sfx && X.sfx(k); } catch (e) { } };
     return new Promise((done) => {
@@ -54,6 +74,11 @@
           const spk = stage.querySelector('.wu-spk'); spk.onclick = () => play(r.au); setTimeout(() => play(r.au), 350);
           stage.querySelectorAll('.wu-clk button').forEach(b => b.onclick = () => { const box = stage.querySelector('.wu-clk'); if (box.classList.contains('wu-lk')) return; box.classList.add('wu-lk'); const ok = b.dataset.ok === '1'; if (ok) hits++;
             b.classList.add(ok ? 'ok' : 'bad'); if (!ok) box.querySelector('[data-ok="1"]').classList.add('ok'); sfx(ok ? 'ok' : 'bad'); const fb = stage.querySelector('.wu-fb'); fb.className = 'wu-fb ' + (ok ? 'g' : 'r'); fb.innerHTML = `<b>${ok ? '¡Correcto!' : 'Era esta'}</b>${r.txt}`; play(r.au); next(ok ? 1500 : 2200); }); }
+        if (cfg.kind === 'pick') { const r = cfg.R[i]; const q = r.q.replace('___', '<u class="wu-gap">___</u>');
+          shell(`<div class="wu-card"><div class="wu-cimg" style="background-image:url('${U(r.img, 800, 440)}')"></div><div class="wu-ctx"><b class="wu-q">${q}</b><button type="button" class="wu-mini">${VOL}Escuchar</button></div></div><div class="wu-opts wu-pk">${r.opts.map((o, k) => `<button type="button" data-k="${k}">${o}</button>`).join('')}</div><p class="wu-fb"></p>`);
+          stage.querySelector('.wu-mini').onclick = () => play(r.au); setTimeout(() => play(r.au), 350);
+          stage.querySelectorAll('.wu-pk button').forEach(b => b.onclick = () => { const box = stage.querySelector('.wu-pk'); if (box.classList.contains('wu-lk')) return; box.classList.add('wu-lk'); const ok = +b.dataset.k === r.a; if (ok) hits++;
+            b.classList.add(ok ? 'ok' : 'bad'); if (!ok) box.querySelector(`[data-k="${r.a}"]`).classList.add('ok'); sfx(ok ? 'ok' : 'bad'); const fb = stage.querySelector('.wu-fb'); fb.className = 'wu-fb ' + (ok ? 'g' : 'r'); fb.innerHTML = `<b>${ok ? '¡Correcto!' : 'Era'}</b>${r.en}`; play(r.au); next(ok ? 1500 : 2200); }); }
         if (cfg.kind === 'swipe') { const r = cfg.R[i];
           shell(`<div class="wu-card"><div class="wu-cimg" style="background-image:url('${U(r.img, 800, 440)}')"></div><div class="wu-ctx"><b>${r.en}</b><button type="button" class="wu-mini">${VOL}Escuchar</button></div></div><div class="wu-two">${cfg.opts.map((o, k) => `<button type="button" data-k="${k}">${o}</button>`).join('')}</div><p class="wu-fb"></p>`);
           stage.querySelector('.wu-mini').onclick = () => play(r.au); setTimeout(() => play(r.au), 350);

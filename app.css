@@ -9923,3 +9923,8 @@ body.ag-teens .me-top h1{color:#fff}body.ag-teens .me-top p{color:rgba(255,255,2
 /* v657: chips de confianza con «+500 estudiantes» nunca se salen en celular */
 @media (max-width:600px){.lp-trust{flex-wrap:nowrap!important;justify-content:center!important;overflow:visible!important}}
 @media (max-width:400px){body.lp-teen .lp-hero.lp-k .lp-trust{gap:4px!important}body.lp-teen .lp-hero.lp-k .lp-trust span,body.lp-teen .lp-hero.lp-k .lp-trust a{padding:2px 6px 2px 2px!important}}
+
+/* v662: calentamiento de repaso · 3 opciones en una fila */
+.wu-opts.wu-pk{display:grid!important;grid-template-columns:repeat(3,1fr)!important;gap:10px}
+.wu-opts.wu-pk button{min-width:0;padding-left:6px!important;padding-right:6px!important;overflow-wrap:anywhere}
+.wu-q .wu-gap{text-decoration:none;color:#E3242B}
