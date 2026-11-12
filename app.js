@@ -627,7 +627,7 @@
       snaps[i] = snapHTML(stage); revisit = false;
       save();
       i++;
-      if (ITL_ON && i < steps.length && steps[i].sec !== s.sec && app.contains(player)) { const RS = Object.values(run.res || {}).filter(x => x && x.sec === s.sec && x.t); const rc = RS.reduce((a, x) => a + x.c, 0), rt = RS.reduce((a, x) => a + x.t, 0); await interlude(steps[i].sec, rt ? rc / rt : null, { c: rc, t: rt, sec: s.sec, step: i + 1, total: steps.length }); } // v420: el mensaje depende de cómo le fue
+      if (ITL_ON && i < steps.length && steps[i].sec !== s.sec && app.contains(player)) { const RS = Object.values(run.res || {}).filter(x => x && x.sec === s.sec && x.t); const rc = RS.reduce((a, x) => a + x.c, 0), rt = RS.reduce((a, x) => a + x.t, 0); const LR = RS.length ? Math.min(...RS.map(x => x.c / x.t)) : null; /* v664: si algún ejercicio de la sección salió mal, la transición nunca felicita */ const pf = rt ? (LR != null ? Math.min(rc / rt, LR) : rc / rt) : LR; await interlude(steps[i].sec, pf, { c: rc, t: rt, sec: s.sec, step: i + 1, total: steps.length }); } // v420: el mensaje depende de cómo le fue
     }
     $('.prog i', app).style.width = '100%'; cleanup();
     results(p, run);
@@ -977,7 +977,7 @@
             if (r.err) { if (r.err === 'mic') { st.textContent = 'Permite el micrófono'; st2.textContent = 'Actívalo en el candado de la barra de direcciones.'; } else { st.textContent = 'Intenta otra vez'; st2.textContent = 'No se pudo preparar el audio. Toca el micrófono de nuevo.'; } return; }
             if (r.silent) { st.textContent = 'No te escuché'; st2.textContent = 'Acércate al micrófono y toca otra vez.'; return; }
             if (!r.ok) { fails++; sfx('bad'); st.textContent = 'Otra toma'; st2.textContent = 'Escucha el modelo y dila igual';
-              res.innerHTML = MRMEL.resultHTML(r) + (fails >= 3 || r.unv ? `<div class="ms9-bt"><button type="button" class="btn w sm ms9-sk">Seguir sin estrellas →</button></div>` : '');
+              res.innerHTML = MRMEL.resultHTML(r) + (fails >= 2 || r.unv ? `<div class="ms9-bt"><button type="button" class="btn w sm ms9-sk">Seguir sin estrellas →</button></div>` : '');
               const sk = res.querySelector('.ms9-sk'); if (sk) sk.onclick = () => done(r.buf ? { r: Math.max(1, r.r || 1), it: Math.max(1, r.it || 1), buf: r.buf, fail: 1 } : null); return; } // v517: hablar no basta · v630: si sigue, en «Escuchar mi escena» se oye SU voz (no cuenta como acierto)
             if (turn.dataset.peek) r.it = Math.max(1, r.it - 1); /* v523: miró el texto en la misión eco → −1 estrella */ cur = r; sfx(r.r + r.it >= 5 ? 'ok' : 'tap'); st.textContent = 'Otra toma'; st2.textContent = 'Si quieres, grábala otra vez';
             res.innerHTML = MRMEL.resultHTML(r) + `<div class="ms9-bt"><button type="button" class="btn w sm ms9-me">▶ Tu toma</button><button type="button" class="btn k sm ms9-ok">Usar esta toma →</button></div>`;

@@ -45,7 +45,7 @@
         if (r.err) { if (r.err === 'mic') say('Permite el micrófono', 'Actívalo en el candado de la barra de direcciones.'); else say('Intenta otra vez', 'No se pudo preparar el audio. Toca el micrófono de nuevo.'); return; }
         if (r.silent) { say('No te escuché', 'Acércate al micrófono e intenta otra vez.'); if (!st) res.innerHTML = '<p class="mel9-tip">No te escuché. Acércate al micrófono e intenta otra vez.</p>'; return; }
         res.innerHTML = MRMEL.resultHTML(r);
-        if (!r.ok) { fails++; sfx('bad'); say('Otra vez', 'Escucha el modelo y dilo igual'); if (fails >= 3 || r.unv) { res.insertAdjacentHTML('beforeend', '<div class="rp9"><button type="button" class="btn w sm m2v-sk">Seguir →</button></div>'); res.querySelector('.m2v-sk').onclick = () => { stopA(); done({ ok: false }); }; } return; }
+        if (!r.ok) { fails++; sfx('bad'); say('Otra vez', 'Escucha el modelo y dilo igual'); if (fails >= 2 || r.unv) { res.insertAdjacentHTML('beforeend', '<div class="rp9"><button type="button" class="btn w sm m2v-sk">Seguir →</button></div>'); res.querySelector('.m2v-sk').onclick = () => { stopA(); done({ ok: false }); }; } return; }
         sfx('ok'); try { M().praise(); } catch (e) { } say('¡Muy bien!', 'Puedes repetirla o seguir');
         res.insertAdjacentHTML('beforeend', '<div class="rp9"><button type="button" class="btn w sm rp9-me">▶ Tu voz</button><button type="button" class="btn w sm rp9-ag">↻ Repetir</button><button type="button" class="btn k sm rp9-nx">Siguiente →</button></div>');
         res.querySelector('.rp9-me').onclick = () => { stopA(); MRMEL.play(r.buf); };

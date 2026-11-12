@@ -628,7 +628,7 @@
           if (mm.err) { st.textContent = 'Permite el micrófono en tu navegador'; return; }
           if (mm.silent) { st.textContent = 'No te escuché. Toca el micrófono e intenta otra vez.'; return; }
           tries++; if (mm.ok) { best = Math.max(best, mm.r + mm.it >= 5 ? 90 : 75); sfx('ok'); praise(); st.textContent = ''; } else { sfx('bad'); st.textContent = 'Escucha el modelo y repite.'; }
-          if (mm.ok || tries >= 3) $('#nx', bar).classList.remove('hidden'); return; }
+          if (mm.ok || tries >= 2) $('#nx', bar).classList.remove('hidden'); return; }
         if (!M.canSR) { $('#rec', recRow).click(); return; }
         stop(); mic.classList.add('rec'); st.textContent = '🎧 Te escucho… habla ahora';
         const r = await M.listen(Math.max(5000, it.en.split(' ').length * 1200), { target: it.en }); mic.classList.remove('rec');
@@ -645,7 +645,7 @@
         out.querySelectorAll('.srbox').forEach(x => x.remove());
         out.prepend(h(`<div class="heardbox srbox"><div class="meter"><div class="bar"><i style="width:${sc.score}%;background:${ok ? 'var(--ok)' : mid ? 'var(--k)' : 'var(--bad)'}"></i></div><b>${sc.score}%</b></div><p style="margin:8px 0 0"><b>${ok ? '✅ ¡Bien hecho!' : mid ? '🟡 ¡Casi!' : '❌ Todavía no.'}</b> ${msg}</p><div class="row" style="margin-top:8px"><button class="btn sm ${ok ? 'w' : 'k'} again">🔁 Intentar otra vez</button></div></div>`));
         const ag = out.querySelector('.srbox .again'); if (ag) ag.onclick = () => mic.click();
-        st.textContent = tries >= 3 || ok ? '' : 'Puedes intentarlo de nuevo 🎤';
+        st.textContent = tries >= 2 || ok ? '' : 'Puedes intentarlo de nuevo 🎤';
         if (ok || mid || tries >= 2) $('#nx', bar).classList.remove('hidden');
       };
     });
