@@ -14,6 +14,7 @@
   function isAudioBtn(el) {
     if (!el || el.dataset.slw || el.classList.contains('slw-b') || el.disabled) return false;
     if (el.closest('.slw-b')) return false;
+    if (el.closest('.wu-opts, .rto-opts, .opts, [data-noslw]')) return false; /* v665: nunca en las opciones de respuesta (p. ej. «play») */
     if (el.closest('.stage') && el.closest('.stage').querySelector('iframe, video')) return false; // la canción (video) no se puede poner más lenta
     try { const ps = document.querySelector('.pstep b'); if (ps && /^music$/i.test(ps.textContent.trim())) return false; } catch (e) { }
     const t = label(el); if (NOT.test(t) || /^(me|rv-me)$/.test(el.id)) return false;

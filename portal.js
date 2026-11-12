@@ -811,7 +811,7 @@
     else if (kids && newbie) main = main.replace('mra-x-plane-red.webp', 'mra-x-balloon1.webp');
     const teens = !staff && !kids && window.MRTEENS && MRTEENS.on(); document.body.classList.toggle('ag-teens', !!teens); // 🚀 perfil Teens (12 a 17 años)
     const adult = !staff && !kids && !teens; document.body.classList.toggle('ag-adult', adult); // v609: perfil de adultos sobrio y premium
-    if (teens && a && a.ready && !P.isExpired()) { main = MRTEENS.hero(p, a, P.look().nick || p.first || '') + `<div class="tn-row one">${MRTEENS.missions()}</div>` + (MRTEENS.realLife ? MRTEENS.realLife() : ''); }
+    if (teens && a && a.ready && !P.isExpired()) { main = MRTEENS.hero(p, a, P.look().nick || p.first || '') + /* v665: sin «Meta de la semana» en Jóvenes */ (MRTEENS.realLife ? MRTEENS.realLife() : ''); }
     else if (teens && newbie) main = main.replace('mra-x-plane-red.webp', 'mra-x-rocket.webp');
     const g1ag = kids ? 'kids' : teens ? 'teens' : 'adult'; let g1on = false;
     if (!staff && !P.isExpired()) { const tdn = g1Total(); // 🧭 v383: guía del primer día
@@ -1401,7 +1401,7 @@
     const c = up[0], today = P.todayISO(), isToday = c.date === today;
     const tom = new Date(today + 'T12:00:00'); tom.setDate(tom.getDate() + 1); const isTom = c.date === tom.toISOString().slice(0, 10);
     const pic = window.MRPROFPIC && MRPROFPIC(c.teacher);
-    const topic = String(c.topic || '').replace(/^Módulo \d+ · /, '').replace(/\s*\([^)]*\)$/, '');
+    const topic = /^El profe elige el tema/.test(String(c.topic || '')) ? 'Tu profe elige el tema' : String(c.topic || '').replace(/^Módulo \d+ · /, '').replace(/\s*\([^)]*\)$/, ''); // v666
     const el = document.createElement('div'); el.id = 'pt-nc'; el.className = 'card pt-nc' + (isToday ? ' hoy' : '');
     const paint = () => { const ms = startMs(c) - Date.now(), min = Math.round(ms / 60000);
       const left = ms <= 0 ? '🔴 Tu clase está en curso' : min <= 5 ? '🟢 ¡Ya puedes entrar!' : min < 60 ? `Empieza en ${min} min` : min < 24 * 60 ? `Faltan ${Math.floor(min / 60)} h ${min % 60} min` : (Math.round(min / 1440) === 1 ? 'Falta 1 día' : `Faltan ${Math.round(min / 1440)} días`);
@@ -1440,7 +1440,7 @@
         <div id="lv-buys"></div></div>
       <div class="card lv-card lv-next"><div class="lv-h"><span class="lv-ic ic-cal">${MRI('calendar')}</span><div><h3>Mis próximas clases</h3></div></div>
         ${up.length ? `<div class="lv-list">${up.map(c => `<div class="lv-cl ${c.type}${c.date === today ? ' hoy' : ''}"><div class="lv-dt"><b>${fmtD(c.date, { day: 'numeric' })}</b><small>${fmtD(c.date, { month: 'short' })}</small></div>
-          <div class="grow"><b>${c.free ? '🎁 Clase gratis' : c.type === 'vip' ? '🎯 Clase individual' : c.type === 'club' ? esc(c.club || '🎙️ Club') : '👥 Clase grupal'}${c.date === today ? ' <i class="lv-today">HOY</i>' : ''}</b><small>${fmtD(c.date, { weekday: 'long' })} · ${fmtT(c.time)} · ${(window.MRPROFPIC && MRPROFPIC(c.teacher)) ? `<img class="lv-tpic" src="${MRPROFPIC(c.teacher)}" alt="">` : ''}${esc(c.teacher || '')}${c.topic ? ' · ' + esc(c.topic) : ''}</small>${(() => { const q = window.MRTH && c.topic && MRTH.parse(c.topic); return q ? MRTH.html(q.m, q.t, M.ageGroup && M.ageGroup(), 's') : ''; })()}</div>
+          <div class="grow"><b>${c.free ? '🎁 Clase gratis' : c.type === 'vip' ? '🎯 Clase individual' : c.type === 'club' ? esc(c.club || '🎙️ Club') : '👥 Clase grupal'}${c.date === today ? ' <i class="lv-today">HOY</i>' : ''}</b><small>${fmtD(c.date, { weekday: 'long' })} · ${fmtT(c.time)} · ${(window.MRPROFPIC && MRPROFPIC(c.teacher)) ? `<img class="lv-tpic" src="${MRPROFPIC(c.teacher)}" alt="">` : ''}${esc(c.teacher || '')}${c.topic ? ' · ' + esc(/^El profe elige el tema/.test(c.topic) ? 'Tu profe elige el tema' : c.topic) : ''}</small>${(() => { const q = window.MRTH && c.topic && MRTH.parse(c.topic); return q ? MRTH.html(q.m, q.t, M.ageGroup && M.ageGroup(), 's') : ''; })()}</div>
           <div class="lv-act">${c.free && !c.fok ? (Date.now() < c.fask ? `<small class="lv-live-n">Confirmas el ${esc(fcDl(c.fask))}</small>` : `<button class="btn sm fc-yes" data-fcok="${esc(c.id)}">Sí, voy</button><small class="lv-live-n">Antes del ${esc(fcDl(c.fdl))}</small>`) : c.free ? '<span class="lv-ok">✅ Confirmada</span>' : ''}${c.type === 'club' ? (c.confirmed ? '<span class="lv-ok">✅ Reservada</span>' : c.full ? '<span class="lv-pend">🚫 Cupos llenos (10/10)</span>' : c.canConfirm ? `<button class="btn k sm" data-conf="${esc(c.id)}">✅ Reservar cupo</button><small class="lv-spots">${c.spots} cupo${c.spots === 1 ? '' : 's'} libre${c.spots === 1 ? '' : 's'}</small>` : '<span class="lv-pend">⏰ Reservas cerradas (3 h antes)</span>') : ''}${c.type === 'vip' ? (c.date === today ? `<a class="btn k sm" href="clase-en-vivo.html?c=${encodeURIComponent(c.id)}">${ICO.cam} Entrar a la clase</a><small class="lv-live-n">Se activa 5 min antes</small>` : '') : ''}${c.canCancel ? `<button class="btn w sm" data-cancel="${esc(c.id)}" data-kind="${c.type}" data-late="${c.lateCancel ? 1 : ''}">Cancelar</button>` : ''}</div></div>`).join('')}</div>` : '<p class="muted">No tienes clases programadas todavía. Aquí aparecerán las clases individuales que reserves.</p>'}${up.some(c => c.type === 'club') ? '<p class="muted lv-note">🎙️ Reserva tu cupo en las clases grupales mínimo <b>3 horas antes</b>. El enlace aparece al reservar.</p>' : ''}</div>
       ${`<div class="card lv-card lv-claim"><div class="lv-h"><span class="lv-ic ic-flag">${MRI('flag')}</span><div><h3>¿Tu profe no se conectó?</h3></div></div>
         ${(pr.claimable || []).length ? `<p class="muted">Si tu profe no se conecta, repórtalo aquí (hasta 24 horas después de la clase). Si se confirma, <b>la clase vuelve a tu saldo</b>.</p><div class="lv-list">${pr.claimable.map(c => `<div class="lv-cl"><div class="grow"><b>${fmtD(c.date, { weekday: 'long', day: 'numeric', month: 'short' })} · ${fmtT(c.time)}</b><small>${(window.MRPROFPIC && MRPROFPIC(c.teacher)) ? `<img class="lv-tpic" src="${MRPROFPIC(c.teacher)}" alt="">` : ''}${esc(c.teacher || '')}</small></div><button class="btn w sm" data-claim="${esc(c.id)}">${MRI('flag')} Mi profe no se conectó</button></div>`).join('')}</div>` : ''}
@@ -1493,7 +1493,7 @@
     if (!r.ok) { b.innerHTML = `<p>${r.err === 'fc_late' ? 'Tu clase gratis se reserva en los primeros días de tu acceso, y ese tiempo ya pasó.' : r.err === 'no_credits' ? 'Ya reservaste tu clase.' : r.err === 'not_premium' ? 'Las clases individuales son parte de los planes Premium.' : 'No pudimos cargar los espacios. Revisa tu conexión.'}</p>`; return; }
     if (!r.teachers.length) { b.innerHTML = `<p class="muted">Por ahora no hay espacios libres en los próximos días. Los profes publican nuevos horarios cada semana.</p><button class="btn k block" id="vb-wait0">🔔 Avísame cuando haya espacio</button>`; $('#vb-wait0', b).onclick = () => waitAsk(m); return; }
     m.classList.remove('vb-load'); // ya hay espacios: ventana completa
-    let T = null, D = null, S = null, TP = null, OT = '', ALL = false, PICK = false, FD = null, FH = null, TK = { h: 8, m: 0, p: 'a' };
+    let T = null, D = null, S = null, TP = null, OT = '', PKO = false, ELO = false, ALL = false, PICK = false, FD = null, FH = null, TK = { h: 8, m: 0, p: 'a' };
     const MN = (P.assigned() || {}).n || +(P.get() || {}).module || 1; const tops = TOPICS[MN] || TOPICS[1];
     // v533: solo los temas de su ruta → «Vas aquí» (el tema actual), «Repasar» (hechos con menos de 80 %) y «Completo» (hechos con 80 % o más). Sin «Otro tema».
     // v548: pestañas de módulos · el actual («Estás aquí») y los anteriores habilitados; en un módulo anterior se recomiendan los temas con menos de 80 %
@@ -1509,6 +1509,7 @@
       const rec = tp.map((t, i) => i).filter(i => i <= upto && sc[i] != null && sc[i] < 80).sort((a, c) => sc[a] - sc[c]).slice(0, 2).map(i => ({ i, tag: 'Sugerido', c: 'sug', pc: sc[i] }));
       const all = tp.map((t, i) => i === cur ? { i, tag: 'Vas aquí', c: 'now' } : i > upto ? { i, tag: 'Próximo', c: 'nx', lk: 1 } : sc[i] != null ? (sc[i] < 80 ? { i, tag: 'Refuerza', c: 'ref', pc: sc[i] } : { i, tag: 'Dominado', c: 'dom', pc: sc[i] }) : { i, tag: 'Disponible', c: 'av' });
       return { all: all.length ? all : [{ i: 0, tag: 'Vas aquí', c: 'now' }], rec }; } catch (e) { return { all: tp.map((t, i) => ({ i, tag: n === MN && !i ? 'Vas aquí' : 'Repasar', c: n === MN && !i ? 'now' : 'rev' })), rec: [] }; } };
+    const WKF = (n) => ordFor(n).all.filter(x => x.pc != null && x.pc < 80 && !x.lk).sort((a, c) => a.pc - c.pc).slice(0, 3); // v666: temas por reforzar
     const modOpen = n => { if (n === MN) return true; const m = MODN(n); if (!m || !TOPICS[n]) return false; const r = P.role(m.id); return r === 'current' || r === 'review'; };
     let MS = MN, LK = 0, SHALL = false;
     const step = () => {
@@ -1535,11 +1536,17 @@
           const recOn = O.rec.length && !SHALL;
           return `<div class="vb-mods">${[1, 2, 3, 4].map(n => { const op = modOpen(n), cur = n === MN; return `<button type="button" class="vb-m${cur ? ' cur' : ''}${op ? '' : ' vb-off'}${n === MS ? ' on' : ''}${vbImg('m', String(n), 360, 200) ? ' vb-mi' : ''}" data-m="${n}" style="--mi:url('${vbImg('m', String(n), 360, 200)}')"><b>Módulo ${n}</b><small>${cur ? '<i></i>Estás aquí' : op ? '✓ Hecho' : '🔒'}</small></button>`; }).join('')}</div>`
           + (LK ? `<div class="vb-lk">🔒 El Módulo ${LK} se habilita cuando termines el Módulo ${LK - 1}.</div>` : '')
-          + `<div class="vb-tw">`
+          + `<div class="vb-tw">` + (() => { /* v666: «Que mi profe elija el tema» + listas desplegables */
+            const WK = O.all.filter(x => x.pc != null && x.pc < 80 && !x.lk).sort((a, c) => a.pc - c.pc).slice(0, 3);
+            const wl = WK.length ? WK.map(x => `<div><span>${esc((window.MRTH && MRTH.get && MRTH.get(MS, x.i + 1, AG) || {}).s || TT[x.i][1])}</span><b>${x.pc}%</b></div>`).join('') : `<p class="vb-pkn">Aún no tienes temas por reforzar: tu profe elegirá entre los primeros temas de tu módulo.</p>`;
+            const elo = ELO || (TP != null && TP !== 'p');
+            return `<button type="button" class="vb-pk${TP === 'p' ? ' on' : ''}" id="vb-pk"><i>${MRI('user')}</i><b>Que mi profe elija el tema</b><small>Mi profe elige según lo que más necesito reforzar.</small><em></em></button>
+              <details class="vb-dd" id="vb-dd1"${PKO ? ' open' : ''}><summary>${WK.length ? `Ver mis temas por reforzar (${WK.length})` : 'Ver mis temas por reforzar'}</summary><div class="vb-pkw">${wl}</div></details>
+              <details class="vb-dd" id="vb-dd2"${elo ? ' open' : ''}><summary>O elijo yo el tema</summary><div class="vb-ddl">`; })()
           + (recOn ? `<p class="vb-rh">★ Te recomendamos practicar</p>${O.rec.map(x => row(x, 1)).join('')}<button type="button" class="vb-more" id="vb-more">Ver los ${O.all.length} temas del módulo ▾</button>`
             : (O.rec.length ? `<button type="button" class="vb-recb" id="vb-recb">★ Te recomendamos practicar (${O.rec.length})<span>Ver ▸</span></button>` : '')
               + `<p class="vb-rh2">Todos los temas del Módulo ${MS}</p><div class="vb-all">${O.all.map(x => row(x, 0)).join('')}</div>${O.rec.length ? '<button type="button" class="vb-hide" id="vb-hide">Ocultar los temas ▴</button>' : ''}`)
-          + `</div>`; })()}
+          + `</div></details></div>`; })()}
         <input class="inp${TP === 'o' ? '' : ' hidden'}" id="vb-topic" maxlength="180" placeholder="Ej: entrevista de trabajo en inglés" value="${esc(OT)}">
         <button class="btn k block lg vb-ok" id="vb-ok" ${S && TP != null ? '' : 'disabled'}>${S && TP == null ? '👆 Elige el tema de tu clase' : S ? 'Revisar mi reserva →' : 'Elige una hora'}</button>`;
       $('#vb-back', b).onclick = () => { T = null; D = null; S = null; step(); }; if (!SUM) $('#vb-back', b).textContent = PICK ? '← Profes' : '← Buscar por hora';
@@ -1548,6 +1555,7 @@
       $$('.vb-m', b).forEach(x => x.onclick = () => { const n = +x.dataset.m; OT = $('#vb-topic', b).value; if (!modOpen(n)) { LK = n; step(); return; } LK = 0; if (n !== MS) { MS = n; TP = null; SHALL = false; } sfx('tap'); step(); });
       { const mo = $('#vb-more', b); if (mo) mo.onclick = () => { SHALL = true; OT = $('#vb-topic', b).value; step(); }; const rb = $('#vb-recb', b); if (rb) rb.onclick = () => { SHALL = false; step(); }; const hd = $('#vb-hide', b); if (hd) hd.onclick = () => { SHALL = false; step(); }; }
       $$('.vb-row', b).forEach(x => x.onclick = () => { if (x.disabled) return; OT = $('#vb-topic', b).value; TP = +x.dataset.tp; sfx('tap'); step(); });
+      { const pk = $('#vb-pk', b); if (pk) pk.onclick = () => { OT = $('#vb-topic', b).value; TP = 'p'; ELO = false; sfx('tap'); step(); }; const d1 = $('#vb-dd1', b), d2 = $('#vb-dd2', b); if (d1) d1.ontoggle = () => { PKO = d1.open; }; if (d2) d2.ontoggle = () => { ELO = d2.open; }; } // v666
       $$('.vb-tp', b).forEach(x => x.onclick = () => { OT = $('#vb-topic', b).value; TP = x.dataset.tp === 'o' ? 'o' : +x.dataset.tp; sfx('tap'); step(); if (TP === 'o') $('#vb-topic', b).focus(); });
       $('#vb-ok', b).onclick = () => {
         if (TP == null) return M.toast('Elige el tema que quieres practicar 🙂');
@@ -1557,8 +1565,9 @@
       const reviewAsk = () => { const TT = TOPICS[MS] || tops, other = $('#vb-topic', b).value.trim();
         const end = (() => { const p = S.time.split(':'); const mm = (+p[0]) * 60 + (+p[1] || 0) + 50; return String(Math.floor(mm / 60)).padStart(2, '0') + ':' + String(mm % 60).padStart(2, '0'); })();
         const pic = T.photo || (window.MRPROFPIC && MRPROFPIC(T.name));
-        const tpH = TP === 'o' ? `<b>Otro tema</b><small>${esc(other)}</small>` : `<b>Módulo ${MS} · ${esc(TT[TP][0])}</b><small>${esc(TT[TP][1])}</small>${window.MRTH ? MRTH.html(MS, TP + 1, M.ageGroup && M.ageGroup(), 's') : ''}`;
-        const tpPic = TP === 'o' ? '' : vbImg('t', MS + '-' + (TP + 1), 720, 360); // v612: foto del tema
+        const WK = TP === 'p' ? WKF(MS) : [];
+        const tpH = TP === 'p' ? `<b>Tu profe elige el tema</b><small>${WK.length ? 'Escogerá uno de tus temas por reforzar: ' + WK.map(x => esc((window.MRTH && MRTH.get && MRTH.get(MS, x.i + 1, M.ageGroup && M.ageGroup()) || {}).s || TT[x.i][1])).join(' · ') : 'Escogerá entre los primeros temas de tu módulo.'}</small>` : TP === 'o' ? `<b>Otro tema</b><small>${esc(other)}</small>` : `<b>Módulo ${MS} · ${esc(TT[TP][0])}</b><small>${esc(TT[TP][1])}</small>${window.MRTH ? MRTH.html(MS, TP + 1, M.ageGroup && M.ageGroup(), 's') : ''}`;
+        const tpPic = TP === 'o' || TP === 'p' ? '' : vbImg('t', MS + '-' + (TP + 1), 720, 360); // v612: foto del tema
         const cm = M.modal(`<div class="vb-cf"><h3>Revisa tu reserva</h3><p class="vb-cf-s">Confirma que todo esté bien antes de reservar.</p>
           <div class="vb-cf-t"><span class="vb-cf-av">${pic ? `<img src="${esc(pic)}" alt="">` : esc((T.name || '?').split(' ').map(x => x[0]).slice(0, 2).join(''))}</span><div><small>PROFE</small><b>${esc(T.name)}</b><em>${T.stars ? `★ ${String(T.stars).replace('.', ',')}${T.nrev ? ` <i>(${T.nrev} ${T.nrev === 1 ? 'calificación' : 'calificaciones'})</i>` : ''}` : '★ Profe nuevo en la escuela'}</em></div></div>
           <div class="vb-cf-r"><small>FECHA</small><b>${esc((s => s[0].toUpperCase() + s.slice(1))(fmtD(S.date, { weekday: 'long', day: 'numeric', month: 'long' })))}</b></div>
@@ -1569,7 +1578,7 @@
         cm.classList.add('vb-cf-m'); $('#cf-back', cm).onclick = () => cm.remove(); $('#cf-ok', cm).onclick = () => doBook($('#cf-ok', cm), cm); };
       const doBook = async (ok, cm) => {
         ok.disabled = true; ok.textContent = 'Reservando…';
-        const other = $('#vb-topic', b).value.trim(); const topic = TP === 'o' ? (other ? 'Otro tema: ' + other : 'Otro tema') : TP != null ? `Módulo ${MS} · Tema ${TP + 1}: ${(TOPICS[MS] || tops)[TP][0]} (${(TOPICS[MS] || tops)[TP][1]})` : '';
+        const other = $('#vb-topic', b).value.trim(); const topic = TP === 'p' ? (() => { const W = WKF(MS), TT2 = TOPICS[MS] || tops; return `El profe elige el tema · Módulo ${MS} · ` + (W.length ? 'Por reforzar: ' + W.map(x => `Tema ${x.i + 1} ${TT2[x.i][0]} ${x.pc}%`).join('; ') : 'Estudiante nuevo: primeros temas del módulo'); })() : TP === 'o' ? (other ? 'Otro tema: ' + other : 'Otro tema') : TP != null ? `Módulo ${MS} · Tema ${TP + 1}: ${(TOPICS[MS] || tops)[TP][0]} (${(TOPICS[MS] || tops)[TP][1]})` : '';
         const res = await MRAC.call('vipBook', { code: MRAC.code(), slotId: S.id, topic }); if (res.ok || res.err === 'taken' || res.err === 'clash' || res.err === 'no_credits') cm.remove();
         if (res.ok) { m.remove(); sfx('win'); M.confetti(1800); M.modal(`<div class="center">${M.mascot('mascot bounce', 'celebrate')}<h3>${res.free ? '¡Tu clase gratis quedó reservada! 🎉' : '¡Clase reservada! 🎉'}</h3><p style="font-size:17px">${esc(T.name)} · <b>${fmtD(S.date, { weekday: 'long', day: 'numeric', month: 'long' })}</b> · ${fmtT(S.time)} (hora Colombia)</p><p class="muted">${res.free ? ((+String(S.time).slice(0, 2) < 11) ? 'Te enviamos los detalles a tu correo. La noche anterior te pediremos confirmarla con un toque.' : 'Te enviamos los detalles a tu correo. 4 horas antes te pediremos confirmarla con un toque.') : 'Te enviamos la confirmación a tu correo. El enlace de la clase aparece en “Mis próximas clases”.'}</p></div>`, { x: true }); await MRAC.me(true); live(); }
         else { M.toast({ taken: 'Ese espacio acaba de ser reservado. Elige otro 🙏', clash: 'Ya tienes una clase a esa hora. Elige otro horario.', window: r.credits && r.credits.free ? 'Tu clase gratis debe quedar dentro de tu acceso gratis. Elige otro día.' : 'Las clases se reservan desde el día siguiente y durante los próximos 5 días de clase.', no_credits: r.credits && r.credits.free ? 'Ya reservaste tu clase gratis.' : 'Ya reservaste todas tus clases de este periodo.', fc_late: 'El tiempo para reservar tu clase gratis ya pasó.', fc_soon: 'Ese horario ya está muy cerca para una clase gratis. Elige uno más adelante.', holiday: 'Ese día es domingo o festivo en Colombia: no hay clases. Elige otro día 🙏', too_late: 'Ese espacio ya no se puede reservar (muy pronto).' }[res.err] || 'No se pudo reservar. Inténtalo de nuevo.');

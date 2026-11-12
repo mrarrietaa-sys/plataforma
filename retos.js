@@ -139,7 +139,7 @@
   const sz = t => t.length > 34 ? ' xs' : t.length > 20 ? ' sm' : '';
   function after(B, S, it, good, chosen, delayOk, delayBad, extra) {
     const fb = B.querySelector('.rto-fb'), m = S.score(good, it);
-    if (fb) { fb.innerHTML = (good ? `<span class="ok">✓ ${esc(it.txt)} · ${m}</span>` : `<span class="no">${extra || 'Era'}: <b>${esc(it.txt)}</b></span>`) + `<button type="button" class="rto-au sm2" aria-label="Escuchar">${VOL}</button>`; const rb = fb.querySelector('.rto-au'); rb.onclick = () => { stopA(); play(it.after); }; }
+    if (fb) { fb.innerHTML = (good ? `<span class="ok">✓ ${esc(it.txt)} · ${m}</span>` : `<span class="no">${extra || 'Era'}: <b>${esc(it.txt)}</b></span>`); } /* v665: sin bocina ni tortuga en el mensaje rápido (el audio suena solo) */
     stopA(); play(it.after); S.later(() => S.round(), good ? delayOk : delayBad);
   }
   function timeout(B, S, it, ms, msg) { S.later(() => { if (S.cur !== it || S.done) return; S.done = true; const fb = B.querySelector('.rto-fb'); S.score(false, it); if (fb) fb.innerHTML = `<span class="no">${msg || '¡Se acabó el tiempo!'} <b>${esc(it.txt)}</b></span>`; stopA(); play(it.after); S.later(() => S.round(), 1900); }, ms); }

@@ -19,7 +19,7 @@
   const on = () => mod() === 2 || mod() === 3 || mod() === 4; // v523: el Módulo 4 también // v520: el Módulo 3 también tiene su experiencia propia
   const theme = () => { const a = ag(); document.documentElement.classList.add('m2x'); document.documentElement.classList.toggle('m3x', mod() === 3); document.documentElement.classList.toggle('m4x', mod() === 4); ['adult', 'teens', 'kids'].forEach(x => document.documentElement.classList.toggle('m2x-' + x, x === a)); };
   function frame(stage, lbl, title, ins) { theme(); stage.classList.toggle('dk', ag() === 'teens'); stage.classList.add('as-stage', 'as-' + ag(), 'm2x-st'); return A().head(stage, { lbl, title, ins }); }
-  const tes = (k) => { const t = window.MRKQAES && (MRKQAES[k.a] || MRKQAES[k.a.split(' / ')[0]]); return t ? String(t).split(' / ')[0] : ''; };
+  const tes = (k) => { const t = window.MRKQES && MRKQES(k.q, k.a, k.a.split(' / ')[0]); return t ? String(t).split(' / ')[0] : ''; };
 
   /* =================== un turno de voz (común a los 3 formatos) =================== */
   // mode: 'tap' (toca y habla) · 'hold' (mantén presionado, walkie-talkie)

@@ -204,7 +204,7 @@
   }
   // 👧 Entrevista con Mr. Arrieta
   /* v466 · tarjeta «Lee esta respuesta en voz alta» con su traducción (Kids y Teens, igual que adultos) */
-  function readCard(k, tgt, blank, chat) { const tes = window.MRKQAES && (MRKQAES[k.a] || MRKQAES[tgt]);
+  function readCard(k, tgt, blank, chat) { const tes = window.MRKQES && MRKQES(k.q, k.a, tgt);
     return `<div class="as-read${chat ? ' ch' : ''}"><small>Lee esta respuesta en voz alta</small><b>${esc(tgt).replace(/___/g, '<u>___</u>')}</b>${tes ? `<span class="as-rdes">${esc(String(tes).split(' / ')[0])}</span>` : ''}${blank ? '<em>Completa el ___ con tu información</em>' : ''}${chat && k.aau ? `<button type="button" class="as-rdp">${SV(I.vol)}</button>` : ''}</div>`; }
   async function interview(stage, Q) {
     let c = 0; const POSE = ['wink', 'point', 'present', 'idea', 'smile'];

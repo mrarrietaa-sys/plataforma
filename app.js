@@ -943,13 +943,13 @@
       const X = missionFor(p); if (!X) return null; if (!window.MRMEL) return STEP.missionOld(stage, p);
       const I = n => window.MRI ? MRI(n) : '';
       const GN = { v: ['plane', 'Viajar'], t: ['briefcase', 'Trabajo'], e: ['grad', 'Estudios'], kc: ['grad', 'Colegio'], kj: ['pad', 'Juegos y videos'], kv: ['plane', 'Viajar'], km: ['music', 'Música'], tc: ['grad', 'Colegio'], ts: ['tv', 'Series y redes'], tg: ['pad', 'Gaming'], tx: ['plane', 'Viajar o estudiar afuera'] }[X.k] || ['target', 'Tu objetivo'];
-      const BG = { v: '1551882547-ff40c63fe5fa', kv: '1436491865332-7a61a109cc05', tx: '1436491865332-7a61a109cc05', t: '1497215728101-856f4ea42174', e: '1522202176988-66273c2fd55f', ts: '1522202176988-66273c2fd55f', kc: '1580582932707-520aed937b7b', tc: '1580582932707-520aed937b7b', km: '1511379938547-c1f69419868d', kj: '1542751371-adc38448a05e', tg: '1542751371-adc38448a05e' }[X.k] || '1497215728101-856f4ea42174';
+      const BG = { v: '1551882547-ff40c63fe5fa', kv: '1436491865332-7a61a109cc05', tx: '1436491865332-7a61a109cc05', t: '1497215728101-856f4ea42174', e: '1522202176988-66273c2fd55f', ts: '1758611973525-b5a86f468b5e', kc: '1780844824650-4ba9b0b46c3a', tc: '1580582932707-520aed937b7b', km: '1511379938547-c1f69419868d', kj: '1758612898312-708f2ffdcd53', tg: '1787617092180-ae3a8c35c477' }[X.k] || '1497215728101-856f4ea42174';
       const list = X.list.slice(), N = list.length; let c = 0; const takes = [];
       const PF = (window.MRAP && MRAP.get && MRAP.get()) || {}; const INI = (((PF.first || S.name || 'T')[0] || 'T') + ((PF.last || '')[0] || '')).toUpperCase();
       const pool = []; Object.keys(window.MRMISSIONS || {}).forEach(k => { if (k.split('-')[0] === String(+M.MOD.n || 1) && k !== (+M.MOD.n || 1) + '-' + p.topic) [MRMISSIONS[k][X.k]].filter(Boolean).forEach(L => (Array.isArray(L) ? L : [L]).forEach(y => { if (y && y.a && pool.indexOf(y.a) < 0) pool.push(y.a); })); });
       const body = A.head(stage, { lbl: 'Mission', title: 'Tu misión', count: GN[1] }); stage.classList.add('ms9-stage'); if (M.ageGroup() === 'teens') stage.classList.add('dk');
       const el = h(`<div class="ms9"><div class="ms9-sc" style="background-image:url('${M.imgURL('u:photo-' + BG, 900, 420)}')"><span class="ms9-goal">${I(GN[0])}${esc(GN[1])}</span>
-          <div class="ms9-ch"><span class="ms9-av">${list[0].img ? photo('u:' + list[0].img) : M.ageGroup() === 'kids' ? '<img src="mra-smile.webp" alt="Mr. Arrieta" style="object-fit:cover;object-position:top">' : photo('u:photo-1494790108377-be9c29b29330')}</span></div><div class="ms9-ch me"><span class="ms9-av ini">${esc(INI)}</span><small>Tú</small></div></div>
+          <div class="ms9-ch"><span class="ms9-av">${list[0].img ? photo('u:' + list[0].img) : M.ageGroup() === 'kids' ? '<img src="mra-smile.webp" alt="Mr. Arrieta" style="object-fit:cover;object-position:top">' : photo(M.ageGroup() === 'teens' ? 'u:photo-1776111842991-4a189c07e609' : 'u:photo-1494790108377-be9c29b29330')}</span></div><div class="ms9-ch me"><span class="ms9-av ini">${esc(INI)}</span><small>Tú</small></div></div>
         <div class="ms9-sit"></div><div class="ms9-dl"></div><div class="ms9-turn"></div></div>`); body.appendChild(el);
       const $e = q => el.querySelector(q), dl = $e('.ms9-dl'), turn = $e('.ms9-turn');
       const bub = (txt, me, es) => { const b = h(`<div class="ms9-b${me ? ' me' : ''}">${esc(txt)}${es ? `<small>${esc(es)}</small>` : ''}</div>`); dl.appendChild(b); dl.scrollTop = dl.scrollHeight; return b; };
@@ -965,7 +965,7 @@
           turn.querySelectorAll('.ms9-o').forEach(b => b.onclick = () => { const o = opts[+b.dataset.i]; if (o !== x.a) { miss++; b.classList.add('bad'); sfx('bad'); setTimeout(() => b.classList.remove('bad'), 600); return; } sfx('ok'); done(miss === 0); }); });
         if (first) c++;
         // 2) dobla su línea con el motor de melodía
-        const tr = window.MRKQAES && MRKQAES[x.a];
+        const tr = window.MRKQES && MRKQES(x.q, x.a);
         const tk = await new Promise(done => { let cur = null, fails = 0;
           turn.innerHTML = `<div class="ms9-line">${window.M2X && M2X.on() ? `<small>TU TURNO · ${M2X.mod() === 4 ? 'SIN TEXTO' : M2X.mod() === 3 ? 'SOLO LAS INICIALES' : 'RECUERDA LA PALABRA'}</small>${M2X.hide(x.a, p)}` : `<small>TU TURNO · DÍLO EN VOZ ALTA</small><b>${esc(x.a)}</b>`}${tr ? `<span>${esc(tr)}</span>` : ''}</div><div class="ms9-mel"></div><div class="ms9-res"></div>
             <div class="ms9-act"><button type="button" class="ms9-mic" aria-label="Grabar">${I('mic')}</button><div><b class="ms9-st">Toca el micrófono y dila</b><small class="ms9-st2">Imita el ritmo y la melodía del modelo</small></div><button type="button" class="btn w sm ms9-mo">${I('vol')} Modelo</button></div>`;
@@ -1029,7 +1029,7 @@
             el.querySelectorAll('.mv-o').forEach(b => b.onclick = () => {
               if (el.classList.contains('chosen')) return; const o = opts[+b.dataset.i];
               if (o !== x.a) { b.classList.add('bad'); sfx('bad'); setTimeout(M.encourage, 200); setTimeout(() => b.classList.remove('bad'), 650); return; }
-              el.classList.add('chosen'); b.classList.add('on'); sfx('ok'); { const tr = window.MRKQAES && MRKQAES[x.a]; if (tr) b.querySelector('span').insertAdjacentHTML('beforeend', `<small class="mv-oes">${esc(tr)}</small>`); } el.querySelectorAll('.mv-o').forEach(z => { if (z !== b) z.classList.add('off'); });
+              el.classList.add('chosen'); b.classList.add('on'); sfx('ok'); { const tr = window.MRKQES && MRKQES(x.q, x.a); if (tr) b.querySelector('span').insertAdjacentHTML('beforeend', `<small class="mv-oes">${esc(tr)}</small>`); } el.querySelectorAll('.mv-o').forEach(z => { if (z !== b) z.classList.add('off'); });
               const say = $e('.mv-say'); say.hidden = false; stop(); setTimeout(() => play(x.aau), 300);
               if (!M.canSR) { $e('.mv-st').textContent = 'Dilo en voz alta.'; okk = true; return setTimeout(done, 2600); }
               let fails = 0; const mic = $e('.mv-mic');
@@ -1061,7 +1061,7 @@
           const typing = add('<div class="mv-vn mv-typ"><i></i><i></i><i></i></div>'); await sleep(900); typing.remove();
           const vn = add(`<div class="mv-vn"><div class="mv-pr"><button type="button" class="mv-pp" aria-label="Escuchar">${PLAY}</button><span class="mv-wv"></span></div><b>${esc(x.q)}</b><small>${esc(x.es)}</small></div>`);
           const pp = vn.querySelector('.mv-pp'); const playQ = () => { stop(); vn.classList.add('playing'); play(x.qau); setTimeout(() => vn.classList.remove('playing'), 2200); }; pp.onclick = playQ; playQ();
-          { await sleep(700); const ex = add(`<div class="mv-ex"><small>Léela en voz alta</small><span>${esc(x.a)}</span>${window.MRKQAES && MRKQAES[x.a] ? `<em class="mv-exes">${esc(MRKQAES[x.a])}</em>` : ''}<button type="button" class="mv-pl" aria-label="Escuchar">${I('vol')}</button></div>`); ex.querySelector('.mv-pl').onclick = () => { stop(); play(x.aau); }; await sleep(1600); stop(); play(x.aau); } /* v460: Mr. Arrieta lee la pregunta y la respuesta; el estudiante la lee */
+          { await sleep(700); const ex = add(`<div class="mv-ex"><small>Léela en voz alta</small><span>${esc(x.a)}</span>${window.MRKQES && MRKQES(x.q, x.a) ? `<em class="mv-exes">${esc(MRKQES(x.q, x.a))}</em>` : ''}<button type="button" class="mv-pl" aria-label="Escuchar">${I('vol')}</button></div>`); ex.querySelector('.mv-pl').onclick = () => { stop(); play(x.aau); }; await sleep(1600); stop(); play(x.aau); } /* v460: Mr. Arrieta lee la pregunta y la respuesta; el estudiante la lee */
           mic.disabled = false; st.textContent = 'Toca el micrófono y léela'; hint.hidden = true;
           let okk = false;
           await new Promise(done => {
@@ -1122,7 +1122,7 @@
         if (!stage.isConnected) break;
         const k = Q[i], tgt = k.a.split(' / ')[0], blank = k.a.includes('___');
         $v('.vk-n').textContent = `Pregunta ${i + 1}/${N}`; vc.querySelectorAll('.vk-dots i').forEach((d, j) => d.className = j < i ? 'on' : j === i ? 'cur' : ''); $v('.vk-qt').textContent = k.q; $v('.vk-qes').textContent = k.es || '';
-        { const gd = ynGuide(k.q); let gEl = $v('.vk-guide'); if (!gEl) { gEl = h('<div class="vk-guide"></div>'); $v('.vk-q').appendChild(gEl); } gEl.classList.add('vk-read'); { const tes = window.MRKQAES && (MRKQAES[k.a] || MRKQAES[tgt]); gEl.innerHTML = `<small>Lee esta respuesta en voz alta</small><b>${esc(tgt).replace(/___/g, '<u>___</u>')}</b>${tes ? `<span class="vk-res">${esc(String(tes).split(' / ')[0])}</span>` : ''}${blank ? '<em>Completa el ___ con tu información</em>' : ''}`; } /* v466: traducción de la respuesta, pequeña y en gris */ void gd; } /* v460: el estudiante lee la respuesta modelo; se revisa la pronunciación */
+        { const gd = ynGuide(k.q); let gEl = $v('.vk-guide'); if (!gEl) { gEl = h('<div class="vk-guide"></div>'); $v('.vk-q').appendChild(gEl); } gEl.classList.add('vk-read'); { const tes = window.MRKQES && MRKQES(k.q, k.a, tgt); gEl.innerHTML = `<small>Lee esta respuesta en voz alta</small><b>${esc(tgt).replace(/___/g, '<u>___</u>')}</b>${tes ? `<span class="vk-res">${esc(String(tes).split(' / ')[0])}</span>` : ''}${blank ? '<em>Completa el ___ con tu información</em>' : ''}`; } /* v466: traducción de la respuesta, pequeña y en gris */ void gd; } /* v460: el estudiante lee la respuesta modelo; se revisa la pronunciación */
         $v('.vk-ans').hidden = true; $v('.vk-next').hidden = true; $v('.vk-fb').hidden = true; $v('.vk-fb').innerHTML = ''; $v('.vk-msg').textContent = 'Escucha la pregunta…';
         vc.classList.remove('ok', 'late', 'bad'); const img = $v('.vk-screen img'); img.src = PIC + '.webp?v=2'; img.classList.remove('talk'); void img.offsetWidth; img.classList.add('talk');
         await play(k.qau); if (!stage.isConnected) break; if (k.aau) { await sleep(250); await play(k.aau); if (!stage.isConnected) break; }
