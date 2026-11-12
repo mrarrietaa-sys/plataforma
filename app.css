@@ -9928,3 +9928,13 @@ body.ag-teens .me-top h1{color:#fff}body.ag-teens .me-top p{color:rgba(255,255,2
 .wu-opts.wu-pk{display:grid!important;grid-template-columns:repeat(3,1fr)!important;gap:10px}
 .wu-opts.wu-pk button{min-width:0;padding-left:6px!important;padding-right:6px!important;overflow-wrap:anywhere}
 .wu-q .wu-gap{text-decoration:none;color:#E3242B}
+/* v663: ventana de pago centrada (título y botón «Pagar ahora») */
+.modal .card h3.by-h{display:block!important;text-align:center;margin:0 0 8px!important;padding:0 44px!important}
+.modal .card h3.by-h .mri{display:inline-block;vertical-align:-5px;margin-right:8px}
+.by-pay .by-st{text-align:center}
+.btn.by-paybtn{flex-direction:column!important;width:100%!important;gap:4px!important;text-align:center!important}
+.by-paybtn span{align-items:center;text-align:center}
+.by-paybtn .bt{display:inline-flex;align-items:center;gap:8px}.by-paybtn .bt .mri{width:22px;height:22px}
+/* v663: botones de «Revisa tu reserva» — el texto nunca se sale, en cualquier celular */
+.vb-cf-no,.vb-cf-ok{white-space:normal!important;line-height:1.2;overflow-wrap:normal;word-break:normal;min-height:42px}
+@media(max-width:340px){.topbar .iconbtn{width:32px!important;height:32px!important}.topbar .brand .logo{height:32px!important}}

@@ -13,7 +13,7 @@
   async function cat() { if (catOk) return; try { const r = await MRAC.call('plans', {}); if (r && r.ok) { PLS().applyCat && PLS().applyCat(r.cat); window.__mpOn = !!r.mp; catOk = true; } } catch (e) { } }
   function payBlock(id, ok) {
     return `<div class="by-pay"><p class="by-st"><b>¿Cómo quieres pagar?</b></p>
-      <button class="btn k block lg by-paybtn" data-m="mp" id="${id}-mp">${MRI('card')}<span><b>Pagar ahora</b><small>Tarjeta, PSE, Nequi o Daviplata · Mercado Pago</small></span></button>
+      <button class="btn k block lg by-paybtn" data-m="mp" id="${id}-mp"><span><b class="bt">${MRI('card')}Pagar ahora</b><small>Tarjeta, PSE, Nequi o Daviplata<br>Mercado Pago</small></span></button>
       <p class="muted center" style="font-size:13px;margin:4px 0 10px">${ok || 'Tu plan se activa solo, apenas se apruebe el pago'}</p>
       </div>`; // 💳 v617: solo Mercado Pago (sin transferencia)
   }
@@ -28,7 +28,7 @@
     m.querySelector(`#${id}-mp`).onclick = async (e) => { const b = e.currentTarget; b.disabled = true; b.textContent = '⏳ Abriendo Mercado Pago…';
       const r = await MRAC.call('buyStart', Object.assign({ code: CODE(), method: 'mp' }, payload)).catch(() => ({ ok: false }));
       if (r && r.ok && r.url) { try { localStorage.setItem('mra_buy_last', r.id); localStorage.setItem('mra_buy_code', CODE()); } catch (er) { } location.href = r.url; return; }
-      b.disabled = false; b.innerHTML = MRI('card') + '<span><b>Pagar con tarjeta</b><small>Mercado Pago · débito o crédito</small></span>'; M.toast(ERR[r && r.err] || 'No se pudo iniciar el pago.'); };
+      b.disabled = false; b.innerHTML = '<span><b class="bt">' + MRI('card') + 'Pagar ahora</b><small>Tarjeta, PSE, Nequi o Daviplata<br>Mercado Pago</small></span>'; M.toast(ERR[r && r.err] || 'No se pudo iniciar el pago.'); };
     if (!m.querySelector(`#${id}-tr`)) return; // v617: ya no hay transferencia
     m.querySelector(`#${id}-tr`).onclick = () => m.querySelector(`#${id}-trbox`).classList.remove('hidden');
     m.querySelector(`#${id}-file`).onchange = (e) => { const f = e.target.files[0]; const l = m.querySelector(`#${id}-fn`); l.textContent = f ? f.name : 'Adjunta tu comprobante de pago'; l.parentNode.classList.toggle('on', !!f); };
