@@ -237,7 +237,7 @@
     else if (window.MRAP && MRAP.isTrial()) cont = `<section class="t2-cont t2-end"><div class="t2-cx"><span class="t2-k">Acceso gratuito</span><h2>Desbloquea toda tu ruta</h2><p>Sigue aprendiendo con todas las lecciones del ${esc(M.MOD.es)}.</p><button class="t2-go" id="buy3">${I('unlock')}Desbloquear${arr}</button></div></section>`;
     else cont = `<section class="t2-cont t2-end"><div class="t2-cx"><span class="t2-k">${totP} de ${totP} lecciones</span><h2>¡Terminaste las lecciones!</h2><p>${S.final && S.final.passed ? 'Ya aprobaste el Final Test.' : 'Ya puedes presentar el Final Test.'}</p><button class="t2-go" id="tofinal">${I('award')}Final Test${arr}</button></div></section>`;
     app.innerHTML = `<div class="wrap t2">
-      <div class="t2-head">${window.MRAP && MRAP.get() ? `<a class="t2-back" href="index.html">${SVB}Mi perfil</a>` : ''}<div class="t2-hx"><div><span class="t2-k">${esc(M.MOD.es)} · ${esc(M.MOD.levelEs || M.MOD.id)}</span>${chip}<h1>${greeting()}, ${esc(first)}</h1></div>
+      <div class="t2-head">${window.MRAP && MRAP.get() ? `<a class="t2-back" href="index.html">${SVB}Mi perfil</a>` : ''}<div class="t2-hx"><div><span class="t2-k">${esc(M.MOD.es)} · ${esc(M.MOD.levelEs || M.MOD.id)}</span>${chip}<h1>${greeting()}, <span class="mk-pill">${esc(first)}</span></h1></div>
         <div class="t2-stats ringbox"><div><b>${rev ? 100 : pct}%</b><span>avance</span></div><div><b>${rev ? totP : doneN}/${totP}</b><span>lecciones</span></div><div><b>${S.streak.n || 0}</b><span>días seguidos</span></div></div></div></div>
       ${cont}
       <div id="hwfb"></div>

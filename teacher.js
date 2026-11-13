@@ -204,7 +204,7 @@
     outBtn.classList.remove('hidden'); outBtn.onclick = () => { if (confirm('¿Cerrar sesión?')) logout(); };
     const t = D.teacher;
     app.innerHTML = `<div class="tp-head">
-        <div class="tp-head-txt"><h1>¡Hola, ${esc(t.hello || String(t.name || '').split(' ')[0])}!</h1><p class="muted">${dLabel(today(), true)} · <b>${h12(nowHM())}</b> hora Colombia · Código <b>${esc(t.code)}</b></p></div>
+        <div class="tp-head-txt"><h1>¡Hola, <span class="mk-pill">${esc(t.hello || String(t.name || '').split(' ')[0])}!</span></h1><p class="muted">${dLabel(today(), true)} · <b>${h12(nowHM())}</b> hora Colombia · Código <b>${esc(t.code)}</b></p></div>
         <div class="tp-dds">
           <div class="tp-dd"><button class="tp-ddb" data-dd="tools">${TI('tools')} Herramientas <span class="car">▾</span></button><div class="tp-ddm">
             <button class="tp-mi" id="tp-live"><i class="ib2">${TI('video')}</i><span><b>Clases en vivo</b><small>Practica las clases de los 4 módulos</small></span></button>

@@ -668,7 +668,7 @@
       
       ${(() => { const lu = P.lastUser(); const vn = (lu && lu.first) || vName(); return lu && lu.first ? `<div class="pt-hello"><img class="pt-mra pt-rkt" src="mra-x-rocket2.webp?v=2" alt="Mr. Arrieta" draggable="false" data-noguide><div class="bubble">${hiGreet(vn)}</div></div>`
         : `<div class="pt-hello"><img class="pt-mra pt-rkt" src="mra-x-rocket2.webp?v=2" alt="Mr. Arrieta" draggable="false"><div class="bubble">${hiGreet(vn)}</div></div>`; })()}
-      <h1>Ingresa a tu perfil</h1><p class="muted">Escribe el código que te llegó a tu correo o WhatsApp.</p>
+      <h1>Ingresa a tu <span class="mk-pill">perfil</span></h1><p class="muted">Escribe el código que te llegó a tu correo o WhatsApp.</p>
       <input class="inp" id="cd" type="password" placeholder="Ej: ABC-123" autocapitalize="characters" autocomplete="off">
       <button class="btn k block lg" id="ok">Entrar →</button>
       <div class="pt-or"><span>¿Aún no eres estudiante?</span></div>
@@ -790,9 +790,9 @@
     const n = steps.length, done = steps.filter(x => x.st === 'ok').length, base = steps.filter(x => !x.tag).length; // estrellas Kids: pasos sin la clase en vivo
     const row = (x) => `<div class="g1-st ${x.st}"><span class="g1-n">${x.st === 'ok' ? gi('ck') : x.k}</span><div><b>${x.b}${x.tag ? `<em class="g1-tag">${x.tag}</em>` : ''}</b><small>${x.s}</small>${x.btn ? '<div>' + x.btn + '</div>' : ''}</div></div>`;
     const stage = placed ? 2 : GL && gk ? 1 : 0; // 0: nada · 1: objetivo listo · 2: nivel listo
-    if (ag === 'teens') return `<div class="card g1 g1-tn"><div class="g1-hd"><img src="mra-x-rocket5.webp" alt="Mr. Arrieta"><div>${prem ? `<span class="g1-chip">PREMIUM · ${nv} CLASES</span>` : ''}<b>Hey, ${nm}</b><span>${stage === 2 ? 'Tu nivel: ' + lvl + '. Sigue con tu misión.' : stage === 1 ? 'Objetivo: ' + gname + '. Ahora descubre tu nivel.' : 'Tu misión de hoy. Todo lo demás ya está abierto.'}</span></div></div>
+    if (ag === 'teens') return `<div class="card g1 g1-tn"><div class="g1-hd"><img src="mra-x-rocket5.webp" alt="Mr. Arrieta"><div>${prem ? `<span class="g1-chip">PREMIUM · ${nv} CLASES</span>` : ''}<b>Hey, <span class="mk-pill">${nm}</span></b><span>${stage === 2 ? 'Tu nivel: ' + lvl + '. Sigue con tu misión.' : stage === 1 ? 'Objetivo: ' + gname + '. Ahora descubre tu nivel.' : 'Tu misión de hoy. Todo lo demás ya está abierto.'}</span></div></div>
       <div class="g1-box"><span class="g1-lb">MISIÓN DE INICIO · ${done} DE ${n}</span><div class="g1-seg">${steps.map(x => `<i class="${x.st === 'ok' ? 'on' : ''}"></i>`).join('')}</div>${steps.map(row).join('')}</div></div>`;
-    if (ag === 'kids') { const H = [['mra-welcome.webp', `¡Hola, ${nm}!`, `Vamos a empezar tu aventura. ¡Son solo ${n} pasos!`, 'kg1'], ['mra-celebrate.webp', '¡Ganaste tu primera estrella!', 'Ya sabemos lo que te gusta. ¡Ahora descubre tu nivel!', 'kg4'], ['mra-celebrate.webp', '¡Ganaste otra estrella!', 'Ya sabemos tu nivel. ¡Ahora tu primera lección!', 'kg2']][stage];
+    if (ag === 'kids') { const H = [['mra-welcome.webp', `¡Hola, <span class="mk-pill">${nm}!</span>`, `Vamos a empezar tu aventura. ¡Son solo ${n} pasos!`, 'kg1'], ['mra-celebrate.webp', '¡Ganaste tu primera <span class="mk-pill">estrella!</span>', 'Ya sabemos lo que te gusta. ¡Ahora descubre tu nivel!', 'kg4'], ['mra-celebrate.webp', '¡Ganaste otra <span class="mk-pill">estrella!</span>', 'Ya sabemos tu nivel. ¡Ahora tu primera lección!', 'kg2']][stage];
       return `<div class="card g1 g1-kd"><div class="g1-hd"><img src="${H[0]}" alt="Mr. Arrieta"><div class="g1-bub"><b>${H[1]}</b><span>${H[2]}</span><button class="g1-spk" data-kg="${H[3]}">${gi('vol')}Escuchar</button></div></div>
       <div class="g1-box"><span class="g1-lb">TU AVENTURA DE INICIO</span>${steps.map((x, i) => (i ? `<div class="g1-line${steps[i - 1].st === 'ok' ? ' ok' : ''}"></div>` : '') + row(x)).join('')}</div>
       <div class="g1-stars">Estrellas de inicio <i>${'★'.repeat(Math.min(done, base))}${'☆'.repeat(Math.max(0, base - done))}</i></div></div>`; }
@@ -890,7 +890,7 @@
       ${upBanner()}
 
       ${birthdayBanner()}
-      ${adult && !newbie ? `<div class="ad-hi"><div><small>${(s0 => s0[0].toUpperCase() + s0.slice(1))(new Date().toLocaleDateString('es-CO', { weekday: 'long', day: 'numeric', month: 'long' }))}</small><h1>${esc(greet)}, ${esc(P.look().nick || p.first || '')}</h1></div><span class="ad-plan">${MRI(plIc)} ${esc(plName.replace(' clases', ''))}</span></div>` : ''}
+      ${adult && !newbie ? `<div class="ad-hi"><div><small>${(s0 => s0[0].toUpperCase() + s0.slice(1))(new Date().toLocaleDateString('es-CO', { weekday: 'long', day: 'numeric', month: 'long' }))}</small><h1>${esc(greet)}, <span class="mk-pill">${esc(P.look().nick || p.first || '')}</span></h1></div><span class="ad-plan">${MRI(plIc)} ${esc(plName.replace(' clases', ''))}</span></div>` : ''}
       <div id="pt-ann"></div><div id="pt-ofr"></div>
       ${P.isExpired() || (trial && !(window.MRAC && MRAC.code())) ? `<div class="pt-trialbar">${P.isExpired() ? `⏰ <div><b>Tu plan venció.</b> Todo tu contenido está bloqueado, pero tu progreso sigue guardado. Apenas renueves, se desbloquea todo. <a href="#" class="tb-up">Ver planes →</a></div>` : `🟢 <div><b>Acceso gratuito:</b> la prueba de clasificación y los <b>3 primeros temas</b> de tu módulo. <a href="#" class="tb-up">Ver planes →</a></div>`}</div>` : ''}
       ${main}

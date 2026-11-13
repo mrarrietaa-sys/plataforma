@@ -1,0 +1,10 @@
+/* v684 · Identidad de marca mrarrieta.com: letra propia para títulos, números y botones (reemplaza a Poppins en toda la plataforma) + sello rojo inclinado */
+@font-face{font-family:'Poppins';src:url(fonts/mra-500.woff2) format('woff2');font-weight:100 500;font-style:normal;font-display:swap}
+@font-face{font-family:'Poppins';src:url(fonts/mra-600.woff2) format('woff2');font-weight:600;font-style:normal;font-display:swap}
+@font-face{font-family:'Poppins';src:url(fonts/mra-700.woff2) format('woff2');font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:'Poppins';src:url(fonts/mra-800.woff2) format('woff2');font-weight:800 900;font-style:normal;font-display:swap}
+h1,h2{letter-spacing:-.02em}
+/* sello rojo: misma inclinación que «HABLANDO», el texto nunca toca los bordes */
+.mk-pill{display:inline-block;background:#E3242B;color:#fff;-webkit-text-fill-color:#fff;background-clip:border-box;-webkit-background-clip:border-box;border-radius:.32em;padding:.26em .4em .22em;margin:.06em .06em;line-height:1.1;width:max-content;max-width:100%;flex:none;align-self:center;white-space:nowrap;transform:rotate(-1.5deg);font:inherit;letter-spacing:-.01em;vertical-align:baseline}
+h1 em{padding-top:.18em!important;padding-bottom:.16em!important;line-height:1.1!important}
+.lp-k h1 em{padding:.2em 12px .22em!important;line-height:1.1!important;margin:.15em 0 .2em!important;transform:rotate(-1.5deg)}

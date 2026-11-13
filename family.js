@@ -13,7 +13,7 @@
 
   function login(msg) {
     topRight(false);
-    app.innerHTML = `<section class="card fm-login"><img src="mra-smile.webp" alt="Mr. Arrieta"><div><span class="fm-eye">${I('users')} Mi familia</span><h1>Panel de papás</h1>
+    app.innerHTML = `<section class="card fm-login"><img src="mra-smile.webp" alt="Mr. Arrieta"><div><span class="fm-eye">${I('users')} Mi familia</span><h1>Panel de <span class="mk-pill">papás</span></h1>
       <p class="muted">Escribe tu código de familia. Lo encuentras en el correo de bienvenida de tu hijo(a).</p>
       <input class="inp" id="fc" placeholder="FAM-…" autocomplete="off" autocapitalize="characters"><button class="btn k block lg" id="go">Entrar →</button><p class="fm-err" id="er">${esc(msg || '')}</p><p class="fm-lh">¿No tienes tu código? <a href="https://wa.me/573017810841?text=${encodeURIComponent('Hola, soy papá/mamá de un estudiante de mrarrieta.com y necesito mi código de familia.')}" target="_blank" rel="noopener">Escríbenos por WhatsApp</a></p><a class="fm-lback" href="index.html">← Volver a mrarrieta.com</a></div></section>`;
      // v668: el enlace del correo trae el código de familia
