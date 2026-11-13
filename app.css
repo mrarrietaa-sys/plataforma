@@ -10021,3 +10021,23 @@ body.ag-teens .me-top h1{color:#fff}body.ag-teens .me-top p{color:rgba(255,255,2
 .ad-planbtns{align-items:stretch!important}.ad-pn{display:inline-flex!important;flex-direction:row!important;align-items:stretch;gap:0!important;flex-wrap:nowrap!important}
 .ad-pn select{width:auto!important;min-width:118px;border-radius:12px 0 0 12px!important;margin:0!important}.ad-pn .btn{border-radius:0 12px 12px 0!important;margin:0!important;white-space:nowrap}
 .ad-par{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.ad-par .mri{width:16px;height:16px}
+/* v671: portal del profe · calificación y pendientes centrados · elegir tema · novedades vigentes */
+.tp-rank.tp-rank2{display:block;text-align:center;padding:18px 18px 16px;border:1.5px solid #f3d9a4;background:linear-gradient(180deg,#fffaf0,#fff)}
+.tp-rank2 .tp-rk-st{display:inline-block;font:800 14px var(--fh,Poppins),sans-serif;letter-spacing:.12em;color:#d97706;background:#fff3dc;border-radius:99px;padding:4px 14px;margin-bottom:8px}
+.tp-rank2 b{display:block;font:800 18px/1.3 var(--fh,Poppins),sans-serif;color:#0B2A5B;margin:0 0 6px}.tp-rank2 b em{font-style:normal;color:#d97706}
+.tp-rank2 small{display:block;color:#5b6577;font-size:14px;line-height:1.45;max-width:460px;margin:0 auto}
+.tp-alert.tp-pend{display:block;text-align:center}.tp-pend b{display:block}.tp-pend span{display:block;margin-top:2px}.tp-pend .btn{display:inline-flex;margin:12px auto 0}
+.tp-pk{text-align:center}.tp-pk-r{display:block;text-align:center;padding:12px 0}.tp-pk-r>span{display:block}
+.tp-pk-r>b{display:inline-block;background:#fee2e2;color:#b91c1c;border-radius:99px;padding:2px 12px;font-size:13px;margin-top:6px}
+.tp-pkb{display:block;margin:10px auto 0;font:700 13.5px var(--fh,Poppins),sans-serif;color:#0B2A5B;background:#fff;border:1.5px solid #0B2A5B;border-radius:99px;padding:8px 18px;cursor:pointer}.tp-pkb:hover{background:#0B2A5B;color:#fff}.tp-pkb:disabled{opacity:.6;cursor:default}
+.tp-pkd{border:1.5px solid #16a34a;background:#f0fdf4;border-radius:14px;padding:14px;text-align:center;margin:6px 0}
+.tp-pkd p{margin:0!important;display:flex;align-items:center;justify-content:center;gap:6px;font:800 12.5px var(--fh,Poppins),sans-serif;color:#15803d;letter-spacing:.05em;text-transform:uppercase}.tp-pkd p svg{width:16px;height:16px}
+.tp-pkd b{display:block;font:800 16.5px/1.3 var(--fh,Poppins),sans-serif;color:#0B2A5B;margin:6px 0 2px}.tp-pkd span{display:block;color:#5b6577;font-size:13.5px}.tp-pkd i{display:block;color:#334155;font-size:13.5px;margin-top:4px}
+.tp-pkc{margin-top:8px;font:700 13.5px var(--fh,Poppins),sans-serif;color:#1d4ed8;background:none;border:0;text-decoration:underline;cursor:pointer;padding:4px 8px}
+.tp-nv{text-align:center}.tp-nv-h{width:48px;height:48px;border-radius:14px;background:#0B2A5B;color:#fff;display:inline-flex;align-items:center;justify-content:center;margin-bottom:8px}.tp-nv-h svg{width:22px;height:22px}
+.tp-nv h3{margin:0 0 14px!important;text-align:center}
+.tp-nv-l{max-height:min(56vh,460px);overflow-y:auto;margin-bottom:6px}
+.tp-nv-i{border:1.5px solid #e3e8f2;border-radius:16px;padding:14px;margin-bottom:10px;background:#f8faff}
+.tp-nv-i .ic{display:inline-flex;width:34px;height:34px;border-radius:10px;align-items:center;justify-content:center;background:#e8eefc;color:#0B2A5B;margin-bottom:6px}
+.tp-nv-i b{display:block;font:800 16px var(--fh,Poppins),sans-serif;color:#0B2A5B}.tp-nv-i>span:not(.ic){display:block;color:#334155;font-size:14.5px;margin-top:4px}
+.tp-nv-i em{display:inline-block;font-style:normal;margin-top:8px;background:#fff3dc;color:#b45309;font:700 12.5px var(--fh,Poppins),sans-serif;border-radius:99px;padding:4px 12px}

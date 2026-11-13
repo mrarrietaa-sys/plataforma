@@ -46,9 +46,14 @@
     return f.indexOf('fok') >= 0 ? '<div class="tp-fcn ok"><b>Estudiante de clase gratis · ✓ La clase va</b><span>Confirmó. Es su primera clase con la escuela: ¡que viva la mejor experiencia!</span></div>' : '<div class="tp-fcn"><b>Estudiante de clase gratis · No te prepares todavía</b><span>Te confirmamos ' + (+String(c.time).slice(0, 2) < 11 ? 'la noche anterior (9:00 p. m.)' : '2 horas antes') + ' si la clase va o no. Solo te conectas si te llega «la clase va».</span></div>'; };
   const typeBadge = (c) => c.type === 'vip' ? '' /* v597: todas las clases son individuales, no hace falta decirlo */ : (c.type === 'club' ? '<span class="tp-badge grp">Club</span>' : '<span class="tp-badge grp">Grupal</span>');
   const statusBadge = (c) => ({ done: '<span class="tp-st done">Dictada ✓</span>', noshow: '<span class="tp-st noshow">No asistió</span>', cancelled: '<span class="tp-st canc">Cancelada</span>', latecancel: '<span class="tp-st canc">Cancelada tarde</span>', tnoshow: '<span class="tp-st noshow">⚠️ No te conectaste</span>', tlate: '<span class="tp-st noshow">⚠️ Cancelaste tarde</span>' }[c.status] || (c.date <= today() ? '<span class="tp-st pend">Por marcar</span>' : '<span class="tp-st sch">Programada</span>'));
-  const pkBlock = (t) => { /* v666: el estudiante pidió que el profe elija el tema */ const m = String(t).match(/Módulo (\d+)/), mod = m ? m[1] : '', rest = String(t).split('Por reforzar:')[1];
-    const rows = rest ? rest.split(';').map(x => x.trim()).filter(Boolean).map(x => { const q = x.match(/^Tema (\d+) (.*?) (\d+)%$/); if (q) { const hh = window.MRTH && MRTH.get ? MRTH.get(+mod, +q[1]) : null; return `<div class="tp-pk-r"><span>${esc(hh && hh.s ? hh.s : q[2])}<small>Módulo ${mod} · Tema ${q[1]}: ${esc(q[2])}</small>${hh && hh.ex ? `<i>Ej.: “${esc(hh.ex)}”</i>` : ''}</span><b>${q[3]}%</b></div>`; } return q ? '' : `<div class="tp-pk-r"><span>${esc(x)}</span></div>`; }).join('') : `<div class="tp-pk-r"><span>Estudiante nuevo: elige uno de los primeros temas del Módulo ${mod}.</span></div>`;
-    return `<div class="tp-pk"><p>El estudiante quiere que tú elijas el tema</p>${rows}<small>${rest ? 'Son sus temas con el puntaje más bajo en la plataforma. Escoge uno y prepáralo para la clase.' : 'Escoge el tema y prepáralo para la clase.'}</small></div>`; };
+  const NVI = (k) => `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${({calendar: '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',alert: '<circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/>',bell: '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',check: '<path d="M20 6 9 17l-5-5"/>'})[k] || ''}</svg>`; // v671: íconos sobrios
+  const pkOpen = (c) => c && c.status === 'scheduled' && new Date(c.date + 'T' + (c.time || '00:00') + ':00-05:00').getTime() > Date.now(); // v671: se puede elegir/cambiar hasta que empiece la clase
+  const REPICK = new Set();
+  const pkBlock = (t, c) => { /* v666: el estudiante pidió que el profe elija el tema · v671: el profe lo elige aquí */ const m = String(t).match(/Módulo (\d+)/), mod = m ? m[1] : '', rest = String(t).split('Por reforzar:')[1], can = pkOpen(c);
+    const rows = rest ? rest.split(';').map(x => x.trim()).filter(Boolean).map(x => { const q = x.match(/^Tema (\d+) (.*?) (\d+)%$/); if (q) { const hh = window.MRTH && MRTH.get ? MRTH.get(+mod, +q[1]) : null; return `<div class="tp-pk-r"><span>${esc(hh && hh.s ? hh.s : q[2])}<small>Módulo ${mod} · Tema ${q[1]}: ${esc(q[2])}</small>${hh && hh.ex ? `<i>Ej.: “${esc(hh.ex)}”</i>` : ''}</span><b>Puntaje ${q[3]}%</b>${can && c ? `<button type="button" class="tp-pkb" data-pick="${esc(c.id)}" data-n="${q[1]}">Elegir este tema</button>` : ''}</div>`; } return q ? '' : `<div class="tp-pk-r"><span>${esc(x)}</span></div>`; }).join('') : `<div class="tp-pk-r"><span>Estudiante nuevo: elige uno de los primeros temas del Módulo ${mod}.</span></div>`;
+    return `<div class="tp-pk"><p>El estudiante quiere que tú elijas el tema</p>${rows}<small>${rest ? (can ? 'Son sus temas con el puntaje más bajo. Elige uno: el estudiante lo verá en su clase.' : 'Son sus temas con el puntaje más bajo en la plataforma.') : 'Escoge el tema y prepáralo para la clase.'}</small></div>`; };
+  const pkDone = (c) => { const q = window.MRTH && MRTH.parse ? MRTH.parse(c.topic) : null, hh = q && MRTH.get ? MRTH.get(+q.m, +q.t) : null, nm = String(c.topic).replace(/^Módulo \d+ · /, '');
+    return `<div class="tp-pkd"><p>${NVI('check')}Tema elegido por ti</p>${hh && hh.s ? `<b>${esc(hh.s)}</b>` : ''}<span>${esc(String(c.topic))}</span>${hh && hh.ex ? `<i>Ej.: “${esc(hh.ex)}”</i>` : ''}${pkOpen(c) ? `<button type="button" class="tp-pkc" data-repick="${esc(c.id)}">Cambiar tema</button>` : ''}</div>`; };
   const whoOf = (c) => c.type === 'vip' ? esc(studentName(c.students[0] || '')) : esc(c.type === 'club' ? (c.topic || 'Club') : ((groupOf(c.groupId) || {}).name || 'Grupo')) + ` · ${c.students.length} estudiante${c.students.length === 1 ? '' : 's'}`;
 
   /* ---------- entrada ---------- */
@@ -310,7 +315,7 @@
     const r = rel(c.date), link = meetOf(c), canMark = c.status === 'scheduled' && c.date <= today();
     return `<li class="tp-cls${r === 'Hoy' ? ' today' : r === 'Mañana' ? ' tomorrow' : ''}">
       <div class="tp-cls-when"><b>${r || dLabel(c.date)}</b><span>${r ? dLabel(c.date) + ' · ' : ''}${h12(c.time)} – ${h12(endHM(c.time, c.duration))}</span></div>
-      <div class="tp-cls-what">${fcNote(c)}${typeBadge(c)} ${statusBadge(c)}<div class="tp-cls-who">${whoOf(c)}</div>${c.topic && c.type !== 'club' ? (/^El profe elige el tema/.test(c.topic) ? pkBlock(c.topic) : `<small class="muted">Tema: ${esc(c.topic)}</small>`) : ''}${(() => { const q = window.MRTH && c.type !== 'club' && c.topic && MRTH.parse(c.topic); if (!q) return ''; const st = (D && D.students[String(c.students[0] || '').toUpperCase()]) || {}; return MRTH.html(q.m, q.t, st.ag || 'adult', 't', { ex: 1, g: 1 }); })()}
+      <div class="tp-cls-what">${fcNote(c)}${typeBadge(c)} ${statusBadge(c)}<div class="tp-cls-who">${whoOf(c)}</div>${c.topic && c.type !== 'club' ? (/^El profe elige el tema/.test(c.topic) ? pkBlock(c.topic, c) : c.topt && REPICK.has(c.id) ? pkBlock(c.topt, c) : c.topt ? pkDone(c) : `<small class="muted">Tema: ${esc(c.topic)}</small>`) : ''}${(() => { const q = window.MRTH && c.type !== 'club' && !c.topt && c.topic && MRTH.parse(c.topic); if (!q) return ''; const st = (D && D.students[String(c.students[0] || '').toUpperCase()]) || {}; return MRTH.html(q.m, q.t, st.ag || 'adult', 't', { ex: 1, g: 1 }); })()}
         ${c.status === 'done' ? `<small class="muted">Asistencia: ${c.students.filter((x) => (c.attendance || {})[String(x).toUpperCase()] === true || (c.attendance || {})[x] === true).length}/${c.students.length}</small>` : ''}
         ${(c.type === 'group' || c.type === 'club') && c.status === 'scheduled' ? `<small class="muted">✅ ${+c.confirmed || 0} confirmado(s)${c.flags === 'cutoff' ? '' : ' · se cierra 3 h antes'}</small>` : ''}${c.status === 'sin-asistentes' ? '<small class="tp-note">🙌 Nadie confirmó: no necesitas conectarte.</small>' : ''}
         ${c.notes && opt && opt.notes ? `<small class="tp-note">📝 ${esc(c.notes)}</small>` : ''}</div>
@@ -392,8 +397,8 @@
         <div class="tp-stat red"><b>${+D.stats.taughtMonth || 0}</b><span>clases dictadas este mes</span></div>
         <div class="tp-stat"><b>${up.length}</b><span>próximas clases</span></div>
       </div>
-      ${D.rank ? `<div class="tp-rank"><span class="tp-rk-s">★ ${D.rank.stars ? String(D.rank.stars).replace('.', ',') : '—'}</span><div><b>${D.rank.stars ? 'Tu calificación: ★ ' + String(D.rank.stars).replace('.', ',') + ' · apareces ' + D.rank.pos + '.º al reservar' : 'Aún no tienes calificaciones'}</b><small>${D.rank.stars ? D.rank.n + (D.rank.n === 1 ? ' calificación' : ' calificaciones') + ' de tus estudiantes. ' : ''}Los profes mejor calificados aparecen primero cuando el estudiante reserva.</small></div></div>` : ''}
-      ${pend.length ? `<div class="tp-alert warn"><b>📌 Tienes ${pend.length} clase${pend.length > 1 ? 's' : ''} por marcar.</b> Registra la asistencia para que el estudiante vea su progreso. <button class="btn k sm" data-go="classes">Ir a Mis clases</button></div>` : ''}
+      ${D.rank ? `<div class="tp-rank tp-rank2">${D.rank.stars ? `<span class="tp-rk-st">${(() => { const v = +D.rank.stars || 0, f = Math.round(v); return '★'.repeat(f) + '☆'.repeat(Math.max(0, 5 - f)); })()}</span>` : ''}<b>${D.rank.stars ? 'Tu calificación: <em>' + String(D.rank.stars).replace('.', ',') + ' estrella' + (+D.rank.stars === 1 ? '' : 's') + '</em> · apareces ' + D.rank.pos + '.º al reservar' : 'Aún no tienes calificaciones'}</b><small>${D.rank.stars ? D.rank.n + (D.rank.n === 1 ? ' calificación' : ' calificaciones') + ' de tus estudiantes. ' : ''}Los profes mejor calificados aparecen primero cuando el estudiante reserva.</small></div>` : ''}
+      ${pend.length ? `<div class="tp-alert warn tp-pend"><b>Tienes ${pend.length} clase${pend.length > 1 ? 's' : ''} por marcar.</b><span>Registra la asistencia para que el estudiante vea su progreso.</span><button class="btn k sm" data-go="classes">Ir a Mis clases</button></div>` : ''}
       <div class="card tp-card"><div class="tp-card-h"><h2>Próximas clases</h2><small class="muted">hora Colombia</small></div>
         ${up.length ? `<ul class="tp-acc-l">${up.slice(0, 40).map((c) => accRow(c)).join('')}</ul>` : `<div class="tp-empty"><img src="mra-think.webp" alt="" width="110" height="110"><p>No tienes clases programadas.${free ? '' : ' Agrega espacios en <b>Mi disponibilidad</b> para que tus estudiantes Premium reserven clases individuales.'}</p></div>`}
       </div>
@@ -543,13 +548,41 @@
       : `<div class="card tp-card"><div class="tp-empty"><img src="mra-wink.webp" alt="" width="110" height="110"><p>Aún no tienes grupos asignados. La administración te asignará grupos según los niveles que dictas.</p></div></div>`;
   }
 
-  // 🔔 pop-up: reservas, cancelaciones y confirmaciones nuevas (al entrar y cada 2 minutos)
+  // v671: elegir / cambiar el tema que pidió el estudiante
+  document.addEventListener('click', async (e) => {
+    const rp = e.target.closest && e.target.closest('[data-repick]'); if (rp) { REPICK.add(rp.dataset.repick); shell(); return; }
+    const b = e.target.closest && e.target.closest('[data-pick]'); if (!b || b.disabled) return;
+    const c = D && D.classes.find(x => x.id === b.dataset.pick); if (!c) return;
+    b.disabled = true; b.textContent = 'Guardando…';
+    const r = await api('tPick', { classId: c.id, n: +b.dataset.n }).catch(() => null);
+    if (!r || !r.ok) { b.disabled = false; b.textContent = 'Elegir este tema'; toast(r && r.err === 'closed' ? 'La clase ya empezó: no se puede cambiar el tema.' : 'No se pudo guardar. Inténtalo de nuevo.', true); return; }
+    if (!c.topt) c.topt = c.topic; c.topic = r.topic; REPICK.delete(c.id); toast('Listo: el estudiante verá este tema en su clase.'); shell();
+  });
+  // 🔔 pop-up de novedades · v671: solo lo que sigue siendo cierto (clases que existen y aún no pasan) · los recordatorios viejos ya no aparecen
   const POPPED = new Set();
+  const clsMs = (c) => new Date(c.date + 'T' + (c.time || '00:00') + ':00-05:00').getTime();
+  const fmtCls = (c) => { const d = new Date(c.date + 'T12:00:00'); const ds = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'][d.getDay()] + ' ' + d.getDate() + ' ' + ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'][d.getMonth()]; const [hh, mm] = String(c.time || '00:00').split(':').map(Number); return ds + ' · ' + ((hh % 12) || 12) + ':' + String(mm).padStart(2, '0') + ' ' + (hh < 12 ? 'a. m.' : 'p. m.'); };
+  function popItem(n) {
+    const c = n.data && n.data.classId ? D.classes.find(x => x.id === n.data.classId) : null; const t = String(n.title || '');
+    if (!c) return null; // sin clase no hay novedad que mostrar (queda en la campanita)
+    const live = c.status === 'scheduled' && clsMs(c) > Date.now(), who = (c.students || []).map(studentName).join(', ') || (c.type === 'club' ? 'Club' : 'Estudiante');
+    const I = NVI;
+    if (/Nueva clase/.test(t)) { if (!live) return null; const pk = /^El profe elige el tema/.test(String(c.topic || '')) ? 'Tú eliges el tema' + ((String(c.topic).match(/Módulo \d+/) || [''])[0] ? ' · ' + String(c.topic).match(/Módulo \d+/)[0] : '') : (c.topic ? String(c.topic).replace(/\s*\(.*$/, '') : '');
+      return `<div class="tp-nv-i"><span class="ic">${I('calendar')}</span><b>Nueva clase individual</b><span>${esc(who)} · ${esc(fmtCls(c))}</span>${pk ? `<em>${esc(pk)}</em>` : ''}</div>`; }
+    if (/empieza en|Mañana a las|Hoy a las/.test(t)) { if (!live) return null; const td = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Bogota' }), tm = new Date(Date.now() + 864e5).toLocaleDateString('en-CA', { timeZone: 'America/Bogota' });
+      const when = c.date === td ? 'Tu clase es hoy' : c.date === tm ? 'Tu clase es mañana' : 'Próxima clase';
+      return `<div class="tp-nv-i"><span class="ic">${I('clock')}</span><b>${when}</b><span>${esc(who)} · ${esc(fmtCls(c))}</span></div>`; }
+    if (/cancel/i.test(t)) { if (clsMs(c) < Date.now() - 864e5) return null; return `<div class="tp-nv-i"><span class="ic">${I('alert')}</span><b>Clase cancelada</b><span>${esc(who)} · ${esc(fmtCls(c))}</span></div>`; }
+    if (!live) return null;
+    return `<div class="tp-nv-i"><span class="ic">${I('bell')}</span><b>${esc(t.replace(/^[^A-Za-zÁÉÍÓÚÑ¡¿]+/, ''))}</b><span>${esc(who)} · ${esc(fmtCls(c))}</span></div>`;
+  }
   function popNew() {
     if (!D || document.querySelector('.tp-modal')) return;
     const nw = (D.notifications || []).filter(n => !n.read && (n.type === 'vip' || n.type === 'club') && !POPPED.has(n.id)); if (!nw.length) return;
     nw.forEach(n => POPPED.add(n.id));
-    const m = modal(`<h3>🔔 ${nw.length === 1 ? 'Tienes una novedad' : 'Tienes ' + nw.length + ' novedades'}</h3><div class="tp-pop-list">${nw.map(n => `<div><b>${esc(n.title)}</b><small>${esc(n.body || '')}</small></div>`).join('')}</div><button class="btn k block" id="tp-pok">Entendido</button>`);
+    const rk = (n) => /Nueva clase/.test(n.title || '') ? 0 : /cancel/i.test(n.title || '') ? 1 : 2, seen = new Set(); // una sola novedad por clase: primero la reserva nueva
+    const items = nw.slice().sort((a, b) => rk(a) - rk(b)).filter(n => { const k = n.data && n.data.classId; if (!k) return true; if (seen.has(k)) return false; seen.add(k); return true; }).map(n => { try { return popItem(n); } catch (e) { return null; } }).filter(Boolean); if (!items.length) return; // nada vigente: no se muestra la ventana (todo sigue en la campanita)
+    const m = modal(`<div class="tp-nv"><div class="tp-nv-h">${NVI('bell')}</div><h3>${items.length === 1 ? 'Tienes una novedad' : 'Tienes ' + items.length + ' novedades'}</h3><div class="tp-nv-l">${items.join('')}</div><button class="btn k block" id="tp-pok">Entendido</button></div>`);
     $('#tp-pok', m).onclick = () => { m.remove(); api('notifRead', { ids: nw.map(n => n.id) }).catch(() => { }); nw.forEach(n => n.read = true); if (tab === 'home') shell(); };
   }
   // "Atrás": dentro del portal vuelve al Resumen; nunca saca al profe a otra página por error
