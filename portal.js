@@ -28,8 +28,21 @@
     if ($('#snd-b')) $('#snd-b').onclick = () => { const on = !voiceOn(); try { localStorage.setItem(VKEY, on ? '0' : '1'); } catch (e) { } if (!on) M.stop(); $('#snd-b').textContent = on ? '🔊' : '🔇'; M.toast(on ? '🔊 Voz de bienvenida activada' : '🔇 Voz de bienvenida desactivada'); };
   }
   let curRoute = 'home';
+  /* v668 · aviso «¿Te gustaría practicar con un profe?» (solo plan Plataforma) · al cerrarlo vuelve el lunes siguiente */
+  const upMon = () => { const d = new Date(); const k = (d.getDay() + 6) % 7; d.setDate(d.getDate() - k); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+  const upKey = () => 'mra_upx_' + (((P.get() || {}).code) || '');
+  function upBanner() { try { const p = P.get(); if (!p || p.type === 'staff' || p.tpr || P.plan().eff !== 'membership' || P.isExpired()) return ''; let hid = ''; try { hid = localStorage.getItem(upKey()) || ''; } catch (e) { } if (hid === upMon()) return '';
+    const ag = document.body.classList.contains('ag-kids') ? 'kids' : document.body.classList.contains('ag-teens') ? 'teens' : 'adult';
+    return `<div class="up-c up-${ag}" id="up-c" role="button" tabindex="0"><b><span class="up-ic">${MRI('crown')}</span>${ag === 'kids' ? '¿Te gustaría clases con un profe?' : '¿Te gustaría practicar con un profe?'}</b><span class="up-go">Ver Premium</span><button type="button" class="up-x" id="up-x" aria-label="Cerrar">✕</button></div>`; } catch (e) { return ''; } }
+  document.addEventListener('click', (e) => { const c = e.target.closest && e.target.closest('#up-c'); if (!c) return; e.preventDefault();
+    if (e.target.closest('#up-x')) { try { localStorage.setItem(upKey(), upMon()); } catch (er) { } c.classList.add('up-out'); setTimeout(() => c.remove(), 220); return; }
+    if (window.MRBUY && MRBUY.minorNow && MRBUY.minorNow()) return MRBUY.askParent('premium8');
+    if (window.MRPLANS && MRPLANS.modal) MRPLANS.modal(M, 'Pásate a <b>Premium</b>: clases individuales de 50 minutos con un profe, solo contigo, cuando quieras.'); else if (window.MRBUY) MRBUY.plan('premium8'); });
+  /* v668: al abrir un perfil se quita todo lo de la portada (barra inferior, bloqueo de scroll, ventana de ingreso) */
+  function landingOff() { document.querySelectorAll('.lp-dock.home').forEach(x => x.remove()); document.body.classList.remove('home-app', 'sheet-open'); document.documentElement.classList.remove('home-lock'); }
+  try { new MutationObserver(() => { if (P.get() && document.querySelector('.lp-dock.home') && document.querySelector('#app .db, #app .pt-wrap:not(.pt-login-w), #app .db-side')) landingOff(); }).observe(document.body, { childList: true, subtree: false }); } catch (e) { }
   function route(r) { try { if (r !== 'placement') document.documentElement.classList.remove('in-place'); } catch (e) { } try { document.body.classList.toggle('rt-home', !r || r === 'home'); } catch (e) { } /* v609 */ curRoute = r || 'home'; M.stop && M.stop(); window.scrollTo(0, 0); topbar(); const p = PAGE !== 'home' ? null : P.get();
-    if (p) { const hd = document.querySelector('.lp-dock.home'); if (hd) { hd.remove(); document.body.classList.remove('home-app'); document.documentElement.classList.remove('home-lock'); } }
+    if (p) { landingOff(); }
     if (!p) return login();
     if (!p.first && !(p.cloud && p.type === 'student')) return nameStep(); // v410: los datos (nombre, fecha de nacimiento, correo) ya se piden al inscribirse; solo se preguntan si de verdad faltan en un acceso sin nube
     if (r === 'placement') return placement();
@@ -184,6 +197,7 @@
 
   // 📱 entrada como app: barra inferior (sin pie de página largo)
   function homeDock() {
+    try { document.body.classList.remove('ag-kids', 'ag-teens'); if (P.get()) return; } catch (e) { } // v668: con una sesión abierta no se pone la barra de la portada
     if (document.querySelector('.lp-dock')) return; document.body.classList.add('home-app');
     const LW = () => document.querySelector('.ld-login'); // 📱 celular: el ingreso se abre como ventana (el cliente no baja) · se busca cada vez (la página se vuelve a dibujar al salir de un perfil)
     const prep = (lw) => { if (lw && !lw.querySelector('.lp-shx')) { (lw.querySelector('.pt-login') || lw).insertAdjacentHTML('afterbegin', '<button type="button" class="lp-shx" aria-label="Cerrar">✕</button>'); lw.querySelector('.lp-shx').onclick = () => sheet(false); lw.addEventListener('click', e => { if (e.target === lw) sheet(false); }); } };
@@ -491,6 +505,11 @@
     if (!code || !pr || pr.type === 'staff' || !window.MRBUY) return; const k = new URLSearchParams(a.getAttribute('href').split('?')[1]).get('plan'); if (!/^(membership|premium\d*)$/.test(k)) return;
     e.preventDefault(); e.stopPropagation(); MRBUY.plan(k); } catch (er) { } }, true);
   // enlaces de los correos: ?pagar=CÓDIGO abre los planes y pagos · ?gratis=1 abre la prueba gratis
+  /* v668: el papá o la mamá confirma la cuenta de su hijo(a) desde el correo */
+  setTimeout(async () => { try { const q = new URLSearchParams(location.search); const pc = q.get('pc'), t = q.get('t'); if (!pc || !t) return; history.replaceState(null, '', location.pathname);
+    const r = await MRAC.call('parentConfirm', { code: pc, t }).catch(() => null);
+    M.modal(`<div class="center"><div class="to-ic">${MRI(r && r.ok ? 'check' : 'alert')}</div><h3>${r && r.ok ? '¡Gracias' + (r.guardian ? ', ' + esc(r.guardian) : '') + '!' : 'No pudimos confirmar'}</h3><p>${r && r.ok ? 'Confirmaste la cuenta de <b>' + esc(r.first || '') + '</b>. Te contaremos de su avance y cualquier pago pasará por ti.' : 'El enlace no es válido o ya venció. Escríbenos por WhatsApp al 301 781 0841.'}</p><button class="btn k block" onclick="this.closest('.modal').remove()">Entendido</button></div>`, { x: true });
+  } catch (e) { } }, 500);
   // ✉️ botón "Confirmar mi correo" de los correos de bienvenida
   setTimeout(async () => { try { const q = new URLSearchParams(location.search); const vm = q.get('vm'), t = q.get('t'); if (!vm || !t) return; history.replaceState(null, '', location.pathname);
     const r = await MRAC.call('verifyMail', { code: vm, t }).catch(() => null);
@@ -554,12 +573,16 @@
   function trialForm(kidFirst) {
     const m = M.modal(`<div class="center to-new"><div class="to-ic">${MRI('gift')}</div><h3>Prueba gratis 3 días</h3><p class="to-off">Plataforma completa <b>+ 1 clase gratis con profe</b></p><div class="to-pills"><span>✓ <i class="to-tu">Tu</i> nivel en 10 min</span><span>✓ Te corrige</span><span class="g">✓ Clase 1 a 1</span></div><p class="to-sm2">Sin tarjeta · sin compromiso</p></div>
       <div class="tf"><div class="tf-who" role="tablist"><button type="button" class="on" data-who="me">Para mí</button><button type="button" data-who="kid">Para mi hijo(a)</button></div>
-      <b class="tf-h tf-k hidden">Datos del niño(a)</b><input class="inp" id="tf-n" placeholder="Nombre y apellido" autocomplete="name"><label class="tf-bd tf-k hidden"><span>Fecha de nacimiento</span><input class="inp" id="tf-b" type="date" max="${new Date().toISOString().slice(0, 10)}"><small>Con su edad lo llevamos a su experiencia: <b>Kids</b> (9 a 11) o <b>Teens</b> (12 a 17).</small></label><b class="tf-h tf-k hidden">Datos del papá o la mamá</b><input class="inp tf-k hidden" id="tf-g" placeholder="Nombre y apellido" autocomplete="name"><input class="inp" id="tf-w" type="tel" placeholder="WhatsApp" autocomplete="tel"><input class="inp" id="tf-e" type="email" placeholder="Correo" autocomplete="email"><input class="inp tf-k hidden" id="tf-e2" type="email" placeholder="Correo del otro padre (opcional)">
+      <b class="tf-h tf-k hidden">Datos del niño(a)</b><input class="inp" id="tf-n" placeholder="Nombre y apellido" autocomplete="name"><label class="tf-bd tf-me"><span>Tu fecha de nacimiento</span><input class="inp" id="tf-mb" type="date" max="${new Date().toISOString().slice(0, 10)}"></label><div class="tf-pm hidden" id="tf-pm"><b>Eres menor de edad: necesitamos a tu papá o mamá</b><small>Le avisaremos de tu cuenta y de tus pagos. Tú puedes empezar ya.</small><input class="inp" id="tf-pg" placeholder="Nombre y apellido (papá o mamá)" autocomplete="off"><input class="inp" id="tf-pe" type="email" placeholder="Correo de tu papá o mamá" autocomplete="off"></div><label class="tf-bd tf-k hidden"><span>Fecha de nacimiento</span><input class="inp" id="tf-b" type="date" max="${new Date().toISOString().slice(0, 10)}"><small>Con su edad lo llevamos a su experiencia: <b>Kids</b> (9 a 11) o <b>Teens</b> (12 a 17).</small></label><b class="tf-h tf-k hidden">Datos del papá o la mamá</b><input class="inp tf-k hidden" id="tf-g" placeholder="Nombre y apellido" autocomplete="name"><input class="inp" id="tf-w" type="tel" placeholder="WhatsApp" autocomplete="tel"><input class="inp" id="tf-e" type="email" placeholder="Correo" autocomplete="email"><input class="inp tf-k hidden" id="tf-e2" type="email" placeholder="Correo del otro padre (opcional)">
       <label class="tf-ok tf-req"><input type="checkbox" id="tf-c"> <span><span id="tf-ct">Autorizo el tratamiento de mis datos personales según la <a href="privacidad.html" target="_blank" rel="noopener">política de privacidad</a>.</span><em class="tf-em r">OBLIGATORIA</em></span></label>
       <label class="tf-ok"><input type="checkbox" id="tf-m"> <span><span id="tf-mt">Quiero recibir novedades y promociones por WhatsApp y correo. Puedo cancelarlas cuando quiera.</span><em class="tf-em">OPCIONAL</em></span></label>
       <button class="btn r block lg" id="tf-go">Crear mi acceso gratis →</button><p class="muted center" id="tf-msg" style="font-size:13.5px;margin:0"></p></div>`, { x: true });
     const msg = (t) => { $('#tf-msg', m).textContent = t; }; let kid = false;
-    m.querySelectorAll('[data-who]').forEach(b => b.onclick = () => { kid = b.dataset.who === 'kid'; m.querySelectorAll('[data-who]').forEach(x => x.classList.toggle('on', x === b)); m.querySelectorAll('.tf-k').forEach(x => x.classList.toggle('hidden', !kid)); msg(''); m.querySelector('.card').classList.toggle('tf-kidm', kid); const ld = m.querySelector('.to-lead'); if (ld) { ld._o = ld._o || ld.innerHTML; ld.innerHTML = kid ? 'Acceso completo a <b>la plataforma</b> por 3 días para tu hijo(a).' : ld._o; }
+    const ageOfB = (bv) => { if (!bv) return null; const t = new Date(), bd = new Date(bv + 'T12:00:00'); let a = t.getFullYear() - bd.getFullYear(); if (t.getMonth() < bd.getMonth() || (t.getMonth() === bd.getMonth() && t.getDate() < bd.getDate())) a--; return a; };
+    const meMinor = () => { const a = ageOfB($('#tf-mb', m).value); return !kid && a !== null && a < 18; }; // v668: menor que se inscribe solo
+    const pmSync = () => { const on = meMinor(); $('#tf-pm', m).classList.toggle('hidden', !on); m.querySelector('.card').classList.toggle('tf-minor', on); };
+    $('#tf-mb', m).addEventListener('change', pmSync); $('#tf-mb', m).addEventListener('input', pmSync);
+    m.querySelectorAll('[data-who]').forEach(b => b.onclick = () => { kid = b.dataset.who === 'kid'; m.querySelectorAll('[data-who]').forEach(x => x.classList.toggle('on', x === b)); m.querySelectorAll('.tf-k').forEach(x => x.classList.toggle('hidden', !kid)); m.querySelectorAll('.tf-me').forEach(x => x.classList.toggle('hidden', kid)); pmSync(); msg(''); m.querySelector('.card').classList.toggle('tf-kidm', kid); const ld = m.querySelector('.to-lead'); if (ld) { ld._o = ld._o || ld.innerHTML; ld.innerHTML = kid ? 'Acceso completo a <b>la plataforma</b> por 3 días para tu hijo(a).' : ld._o; }
       $('#tf-n', m).placeholder = 'Nombre y apellido'; $('#tf-w', m).placeholder = 'WhatsApp'; $('#tf-e', m).placeholder = 'Correo';
       const POL = '<a href="privacidad.html" target="_blank" rel="noopener">política de privacidad</a>'; $('#tf-ct', m).innerHTML = (kid ? 'Soy su <b>papá, mamá o acudiente</b> y autorizo el tratamiento de los datos de mi hijo(a) y los míos según la ' : 'Autorizo el tratamiento de mis datos personales según la ') + POL + '.'; $('#tf-mt', m).textContent = kid ? 'Quiero recibir novedades y promociones por WhatsApp y correo (solo a mí, nunca al niño).' : 'Quiero recibir novedades y promociones por WhatsApp y correo. Puedo cancelarlas cuando quiera.'; });
     if (kidFirst) { const kb = m.querySelector('[data-who="kid"]'); if (kb) kb.click(); }
@@ -568,13 +591,16 @@
       if (name.split(/\s+/).length < 2) return msg(kid ? 'Escribe el nombre y apellido del niño(a).' : 'Escribe tu nombre y apellido.');
       if (kid && guardian.split(/\s+/).length < 2) return msg('Escribe el nombre y apellido del papá o la mamá.');
       const birth = kid ? ($('#tf-b', m).value || '') : ''; if (kid) { if (!birth) return msg('Escribe la fecha de nacimiento del niño(a).'); const t = new Date(), bd = new Date(birth + 'T12:00:00'); let age = t.getFullYear() - bd.getFullYear(); if (t.getMonth() < bd.getMonth() || (t.getMonth() === bd.getMonth() && t.getDate() < bd.getDate())) age--; if (age < 9 || age > 17) return msg(age < 9 ? 'La escuela recibe niños desde los 9 años.' : 'Para mayores de 18 años elige «Para mí».'); }
+      const mb = !kid ? ($('#tf-mb', m).value || '') : '', ma = ageOfB(mb), pg = $('#tf-pg', m).value.trim(), pe = $('#tf-pe', m).value.trim(); // v668
+      if (!kid) { if (!mb) return msg('Escribe tu fecha de nacimiento.'); if (ma < 9) return msg('La escuela recibe estudiantes desde los 9 años.');
+        if (ma < 18) { if (pg.split(/\s+/).length < 2) return msg('Escribe el nombre y apellido de tu papá o mamá.'); if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(pe)) return msg('Revisa el correo de tu papá o mamá.'); if (pe.toLowerCase() === email.toLowerCase()) return msg('El correo de tu papá o mamá debe ser diferente al tuyo.'); } }
       if (whatsapp.replace(/\D/g, '').length < 7) return msg('Revisa el número de WhatsApp.');
       if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return msg('Revisa el correo.');
       if (kid && email2 && (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email2) || email2.toLowerCase() === email.toLowerCase())) return msg('Revisa el segundo correo (debe ser diferente al primero).');
       if (!$('#tf-c', m).checked) return msg('Para continuar, autoriza el tratamiento de datos (casilla obligatoria).'); const mkt = $('#tf-m', m).checked;
       const b = $('#tf-go', m); b.disabled = true; b.textContent = '⏳ Creando tu acceso…';
-      setVName(name); const r = await MRAC.call('trialSignup', kid ? { name, whatsapp, email, kid: true, guardian, email2, birth, datos: true, mkt } : { name, whatsapp, email, datos: true, mkt }).catch(() => null);
-      if (!r || !r.ok) { b.disabled = false; b.textContent = 'Crear mi acceso gratis →'; return msg(r && r.err === 'family' ? 'Esta familia ya tiene 3 pruebas gratis. Para otro hijo(a), escríbenos por WhatsApp o elige un plan.' : r && r.err === 'busy' ? 'Hay muchas solicitudes en este momento. Inténtalo en unos minutos.' : 'No se pudo crear tu acceso. Revisa tus datos e inténtalo de nuevo.'); }
+      setVName(name); const r = await MRAC.call('trialSignup', kid ? { name, whatsapp, email, kid: true, guardian, email2, birth, datos: true, mkt } : Object.assign({ name, whatsapp, email, datos: true, mkt, birth: mb }, ma < 18 ? { guardian: pg, pemail: pe } : {})).catch(() => null);
+      if (!r || !r.ok) { b.disabled = false; b.textContent = 'Crear mi acceso gratis →'; return msg(r && r.err === 'parent' ? 'Revisa los datos de tu papá o mamá.' : r && r.err === 'family' ? 'Esta familia ya tiene 3 pruebas gratis. Para otro hijo(a), escríbenos por WhatsApp o elige un plan.' : r && r.err === 'busy' ? 'Hay muchas solicitudes en este momento. Inténtalo en unos minutos.' : 'No se pudo crear tu acceso. Revisa tus datos e inténtalo de nuevo.'); }
       if (r.exists) { m.querySelector('.card').innerHTML = `<div class="center"><div class="to-ic">${MRI('clock')}</div><h3>Estos datos ya están registrados</h3><p>El acceso gratuito de 3 días es <b>solo una vez por persona</b>. Si ya eres estudiante, entra con tu código en "Ingresa a tu perfil". Si quieres continuar, elige tu plan.</p><a class="btn k block lg" href="#ld-planes" id="tf-pl">Ver planes →</a></div>`; $('#tf-pl', m).onclick = () => m.remove(); return; }
       m.querySelector('.card').innerHTML = `<div class="center">${M.mascot('mascot bounce', 'celebrate')}<h3>¡Listo, ${esc(r.first)}! 🎉</h3><p>Tu código de acceso es</p><div class="rc-code" style="font:800 28px Poppins,sans-serif;color:#0B2A5B;letter-spacing:.06em;background:#EEF3FB;border:2px dashed #9fb3d6;border-radius:14px;padding:8px 18px;display:inline-block;margin:6px 0">${esc(r.code)}</div><p class="muted">${kid ? 'También lo enviamos ' + (email2 ? 'a los dos correos' : 'al correo') + ' de los padres.' : 'También te lo enviamos al correo.'} Guárdalo para entrar después.</p>${kid && r.fcode ? `<div class="tf-fam">${MRI('users')}<span>Código de familia: <b>${esc(r.fcode)}</b><small>Con él, papá y mamá ven cómo va su hijo(a). Llegó a su correo.</small></span></div>` : ''}<button class="btn r block lg" id="tf-in">Entrar a mi prueba gratis →</button></div>`;
       $('#tf-in', m).onclick = () => { m.remove(); lvlPick({ mode: 'start', kid, onPick: (n) => { try { sessionStorage.setItem('mra_lvl_pick', String(n)); } catch (e) { } tfEnter(); } }); };
@@ -620,6 +646,7 @@
     a.onfinish = () => { clearTimeout(rocketTour.rep); rocketTour.rep = setTimeout(() => { if (!document.hidden && document.body.classList.contains('home-app') && !document.querySelector('.modal,.sheet-on,.wfx') && $('.ld-hero')) welcomeFx(); }, 5000); /* 🔁 cada 5 s: estrellas + vuelo */ clearInterval(tr); el._fly = 0; el.style.zIndex = ''; const b = el.getBoundingClientRect(), rg = document.createElement('span'); rg.className = 'rk-ring'; const z = parseFloat(document.documentElement.style.zoom) || 1; rg.style.left = ((b.left + b.width / 2 + scrollX) / z) + 'px'; rg.style.top = ((b.top + b.height * .8 + scrollY) / z) + 'px'; document.body.appendChild(rg); setTimeout(() => rg.remove(), 800); };
   }
   function login() {
+    try { document.body.classList.remove('ag-kids', 'ag-teens'); } catch (e) { } // v668: la página de entrada siempre en blanco (sin colores de un perfil anterior)
     app.innerHTML = `<div class="wrap pt-wrap"><div class="card pt-login">
       
       ${(() => { const lu = P.lastUser(); const vn = (lu && lu.first) || vName(); return lu && lu.first ? `<div class="pt-hello"><img class="pt-mra pt-rkt" src="mra-x-rocket2.webp?v=2" alt="Mr. Arrieta" draggable="false" data-noguide><div class="bubble">${hiGreet(vn)}</div></div>`
@@ -843,6 +870,7 @@
     const ddHTML = (k) => { const [ic, t, items] = MENU[k]; return `<div class="sd-dd" data-k="${k}"><button class="sd-ddb">${ic} ${t} <span class="car">▾</span></button><div class="sd-ddm">${items.map(([id, cl, i2, b, sm]) => `<button class="sd-mi" data-act="${id}"><i class="${cl}">${i2}</i><span><b>${b}</b><small>${sm}</small></span></button>`).join('')}</div></div>`; };
     app.innerHTML = `<div class="wrap db">${side}<div class="db-main">
       <section class="pg" data-pgk="top">
+      ${upBanner()}
 
       ${birthdayBanner()}
       ${adult && !newbie ? `<div class="ad-hi"><div><small>${(s0 => s0[0].toUpperCase() + s0.slice(1))(new Date().toLocaleDateString('es-CO', { weekday: 'long', day: 'numeric', month: 'long' }))}</small><h1>${esc(greet)}, ${esc(P.look().nick || p.first || '')}</h1></div><span class="ad-plan">${MRI(plIc)} ${esc(plName.replace(' clases', ''))}</span></div>` : ''}
@@ -912,6 +940,16 @@
     setPg(PG, true);
     $$('.pt-polb').forEach(x => x.onclick = () => window.MRPOLICY && MRPOLICY.show());
     setTimeout(policyFirst, 400);
+    const npAsk = window.MRNP = (after) => { try { if (document.getElementById('np-m')) return; // v668: menor ya inscrito sin correo de los papás
+      const m = M.modal(`<div class="center" id="np-m"><div class="to-ic">${MRI('users')}</div><h3>Un dato de tu papá o mamá</h3><p>Como eres menor de edad, necesitamos el correo de tu papá o mamá. Les avisaremos de tu avance y de tus pagos. Solo lo pedimos una vez.</p></div><div class="tf-pm np-f"><input class="inp" id="np-g" placeholder="Nombre y apellido (papá o mamá)" autocomplete="off"><input class="inp" id="np-e" type="email" placeholder="Correo de tu papá o mamá" autocomplete="off"></div><button class="btn k block lg" id="np-go">Guardar</button><p class="muted center" id="np-msg" style="font-size:13.5px;margin:6px 0 0"></p>`, { x: false });
+      const msg = (t) => { m.querySelector('#np-msg').textContent = t; };
+      m.querySelector('#np-go').onclick = async (e) => { const g = m.querySelector('#np-g').value.trim(), pe = m.querySelector('#np-e').value.trim();
+        if (g.split(/\s+/).length < 2) return msg('Escribe el nombre y apellido de tu papá o mamá.'); if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(pe)) return msg('Revisa el correo de tu papá o mamá.');
+        const b = e.currentTarget; b.disabled = true; b.textContent = 'Guardando…'; const r = await MRAC.call('parentSet', { code: MRAC.code(), guardian: g, pemail: pe }).catch(() => null);
+        if (!r || !r.ok) { b.disabled = false; b.textContent = 'Guardar'; return msg(r && r.err === 'parent' ? 'Revisa los datos: el correo debe ser de tu papá o mamá (diferente al tuyo).' : 'No se pudo guardar. Inténtalo de nuevo.'); }
+        try { const pp = P.get(); pp.np = 0; P.save(pp); } catch (er) { } m.remove(); if (after) after(); else M.toast('¡Listo! Le escribimos a tu papá o mamá' + (r.to ? ' (' + r.to + ')' : '') + '.'); };
+    } catch (e) { } };
+    const npWait = () => { try { const q = P.get(); if (!q || !q.np) return; if (document.querySelector('.modal')) return setTimeout(npWait, 1500); npAsk(); } catch (e) { } }; setTimeout(npWait, 1600); // espera a que no haya otra ventana abierta
     // bienvenida de regreso (una vez por sesión)
     try { if (P.isBirthday()) sessionStorage.setItem('mra_wb', '1'); // en su cumpleaños el saludo es la fiesta 🎂
       if (back && !sessionStorage.getItem('mra_wb')) { sessionStorage.setItem('mra_wb', '1'); const pr = a && a.ready ? P.progress(a.id) : null;
@@ -1506,7 +1544,7 @@
       const cur = n === MN ? tp.findIndex((t, i) => !done(i)) : -1;
       const upto = n === MN ? (cur >= 0 ? cur : tp.length - 1) : tp.length - 1;
       // v551: «Dominado» (80 % o más) · «Refuerza» (menos de 80 %) · «Vas aquí» · «Próximo» (aún no llega: se ve, pero no se reserva) · arriba solo los 2 más bajos
-      const rec = tp.map((t, i) => i).filter(i => i <= upto && sc[i] != null && sc[i] < 80).sort((a, c) => sc[a] - sc[c]).slice(0, 2).map(i => ({ i, tag: 'Sugerido', c: 'sug', pc: sc[i] }));
+      const rec = tp.map((t, i) => i).filter(i => i <= upto && sc[i] != null && sc[i] < 80).sort((a, c) => sc[a] - sc[c]).slice(0, 3).map(i => ({ i, tag: 'Sugerido', c: 'sug', pc: sc[i] }));
       const all = tp.map((t, i) => i === cur ? { i, tag: 'Vas aquí', c: 'now' } : i > upto ? { i, tag: 'Próximo', c: 'nx', lk: 1 } : sc[i] != null ? (sc[i] < 80 ? { i, tag: 'Refuerza', c: 'ref', pc: sc[i] } : { i, tag: 'Dominado', c: 'dom', pc: sc[i] }) : { i, tag: 'Disponible', c: 'av' });
       return { all: all.length ? all : [{ i: 0, tag: 'Vas aquí', c: 'now' }], rec }; } catch (e) { return { all: tp.map((t, i) => ({ i, tag: n === MN && !i ? 'Vas aquí' : 'Repasar', c: n === MN && !i ? 'now' : 'rev' })), rec: [] }; } };
     const WKF = (n) => ordFor(n).all.filter(x => x.pc != null && x.pc < 80 && !x.lk).sort((a, c) => a.pc - c.pc).slice(0, 3); // v666: temas por reforzar
@@ -1543,13 +1581,13 @@
           /* v667: dos opciones claras (adultos y jóvenes) · niños: el profe prepara la clase */
           if (AG === 'kids') return `<div class="vb-kc"><img src="mra-x-hero.webp?v=7" alt="Mr. Arrieta"><b>¡Tu profe prepara tu clase!</b><span>Practicarás lo que más necesitas. Tú solo llega con ganas de hablar inglés.</span></div>`;
           const WK = O.all.filter(x => x.pc != null && x.pc < 80 && !x.lk).sort((a, c) => a.pc - c.pc).slice(0, 3);
-          const wl = WK.length ? WK.map(x => `<div class="r"><span>${esc((window.MRTH && MRTH.get && MRTH.get(MS, x.i + 1, AG) || {}).s || TT[x.i][1])}</span><b>${x.pc}%</b></div>`).join('') + '<p>Son tus temas con el puntaje más bajo.</p>' : '<p>Aún no tienes temas por reforzar: tu profe elegirá entre los primeros temas de tu módulo.</p>';
+          const wl = WK.length ? WK.map(x => { const h = (window.MRTH && MRTH.get && MRTH.get(MS, x.i + 1, AG)) || {}; return `<div class="r"><div class="h"><span>${esc(h.s || TT[x.i][1])}</span><b>${x.pc}%</b></div><em>Tema ${x.i + 1}: ${esc(TT[x.i][0])}</em>${h.ex ? `<i>Ej.: “${esc(h.ex)}”</i>` : ''}</div>`; }).join('') + `<p>Son tus ${WK.length === 1 ? 'tema' : WK.length + ' temas'} con el puntaje más bajo.</p>` : '<p>Aún no tienes temas por reforzar: tu profe elegirá entre los primeros temas de tu módulo.</p>'; /* v668: tema en inglés + ejemplo · máx. 3 */
           const CH = TP === 'p' ? 'p' : (ELO || TP != null) ? 'y' : '';
           return `<div class="vb-c2${AG === 'teens' ? ' tn' : ''}"><button type="button" class="vb-c2b${CH === 'p' ? ' on' : ''}" id="vb-chp">${AG === 'teens' ? '<span class="vb-rec">RECOMENDADO</span>' : ''}<i>${MRI('user')}</i><b>Que mi profe elija el tema</b><small>Elige según lo que necesito reforzar</small></button><button type="button" class="vb-c2b${CH === 'y' ? ' on' : ''}" id="vb-chy"><i>${MRI('book')}</i><b>Prefiero escoger mi tema</b><small>Veo los temas de mi módulo</small></button></div>`
             + (CH === 'p' ? `<div class="vb-c2p"><h4>Tu profe elegirá uno de estos</h4>${wl}</div>` : '')
             + (CH === 'y' ? MODS + `<div class="vb-tw">` + LIST + `</div>` : ''); })()}
         <input class="inp${TP === 'o' ? '' : ' hidden'}" id="vb-topic" maxlength="180" placeholder="Ej: entrevista de trabajo en inglés" value="${esc(OT)}">
-        <button class="btn k block lg vb-ok" id="vb-ok" ${S && TP != null ? '' : 'disabled'}>${S && TP == null ? 'Elige una opción' : S ? 'Revisar mi reserva →' : 'Elige una hora'}</button>`;
+        <button class="btn k block lg vb-ok" id="vb-ok" ${S && TP != null ? '' : 'disabled'}>${S && TP == null ? (ELO ? 'Elige un tema de la lista' : 'Elige una opción') : S ? 'Revisar mi reserva →' : 'Elige una hora'}</button>`;
       $('#vb-back', b).onclick = () => { T = null; D = null; S = null; step(); }; if (!SUM) $('#vb-back', b).textContent = PICK ? '← Profes' : '← Buscar por hora';
       $$('.vb-d', b).forEach(x => x.onclick = () => { D = x.dataset.d; S = null; step(); });
       $$('.vb-h', b).forEach(x => x.onclick = () => { S = T.slots.find(s => s.id === x.dataset.s); sfx('tap'); OT = $('#vb-topic', b).value; step(); });

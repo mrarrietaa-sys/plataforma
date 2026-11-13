@@ -40,17 +40,28 @@
       m.querySelector('.card').innerHTML = `<div class="center">${M.mascot('mascot', 'thumbs')}</div><h3 class="center">¡Recibimos tu comprobante!</h3><p class="center" style="font-size:16px">Administración lo revisará pronto. <b>Apenas lo apruebe, se habilita de inmediato</b> en tu perfil y te avisamos en la campanita 🔔 y por correo.</p><button class="btn k block" id="by-x">Entendido</button>`;
       m.querySelector('#by-x').onclick = () => m.remove(); };
   }
+  /* v668: un menor de edad no paga desde su perfil: la propuesta le llega al correo de su papá o mamá */
+  const minorNow = () => { try { const q = (window.MRAP && MRAP.get()) || {}; return q.type !== 'staff' && q.age != null && q.age < 18 && !/inscripcion/.test(location.pathname); } catch (e) { return false; } };
+  async function askParent(k) {
+    const kid = (M.ageGroup && M.ageGroup()) === 'kids'; const w = M.modal(`<div class="center by-ask"><div class="center">${M.mascot('mascot', 'thumbs')}</div><h3>Un momento…</h3><p>Estamos enviando la propuesta a tu papá o mamá.</p></div>`, { x: true });
+    const r = await MRAC.call('parentAsk', { code: CODE(), plan: k }).catch(() => null); if (r && r.err === 'noparent' && window.MRNP) { w.remove(); return MRNP(() => askParent(k)); } const c = w.querySelector('.card') || w;
+    if (r && r.ok) c.innerHTML = `<div class="center by-ask">${M.mascot('mascot bounce', 'thumbs')}<h3>¡Listo!</h3><p class="by-a1">Le enviamos la propuesta a <b>tu papá o mamá</b>${r.to ? ' a su correo <b>' + esc(r.to) + '</b>' : ''}.</p><p class="muted">${kid ? 'Cuando la acepten, tendrás clases con un profe. ¡Mientras tanto, sigue practicando!' : 'Cuando la aprueben, se activan tus clases con profe. Mientras tanto, sigue con tu ruta.'}</p><button class="btn k block" id="by-ok">Entendido</button></div>`;
+    else c.innerHTML = `<div class="center by-ask"><h3>No pudimos enviarla</h3><p>${r && r.err === 'noparent' ? 'Aún no tenemos el correo de tu papá o mamá.' : 'Inténtalo de nuevo en un momento.'}</p><button class="btn k block" id="by-ok">Entendido</button></div>`;
+    const b = c.querySelector('#by-ok'); if (b) b.onclick = () => w.remove();
+  }
   async function plan(k, opt) {
+    if (minorNow()) return askParent(k);
     await cat(); const p = (PLS().PL || {})[k]; if (!p) return; const nm = (PLS().noEmo || String)(p.name);
     const EXU = PLS().extra ? PLS().extra() : 32900; let X = 0, disc = 0; // 👑 v626: el estudiante ya eligió sus clases en «Crea tu plan»
     const m = M.modal(`<h3 class="by-h">${MRI('card')} ${esc(nm)}</h3>
       <table class="by-sum"><tr><td>Plan</td><td><b>${esc(nm)}</b></td></tr><tr><td>Precio</td><td><b>${esc(p.price)}</b> COP</td></tr><tr><td>Periodicidad</td><td>Mensual (se renueva solo si vuelves a pagar)</td></tr>
-        <tr><td>Clases incluidas</td><td>${p.classes ? p.classes + ' clases individuales de 50 minutos por mes' : 'No incluye clases individuales'}</td></tr>${false ? `<tr><td>Clases extra <small>(${fmt(EXU)} c/u)</small></td><td><span class="by-xst"><button type="button" data-bx="-1">−</button><b id="by-xn">${X}</b><button type="button" data-bx="1">+</button></span></td></tr>` : ''}<tr id="by-disc" class="hidden by-gift"><td>Regalo</td><td id="by-dv">${MRI('gift')} 1 clase individual con profe</td></tr><tr><td><b>Total a pagar</b></td><td><b id="by-tot">${esc(p.price)} COP</b></td></tr></table>
+        <tr><td>Clases incluidas</td><td>${p.classes ? p.classes + ' clases individuales de 50 minutos por mes' : 'No incluye clases individuales'}</td></tr>${false ? `<tr><td>Clases extra <small>(${fmt(EXU)} c/u)</small></td><td><span class="by-xst"><button type="button" data-bx="-1">−</button><b id="by-xn">${X}</b><button type="button" data-bx="1">+</button></span></td></tr>` : ''}<tr id="by-up" class="hidden by-up"><td>Descuento</td><td id="by-upv"></td></tr><tr id="by-disc" class="hidden by-gift"><td>Regalo</td><td id="by-dv">${MRI('gift')} 1 clase individual con profe</td></tr><tr><td><b>Total a pagar</b></td><td><b id="by-tot">${esc(p.price)} COP</b></td></tr></table>
       <div class="${firstBuy() ? '' : 'hidden'}"><label class="ad-lab" style="display:block;margin-top:8px"><b>¿Te recomendó un amigo?</b> Escribe su código (opcional)</label><div class="by-ref"><input class="inp" id="by-ref" placeholder="Ej.: LAURA-123" value="${esc(refSaved())}"><button class="btn w" id="by-refok">Aplicar</button></div><p class="muted" id="by-refmsg" style="font-size:13px;margin:0 0 6px"></p></div>
       ${p.classes ? '<p class="muted" style="font-size:13.5px">Las clases incluidas son del periodo mensual y no se acumulan. Reserva desde mañana y hasta 5 días adelante, nunca para el mismo día; cancela gratis hasta 12 horas antes.</p>' : ''}
       ${payBlock('bp')}`, { x: true });
     const pay = { kind: 'plan', plan: k }; if (X) pay.extra = X; wire(m, 'bp', pay);
-    function tot() { m.querySelector('#by-tot').textContent = fmt(p.n + X * EXU) + ' COP'; } // v623: sin descuentos
+    let UPC = 0; function tot() { m.querySelector('#by-tot').textContent = fmt(Math.max(0, p.n - UPC) + X * EXU) + ' COP'; } // v668: descuento por días de Plataforma sin usar
+    if (/^premium/.test(k)) MRAC.call('upQuote', { code: CODE(), plan: k }).then(q => { if (!q || !q.ok || !(q.credit > 0)) return; UPC = q.credit; const tr = m.querySelector('#by-up'); tr.classList.remove('hidden'); m.querySelector('#by-upv').innerHTML = '<b>−' + fmt(q.credit) + '</b><small>' + q.days + (q.days === 1 ? ' día' : ' días') + ' de Plataforma que no usaste</small>'; tot(); }).catch(() => { });
     m.querySelectorAll('[data-bx]').forEach(b => b.onclick = () => { X = Math.max(0, Math.min(10, X + +b.dataset.bx)); m.querySelector('#by-xn').textContent = X; if (X) pay.extra = X; else delete pay.extra; tot(); }); tot();
     const gift = (on, why) => { const g = m.querySelector('#by-disc'); g.classList.toggle('hidden', !on); if (on) g.querySelector('#by-dv').innerHTML = MRI('gift') + ' 1 clase con profe' + (why ? '<small>' + esc(why) + '</small>' : ''); }; // 🎁 v623: clase de regalo en vez de descuento
     const apply = async () => { const v = m.querySelector('#by-ref').value.trim().toUpperCase(), msg = m.querySelector('#by-refmsg');
@@ -90,6 +101,6 @@
       m.querySelector('#by-ok').onclick = () => { if (mv && window.MRAC && MRAC.code()) { try { MRAC.wipeLocal(true); localStorage.removeItem('mra_profile_v1'); localStorage.removeItem('mra_buy_code'); sessionStorage.removeItem('mra_me_cache'); } catch (e) { } } location.href = 'index.html'; }; return; }
     M.modal(`<h3 class="center">${st === 'pendiente' ? '⏳ Tu pago está en proceso' : '⚠️ El pago no se completó'}</h3><p class="center">${st === 'pendiente' ? 'Mercado Pago aún no lo confirma. Apenas lo haga, se habilita solo (lo revisamos cada hora) y te avisamos.' : 'No se realizó el cobro. Puedes intentarlo de nuevo o pagar por transferencia.'}</p>`, { x: true });
   }
-  window.MRBUY = { plan, extra, back };
+  window.MRBUY = { plan, extra, back, askParent, minorNow };
   setTimeout(back, 1500);
 })();

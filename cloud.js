@@ -37,7 +37,7 @@
     p.gc = st.gc ? 1 : 0; // 🎁 v623: Plataforma con clase de regalo
     p.fc = st.fc ? 1 : 0; // 🎁 v603: acceso gratis con clase gratis (vive la experiencia Premium)
     p.allOpen = !!st.all; // 🧪 v420: estudiante de prueba con TODA la plataforma habilitada
-    if (st.birth) p.birth = st.birth; if (st.ag) p.ag = st.ag; // 👧 grupo de edad (Kids / Teens / Adultos) según la nube
+    if (st.birth) p.birth = st.birth; if (st.ag) p.ag = st.ag; p.age = st.age == null ? null : +st.age; p.np = st.np ? 1 : 0; // v668: edad y si falta el correo de los papás // 👧 grupo de edad (Kids / Teens / Adultos) según la nube
     if (Array.isArray(st.sr)) p.sr = Array.from(new Set([...(Array.isArray(p.sr) ? p.sr : []), ...st.sr])); // ⭐ opiniones de la escuela ya enviadas
     if (st.goal && st.goal.k) p.goal = st.goal; // 🎯 objetivo guardado en la nube
     if (p.first && !p.name) p.name = (p.first + ' ' + (p.last || '')).trim();

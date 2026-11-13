@@ -9983,3 +9983,41 @@ body.ag-teens .me-top h1{color:#fff}body.ag-teens .me-top p{color:rgba(255,255,2
 .vb-kc b{font:800 17px var(--fh,Poppins),sans-serif;color:#0B2A5B}.vb-kc span{font-size:15px;color:#475569;line-height:1.4}
 @media(max-width:480px){.modal.vb-modal .vb h3{padding:0 40px!important;font-size:15.5px!important;white-space:nowrap!important}.modal.vb-modal .vb h3 svg,.modal.vb-modal .vb h3 .mri{display:none}}
 @media(max-width:359px){.modal.vb-modal .vb h3{white-space:normal!important;padding:0 38px!important}}
+/* v668: temas por reforzar con nombre en inglés y ejemplo */
+.vb-c2p .r{display:block!important}.vb-c2p .r .h{display:flex;justify-content:space-between;gap:10px}.vb-c2p .r .h span{font-weight:700}.vb-c2p .r .h b{color:#E3242B;flex:none}
+.vb-c2p .r em{display:block;font-style:normal;font-size:13px;color:#64748b;margin-top:2px}.vb-c2p .r i{display:block;font-size:13.5px;color:#0B2A5B;margin-top:3px}
+.tp-pk-r i{display:block;font-size:13px;color:#0B2A5B;font-style:italic;margin-top:2px}
+/* v668: «Estás aquí» con aire dentro del cuadro del módulo */
+@media(max-width:480px){.vb-m small{font-size:8.5px!important;gap:2px!important;letter-spacing:-.1px}.vb-m small i{width:5px!important;height:5px!important}.vb-m b{font-size:11.5px!important}.vb-mods{gap:6px!important}}
+/* v668: «Abriendo la reserva…» y «Repetir con mi profe» centrados */
+.modal.vb-modal.vb-load>.card{max-width:480px!important}.modal.vb-modal.vb-load .vb h3{white-space:nowrap!important;justify-content:center!important;padding:0 46px!important}.modal.vb-modal.vb-load #vb-b{text-align:center!important}
+@media(max-width:480px){.modal.vb-modal.vb-load .vb h3{white-space:normal!important}}
+.vf-rl{text-align:center!important}.vf-rt{justify-content:center!important}.vf-ro{text-align:center}
+/* v668: menú lateral de Jóvenes legible en PC · «CLASES» en blanco */
+@media(min-width:900px){body.ag-teens .db-pgnav button{color:#fff!important;opacity:1!important}body.ag-teens .db-pgnav button .mri,body.ag-teens .db-pgnav button svg{color:#fff!important;opacity:1!important}}
+.pt-nc-d small{color:#fff!important;-webkit-text-fill-color:#fff!important;opacity:1!important}
+/* v668: «Para mí» de un menor de edad: datos del papá o la mamá (recuadro centrado, la ventana no crece hasta los bordes) */
+.tf-pm{background:#eef4ff;border:1.5px solid #bcd0f5;border-radius:14px;padding:10px 12px;margin:2px 0 8px;text-align:center;display:grid;gap:6px}
+.tf-pm>b{font:800 14px var(--fh,Poppins),sans-serif;color:#0B2A5B;line-height:1.3}.tf-pm>small{font-size:12.5px;color:#475569;line-height:1.35;margin-top:-2px}
+.tf-pm .inp{margin:0!important;text-align:left}
+.tf-pm.hidden{display:none!important}
+.modal .card.tf-minor{max-height:calc(100dvh - 40px)!important;overflow-y:auto}
+@media(max-width:700px){.modal .card.tf-minor{max-height:calc(100dvh - 160px)!important}}
+.by-up td{color:#15803d;font-weight:700}.by-up small{display:block;font-weight:600;font-size:12px;color:#64748b;margin-top:2px}
+.by-ask h3{margin:6px 0 4px}.by-ask .by-a1{font-size:16px}
+/* v668: aviso «¿Te gustaría practicar con un profe?» con los colores de cada edad · una línea · X */
+.up-c{position:relative;display:flex;align-items:center;justify-content:center;gap:10px;border-radius:14px;padding:9px 46px;margin:0 0 12px;text-align:center;cursor:pointer;transition:opacity .2s,transform .2s}
+.up-c.up-out{opacity:0;transform:translateY(-6px)}
+.up-c b{font:800 14.5px var(--fh,Poppins),sans-serif;white-space:nowrap;background:none!important}
+.up-c .up-ic{display:inline-flex;vertical-align:-3px;margin-right:6px}.up-c .up-ic .mri,.up-c .up-ic svg{width:18px;height:18px}
+.up-c .up-go{border-radius:999px;padding:6px 14px;font:800 13px var(--fh,Poppins),sans-serif;white-space:nowrap}
+.up-c .up-x{position:absolute;right:9px;top:50%;transform:translateY(-50%);width:28px;height:28px;border-radius:50%;font-size:13px;line-height:1;cursor:pointer;display:grid;place-items:center;background:transparent;padding:0}
+.up-c.up-adult{background:#fff;border:1.5px solid #dbe3ef;box-shadow:0 4px 14px rgba(11,42,91,.06)}.up-c.up-adult b{color:#0B2A5B!important;-webkit-text-fill-color:#0B2A5B!important}.up-c.up-adult .up-go{background:#E3242B;color:#fff}.up-c.up-adult .up-x{border:1px solid #dbe3ef;color:#64748b}.up-c.up-adult .up-ic{color:#E3242B}
+.up-c.up-teens{background:#0f2a5c;border:1.5px solid rgba(34,229,138,.35)}.up-c.up-teens b{color:#fff!important;-webkit-text-fill-color:#fff!important}.up-c.up-teens .up-go{background:#22e58a;color:#04122b}.up-c.up-teens .up-x{border:1px solid #2b5294;color:#cbd5e1}.up-c.up-teens .up-ic{color:#22e58a}
+.up-c.up-kids{background:#fff7ed;border:2px solid #fdba74}.up-c.up-kids b{color:#9a3412!important;-webkit-text-fill-color:#9a3412!important}.up-c.up-kids .up-go{background:#f59e0b;color:#fff}.up-c.up-kids .up-x{border:1px solid #fdba74;color:#9a3412}.up-c.up-kids .up-ic{color:#f59e0b}
+@media(max-width:600px){.up-c{padding:10px 42px 10px 12px}.up-c b{font-size:clamp(12px,3.5vw,14px)}.up-c b::after{content:' ›'}.up-c .up-go{display:none}}
+/* v668: administración · «Cambiar a otro plan» y Premium al lado de las clases */
+.ad-cpl{margin:6px 0 2px;font:800 12.5px var(--fh,Poppins),sans-serif;color:#64748b;letter-spacing:.05em;text-transform:uppercase}
+.ad-planbtns{align-items:stretch!important}.ad-pn{display:inline-flex!important;flex-direction:row!important;align-items:stretch;gap:0!important;flex-wrap:nowrap!important}
+.ad-pn select{width:auto!important;min-width:118px;border-radius:12px 0 0 12px!important;margin:0!important}.ad-pn .btn{border-radius:0 12px 12px 0!important;margin:0!important;white-space:nowrap}
+.ad-par{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.ad-par .mri{width:16px;height:16px}
