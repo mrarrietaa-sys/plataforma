@@ -10148,3 +10148,9 @@ body.ag-teens .me-top h1{color:#fff}body.ag-teens .me-top p{color:rgba(255,255,2
 /* v674: el botón flotante de WhatsApp y el pie largo ya no existen en la portada */
 .ld-wawrap,#ld-wa{display:none!important}
 body.rt-home .ld-foot{display:none!important}
+/* v675: menús del portal del profe · el título vuelve a verse (estaba en blanco) e ícono alineado con el texto */
+.tp-page .tp-head .tp-ddm{text-align:left}
+.tp-page .tp-head .tp-ddm b{color:#0B2A5B!important;display:block}
+.tp-page .tp-head .tp-ddm small{color:#5b6577!important}
+.tp-page .tp-head .tp-mi{display:flex!important;align-items:center!important;gap:12px}
+.tp-page .tp-head .tp-mi>span{display:flex;flex-direction:column;justify-content:center;min-width:0}
