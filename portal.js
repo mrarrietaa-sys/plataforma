@@ -220,6 +220,7 @@
     const prep = (lw) => { if (lw && !lw.querySelector('.lp-shx')) { (lw.querySelector('.pt-login') || lw).insertAdjacentHTML('afterbegin', '<button type="button" class="lp-shx" aria-label="Cerrar">✕</button>'); lw.querySelector('.lp-shx').onclick = () => sheet(false); lw.addEventListener('click', e => { if (e.target === lw) sheet(false); }); } };
     const sheet = (on) => { const lw = LW(); if (innerWidth >= 900 || !lw) return; prep(lw); lw.classList.toggle('sheet-on', on); document.body.classList.toggle('sheet-open', on); if (on) { const inp = lw.querySelector('input'); setTimeout(() => inp && inp.focus(), 250); } };
     prep(LW());
+    if (/[?&]out=\d/.test(location.search)) { try { history.replaceState(null, '', location.pathname + location.hash); } catch (e) { } } // v685: al salir se carga la entrada nueva (nunca una copia vieja guardada)
     if (/[?&]ingresar=1/.test(location.search)) { try { history.replaceState(null, '', location.pathname + location.hash); } catch (e) { } } // solo se abre por el clic en «Ingresar»; al volver o recargar se ve la página de entrada
     if (window.__goIn) setTimeout(() => { if (innerWidth < 900) sheet(true); else { const inp = document.querySelector('.ld-login input'); if (inp) inp.focus(); } }, 600);
     document.addEventListener('click', e => { if (e.target.closest('[data-goin]') && innerWidth < 900) { e.preventDefault(); e.stopImmediatePropagation(); sheet(true); } }, true);
@@ -762,7 +763,7 @@
   }
   function logout() {
     const m = M.modal(`<h3>¿Salir de tu perfil?</h3><p class="muted">Tu progreso queda guardado${window.MRAC && MRAC.code() ? ' en la nube: puedes continuar desde cualquier dispositivo' : ' en este dispositivo'}. Para volver a entrar necesitarás tu código.</p><div class="row"><button class="btn k" id="y">Sí, salir</button><button class="btn w" id="n">Cancelar</button></div>`, { x: true });
-    $('#n', m).onclick = () => m.remove(); $('#y', m).onclick = async () => { const cur = P.get(); if (window.MRAC && MRAC.code()) { $('#y', m).disabled = true; $('#y', m).textContent = 'Guardando…'; const ok = await (MRAC.signOut ? MRAC.signOut() : MRAC.sync(true)); if (!ok) { $('#y', m).disabled = false; $('#y', m).textContent = 'Sí, salir'; M.toast('No se pudo guardar en la nube. Revisa tu internet e inténtalo de nuevo.'); return; } } m.remove(); if (cur && cur.first) P.save(cur); P.clear(); try { sessionStorage.removeItem('mra_me_cache'); } catch (e) { } route('home'); };
+    $('#n', m).onclick = () => m.remove(); $('#y', m).onclick = async () => { const cur = P.get(); if (window.MRAC && MRAC.code()) { $('#y', m).disabled = true; $('#y', m).textContent = 'Guardando…'; const ok = await (MRAC.signOut ? MRAC.signOut() : MRAC.sync(true)); if (!ok) { $('#y', m).disabled = false; $('#y', m).textContent = 'Sí, salir'; M.toast('No se pudo guardar en la nube. Revisa tu internet e inténtalo de nuevo.'); return; } } m.remove(); if (cur && cur.first) P.save(cur); P.clear(); try { sessionStorage.removeItem('mra_me_cache'); } catch (e) { } try { window.__mraWiped = true; location.replace('index.html?out=' + Date.now()); } catch (e) { route('home'); } };
   }
 
   /* ---------- perfil ---------- */
@@ -1055,10 +1056,12 @@
   const tourKind = () => { const p = P.get() || {}; return !p.module && p.type !== 'staff' ? 'start' : 'profile'; };
   function tourSeenK(kind) { const p = P.get() || {}; if (p.tourDone) return true; /* tour antiguo: ya lo vio */ if (kind === 'start' ? p.tour1 : p.tour2) return true; try { return !!localStorage.getItem(TOURK() + '_' + kind); } catch (e) { return false; } }
   // 📌 política: emergente la PRIMERA vez que un estudiante pago entra (una sola vez, guardada en la nube)
-  function polPending() { const p = P.get() || {}; return !!window.MRPOLICY && p.type !== 'staff' && P.plan().eff === 'premium' && !p.pol1; }
+  const polK = () => 'mra_polok_' + (((window.MRAC && MRAC.code && MRAC.code()) || (P.get() || {}).code || '') + '').toUpperCase();
+  function polPending() { const p = P.get() || {}; if (!window.MRPOLICY || p.type === 'staff' || P.plan().eff !== 'premium' || p.pol1) return false; try { if (localStorage.getItem(polK())) { p.pol1 = +localStorage.getItem(polK()) || Date.now(); P.save(p); return false; } } catch (e) { } return true; } // v685: una sola vez (también guardada en este dispositivo)
+  const cloudReady = () => { try { return !(window.MRAC && MRAC.code && MRAC.code()) || !!localStorage.getItem('mra_sync_ts'); } catch (e) { return true; } };
   function policyFirst() {
-    if (!polPending() || $('.pol-modal')) return; if ($('.modal')) return setTimeout(policyFirst, 800);
-    MRPOLICY.show({ first: true, onClose: () => { const p = P.get(); if (p && !p.pol1) { p.pol1 = Date.now(); P.save(p); try { window.MRAC && MRAC.code() && MRAC.sync(true); } catch (e) { } } } });
+    if (!cloudReady()) return setTimeout(policyFirst, 900); if (!polPending() || $('.pol-modal')) return; if ($('.modal')) return setTimeout(policyFirst, 800);
+    MRPOLICY.show({ first: true, onClose: () => { try { localStorage.setItem(polK(), String(Date.now())); } catch (e) { } const p = P.get(); if (p && !p.pol1) { p.pol1 = Date.now(); P.save(p); try { window.MRAC && MRAC.code() && MRAC.sync(true); } catch (e) { } } } });
   }
   // ✉️ el estudiante corrige su correo (si rebotó o si se equivocó al escribirlo)
   // 🧾 v615: Mis pagos — comprobantes de pago para descargar en PDF

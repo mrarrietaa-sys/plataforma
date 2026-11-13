@@ -37,12 +37,13 @@
     if (!must) { m.addEventListener('click', (e) => { if (e.target === m || e.target.closest('[data-x]')) m.remove(); }); m.querySelector('#ag-dl').onclick = () => pdf(c); return m; }
     m.querySelector('#ag-ok').onclick = async () => { const b = m.querySelector('#ag-ok'); b.disabled = true; b.textContent = 'Guardando…';
       const x = await MRAC.call('myAgreeAccept', { code: MRAC.code(), version: c.version }).catch(() => null);
-      if (x && x.ok) { A = x; m.remove(); toast('✅ Acuerdo aceptado · se descargó tu copia'); pdf(x); }
+      if (x && x.ok) { try { localStorage.setItem(okK(), String(Date.now())); } catch (e) { } A = x; m.remove(); toast('✅ Acuerdo aceptado · se descargó tu copia'); pdf(x); }
       else { b.disabled = false; b.textContent = '✅ Leí y acepto'; toast(x && x.err === 'version' ? 'El acuerdo se actualizó: recarga la página.' : 'No se pudo guardar. Revisa tu conexión.'); } };
     return m;
   }
   // al entrar al perfil: si su plan pago no tiene el acuerdo aceptado, se muestra (bloquea hasta aceptar)
-  async function check() { if (!window.MRAC || !MRAC.code()) return false; const r = await MRAC.call('myAgree', { code: MRAC.code() }).catch(() => null); if (!r || !r.ok || !r.kind) return false; A = r; if (r.needs && !document.querySelector('.ag-modal')) { show(r); return true; } return false; }
+  const okK = () => 'mra_agok_' + String(MRAC.code() || '').toUpperCase();
+  async function check() { if (!window.MRAC || !MRAC.code()) return false; try { if (localStorage.getItem(okK())) return false; } catch (e) { } /* v685: aceptado una vez → no se vuelve a mostrar */ const r = await MRAC.call('myAgree', { code: MRAC.code() }).catch(() => null); if (!r || !r.ok || !r.kind) return false; A = r; if (!r.needs) { try { localStorage.setItem(okK(), String(Date.now())); } catch (e) { } } if (r.needs && !document.querySelector('.ag-modal')) { show(r); return true; } return false; }
   async function open() { const r = A && !A.needs ? A : await MRAC.call('myAgree', { code: MRAC.code() }).catch(() => null); if (r && r.ok && r.kind) show(r); else toast('Tu acuerdo aparece cuando tienes un plan activo.'); }
   window.MRAGREE = { check, open };
 })();

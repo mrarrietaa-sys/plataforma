@@ -119,7 +119,15 @@ window.MRMOOD = function (c, t) { const r = t ? c / t : 1, pk = (a) => a[Math.fl
         const on = !!cur || [...ext].some(a => !a.paused && !a.ended) || !!(window.speechSynthesis && speechSynthesis.speaking);
     if (pill) pill.classList.toggle('on', on);
   }
-  function halt() {
+  /* v685 · AUDIOS EN FILA: ningún audio se reproduce encima de otro ni lo corta. Cada audio espera a que termine el anterior.
+     «Detener» sigue deteniendo todo; si justo después se pide otro audio, el que suena termina primero y luego suena el nuevo. */
+  let haltTk = 0, qGen = 0;
+  const qLive = (a) => a && a instanceof HTMLAudioElement && !a.srcObject && !a.paused && !a.ended && !a.error && !a.muted && a.volume > 0;
+  function qBusy() { if (cur && qLive(cur)) return true; if ([...ext].some(qLive)) return true; let on = false; try { ALLA.forEach(a => { if (qLive(a)) on = true; }); } catch (e) { } return on; }
+  function waitIdle(gen) { return new Promise(res => { const t0 = Date.now(); let quiet = 0; const tick = () => { if (gen !== undefined && gen !== qGen) return res(false); if (!qBusy()) { if (++quiet >= 2) return res(true); } else quiet = 0; if (Date.now() - t0 > 30000) return res(true); setTimeout(tick, 120); }; tick(); }); }
+  function halt() { const tk = ++haltTk; setTimeout(() => { if (tk === haltTk) hardHalt(); }, 0); }
+  function hardHalt() {
+    qGen++;
     if (cur) { cur.pause(); cur = null; }
     if (curBtn) { curBtn.classList.remove('playing'); curBtn = null; }
     if (curEnd) { const e = curEnd; curEnd = null; e(); }
@@ -141,15 +149,19 @@ window.MRMOOD = function (c, t) { const r = t ? c / t : 1, pk = (a) => a[Math.fl
   }
   // 🔇 v415: la plataforma NUNCA se escucha a sí misma: se registra todo audio que suene (Audio, <audio>, voz del navegador)
   const ALLA = new Set(); let audEnd = 0;
-  try { const P0 = HTMLMediaElement.prototype.play; HTMLMediaElement.prototype.play = function () { const a = this; if (!a.__mraT) { a.__mraT = 1; const off = () => { ALLA.delete(a); audEnd = Date.now(); }; a.addEventListener('pause', off); a.addEventListener('ended', off); a.addEventListener('error', off); a.addEventListener('playing', () => ALLA.add(a)); } ALLA.add(a); return P0.apply(this, arguments); }; } catch (e) { }
+  try { const P0 = HTMLMediaElement.prototype.play; HTMLMediaElement.prototype.play = function () { const a = this; if (!a.__mraT) { a.__mraT = 1; const off = () => { ALLA.delete(a); audEnd = Date.now(); }; a.addEventListener('pause', off); a.addEventListener('ended', off); a.addEventListener('error', off); a.addEventListener('playing', () => ALLA.add(a)); } if (a instanceof HTMLAudioElement && !a.srcObject && !a.__mraQ && !a.__mraNow) { try { haltTk++; } catch (e) { } let busy = false; try { busy = qBusy(); } catch (e) { } if (busy) { const args = arguments, g = qGen; return waitIdle(g).then(ok => { if (!ok) return; ALLA.add(a); return P0.apply(a, args); }); } } ALLA.add(a); return P0.apply(this, arguments); }; } catch (e) { }
   function audBusy() { let on = !!(window.speechSynthesis && speechSynthesis.speaking); const live = (a) => !a.paused && !a.ended && !a.muted && a.volume > 0 && a.readyState > 2 && !a.error; ALLA.forEach(a => { if (!live(a)) { if (a.paused || a.ended || a.error) ALLA.delete(a); } else on = true; }); if (cur && live(cur)) on = true; return on; } // v421: solo cuenta el audio que de verdad está sonando
   function audQuiet() { return !audBusy() && Date.now() - audEnd > 300; }
   function trackAudio(a) { ext.add(a); ['play', 'playing', 'pause'].forEach(ev => a.addEventListener(ev, audioUI)); a.addEventListener('ended', () => { ext.delete(a); audioUI(); }); audioUI(); return a; }
   function play(au, opts = {}) {
-    halt();
+    haltTk++; // un «detener» seguido de otro audio no corta: el nuevo espera su turno
+    const gen = qGen;
     return new Promise(res => {
       if (!au) return res();
-      const a = audioEl(au);
+      if (cur && cur.__au === au && qLive(cur)) { const c = cur; const f = () => res(); c.addEventListener('ended', f, { once: true }); c.addEventListener('pause', f, { once: true }); return; } // el mismo audio ya está sonando: no se repite encima
+      waitIdle(gen).then(ok => { if (!ok) return res(); go(); });
+      const go = () => {
+      const a = audioEl(au); a.__au = au; a.__mraQ = 1;
       a.playbackRate = opts.rate || (window.__mraSlow ? 0.75 : 1); a.preservesPitch = true; a.webkitPreservesPitch = true; /* v602: «Más lento» = mismo audio al 75 %, misma voz */
       cur = a; if (opts.btn) { curBtn = opts.btn; opts.btn.classList.add('playing'); }
       let done = false;
@@ -157,6 +169,7 @@ window.MRMOOD = function (c, t) { const r = t ? c / t : 1, pk = (a) => a[Math.fl
       curEnd = end;
       a.onended = end; a.addEventListener('mrfail', end); /* v520: si un archivo no está, prueba el siguiente antes de rendirse */
       a.play().then(audioUI).catch(e => { if (!e || e.name === 'NotAllowedError' || a.__ex) end(); });
+      };
     });
   }
   // audio is packed in a few files (js/audio/*.js) so the folder is easy to upload to GitHub
