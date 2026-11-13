@@ -10197,3 +10197,4 @@ body.ag-kids .pt-ann.pt-trial span,body.ag-kids .pt-ann.pt-trial b{color:#7c3e00
 .fm-pr2.on .fm-ck{background:#0B2A5B;border-color:#0B2A5B;color:#fff}.fm-ph .fm-ck{flex:none}
 /* v681: en «Para mi hijo(a)» solo se pide la fecha del niño(a) */
 .tf-kidm .tf-bd.hidden,.modal .tf-bd.hidden{display:none!important}
+.tf-bd .tf-sm{font-size:12.5px;line-height:1.25}
