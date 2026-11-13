@@ -39,6 +39,7 @@
     if (window.MRBUY && MRBUY.minorNow && MRBUY.minorNow()) return MRBUY.askParent('premium8');
     if (window.MRPLANS && MRPLANS.modal) MRPLANS.modal(M, 'Pásate a <b>Premium</b>: clases individuales de 50 minutos con un profe, solo contigo, cuando quieras.'); else if (window.MRBUY) MRBUY.plan('premium8'); });
   /* v668: al abrir un perfil se quita todo lo de la portada (barra inferior, bloqueo de scroll, ventana de ingreso) */
+  try { addEventListener('pageshow', (e) => { if (e.persisted) location.reload(); }); } catch (e) { } // v673: al volver con «Atrás» del navegador se recarga (nunca una portada a medias)
   function landingOff() { document.querySelectorAll('.lp-dock.home').forEach(x => x.remove()); document.body.classList.remove('home-app', 'sheet-open'); document.documentElement.classList.remove('home-lock'); }
   try { new MutationObserver(() => { if (P.get() && document.querySelector('.lp-dock.home') && document.querySelector('#app .db, #app .pt-wrap:not(.pt-login-w), #app .db-side')) landingOff(); }).observe(document.body, { childList: true, subtree: false }); } catch (e) { }
   function route(r) { try { if (r !== 'placement') document.documentElement.classList.remove('in-place'); } catch (e) { } try { document.body.classList.toggle('rt-home', !r || r === 'home'); } catch (e) { } /* v609 */ curRoute = r || 'home'; M.stop && M.stop(); window.scrollTo(0, 0); topbar(); const p = PAGE !== 'home' ? null : P.get();
@@ -197,7 +198,7 @@
 
   // 📱 entrada como app: barra inferior (sin pie de página largo)
   function homeDock() {
-    try { document.body.classList.remove('ag-kids', 'ag-teens'); if (P.get()) return; } catch (e) { } // v668: con una sesión abierta no se pone la barra de la portada
+    try { document.body.classList.remove('ag-kids', 'ag-teens'); if (document.querySelector('#app .db, #app .db-side')) return; } catch (e) { } // v673: solo se omite si de verdad hay un perfil en pantalla // v668: con una sesión abierta no se pone la barra de la portada
     if (document.querySelector('.lp-dock')) return; document.body.classList.add('home-app');
     const LW = () => document.querySelector('.ld-login'); // 📱 celular: el ingreso se abre como ventana (el cliente no baja) · se busca cada vez (la página se vuelve a dibujar al salir de un perfil)
     const prep = (lw) => { if (lw && !lw.querySelector('.lp-shx')) { (lw.querySelector('.pt-login') || lw).insertAdjacentHTML('afterbegin', '<button type="button" class="lp-shx" aria-label="Cerrar">✕</button>'); lw.querySelector('.lp-shx').onclick = () => sheet(false); lw.addEventListener('click', e => { if (e.target === lw) sheet(false); }); } };
@@ -371,7 +372,7 @@
       trialForm(true); let pf = {}; try { pf = JSON.parse(localStorage.getItem('mra_fam_prefill') || '{}'); } catch (e) { }
       const set = (id, v) => { const i = document.getElementById(id); if (i && v) i.value = v; }; set('tf-g', pf.guardian); set('tf-w', pf.whatsapp); set('tf-e', pf.email); set('tf-e2', pf.email2);
     }, 500);
-    else homeDock();
+    else { homeDock(); if (!window.__ldGuard) window.__ldGuard = setInterval(() => { try { if (PAGE === 'home' && document.querySelector('#app .ld') && !document.querySelector('#app .db, #app .db-side') && !document.body.classList.contains('home-app')) { document.querySelectorAll('.lp-dock').forEach(x => x.remove()); homeDock(); } } catch (e) { } }, 700); } // v673: la portada siempre queda como app (nunca la versión larga)
     const free = $('.pt-free'); if (free) free.remove();
     const or = $('.pt-or'); if (or) or.innerHTML = `<a href="#" data-trial class="pt-trialk">🎁 Prueba gratis 3 días</a>`;
     const links = $('.pt-links'); if (links) links.remove();

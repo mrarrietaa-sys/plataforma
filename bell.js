@@ -24,7 +24,7 @@
   function render() {
     const n = unread().length;
     panel.innerHTML = `<div class="mr-bp-h"><b>🔔 Notificaciones</b>${n ? `<button type="button" class="mr-bp-all">Marcar leídas</button>` : ''}<button type="button" class="mr-bp-x" aria-label="Cerrar">✕</button></div>
-      <div class="mr-bp-list">${items.length ? items.slice(0, 40).map((x) => `<div class="mr-bp-i${x.read ? '' : ' new'}${x.type === 'chat' ? ' chat' : ''}" data-id="${esc(x.id)}"><b>${esc(x.title)}</b>${x.body ? `<p>${esc(x.body)}</p>` : ''}<small>${when(x.date)}</small></div>`).join('') : '<p class="mr-bp-empty">No tienes notificaciones todavía.</p>'}</div>`;
+      <div class="mr-bp-list">${items.length ? items.slice(0, 40).map((x) => `<div class="mr-bp-i${x.read ? '' : ' new'}${x.type === 'chat' ? ' chat' : ''}" data-id="${esc(x.id)}"><span class="mr-ck" aria-hidden="true"></span><div class="mr-bp-tx"><b>${esc(String(x.title || '').replace(/^[^\p{L}\p{N}¡¿]+/u, ''))}</b>${x.body ? `<p>${esc(x.body)}</p>` : ''}<small>${when(x.date)}</small></div></div>`).join('') : '<p class="mr-bp-empty">No tienes notificaciones todavía.</p>'}</div>`;
     panel.querySelector('.mr-bp-x').onclick = close;
     const all = panel.querySelector('.mr-bp-all'); if (all) all.onclick = () => { const ids = unread().map((x) => x.id); items.forEach((x) => x.read = true); paint(); try { O.markRead && O.markRead(ids, true); } catch (e) { } };
     panel.querySelectorAll('.mr-bp-i').forEach((el) => el.onclick = () => { const x = items.find((i) => String(i.id) === el.dataset.id); if (!x) return;
@@ -56,7 +56,7 @@
   const go = () => {
     const A = window.MRAC; if (!A || !A.code || !A.code()) { if (++tries < 20) setTimeout(go, 1500); return; }
     MRBELL.set(A.notifications ? A.notifications() : []);
-    MRBELL.mount({ every: 15000, active: () => !!A.code(), fetch: async () => { const r = await A.call('notifs', { code: A.code() }).catch(() => null); return r && r.ok ? (r.notifications || []) : null; }, markRead: (ids, all) => A.markRead && A.markRead(ids, all), go: (x) => { // v580: a dónde lleva cada aviso del estudiante
+    MRBELL.mount({ every: 15000, active: () => { try { if (!A.code()) return false; if (window.MRAP && MRAP.get && !MRAP.get()) return false; if (document.body.classList.contains('home-app')) return false; } catch (e) { } return true; }, /* v673: sin sesión abierta no hay campanita */ fetch: async () => { const r = await A.call('notifs', { code: A.code() }).catch(() => null); return r && r.ok ? (r.notifications || []) : null; }, markRead: (ids, all) => A.markRead && A.markRead(ids, all), go: (x) => { // v580: a dónde lleva cada aviso del estudiante
       const t = x.type, ti = String(x.title || ''); let id = null;
       if (t === 'vip') id = /espacio|adicional|Tienes \d|Esta semana|Pago confirmado/i.test(ti) ? 'book' : 'cls';
       else if (t === 'club') id = 'cls'; else if (t === 'plan' || t === 'compra') id = 'me'; else if (t === 'tarea' || t === 'feedback') id = 'learn'; else if (t === 'mail') id = 'mail';
