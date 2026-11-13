@@ -16,7 +16,11 @@
   const ls = { get: (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) { } }, del: (k) => { try { localStorage.removeItem(k); } catch (e) { } } };
   const J = (s, d) => { try { return s ? JSON.parse(s) : d; } catch (e) { return d; } };
 
+  /* v675: modo lectura (papá o mamá viendo el perfil del hijo): nada se guarda ni se cambia */
+  const OBS_OK = /^(me|login|who|notifs|vipOptions|myBuys|myCoupon|myBoards|myNotes|myReceipt|reviews|refInfo|rankAll|pubStats|plans|offerInfo|famData|upQuote|myEmail|notifRead)$/;
+  const obsOn = () => { try { return sessionStorage.getItem('mra_obs') === '1'; } catch (e) { return false; } };
   async function call(action, data, opt) {
+    if (obsOn() && !OBS_OK.test(String(action))) return { ok: false, err: 'obs' };
     if (!URL_) return { ok: false, err: 'offline' };
     const ctl = window.AbortController ? new AbortController() : null; const to = setTimeout(() => ctl && ctl.abort(), (opt && opt.timeout) || 30000);
     try {
@@ -98,7 +102,7 @@ function mraMergeKey(k, aS, bS) { /* a = lo que ya había, b = lo nuevo · nunca
   }
   let timer = null, busy = false, dirty = false;
   async function sync(now) {
-    const c = code(); if (!c || window.__mraWiped) return false;
+    const c = code(); if (!c || window.__mraWiped || obsOn()) return false;
     if (!now) { dirty = true; clearTimeout(timer); timer = setTimeout(() => sync(true), 15000); return true; }
     if (busy) { for (let i = 0; i < 40 && busy; i++) await new Promise(r => setTimeout(r, 250)); if (busy) { dirty = true; return false; } } busy = true; dirty = false; const ts = Date.now();
     const r = await call('sync', { code: c, ts, base: +ls.get(TS) || 0, keys: collect(), summary: summary() });
@@ -108,7 +112,7 @@ function mraMergeKey(k, aS, bS) { /* a = lo que ya había, b = lo nuevo · nunca
     if (dirty) { clearTimeout(timer); timer = setTimeout(() => sync(true), 15000); }
     return r.ok;
   }
-  function beacon(force) { const c = code(); if (window.__mraWiped || !c || !URL_ || (!dirty && force !== true)) return; try { const ts = Date.now(); const body = JSON.stringify({ action: 'sync', code: c, ts, base: +ls.get(TS) || 0, keys: collect(), summary: summary() }); if (navigator.sendBeacon && navigator.sendBeacon(URL_, new Blob([body], { type: 'text/plain;charset=utf-8' }))) { ls.set(TS, String(ts)); dirty = false; } } catch (e) { } }
+  function beacon(force) { const c = code(); if (window.__mraWiped || obsOn() || !c || !URL_ || (!dirty && force !== true)) return; try { const ts = Date.now(); const body = JSON.stringify({ action: 'sync', code: c, ts, base: +ls.get(TS) || 0, keys: collect(), summary: summary() }); if (navigator.sendBeacon && navigator.sendBeacon(URL_, new Blob([body], { type: 'text/plain;charset=utf-8' }))) { ls.set(TS, String(ts)); dirty = false; } } catch (e) { } }
   // detecta cambios en el progreso para sincronizar solo cuando hace falta (ahorra cuota con muchos usuarios)
   try { const orig = Storage.prototype.setItem; Storage.prototype.setItem = function (k, v) { if (this === window.localStorage && window.__mraWiped && SYNC_RX.test(k) && k !== 'mra_profile_v1') return; /* tras borrar el dispositivo, esta página (con datos viejos en memoria) ya no puede volver a escribir progreso */ orig.apply(this, arguments); if (this === window.localStorage && SYNC_RX.test(k) && code()) sync(false); }; } catch (e) { }
   // si en otra pestaña se cerró sesión o administración reinició el progreso, esta pestaña se recarga (no puede reescribir datos viejos)

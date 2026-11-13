@@ -10154,3 +10154,10 @@ body.rt-home .ld-foot{display:none!important}
 .tp-page .tp-head .tp-ddm small{color:#5b6577!important}
 .tp-page .tp-head .tp-mi{display:flex!important;align-items:center!important;gap:12px}
 .tp-page .tp-head .tp-mi>span{display:flex;flex-direction:column;justify-content:center;min-width:0}
+/* v675: modo lectura del papá o la mamá */
+.obs-bar{position:sticky;top:0;z-index:55;display:flex;align-items:center;justify-content:center;gap:12px;background:#0B2A5B;color:#fff;padding:8px 14px;white-space:nowrap}
+.obs-l{display:inline-flex;align-items:center;gap:8px;font:600 14px Inter,sans-serif}.obs-l svg{width:18px;height:18px}
+.obs-back{background:#fff;color:#0B2A5B;border:0;border-radius:99px;padding:6px 14px;font:700 13px Inter,sans-serif;cursor:pointer}
+body.obs-on [data-logout],body.obs-on .pt-out{display:none!important}
+.obs-t{position:fixed;left:50%;bottom:96px;transform:translate(-50%,20px);opacity:0;pointer-events:none;transition:.25s;z-index:9999;background:#0B2A5B;color:#fff;border-radius:12px;padding:11px 16px;font:600 14px Inter,sans-serif;text-align:center;width:max-content;max-width:calc(100% - 32px);box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.obs-t.on{opacity:1;transform:translate(-50%,0)}

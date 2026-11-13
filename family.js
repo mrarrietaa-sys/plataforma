@@ -36,7 +36,7 @@
       : `<div class="fm-mini${k.idle >= 5 ? ' w' : ''}"><small>Última práctica</small><b>${I('clock')}${ago(k.idle)}</b></div><div class="fm-mini"><small>Su nivel</small><b>${k.module ? LV[k.module] : 'Por definir'}</b></div>`;
     return `<article class="card fm-kid ag-${g[0]}" data-i="${i}"><button class="fm-kh" data-tg="${i}"><span class="fm-kn"><b>${esc(k.first)} ${esc(k.lastName || '')}</b><span><i class="fm-tag ${g[0]}">${g[1]}${k.age != null ? ' · ' + k.age + ' AÑOS' : ''}</i>${esc(k.planName)}</span></span><span class="fm-go">${I('chev')}</span></button>
       <div class="fm-row">${mini}</div>
-      <div class="fm-more" hidden><p>Código de ${esc(k.first)}: <b>${esc(k.code)}</b></p><button class="btn w sm" data-in="${esc(k.code)}">Entrar como ${esc(k.first)}</button></div></article>`;
+      <div class="fm-more" hidden><p>Código de ${esc(k.first)}: <b>${esc(k.code)}</b></p><button class="btn w sm" data-in="${esc(k.code)}">Ver el perfil de ${esc(k.first)} (modo lectura)</button></div></article>`;
   }
 
   function render(r) {
@@ -64,7 +64,7 @@
     else if (!LS.get('mra_fam_tour')) setTimeout(tour, 700);
     $('#cp').onclick = () => { try { navigator.clipboard.writeText(f.fcode); $('#cp').innerHTML = I('check') + ' Copiado'; } catch (e) { } };
     app.querySelectorAll('[data-tg]').forEach(b => b.onclick = () => detail(r, +b.dataset.tg));
-    app.querySelectorAll('[data-in]').forEach(b => b.onclick = () => { try { sessionStorage.setItem('mra_autocode', b.dataset.in); sessionStorage.setItem('mra_from_fam', '1'); } catch (e) { } location.href = 'index.html'; });
+    app.querySelectorAll('[data-in]').forEach(b => b.onclick = () => { try { sessionStorage.setItem('mra_autocode', b.dataset.in); sessionStorage.setItem('mra_from_fam', '1'); sessionStorage.setItem('mra_obs', '1'); } catch (e) { } location.href = 'index.html'; });
     const add = $('#add'); if (add) add.onclick = () => { LS.set('mra_fam_prefill', JSON.stringify({ guardian: f.guardian, email: f.email, email2: f.email2, whatsapp: f.whatsapp })); location.href = 'ninos.html?tab=planes&fam=1'; };
     $('#sw2').onclick = async () => { const b = $('#sw2'), on = !b.classList.contains('on'); b.classList.toggle('on', on); b.setAttribute('aria-checked', on); const x = await MRAC.call('famReports', { fcode: f.fcode, on }).catch(() => null); if (!x || !x.ok) b.classList.toggle('on', !on); };
     $('#payb').onclick = () => pay(r);
@@ -87,7 +87,7 @@
         <div class="card fm-who"><span class="fm-dav ${g[0]}">${esc((k.first || '?').charAt(0))}</span><h2>${esc(k.first)} ${esc(k.lastName || '')}</h2><p>${esc(k.planName)}${k.module ? ' · ' + LVN[k.module] : ''}</p><i class="fm-tag ${g[0]}">${g[1]}${k.age != null ? ' · ' + k.age + ' AÑOS' : ''}</i>
           <div class="fm-ring" style="--p:${d.pct || 0}"><div><b>${d.pct || 0}%</b><small>${k.module ? 'Módulo ' + k.module : 'Su módulo'}</small></div></div>
           <div class="fm-kv"><div><span>Objetivo</span><b>${esc(GOALN[d.goal] || 'Aún no lo elige')}</b></div><div><span>Código</span><b>${esc(k.code)}</b></div><div><span>${k.expired ? 'Plan venció el' : k.planEnd ? 'Plan activo hasta' : 'Plan'}</span><b>${k.planEnd ? fD(k.planEnd) : esc(k.planName)}</b></div></div>
-          <button class="btn w block" data-in="${esc(k.code)}">Entrar como ${esc(k.first)}</button></div></aside>
+          <button class="btn w block" data-in="${esc(k.code)}">Ver el perfil de ${esc(k.first)} (modo lectura)</button></div></aside>
       <div class="fm-dmain"><div class="fm-wk"><div><small>Lecciones esta semana</small><b>${w.classes || 0}</b></div><div><small>Días que practicó</small><b>${w.days || 0}</b></div><div><small>${k.ag === 'teens' ? 'Frases de la vida real' : 'Medallas'}</small><b>${k.ag === 'teens' ? (w.phrases || 0) + '<span class="fm-wks"> esta semana</span>' : (d.tp || 0)}</b></div>${`<div><small>${prem ? 'Clases con profe del mes' : 'Su nivel'}</small><b>${prem ? (k.credits ? k.credits.used + ' de ' + k.credits.total : '—') : (k.module ? LVN[k.module].split(' ')[0] : '—')}</b></div>`}</div>
         <div class="fm-d2"><div class="card fm-path"><div class="fm-dh"><h3>Su camino</h3><small>${d.done || 0} de ${d.total || '—'} lecciones</small></div>
             <div class="fm-pbar"><i style="width:${Math.max(3, d.pct || 0)}%"></i></div>
@@ -96,7 +96,7 @@
           <div class="fm-dcol"><div class="card"><div class="fm-dh"><h3>Próximas clases con profe</h3></div>${(d.upcoming || []).length ? d.upcoming.map(c => { const dt = new Date(c.date + 'T12:00:00'); return `<div class="fm-cl"><span class="fm-dt">${MES[dt.getMonth()]}<b>${dt.getDate()}</b></span><span><b>${esc(c.teacher || 'Profe')}</b><small>${esc(c.dow)} · ${esc(c.time)}</small></span><i>Reservada</i></div>`; }).join('') : `<p class="fm-empty">${prem ? 'No tiene clases reservadas.' : 'Su plan no incluye clases con profe.'}</p>`}</div>
             <div class="card"><div class="fm-dh"><h3>Último comentario del profe</h3></div>${d.comment ? `<div class="fm-note"><b>${esc(d.comment.teacher || 'Su profe')} · ${esc(d.comment.nice)}:</b> ${esc(d.comment.text)}</div>` : '<p class="fm-empty">Aparecerá aquí después de su próxima clase con profe.</p>'}</div></div></div></div></div>`;
     window.scrollTo(0, 0); $('#back').onclick = () => render(r);
-    app.querySelectorAll('[data-in]').forEach(b => b.onclick = () => { try { sessionStorage.setItem('mra_autocode', b.dataset.in); sessionStorage.setItem('mra_from_fam', '1'); } catch (e) { } location.href = 'index.html'; });
+    app.querySelectorAll('[data-in]').forEach(b => b.onclick = () => { try { sessionStorage.setItem('mra_autocode', b.dataset.in); sessionStorage.setItem('mra_from_fam', '1'); sessionStorage.setItem('mra_obs', '1'); } catch (e) { } location.href = 'index.html'; });
   }
   // 💳 pago familiar: varios planes en un solo pago
   function pay(r) { // 💳 v617: solo Mercado Pago · cada hijo puede llevar clases extra

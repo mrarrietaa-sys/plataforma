@@ -41,6 +41,20 @@
   /* v668: al abrir un perfil se quita todo lo de la portada (barra inferior, bloqueo de scroll, ventana de ingreso) */
   try { addEventListener('pageshow', (e) => { if (e.persisted) location.reload(); }); } catch (e) { } // v673: al volver con «Atrás» del navegador se recarga (nunca una portada a medias)
   if (PAGE === 'home' && !window.__ldGuard2) window.__ldGuard2 = setInterval(() => { try { if (document.querySelector('#app .db, #app .db-side')) return; if (!document.querySelector('.ld-foot, #ld-wa')) return; if (document.body.classList.contains('home-app')) return; document.querySelectorAll('.lp-dock').forEach(x => x.remove()); homeDock(); } catch (e) { } }, 600); // v674: la portada nunca queda en la versión larga (pie azul y WhatsApp)
+  /* v675: MODO LECTURA · el papá o la mamá ve el perfil de su hijo(a) desde su portal: puede mirar, no puede cambiar nada */
+  const OBS = () => { try { return sessionStorage.getItem('mra_obs') === '1' && !!P.get(); } catch (e) { return false; } };
+  const obsExit = () => { try { window.__mraWiped = true; sessionStorage.removeItem('mra_obs'); sessionStorage.removeItem('mra_from_fam'); sessionStorage.removeItem('mra_me_cache'); P.clear(); } catch (e) { } location.href = 'familia.html'; };
+  const obsTick = () => { if (!OBS()) { document.body.classList.remove('obs-on'); const b0 = document.getElementById('obs-bar'); if (b0) b0.remove(); return; }
+    document.body.classList.add('obs-on');
+    if (!document.getElementById('obs-bar')) { const tb = document.getElementById('topbar'); if (tb) { tb.insertAdjacentHTML('afterend', `<div class="obs-bar" id="obs-bar"><span class="obs-l"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>Modo lectura</span><button type="button" class="obs-back" id="obs-back">Volver a mi portal</button></div>`); document.getElementById('obs-back').onclick = obsExit; } }
+    document.querySelectorAll('.modal.gl-modal, .modal.pol-modal, #np-m, .tour-ov, .tour, #tour, .wb').forEach(x => { const m = x.closest('.modal') || x; m.remove(); }); document.querySelectorAll('.modal').forEach(m => { if (m.querySelector('[data-plans], .by-paybtn, .up-go, .wb')) m.remove(); }); };
+  setInterval(obsTick, 500);
+  window.addEventListener('click', (e) => { if (!OBS()) return; const t = e.target; if (!t.closest) return;
+    if (t.closest('#obs-bar, .db-pgnav, .sd-tab, .pt-bnav, .bnav, button[data-pg], [data-rank], .mr-bell, .mr-bp, .mx, [data-x], .lp-shx, #tb-snd, .tb-snd, .wb-x, #wbx')) return;
+    if (t.closest('[data-logout], .pt-out, [title*="Salir"], #tb-back')) { e.preventDefault(); e.stopImmediatePropagation(); obsExit(); return; }
+    const a = t.closest('button, a, [role="button"], .pt-mod, .md3-c, .md3-hero, input, select, textarea, label'); if (!a) return;
+    if (a.closest('.modal') && /^(Entendido|Cerrar|Ok|✕)$/i.test((a.textContent || '').trim())) return;
+    e.preventDefault(); e.stopImmediatePropagation(); let tt = document.getElementById('obs-t'); if (!tt) { tt = document.createElement('div'); tt.id = 'obs-t'; tt.className = 'obs-t'; document.body.appendChild(tt); } tt.textContent = 'Modo lectura: solo tu hijo(a) puede hacer lecciones, reservar o cambiar algo.'; tt.classList.add('on'); clearTimeout(tt._h); tt._h = setTimeout(() => tt.classList.remove('on'), 2600); }, true);
   function landingOff() { document.querySelectorAll('.lp-dock.home').forEach(x => x.remove()); document.body.classList.remove('home-app', 'sheet-open'); document.documentElement.classList.remove('home-lock'); }
   try { new MutationObserver(() => { if (P.get() && document.querySelector('.lp-dock.home') && document.querySelector('#app .db, #app .pt-wrap:not(.pt-login-w), #app .db-side')) landingOff(); }).observe(document.body, { childList: true, subtree: false }); } catch (e) { }
   function route(r) { try { if (r !== 'placement') document.documentElement.classList.remove('in-place'); } catch (e) { } try { document.body.classList.toggle('rt-home', !r || r === 'home'); } catch (e) { } /* v609 */ curRoute = r || 'home'; M.stop && M.stop(); window.scrollTo(0, 0); topbar(); const p = PAGE !== 'home' ? null : P.get();
@@ -696,7 +710,7 @@
       const old = P.get() || {};
       P.save(Object.assign({ created: Date.now() }, old, { type: r.type, demo: !!r.demo, codeHash: M.codeHash(i.value), module: r.module || old.module || null, assignedBy: r.module ? 'admin' : (old.assignedBy || null) }));
       sfx('win'); M.confetti(1500); greetVoice(); route('home'); };
-    $('#ok').onclick = go; i.onkeydown = e => { if (e.key === 'Enter') go(); };
+    { const go0 = go; const goX = () => { try { if (!window.__famIn) sessionStorage.removeItem('mra_obs'); } catch (e) { } return go0(); }; $('#ok').onclick = goX; i.onkeydown = e => { if (e.key === 'Enter') goX(); }; } // v675: si el estudiante entra con su código, no hay modo lectura
   }
   function nameStep() {
     const s1 = (M.S && M.S.name) || ''; const p = P.get();
