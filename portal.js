@@ -41,6 +41,7 @@
   /* v668: al abrir un perfil se quita todo lo de la portada (barra inferior, bloqueo de scroll, ventana de ingreso) */
   try { addEventListener('pageshow', (e) => { if (e.persisted) location.reload(); }); } catch (e) { } // v673: al volver con «Atrás» del navegador se recarga (nunca una portada a medias)
   if (PAGE === 'home' && !window.__ldGuard2) window.__ldGuard2 = setInterval(() => { try { if (document.querySelector('#app .db, #app .db-side')) return; if (!document.querySelector('.ld-foot, #ld-wa')) return; if (document.body.classList.contains('home-app')) return; document.querySelectorAll('.lp-dock').forEach(x => x.remove()); homeDock(); } catch (e) { } }, 600); // v674: la portada nunca queda en la versión larga (pie azul y WhatsApp)
+  if (PAGE === 'home' && !window.__ldGuard3) window.__ldGuard3 = setInterval(() => { try { if (P.get() || document.body.classList.contains('home-app') || !document.querySelector('#app .ld') || document.querySelector('#app .db, #app .db-side')) return; document.querySelectorAll('.lp-dock').forEach(x => x.remove()); homeDock(); } catch (e) { } }, 800); // v685: sin perfil abierto, la entrada siempre queda como app (nunca la versión larga ni la campanita)
   /* v675: MODO LECTURA · el papá o la mamá ve el perfil de su hijo(a) desde su portal: puede mirar, no puede cambiar nada */
   const OBS = () => { try { return sessionStorage.getItem('mra_obs') === '1' && !!P.get(); } catch (e) { return false; } };
   const obsExit = () => { try { window.__mraWiped = true; sessionStorage.removeItem('mra_obs'); sessionStorage.removeItem('mra_from_fam'); sessionStorage.removeItem('mra_me_cache'); P.clear(); } catch (e) { } location.href = 'familia.html'; };
@@ -1301,12 +1302,12 @@
       ${MRPLANS.cards(pl.expired ? pl.plan : (pl.eff === 'premium' ? pl.plan : pl.eff), renew)}`;
   }
   // sección Premium: grupo, créditos VIP, próximas clases, club — se llena con datos de la nube
-  function bookStart() { if (!P.plan().premium && P.plan().fc) { const mm = M.modal(`<h3>🎁 Antes de reservar tu clase gratis</h3><ul class="lv-rules">
+  function bookStart() { if (!P.plan().premium && P.plan().fc) { const mm = M.modal(`<h3>Antes de reservar tu clase gratis</h3><ul class="lv-rules">
         <li><span>📅</span><div><b>¿Para qué día?</b> Elige cualquier día de tu acceso gratis <b>a partir de mañana</b>. Las clases no se reservan para el mismo día.</div></li>
         <li><span>📌</span><div><b>Confírmala:</b> <b>4 horas antes</b> de tu clase te pediremos confirmarla con un toque (si tu clase es en la mañana, <b>la noche anterior</b>). Si no la confirmas a tiempo, se cancela sola.</div></li>
         <li><span>✅</span><div><b>¿Puedo cancelar?</b> Sí, gratis hasta <b>12 horas antes</b>. Así otro estudiante aprovecha el espacio.</div></li>
         <li><span>⏱️</span><div>Es <b>una sola clase</b> de <b>50 minutos</b> con un profe real.</div></li></ul><button class="btn k block lg" id="vb-go">Entendido, reservar →</button>`, { x: true }); $('#vb-go', mm).onclick = () => { mm.remove(); vipBooking(); }; return; } // 🎁 v603
-    const mm = M.modal(`<h3>🎯 Antes de reservar tu clase individual</h3><ul class="lv-rules">
+    const mm = M.modal(`<h3>Antes de reservar tu clase individual</h3><ul class="lv-rules">
         <li><span>📅</span><div><b>¿Cuándo puedes reservar?</b> Desde <b>mañana</b> y durante los <b>próximos 5 días de clase</b> (sin domingos ni festivos). Para hoy no se puede reservar.</div></li>
         <li><span>✅</span><div><b>¿Puedo cancelar?</b> Sí, gratis hasta <b>12 horas antes</b> de la clase. La clase vuelve a tu saldo.</div></li>
         <li><span>⚠️</span><div><b>Si cancelas con menos de 12 horas o no te conectas,</b> la clase se descuenta de tu plan.</div></li>

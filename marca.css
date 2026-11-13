@@ -5,6 +5,18 @@
 @font-face{font-family:'Poppins';src:url(fonts/mra-800.woff2) format('woff2');font-weight:800 900;font-style:normal;font-display:swap}
 h1,h2{letter-spacing:-.02em}
 /* sello rojo: misma inclinación que «HABLANDO», el texto nunca toca los bordes */
-.mk-pill{display:inline-block;background:#E3242B;color:#fff;-webkit-text-fill-color:#fff;background-clip:border-box;-webkit-background-clip:border-box;border-radius:.32em;padding:.26em .4em .22em;margin:.06em .06em;line-height:1.1;width:max-content;max-width:100%;flex:none;align-self:center;white-space:nowrap;transform:rotate(-1.5deg);font:inherit;letter-spacing:-.01em;vertical-align:baseline}
-h1 em{padding-top:.18em!important;padding-bottom:.16em!important;line-height:1.1!important}
+.mk-pill{display:inline-block;background:#E3242B;color:#fff;-webkit-text-fill-color:#fff;background-clip:border-box;-webkit-background-clip:border-box;border-radius:.32em;padding:.2em .4em .24em;margin:.06em .06em;line-height:1.1;width:max-content;max-width:100%;flex:none;align-self:center;white-space:nowrap;transform:rotate(-1.5deg);font:inherit;letter-spacing:-.01em;vertical-align:baseline}
+h1 em{padding-top:.1em!important;padding-bottom:.14em!important;line-height:1.1!important}
 .lp-k h1 em{padding:.2em 12px .22em!important;line-height:1.1!important;margin:.15em 0 .2em!important;transform:rotate(-1.5deg)}
+
+/* v685 · el sello rojo siempre centrado: igual espacio arriba (sobre las mayúsculas) y abajo (bajo la línea del texto) */
+.ld-hero h1 em{line-height:1!important;padding-top:.04em!important;padding-bottom:.12em!important}
+@supports (text-box:trim-both cap alphabetic){
+ .mk-pill{text-box:trim-both cap alphabetic;padding:.29em .4em .31em}
+ .lp-k h1 em{text-box:trim-both cap alphabetic;padding-top:.28em!important;padding-bottom:.31em!important}
+ .ld-hero h1 em{text-box:trim-both cap alphabetic;padding-top:.27em!important;padding-bottom:.27em!important}
+}
+/* v685 · niños en PC: «Juegos con voces reales» junto al globo (nunca encima del título) */
+@media(min-width:900px){.lp-k .lp-badge.b2{top:auto!important;bottom:9%!important;right:5%!important}}
+/* v685 · «Antes de reservar…»: título solo, centrado y en una línea */
+:has(>.lv-rules)>h3,.modal .card:has(>.lv-rules)>h3{display:block!important;text-align:center!important;padding:0 2px!important;margin:30px 0 10px!important;white-space:nowrap!important;font-size:clamp(12px,4.5vw,19px)!important;line-height:1.25!important;letter-spacing:-.01em}
