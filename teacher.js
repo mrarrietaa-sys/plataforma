@@ -209,7 +209,7 @@
           <div class="tp-dd"><button class="tp-ddb" data-dd="tools">${TI('tools')} Herramientas <span class="car">▾</span></button><div class="tp-ddm">
             <button class="tp-mi" id="tp-live"><i class="ib2">${TI('video')}</i><span><b>Clases en vivo</b><small>Practica las clases de los 4 módulos</small></span></button>
 </div></div>
-          <div class="tp-dd"><button class="tp-ddb" data-dd="cls">${({ home: TI('home') + ' Resumen', avail: TI('cal') + ' Mi disponibilidad', classes: TI('grad') + ' Mis clases', pay: TI('pay') + ' Mis pagos' })[tab] || TI('grad') + ' Mis clases'} <span class="car">▾</span></button><div class="tp-ddm">
+          <div class="tp-dd"><button class="tp-ddb" data-dd="cls">${({ home: TI('home') + ' Resumen', avail: TI('cal') + ' <span class="tp-lg">Mi disponibilidad</span><span class="tp-sh">Disponibilidad</span>', classes: TI('grad') + ' Mis clases', pay: TI('pay') + ' Mis pagos' })[tab] || TI('grad') + ' Mis clases'} <span class="car">▾</span></button><div class="tp-ddm">
             <button class="tp-mi tp-tab" data-tab="home"><i class="ib6">${TI('home')}</i><span><b>Resumen</b><small>Próximas clases y estadísticas</small></span></button>
             <button class="tp-mi tp-tab" data-tab="classes"><i class="ib">${TI('grad')}</i><span><b>Mis clases</b><small>Próximas y pasadas · tablero</small></span></button>
             <button class="tp-mi tp-tab" data-tab="avail"><i class="ib2">${TI('cal')}</i><span><b>Mi disponibilidad</b><small>Tus horarios para reservar</small></span></button>
@@ -269,7 +269,7 @@
     dds.forEach((d) => { d.querySelector('.tp-ddb').onclick = (e) => { e.stopPropagation(); const o = d.classList.contains('open'); closeDD(); if (!o) d.classList.add('open'); }; d.querySelectorAll('.tp-mi').forEach((x) => x.addEventListener('click', closeDD)); });
     if (!window.__tpdd) { window.__tpdd = 1; document.addEventListener('click', (e) => { if (!e.target.closest('.tp-dd')) $$('.tp-dd').forEach((d) => d.classList.remove('open')); }); document.addEventListener('keydown', (e) => { if (e.key === 'Escape') $$('.tp-dd').forEach((d) => d.classList.remove('open')); }); }
     ({ home, avail, classes, groups, pay }[tab] || home)($('#tp-body'));
-    weekBanner($('#tp-body'));
+    if (tab === 'home' || tab === 'avail') weekBanner($('#tp-body')); // v672: cada pestaña muestra solo lo suyo
     if (tab === 'home') tprCard($('#tp-body'));
   }
   /* 🎓 v596 · Prueba del profe: 30 días para vivir las lecciones como un estudiante real (desaparece sola al terminar) */
@@ -279,9 +279,8 @@
     const T = +x.total || 7, pct = Math.max(4, Math.min(100, Math.round((T - x.days) / T * 100)));
     const cap = '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>';
     const box = document.createElement('div'); box.className = 'tpr-card';
-    box.innerHTML = `<span class="tpr-badge">${cap}PRUEBA DEL PROFE</span><h3>Vive la experiencia del estudiante</h3><p>Haz las lecciones como lo hace tu estudiante, paso a paso, para que llegues a cada clase sabiendo lo que ya practicó.</p>
-      <div class="tpr-days"><b>${x.days}</b><span>${x.days === 1 ? 'día' : 'días'}<br>restante${x.days === 1 ? '' : 's'}</span></div><div class="tpr-bar"><i style="width:${pct}%"></i></div>
-      <button type="button" class="tpr-go" id="tpr-go">Entrar como estudiante →</button><div class="tpr-av">${tot ? `Tu avance: Módulo ${+x.module || 1} · ${dn} de ${tot} lecciones` : 'Empiezas en el Módulo 1, como un estudiante nuevo'}</div>`;
+    box.className = 'tpr-card tpr-slim'; // v672: franja compacta
+    box.innerHTML = `<div class="tpr-t"><span class="tpr-badge">${cap}PRUEBA DEL PROFE</span><b>Vive la experiencia del estudiante</b><small>${x.days} ${x.days === 1 ? 'día restante' : 'días restantes'} · ${tot ? `Módulo ${+x.module || 1} · ${dn} de ${tot} lecciones` : 'Empiezas en el Módulo 1'}</small></div><button type="button" class="tpr-go" id="tpr-go">Entrar como estudiante →</button>`;
     el.prepend(box);
     $('#tpr-go').onclick = () => { const b = $('#tpr-go'); b.disabled = true; b.textContent = 'Entrando…';
       try { const p = JSON.parse(localStorage.getItem('mra_profile_v1') || 'null'); if (p && String(p.code || '').toUpperCase() !== String(x.code).toUpperCase()) localStorage.removeItem('mra_profile_v1');
@@ -393,10 +392,8 @@
     const up = D.classes.filter((c) => c.status === 'scheduled' && c.date >= t0);
     const pend = D.classes.filter((c) => c.status === 'scheduled' && c.date <= t0 && !(c.date === t0 && endHM(c.time, c.duration) > nowHM()));
     const free = D.slots.filter((s) => s.status === 'free' && s.date >= t0).length;
-    el.innerHTML = `<div class="tp-stats">
-        <div class="tp-stat red"><b>${+D.stats.taughtMonth || 0}</b><span>clases dictadas este mes</span></div>
-        <div class="tp-stat"><b>${up.length}</b><span>próximas clases</span></div>
-      </div>
+    { const hd = $('.tp-head'), dd = hd && hd.querySelector('.tp-dds'); if (dd && !hd.querySelector('.tp-hs')) dd.insertAdjacentHTML('beforebegin', `<div class="tp-hs"><div><b>${+D.stats.taughtMonth || 0}</b><span>clases dictadas este mes</span></div><div><b>${up.length}</b><span>${up.length === 1 ? 'próxima clase' : 'próximas clases'}</span></div></div>`); } // v672: las cifras van en el saludo
+    el.innerHTML = `
       ${D.rank ? `<div class="tp-rank tp-rank2">${D.rank.stars ? `<span class="tp-rk-st">${(() => { const v = +D.rank.stars || 0, f = Math.round(v); return '★'.repeat(f) + '☆'.repeat(Math.max(0, 5 - f)); })()}</span>` : ''}<b>${D.rank.stars ? 'Tu calificación: <em>' + String(D.rank.stars).replace('.', ',') + ' estrella' + (+D.rank.stars === 1 ? '' : 's') + '</em> · apareces ' + D.rank.pos + '.º al reservar' : 'Aún no tienes calificaciones'}</b><small>${D.rank.stars ? D.rank.n + (D.rank.n === 1 ? ' calificación' : ' calificaciones') + ' de tus estudiantes. ' : ''}Los profes mejor calificados aparecen primero cuando el estudiante reserva.</small></div>` : ''}
       ${pend.length ? `<div class="tp-alert warn tp-pend"><b>Tienes ${pend.length} clase${pend.length > 1 ? 's' : ''} por marcar.</b><span>Registra la asistencia para que el estudiante vea su progreso.</span><button class="btn k sm" data-go="classes">Ir a Mis clases</button></div>` : ''}
       <div class="card tp-card"><div class="tp-card-h"><h2>Próximas clases</h2><small class="muted">hora Colombia</small></div>
