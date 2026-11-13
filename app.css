@@ -10173,3 +10173,25 @@ body.ag-kids .pt-ann.pt-trial span,body.ag-kids .pt-ann.pt-trial b{color:#7c3e00
 .dk .mel9-lg{color:#fff}
 /* v679: botón del portal de papás en dos líneas */
 .fm-inb{display:flex;flex-direction:column;align-items:center;line-height:1.2}.fm-inb b{font-weight:800}.fm-inb small{font-size:12.5px;font-weight:600;opacity:.75;margin-top:2px}
+/* v680: «Planes y clases de mis hijos» · Plataforma o Premium · arma tus clases (4 a 20) · nunca toca los bordes */
+.modal.fm-pay{padding:16px!important;align-items:center}
+.modal.fm-pay .card.fm-pay2{width:100%;max-width:440px;max-height:calc(100dvh - 32px);overflow-y:auto;box-sizing:border-box;margin:0 auto;padding:20px 16px 16px;border-radius:22px;position:relative}
+.fm-pay2 h3{text-align:center;margin:2px 40px 4px;white-space:nowrap;font-size:clamp(16px,4.6vw,19px)}
+.fm-pay2 .fm-psub{text-align:center;margin:0 0 12px;font-size:13.5px}
+.fm-pay2 .fm-px{position:absolute;right:12px;top:12px}
+.fm-pr2{border:1.5px solid #e3e8f2;border-radius:16px;padding:10px 12px;margin-bottom:10px;background:#fff}
+.fm-pr2.on{border-color:#0B2A5B;box-shadow:0 0 0 3px #e3eaf7}
+.fm-ph{display:flex;align-items:center;gap:10px;cursor:pointer}.fm-ph input{position:absolute;opacity:0;pointer-events:none}
+.fm-ph .fm-pn{flex:1;min-width:0}.fm-ph .fm-pn b{display:block;color:#0B2A5B;font-size:16px}.fm-ph .fm-pn small{display:block;color:#5b6577;font-size:12.5px}.fm-ph .fm-pn small.w{color:#b45309}
+.fm-ph .fm-pp{color:#0B2A5B;font-size:15px;white-space:nowrap}.fm-pr2:not(.on) .fm-pp{color:#94a3b8}
+.fm-ops{display:grid;gap:8px;margin-top:10px}
+.fm-op{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:#fff;border:1.5px solid #e3e8f2;border-radius:12px;padding:10px 12px;cursor:pointer;font:inherit}
+.fm-op.s{border-color:#0B2A5B;background:#f6f8fd}
+.fm-r{width:18px;height:18px;border-radius:50%;border:2px solid #c7d0e0;flex:none;box-sizing:border-box}.fm-op.s .fm-r{border:5px solid #0B2A5B}
+.fm-ot{flex:1;min-width:0}.fm-ot b{display:block;color:#0B2A5B;font-size:14.5px}.fm-ot small{display:block;color:#5b6577;font-size:12px}
+.fm-opr{color:#0B2A5B;font-weight:800;font-size:13.5px;white-space:nowrap}
+.fm-cnt{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:10px;padding-top:10px;border-top:1px dashed #c9d4e8}
+.fm-cnt button{width:40px;height:40px;border-radius:50%;border:1.5px solid #0B2A5B;background:#fff;color:#0B2A5B;font:800 20px Poppins,sans-serif;cursor:pointer}.fm-cnt button:disabled{opacity:.35;cursor:default}
+.fm-cnt span{text-align:center;min-width:90px}.fm-cnt b{display:block;font:800 26px/1 Poppins,sans-serif;color:#0B2A5B}.fm-cnt small{color:#5b6577;font-size:12px}
+.fm-cnh{text-align:center;color:#5b6577;font-size:12px;margin:6px 0 0}
+.fm-pr2.on .fm-ck{background:#0B2A5B;border-color:#0B2A5B;color:#fff}.fm-ph .fm-ck{flex:none}
