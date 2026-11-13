@@ -160,3 +160,6 @@
 .rto-start img,.rto-end img{animation:rtoFl 2.8s ease-in-out infinite;filter:drop-shadow(0 14px 10px rgba(0,0,0,.22))}
 @keyframes rtoFl{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
 @media(prefers-reduced-motion:reduce){.rto-start img,.rto-end img{animation:none}}
+/* v679: A1 · traducción al español debajo de la pregunta */
+.rto-ask .rto-es{display:block;margin-top:4px;font-size:14px;font-style:italic;font-weight:500;color:#5b6577;line-height:1.35}
+body.ag-teens .rto-ask .rto-es{color:#c3cfe6}

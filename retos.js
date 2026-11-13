@@ -50,7 +50,7 @@
     const ok = k => k && k.q && k.a && k.qau && k.aau && !/_{2,}/.test(first(k.a)) && first(k.a).length <= 46;
     const K = (p.keyq || []).filter(ok), pool = topicParts(p).flatMap(x => (x.keyq || []).filter(ok)).concat(K);
     const ans = [...new Set(pool.map(k => first(k.a)))]; if (K.length < 2 || ans.length < 3) return [];
-    return K.map(k => { const a = first(k.a); return { mode: 'q', q: k.q, say: k.qau, after: k.aau, ans: a, txt: a, opts: [a, ...shuf(ans.filter(x => x !== a)).slice(0, 2)] }; });
+    return K.map(k => { const a = first(k.a); return { mode: 'q', q: k.q, es: k.es || '', say: k.qau, after: k.aau, ans: a, txt: a, opts: [a, ...shuf(ans.filter(x => x !== a)).slice(0, 2)] }; });
   }
   // ⏰ La hora (Módulo 2 · Adultos): frases del tema «Telling the Time» con su audio
   const NUM = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12, twenty: 20, 'twenty-five': 25 };
@@ -132,9 +132,9 @@
       intro();
     });
   }
-  const ASK = (small, html, au) => `<div class="rto-ask"><div class="q"><small>${small}</small><b>${html}</b></div>${au ? `<button type="button" class="rto-au" aria-label="Escuchar">${VOL}</button>` : ''}</div>`;
+  const ASK = (small, html, au, es) => `<div class="rto-ask"><div class="q"><small>${small}</small><b>${html}</b>${es ? `<em class="rto-es">${esc(es)}</em>` : ''}</div>${au ? `<button type="button" class="rto-au" aria-label="Escuchar">${VOL}</button>` : ''}</div>`;
   const wireAu = (B, key) => { const b = B.querySelector('.rto-au'); if (b) b.onclick = () => { stopA(); play(key); }; };
-  const promptOf = it => it.mode === 'f' ? ['COMPLETA LA FRASE', blank(it.q), null] : it.mode === 'q' ? ['ESCUCHA Y RESPONDE', esc(it.q), it.say] : it.mode === 't' ? ['ESCUCHA LA HORA', esc(it.ans), it.say] : ['ESCUCHA', '¿Qué palabra escuchas?', it.say];
+  const promptOf = it => it.mode === 'f' ? ['COMPLETA LA FRASE', blank(it.q), null] : it.mode === 'q' ? ['ESCUCHA Y RESPONDE', esc(it.q), it.say, (() => { try { return +(M() && M().MOD && M().MOD.n) <= 2 ? it.es : ''; } catch (e) { return ''; } })()] : it.mode === 't' ? ['ESCUCHA LA HORA', esc(it.ans), it.say] : ['ESCUCHA', '¿Qué palabra escuchas?', it.say];
   const FB = '<div class="rto-fb"></div>';
   const sz = t => t.length > 34 ? ' xs' : t.length > 20 ? ' sm' : '';
   function after(B, S, it, good, chosen, delayOk, delayBad, extra) {
@@ -143,7 +143,7 @@
     stopA(); play(it.after); S.later(() => S.round(), good ? delayOk : delayBad);
   }
   function timeout(B, S, it, ms, msg) { S.later(() => { if (S.cur !== it || S.done) return; S.done = true; const fb = B.querySelector('.rto-fb'); S.score(false, it); if (fb) fb.innerHTML = `<span class="no">${msg || '¡Se acabó el tiempo!'} <b>${esc(it.txt)}</b></span>`; stopA(); play(it.after); S.later(() => S.round(), 1900); }, ms); }
-  const head = (B, it) => { const [s, h, au] = promptOf(it); return ASK(s, h, au); };
+  const head = (B, it) => { const [s, h, au, es] = promptOf(it); return ASK(s, h, au, es); }; // v679: A1 · traducción al español
   function setup(B, S, it, html) { S.cur = it; S.done = false; B.innerHTML = head(B, it) + html + FB; const [, , au] = promptOf(it); wireAu(B, au); if (au) setTimeout(() => { if (S.cur === it) play(au); }, 150); }
 
   /* ---------- los 12 juegos ---------- */
