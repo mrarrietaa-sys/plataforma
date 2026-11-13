@@ -17,6 +17,8 @@ h1 em{padding-top:.1em!important;padding-bottom:.14em!important;line-height:1.1!
  .ld-hero h1 em{text-box:trim-both cap alphabetic;padding-top:.27em!important;padding-bottom:.27em!important}
 }
 /* v685 · niños en PC: «Juegos con voces reales» junto al globo (nunca encima del título) */
-@media(min-width:900px){.lp-k .lp-badge.b2{top:auto!important;bottom:9%!important;right:5%!important}}
+@media(min-width:900px){.lp-k .lp-badge.b2{top:auto!important;bottom:12px!important;right:9.5%!important}body:not(.lp-teen) .lp-k .lp-bal{max-height:calc(100% - 128px)!important;width:auto!important}}
+/* v687 · PC: el cuadro de color de adultos, niños y jóvenes no toca la barra roja (mismo aire arriba y abajo) */
+@media(min-width:900px){body.lp-app .lp-hero{margin-top:10px!important;height:calc(100% - 10px)!important}}
 /* v685 · «Antes de reservar…»: título solo, centrado y en una línea */
 :has(>.lv-rules)>h3,.modal .card:has(>.lv-rules)>h3{display:block!important;text-align:center!important;padding:0 2px!important;margin:30px 0 10px!important;white-space:nowrap!important;font-size:clamp(12px,4.5vw,19px)!important;line-height:1.25!important;letter-spacing:-.01em}
