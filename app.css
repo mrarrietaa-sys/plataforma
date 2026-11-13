@@ -10167,3 +10167,7 @@ body.ag-teens .pt-ann.pt-trial span,body.ag-teens .pt-ann.pt-trial b{color:#fff!
 body.ag-teens .pt-ann.pt-trial svg{color:#fff!important}
 body.ag-kids .pt-ann.pt-trial{background:#fff3df!important;border:1px solid #f6d9a8!important}
 body.ag-kids .pt-ann.pt-trial span,body.ag-kids .pt-ann.pt-trial b{color:#7c3e00!important}
+/* v678: leyenda «Modelo · Tu voz» más visible, mismo azul del consejo (todos los módulos y edades) */
+.mel9-lg{color:#0B2A5B;font-size:12.5px;font-weight:700}
+.mel9-lg i{height:5px}
+.dk .mel9-lg{color:#fff}
