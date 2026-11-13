@@ -40,6 +40,7 @@
     if (window.MRPLANS && MRPLANS.modal) MRPLANS.modal(M, 'Pásate a <b>Premium</b>: clases individuales de 50 minutos con un profe, solo contigo, cuando quieras.'); else if (window.MRBUY) MRBUY.plan('premium8'); });
   /* v668: al abrir un perfil se quita todo lo de la portada (barra inferior, bloqueo de scroll, ventana de ingreso) */
   try { addEventListener('pageshow', (e) => { if (e.persisted) location.reload(); }); } catch (e) { } // v673: al volver con «Atrás» del navegador se recarga (nunca una portada a medias)
+  if (PAGE === 'home' && !window.__ldGuard2) window.__ldGuard2 = setInterval(() => { try { if (document.querySelector('#app .db, #app .db-side')) return; if (!document.querySelector('.ld-foot, #ld-wa')) return; if (document.body.classList.contains('home-app')) return; document.querySelectorAll('.lp-dock').forEach(x => x.remove()); homeDock(); } catch (e) { } }, 600); // v674: la portada nunca queda en la versión larga (pie azul y WhatsApp)
   function landingOff() { document.querySelectorAll('.lp-dock.home').forEach(x => x.remove()); document.body.classList.remove('home-app', 'sheet-open'); document.documentElement.classList.remove('home-lock'); }
   try { new MutationObserver(() => { if (P.get() && document.querySelector('.lp-dock.home') && document.querySelector('#app .db, #app .pt-wrap:not(.pt-login-w), #app .db-side')) landingOff(); }).observe(document.body, { childList: true, subtree: false }); } catch (e) { }
   function route(r) { try { if (r !== 'placement') document.documentElement.classList.remove('in-place'); } catch (e) { } try { document.body.classList.toggle('rt-home', !r || r === 'home'); } catch (e) { } /* v609 */ curRoute = r || 'home'; M.stop && M.stop(); window.scrollTo(0, 0); topbar(); const p = PAGE !== 'home' ? null : P.get();
@@ -507,6 +508,7 @@
     e.preventDefault(); e.stopPropagation(); MRBUY.plan(k); } catch (er) { } }, true);
   // enlaces de los correos: ?pagar=CÓDIGO abre los planes y pagos · ?gratis=1 abre la prueba gratis
   /* v668: el papá o la mamá confirma la cuenta de su hijo(a) desde el correo */
+  try { const q0 = new URLSearchParams(location.search); if (q0.get('pc') && q0.get('t')) { location.replace('familia.html' + location.search); } } catch (e) { } // v674: enlaces viejos del correo → portal de papás
   setTimeout(async () => { try { const q = new URLSearchParams(location.search); const pc = q.get('pc'), t = q.get('t'); if (!pc || !t) return; history.replaceState(null, '', location.pathname);
     const r = await MRAC.call('parentConfirm', { code: pc, t }).catch(() => null);
     M.modal(`<div class="center"><div class="to-ic">${MRI(r && r.ok ? 'check' : 'alert')}</div><h3>${r && r.ok ? '¡Gracias' + (r.guardian ? ', ' + esc(r.guardian) : '') + '!' : 'No pudimos confirmar'}</h3><p>${r && r.ok ? 'Confirmaste la cuenta de <b>' + esc(r.first || '') + '</b>. Te contaremos de su avance y cualquier pago pasará por ti.' : 'El enlace no es válido o ya venció. Escríbenos por WhatsApp al 301 781 0841.'}</p><button class="btn k block" onclick="this.closest('.modal').remove()">Entendido</button></div>`, { x: true });
@@ -1634,7 +1636,9 @@
       const hOf = (t) => String(t).slice(0, 2), okH = (s, h) => !s || s === 'any' ? +h.slice(0, 2) <= 20 : +h.slice(0, 2) <= endH(s);
       if (FD === 'any' || (FD && days.indexOf(FD) < 0)) FD = null; // v553: sin botón «todos los días»
       const match = (d, h) => all.filter(x => (d === 'any' || x.date === d) && hOf(x.time) === hOf(h));
-      const rank = (x) => (r.fav && x.t.id === r.fav.teacherId ? 100 : 0) + (x.t.stars || 0) * 10 + Math.min(9, (x.t.done || 0) / 20);
+      /* v674: orden justo · 1) el profe con quien ya tuvo clase · 2) mejor calificados (por medias estrellas; profe nuevo sin calificación = 4,5) · 3) empatados se rotan cada día y por estudiante, para que todos tengan oportunidad */
+      const rot = (id) => { const k = String(id) + '|' + P.todayISO() + '|' + String((P.get() || {}).code || ''); let h = 0; for (let i = 0; i < k.length; i++) h = (h * 31 + k.charCodeAt(i)) | 0; return ((h >>> 0) % 1000) / 1000; };
+      const rank = (x) => (r.fav && x.t.id === r.fav.teacherId ? 100 : 0) + Math.round(((+x.t.stars || 0) || 4.5) * 2) / 2 * 10 + rot(x.t.id);
       const name = (t) => esc(t.name), pic = (t) => { const u = t.photo || (window.MRPROFPIC && MRPROFPIC(t.name)); return u ? `<img src="${esc(u)}" alt="">` : `<span class="vf-ini">${esc((t.name || '?').split(' ').map(x => x[0]).slice(0, 2).join(''))}</span>`; };
       const stars = (t) => t.stars ? `<span class="vf-st">★ ${String(t.stars).replace('.', ',')}</span>` : 'Profe nuevo'; // v580: solo estrellas
       // ⭐ mi horario de siempre (si ese mismo profe tiene libre ese día de la semana a esa hora)
@@ -1653,6 +1657,7 @@
         <div class="vf-none"><span class="vf-ni">${MRI('bell')}</span><div><b>¿Ningún horario te sirve?</b><small>Te avisamos apenas se abra un espacio.</small></div><button type="button" class="vf-btnw" id="vf-wait2">Avísame</button></div></div>`;
       const mins = (t) => { const p = String(t).split(':'); return (+p[0]) * 60 + (+p[1] || 0); }, dif = (x) => Math.abs(mins(x.time) - mins(FH));
       const okFH = FH && FD && mins(FH) >= 7 * 60 && Math.floor(mins(FH) / 60) <= endH(FD);
+      const vfMore = (A, off, near) => A.length ? `<button type="button" class="vf-more" data-vfm>Ver más profes (${A.length}) ▾</button><div class="vf-tl vf-tlm" hidden>${A.map((x, i) => tcard(x, off + i, near)).join('')}</div>` : '';
       const tcard = (x, i, near) => `<button type="button" class="vf-tc2${near ? ' n' : ''}${r.fav && x.t.id === r.fav.teacherId ? ' best' : ''}" data-x="${i}"><span class="vf-av">${pic(x.t)}</span><span class="vf-ti">${r.fav && x.t.id === r.fav.teacherId ? '<span class="vf-badge">TU PROFE DE SIEMPRE</span>' : ''}<b>${name(x.t)}</b><small>${stars(x.t)}</small></span><span class="vf-h">${x.date !== FD ? (s => s[0].toUpperCase() + s.slice(1))(fmtD(x.date, { weekday: 'short', day: 'numeric' }).replace('.', '')) + ' · ' : ''}${fmtT(x.time)}</span><span class="vf-chev">›</span></button>`;
       let right, L = [];
       if (!FD || !FH) right = `<div class="vf-empty">${MRI('calendar')}<b>${!FD ? 'Elige el día' : 'Ahora elige la hora'}</b><span>${!FD ? 'Te mostramos al instante qué profes están libres.' : 'Escribe la hora que quieres y toca «Buscar profes a esa hora».'}</span></div>`;
@@ -1662,23 +1667,26 @@
         const ex = byT(day.filter(x => mins(x.time) === mins(FH)).sort((x, y) => rank(y) - rank(x)));
         const nearA = byT(day.filter(x => mins(x.time) !== mins(FH) && dif(x) <= 60 && !ex.some(e => e.t.id === x.t.id)).sort((x, y) => dif(x) - dif(y) || rank(y) - rank(x))).slice(0, 4);
         const head = `<div class="vf-rh"><b>${esc((s => s[0].toUpperCase() + s.slice(1))(fmtD(FD, { weekday: 'long', day: 'numeric', month: 'short' }).replace('.', '')))} · ${fmtT(FH)}</b></div>`;
-        if (ex.length) {
-          L = ex.concat(nearA);
-          right = head + `<span class="vf-ok">${MRI('check')}${ex.length} ${ex.length === 1 ? 'profe disponible' : 'profes disponibles'} a tu hora</span><p class="vf-pickp">Elige el profe que te guste:</p><div class="vf-tl">${ex.map((x, i) => tcard(x, i)).join('')}</div>`
-            + (nearA.length ? `<span class="vf-nr">${MRI('clock')}Cerca de tu hora</span><div class="vf-tl">${nearA.map((x, i) => tcard(x, ex.length + i, 1)).join('')}</div>` : '')
+        if (ex.length) { // v674: máximo 3 profes a la vista · el resto en «Ver más profes»
+          const vis = ex.slice(0, 3), near3 = nearA.slice(0, Math.max(0, 3 - vis.length)), more = ex.slice(3, 6).concat(nearA.slice(near3.length)).slice(0, 3);
+          L = vis.concat(near3, more);
+          right = head + `<span class="vf-ok">${MRI('check')}${ex.length} ${ex.length === 1 ? 'profe disponible' : 'profes disponibles'} a tu hora</span><p class="vf-pickp">Elige el profe que te guste:</p><div class="vf-tl">${vis.map((x, i) => tcard(x, i)).join('')}</div>`
+            + (near3.length ? `<span class="vf-nr">${MRI('clock')}Cerca de tu hora</span><div class="vf-tl">${near3.map((x, i) => tcard(x, vis.length + i, 1)).join('')}</div>` : '')
+            + vfMore(more, vis.length + near3.length)
             + `<p class="vf-hint">Cada clase dura 50 minutos.</p>`;
         } else {
           const tod = (x) => mins(x.time), want = mins(FH);
-          let close = byT(day.slice().sort((x, y) => dif(x) - dif(y) || rank(y) - rank(x))).slice(0, 4);
-          if (close.length < 4) { const seen = {}; close.forEach(x => seen[x.t.id + x.date] = 1); all.filter(x => x.date !== FD).sort((x, y) => Math.abs(tod(x) - want) - Math.abs(tod(y) - want) || x.date.localeCompare(y.date)).forEach(x => { const k = x.t.id + x.date; if (close.length < 4 && !seen[k]) { seen[k] = 1; close.push(x); } }); }
+          let close = byT(day.slice().sort((x, y) => dif(x) - dif(y) || rank(y) - rank(x))).slice(0, 5);
+          if (close.length < 5) { const seen = {}; close.forEach(x => seen[x.t.id + x.date] = 1); all.filter(x => x.date !== FD).sort((x, y) => Math.abs(tod(x) - want) - Math.abs(tod(y) - want) || x.date.localeCompare(y.date)).forEach(x => { const k = x.t.id + x.date; if (close.length < 5 && !seen[k]) { seen[k] = 1; close.push(x); } }); }
           close.sort((x, y) => (x.date === FD ? 0 : 1) - (y.date === FD ? 0 : 1) || (x.date + x.time).localeCompare(y.date + y.time));
-          L = close;
+          const cMore = close.slice(3); close = close.slice(0, 3); L = close.concat(cMore); // v674: máximo 3 a la vista
           right = head + `<div class="vf-warn">${MRI('alert')}<span>A las <b>${fmtT(FH)}</b> no hay profes disponibles ese día.</span></div>`;
-          right += close.length ? `<span class="vf-nr">${MRI('clock')}Los horarios más cercanos</span><p class="vf-pickp">Elige el profe que te guste:</p><div class="vf-tl">${close.map((x, i) => tcard(x, i, 1)).join('')}</div>` : `<p class="vf-hint">Por ahora no hay espacios en los próximos días. Toca «Avísame» y te contamos apenas se abra uno.</p>`;
+          right += close.length ? `<span class="vf-nr">${MRI('clock')}Los horarios más cercanos</span><p class="vf-pickp">Elige el profe que te guste:</p><div class="vf-tl">${close.map((x, i) => tcard(x, i, 1)).join('')}</div>` + vfMore(cMore, close.length, 1) : `<p class="vf-hint">Por ahora no hay espacios en los próximos días. Toca «Avísame» y te contamos apenas se abra uno.</p>`;
         }
         right += `<div class="vf-foot"><button type="button" class="vf-lnk" id="vf-all">${MRI('calendar')} Ver toda la disponibilidad de los profes</button><span class="vf-pol">Clase de 50 minutos · cancelación gratis hasta 12 horas antes</span></div>`;
       }
       b.innerHTML = `<div class="vf">${left}<div class="vf-right" id="vf-r">${right}</div></div><button type="button" class="vf-pick" id="vf-pick">Prefiero elegir primero el profe →</button>`;
+      { const mb = $('[data-vfm]', b); if (mb) mb.onclick = () => { const t = mb.nextElementSibling, op = t.hidden; t.hidden = !op; mb.textContent = op ? 'Ver menos ▴' : mb.textContent.replace('Ver menos ▴', '') || mb.textContent; if (!op) mb.textContent = 'Ver más profes (' + t.children.length + ') ▾'; }; }
       $$('.vf-d', b).forEach(x => x.onclick = () => { FD = x.dataset.d; sfx('tap'); finder(); if (FH) goR(); });
       const goR = () => { if (innerWidth < 900) { const rr = $('#vf-r', b); if (rr) setTimeout(() => rr.scrollIntoView({ behavior: 'smooth', block: 'start' }), 30); } };
       const to24 = () => { let h = TK.h % 12; if (TK.p === 'p') h += 12; return String(h).padStart(2, '0') + ':' + String(TK.m).padStart(2, '0'); };

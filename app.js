@@ -1465,9 +1465,10 @@
     const body = A.head(stage, { lbl: it.f === 'x' ? 'Writing · contra reloj' : 'Writing', title });
     stage.classList.add('wr10');
     let top = '';
-    if (it.f === 'c') top = `<div class="wr-chat"><div class="wr-who"><span class="wr-av">${esc(String(it.who || 'F')[0])}</span>${esc(it.who)}</div><div class="wr-bub">${esc(it.q)}</div><div class="wr-me hidden"></div></div>`;
+    if (it.f === 'c') top = `<div class="wr-chat"><div class="wr-who"><span class="wr-av">${esc(String(it.who || 'F')[0])}</span>${esc(it.who)}</div><div class="wr-bub">${esc(it.q)}${it.es ? `<span class="wr-bes">${esc(it.es)}</span>` : ''}</div><div class="wr-me hidden"></div></div>`;
     else if (it.f === 'x') { const b = esc(it.bad), e = esc(it.err), i = b.indexOf(e); top = `<div class="wr-bad">${i >= 0 ? b.slice(0, i) + '<u>' + e + '</u>' + b.slice(i + e.length) : b}</div><div class="wr-timer"><div class="wr-tl"><i></i></div><b>0:00</b></div>`; }
     else top = `<div class="wr-start">${esc(it.s)} <em class="wr-blank">&nbsp;</em></div><div class="wr-chips">${(it.ch || []).map(c => `<b>${esc(c)}</b>`).join('')}</div>`;
+    if (it.es && it.f !== 'c') top += `<p class="wr-es">${esc(it.es)}</p>`; // v674: A1 · traducción al español debajo
     body.appendChild(h(`<div class="wr-top">${top}</div>`));
     const ta = h(`<textarea class="wr-in" rows="2" autocomplete="off" autocapitalize="sentences" spellcheck="false" placeholder="${it.f === 'c' ? 'Escribe tu respuesta en inglés…' : it.f === 'x' ? 'Escribe la frase correcta…' : 'Termina la frase en inglés…'}"></textarea>`);
     body.appendChild(ta);

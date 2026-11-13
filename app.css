@@ -10133,3 +10133,18 @@ body.ag-teens .me-top h1{color:#fff}body.ag-teens .me-top p{color:rgba(255,255,2
 .pt-nc .pt-nc-d{width:56px!important;height:58px!important;padding:0 4px!important;box-sizing:border-box;border-radius:12px!important;overflow:hidden}
 .pt-nc .pt-nc-d b{font:700 21px/1 Poppins,sans-serif!important}
 .pt-nc .pt-nc-d small{font:700 9px/1.2 Poppins,sans-serif!important;letter-spacing:.03em;max-width:100%;text-align:center}
+/* v674: reserva · máximo 3 profes + «Ver más profes» · aviso centrado (3 edades) */
+.vf-warn{justify-content:center;text-align:center}.vf-warn span{text-align:center}
+.vf-more{display:block;margin:8px auto 2px;background:none;border:0;font:600 13.5px Inter,sans-serif;color:#0B2A5B;text-decoration:underline;cursor:pointer;padding:6px}
+.vf-tlm{margin-top:4px}
+/* v674: A1 · traducción al español centrada, sin etiqueta */
+.wr-bes{display:block;margin-top:8px;padding-top:7px;border-top:1px dashed #c9d4e8;font-size:14.5px;line-height:1.4;color:#5b6577;font-style:italic;text-align:center}
+.wr-es{margin:8px auto 0;max-width:520px;text-align:center;font-size:14.5px;line-height:1.4;color:#5b6577;font-style:italic}
+.wr10 .wr-bub{text-align:center}
+/* v674: confirmación del papá en su portal */
+.fm-pcok{display:flex;align-items:center;justify-content:center;gap:12px;text-align:left;max-width:640px;margin:0 auto 14px;padding:14px 16px;border-radius:14px;background:#f0fdf4;border:1px solid #86efac;color:#14532d}
+.fm-pcok svg{width:26px;height:26px;flex:none;color:#16a34a}.fm-pcok b{display:block;font:700 16px Poppins,sans-serif}.fm-pcok span{display:block;font-size:14px}
+.fm-pcok.bad{background:#fef2f2;border-color:#fca5a5;color:#7f1d1d}.fm-pcok.bad svg{color:#dc2626}
+/* v674: el botón flotante de WhatsApp y el pie largo ya no existen en la portada */
+.ld-wawrap,#ld-wa{display:none!important}
+body.rt-home .ld-foot{display:none!important}

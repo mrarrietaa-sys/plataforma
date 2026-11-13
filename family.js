@@ -16,12 +16,17 @@
     app.innerHTML = `<section class="card fm-login"><img src="mra-smile.webp" alt="Mr. Arrieta"><div><span class="fm-eye">${I('users')} Mi familia</span><h1>Panel de papás</h1>
       <p class="muted">Escribe tu código de familia. Lo encuentras en el correo de bienvenida de tu hijo(a).</p>
       <input class="inp" id="fc" placeholder="FAM-…" autocomplete="off" autocapitalize="characters"><button class="btn k block lg" id="go">Entrar →</button><p class="fm-err" id="er">${esc(msg || '')}</p><p class="fm-lh">¿No tienes tu código? <a href="https://wa.me/573017810841?text=${encodeURIComponent('Hola, soy papá/mamá de un estudiante de mrarrieta.com y necesito mi código de familia.')}" target="_blank" rel="noopener">Escríbenos por WhatsApp</a></p><a class="fm-lback" href="index.html">← Volver a mrarrieta.com</a></div></section>`;
-    try { const qf = new URLSearchParams(location.search).get('f'); if (qf && /^FAM-/i.test(qf) && $('#fc')) $('#fc').value = qf.toUpperCase(); } catch (e) { } // v668: el enlace del correo trae el código de familia
+     // v668: el enlace del correo trae el código de familia
     const go = async () => { const v = $('#fc').value.trim().toUpperCase(); if (!/^FAM-/.test(v)) return ($('#er').textContent = 'El código de familia empieza por FAM-.'); $('#go').disabled = true;
       const r = await MRAC.call('famData', { fcode: v }).catch(() => null); $('#go').disabled = false;
       if (!r || !r.ok) return ($('#er').textContent = r && r.err === 'notfound' ? 'No encontramos ese código. Revísalo e inténtalo de nuevo.' : 'No hay conexión. Inténtalo de nuevo.');
-      LS.set('mra_fam', v); LS.set('mra_last_role', JSON.stringify({ role: 'family' })); try { sessionStorage.setItem('mra_fam_hi', '1'); } catch (e) { } render(r); };
+      LS.set('mra_fam', v); LS.set('mra_last_role', JSON.stringify({ role: 'family' })); try { sessionStorage.setItem('mra_fam_hi', '1'); } catch (e) { } render(r); try { const m = sessionStorage.getItem('mra_pc_msg'); if (m) { sessionStorage.removeItem('mra_pc_msg'); app.insertAdjacentHTML('afterbegin', m); } } catch (e) { } };
     $('#go').onclick = go; $('#fc').onkeydown = (e) => { if (e.key === 'Enter') go(); };
+    try { const q = new URLSearchParams(location.search), pc = q.get('pc'), t = q.get('t'); if (pc && t && !window.__pcDone) { window.__pcDone = 1; history.replaceState(null, '', location.pathname); // v674: el papá confirma la cuenta de su hijo(a) y entra a su portal
+      MRAC.call('parentConfirm', { code: pc, t }).then((r) => { const ok = r && r.ok; const fam = (r && r.fam) || q.get('f') || '';
+        const box = document.createElement('div'); box.className = 'fm-pcok' + (ok ? '' : ' bad'); box.innerHTML = ok ? `${I('check')}<div><b>¡Gracias${r.guardian ? ', ' + esc(r.guardian) : ''}!</b><span>Confirmaste la cuenta de ${esc(r.first || 'tu hijo(a)')}. Escribe tu código de familia (FAM-…) para entrar a tu portal.</span></div>` : `${I('alert')}<div><b>No pudimos confirmar</b><span>El enlace no es válido o ya venció. Escríbenos por WhatsApp al 301 781 0841.</span></div>`;
+        try { sessionStorage.setItem('mra_pc_msg', box.outerHTML); } catch (e) { }
+        try { sessionStorage.removeItem('mra_pc_msg'); } catch (e) { } if ($('#fc')) $('#fc').value = ''; const lg = app.querySelector('.fm-login'); (lg || app).insertAdjacentElement(lg ? 'beforebegin' : 'afterbegin', box); if (ok && $('#fc')) $('#fc').focus(); }).catch(() => { }); } } catch (e) { } // v674: confirma y pide su código de familia (no entra solo)
   }
 
   function kidCard(k, i) {
