@@ -10161,3 +10161,9 @@ body.rt-home .ld-foot{display:none!important}
 body.obs-on [data-logout],body.obs-on .pt-out{display:none!important}
 .obs-t{position:fixed;left:50%;bottom:96px;transform:translate(-50%,20px);opacity:0;pointer-events:none;transition:.25s;z-index:9999;background:#0B2A5B;color:#fff;border-radius:12px;padding:11px 16px;font:600 14px Inter,sans-serif;text-align:center;width:max-content;max-width:calc(100% - 32px);box-shadow:0 10px 30px rgba(0,0,0,.25)}
 .obs-t.on{opacity:1;transform:translate(-50%,0)}
+/* v677: aviso de acceso gratuito acorde al color de cada edad (jóvenes y niños) */
+body.ag-teens .pt-ann.pt-trial{background:#0f2350!important;border:1px solid rgba(255,255,255,.14)!important;color:#fff!important}
+body.ag-teens .pt-ann.pt-trial span,body.ag-teens .pt-ann.pt-trial b{color:#fff!important;-webkit-text-fill-color:#fff!important;background:none!important}
+body.ag-teens .pt-ann.pt-trial svg{color:#fff!important}
+body.ag-kids .pt-ann.pt-trial{background:#fff3df!important;border:1px solid #f6d9a8!important}
+body.ag-kids .pt-ann.pt-trial span,body.ag-kids .pt-ann.pt-trial b{color:#7c3e00!important}
