@@ -84,7 +84,7 @@
   function must() { return shouldAsk(); }
   // v515: muestra la ventana (sin «Ahora no») cuando no haya otra ventana abierta; se resuelve con el objetivo elegido
   let mP = null;
-  function require() { if (!must()) return Promise.resolve(get()); if (mP) return mP; mP = new Promise(res => { const go = () => { if (document.querySelector('.modal:not(.gl-modal)') || document.querySelector('.tour-ov,.tour')) return setTimeout(go, 700); ask({ noSkip: true }).then(g => { mP = null; res(g); }); }; go(); }); return mP; }
+  function require() { if (!must()) return Promise.resolve(get()); if (mP) return mP; mP = new Promise(res => { const go = () => { try { if (!(window.MRAP && MRAP.get())) { mP = null; return res(null); } } catch (e) { } if (document.querySelector('.modal:not(.gl-modal)') || document.querySelector('.tour-ov,.tour')) return setTimeout(go, 700); ask({ noSkip: true }).then(g => { mP = null; res(g); }); }; go(); }); return mP; }
   // "por qué te sirve" para un tema (módulo m, tema n)
   function why(m, n, g) { g = valid(g || get()); if (!g || !window.MRGOALWHY || G[g.k].age) return ''; const x = MRGOALWHY[(+m || 1) + '-' + n]; return x && x[g.k] ? { k: g.k, name: G[g.k].short, t: x[g.k] } : ''; }
   function whyHTML(m, n, g) { const w = why(m, n, g); return w ? `<div class="gl-why"><div><b>Para tu objetivo · ${esc(w.name)}</b><span>${esc(w.t)}</span></div></div>` : ''; }
