@@ -492,12 +492,12 @@
   const preloadScenes = () => Object.keys(SCENES).forEach(k => { const i = new Image(); i.src = 'mra-x-' + k + '.webp?v=7'; });
   // v420: Mr. Arrieta dice algo acorde a cómo le fue en la sección (nunca "Great job!" si se equivocó)
   const ITL_FB = { hi: [['Great job!', 'a88a2d51d2', '¡Lo hiciste muy bien!'], ['Excellent!', '54f1859c38', '¡Excelente trabajo!'], ['Awesome!', '98561b5346', '¡Increíble!'], ['Well done!', 'b93b9f5f0f', '¡Muy bien hecho!']],
-    mid: [['Nice work!', 'aa2b15da71', 'Vas bien. Al final repasa lo que fallaste.']], lo: [['Not quite. You can do it!', '8b4c184411', 'No pasa nada: equivocarse es parte de aprender. ¡Sigue!']] };
+    mid: [['Nice work!', 'aa2b15da71', 'Vas bien. Al final repasa lo que fallaste.']], lo: [['Not quite. You can do it!', '8b4c184411', 'No pasa nada: equivocarse es parte de aprender. ¡Sigue!']], go: [["Let's keep going!", 'kg5a7e3c01', '¡Sigamos!']] }; /* v698: «go» = la transición no juzga */
   let itlLast = '';
   function interlude(next, perf, info) { /* v482 · transición mejorada: resultado real, avance, mitad/última, sin tocar la cabeza ni las letras */
     return new Promise(res => {
       const k = SEC_SC[next] || FREE[sceneN++ % FREE.length], sc0 = SCENES[k];
-      const band = perf == null ? null : perf >= .8 ? 'hi' : perf >= .6 ? 'mid' : 'lo'; // v630: con menos del 60 % nunca dice «Well done» ni «Nice work»
+      const band = perf == null ? null : perf < 0 ? 'go' : perf >= .8 ? 'hi' : perf >= .6 ? 'mid' : 'go'; /* v698: la transición NUNCA dice algo negativo */ // v630: con menos del 60 % nunca dice «Well done» ni «Nice work»
       let fbx = null; if (band) { const L = ITL_FB[band].filter(x => x[0] !== itlLast); fbx = (L.length ? L : ITL_FB[band])[Math.floor(Math.random() * (L.length || ITL_FB[band].length))]; itlLast = fbx[0]; }
       const sad = band === 'lo' ? 'mra-sad' + (1 + Math.floor(Math.random() * 3)) + '.webp' : null;
       const sc = fbx ? Object.assign({}, sad ? { a: 'pop' } : sc0, { say: fbx[0] }) : sc0;
@@ -505,7 +505,7 @@
       let nick = ''; try { const pp = window.MRAP && MRAP.get && MRAP.get(); nick = ((MRAP.look && MRAP.look().nick) || (pp && pp.first) || '').trim().split(/\s+/)[0]; } catch (e) { }
       const useName = nick && band === 'hi' && st && st % 3 === 0;
       const sayTxt = useName ? sc.say.replace(/!$/, ', ' + nick + '!') : sc.say;
-      const resTxt = I9.t ? (band === 'lo' ? 'Sigue intentando, ¡tú puedes!' : `${I9.c} de ${I9.t} en ${I9.sec}`) : '';
+      const resTxt = band === 'go' ? '¡Sigamos!' : I9.t ? `${I9.c} de ${I9.t} en ${I9.sec}` : '';
       const special = tot >= 4 && st ? (st === tot ? '¡Última! Ya casi terminas' : st === Math.ceil(tot / 2) ? '¡Vas por la mitad!' : '') : '';
       const dots = tot ? `<span class="itl-dots">${Array.from({ length: tot }, (_, j) => `<i class="${j < st - 1 ? 'd' : j === st - 1 ? 'c' : ''}"></i>`).join('')}</span><span class="itl-pso">Paso ${st} de ${tot}</span>` : '';
       const ov = h(`<div class="itl itl9 itl-${sc.a}" role="status">${sc.a === 'stage' ? '<div class="itl-lights"></div>' : ''}
@@ -627,7 +627,7 @@
       snaps[i] = snapHTML(stage); revisit = false;
       save();
       i++;
-      if (ITL_ON && i < steps.length && steps[i].sec !== s.sec && app.contains(player)) { const RS = Object.values(run.res || {}).filter(x => x && x.sec === s.sec && x.t); const rc = RS.reduce((a, x) => a + x.c, 0), rt = RS.reduce((a, x) => a + x.t, 0); const LR = RS.length ? Math.min(...RS.map(x => x.c / x.t)) : null; /* v664: si algún ejercicio de la sección salió mal, la transición nunca felicita */ const LAST = run.res[i - 1] && run.res[i - 1].t ? run.res[i - 1] : null; /* v697 · UNA sola fuente de verdad: la transición repite el MISMO veredicto que el estudiante acaba de ver en la actividad (pantalla final / Mr. Arrieta). Si la actividad no mostró veredicto, se usa su resultado con la misma regla (80 % / 60 %). Si no tuvo nota, la transición no juzga. */ const MD = window.__mood && window.__mood.at >= (window.__stepT || 0) ? window.__mood.k : null; const pf = MD ? { hi: 1, mid: .7, lo: .3 }[MD] : LAST ? LAST.c / LAST.t : null; await interlude(steps[i].sec, pf, { c: LAST ? LAST.c : rc, t: LAST ? LAST.t : rt, sec: s.sec, step: i + 1, total: steps.length }); } // v420: el mensaje depende de cómo le fue
+      if (ITL_ON && i < steps.length && steps[i].sec !== s.sec && app.contains(player)) { const RS = Object.values(run.res || {}).filter(x => x && x.sec === s.sec && x.t); const rc = RS.reduce((a, x) => a + x.c, 0), rt = RS.reduce((a, x) => a + x.t, 0); const LR = RS.length ? Math.min(...RS.map(x => x.c / x.t)) : null; /* v664: si algún ejercicio de la sección salió mal, la transición nunca felicita */ const LAST = run.res[i - 1] && run.res[i - 1].t ? run.res[i - 1] : null; /* v697 · UNA sola fuente de verdad: la transición repite el MISMO veredicto que el estudiante acaba de ver en la actividad (pantalla final / Mr. Arrieta). Si la actividad no mostró veredicto, se usa su resultado con la misma regla (80 % / 60 %). Si no tuvo nota, la transición no juzga. */ const MD = window.__mood && window.__mood.at >= (window.__stepT || 0) ? window.__mood.k : null; const pf = MD === 'hi' ? 1 : MD === 'mid' ? .7 : -1; /* v698: solo felicita si la actividad acaba de felicitar; si no, «Let's keep going!» */ await interlude(steps[i].sec, pf, { c: LAST ? LAST.c : rc, t: LAST ? LAST.t : rt, sec: s.sec, step: i + 1, total: steps.length }); } // v420: el mensaje depende de cómo le fue
     }
     $('.prog i', app).style.width = '100%'; cleanup();
     results(p, run);
@@ -948,20 +948,23 @@
       const PF = (window.MRAP && MRAP.get && MRAP.get()) || {}; const INI = (((PF.first || S.name || 'T')[0] || 'T') + ((PF.last || '')[0] || '')).toUpperCase();
       const pool = []; Object.keys(window.MRMISSIONS || {}).forEach(k => { if (k.split('-')[0] === String(+M.MOD.n || 1) && k !== (+M.MOD.n || 1) + '-' + p.topic) [MRMISSIONS[k][X.k]].filter(Boolean).forEach(L => (Array.isArray(L) ? L : [L]).forEach(y => { if (y && y.a && pool.indexOf(y.a) < 0) pool.push(y.a); })); });
       const body = A.head(stage, { lbl: 'Mission', title: 'Tu misión' }); /* v696: la categoría se ve una sola vez (sobre la foto) */ stage.classList.add('ms9-stage'); if (M.ageGroup() === 'teens') stage.classList.add('dk');
-      const el = h(`<div class="ms9"><div class="ms9-sc" style="background-image:url('${M.imgURL('u:photo-' + BG, 900, 420)}')"><span class="ms9-goal">${I(GN[0])}${esc(GN[1])}</span>
+      const el = h(`<div class="ms9 ms9-movie ms9-run"><div class="mvx-film ms9-fl"><span class="ms9-goal">${I(GN[0])}${esc(GN[1])}</span><span class="mvx-cnt"></span><p class="ms9-sit"></p><div class="mvx-sub ms9-qs"></div>
           <div class="ms9-ch"><span class="ms9-av">${M.ageGroup() === 'kids' ? '<img src="mra-smile.webp" alt="Mr. Arrieta" style="object-fit:cover;object-position:top">' : photo(M.ageGroup() === 'teens' ? 'u:photo-1776111842991-4a189c07e609' : 'u:photo-1494790108377-be9c29b29330')}</span></div><div class="ms9-ch me"><span class="ms9-av ini">${esc(INI)}</span><small>Tú</small></div></div>
-        <div class="ms9-sit"></div><div class="ms9-dl"></div><div class="ms9-turn"></div></div>`); body.appendChild(el);
+        <div class="mvx-seg">${list.map(() => '<i></i>').join('')}</div><div class="ms9-dl"></div><div class="ms9-turn"></div></div>`); body.appendChild(el); el.querySelector('.ms9-fl').style.backgroundImage = `url('${M.imgURL('u:photo-' + BG, 900, 420)}')`; /* v698: misión en curso como película, todo centrado */
       const $e = q => el.querySelector(q), dl = $e('.ms9-dl'), turn = $e('.ms9-turn'); const sc = () => { el.classList.toggle('ms9-ov', dl.scrollHeight > dl.clientHeight + 4); el.classList.toggle('ms9-attop', dl.scrollTop <= 4); el.classList.toggle('ms9-atend', dl.scrollTop + dl.clientHeight >= dl.scrollHeight - 4); }; dl.addEventListener('scroll', sc, { passive: true }); /* v696: la conversación se desvanece arriba/abajo en vez de cortarse */
       const bub = (txt, me, es, au) => { const b = h(`<div class="ms9-b${me ? ' me' : ''}${au ? ' ms9-bq' : ''}"><div class="ms9-tx">${esc(txt)}${es ? `<small>${esc(es)}</small>` : ''}</div>${au ? `<div class="ms9-bctl"><button type="button" class="ms9-bpl" aria-label="Escuchar la pregunta">${I('vol')}</button></div>` : ''}</div>`); if (au) b.querySelector('.ms9-bpl').onclick = () => { stop(); play(au); }; dl.appendChild(b); dl.scrollTop = dl.scrollHeight; setTimeout(sc, 30); return b; }; /* v688: la pregunta tiene su parlante (y su tortuguita) */
+      const SVT0 = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 10 2 4v3a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-3a8 8 0 1 0-16 0v3a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-3l2-4h4Z"/><path d="M4.82 7.9 8 10"/><path d="M15.18 7.9 12 10"/><path d="M16.93 10H20a2 2 0 0 1 0 4H2"/></svg>';
       for (let mi = 0; mi < N; mi++) {
         if (!stage.isConnected) break; const x = list[mi];
-        $e('.ms9-sit').textContent = x.sit || ''; if (x.img) $e('.ms9-sc').style.backgroundImage = `url('${M.imgURL('u:' + x.img, 900, 420)}')`; /* v696: la foto grande es la del lugar de esta pregunta */ $e('.ms9-ch').classList.add('talk'); bub(x.q, false, x.es, x.qau); turn.innerHTML = '';
-        await play(x.qau); $e('.ms9-ch').classList.remove('talk'); if (!stage.isConnected) break;
+        $e('.ms9-sit').textContent = x.sit || ''; $e('.mvx-cnt').textContent = 'Pregunta ' + (mi + 1) + ' de ' + N; el.querySelectorAll('.mvx-seg i').forEach((g, j) => g.className = j < mi ? 'd' : j === mi ? 'c' : '');
+        { const qs = $e('.ms9-qs'); qs.classList.remove('in'); void qs.offsetWidth; qs.innerHTML = `<span class="mvx-av">${$e('.ms9-ch:not(.me) .ms9-av').innerHTML}</span><div class="mvx-ln"><b>${esc(x.q)}</b>${x.es ? `<span>${esc(x.es)}</span>` : ''}<div class="ms9-qb" data-noslw><button type="button" class="ms9-qp" aria-label="Escuchar la pregunta">${I('vol')}</button><button type="button" class="ms9-qt slw-b" aria-label="Escuchar más lento">${SVT0}</button></div></div>`; qs.classList.add('in', 'talk');
+          qs.querySelector('.ms9-qp').onclick = () => { stop(); window.__mraSlow = false; play(x.qau); }; qs.querySelector('.ms9-qt').onclick = e => { e.stopPropagation(); stop(); window.__mraSlow = true; play(x.qau); }; }
+        if (x.img) $e('.ms9-fl').style.backgroundImage = `url('${M.imgURL('u:' + x.img, 900, 420)}')`; /* v696: la foto grande es la del lugar de esta pregunta */ $e('.ms9-ch').classList.add('talk'); bub(x.q, false, x.es, x.qau); turn.innerHTML = '';
+        await play(x.qau); $e('.ms9-ch').classList.remove('talk'); $e('.ms9-qs').classList.remove('talk'); if (!stage.isConnected) break;
         const wrong = sample(pool.filter(a => { if (a === x.a || M.words(a)[0] === M.words(x.a)[0]) return false; try { return !M.freeJudge(x.q, x.a, [a]).ok; } catch (e) { return true; } }), 2); const opts = shuffle([x.a, ...wrong]);
         // 1) elige la respuesta (prueba que entendió)
         const first = await new Promise(done => { let miss = 0;
-          turn.innerHTML = `<p class="ms9-q">¿Qué le respondes?</p><div class="ms9-opts">${opts.map((o, i) => `<button type="button" class="ms9-o" data-i="${i}">${esc(o)}</button>`).join('')}</div><button type="button" class="ms9-rep">${I('vol')} Escuchar otra vez</button>`;
-          turn.querySelector('.ms9-rep').onclick = () => { stop(); play(x.qau); };
+          turn.innerHTML = `<p class="ms9-q">¿Qué le respondes?</p><div class="ms9-opts">${opts.map((o, i) => `<button type="button" class="ms9-o" data-i="${i}">${esc(o)}</button>`).join('')}</div>`;
           turn.querySelectorAll('.ms9-o').forEach(b => b.onclick = () => { const o = opts[+b.dataset.i]; if (o !== x.a) { miss++; b.classList.add('bad'); sfx('bad'); setTimeout(() => b.classList.remove('bad'), 600); return; } sfx('ok'); done(miss === 0); }); });
         if (first) c++;
         // 2) dobla su línea con el motor de melodía
@@ -991,7 +994,7 @@
       const T = takes.filter(t => t && !t.fail), sr = T.length ? Math.round(T.reduce((a, t) => a + t.r, 0) / T.length) : 0, si = T.length ? Math.round(T.reduce((a, t) => a + t.it, 0) / T.length) : 0;
       /* v697 · «Misión cumplida» como una PELÍCULA con subtítulos: foto grande del lugar, solo la frase que suena (con su traducción), barra por frase y controles */
       { const h2 = stage.querySelector(':scope > h2'); if (h2) h2.textContent = '¡Misión cumplida!'; }
-      const bgImg = $e('.ms9-sc').style.backgroundImage || `url('${M.imgURL('u:photo-' + BG, 900, 420)}')`;
+      const bgImg = $e('.ms9-fl').style.backgroundImage || `url('${M.imgURL('u:photo-' + BG, 900, 420)}')`;
       const avHTML = $e('.ms9-ch:not(.me) .ms9-av').innerHTML;
       const LN = []; list.forEach((x, k) => { LN.push({ o: 1, en: x.q, es: x.es || '', au: x.qau }); LN.push({ o: 0, en: x.a, es: (window.MRKQES && MRKQES(x.q, x.a)) || '', k }); });
       const SVP = '<svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>', SVZ = '<svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>';

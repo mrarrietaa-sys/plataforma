@@ -5,7 +5,7 @@
    M3: Adultos Clasificador · Teens Carrera · Kids Canasta
    M4: Adultos Rascacielos · Teens Penalti · Kids Ranita */
 (function () {
-  try { if (!document.querySelector('link[href^="retos.css"]')) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'retos.css?v=632'; document.head.appendChild(l); } } catch (e) { }
+  try { if (!document.querySelector('link[href^="retos.css"]')) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'retos.css?v=698'; document.head.appendChild(l); } } catch (e) { }
   const T = window.__rtT || 40, IMG = 'retos/';
   const M = () => window.M1, A = () => window.M1A;
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -25,7 +25,9 @@
   function topicParts(p) { try { return M().allParts().filter(x => x.topic === p.topic); } catch (e) { return [p]; } }
   function vocabItems(p) {
     const V = (p.vocab || []).filter(v => v && v.en && v.au && String(v.en).length <= 22 && !(ag() !== 'adult' && WORK.test(v.en)));
-    const uniq = V.filter((v, i) => V.findIndex(x => x.en === v.en) === i); if (uniq.length < 3) return [];
+    let uniq = V.filter((v, i) => V.findIndex(x => x.en === v.en) === i); if (uniq.length < 3) return [];
+    /* v698: primero las palabras propias de ESTE tema (las que se repiten en otros temas del módulo van al final) */
+    try { const oth = new Set(M().allParts().filter(x => x.topic !== p.topic).flatMap(x => (x.vocab || []).map(v => String(v.en || '').toLowerCase()))); const own = uniq.filter(v => !oth.has(v.en.toLowerCase())); if (own.length >= 3) uniq = own; } catch (e) { }
     return uniq.map(v => ({ mode: 'v', say: v.au, after: v.au, ans: v.en, txt: v.en + (v.es ? ' = ' + v.es : ''), opts: [v.en, ...shuf(uniq.filter(x => x.en !== v.en)).slice(0, 2).map(x => x.en)] }));
   }
   function fillItems(p, n) {
@@ -42,10 +44,19 @@
     const loose = v => new RegExp('\\b' + v.en.split(/\s+/).map(w => { const c = w.replace(/[^A-Za-z']/g, ''); const st = c.length > 4 ? c.replace(/(ies|es|ed|ing|e|s|y)$/i, '') : c; return rx(st) + "[A-Za-z']*"; }).join('\\s+') + '\\b', 'i');
     const L = []; S.forEach(s => { const cand = V.slice().sort((a, b) => (a.img === s.img ? -1 : 0) - (b.img === s.img ? -1 : 0) || b.en.length - a.en.length);
       let v = cand.find(v => exact(v).test(s.en)), m = v && s.en.match(exact(v)); if (!v) { v = cand.find(v => v.en.split(/\s+/).length <= 4 && loose(v).test(s.en)); m = v && s.en.match(loose(v)); } if (!v || !m) return;
-      const ans = m[0], others = shuf(V.filter(x => x !== v && !exact(x).test(s.en) && x.en.toLowerCase() !== ans.toLowerCase())).slice(0, (n || 3) - 1).map(x => x.en); if (others.length < (n || 3) - 1) return;
+      const ans = m[0], need = (n || 3) - 1, cl = sameClass(ans, s.en);
+      let others = cl ? cl.slice(0, need) : [];
+      if (others.length < need) others = others.concat(shuf(V.filter(x => x !== v && !exact(x).test(s.en) && x.en.toLowerCase() !== ans.toLowerCase() && others.indexOf(x.en) < 0 && (cl || !FUNC.test(x.en)))).slice(0, need - others.length).map(x => x.en));
+      if (others.length < need) return;
       L.push({ mode: 'f', q: s.en.replace(m[0], '___'), ans, after: s.au, txt: s.en, opts: [ans, ...others] }); });
     return L.length >= 3 ? L : [];
   }
+  /* v698: si la respuesta es una palabra gramatical, los distractores son de su misma clase (y nunca otra respuesta válida) */
+  const FUNC = /^(who|which|that|where|when|whose|am|is|are|have|has)$/i;
+  const CLS = { who: ['which', 'where', 'whose', 'when'], which: ['who', 'where', 'whose'], that: ['where', 'whose', 'when'], where: ['who', 'which', 'whose'], when: ['who', 'which', 'whose'], whose: ['who', 'which', 'where'],
+    am: ['is', 'are'], is: ['am', 'are'], are: ['am', 'is'], have: ['has', 'is'], has: ['have', 'are'] };
+  function sameClass(ans, sent) { const k = String(ans).toLowerCase(), L = CLS[k]; if (!L) return null; const cap = /^[A-Z]/.test(ans); const words = String(sent).toLowerCase().match(/[a-z']+/g) || [];
+    return shuf(L.filter(w => words.indexOf(w) < 0)).map(w => cap ? w[0].toUpperCase() + w.slice(1) : w); }
   function qaItems(p) {
     const ok = k => k && k.q && k.a && k.qau && k.aau && !/_{2,}/.test(first(k.a)) && first(k.a).length <= 46;
     const K = (p.keyq || []).filter(ok), pool = topicParts(p).flatMap(x => (x.keyq || []).filter(ok)).concat(K);
@@ -78,7 +89,7 @@
     'adult-1': { k: 'maletas', t: 'Maletas al vuelo', ins: 'Escucha la pregunta y agarra la maleta con la respuesta correcta antes de que se vaya por la banda.', src: p => qaItems(p) },
     'teens-1': { k: 'ritmo', t: 'Ritmo en inglés', ins: 'Tus amigos te escriben. Toca la respuesta correcta antes de que caiga.', src: p => qaItems(p) },
     'kids-1': { k: 'burbujas', t: 'Burbujas', ins: 'Escucha la palabra y revienta la burbuja correcta antes de que se vaya volando.', src: p => vocabItems(p) },
-    'adult-2': { k: 'reloj', t: 'Reloj veloz', ins: 'Escucha la hora y toca el reloj que la marca. ¡Solo 2 opciones, pero rápido!', src: p => timeItems() },
+    'adult-2': { k: 'metro', t: 'Metro', ins: 'Lee la frase. Llega el metro: toca el vagón con la palabra correcta antes de que se vaya. ¡Encadena aciertos y el metro va más rápido!', src: p => fillItems(p) },
     'teens-2': { k: 'ninja', t: 'Corte ninja', ins: 'Lee la frase y corta la palabra que la completa mientras vuela. ¡No cortes las falsas!', src: p => fillItems(p) },
     'kids-2': { k: 'pesca', t: 'Pesca mágica', ins: 'Escucha la palabra y pesca el pez que la tiene antes de que se vaya nadando.', src: p => vocabItems(p) },
     'adult-3': { k: 'clasif', t: 'Clasificador exprés', ins: 'La frase baja por el tubo. Toca la palabra que la completa antes de que llegue abajo.', src: p => fillItems(p) },
@@ -92,25 +103,24 @@
     const g = G[ag() + '-' + Math.min(4, Math.max(1, mod()))]; if (!g) return null;
     let items = g.src(p) || [];
     if (ag() !== 'adult' && items.length && items[0].mode === 'f') { const af = ageFill(p, g.k === 'ranita' ? 2 : 3); const clean2 = items.filter(it => !WORK.test(it.q + ' ' + it.txt)); items = af.length >= 3 ? af : (clean2.length >= 3 ? clean2 : []); }
-    if (items.length < 3) { items = vocabItems(p); if (g.k === 'reloj' || g.k === 'ranita') items = items.map(it => Object.assign({}, it, { opts: g.k === 'ranita' ? it.opts.slice(0, 2) : it.opts })); }
-    if (g.k === 'reloj' && items.length && items[0].mode !== 't') return null; // sin frases de la hora → juego normal de la lección
+    if (items.length < 3) { items = vocabItems(p); if (g.k === 'ranita') items = items.map(it => Object.assign({}, it, { opts: it.opts.slice(0, 2) })); }
     if (items.length < 3) return null;
     return { g, items };
   }
-  window.MRRETO = { has: p => !!pick(p), pick, parseTime };
+  window.MRRETO = { has: p => !!pick(p), pick, parseTime, fit: (e, m) => fitIn(e, m) };
 
   /* ---------- motor común ---------- */
   function run(stage, p) {
     const P = pick(p); if (!P) return Promise.resolve(null);
     const { g, items } = P, AGE = ag();
-    const body = A().head(stage, { lbl: 'Practice', title: g.t, ins: g.ins });
+    const body = A().head(stage, { lbl: 'Practice', title: 'Game', ins: g.ins }); /* v698: todos los juegos se llaman «Game» */
     const box = document.createElement('div'); box.className = `rto rto-${AGE} rto-${g.k}`; body.appendChild(box);
     box.innerHTML = `<div class="rto-top"><span class="rto-pts">0 pts</span><div class="rto-bar"><i></i></div><span class="rto-s">${T} s</span></div><div class="rto-body"></div>`;
     const fit = () => { if (!box.isConnected) return removeEventListener('resize', fit); const r = box.getBoundingClientRect(); const h = Math.max(320, Math.min(620, innerHeight - r.top - 34)); box.style.height = h + 'px'; };
     fit(); addEventListener('resize', fit); setTimeout(fit, 300);
     const B = box.querySelector('.rto-body');
     return new Promise(done => {
-      const intro = () => { B.innerHTML = `<div class="rto-start"><img src="mra-point.webp" alt="Mr. Arrieta"><h3>${esc(g.t)}</h3><p>${esc(g.ins)}</p><button type="button" class="rto-go">Empezar · ${T} s</button></div>`; B.querySelector('.rto-go').onclick = start; };
+      const intro = () => { B.innerHTML = `<div class="rto-start"><img src="mra-point.webp" alt="Mr. Arrieta"><h3>Game</h3><p>${esc(g.ins)}</p><button type="button" class="rto-go">Empezar · ${T} s</button></div>`; B.querySelector('.rto-go').onclick = start; };
       const S = { ok: 0, tot: 0, pts: 0, streak: 0, live: false, tm: [], raf: 0, missed: [] };
       S.later = (f, ms) => S.tm.push(setTimeout(() => { if (S.live && box.isConnected) f(); }, ms));
       S.score = (good, it) => { S.tot++; if (good) { S.ok++; S.streak++; S.pts += 10 + (S.streak >= 3 ? 5 : 0); vib(30); } else { S.streak = 0; vib([60, 40, 60]); if (it && S.missed.indexOf(it.ans) < 0) S.missed.push(it.ans); } box.querySelector('.rto-pts').textContent = S.pts + ' pts'; return good ? (S.streak >= 3 ? '¡Racha! +15' : '+10') : ''; };
@@ -123,7 +133,7 @@
       async function end() {
         S.live = false; S.tm.forEach(clearTimeout); cancelAnimationFrame(S.raf); stopA(); if (!box.isConnected) return done(null);
         const md = window.MRMOOD ? MRMOOD(S.ok, S.tot || 1) : { k: 'hi', img: 'mra-celebrate.webp', t: '¡Excelente!' };
-        let k = S.tot === 0 ? 'lo' : md.k, img = S.tot === 0 ? 'mra-sad1.webp' : md.img; if (k === 'hi' && S.tot < 3) { k = 'mid'; img = 'mra-smile.webp'; }
+        let k = S.tot === 0 ? 'lo' : md.k, img = S.tot === 0 ? 'mra-sad1.webp' : md.img; if (k === 'hi' && S.tot < 3) { k = 'mid'; img = 'mra-smile.webp'; } try { window.__mood = { k, at: Date.now() }; } catch (e) { } /* v698: la transición repite exactamente lo que dice esta pantalla */
         const msg = k === 'hi' ? `Acertaste ${S.ok} de ${S.tot}. ¡Muy rápido!` : k === 'lo' ? `Solo ${S.ok} de ${S.tot} correctas. Repasa y vuelve a intentarlo.` : (S.ok === S.tot ? `Acertaste ${S.ok} de ${S.tot}. ¡Ahora intenta responder más rápido!` : `Acertaste ${S.ok} de ${S.tot}. Al final repasa lo que fallaste.`);
         B.innerHTML = `<div class="rto-end ${k}"><img src="${img}" alt="Mr. Arrieta"><h3>${k === 'hi' ? '¡Excelente!' : k === 'lo' ? 'Try again!' : '¡Vas bien!'}</h3><div class="rto-big">${S.pts}</div><small>puntos</small><p>${msg}</p></div>`;
         await A().waitNext(stage, 'Continuar'); removeEventListener('resize', fit);
@@ -136,6 +146,12 @@
   const wireAu = (B, key) => { const b = B.querySelector('.rto-au'); if (b) b.onclick = () => { stopA(); play(key); }; };
   const promptOf = it => it.mode === 'f' ? ['COMPLETA LA FRASE', blank(it.q), null] : it.mode === 'q' ? ['ESCUCHA Y RESPONDE', esc(it.q), it.say, (() => { try { return +(M() && M().MOD && M().MOD.n) <= 2 ? it.es : ''; } catch (e) { return ''; } })()] : it.mode === 't' ? ['ESCUCHA LA HORA', esc(it.ans), it.say] : ['ESCUCHA', '¿Qué palabra escuchas?', it.say];
   const FB = '<div class="rto-fb"></div>';
+  /* v698: el texto se encoge hasta caber dentro de su caja (nunca se sale ni toca el borde) */
+  function fitIn(el, min) { if (!el || !el.isConnected) return; let f = parseFloat(getComputedStyle(el).fontSize) || 15; el.style.overflowWrap = 'normal'; el.style.wordBreak = 'normal';
+    const cs = getComputedStyle(el), inner = el.clientWidth - (parseFloat(cs.paddingLeft) || 0) - (parseFloat(cs.paddingRight) || 0), rg = document.createRange();
+    const wide = () => { rg.selectNodeContents(el); const w = Math.max(...[...rg.getClientRects()].map(r => r.width), 0); return w > inner + .5 || el.scrollWidth > el.clientWidth + 1 || el.scrollHeight > el.clientHeight + 1; };
+    for (let i = 0; i < 14 && f > (min || 11) && wide(); i++) { f -= 1; el.style.setProperty('font-size', f + 'px', 'important'); }
+    if (wide()) el.style.overflowWrap = 'anywhere'; }
   const sz = t => t.length > 34 ? ' xs' : t.length > 20 ? ' sm' : '';
   function after(B, S, it, good, chosen, delayOk, delayBad, extra) {
     const fb = B.querySelector('.rto-fb'), m = S.score(good, it);
@@ -179,8 +195,8 @@
       const itEl = B.querySelector('.rto-item'); if (it.mode === 'f') itEl.innerHTML = blank(it.q); itEl.classList.add(sz(it.q || '').trim() || 'n');
       B.querySelectorAll('.rto-bins button').forEach((b, k) => b.onclick = () => { if (S.done || !S.live) return; S.done = true; const good = op[k] === it.ans; itEl.classList.add(good ? 'r' : 'w'); itEl.textContent = it.txt; b.classList.add(good ? 'r' : 'w'); after(B, S, it, good, op[k], 900, 2100); });
       timeout(B, S, it, sp * 1000 + 200); }; S.round(); },
-    carrera(B, S) { let lane = 1; S.round = () => { const it = S.next(), op = shuf(it.opts); while (op.length < 3) op.push(''); setup(B, S, it, `<div class="rto-area rto-road"><div class="rto-asph"></div><div class="rto-lns"><i></i><i></i></div><div class="rto-gates">${op.map(o => `<span class="rto-gt${o ? '' : ' em'}${sz(o)}">${esc(o)}</span>`).join('')}</div><img class="rto-car" src="${IMG}car.webp" alt=""><div class="rto-steer"><button type="button" aria-label="Izquierda">‹</button><button type="button" aria-label="Derecha">›</button></div></div>`);
-      const ar = B.querySelector('.rto-area'), car = ar.querySelector('.rto-car'), gates = ar.querySelector('.rto-gates'); const place = () => { car.style.left = (16.66 + lane * 33.33) + '%'; }; place();
+    carrera(B, S) { let lane = 1; S.round = () => { const it = S.next(), op = shuf(it.opts); while (op.length < 3) op.push(''); setup(B, S, it, `<div class="rto-area rto-road"><div class="rto-asph"></div><div class="rto-lns"><i></i><i></i></div><div class="rto-gates">${op.map(o => `<span class="rto-gt${o ? '' : ' em'}${sz(o)}">${esc(o)}</span>`).join('')}</div><img class="rto-wag" src="${IMG}car.webp" alt=""><div class="rto-steer"><button type="button" aria-label="Izquierda">‹</button><button type="button" aria-label="Derecha">›</button></div></div>`);
+      const ar = B.querySelector('.rto-area'), car = ar.querySelector('.rto-wag'), gates = ar.querySelector('.rto-gates'); const place = () => { car.style.left = (16.66 + lane * 33.33) + '%'; }; place();
       const [bl, br] = ar.querySelectorAll('.rto-steer button'); bl.onclick = () => { if (!S.done) { lane = Math.max(0, lane - 1); place(); } }; br.onclick = () => { if (!S.done) { lane = Math.min(2, lane + 1); place(); } };
       ar.onpointerdown = e => { if (e.target.closest('.rto-steer') || S.done) return; const R = ar.getBoundingClientRect(); lane = Math.max(0, Math.min(2, Math.floor((e.clientX - R.left) / R.width * 3))); place(); };
       const TT = 6000; gates.style.setProperty('--t', TT + 'ms');
@@ -210,8 +226,23 @@
     ranita(B, S) { S.round = () => { const it = S.next(), op = shuf(it.opts.slice(0, 2)); setup(B, S, it, `<div class="rto-area rto-lake"><div class="rto-frog"><img src="${FROG}" alt=""></div></div>`);
       const ar = B.querySelector('.rto-area'), fr = ar.querySelector('.rto-frog');
       op.forEach((o, k) => { const p = document.createElement('button'); p.type = 'button'; p.className = 'rto-pad ' + (k ? 'rr' : 'l') + sz(o); p.textContent = o; p.style.setProperty('--t', '7.5s');
-        p.onclick = () => { if (S.done || !S.live) return; S.done = true; const good = o === it.ans; ar.querySelectorAll('.rto-pad').forEach(x => x.style.animationPlayState = 'paused'); fr.classList.add(k ? 'jr' : 'jl'); setTimeout(() => { if (good) p.classList.add('ok'); else { p.classList.add('bad'); fr.classList.add('sp'); } }, 450); after(B, S, it, good, o, 1200, 2000, '¡Splash! Era'); }; ar.appendChild(p); });
+        p.onclick = () => { if (S.done || !S.live) return; S.done = true; const good = o === it.ans; ar.querySelectorAll('.rto-pad').forEach(x => x.style.animationPlayState = 'paused'); fr.classList.add(k ? 'jr' : 'jl'); setTimeout(() => { if (good) p.classList.add('ok'); else { p.classList.add('bad'); fr.classList.add('sp'); } }, 450); after(B, S, it, good, o, 1200, 2000, '¡Splash! Era'); }; ar.appendChild(p); fitIn(p, 11); });
       timeout(B, S, it, 7500, '¡Las hojas se hundieron! Era:'); }; S.round(); },
+    /* 🚇 v698 · Metro (Módulo 2 · Adultos): el tren llega, se detiene y se va. Toca el vagón con la respuesta correcta. */
+    metro(B, S) { S.round = () => { const it = S.next(), op = shuf(it.opts).slice(0, 3), stopMs = Math.max(3400, 6000 - S.streak * 400);
+      setup(B, S, it, `<div class="rto-area rto-tun"><div class="rto-mt-sign"><span>LÍNEA 2</span><b class="rto-mt-cb"></b></div><div class="rto-mt-rail"></div><div class="rto-train">${op.map((o, k) => `<button type="button" class="rto-wag${k === 0 ? ' hd' : ''}"><span class="win"><i></i><i></i></span><span class="lb${sz(o)}">${esc(o)}</span><span class="dr"></span></button>`).join('')}</div><div class="rto-mt-pl"><i class="rto-mt-dep"></i></div></div>`);
+      const ar = B.querySelector('.rto-area'), tr = ar.querySelector('.rto-train'), dep = ar.querySelector('.rto-mt-dep'), cb = ar.querySelector('.rto-mt-cb'), W = ar.clientWidth;
+      if (S.streak >= 2) { cb.textContent = 'Combo x' + S.streak; cb.classList.add('on'); }
+      tr.style.transform = `translateX(${W + 30}px)`; void tr.offsetWidth; tr.style.transition = 'transform 1.1s cubic-bezier(.2,.8,.25,1)'; tr.style.transform = 'translateX(0)';
+      ar.querySelectorAll('.rto-wag .lb').forEach(l => fitIn(l, 11));
+      S.later(() => { if (S.done || S.cur !== it) return; dep.style.transition = `transform ${stopMs}ms linear`; dep.style.transform = 'scaleX(0)'; }, 1100);
+      const leave = () => { tr.style.transition = 'transform 1s cubic-bezier(.55,0,.8,.4)'; tr.style.transform = `translateX(${-(W + 40)}px)`; };
+      S.later(() => { if (S.cur === it && !S.done) { tr.classList.add('cl'); leave(); } }, 1100 + stopMs);
+      ar.querySelectorAll('.rto-wag').forEach((b, k) => b.onclick = () => { if (S.done || !S.live) return; S.done = true; const good = op[k] === it.ans; const cs = getComputedStyle(tr).transform; tr.style.transition = 'none'; tr.style.transform = cs; dep.style.transition = 'none';
+        b.classList.add(good ? 'r' : 'w'); if (!good) ar.querySelectorAll('.rto-wag')[op.indexOf(it.ans)].classList.add('r');
+        if (good && S.streak + 1 >= 2) { cb.textContent = 'Combo x' + (S.streak + 1); cb.classList.remove('on'); void cb.offsetWidth; cb.classList.add('on'); }
+        after(B, S, it, good, op[k], 1100, 2100, 'Ese no era. Era'); if (good) S.later(() => { tr.classList.add('cl'); leave(); }, 650); });
+      timeout(B, S, it, 1100 + stopMs + 700, '¡Se fue el metro! Era:'); }; S.round(); },
     generic(B, S, it) { GAMES.burbujas(B, S); }
   };
   const FROG = 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 100"><defs><radialGradient id="fg" cx="45%" cy="35%" r="70%"><stop offset="0" stop-color="#86efac"/><stop offset=".6" stop-color="#22c55e"/><stop offset="1" stop-color="#15803d"/></radialGradient><radialGradient id="bl" cx="50%" cy="40%" r="60%"><stop offset="0" stop-color="#ecfccb"/><stop offset="1" stop-color="#bef264"/></radialGradient></defs><ellipse cx="60" cy="94" rx="40" ry="5" fill="#000" opacity=".18"/><ellipse cx="28" cy="84" rx="17" ry="9" fill="#16a34a"/><ellipse cx="92" cy="84" rx="17" ry="9" fill="#16a34a"/><ellipse cx="60" cy="64" rx="40" ry="30" fill="url(#fg)"/><ellipse cx="60" cy="72" rx="24" ry="17" fill="url(#bl)"/><circle cx="38" cy="32" r="17" fill="url(#fg)"/><circle cx="82" cy="32" r="17" fill="url(#fg)"/><circle cx="38" cy="31" r="12" fill="#fff"/><circle cx="82" cy="31" r="12" fill="#fff"/><circle cx="40" cy="33" r="7" fill="#0f172a"/><circle cx="80" cy="33" r="7" fill="#0f172a"/><circle cx="42.5" cy="30" r="2.6" fill="#fff"/><circle cx="82.5" cy="30" r="2.6" fill="#fff"/><ellipse cx="34" cy="56" rx="6" ry="3.5" fill="#f9a8d4" opacity=".8"/><ellipse cx="86" cy="56" rx="6" ry="3.5" fill="#f9a8d4" opacity=".8"/><path d="M44 54 Q60 68 76 54" fill="none" stroke="#14532d" stroke-width="3.5" stroke-linecap="round"/><ellipse cx="34" cy="90" rx="9" ry="4" fill="#15803d"/><ellipse cx="86" cy="90" rx="9" ry="4" fill="#15803d"/></svg>');

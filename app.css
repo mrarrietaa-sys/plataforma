@@ -10396,3 +10396,30 @@ body.ag-kids .ms9-movie{--mv:#f59e0b;--mvs:#f6e3c2;--mvb:#f6e3c2;--mvn:#d97706;-
 .mvx-res{display:flex;justify-content:center;gap:8px;margin-top:12px;flex-wrap:wrap}.mvx-res span{border:1.5px solid var(--mvb);border-radius:12px;padding:6px 12px;font:700 13px Inter,system-ui,sans-serif;color:var(--mvt);background:var(--mvc)}.mvx-res i{font-style:normal;color:#f59e0b}.mvx-res i i{color:#d6cfc2}
 .mvx-nx{width:100%;max-width:640px;margin:12px auto 0;background:var(--mvn)!important;border-color:var(--mvn)!important;color:var(--mvnt)!important}
 .mvx-sub.talk .mvx-av,.mvx-sub.talk .mvx-me{box-shadow:0 0 0 3px var(--mv);animation:mvxTk 1s ease-in-out infinite alternate}@keyframes mvxTk{to{box-shadow:0 0 0 6px var(--mv)}}
+/* v698 · misión en curso como película + subtítulos centrados (todas las edades) */
+.mvx-sub{flex-direction:column!important;align-items:center!important;text-align:center!important;gap:6px!important}
+.mvx-ln{flex:none!important;width:100%;min-width:0}
+.mvx-ln b,.mvx-ln>span{max-width:100%;margin-left:auto;margin-right:auto}
+.ms9-run .ms9-ch,.ms9-run .ms9-dl{display:none!important}
+.ms9-run .mvx-film{height:auto!important;min-height:clamp(200px,calc(30svh / var(--z, 1)),290px);display:flex;flex-direction:column;justify-content:space-between;align-items:center;gap:10px;padding:48px 12px 12px;box-sizing:border-box}
+.ms9-run .mvx-film .ms9-sit{position:relative;z-index:2;margin:0;font:600 12.5px/1.35 Inter,system-ui,sans-serif!important;color:#fff!important;background:rgba(0,0,0,.45);border-radius:10px;padding:5px 10px;max-width:100%;text-align:center;box-sizing:border-box}
+.ms9-run .mvx-film .mvx-sub{position:relative!important;left:auto;right:auto;bottom:auto;width:100%}
+.ms9-run .mvx-ln b{font-size:clamp(16px,4.3vw,20px)}
+.ms9-qb{display:flex;justify-content:center;gap:8px;margin-top:8px}
+.ms9-qb button{width:36px;height:36px;border-radius:50%;border:0;background:rgba(255,255,255,.92);color:#0B2A5B;display:grid;place-items:center;cursor:pointer;padding:0}
+.ms9-qb .mri{width:18px;height:18px}
+.ms9-run .mvx-sub .mvx-av{width:44px;height:44px}
+.ms9-run .mvx-seg{margin-top:10px}
+.ms9-run .ms9-turn{width:100%;max-width:640px;margin:12px auto 0}
+.ms9-run .ms9-q{text-align:center}
+.ms9-run .ms9-o{overflow-wrap:anywhere}
+/* «Tu turno»: la foto se compacta (la pregunta sigue visible) para que todo quepa sin desplazar */
+.ms9-run:has(.ms9-line) .mvx-film{min-height:0}
+.ms9-run:has(.ms9-line) .mvx-film .ms9-sit,.ms9-run:has(.ms9-line) .ms9-qb{display:none}
+.ms9-run:has(.ms9-line) .mvx-sub .mvx-av{width:34px;height:34px}
+.ms9-run:has(.ms9-line) .ms9-turn{margin-top:10px}
+.ms9-run .ms9-res:not(:empty){margin-bottom:10px}
+.ms9-run:has(.ms9-line) .mvx-film{padding:44px 12px 10px;gap:6px}
+.ms9-run:has(.ms9-line) .mvx-seg{margin-top:8px}
+.ms9-run:has(.ms9-line) .ms9-line{padding:8px 12px}
+.ms9-run .ms9-turn{gap:6px}
