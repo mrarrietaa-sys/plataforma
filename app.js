@@ -952,10 +952,10 @@
           <div class="ms9-ch"><span class="ms9-av">${list[0].img ? photo('u:' + list[0].img) : M.ageGroup() === 'kids' ? '<img src="mra-smile.webp" alt="Mr. Arrieta" style="object-fit:cover;object-position:top">' : photo(M.ageGroup() === 'teens' ? 'u:photo-1776111842991-4a189c07e609' : 'u:photo-1494790108377-be9c29b29330')}</span></div><div class="ms9-ch me"><span class="ms9-av ini">${esc(INI)}</span><small>Tú</small></div></div>
         <div class="ms9-sit"></div><div class="ms9-dl"></div><div class="ms9-turn"></div></div>`); body.appendChild(el);
       const $e = q => el.querySelector(q), dl = $e('.ms9-dl'), turn = $e('.ms9-turn');
-      const bub = (txt, me, es) => { const b = h(`<div class="ms9-b${me ? ' me' : ''}">${esc(txt)}${es ? `<small>${esc(es)}</small>` : ''}</div>`); dl.appendChild(b); dl.scrollTop = dl.scrollHeight; return b; };
+      const bub = (txt, me, es, au) => { const b = h(`<div class="ms9-b${me ? ' me' : ''}${au ? ' ms9-bq' : ''}"><div class="ms9-bt">${esc(txt)}${es ? `<small>${esc(es)}</small>` : ''}</div>${au ? `<div class="ms9-bctl"><button type="button" class="ms9-bpl" aria-label="Escuchar la pregunta">${I('vol')}</button></div>` : ''}</div>`); if (au) b.querySelector('.ms9-bpl').onclick = () => { stop(); play(au); }; dl.appendChild(b); dl.scrollTop = dl.scrollHeight; return b; }; /* v688: la pregunta tiene su parlante (y su tortuguita) */
       for (let mi = 0; mi < N; mi++) {
         if (!stage.isConnected) break; const x = list[mi];
-        $e('.ms9-sit').textContent = x.sit || ''; $e('.ms9-ch').classList.add('talk'); bub(x.q, false, x.es); turn.innerHTML = '';
+        $e('.ms9-sit').textContent = x.sit || ''; $e('.ms9-ch').classList.add('talk'); bub(x.q, false, x.es, x.qau); turn.innerHTML = '';
         await play(x.qau); $e('.ms9-ch').classList.remove('talk'); if (!stage.isConnected) break;
         const wrong = sample(pool.filter(a => { if (a === x.a || M.words(a)[0] === M.words(x.a)[0]) return false; try { return !M.freeJudge(x.q, x.a, [a]).ok; } catch (e) { return true; } }), 2); const opts = shuffle([x.a, ...wrong]);
         // 1) elige la respuesta (prueba que entendió)
