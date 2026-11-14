@@ -10260,3 +10260,16 @@ html body .wrap.db .md3-hx .md3-stats>div>small,html body .wrap .md3-stats>div>s
 /* ===== v690 · lectura: cada pregunta con su traducción al español (Módulos 1 y 2) ===== */
 .yn .yn-es{display:block;font-weight:500;font-size:12.5px;color:#6b7a90;font-style:italic;margin-top:2px;line-height:1.3}
 .dk .yn .yn-es,body.ag-teens .yn .yn-es{color:#9fb3d1}
+
+/* ===== v691 · «Crea tu acceso gratis» al final de Opiniones, Profes y Papás (todo a la vista) ===== */
+.lp-cta9{display:flex;flex-direction:column;align-items:center;text-align:center;margin:12px auto 0;max-width:640px}
+.lp-cta9.in{animation:cta9In .6s ease-out both}
+@keyframes cta9In{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.lp-cta9-b{--c:#E3242B;position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:8px;border:0;border-radius:14px;padding:12px 26px;font:700 16px Poppins,system-ui,sans-serif;color:#fff;background:var(--c);cursor:pointer;max-width:100%;animation:cta9Br 2.4s ease-in-out infinite}
+.lp-cta9-b .mri,.lp-cta9-b svg{width:18px;height:18px}
+.lp-cta9-b::after{content:'';position:absolute;top:0;bottom:0;width:45%;left:-60%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-20deg);animation:cta9Sh 2.4s ease-in-out infinite;pointer-events:none}
+@keyframes cta9Sh{0%{left:-60%}55%,100%{left:130%}}
+@keyframes cta9Br{0%,100%{box-shadow:0 6px 14px rgba(0,0,0,.14)}50%{box-shadow:0 0 0 4px color-mix(in srgb,var(--c) 22%,transparent),0 8px 18px rgba(0,0,0,.18)}}
+.lp-cta9.k .lp-cta9-b{--c:#F59E0B}
+body.lp-teen .lp-cta9.k .lp-cta9-b{--c:#22C55E}
+.lp-cta9 small{display:block;margin-top:5px;color:#16a34a;font-weight:700;font-size:12.5px}
