@@ -10198,3 +10198,61 @@ body.ag-kids .pt-ann.pt-trial span,body.ag-kids .pt-ann.pt-trial b{color:#7c3e00
 /* v681: en «Para mi hijo(a)» solo se pide la fecha del niño(a) */
 .tf-kidm .tf-bd.hidden,.modal .tf-bd.hidden{display:none!important}
 .tf-bd .tf-sm{font-size:12.5px;line-height:1.25}
+
+/* ===== v688 · Misión: la pregunta con su parlante y su tortuguita ===== */
+.ms9-b.ms9-bq{display:flex;align-items:center;gap:10px}
+.ms9-bt{flex:1;min-width:0}
+.ms9-bctl{display:flex;gap:6px;flex:none;align-items:center}
+.ms9-bpl{width:38px;height:38px;border-radius:50%;border:0;background:#fff;color:#0B2A5B;display:grid;place-items:center;cursor:pointer;box-shadow:0 2px 6px rgba(11,42,91,.12);padding:0}
+.ms9-bpl svg{width:19px;height:19px}
+.dk .ms9-bpl{background:#0B1E3F;color:#fff}
+
+/* ===== v688 · Repite las frases: la frase centrada en una línea; debajo Escuchar, tortuguita y micrófono ===== */
+.lrc-bd{display:flex!important;flex-direction:column!important;align-items:center!important;gap:6px!important;padding:12px 14px 14px!important}
+.lrc-w{display:contents!important}
+.lrc-en{order:1;width:100%;text-align:center!important;white-space:nowrap;overflow-wrap:normal!important}
+.lrc-en.lrc-wrap{white-space:normal}
+.lrc-es{order:2;width:100%;text-align:center!important;margin-top:0!important}
+.lrc-ctr{order:3;justify-content:center!important;gap:22px!important;align-items:flex-start!important;margin-top:4px}
+.lrc-res{order:4;width:100%;margin-top:4px!important}
+
+/* ===== v688 · Prueba gratis en PC: dos columnas, todo a la vista sin bajar ===== */
+@media(min-width:900px){
+.modal .card:has(#tf-go):has(>.to-new){width:min(880px,94vw)!important;max-width:880px!important;max-height:none!important;overflow:visible!important;position:relative;display:grid!important;grid-template-columns:300px 1fr;gap:0 28px;align-items:center;padding:26px 28px!important}
+.modal .card:has(>.to-new)>.mx{position:absolute}
+.modal .card>.to-new{grid-column:1;background:#F3F6FB;border-radius:18px;padding:26px 20px!important;margin:0!important;align-self:stretch;display:flex;flex-direction:column;justify-content:center}
+.modal .card>.to-new .to-pills{display:flex;flex-direction:column;align-items:center;gap:8px}
+.modal .card>.tf{grid-column:2;padding-top:34px!important;display:grid!important;grid-template-columns:1fr 1fr;gap:10px 12px;align-items:end;margin:0!important}
+.modal .card>.tf>*{grid-column:1/-1;margin:0!important}
+.modal .card>.tf>#tf-n,.modal .card>.tf>.tf-bd.tf-me{grid-column:auto}
+.modal .card>.tf>#tf-w,.modal .card>.tf>#tf-e{grid-column:auto}
+}
+
+/* ===== v688 · Resultado del examen más compacto: todo a la vista (PC y celular) ===== */
+.fx-res{max-width:760px;margin-left:auto;margin-right:auto;padding:16px 20px!important}
+.fx-res .mascot{max-height:clamp(90px,15vh,140px)!important;width:auto!important}
+.fx-res>.row{gap:12px!important}
+.fx-res .lbl{font-size:10px!important;letter-spacing:.12em!important;padding:4px 10px!important}
+.fx-res .fx-score{font-size:clamp(32px,4.2vw,42px)!important;margin-top:4px}
+.fx-res .fx-score small{font-size:15px!important}
+.fx-res .fx-band{font-size:13px;padding:3px 10px;margin:4px 0}
+.fx-res .fx-pass-badge{font-size:15px!important}
+.fx-res>p.muted{font-size:13px;margin:6px 0}
+.fx-res .fx-bars{gap:4px!important;margin:8px auto!important;max-width:460px!important}
+.fx-res .fx-bars>div{font-size:13px!important}
+.fx-res .sp9-sum{margin:6px 0!important}
+.fx-res .sp9-sum div{padding:6px 14px!important}
+.fx-res .sp9-sum b{font-size:18px!important}
+.fx-res .fx-comment{font-size:14px!important;line-height:1.45!important;padding:10px 14px!important}
+.fx-res .fx-notify{font-size:13px}
+.fx-res .btn{font-size:14px}
+
+/* ===== v688 · «aprobados» y «lecciones hechas»: los números siempre se ven (también en jóvenes) ===== */
+html body .wrap.db .md3-hx .md3-stats>div>b,html body .wrap .md3-stats>div>b,html body .md3-stats b{color:#0B2A5B!important;-webkit-text-fill-color:#0B2A5B!important}
+html body .wrap.db .md3-hx .md3-stats>div>small,html body .wrap .md3-stats>div>small,html body .md3-stats small{color:#5B6B82!important;-webkit-text-fill-color:#5B6B82!important}
+
+/* ===== v689 · al terminar el reto de voz, el botón de prueba gratis palpita 3 veces (sin tocar los bordes) ===== */
+@keyframes mkpulse{0%,100%{transform:scale(1)}50%{transform:scale(1.03);box-shadow:0 0 0 4px rgba(227,36,43,.22),0 8px 18px rgba(227,36,43,.3)}}
+@keyframes mkpulseM{0%,100%{transform:scale(1)}50%{transform:scale(1.02);box-shadow:0 0 0 3px rgba(227,36,43,.22)}}
+.mk-pulse{animation:mkpulse .9s ease-in-out 3}
+@media(max-width:899px){.mk-pulse{animation-name:mkpulseM}}
