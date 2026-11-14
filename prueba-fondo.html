@@ -1,7 +1,7 @@
 <!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Prueba de fondo · mrarrieta.com</title>
 <link rel="icon" type="image/png" href="favicon.png">
-<link rel="stylesheet" href="marca.css?v=693">
+<link rel="stylesheet" href="marca.css?v=694">
 <style>
 :root{--k:#0B2A5B;--r:#E3242B;--g:#16a34a;--mut:#64748b}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -41,18 +41,17 @@ h1{font:800 22px Poppins,sans-serif;color:var(--k);text-align:center}
 </div>
 <p class="err" id="err"></p>
 </div>
-<script src="fondo/selfie_segmentation.js"></script>
 <script>
 (() => {
   const $ = (s) => document.querySelector(s);
   const cam = $('#cam'), out = $('#out'), ctx = out.getContext('2d');
-  const bg = new Image(); bg.src = 'fondo/oficina.webp';
+  const bg = new Image();
   let want = 'auto', mode = 'office', last = performance.now(), frames = 0, fps = 0, slow = 0, fast = 0, busy = false;
   const setMode = (m) => { mode = m; $('#s-mode').textContent = 'Modo: ' + ({ office: 'Oficina', blur: 'Desenfoque', none: 'Sin fondo' })[m]; };
   document.querySelectorAll('.mode button').forEach(b => b.onclick = () => { want = b.dataset.m; document.querySelectorAll('.mode button').forEach(x => x.classList.toggle('on', x === b)); if (want !== 'auto') setMode(want); slow = fast = 0; });
-  const seg = new SelfieSegmentation({ locateFile: (f) => 'fondo/' + f });
-  seg.setOptions({ modelSelection: 1, selfieMode: false });
-  seg.onResults((r) => {
+  let seg = null, BASE = 'fondo/';
+  const loadLib = () => new Promise((ok, no) => { if (window.SelfieSegmentation) return ok(); const tryB = (bases) => { if (!bases.length) return no(); const sc = document.createElement('script'); sc.src = bases[0] + 'selfie_segmentation.js'; sc.onload = () => { BASE = bases[0]; ok(); }; sc.onerror = () => { sc.remove(); tryB(bases.slice(1)); }; document.head.appendChild(sc); }; tryB(['fondo/', '']); });
+  const onRes = (r) => {
     const w = out.width = r.image.width, h = out.height = r.image.height;
     ctx.save(); ctx.clearRect(0, 0, w, h);
     if (mode === 'none') { ctx.drawImage(r.image, 0, 0, w, h); ctx.restore(); return; }
@@ -62,9 +61,9 @@ h1{font:800 22px Poppins,sans-serif;color:var(--k);text-align:center}
     if (mode === 'office' && bg.complete && bg.naturalWidth) { const s = Math.max(w / bg.naturalWidth, h / bg.naturalHeight), bw = bg.naturalWidth * s, bh = bg.naturalHeight * s; ctx.filter = 'blur(6px) brightness(1.05) saturate(.9)'; ctx.drawImage(bg, (w - bw) / 2 - 8, (h - bh) / 2 - 8, bw + 16, bh + 16); }
     else { ctx.filter = 'blur(14px)'; ctx.drawImage(r.image, 0, 0, w, h); }
     ctx.restore();
-  });
+  };
   const loop = async () => {
-    if (!busy && cam.readyState >= 2) { busy = true; try { await seg.send({ image: cam }); } catch (e) { $('#err').textContent = 'No se pudo procesar el video en este equipo.'; } busy = false; frames++; }
+    if (seg && !busy && cam.readyState >= 2) { busy = true; try { await seg.send({ image: cam }); } catch (e) { $('#err').textContent = 'No se pudo procesar el video en este equipo.'; } busy = false; frames++; }
     const now = performance.now();
     if (now - last >= 1000) {
       fps = Math.round(frames * 1000 / (now - last)); frames = 0; last = now;
@@ -80,10 +79,14 @@ h1{font:800 22px Poppins,sans-serif;color:var(--k);text-align:center}
   };
   $('#go').onclick = async () => {
     $('#err').textContent = '';
+    const go = $('#go'); go.disabled = true; go.textContent = 'Preparando…';
+    try { await loadLib(); seg = new SelfieSegmentation({ locateFile: (f) => BASE + f }); seg.setOptions({ modelSelection: 1, selfieMode: false }); seg.onResults(onRes); bg.onerror = () => { bg.onerror = null; bg.src = (BASE ? '' : 'fondo/') + 'oficina.webp'; }; bg.src = BASE + 'oficina.webp'; }
+    catch (e) { go.disabled = false; go.textContent = 'Encender mi cámara'; $('#err').textContent = 'Falta la carpeta «fondo» en GitHub. Súbela con todos sus archivos y vuelve a intentar.'; return; }
     try {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error('nocam');
       const s = await navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 960 }, height: { ideal: 720 } }, audio: false });
       cam.srcObject = s; await cam.play(); $('#go').hidden = true; $('#ui').hidden = false; setMode('office'); loop();
-    } catch (e) { $('#err').textContent = 'No pudimos encender la cámara. Revisa que el navegador tenga permiso para usarla.'; }
+    } catch (e) { go.disabled = false; go.textContent = 'Encender mi cámara'; $('#err').textContent = e && e.name === 'NotAllowedError' ? 'El navegador no dio permiso a la cámara. Toca el candado junto a la dirección, permite la cámara y vuelve a intentar.' : 'No pudimos encender la cámara. Revisa que esté conectada y que ninguna otra aplicación la esté usando.'; }
   };
 })();
 </script>
