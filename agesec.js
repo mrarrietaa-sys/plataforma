@@ -342,7 +342,7 @@
         body.querySelectorAll('.as-wc').forEach(b => b.onclick = () => { const k = +b.dataset.k; if (pick.includes(k)) return; pick.push(k); sfx('tap'); draw(); });
         body.querySelector('#as-undo').onclick = () => { pick.pop(); draw(); };
         body.querySelector('#as-send').onclick = async () => { const got = pick.map(k => words[k]).join(' '); if (pick.length < words.length) return; tries++;
-          if (got === words.join(' ')) { body.querySelector('#as-msg').classList.add('sent'); sfx('ok'); if (it.au) await play(it.au); done(tries === 1); }
+          if (got === words.join(' ')) { body.querySelector('#as-msg').classList.add('sent'); sfx('ok'); if (it.au) await play(it.au); done(tries <= 2); }
           else { sfx('bad'); body.querySelector('#as-msg').classList.add('bad'); setTimeout(() => body.querySelector('#as-msg').classList.remove('bad'), 600); if (tries >= 2) { pick = words.map((_, k) => k); draw(); if (it.au) await play(it.au); setTimeout(() => done(false), 600); } else { pick = []; draw(); } } }; });
       if (ok) c++; else missed.push({ en: it.en, au: it.au });
     }

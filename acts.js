@@ -721,3 +721,8 @@
   }
   window.M1A = { song9, ml10, head, playBtn, slowBtn, waitNext, qloop, choose, feedback, typeQ, speakCard, learn, listenChoose, pickWord, typeWord, typeLetter, typeNumber, phone, spellName, typeSentence, fill, unscramble, memory, sort, crossword, speed, spell, plural, dialogue, speak, speakWords, result };
 })();
+
+/* v688 · Repite las frases: la frase cabe en una sola línea (la letra se ajusta sola) */
+(()=>{const fit=e=>{e.classList.remove('lrc-wrap');e.style.fontSize='';let s=parseFloat(getComputedStyle(e).fontSize);while(e.scrollWidth>e.clientWidth+1&&s>17){s-=1;e.style.fontSize=s+'px'}if(e.scrollWidth>e.clientWidth+1)e.classList.add('lrc-wrap')};
+const all=()=>document.querySelectorAll('.lrc-en').forEach(fit);const go=()=>{all();let tq=0;new MutationObserver(()=>{if(tq)return;tq=requestAnimationFrame(()=>{tq=0;all()})}).observe(document.body,{subtree:true,childList:true,characterData:true});addEventListener('resize',all)};if(document.body)go();else addEventListener('DOMContentLoaded',go)})();
+

@@ -193,7 +193,7 @@
       body.querySelectorAll('.m2m-tb').forEach(b => b.onclick = () => { hand = b.dataset.h; body.querySelectorAll('.m2m-tb').forEach(x => x.classList.toggle('on', x === b)); draw(); });
       body.querySelector('.m2m-pl').onclick = () => { stopA(); play(it.au); }; draw(); await sleep(250); play(it.au);
       const ok = await new Promise(done => { body.querySelector('.m2m-ok').onclick = async () => { const good = cur.h % 12 === it.t.h % 12 && cur.m === it.t.m; tries++;
-        if (good) { sfx('ok'); kh.querySelector('svg').classList.add('win'); fb.innerHTML = `<div class="as-fbk ok"><span>¡Correcto! <b>${esc(it.en)}</b></span></div>`; play(it.au); body.querySelector('.m2m-act').innerHTML = ''; await sleep(1700); return done(tries === 1); }
+        if (good) { sfx('ok'); kh.querySelector('svg').classList.add('win'); fb.innerHTML = `<div class="as-fbk ok"><span>¡Correcto! <b>${esc(it.en)}</b></span></div>`; play(it.au); body.querySelector('.m2m-act').innerHTML = ''; await sleep(1700); return done(tries <= 2); }
         sfx('bad'); const hOk = cur.h % 12 === it.t.h % 12, mOk = cur.m === it.t.m;
         fb.innerHTML = `<div class="as-fbk no"><span>${!mOk ? 'Revisa la <b>aguja larga</b> (minutos).' : ''} ${!hOk ? 'Revisa la <b>aguja corta</b> (hora).' : ''}</span></div>`;
         if (tries >= 3) { Object.assign(cur, it.t); draw(); fb.innerHTML = `<div class="as-fbk no"><span>Así se pone: <b>${esc(it.en)}</b></span></div>`; body.querySelector('.m2m-act').innerHTML = '<button type="button" class="btn k lg m2m-nx">Siguiente</button>'; body.querySelector('.m2m-nx').onclick = () => done(false); } }; });
@@ -452,7 +452,7 @@
         el.querySelector('.m3d-pl').onclick = () => say(false); el.querySelector('.m3d-sl').onclick = () => say(true); await say(false); try { inp.focus(); } catch (e) { }
         const ok = await new Promise(done => { let tries = 0; okb.onclick = () => { const v = norm(inp.value), t = norm(x.full); if (!v) { inp.focus(); return; } tries++;
           const tw = t.split(' '), vw = v.split(' '); const good = v === t;
-          if (good) { sfx('ok'); inp.disabled = true; fb.innerHTML = `<div class="as-fbk ok"><span>Perfecto: <b>${esc(x.full)}</b></span></div>`; okb.textContent = i < R.length - 1 ? 'Siguiente frase' : 'Continuar'; okb.onclick = () => done(tries === 1); return; }
+          if (good) { sfx('ok'); inp.disabled = true; fb.innerHTML = `<div class="as-fbk ok"><span>Perfecto: <b>${esc(x.full)}</b></span></div>`; okb.textContent = i < R.length - 1 ? 'Siguiente frase' : 'Continuar'; okb.onclick = () => done(tries <= 2); return; }
           const marked = vw.map((w, j) => tw[j] === w ? esc(w) : `<u>${esc(w)}</u>`).join(' ') + (vw.length < tw.length ? ' <u>…</u>' : '');
           sfx('bad'); if (tries >= 2) { inp.disabled = true; fb.innerHTML = `<div class="as-fbk no"><span>Así es la frase: <b>${esc(x.full)}</b></span></div>`; okb.textContent = i < R.length - 1 ? 'Siguiente frase' : 'Continuar'; okb.onclick = () => done(false); play(x.au); return; }
           fb.innerHTML = `<div class="as-fbk no"><span>Casi. Revisa lo subrayado y escucha otra vez: ${marked}${vw.length < tw.length ? ' (faltan palabras)' : ''}</span></div>`; }; });
