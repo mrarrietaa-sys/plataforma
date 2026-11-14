@@ -1,0 +1,90 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Prueba de fondo · mrarrieta.com</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="stylesheet" href="marca.css?v=692">
+<style>
+:root{--k:#0B2A5B;--r:#E3242B;--g:#16a34a;--mut:#64748b}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,Arial,sans-serif;background:#EDF1F8;color:#1d2b45;min-height:100vh}
+.hd{display:flex;align-items:center;gap:14px;background:#fff;border-bottom:3px solid var(--r);padding:8px 16px}
+.hd img{height:44px}.hd b{font:800 17px Poppins,sans-serif;color:var(--k)}
+.wrap{max-width:1180px;margin:0 auto;padding:16px}
+h1{font:800 22px Poppins,sans-serif;color:var(--k);text-align:center}
+.sub{text-align:center;color:var(--mut);margin:4px 0 14px;font-size:14.5px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.box{background:#fff;border-radius:18px;padding:10px;box-shadow:0 8px 20px -14px rgba(11,42,91,.4)}
+.box small{display:block;font:800 12.5px Poppins,sans-serif;color:var(--k);text-align:center;margin-bottom:6px;letter-spacing:.04em}
+.v{position:relative;width:100%;aspect-ratio:4/3;background:#0f1d3a;border-radius:12px;overflow:hidden}
+.v video,.v canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+.st{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:14px 0 8px}
+.st span{background:#fff;border-radius:99px;padding:6px 12px;font:700 13px Inter;color:var(--k);border:1px solid #e3e8f0}
+.st span.ok{background:#E7F7EE;color:#15803d;border-color:#bfe9cf}.st span.mid{background:#FFF6DC;color:#9a6700;border-color:#f3dc9c}.st span.bad{background:#FDECEC;color:#b91c1c;border-color:#f5c2c2}
+.mode{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.mode button{border:1.5px solid #dbe3ee;background:#fff;border-radius:12px;padding:9px 16px;font:800 14px Poppins,sans-serif;color:var(--k);cursor:pointer}
+.mode button.on{background:var(--k);color:#fff;border-color:var(--k)}
+.go{display:block;margin:18px auto;border:0;border-radius:14px;padding:14px 28px;background:var(--r);color:#fff;font:800 17px Poppins,sans-serif;cursor:pointer}
+.tip{max-width:640px;margin:10px auto 0;background:#fff;border-radius:14px;padding:10px 14px;font-size:14px;color:#334155;text-align:center}
+.err{color:#b91c1c;text-align:center;margin-top:10px;font-weight:700}
+[hidden]{display:none!important}@media(max-width:760px){.grid{grid-template-columns:1fr}}
+</style></head><body>
+<div class="hd"><img src="mra-brand.png" alt="mrarrieta.com"><b>Prueba del fondo de cámara</b></div>
+<div class="wrap">
+<h1>Así te verá el estudiante en clase</h1>
+<p class="sub">Esta prueba es solo para ti: no se graba ni se envía nada. Todo pasa en tu computador.</p>
+<button class="go" id="go">Encender mi cámara</button>
+<div id="ui" hidden>
+ <div class="grid"><div class="box"><small>TU CÁMARA (LO QUE TIENES DETRÁS)</small><div class="v"><video id="cam" playsinline muted></video></div></div>
+ <div class="box"><small>LO QUE VE EL ESTUDIANTE</small><div class="v"><canvas id="out"></canvas></div></div></div>
+ <div class="st"><span id="s-mode">Modo: —</span><span id="s-fps">Velocidad: —</span><span id="s-eq">Tu equipo: midiendo…</span></div>
+ <div class="mode"><button data-m="auto" class="on">Automático</button><button data-m="office">Oficina</button><button data-m="blur">Desenfoque</button><button data-m="none">Sin fondo</button></div>
+ <p class="tip">Consejo: ponte <b>de frente a la luz</b> (una ventana o lámpara delante de ti, no detrás). Así el borde del pelo se ve limpio.</p>
+</div>
+<p class="err" id="err"></p>
+</div>
+<script src="fondo/selfie_segmentation.js"></script>
+<script>
+(() => {
+  const $ = (s) => document.querySelector(s);
+  const cam = $('#cam'), out = $('#out'), ctx = out.getContext('2d');
+  const bg = new Image(); bg.src = 'fondo/oficina.webp';
+  let want = 'auto', mode = 'office', last = performance.now(), frames = 0, fps = 0, slow = 0, fast = 0, busy = false;
+  const setMode = (m) => { mode = m; $('#s-mode').textContent = 'Modo: ' + ({ office: 'Oficina', blur: 'Desenfoque', none: 'Sin fondo' })[m]; };
+  document.querySelectorAll('.mode button').forEach(b => b.onclick = () => { want = b.dataset.m; document.querySelectorAll('.mode button').forEach(x => x.classList.toggle('on', x === b)); if (want !== 'auto') setMode(want); slow = fast = 0; });
+  const seg = new SelfieSegmentation({ locateFile: (f) => 'fondo/' + f });
+  seg.setOptions({ modelSelection: 1, selfieMode: false });
+  seg.onResults((r) => {
+    const w = out.width = r.image.width, h = out.height = r.image.height;
+    ctx.save(); ctx.clearRect(0, 0, w, h);
+    if (mode === 'none') { ctx.drawImage(r.image, 0, 0, w, h); ctx.restore(); return; }
+    ctx.filter = 'blur(2px)'; ctx.drawImage(r.segmentationMask, 0, 0, w, h); ctx.filter = 'none';   /* borde suave alrededor del pelo */
+    ctx.globalCompositeOperation = 'source-in'; ctx.drawImage(r.image, 0, 0, w, h);
+    ctx.globalCompositeOperation = 'destination-over';
+    if (mode === 'office' && bg.complete && bg.naturalWidth) { const s = Math.max(w / bg.naturalWidth, h / bg.naturalHeight), bw = bg.naturalWidth * s, bh = bg.naturalHeight * s; ctx.filter = 'blur(6px) brightness(1.05) saturate(.9)'; ctx.drawImage(bg, (w - bw) / 2 - 8, (h - bh) / 2 - 8, bw + 16, bh + 16); }
+    else { ctx.filter = 'blur(14px)'; ctx.drawImage(r.image, 0, 0, w, h); }
+    ctx.restore();
+  });
+  const loop = async () => {
+    if (!busy && cam.readyState >= 2) { busy = true; try { await seg.send({ image: cam }); } catch (e) { $('#err').textContent = 'No se pudo procesar el video en este equipo.'; } busy = false; frames++; }
+    const now = performance.now();
+    if (now - last >= 1000) {
+      fps = Math.round(frames * 1000 / (now - last)); frames = 0; last = now;
+      $('#s-fps').textContent = 'Velocidad: ' + fps + ' cuadros/seg';
+      const eq = $('#s-eq'); eq.className = fps >= 18 ? 'ok' : fps >= 10 ? 'mid' : 'bad'; eq.textContent = 'Tu equipo: ' + (fps >= 18 ? 'perfecto para el fondo' : fps >= 10 ? 'justo' : 'lento para el fondo');
+      if (want === 'auto') { /* automático: baja de opción si el equipo no da, y vuelve a subir si mejora */
+        if (fps < 12) { slow++; fast = 0; } else if (fps >= 20) { fast++; slow = 0; } else { slow = fast = 0; }
+        if (slow >= 3) { slow = 0; if (mode === 'office') setMode('blur'); else if (mode === 'blur') setMode('none'); }
+        if (fast >= 6) { fast = 0; if (mode === 'none') setMode('blur'); else if (mode === 'blur') setMode('office'); }
+      }
+    }
+    requestAnimationFrame(loop);
+  };
+  $('#go').onclick = async () => {
+    $('#err').textContent = '';
+    try {
+      const s = await navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 960 }, height: { ideal: 720 } }, audio: false });
+      cam.srcObject = s; await cam.play(); $('#go').hidden = true; $('#ui').hidden = false; setMode('office'); loop();
+    } catch (e) { $('#err').textContent = 'No pudimos encender la cámara. Revisa que el navegador tenga permiso para usarla.'; }
+  };
+})();
+</script>
+</body></html>
