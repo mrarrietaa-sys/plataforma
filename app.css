@@ -10352,7 +10352,7 @@ html body.ag-teens .md3-stats>div>small,html body.ag-teens .wrap .md3-stats>div>
 .m2l-qb{display:flex;justify-content:center;gap:8px;margin-top:4px}
 .m2l-qc .m2l-pl{width:38px;height:38px}
 .dk .m2l-qc{background:#081733;color:#fff}
-@media(max-width:760px){.m2l-sc{height:clamp(110px,calc(18svh / var(--z, 1)),160px)!important;aspect-ratio:auto!important}.m2o-sc{min-height:0!important;height:clamp(70px,calc(11svh / var(--z, 1)),110px)!important}}
+@media(max-width:760px){.m2l-sc{height:clamp(110px,calc(18svh / var(--z, 1)),160px)!important;aspect-ratio:auto!important}.m2o-sc{min-height:96px!important;height:auto!important}}
 .ms9.ms9-ov:not(.ms9-attop) .ms9-dl{-webkit-mask:linear-gradient(transparent,#000 14%,#000 100%);mask:linear-gradient(transparent,#000 14%,#000 100%)}
 .ms9.ms9-ov:not(.ms9-attop):not(.ms9-atend) .ms9-dl{-webkit-mask:linear-gradient(transparent,#000 14%,#000 82%,transparent);mask:linear-gradient(transparent,#000 14%,#000 82%,transparent)}
 @media (min-width:900px){.player .stage .ms9-sc{aspect-ratio:2.5/1!important;width:min(100%,560px)!important}
@@ -10366,3 +10366,33 @@ html body.ag-teens .md3-stats>div>small,html body.ag-teens .wrap .md3-stats>div>
 .m2w-b .m2w-pl{position:static!important;transform:none!important;margin:6px auto 0}
 .m2w-b .slw-w{display:flex!important;justify-content:center;gap:8px;margin-top:6px}.m2w-b .slw-w .m2w-pl{margin:0}
 .m2w-b{min-width:0!important;box-sizing:border-box}.m2w-top{min-width:0;max-width:100%}
+
+.m2o-sc{overflow:hidden}.m2o-ln{max-width:100%;overflow-wrap:anywhere}
+/* ============ v697 · «Misión cumplida» como película con subtítulos ============ */
+.ms9-movie{--mv:#E3242B;--mvt:#0B2A5B;--mvm:#5a6b85;--mvs:#e3e8f0;--mvb:#dbe3ee;--mvc:#fff;--mvn:#0B2A5B;--mvnt:#fff;display:flex;flex-direction:column;gap:0}
+.dk .ms9-movie{--mv:#22e58a;--mvt:#fff;--mvm:#9fb3d1;--mvs:#1e3a6b;--mvb:#1e3a6b;--mvc:#0B1E3F;--mvn:#22e58a;--mvnt:#06210f}
+body.ag-kids .ms9-movie{--mv:#f59e0b;--mvs:#f6e3c2;--mvb:#f6e3c2;--mvn:#d97706;--mvm:#8a6a4b}
+.mvx-film{position:relative;height:clamp(230px,calc(38svh / var(--z, 1)),330px);border-radius:20px;overflow:hidden;background:#1b2440 center 30%/cover;width:100%;max-width:640px;margin:0 auto}
+.mvx-film:after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.05) 25%,rgba(5,12,30,.88))}
+.mvx-film .ms9-goal{z-index:2}
+.mvx-cnt{position:absolute;right:10px;top:10px;z-index:2;background:rgba(0,0,0,.55);color:#fff;border-radius:99px;padding:4px 10px;font:700 12px Inter,system-ui,sans-serif}
+.mvx-sub{position:absolute;left:12px;right:12px;bottom:12px;z-index:2;display:flex;gap:10px;align-items:flex-end;text-align:left;opacity:0;transform:translateY(6px)}
+.mvx-sub.in{animation:mvInx .3s ease forwards}@keyframes mvInx{to{opacity:1;transform:none}}
+.mvx-av,.mvx-me{flex:none;width:48px;height:48px;border-radius:50%;overflow:hidden;border:2.5px solid #fff;background:#fff}
+.mvx-av img{width:100%;height:100%;object-fit:cover}
+.mvx-me{background:#0B2A5B;color:#fff;font:800 16px Poppins,system-ui,sans-serif;display:grid;place-items:center;border-color:var(--mv)}
+.mvx-ln{min-width:0;flex:1}
+.mvx-ln small{display:inline-flex;align-items:center;gap:5px;font:800 11px Poppins,system-ui,sans-serif;letter-spacing:.06em;color:#fff;background:rgba(0,0,0,.45);border:1px solid var(--mv);border-radius:99px;padding:2px 9px;margin-bottom:5px}
+.mvx-eq{display:inline-flex;gap:2px;align-items:flex-end;height:11px}.mvx-eq i{width:3px;height:4px;border-radius:2px;background:var(--mv)}
+.mvx-ln small.on .mvx-eq i{animation:mvEqx .45s ease-in-out infinite alternate}.mvx-ln small.on .mvx-eq i:nth-child(2){animation-delay:.15s}.mvx-ln small.on .mvx-eq i:nth-child(3){animation-delay:.3s}
+@keyframes mvEqx{to{height:11px}}
+.mvx-ln b{display:block;font:800 clamp(17px,4.6vw,21px)/1.25 Poppins,system-ui,sans-serif;color:#fff;overflow-wrap:anywhere}
+.mvx-ln>span{display:block;font:500 13.5px Inter,system-ui,sans-serif;color:#d6deea;margin-top:2px}
+.mvx-seg{display:flex;gap:5px;margin:12px auto 0;width:100%;max-width:640px}.mvx-seg i{flex:1;height:6px;border-radius:9px;background:var(--mvs)}.mvx-seg i.d{background:var(--mv);opacity:.45}.mvx-seg i.c{background:var(--mv)}
+.mvx-ctrl{display:flex;justify-content:center;align-items:center;gap:14px;margin-top:12px}
+.mvx-pl{width:64px;height:64px;border-radius:50%;border:0;background:var(--mv);color:#fff;display:grid;place-items:center;cursor:pointer;box-shadow:0 8px 18px -6px rgba(0,0,0,.35);padding:0}
+.dk .mvx-pl{color:#06210f}
+.ms9-movie .mvx-sm{width:44px!important;height:44px!important;border-radius:50%;border:1.5px solid var(--mvb)!important;background:var(--mvc)!important;color:var(--mvt)!important;display:grid!important;place-items:center;cursor:pointer;padding:0;position:static!important;margin:0!important}
+.mvx-res{display:flex;justify-content:center;gap:8px;margin-top:12px;flex-wrap:wrap}.mvx-res span{border:1.5px solid var(--mvb);border-radius:12px;padding:6px 12px;font:700 13px Inter,system-ui,sans-serif;color:var(--mvt);background:var(--mvc)}.mvx-res i{font-style:normal;color:#f59e0b}.mvx-res i i{color:#d6cfc2}
+.mvx-nx{width:100%;max-width:640px;margin:12px auto 0;background:var(--mvn)!important;border-color:var(--mvn)!important;color:var(--mvnt)!important}
+.mvx-sub.talk .mvx-av,.mvx-sub.talk .mvx-me{box-shadow:0 0 0 3px var(--mv);animation:mvxTk 1s ease-in-out infinite alternate}@keyframes mvxTk{to{box-shadow:0 0 0 6px var(--mv)}}

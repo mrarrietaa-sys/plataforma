@@ -599,7 +599,7 @@
       $$('.secbar span', app).forEach(e => { const k = secs.indexOf(e.dataset.s), ck = secs.indexOf(s.sec); e.className = k === ck ? 'on' : k < ck ? 'ok' : ''; const ln = e.previousElementSibling; if (ln && ln.classList.contains('rt-ln')) ln.classList.toggle('ok', k <= ck); if (k === ck) e.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' }); });
       window.scrollTo({ top: 0, behavior: 'smooth' });
       const back = new Promise(res => { navBack = () => res('__back'); navJump = () => res('__jump');  });
-      let r;
+      let r; window.__stepT = Date.now(); /* v697: para saber qué veredicto vio el estudiante en ESTE ejercicio */
       const AGS = M.ageGroup() !== 'adult' && window.MRAGE2 && MRAGE2[s.k]; // 👧🧑‍🎤 v406: Kids y Teens viven el repaso y la explicación a su manera
       const runIt = () => Promise.race([(AGS ? (st2, pp) => Promise.resolve(MRAGE2[s.k](st2, pp)).then(r => r === null ? (STEP[s.k] || ((a2, b2) => A[s.k](a2, b2)))(st2, pp) : r) : (STEP[s.k] || ((st2, pp) => A[s.k](st2, pp))))(stage, p), back]);
       try {
@@ -627,7 +627,7 @@
       snaps[i] = snapHTML(stage); revisit = false;
       save();
       i++;
-      if (ITL_ON && i < steps.length && steps[i].sec !== s.sec && app.contains(player)) { const RS = Object.values(run.res || {}).filter(x => x && x.sec === s.sec && x.t); const rc = RS.reduce((a, x) => a + x.c, 0), rt = RS.reduce((a, x) => a + x.t, 0); const LR = RS.length ? Math.min(...RS.map(x => x.c / x.t)) : null; /* v664: si algún ejercicio de la sección salió mal, la transición nunca felicita */ const LAST = run.res[i - 1] && run.res[i - 1].t ? run.res[i - 1] : null; /* v696: la transición juzga la actividad que acaba de terminar (80 % / 60 %, igual que su pantalla de resultado) */ const pf = LAST ? LAST.c / LAST.t : rt ? rc / rt : LR; await interlude(steps[i].sec, pf, { c: LAST ? LAST.c : rc, t: LAST ? LAST.t : rt, sec: s.sec, step: i + 1, total: steps.length }); } // v420: el mensaje depende de cómo le fue
+      if (ITL_ON && i < steps.length && steps[i].sec !== s.sec && app.contains(player)) { const RS = Object.values(run.res || {}).filter(x => x && x.sec === s.sec && x.t); const rc = RS.reduce((a, x) => a + x.c, 0), rt = RS.reduce((a, x) => a + x.t, 0); const LR = RS.length ? Math.min(...RS.map(x => x.c / x.t)) : null; /* v664: si algún ejercicio de la sección salió mal, la transición nunca felicita */ const LAST = run.res[i - 1] && run.res[i - 1].t ? run.res[i - 1] : null; /* v697 · UNA sola fuente de verdad: la transición repite el MISMO veredicto que el estudiante acaba de ver en la actividad (pantalla final / Mr. Arrieta). Si la actividad no mostró veredicto, se usa su resultado con la misma regla (80 % / 60 %). Si no tuvo nota, la transición no juzga. */ const MD = window.__mood && window.__mood.at >= (window.__stepT || 0) ? window.__mood.k : null; const pf = MD ? { hi: 1, mid: .7, lo: .3 }[MD] : LAST ? LAST.c / LAST.t : null; await interlude(steps[i].sec, pf, { c: LAST ? LAST.c : rc, t: LAST ? LAST.t : rt, sec: s.sec, step: i + 1, total: steps.length }); } // v420: el mensaje depende de cómo le fue
     }
     $('.prog i', app).style.width = '100%'; cleanup();
     results(p, run);
@@ -989,27 +989,38 @@
       if (!stage.isConnected) return A.result(c, N, 'speaking');
       // 3) el estreno: la escena completa con su voz
       const T = takes.filter(t => t && !t.fail), sr = T.length ? Math.round(T.reduce((a, t) => a + t.r, 0) / T.length) : 0, si = T.length ? Math.round(T.reduce((a, t) => a + t.it, 0) / T.length) : 0;
-      $e('.ms9-sit').textContent = '';
-      el.classList.add('ms9-done'); turn.innerHTML = `<div class="ms9-fin"><b>¡Misión cumplida!</b>${T.length ? `<span>Ritmo <i>${MRMEL.stars(sr)}</i> · Entonación <i>${MRMEL.stars(si)}</i></span>` : ''}<p class="ms9-pg" hidden></p></div><div class="ms9-fb"><span class="ms9-allw"><button type="button" class="btn k ms9-all">${I('vol')} Escuchar mi escena</button></span></div><button type="button" class="btn w ms9-nx">Continuar →</button>`;
-      setTimeout(() => { dl.scrollTop = 0; sc(); }, 60);
+      /* v697 · «Misión cumplida» como una PELÍCULA con subtítulos: foto grande del lugar, solo la frase que suena (con su traducción), barra por frase y controles */
+      { const h2 = stage.querySelector(':scope > h2'); if (h2) h2.textContent = '¡Misión cumplida!'; }
+      const bgImg = $e('.ms9-sc').style.backgroundImage || `url('${M.imgURL('u:photo-' + BG, 900, 420)}')`;
+      const avHTML = $e('.ms9-ch:not(.me) .ms9-av').innerHTML;
+      const LN = []; list.forEach((x, k) => { LN.push({ o: 1, en: x.q, es: x.es || '', au: x.qau }); LN.push({ o: 0, en: x.a, es: (window.MRKQES && MRKQES(x.q, x.a)) || '', k }); });
+      const SVP = '<svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>', SVZ = '<svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>';
+      const SVR = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>';
+      const SVT = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 10 2 4v3a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-3a8 8 0 1 0-16 0v3a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-3l2-4h4Z"/><path d="M4.82 7.9 8 10"/><path d="M15.18 7.9 12 10"/><path d="M16.93 10H20a2 2 0 0 1 0 4H2"/></svg>';
+      el.className = 'ms9 ms9-movie'; el.innerHTML = `<div class="mvx-film"><span class="ms9-goal">${I(GN[0])}${esc(GN[1])}</span><span class="mvx-cnt"></span><div class="mvx-sub"></div></div>
+        <div class="mvx-seg">${LN.map(() => '<i></i>').join('')}</div>
+        <div class="mvx-ctrl" data-noslw><button type="button" class="mvx-sm mvx-re" aria-label="Escuchar desde el inicio">${SVR}</button><button type="button" class="mvx-pl" aria-label="Escuchar mi escena">${SVP}</button><button type="button" class="mvx-sm mvx-slow slw-b" aria-label="Escuchar más lento">${SVT}</button></div>
+        ${T.length ? `<div class="mvx-res"><span>Ritmo <i>${MRMEL.stars(sr)}</i></span><span>Entonación <i>${MRMEL.stars(si)}</i></span></div>` : ''}
+        <button type="button" class="btn k mvx-nx">Continuar →</button>`;
+      el.querySelector('.mvx-film').style.backgroundImage = bgImg;
       if (sr + si >= 5) { try { M.confetti(900); } catch (e) { } sfx('win'); }
-      const bs = () => [...dl.querySelectorAll('.ms9-b')];
-      const fol = (b) => { try { const dr = dl.getBoundingClientRect(), br = b.getBoundingClientRect(); dl.scrollTo({ top: Math.max(0, dl.scrollTop + (br.top - dr.top) - (dl.clientHeight - br.height) / 2), behavior: 'smooth' }); } catch (e) { } }; /* v524: la escena baja sola siguiendo lo que suena */
-      { /* v696 · «Escuchar mi escena»: resalta lo que suena, atenúa lo que ya sonó, muestra el avance y se puede pausar */
-        const btn = turn.querySelector('.ms9-all'), pg = turn.querySelector('.ms9-pg'); let on = false, at = 0;
-        const lbl = (k) => { btn.innerHTML = k === 'p' ? `<svg viewBox="0 0 24 24" fill="currentColor" stroke="none" width="17" height="17"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg> Pausar escena` : `${I('vol')} ${k === 'r' ? 'Seguir escuchando' : 'Escuchar mi escena'}`; btn.classList.toggle('ms9-pz', k === 'p'); };
-        const clr = () => bs().forEach(b => b.classList.remove('now', 'dn'));
-        btn.onclick = async () => {
-          if (on) { on = false; MRMEL.stop(); stop(); lbl('r'); pg.hidden = true; return; }
-          on = true; lbl('p'); if (at >= N) at = 0; if (!at) clr();
-          for (; at < N; at++) { if (!on || !stage.isConnected) break; const x = list[at], B = bs(); pg.hidden = false; pg.innerHTML = `<span class="ms9-eq"><i></i><i></i><i></i></span>Escuchando la escena · <b>${at + 1} de ${N}</b>`;
-            B.forEach((b, j) => { b.classList.toggle('dn', j < at * 2); b.classList.remove('now'); });
-            if (B[at * 2]) { B[at * 2].classList.add('now'); fol(B[at * 2]); } await play(x.qau); if (!on) break; await sleep(250);
-            if (B[at * 2]) { B[at * 2].classList.remove('now'); B[at * 2].classList.add('dn'); } if (B[at * 2 + 1]) { B[at * 2 + 1].classList.add('now'); fol(B[at * 2 + 1]); }
-            if (takes[at]) await MRMEL.play(takes[at].buf); else await play(x.aau); if (!on) break; await sleep(300); }
-          if (on) { on = false; at = 0; clr(); pg.hidden = true; lbl('a'); } };
-      }
-      await new Promise(r => turn.querySelector('.ms9-nx').onclick = () => { MRMEL.stop(); stop(); r(); }); el.classList.remove('ms9-done');
+      const sub = el.querySelector('.mvx-sub'), cnt = el.querySelector('.mvx-cnt'), pl = el.querySelector('.mvx-pl'), segs = [...el.querySelectorAll('.mvx-seg i')];
+      const show = (n, live) => { const L = LN[n]; cnt.textContent = 'Frase ' + (n + 1) + ' de ' + LN.length; segs.forEach((g, j) => g.className = j < n ? 'd' : j === n ? 'c' : '');
+        sub.classList.remove('in'); void sub.offsetWidth;
+        sub.innerHTML = `${L.o ? `<span class="mvx-av">${avHTML}</span>` : `<span class="mvx-me">${esc(INI)}</span>`}<div class="mvx-ln">${L.o ? '' : `<small${live ? ' class="on"' : ''}>TU VOZ <span class="mvx-eq"><i></i><i></i><i></i></span></small>`}<b>${esc(L.en)}</b>${L.es ? `<span>${esc(L.es)}</span>` : ''}</div>`; sub.classList.add('in'); sub.classList.toggle('talk', !!live); };
+      let on = false, at = 0;
+      const btnS = (p2) => { pl.innerHTML = p2 ? SVZ : SVP; pl.setAttribute('aria-label', p2 ? 'Pausar' : 'Escuchar mi escena'); };
+      const halt = () => { on = false; try { MRMEL.stop(); } catch (e) { } stop(); btnS(false); const sm = sub.querySelector('small'); if (sm) sm.classList.remove('on'); sub.classList.remove('talk'); };
+      const go = async () => { if (on) return halt(); on = true; btnS(true); if (at >= LN.length) at = 0;
+        for (; at < LN.length; at++) { if (!on || !stage.isConnected) break; const L = LN[at]; show(at, true);
+          if (L.o) await play(L.au); else if (takes[L.k] && takes[L.k].buf) await MRMEL.play(takes[L.k].buf); else await play(list[L.k].aau);
+          if (!on) break; await sleep(350); }
+        if (on) { on = false; at = 0; btnS(false); segs.forEach(g => g.className = 'd'); const sm = sub.querySelector('small'); if (sm) sm.classList.remove('on'); } };
+      show(0, false);
+      pl.onclick = () => { window.__mraSlow = false; go(); };
+      el.querySelector('.mvx-re').onclick = () => { halt(); at = 0; window.__mraSlow = false; go(); };
+      el.querySelector('.mvx-slow').onclick = (e) => { e.stopPropagation(); halt(); at = 0; window.__mraSlow = true; go(); };
+      await new Promise(r => el.querySelector('.mvx-nx').onclick = () => { halt(); window.__mraSlow = false; r(); });
       return A.result(c, N, 'speaking');
     },
     missionOld: async (stage, p) => { // v459: Módulo 1 o Kids → «Elige y dilo» · resto → «Notas de voz» (sin puertas ni candados)

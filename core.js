@@ -1,5 +1,6 @@
 /* v630 · Mr. Arrieta según el resultado: feliz solo si le fue bien; si falló, preocupado y le pide intentarlo otra vez (todas las edades) */
 window.MRMOOD = function (c, t) { const r = t ? c / t : 1, pk = (a) => a[Math.floor(Math.random() * a.length)]; if (r >= .8) return { k: 'hi', img: pk(['mra-celebrate.webp', 'mra-thumbs.webp', 'mra-wow.webp']), t: '¡Excelente!' }; if (r >= .6) return { k: 'mid', img: 'mra-smile.webp', t: '¡Vas bien!', s: 'Al final repasa lo que fallaste.' }; return { k: 'lo', img: pk(['mra-sad1.webp', 'mra-sad2.webp', 'mra-sad3.webp']), t: 'Try again!', s: 'Esta vez no te salió bien. Repasa y vuelve a intentarlo.' }; };
+{ const _mm = window.MRMOOD; window.MRMOOD = function (c, t) { const r = _mm(c, t); try { window.__mood = { k: r.k, at: Date.now() }; } catch (e) { } return r; }; } /* v697: recuerda el último veredicto mostrado (la transición lo repite igual) */
 /* =====================================================================
    CORE — utilidades, estado (progreso), audio, voz, UI común
    ===================================================================== */

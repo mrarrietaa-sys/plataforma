@@ -307,6 +307,7 @@
       const turn = body.querySelector('.m2o-turn'); body.querySelector('.m2o').classList.add('m2on'); await play(x.au); const m2 = body.querySelector('.m2o'); if (m2) m2.classList.remove('m2on'); if (!stage.isConnected) break;
       const ln = body.querySelector('.m2o-ln'); if (ln) ln.remove(); const r = await voiceTurn(turn, { a: x.full, aau: x.au, tr: KARES[x.full] || '' }, { lbl: 'KARAOKE · DILA AL RITMO', mode: 'tap' }); if (r.ok) c++;
     }
+    try { if (R.length && window.MRMOOD) MRMOOD(c, R.length); } catch (e) { } /* v697: el veredicto del karaoke es el que repite la transición */
     return { c, t: R.length };
   }
 
