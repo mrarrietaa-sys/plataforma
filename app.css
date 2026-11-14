@@ -10273,3 +10273,13 @@ html body .wrap.db .md3-hx .md3-stats>div>small,html body .wrap .md3-stats>div>s
 .lp-cta9.k .lp-cta9-b{--c:#F59E0B}
 body.lp-teen .lp-cta9.k .lp-cta9-b{--c:#22C55E}
 .lp-cta9 small{display:block;margin-top:5px;color:#16a34a;font-weight:700;font-size:12.5px}
+
+/* ===== v693 · volante del profe: detalle agrupado por semana (se abre y se cierra) ===== */
+.tp-wk{border:1px solid #e3e8f0;border-radius:14px;margin-bottom:10px;overflow:hidden;background:#fff}
+.tp-wk>summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;background:#F3F6FB;cursor:pointer}
+.tp-wk>summary::-webkit-details-marker{display:none}
+.tp-wk>summary b{font-family:var(--fh,Poppins),sans-serif;font-weight:800;font-size:15px;color:#0B2A5B}
+.tp-wk>summary span{font-size:13px;color:#475569;white-space:nowrap}.tp-wk>summary em{font-style:normal;font-weight:800;color:#0B2A5B;margin-left:8px}
+.tp-wk>summary::after{content:'▾';color:#64748b;margin-left:6px}.tp-wk[open]>summary::after{content:'▴'}
+.tp-wk .tp-pay-list{margin:0;padding:4px 10px}
+.tp-wk.zero .tp-pay-row,.tp-wk.zero .tp-amt{opacity:.6}
