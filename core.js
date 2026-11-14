@@ -95,7 +95,7 @@ window.MRMOOD = function (c, t) { const r = t ? c / t : 1, pk = (a) => a[Math.fl
   /* ---------- images ---------- */
   function imgURL(src, w = 640, hgt = 480) {
     if (!src) return '';
-    if (src.startsWith('u:')) return `https://images.unsplash.com/${src.slice(2)}?w=${w}&h=${hgt}&fit=crop&crop=entropy&q=82&auto=format`;
+    if (src.startsWith('u:')) return `https://images.unsplash.com/${src.slice(2)}?w=${w}&h=${hgt}&fit=crop&crop=faces,entropy&q=82&auto=format`; /* v696: si hay personas, el recorte se centra en la cara */
     if (src.startsWith('flag:')) return `https://flagcdn.com/w1280/${src.slice(5)}.png`;
     return '';
   }
@@ -320,7 +320,7 @@ window.MRMOOD = function (c, t) { const r = t ? c / t : 1, pk = (a) => a[Math.fl
       const u = new Uint8Array(buf); let bin = ''; for (let i = 0; i < u.length; i += 0x8000) bin += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000));
       return { b64: btoa(bin), sec: seg.length / R };
     }
-    function waitOn(on) { try { let d = document.getElementById('azwait'); if (!on) { if (d) d.remove(); return; } if (!d) { d = document.createElement('div'); d.id = 'azwait'; d.setAttribute('role', 'status'); d.innerHTML = '<i></i>Revisando…'; document.body.appendChild(d); } } catch (e) { } }
+    function waitOn(on) { try { let d = document.getElementById('azwait'); if (!on) { if (d) d.remove(); return; } if (!d) { d = document.createElement('div'); d.id = 'azwait'; d.setAttribute('role', 'status'); d.innerHTML = '<i></i>Revisando…'; const rc = document.querySelector('.player .stage .rec') || document.querySelector('.player .stage .m2v-mic, .player .stage .ms9-mic, .player .stage .lrc-mic, .player .stage .m2v-ptt'), hz = rc && rc.closest('.m2v-act,.ms9-act,.m2v-row'); /* v696: «Revisando…» dentro de la tarjeta, debajo del micrófono */ if (hz) { d.className = 'in'; hz.appendChild(d); } else document.body.appendChild(d); } } catch (e) { } }
     async function assess(wav, ref) {
       waitOn(true); try { const r = await ((!(MRAC.code && MRAC.code()) && window.__azDemo) ? MRAC.call('azDemo', { text: ref || '', audio: wav.b64 }, { timeout: 15000 }) : MRAC.call('azPron', { code: MRAC.code(), text: ref || '', audio: wav.b64 }, { timeout: 15000 })).finally(() => waitOn(false));
         try { localStorage.removeItem('mra_vozdebug'); if (/[?&]vozdebug=1/.test(location.search)) { const W = (r && r.words || []).map(w => w.w + ':' + w.a + (w.e !== 'None' ? '(' + w.e + ')' : '')).join(' '); setTimeout(() => { let d = document.getElementById('azdbg'); if (!d) { d = document.createElement('div'); d.id = 'azdbg'; d.style.cssText = 'position:fixed;left:8px;right:8px;bottom:8px;z-index:99999;background:#111;color:#fff;font:13px/1.4 monospace;padding:10px;border-radius:10px;opacity:.92'; d.onclick = () => d.remove(); document.body.appendChild(d); } d.textContent = (r && r.ok ? `🔧 Azure · reconoció «${r.text || '—'}» · pron ${r.pron} · precisión ${r.acc} · completa ${r.comp} · ${W}` : `🔧 Azure no respondió: ${(r && r.err) || 'error'}`); }, 50); } } catch (er) { } // 🔧 solo para pruebas del administrador (?vozdebug=1)

@@ -1,7 +1,7 @@
 /* v609 · CALENTAMIENTO de 1 minuto — solo en la Lesson 1 del primer tema de cada módulo (todas las edades)
    Va después del Goal y antes de la Explanation. Fotos reales HD, relojes de diseño y voz americana revisada. */
 (function () {
-  const U = (id, w, h) => `https://images.unsplash.com/photo-${id}?w=${w || 900}&h=${h || 520}&fit=crop&crop=entropy&q=82&auto=format`;
+  const U = (id, w, h) => `https://images.unsplash.com/photo-${id}?w=${w || 900}&h=${h || 520}&fit=crop&crop=faces,entropy&q=82&auto=format`;
   const W = {
     1: { kind: 'greet', t: '¿Qué saludo usas?', s: 'Mira la hora y toca el saludo correcto.', opts: ['Good morning', 'Good afternoon', 'Good evening', 'Good night'],
       R: [{ img: '1552650272-b8a34e21bc4b', time: '7:00 a. m.', a: 0, au: 'wu1a' }, { img: '1600066975993-e9aa6928ee28', time: '2:00 p. m.', a: 1, au: 'wu1b' },

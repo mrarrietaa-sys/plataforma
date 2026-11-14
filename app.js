@@ -627,7 +627,7 @@
       snaps[i] = snapHTML(stage); revisit = false;
       save();
       i++;
-      if (ITL_ON && i < steps.length && steps[i].sec !== s.sec && app.contains(player)) { const RS = Object.values(run.res || {}).filter(x => x && x.sec === s.sec && x.t); const rc = RS.reduce((a, x) => a + x.c, 0), rt = RS.reduce((a, x) => a + x.t, 0); const LR = RS.length ? Math.min(...RS.map(x => x.c / x.t)) : null; /* v664: si algún ejercicio de la sección salió mal, la transición nunca felicita */ const pf = rt ? (LR != null ? Math.min(rc / rt, LR) : rc / rt) : LR; await interlude(steps[i].sec, pf, { c: rc, t: rt, sec: s.sec, step: i + 1, total: steps.length }); } // v420: el mensaje depende de cómo le fue
+      if (ITL_ON && i < steps.length && steps[i].sec !== s.sec && app.contains(player)) { const RS = Object.values(run.res || {}).filter(x => x && x.sec === s.sec && x.t); const rc = RS.reduce((a, x) => a + x.c, 0), rt = RS.reduce((a, x) => a + x.t, 0); const LR = RS.length ? Math.min(...RS.map(x => x.c / x.t)) : null; /* v664: si algún ejercicio de la sección salió mal, la transición nunca felicita */ const LAST = run.res[i - 1] && run.res[i - 1].t ? run.res[i - 1] : null; /* v696: la transición juzga la actividad que acaba de terminar (80 % / 60 %, igual que su pantalla de resultado) */ const pf = LAST ? LAST.c / LAST.t : rt ? rc / rt : LR; await interlude(steps[i].sec, pf, { c: LAST ? LAST.c : rc, t: LAST ? LAST.t : rt, sec: s.sec, step: i + 1, total: steps.length }); } // v420: el mensaje depende de cómo le fue
     }
     $('.prog i', app).style.width = '100%'; cleanup();
     results(p, run);
@@ -943,19 +943,19 @@
       const X = missionFor(p); if (!X) return null; if (!window.MRMEL) return STEP.missionOld(stage, p);
       const I = n => window.MRI ? MRI(n) : '';
       const GN = { v: ['plane', 'Viajar'], t: ['briefcase', 'Trabajo'], e: ['grad', 'Estudios'], kc: ['grad', 'Colegio'], kj: ['pad', 'Juegos y videos'], kv: ['plane', 'Viajar'], km: ['music', 'Música'], tc: ['grad', 'Colegio'], ts: ['tv', 'Series y redes'], tg: ['pad', 'Gaming'], tx: ['plane', 'Viajar o estudiar afuera'] }[X.k] || ['target', 'Tu objetivo'];
-      const BG = { v: '1551882547-ff40c63fe5fa', kv: '1436491865332-7a61a109cc05', tx: '1436491865332-7a61a109cc05', t: '1497215728101-856f4ea42174', e: '1522202176988-66273c2fd55f', ts: '1758611973525-b5a86f468b5e', kc: '1780844824650-4ba9b0b46c3a', tc: '1580582932707-520aed937b7b', km: '1511379938547-c1f69419868d', kj: '1758612898312-708f2ffdcd53', tg: '1787617092180-ae3a8c35c477' }[X.k] || '1497215728101-856f4ea42174';
+      const BG = { v: '1551882547-ff40c63fe5fa', kv: '1436491865332-7a61a109cc05', tx: '1436491865332-7a61a109cc05', t: '1497215728101-856f4ea42174', e: '1522202176988-66273c2fd55f', ts: '1758611973525-b5a86f468b5e', kc: '1780844824650-4ba9b0b46c3a', tc: '1580582932707-520aed937b7b', km: '1511379938547-c1f69419868d', kj: '1758612214848-04e700d192ce', tg: '1758612214848-04e700d192ce' }[X.k] || '1497215728101-856f4ea42174';
       const list = X.list.slice(), N = list.length; let c = 0; const takes = [];
       const PF = (window.MRAP && MRAP.get && MRAP.get()) || {}; const INI = (((PF.first || S.name || 'T')[0] || 'T') + ((PF.last || '')[0] || '')).toUpperCase();
       const pool = []; Object.keys(window.MRMISSIONS || {}).forEach(k => { if (k.split('-')[0] === String(+M.MOD.n || 1) && k !== (+M.MOD.n || 1) + '-' + p.topic) [MRMISSIONS[k][X.k]].filter(Boolean).forEach(L => (Array.isArray(L) ? L : [L]).forEach(y => { if (y && y.a && pool.indexOf(y.a) < 0) pool.push(y.a); })); });
-      const body = A.head(stage, { lbl: 'Mission', title: 'Tu misión', count: GN[1] }); stage.classList.add('ms9-stage'); if (M.ageGroup() === 'teens') stage.classList.add('dk');
+      const body = A.head(stage, { lbl: 'Mission', title: 'Tu misión' }); /* v696: la categoría se ve una sola vez (sobre la foto) */ stage.classList.add('ms9-stage'); if (M.ageGroup() === 'teens') stage.classList.add('dk');
       const el = h(`<div class="ms9"><div class="ms9-sc" style="background-image:url('${M.imgURL('u:photo-' + BG, 900, 420)}')"><span class="ms9-goal">${I(GN[0])}${esc(GN[1])}</span>
-          <div class="ms9-ch"><span class="ms9-av">${list[0].img ? photo('u:' + list[0].img) : M.ageGroup() === 'kids' ? '<img src="mra-smile.webp" alt="Mr. Arrieta" style="object-fit:cover;object-position:top">' : photo(M.ageGroup() === 'teens' ? 'u:photo-1776111842991-4a189c07e609' : 'u:photo-1494790108377-be9c29b29330')}</span></div><div class="ms9-ch me"><span class="ms9-av ini">${esc(INI)}</span><small>Tú</small></div></div>
+          <div class="ms9-ch"><span class="ms9-av">${M.ageGroup() === 'kids' ? '<img src="mra-smile.webp" alt="Mr. Arrieta" style="object-fit:cover;object-position:top">' : photo(M.ageGroup() === 'teens' ? 'u:photo-1776111842991-4a189c07e609' : 'u:photo-1494790108377-be9c29b29330')}</span></div><div class="ms9-ch me"><span class="ms9-av ini">${esc(INI)}</span><small>Tú</small></div></div>
         <div class="ms9-sit"></div><div class="ms9-dl"></div><div class="ms9-turn"></div></div>`); body.appendChild(el);
-      const $e = q => el.querySelector(q), dl = $e('.ms9-dl'), turn = $e('.ms9-turn');
-      const bub = (txt, me, es, au) => { const b = h(`<div class="ms9-b${me ? ' me' : ''}${au ? ' ms9-bq' : ''}"><div class="ms9-bt">${esc(txt)}${es ? `<small>${esc(es)}</small>` : ''}</div>${au ? `<div class="ms9-bctl"><button type="button" class="ms9-bpl" aria-label="Escuchar la pregunta">${I('vol')}</button></div>` : ''}</div>`); if (au) b.querySelector('.ms9-bpl').onclick = () => { stop(); play(au); }; dl.appendChild(b); dl.scrollTop = dl.scrollHeight; return b; }; /* v688: la pregunta tiene su parlante (y su tortuguita) */
+      const $e = q => el.querySelector(q), dl = $e('.ms9-dl'), turn = $e('.ms9-turn'); const sc = () => { el.classList.toggle('ms9-ov', dl.scrollHeight > dl.clientHeight + 4); el.classList.toggle('ms9-attop', dl.scrollTop <= 4); el.classList.toggle('ms9-atend', dl.scrollTop + dl.clientHeight >= dl.scrollHeight - 4); }; dl.addEventListener('scroll', sc, { passive: true }); /* v696: la conversación se desvanece arriba/abajo en vez de cortarse */
+      const bub = (txt, me, es, au) => { const b = h(`<div class="ms9-b${me ? ' me' : ''}${au ? ' ms9-bq' : ''}"><div class="ms9-tx">${esc(txt)}${es ? `<small>${esc(es)}</small>` : ''}</div>${au ? `<div class="ms9-bctl"><button type="button" class="ms9-bpl" aria-label="Escuchar la pregunta">${I('vol')}</button></div>` : ''}</div>`); if (au) b.querySelector('.ms9-bpl').onclick = () => { stop(); play(au); }; dl.appendChild(b); dl.scrollTop = dl.scrollHeight; setTimeout(sc, 30); return b; }; /* v688: la pregunta tiene su parlante (y su tortuguita) */
       for (let mi = 0; mi < N; mi++) {
         if (!stage.isConnected) break; const x = list[mi];
-        $e('.ms9-sit').textContent = x.sit || ''; $e('.ms9-ch').classList.add('talk'); bub(x.q, false, x.es, x.qau); turn.innerHTML = '';
+        $e('.ms9-sit').textContent = x.sit || ''; if (x.img) $e('.ms9-sc').style.backgroundImage = `url('${M.imgURL('u:' + x.img, 900, 420)}')`; /* v696: la foto grande es la del lugar de esta pregunta */ $e('.ms9-ch').classList.add('talk'); bub(x.q, false, x.es, x.qau); turn.innerHTML = '';
         await play(x.qau); $e('.ms9-ch').classList.remove('talk'); if (!stage.isConnected) break;
         const wrong = sample(pool.filter(a => { if (a === x.a || M.words(a)[0] === M.words(x.a)[0]) return false; try { return !M.freeJudge(x.q, x.a, [a]).ok; } catch (e) { return true; } }), 2); const opts = shuffle([x.a, ...wrong]);
         // 1) elige la respuesta (prueba que entendió)
@@ -968,7 +968,7 @@
         const tr = window.MRKQES && MRKQES(x.q, x.a);
         const tk = await new Promise(done => { let cur = null, fails = 0;
           turn.innerHTML = `<div class="ms9-line">${window.M2X && M2X.on() ? `<small>TU TURNO · ${M2X.mod() === 4 ? 'SIN TEXTO' : M2X.mod() === 3 ? 'SOLO LAS INICIALES' : 'RECUERDA LA PALABRA'}</small>${M2X.hide(x.a, p)}` : `<small>TU TURNO · DÍLO EN VOZ ALTA</small><b>${esc(x.a)}</b>`}${tr ? `<span>${esc(tr)}</span>` : ''}</div><div class="ms9-mel"></div><div class="ms9-res"></div>
-            <div class="ms9-act"><button type="button" class="ms9-mic" aria-label="Grabar">${I('mic')}</button><div><b class="ms9-st">Toca el micrófono y dila</b><small class="ms9-st2">Imita el ritmo y la melodía del modelo</small></div><button type="button" class="btn w sm ms9-mo">${I('vol')} Modelo</button></div>`;
+            <div class="ms9-act"><button type="button" class="ms9-mic" aria-label="Grabar">${I('mic')}</button><div class="ms9-stx"><b class="ms9-st">Toca el micrófono y dila</b><small class="ms9-st2">Imita el ritmo y la melodía del modelo</small></div><div class="ms9-mob"><button type="button" class="btn w sm ms9-mo">${I('vol')} Modelo</button></div></div>`;
           if (window.M2X) M2X.bindHint(turn, x.aau); const v = MRMEL.view(turn.querySelector('.ms9-mel')); MRMEL.model(x.aau).then(m => v.setModel(m)).catch(() => { });
           const mic = turn.querySelector('.ms9-mic'), st = turn.querySelector('.ms9-st'), st2 = turn.querySelector('.ms9-st2'), res = turn.querySelector('.ms9-res');
           turn.querySelector('.ms9-mo').onclick = () => { MRMEL.stop(); stop(); play(x.aau); };
@@ -990,13 +990,26 @@
       // 3) el estreno: la escena completa con su voz
       const T = takes.filter(t => t && !t.fail), sr = T.length ? Math.round(T.reduce((a, t) => a + t.r, 0) / T.length) : 0, si = T.length ? Math.round(T.reduce((a, t) => a + t.it, 0) / T.length) : 0;
       $e('.ms9-sit').textContent = '';
-      turn.innerHTML = `<div class="ms9-fin"><b>¡Misión cumplida!</b>${T.length ? `<span>Ritmo <i>${MRMEL.stars(sr)}</i> · Entonación <i>${MRMEL.stars(si)}</i></span>` : ''}</div><div class="ms9-bt"><button type="button" class="btn k ms9-all">▶ Escuchar mi escena</button><button type="button" class="btn w ms9-nx">Continuar →</button></div>`;
+      el.classList.add('ms9-done'); turn.innerHTML = `<div class="ms9-fin"><b>¡Misión cumplida!</b>${T.length ? `<span>Ritmo <i>${MRMEL.stars(sr)}</i> · Entonación <i>${MRMEL.stars(si)}</i></span>` : ''}<p class="ms9-pg" hidden></p></div><div class="ms9-fb"><span class="ms9-allw"><button type="button" class="btn k ms9-all">${I('vol')} Escuchar mi escena</button></span></div><button type="button" class="btn w ms9-nx">Continuar →</button>`;
+      setTimeout(() => { dl.scrollTop = 0; sc(); }, 60);
       if (sr + si >= 5) { try { M.confetti(900); } catch (e) { } sfx('win'); }
       const bs = () => [...dl.querySelectorAll('.ms9-b')];
       const fol = (b) => { try { const dr = dl.getBoundingClientRect(), br = b.getBoundingClientRect(); dl.scrollTo({ top: Math.max(0, dl.scrollTop + (br.top - dr.top) - (dl.clientHeight - br.height) / 2), behavior: 'smooth' }); } catch (e) { } }; /* v524: la escena baja sola siguiendo lo que suena */
-      turn.querySelector('.ms9-all').onclick = async (ev) => { const btn = ev.currentTarget; btn.disabled = true; for (let i = 0; i < N; i++) { const x = list[i]; const B = bs(); B.forEach(b => b.classList.remove('now'));
-          if (B[i * 2]) { B[i * 2].classList.add('now'); fol(B[i * 2]); } await play(x.qau); await sleep(250); if (B[i * 2 + 1]) { B[i * 2 + 1].classList.add('now'); fol(B[i * 2 + 1]); } if (takes[i]) await MRMEL.play(takes[i].buf); else await play(x.aau); await sleep(300); } bs().forEach(b => b.classList.remove('now')); btn.disabled = false; };
-      await new Promise(r => turn.querySelector('.ms9-nx').onclick = () => { MRMEL.stop(); stop(); r(); });
+      { /* v696 · «Escuchar mi escena»: resalta lo que suena, atenúa lo que ya sonó, muestra el avance y se puede pausar */
+        const btn = turn.querySelector('.ms9-all'), pg = turn.querySelector('.ms9-pg'); let on = false, at = 0;
+        const lbl = (k) => { btn.innerHTML = k === 'p' ? `<svg viewBox="0 0 24 24" fill="currentColor" stroke="none" width="17" height="17"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg> Pausar escena` : `${I('vol')} ${k === 'r' ? 'Seguir escuchando' : 'Escuchar mi escena'}`; btn.classList.toggle('ms9-pz', k === 'p'); };
+        const clr = () => bs().forEach(b => b.classList.remove('now', 'dn'));
+        btn.onclick = async () => {
+          if (on) { on = false; MRMEL.stop(); stop(); lbl('r'); pg.hidden = true; return; }
+          on = true; lbl('p'); if (at >= N) at = 0; if (!at) clr();
+          for (; at < N; at++) { if (!on || !stage.isConnected) break; const x = list[at], B = bs(); pg.hidden = false; pg.innerHTML = `<span class="ms9-eq"><i></i><i></i><i></i></span>Escuchando la escena · <b>${at + 1} de ${N}</b>`;
+            B.forEach((b, j) => { b.classList.toggle('dn', j < at * 2); b.classList.remove('now'); });
+            if (B[at * 2]) { B[at * 2].classList.add('now'); fol(B[at * 2]); } await play(x.qau); if (!on) break; await sleep(250);
+            if (B[at * 2]) { B[at * 2].classList.remove('now'); B[at * 2].classList.add('dn'); } if (B[at * 2 + 1]) { B[at * 2 + 1].classList.add('now'); fol(B[at * 2 + 1]); }
+            if (takes[at]) await MRMEL.play(takes[at].buf); else await play(x.aau); if (!on) break; await sleep(300); }
+          if (on) { on = false; at = 0; clr(); pg.hidden = true; lbl('a'); } };
+      }
+      await new Promise(r => turn.querySelector('.ms9-nx').onclick = () => { MRMEL.stop(); stop(); r(); }); el.classList.remove('ms9-done');
       return A.result(c, N, 'speaking');
     },
     missionOld: async (stage, p) => { // v459: Módulo 1 o Kids → «Elige y dilo» · resto → «Notas de voz» (sin puertas ni candados)
@@ -1457,7 +1470,8 @@
   /* ---------- v458 · WRITING CORTO: 3 formatos que se turnan por lección, contenido por edad ---------- */
   async function writing10(stage, p, it, AG) {
     const I = n => window.MRI ? MRI(n) : '';
-    const nz = x => String(x || '').toLowerCase().replace(/[’‘`´]/g, "'").replace(/[^a-z0-9' -]+/g, ' ').replace(/\s+/g, ' ').trim();
+    const dia = x => String(x || '').normalize('NFD').replace(/[\u0300-\u036f]/g, ''); /* v696: el teclado del celular pone tildes («vídeo»): no cuentan como error */
+    const nz = x => dia(x).toLowerCase().replace(/[’‘`´]/g, "'").replace(/[^a-z0-9' -]+/g, ' ').replace(/\s+/g, ' ').trim();
     const cap = x => { x = String(x || '').trim().replace(/\s+/g, ' '); x = x.replace(/(^|\s)i(?=\s|'|’|$)/g, '$1I'); return x ? x[0].toUpperCase() + x.slice(1) : x; };
     const end = x => /[.!?]["”]?$/.test(x) ? x : x + '.';
     const esLike = x => (nz(x).match(/\b(el|la|los|las|que|con|para|una|por|pero|muy|tengo|soy|estoy|mi|y)\b/g) || []).length >= 2;
@@ -1470,7 +1484,7 @@
     else top = `<div class="wr-start">${esc(it.s)} <em class="wr-blank">&nbsp;</em></div><div class="wr-chips">${(it.ch || []).map(c => `<b>${esc(c)}</b>`).join('')}</div>`;
     if (it.es && it.f !== 'c') top += `<p class="wr-es">${esc(it.es)}</p>`; // v674: A1 · traducción al español debajo
     body.appendChild(h(`<div class="wr-top">${top}</div>`));
-    const ta = h(`<textarea class="wr-in" rows="2" autocomplete="off" autocapitalize="sentences" spellcheck="false" placeholder="${it.f === 'c' ? 'Escribe tu respuesta en inglés…' : it.f === 'x' ? 'Escribe la frase correcta…' : 'Termina la frase en inglés…'}"></textarea>`);
+    const ta = h(`<textarea class="wr-in" rows="2" lang="en" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="${it.f === 'c' ? 'Escribe tu respuesta en inglés…' : it.f === 'x' ? 'Escribe la frase correcta…' : 'Termina la frase en inglés…'}"></textarea>`);
     body.appendChild(ta);
     ['paste', 'drop'].forEach(ev => ta.addEventListener(ev, e => { e.preventDefault(); M.toast('Escríbela tú mismo: así aprendes de verdad.'); }));
     const fbBox = h(`<div class="wr-fb hidden"></div>`); body.appendChild(fbBox);
@@ -1511,9 +1525,9 @@
         if (!auto && M.words(txt).length < (it.f === 'f' ? 1 : 2)) { ta.focus(); M.toast(it.f === 'f' ? 'Escribe cómo termina la frase' : 'Escribe una frase completa'); return; }
         if (!auto && esLike(txt) && tries < 1) { tries++; ta.focus(); show('no', 'Escríbelo en inglés', 'Usa las palabras de la lección.', ''); sfx('bad'); return; }
         if (it.f === 'x') {
-          const n = nz(txt), oks = it.ok.map(nz), nc = x => String(x || '').replace(/[’‘`´]/g, "'").replace(/[^A-Za-z0-9' -]+/g, ' ').replace(/\s+/g, ' ').trim(), caseIt = oks.includes(nz(it.bad));
+          const n = nz(txt), oks = it.ok.map(nz), nc = x => dia(x).replace(/[’‘`´]/g, "'").replace(/[^A-Za-z0-9' -]+/g, ' ').replace(/\s+/g, ' ').trim(), caseIt = oks.includes(nz(it.bad));
           if (it.ok.map(nc).includes(nc(txt))) return verdict(2, txt, '¡Bien visto! +10', esc(it.why), '');
-          if (oks.includes(n)) return caseIt && nc(txt) === nc(it.bad) ? verdict(0, txt, 'El error sigue ahí', esc(it.why), esc(it.ok[0])) : verdict(1, txt, '¡Casi! +5', 'Revisa las mayúsculas:', esc(it.ok[0]));
+          if (oks.includes(n)) return caseIt ? (nc(txt) === nc(it.bad) ? verdict(0, txt, 'El error sigue ahí', esc(it.why), esc(it.ok[0])) : verdict(1, txt, '¡Casi! +5', 'Revisa las mayúsculas:', esc(it.ok[0]))) : verdict(2, txt, '¡Bien visto! +10', esc(it.why), ''); /* v696: si el error no era de mayúsculas, las mayúsculas del teclado no restan */
           const best = oks.reduce((b, o) => Math.min(b, M.lev(n, o)), 99), stillErr = nz(it.bad) === n ? !caseIt || nc(txt) === nc(it.bad) : caseIt ? new RegExp('(^|\\s)' + nc(it.err).replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(\\s|$)').test(nc(txt)) : new RegExp('(^|\\s)' + nz(it.err).replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(\\s|$)').test(n);
           if (!stillErr && best <= Math.max(3, Math.round(oks[0].length * .12))) return verdict(1, txt, '¡Casi! +5', 'Corregiste el error. Revisa cómo se escribe:', esc(it.ok[0]));
           return verdict(0, txt, stillErr ? 'El error sigue ahí' : 'Revisa la frase', esc(it.why), esc(it.ok[0]));

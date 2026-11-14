@@ -54,9 +54,9 @@
     // escuchar + grabar la voz del estudiante repitiendo + calificación con voz (o autoevaluación si el navegador no reconoce voz)
     const canRec = !!(window.MRMEL && MRMEL.can()); // v516: motor de melodía
     const body = head(stage, { lbl: 'Explanation', title: o.title || 'Listen and repeat', ins: o.ins ? o.ins : canRec
-      ? `Toca cada tarjeta para <b>escuchar</b> la pronunciación. Luego toca <b>🎙️ Repetir</b> y dila en voz alta: verás tu melodía junto a la del modelo. Usa <b>“Escuchar todo”</b> para oírlas seguidas.`
-      : 'Toca cada tarjeta para escuchar la pronunciación y <b>repítela en voz alta</b>. Usa <b>“Escuchar todo”</b> para oírlas seguidas.' });
-    const tools = h(`<div class="row ce-ltools"><button class="btn sm k" id="all">▶ Escuchar todo</button><span class="ce-lcnt" id="cnt"></span>${canRec ? '<span class="ce-lcnt ce-lok" id="cnt2"></span>' : ''}</div>`);
+      ? `Toca cada tarjeta para <b>escuchar</b> la pronunciación. Luego toca <b>🎙️ Repetir</b> y dila en voz alta: verás tu melodía junto a la del modelo.`
+      : 'Toca cada tarjeta para escuchar la pronunciación y <b>repítela en voz alta</b>.' });
+    const tools = h(`<div class="row ce-ltools"><span class="ce-lcnt" id="cnt"></span>${canRec ? '<span class="ce-lcnt ce-lok" id="cnt2"></span>' : ''}</div>`);
     body.appendChild(tools);
     if (false) body.appendChild(h('<p class="ce-lnosr">🎧 Tu navegador no puede calificar la voz. Igual puedes <b>grabarte y escucharte</b> para compararte con el modelo. (En Chrome te califico automáticamente.)</p>'));
     // v500 · flashcards: una palabra a la vez con la foto grande + tira de miniaturas (cabe completo en celular y PC)
@@ -70,10 +70,10 @@
       { const nd = $('.lrc-need', grid); if (nd && needN) { const okN = said.size >= needN; nd.hidden = false; nd.classList.toggle('ok', okN); nd.textContent = okN ? '✓ ¡Listo! Ya puedes avanzar' : tries >= 2 ? '✓ ¡Buen esfuerzo! Ya puedes avanzar' : tries === 1 ? 'Un intento más y puedes seguir, aunque no salga perfecta' : `Repite ${needN === 1 ? 'una frase' : 'por lo menos ' + needN} para avanzar · tienes 2 intentos`; nd.classList.toggle('ok', okN || tries >= 2); } }
       $$('.lrc-t', grid).forEach((t, j) => { t.classList.toggle('lrc-on', j === cur); t.classList.toggle('lrc-dn', said.has(j)); t.classList.toggle('lrc-hd', heard.has(j)); }); };
     const ph = $('.lrc-ph', grid), enEl = $('.lrc-en', grid), esEl = $('.lrc-es', grid), res = $('.lrc-res', grid), mic = $('.lrc-mic', grid), card = $('.lrc-card', grid);
-    $('.lrc-th', grid).innerHTML = p.vocab.map((it, i) => `<button type="button" class="lrc-t" aria-label="${esc(it.en)}">${String(it.img || '').startsWith('#') ? `<span>${esc(it.img.slice(1))}</span>` : `<img loading="lazy" alt="" src="${M.imgURL(it.img, 160, 120)}" onerror="this.style.opacity=0">`}</button>`).join('');
+    $('.lrc-th', grid).innerHTML = p.vocab.map((it, i) => `<button type="button" class="lrc-t" aria-label="${esc(it.en)}">${String(it.img || '').startsWith('#') || /^\d+$/.test(String(it.en).trim()) ? `<span>${esc(String(it.img || '').startsWith('#') ? it.img.slice(1) : String(it.en).trim())}</span>` : `<img loading="lazy" alt="" src="${M.imgURL(it.img, 160, 120)}" onerror="this.style.opacity=0">`}</button>`).join('');
     const sayIt = async (i) => { const it = p.vocab[i]; heard.add(i); upd(); if (isPl) { await play(it.sgau); await sleep(200); } await play(it.au); };
     const show = (i, auto) => { stop(); cur = (i + n) % n; const it = p.vocab[cur]; const badge = it.x === 'near' ? '👉 cerca' : it.x === 'far' ? '👉 lejos' : '';
-      ph.innerHTML = photo(it.img, { badge }) + `<span class="lrc-n">${cur + 1} / ${n}</span>`;
+      ph.innerHTML = photo(/^\d+$/.test(String(it.en).trim()) ? '#' + String(it.en).trim() : it.img, { badge }) + `<span class="lrc-n">${cur + 1} / ${n}</span>`;
       enEl.innerHTML = isPl ? `${esc(it.sg)} → <u>${esc(it.en)}</u>` : esc(it.en); esEl.textContent = it.es || '';
       const s0 = st[cur]; card.classList.remove('ce-st-ok', 'ce-st-mid', 'ce-st-bad'); res.innerHTML = s0 ? s0.html : ''; if (s0) card.classList.add(s0.cls); bindRes();
       if (mic) { mic.disabled = false; $('small', mic).textContent = said.has(cur) ? 'Otra vez' : 'Repetir'; }
@@ -102,7 +102,7 @@
     $('.lrc-nx', grid).onclick = () => { sfx('tap'); show(cur + 1); };
     $$('.lrc-t', grid).forEach((t, j) => t.onclick = () => { sfx('tap'); show(j); });
     show(0, false);
-    $('#all', tools).onclick = async (e) => { const b = e.currentTarget; if (b._run) { b._run = false; stop(); b.textContent = '▶ Continuar'; return; } b._run = true; b.textContent = '⏹ Detener'; const onStop = () => { b._run = false; }; window.addEventListener('m1-audio-stop', onStop, { once: true }); const hideF = M.floatStop(b);
+    if ($('#all', tools)) $('#all', tools).onclick = async (e) => { const b = e.currentTarget; if (b._run) { b._run = false; stop(); b.textContent = '▶ Continuar'; return; } b._run = true; b.textContent = '⏹ Detener'; const onStop = () => { b._run = false; }; window.addEventListener('m1-audio-stop', onStop, { once: true }); const hideF = M.floatStop(b);
       let k = b._i || 0; /* ▶️ retoma desde la tarjeta donde se detuvo */
       for (; k < n; k++) { if (!b._run || !b.isConnected) break; b._i = k; show(k, false); window.addEventListener('m1-audio-stop', onStop, { once: true }); await sayIt(k); if (!b._run) break; await sleep(700); }
       hideF(); const done = k >= n; b._i = done ? 0 : b._i; b._run = false; b.textContent = done ? '▶ Escuchar todo' : '▶ Continuar'; };
