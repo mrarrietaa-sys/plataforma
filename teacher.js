@@ -502,7 +502,7 @@
       bt.disabled = false; bt.textContent = 'Enviar por el chat'; msg.hidden = false; msg.textContent = r && r.err === 'closed' ? r.msg.replace(/^[^\p{L}]+/u, '') : r && r.err === 'paused' ? 'Esta conversación está pausada en este momento.' : 'No se pudo enviar. Revisa tu conexión e inténtalo de nuevo.'; };
   };
 
-  function openChat(room) { if (!window.MRLIVE) return; MRLIVE.open({ room, title: 'Chat con estudiantes', roomsAction: 'tChats', empty: 'Aquí aparecerán tus estudiantes cuando tengan clases contigo.', call: (a, d) => api(a, d) }); }
+  function openChat(room) { if (!window.MRLIVE) return; MRLIVE.open({ room, title: 'Chat con estudiantes', roomsAction: 'tChats', newLabel: 'Nuevo chat', newFind: 'Buscar estudiante por nombre…', newNote: 'Solo aparecen tus estudiantes (con quienes has tenido clase).', newEmpty: 'Aquí aparecerán tus estudiantes cuando tengan clases contigo.', empty: 'Aquí aparecerán tus estudiantes cuando tengan clases contigo.', call: (a, d) => api(a, d) }); }
   function material() {
     const t = D.teacher || {}; const info = { id: t.id || '', name: t.name || 'Profe', first: t.hello || String(t.name || 'Profe').split(' ')[0], at: Date.now() };
     try { sessionStorage.setItem('mra_teacher', JSON.stringify(info)); localStorage.setItem('mra_teacher_tmp', JSON.stringify(info)); } catch (e) { }

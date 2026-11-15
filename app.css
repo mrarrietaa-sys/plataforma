@@ -10442,3 +10442,17 @@ body.ag-kids .ms9-movie{--mv:#f59e0b;--mvs:#f6e3c2;--mvb:#f6e3c2;--mvn:#d97706;-
 .op9-ta{width:100%;box-sizing:border-box;margin-top:8px;border:1.5px solid #0B2A5B;border-radius:12px;padding:10px 12px;font:500 14px/1.4 Inter,system-ui,sans-serif;color:#0B2A5B;resize:vertical}
 .op9-send{width:100%;margin-top:12px;border:0;border-radius:14px;padding:12px;background:#057a63;color:#fff;font:800 15px Poppins,system-ui,sans-serif;cursor:pointer}.op9-send:disabled{opacity:.7}
 .op9-ok{margin:12px 0 0;text-align:center;font:700 14px Inter,system-ui,sans-serif;color:#15803d}.op9-msg{margin:8px 0 0;text-align:center;font:600 13px/1.4 Inter,system-ui,sans-serif;color:#b45309}
+/* v705 · chat como WhatsApp: «Nuevo chat» + buscador */
+.wa-tools{display:flex;flex-direction:column;gap:8px;padding:10px 12px 6px;border-bottom:1px solid #eef1f5;background:#fff}
+.wa-new{border:1.5px solid #057a63;background:#fff;color:#057a63;border-radius:12px;padding:10px 12px;font:800 14px Poppins,system-ui,sans-serif;cursor:pointer}
+.wa-find{border:0;background:#f1f5f9;border-radius:10px;padding:9px 12px;font:500 14px Inter,system-ui,sans-serif;color:#0B2A5B;outline:none;width:100%;box-sizing:border-box}
+.wa-room[hidden],.wa-nci[hidden]{display:none!important}
+.wa-nc{position:absolute;inset:0;z-index:30;background:rgba(8,20,45,.45);display:grid;place-items:center;padding:16px}
+.wa-ncc{position:relative;width:100%;max-width:420px;max-height:calc(100% - 32px);display:flex;flex-direction:column;background:#fff;border-radius:22px;padding:18px;box-shadow:0 30px 60px -20px rgba(0,0,0,.5);box-sizing:border-box}
+.wa-ncc h3{margin:0 40px 10px 0;font:800 18px Poppins,system-ui,sans-serif;color:#0B2A5B}
+.wa-ncx{position:absolute;right:14px;top:14px;width:34px;height:34px;border-radius:10px;border:1.5px solid #dbe3ee;background:#fff;color:#0B2A5B;font:700 15px Inter,system-ui,sans-serif;cursor:pointer}
+.wa-ncf{border:1.5px solid #0B2A5B;border-radius:10px;padding:9px 12px;font:500 14px Inter,system-ui,sans-serif;color:#0B2A5B;margin-bottom:6px;outline:none}
+.wa-ncl{overflow-y:auto;min-height:0}
+.wa-nci{display:flex;gap:12px;align-items:center;width:100%;text-align:left;border:0;border-bottom:1px solid #f1f5f9;background:none;padding:9px 4px;cursor:pointer}
+.wa-nci b{display:block;font:800 15px Poppins,system-ui,sans-serif;color:#111}.wa-nci small{display:block;font:500 13px Inter,system-ui,sans-serif;color:#64748b}
+.wa-ncn{margin:8px 0 0;text-align:center;font:500 12.5px Inter,system-ui,sans-serif;color:#64748b}

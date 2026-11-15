@@ -17,11 +17,12 @@
     const o = Object.assign({ title: 'Chat', empty: '' }, opts || {});
     const el = document.createElement('div'); el.className = 'wa-wrap'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', 'Chat');
     el.innerHTML = `<div class="wa">
-      <aside class="wa-side"><header class="wa-h"><b>💬 ${esc(o.title)}</b><button class="wa-x" aria-label="Cerrar chat">✕</button></header><div class="wa-list"><p class="wa-note">⏳ Cargando…</p></div></aside>
+      <aside class="wa-side"><header class="wa-h"><b>💬 ${esc(o.title)}</b><button class="wa-x" aria-label="Cerrar chat">✕</button></header><div class="wa-tools" hidden><button type="button" class="wa-new">＋ ${esc(o.newLabel || 'Nuevo chat')}</button><input type="search" class="wa-find" placeholder="Buscar conversación…" aria-label="Buscar conversación"></div><div class="wa-list"><p class="wa-note">⏳ Cargando…</p></div></aside>
       <section class="wa-main"><div class="wa-blank"><div><b>mrarrieta.com</b><p>Elige una conversación para empezar a chatear.</p></div></div></section></div>`;
     document.body.appendChild(el); document.documentElement.classList.add('wa-lock');
     W = { el, o, room: null, me: '', msgs: [], timers: [], rooms: [] };
     el.querySelector('.wa-x').onclick = close;
+    el.querySelector('.wa-find').oninput = filterRooms; el.querySelector('.wa-new').onclick = newChat;
     el.addEventListener('click', (e) => { if (e.target === el) close(); });
     loadRooms(true);
     W.timers.push(setInterval(() => !document.hidden && loadRooms(false), 12000));
@@ -32,13 +33,23 @@
     const r = await W.o.call(W.o.roomsAction, {}).catch(() => null); if (!W) return;
     const list = W.el.querySelector('.wa-list');
     if (!r || !r.ok) { if (first) list.innerHTML = '<p class="wa-note">No se pudo cargar el chat. Revisa tu conexión.</p>'; return; }
-    W.me = r.me; W.rooms = r.rooms || []; W.chat = r.chat || null; applyClosed();
+    W.me = r.me; W.rooms = r.rooms || []; W.contacts = r.contacts || null; W.chat = r.chat || null; applyClosed(); W.el.querySelector('.wa-tools').hidden = !W.contacts || !!W.o.readOnly;
     list.innerHTML = W.rooms.length ? W.rooms.map((x) => `<button class="wa-room${W.room === x.room ? ' on' : ''}${x.locked ? ' locked' : ''}" data-room="${esc(x.room)}"${x.locked ? ' data-locked="1"' : ''}>${x.pic ? `<span class="wa-av has"><img src="${esc(x.pic)}" alt=""></span>` : `<span class="wa-av">${esc(ini(x.title))}</span>`}<span class="wa-rt"><b>${esc(x.title)}</b><small>${x.last ? (x.last.from === W.me ? '✓ ' : '') + esc(String(x.last.text).slice(0, 60)) : esc(x.sub || 'Toca para escribir')}</small></span><span class="wa-rm">${x.last ? `<small>${hm(x.last.ts)}</small>` : ''}${x.unread ? `<i>${x.unread}</i>` : ''}</span></button>`).join('')
-      : `<p class="wa-note">${esc(W.o.empty || 'Todavía no tienes conversaciones.')}</p>`;
+      : `<p class="wa-note">${W.contacts && W.contacts.length ? esc('Todavía no tienes conversaciones. Toca «' + (W.o.newLabel || 'Nuevo chat') + '» para escribir.') : esc(W.o.empty || 'Todavía no tienes conversaciones.')}</p>`;
+    filterRooms();
     if (W.chat && W.chat.open === false) list.insertAdjacentHTML('afterbegin', `<div class="wa-closed">${esc(W.chat.msg)}</div>`);
     list.querySelectorAll('[data-room]').forEach((b) => b.onclick = () => { if (b.dataset.locked) { const n = b.querySelector('small'); if (n) { n.textContent = '🔒 Solo puedes chatear con el profe con quien reservaste tu clase'; b.classList.add('shake'); setTimeout(() => b.classList.remove('shake'), 500); } return; } openRoom(b.dataset.room); });
     if (first) { const want = W.o.room && W.rooms.find((x) => x.room === W.o.room); const open1 = W.rooms.filter((x) => !x.locked); const one = open1.length === 1 && W.o.autoOpenSingle && window.innerWidth > 700; if (want && !want.locked) openRoom(want.room); else if (one) openRoom(open1[0].room); }
   }
+  /* v705 · buscar conversación y «Nuevo chat» (solo con quien se puede chatear: profe ↔ sus estudiantes) */
+  function filterRooms() { if (!W) return; const q = (W.el.querySelector('.wa-find').value || '').trim().toLowerCase(); W.el.querySelectorAll('.wa-list .wa-room').forEach((b) => { b.hidden = !!q && b.textContent.toLowerCase().indexOf(q) < 0; }); }
+  function newChat() {
+    if (!W) return; const L = (W.contacts || []).concat(W.rooms.filter((x) => !x.locked)).sort((a, b) => String(a.title).localeCompare(String(b.title)));
+    const ov = document.createElement('div'); ov.className = 'wa-nc'; ov.innerHTML = `<div class="wa-ncc" role="dialog" aria-label="${esc(W.o.newLabel || 'Nuevo chat')}"><button type="button" class="wa-ncx" aria-label="Cerrar">✕</button><h3>${esc(W.o.newLabel || 'Nuevo chat')}</h3><input type="search" class="wa-ncf" placeholder="${esc(W.o.newFind || 'Buscar por nombre…')}"><div class="wa-ncl">${L.length ? L.map((x) => `<button type="button" class="wa-nci" data-room="${esc(x.room)}">${x.pic ? `<span class="wa-av has"><img src="${esc(x.pic)}" alt=""></span>` : `<span class="wa-av">${esc(ini(x.title))}</span>`}<span><b>${esc(x.title)}</b><small>${esc(x.sub || '')}</small></span></button>`).join('') : `<p class="wa-note">${esc(W.o.newEmpty || 'Todavía no hay con quién chatear.')}</p>`}</div><p class="wa-ncn">${esc(W.o.newNote || '')}</p></div>`;
+    W.el.appendChild(ov); const f = ov.querySelector('.wa-ncf'); f.oninput = () => { const q = f.value.trim().toLowerCase(); ov.querySelectorAll('.wa-nci').forEach((b) => b.hidden = !!q && b.textContent.toLowerCase().indexOf(q) < 0); };
+    ov.onclick = (e) => { if (e.target === ov || e.target.closest('.wa-ncx')) ov.remove(); e.stopPropagation(); };
+    ov.querySelectorAll('.wa-nci').forEach((b) => b.onclick = () => { const x = L.find((y) => y.room === b.dataset.room); if (x && !W.rooms.some((y) => y.room === x.room)) W.rooms.push(Object.assign({ unread: 0, last: null }, x)); ov.remove(); openRoom(b.dataset.room); });
+    setTimeout(() => f.focus(), 50); }
   function openRoom(room) {
     const info = W.rooms.find((x) => x.room === room) || { title: '' }; W.room = room; W.msgs = [];
     W.el.querySelector('.wa').classList.add('in-room');
@@ -128,7 +139,7 @@
   // estudiante: chat con su(s) profe(s)
   function openStudent(extra) {
     const A = window.MRAC; if (!A || !A.code || !A.code()) { alert('Entra con tu código para chatear con tu profe.'); return; }
-    open(Object.assign({ title: 'Chat con mi profe', roomsAction: 'chatRooms', autoOpenSingle: true, empty: 'Cuando tengas tu primera clase con un profe, podrás chatear con él o ella aquí.', call: (a, d) => A.call(a, Object.assign({ code: A.code() }, d || {})) }, extra || {}));
+    open(Object.assign({ title: 'Chat con mi profe', roomsAction: 'chatRooms', autoOpenSingle: true, newLabel: 'Escribir a un profe', newFind: 'Buscar profe…', newNote: 'Solo puedes escribirle a profes con quienes has reservado una clase.', newEmpty: 'Cuando reserves tu primera clase, podrás escribirle a tu profe aquí.', empty: 'Cuando tengas tu primera clase con un profe, podrás chatear con él o ella aquí.', call: (a, d) => A.call(a, Object.assign({ code: A.code() }, d || {})) }, extra || {}));
   }
   // "Atrás" con el chat abierto: solo cierra el chat
   document.addEventListener('click', (e) => { if (!W) return; const b = e.target.closest && e.target.closest('.tb-back'); if (!b) return; e.preventDefault(); e.stopImmediatePropagation(); close(); }, true);
