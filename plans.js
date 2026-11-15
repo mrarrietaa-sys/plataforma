@@ -30,8 +30,8 @@
     free: ['Descubre tu nivel en 10 minutos', 'Tu ruta personalizada', 'Habla y la plataforma te corrige', 'Incluye 1 clase gratis con profe'],
     membership: ['Habla desde el día 1: te escucha y te corrige', 'Del A1 al B2, a tu ritmo, 24/7', 'Certificado por cada módulo', 'No incluye clases individuales'],
     premium: ['Todo lo de Plataforma', '4 clases 1 a 1 con profe al mes', 'Tú eliges profe, día y hora', 'Clases no acumulables: úsalas en tu periodo mensual'],
-    premium8: ['Todo lo de Plataforma', '8 clases 1 a 1: 2 por semana', 'Gana fluidez real, más rápido', 'Clases no acumulables: úsalas en tu periodo mensual'],
-    premium12: ['Todo lo de Plataforma', '12 clases 1 a 1: 3 por semana', 'El mejor precio por clase', 'Clases no acumulables: úsalas en tu periodo mensual'],
+    premium8: ['Todo lo de Plataforma', '8 clases 1 a 1 de 50 min', 'Gana fluidez real, más rápido', 'Clases no acumulables: úsalas en tu periodo mensual'],
+    premium12: ['Todo lo de Plataforma', '12 clases 1 a 1 de 50 min', 'El mejor precio por clase', 'Clases no acumulables: úsalas en tu periodo mensual'],
   };
   const waMsg = (k, renew) => `¡Hola! Soy ${who() || 'un estudiante'}. Quiero ${renew ? 'renovar' : 'activar'} el plan ${PL[k].name} (${PL[k].price} ${PL[k].per}) en mrarrieta.com`;
   const IC = { free: 'gift', membership: 'monitor', premium: 'crown', premium8: 'gem', premium12: 'star' };
@@ -70,8 +70,8 @@
     free: { out: 'Descubre tu nivel y prueba la plataforma sin pagar nada.', li: ['Prueba de nivel en 10 minutos', 'Tu ruta personalizada', 'Hablas y la plataforma te corrige'], note: 'Incluye 1 clase gratis con profe.', bt: 'Empezar gratis' },
     membership: { out: 'Aprende a tu ritmo, cuando quieras, desde el celular.', li: ['Habla desde el día 1: te escucha y te corrige', 'Ruta completa del A1 al B2', 'Certificado por cada módulo'], note: 'No incluye clases con profe.', bt: 'Empezar con Plataforma' },
     premium: { out: 'Pierde el miedo a hablar con un profe que te corrige en vivo.', li: ['Todo lo de Plataforma', '4 clases 1 a 1 de 50 min al mes', 'Tú eliges profe, día y hora'], rib: 'Más elegido', hot: 1, bt: 'Empezar con Premium 4' },
-    premium8: { out: 'Gana fluidez real: habla inglés 2 veces por semana.', li: ['Todo lo de Plataforma', '8 clases 1 a 1: 2 por semana', best8() ? 'El mejor precio por clase' : 'Gana fluidez real, más rápido'], rib: best8() ? 'Mejor precio por clase' : 'Más avance', bt: 'Empezar con Premium 8' },
-    premium12: { out: 'Para avanzar rápido: habla inglés 3 veces por semana.', li: ['Todo lo de Plataforma', '12 clases 1 a 1: 3 por semana', 'El mejor precio por clase'], rib: 'Mejor precio por clase', bt: 'Empezar con Premium 12' },
+    premium8: { out: 'Gana fluidez real hablando inglés con tu profe.', li: ['Todo lo de Plataforma', '8 clases 1 a 1 de 50 min', best8() ? 'El mejor precio por clase' : 'Gana fluidez real, más rápido'], rib: best8() ? 'Mejor precio por clase' : 'Más avance', bt: 'Empezar con Premium 8' },
+    premium12: { out: 'Para avanzar rápido con más clases con tu profe.', li: ['Todo lo de Plataforma', '12 clases 1 a 1 de 50 min', 'El mejor precio por clase'], rib: 'Mejor precio por clase', bt: 'Empezar con Premium 12' },
   });
   const CK = () => window.MRI ? MRI('check') : '✓';
   function v2(k, o) { o = o || {}; const d = V2()[k]; const pr = k === 'free' ? { price: '$0', per: '· 3 días' } : PL[k];
@@ -96,13 +96,13 @@
       <div class="lp-plh"><span class="ic">${ico('premium')}</span><b>Premium</b></div>
       <p class="pbk">${kid ? 'Tú decides cuántas clases con profe quiere tu hijo(a) al mes.' : 'Tú decides cuántas clases con profe quieres al mes.'}</p><p class="pbq">De ${PREM.min} a ${PREM.max} clases</p>
       <div class="pbn"><button type="button" class="pbx" data-pbs="-1" aria-label="Una clase menos">−</button><b class="pbN"></b><button type="button" class="pbx" data-pbs="1" aria-label="Una clase más">+</button></div>
-      <div class="pbs"><div class="pr"><strong class="pbP"></strong><small>COP/mes</small></div><span class="pc pbC"></span><span class="pw pbW"></span></div>
+      <div class="pbs"><div class="pr"><strong class="pbP"></strong><small>COP/mes</small></div><span class="pc pbC"></span></div>
       <ul><li>${CK()}<span class="pbL"></span></li><li>${CK()}<span>Eliges profe, día y hora</span></li><li>${CK()}<span>Incluye toda la Plataforma</span></li></ul>
       <small class="lp-pn">Clases no acumulables: úsalas dentro de tu mes. ${window.MRPOLICY ? '<span class="pl-cond" data-cond role="link" tabindex="0">Ver condiciones</span>' : ''}</small>
       ${mode === 'pick' ? '<span class="lp-pb in-plan-pick pbB">Elegir este plan</span>' : mode === 'buy' ? '<button type="button" class="lp-pb pbB" data-buy="premium"></button>' : mode === 'wa' ? '<a class="lp-pb pbB" target="_blank" rel="noopener" href="#"></a>' : '<a class="lp-pb pbB" href="inscripcion.html?plan=premium"></a>'}</div>`; }
   function pbSet(card, n) { if (!card) return; n = Math.max(PREM.min, Math.min(PREM.max, n)); card.dataset.pb = n; const k = pkey(n), v = PREM.base + PREM.per * n, $ = (c) => card.querySelector(c);
     $('.pbN').innerHTML = n + '<small>clases al mes</small>'; $('.pbP').textContent = fmt(v); $('.pbC').textContent = 'Solo ' + fmt(Math.round(v / n / 100) * 100) + ' por clase';
-    $('.pbW').textContent = 'Unas ' + String(Math.round(n / 4 * 10) / 10).replace('.', ',') + ' por semana · tú eliges los días'; $('.pbL').textContent = n + ' clases 1 a 1 de 50 min';
+    /* v702: sin «Unas X por semana · tú eliges los días» (el cliente decide; abajo ya dice «Eliges profe, día y hora») */ $('.pbL').textContent = n + ' clases 1 a 1 de 50 min';
     const [mi, ma] = card.querySelectorAll('[data-pbs]'); mi.disabled = n <= PREM.min; ma.disabled = n >= PREM.max;
     const b = $('.pbB'), cur = +card.dataset.pbc || 0, lbl = cur && cur === n ? (card.dataset.pbr ? 'Renovar mis ' + n + ' clases' : 'Tu plan actual') : 'Quiero mis ' + n + ' clases', m = card.dataset.pbm;
     if (m === 'buy') { b.dataset.buy = k; b.textContent = lbl; b.disabled = !!(cur && cur === n && !card.dataset.pbr); }
@@ -116,7 +116,7 @@
   // ⭐ v623 · franja de Premium 12 (debajo de las tarjetas): para quien quiere clases 3 veces por semana
   function p12(o) { o = o || {}; const P = PL.premium12, pc = per('premium12'), href = o.href || '';
     const bt = href ? `<a class="p12-b" href="${esc(href)}">Ver plan <span aria-hidden="true">→</span></a>` : canBuy() ? `<button type="button" class="p12-b" data-buy="premium12">Ver plan <span aria-hidden="true">→</span></button>` : `<a class="p12-b" target="_blank" rel="noopener" href="${WA(waMsg('premium12'))}">Ver plan <span aria-hidden="true">→</span></a>`;
-    return `<div class="p12"><span class="p12-ic">${ico('premium12')}</span><span class="p12-t"><b>¿Clases 3 veces por semana?</b><span>Premium 12 · <b>${esc(P.price)}</b>/mes · solo ${fmt(pc)} por clase</span></span>${bt}</div>`; }
+    return `<div class="p12"><span class="p12-ic">${ico('premium12')}</span><span class="p12-t"><b>¿Quieres 12 clases al mes?</b><span>Premium 12 · <b>${esc(P.price)}</b>/mes · solo ${fmt(pc)} por clase</span></span>${bt}</div>`; }
   // los botones "Elegir este plan" abren la compra
   document.addEventListener('click', (e) => { const b = e.target.closest && e.target.closest('[data-buy]'); if (!b || !window.MRBUY) return; e.preventDefault(); const mo = b.closest('.modal'); if (mo) mo.remove(); MRBUY.plan(b.dataset.buy); });
   // aviso cuando el contenido está bloqueado (fin del acceso gratuito o plan vencido)
