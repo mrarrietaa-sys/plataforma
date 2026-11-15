@@ -132,7 +132,7 @@
   }
   /* 🛡️ v704 · imágenes: se revisan en el propio dispositivo antes de enviarlas (desnudos o contenido sexual → no se envían y la conversación se pausa) */
   let NS = null;
-  function nsLoad() { if (NS) return NS; const add = (f) => new Promise((res, rej) => { const s = document.createElement('script'); s.src = 'nsfw/' + f; s.onload = res; s.onerror = rej; document.head.appendChild(s); });
+  function nsLoad() { if (NS) return NS; const add = (f) => new Promise((res, rej) => { const s = document.createElement('script'); s.src = f; /* v706: los 3 archivos del revisor de imágenes están en la raíz */ s.onload = res; s.onerror = rej; document.head.appendChild(s); });
     NS = (async () => { if (!window.nsfwjs) { await add('nsfwjs.min.js'); await add('model.min.js'); await add('group1-shard1of1.min.js'); } return window.nsfwjs.load('MobileNetV2'); })(); NS.catch(() => { NS = null; }); return NS; }
   async function imgBad(src) { try { const m = await nsLoad(); const img = new Image(); img.src = src; await img.decode(); const P = {}; (await m.classify(img)).forEach((x) => P[x.className] = x.probability); return (P.Porn || 0) + (P.Hentai || 0) >= 0.5 || (P.Sexy || 0) >= 0.8; } catch (e) { return false; } }
   function alertBar(t) { const box = W && W.el.querySelector('.wa-msgs'); if (box) box.insertAdjacentHTML('beforeend', `<div class="wa-day err"><span>${esc(t)}</span></div>`); }
