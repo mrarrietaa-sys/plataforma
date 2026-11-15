@@ -42,7 +42,7 @@ if (!window.M1) window.M1 = {
   if (REF) { try { localStorage.setItem('mra_ref', REF); } catch (e) { } }
   const st = { plan: /^(free|membership|premium\d*)$/.test(qs.get('plan') || '') ? qs.get('plan') : '', schedule: '', days: [], level: '', source: '', busy: false, extra: Math.max(0, Math.min(10, +qs.get('extra') || 0)) };
   document.addEventListener('mra-extra', (e) => { st.extra = e.detail.n; if (e.detail.plan !== st.plan) { st.extraPlan = e.detail.plan; } else st.extraPlan = st.plan; try { summary(); } catch (er) { } });
-  const planOf = (id) => PLANS.find((p) => p.id === id) || (/^premium\d*$/.test(id || '') && window.MRPLANS ? (() => { const n = MRPLANS.pnum(id), P = MRPLANS.PL[id] || {}; return { id, name: 'PREMIUM · ' + n + ' CLASES', price: P.price || '', per: 'COP/mes', tag: '+ ' + n + ' clases con profe', icon: '👑' }; })() : null); // 👑 v626
+  const planOf = (id) => PLANS.find((p) => p.id === id) || (/^premium\d*$/.test(id || '') && window.MRPLANS ? (() => { const n = MRPLANS.pnum(id), P = MRPLANS.PL[id] || {}; return { id, name: 'PREMIUM', price: P.price || '', per: 'COP/mes', tag: '+ ' + n + ' clases con profe', icon: '👑' }; })() : null); // 👑 v626
 
   /* ---------------- vista principal ---------------- */
   function render() {

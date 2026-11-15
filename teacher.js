@@ -238,7 +238,6 @@
         const AGH = { adult: ['Adultos', 'Conversación real para el trabajo, los viajes y la vida diaria. Clase guiada paso a paso, de 50 minutos.', 'mra-x-laptop.webp'], kids: ['Kids', 'Para niños de 9 a 11 años. Frases cortas, mucha energía y una misión con sellos en cada clase.', 'mra-x-balloon1.webp'], teens: ['Teens', 'Para jóvenes de 12 a 17 años. Temas de su vida, chat de la clase y racha de respuestas. Nada de trabajo.', 'mra-x-rocket.webp'] }[ag];
         const m = modal(`<div class="tpl tpl-${ag}"><button class="tp-x" data-x aria-label="Cerrar">✕</button><h3>🎥 Clases en vivo</h3><p class="muted">Cada tema es una clase de 50 minutos guiada paso a paso. Practícala aquí; la clase real se abre en <b>Mis clases → Entrar a la clase</b>.</p>
           <div class="tp-livetabs tp-agtabs">${[['adult', 'Adultos'], ['kids', 'Kids'], ['teens', 'Teens']].map(([k, t]) => `<button class="${k === ag ? 'on' : ''}" data-la="${k}">${t}</button>`).join('')}</div>
-          ${AGH ? `<div class="tpl-hd"><img src="${AGH[2]}" alt="" onerror="this.remove()"><div><b>${AGH[0]}</b><span>${AGH[1]}</span></div></div>` : ''}
           <div class="tp-livetabs">${[1, 2, 3, 4].map((x) => `<button class="${x === mod ? 'on' : ''}" data-lm="${x}">Módulo ${x} · ${LV[x]}</button>`).join('')}</div>
           <div class="tp-livel">${T.map((t, i) => { const p = ph(i + 1), r = rd(i + 1); return `<a class="tp-livei${AGH ? ' ag' : ''}" href="clase-en-vivo.html?rol=profe&demo=1&m=${mod}&t=${i + 1}${AQ}">${AGH && p ? `<i class="tpl-ph" style="background-image:url('${p}')"><b>${i + 1}</b></i>` : `<b>${i + 1}</b>`}<span>${esc(t[0])}${AGH && r ? `<small>Lectura: ${esc(r)}</small>` : ''}${window.MRTH ? MRTH.html(mod, i + 1, ag, 't', { ex: 1, g: 1 }) : ''}</span><em>Practicar →</em></a>`; }).join('') || '<p class="muted">Cargando…</p>'}</div></div>`);
         const box = m.querySelector('.tp-modal-card') || m; box.classList.add('tpl-box', 'tpl-box-' + ag);
@@ -487,6 +486,22 @@
 
   // 📚 acceso de profe a TODO el material de los módulos (modo profe en la plataforma de estudiantes)
   window.MRCHATOPEN = (room) => openChat(room);
+  /* ⭐ v704 · al tocar «Nueva opinión»: ventana corta con la opinión y un agradecimiento que llega al chat de la escuela */
+  window.MROPINION = (x) => {
+    const d = x.data || {}; const tt = String(x.title || ''); const nm = d.full || d.sname || (tt.match(/de (.+?) ·/) || [])[1] || 'tu estudiante'; const first = String(d.sname || nm).split(' ')[0];
+    const n = +d.stars || (tt.match(/★/g) || []).length || 5; const txt = d.text || x.body || ''; const key = 'mra_opthx_' + x.id; let done = false; try { done = !!localStorage.getItem(key); } catch (e) { }
+    const Q = [`Thank you so much, ${first}! See you in our next class.`, '¡Gracias por tu opinión! Me alegra que te haya gustado la clase.'];
+    const ini = String(nm).split(' ').map((w) => w[0] || '').join('').slice(0, 2).toUpperCase();
+    const m = modal(`<button class="tp-x" data-x aria-label="Cerrar">✕</button><div class="op9"><p class="op9-k">NUEVA OPINIÓN</p><div class="op9-who"><span class="op9-av">${esc(ini)}</span><div><b>${esc(nm)}</b>${d.when ? `<small>Clase individual · ${esc(d.when)}</small>` : ''}</div></div><div class="op9-st" aria-label="${n} de 5">${'★'.repeat(n)}${'☆'.repeat(5 - n)}</div>${txt ? `<div class="op9-q">“${esc(txt)}”</div>` : ''}
+      ${d.room ? (done ? '<p class="op9-ok">Ya le agradeciste por el chat.</p>' : `<div class="op9-sep"></div><p class="op9-lb">Agradécele por el chat</p><div class="op9-ch">${Q.map((q, i) => `<button type="button" class="${i ? '' : 'on'}" data-q="${i}">${esc(q)}</button>`).join('')}</div><textarea class="op9-ta" rows="2" maxlength="400">${esc(Q[0])}</textarea><button type="button" class="op9-send">Enviar por el chat</button><p class="op9-msg" hidden></p>`) : ''}</div>`);
+    const ta = m.querySelector('.op9-ta'), bt = m.querySelector('.op9-send'), msg = m.querySelector('.op9-msg');
+    m.querySelectorAll('[data-q]').forEach((b) => b.onclick = () => { m.querySelectorAll('[data-q]').forEach((o) => o.classList.toggle('on', o === b)); ta.value = Q[+b.dataset.q]; });
+    if (bt) bt.onclick = async () => { const t = ta.value.trim(); if (!t) return; bt.disabled = true; bt.textContent = 'Enviando…';
+      const r = await api('chatSend', { room: d.room, text: t }).catch(() => null);
+      if (r && r.ok) { try { localStorage.setItem(key, '1'); } catch (e) { } m.querySelector('.op9').insertAdjacentHTML('beforeend', `<p class="op9-ok">Mensaje enviado a ${esc(first)}.</p>`); bt.remove(); ta.remove(); m.querySelectorAll('.op9-ch,.op9-lb,.op9-sep').forEach((e) => e.remove()); setTimeout(() => m.remove(), 1600); return; }
+      bt.disabled = false; bt.textContent = 'Enviar por el chat'; msg.hidden = false; msg.textContent = r && r.err === 'closed' ? r.msg.replace(/^[^\p{L}]+/u, '') : r && r.err === 'paused' ? 'Esta conversación está pausada en este momento.' : 'No se pudo enviar. Revisa tu conexión e inténtalo de nuevo.'; };
+  };
+
   function openChat(room) { if (!window.MRLIVE) return; MRLIVE.open({ room, title: 'Chat con estudiantes', roomsAction: 'tChats', empty: 'Aquí aparecerán tus estudiantes cuando tengan clases contigo.', call: (a, d) => api(a, d) }); }
   function material() {
     const t = D.teacher || {}; const info = { id: t.id || '', name: t.name || 'Profe', first: t.hello || String(t.name || 'Profe').split(' ')[0], at: Date.now() };

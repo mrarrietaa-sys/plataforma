@@ -153,5 +153,5 @@ function mraMergeKey(k, aS, bS) { /* a = lo que ya había, b = lo nuevo · nunca
     wipeLocal(true); ls.del(OWNER); ls.del(ME); try { sessionStorage.removeItem(ME); localStorage.removeItem('mra_me_last'); } catch (e) { } return true; }
   function setCode(nc) { const p = prof(); if (p) { p.code = nc; ls.set('mra_profile_v1', JSON.stringify(p)); } ls.set(OWNER, nc); ls.del(ME); try { sessionStorage.removeItem(ME); } catch (e) { } } // 🔑 nuevo código de acceso
   window.MRAC = { setCode, signOut, flush: () => beacon(true), examResult, requestAttempt, homework, feedbackFor, evalSave, notifications, markRead, isPremium: premium, cachedMe: () => { const c = cachedMe(); return c && c.r; }, meLast, on: !!URL_, url: URL_, call, login, me, sync, upload, saveProfile, code, toB64, applyStudent, wipeLocal,
-    planName: (p) => (/^premium\d*$/.test(p || '') ? 'Premium · ' + (+(String(p).slice(7)) || 4) + ' clases' : { free: 'Acceso gratuito', membership: 'Plataforma' }[p] || 'Acceso gratuito') };
+    planName: (p) => (/^premium\d*$/.test(p || '') ? 'Premium' : { free: 'Acceso gratuito', membership: 'Plataforma' }[p] || 'Acceso gratuito') };
 })();

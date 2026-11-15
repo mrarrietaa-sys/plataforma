@@ -61,12 +61,17 @@
     loadMsgs(true).then(() => W && loadRooms(false));
   }
   // 🕒 fuera del horario laboral: se puede leer, pero no escribir
-  function applyClosed() { if (!W) return; const c = W.chat, box = W.el.querySelector('.wa-closed'), bar = W.el.querySelector('.wa-bar'); if (!box || !bar) return; const closed = c && c.open === false; box.hidden = !closed; bar.style.display = closed ? 'none' : ''; if (closed) box.textContent = c.msg; }
+  function applyClosed() { if (!W) return; applyPause(); const c = W.chat, box = W.el.querySelector('.wa-closed'), bar = W.el.querySelector('.wa-bar'); if (!box || !bar) return; const P = W.pause; const closed = (c && c.open === false) || !!P; box.hidden = !closed; box.classList.toggle('wa-pause', !!P); bar.style.display = closed ? 'none' : ''; if (P) box.innerHTML = `<b>Conversación pausada por 24 horas</b><span>${esc(P.msg.replace(/^Conversación pausada por 24 horas\.\s*/, ''))}</span>`; else if (closed) box.textContent = c.msg; }
+  /* 🛡️ v704 · administración: reabrir antes o mantener pausada */
+  function applyPause() { if (!W || !W.o.readOnly) return; const main = W.el.querySelector('.wa-main'); let bx = main && main.querySelector('.wa-admp'); if (!main || !W.room) return; if (!W.pause) { if (bx) bx.remove(); return; }
+    if (!bx) { bx = document.createElement('div'); bx.className = 'wa-admp'; const ro = main.querySelector('.wa-ro'); (ro || main).insertAdjacentElement(ro ? 'beforebegin' : 'beforeend', bx); }
+    bx.innerHTML = `<span>${esc(W.pause.msg.replace(/ Se detectó.*?avisada\./, ''))}</span><div><button type="button" data-op="open">Reabrir ahora</button><button type="button" data-op="keep">Mantener pausada</button></div>`;
+    bx.querySelectorAll('[data-op]').forEach((b) => b.onclick = async () => { b.disabled = true; const r = await W.o.call('aChatPause', { room: W.room, op: b.dataset.op }).catch(() => null); if (r && r.ok) { W.pause = r.pause; applyPause(); } else b.disabled = false; }); }
   async function loadMsgs(first) {
     const room = W.room; const r = await W.o.call(W.o.getAction || 'chatGet', { room }).catch(() => null); if (!W || W.room !== room) return;
     if (!r || !r.ok) { if (first) W.el.querySelector('.wa-msgs').innerHTML = '<p class="wa-note">No se pudieron cargar los mensajes.</p>'; return; }
-    W.me = r.me || W.me; const pend = W.msgs.filter((m) => m.pending);
-    const sig = JSON.stringify(r.msgs.map((m) => [m.id, m.read]));
+    W.me = r.me || W.me; W.pause = r.pause || null; applyClosed(); const pend = W.msgs.filter((m) => m.pending);
+    const sig = JSON.stringify(r.msgs.map((m) => [m.id, m.read, m.mod]));
     if (!first && sig === W.sig && !pend.length) return; W.sig = sig;
     W.msgs = r.msgs.concat(pend.filter((p) => !r.msgs.some((m) => m.text === p.text && m.from === p.from && Math.abs(m.ts - p.ts) < 60000 && !!m.file === !!(p.localImg || p.uploading))));
     render(first);
@@ -76,7 +81,8 @@
     const atBottom = forceBottom || box.scrollHeight - box.scrollTop - box.clientHeight < 80;
     let last = '';
     box.innerHTML = W.msgs.length ? W.msgs.map((m) => { const mine = m.from === W.me; const dk = dayKey(m.ts); const sep = dk !== last ? `<div class="wa-day"><span>${esc(dayLbl(m.ts))}</span></div>` : ''; last = dk;
-      return `${sep}<div class="wa-m ${mine ? 'me' : 'them'}"><div class="wa-b">${W.o.readOnly ? `<span class="wa-who">${esc(m.name || '')}</span>` : ''}${fileHTML(m)}${fmt(m.text)}<span class="wa-meta">${hm(m.ts)}${mine ? `<i class="wa-tk${m.read ? ' read' : ''}">${m.pending ? '🕓' : m.read ? TICK2 : TICK1}</i>` : ''}</span></div></div>`; }).join('')
+      if (m.mod && !W.o.readOnly) return `${sep}<div class="wa-m ${mine ? 'me' : 'them'}"><div class="wa-b wa-mod">Mensaje bloqueado: no cumple las normas de respeto de la escuela.</div></div>`;
+      return `${sep}<div class="wa-m ${mine ? 'me' : 'them'}"><div class="wa-b${m.mod ? ' wa-modadm' : ''}">${m.mod ? '<span class="wa-modt">Bloqueado por la plataforma</span>' : ''}${W.o.readOnly ? `<span class="wa-who">${esc(m.name || '')}</span>` : ''}${fileHTML(m)}${fmt(m.text)}<span class="wa-meta">${hm(m.ts)}${mine ? `<i class="wa-tk${m.read ? ' read' : ''}">${m.pending ? '🕓' : m.read ? TICK2 : TICK1}</i>` : ''}</span></div></div>`; }).join('')
       : '<div class="wa-day"><span>🔒 Escribe tu primer mensaje. Esta conversación puede ser revisada por administración para cuidar la calidad del servicio.</span></div>';
     if (atBottom) box.scrollTop = box.scrollHeight;
   }
@@ -100,18 +106,24 @@
     if (!data) return alertBar('No se pudo leer el archivo.');
     const tmp = { id: 'tmp' + Date.now(), from: W.me, text: caption, ts: Date.now(), pending: true, uploading: !/^image\//.test(mime), localImg: /^image\//.test(mime) ? data : '', fname };
     W.msgs.push(tmp); render(true);
-    const r = await W.o.call('chatSend', { room, text: caption, b64: data.split(',')[1], mime, fname }).catch(() => null); if (!W || W.room !== room) return;
+    let bad = false; if (/^image\//.test(mime)) bad = await imgBad(data); if (!W || W.room !== room) return;
+    const r = await W.o.call('chatSend', Object.assign({ room, text: caption, b64: data.split(',')[1], mime, fname }, bad ? { mod: 'img' } : {})).catch(() => null); if (!W || W.room !== room) return;
     const i = W.msgs.indexOf(tmp);
-    if (r && r.ok) { if (i >= 0) W.msgs[i] = r.msg; } else { if (i >= 0) W.msgs.splice(i, 1); if (r && r.err === 'closed') { W.chat = { open: false, msg: r.msg }; applyClosed(); return render(true); } alertBar(r && r.err === 'type' ? 'Ese tipo de archivo no se permite. Envía imágenes, PDF, Word, Excel o PowerPoint.' : r && r.err === 'size' ? 'El archivo es muy pesado.' : 'No se pudo enviar el archivo. Inténtalo de nuevo.'); }
+    if (r && r.ok) { if (i >= 0) W.msgs[i] = r.msg; } else { if (i >= 0) W.msgs.splice(i, 1); if (r && r.err === 'paused') { W.pause = r.pause; applyClosed(); loadMsgs(true); return; } if (r && r.err === 'closed') { W.chat = { open: false, msg: r.msg }; applyClosed(); return render(true); } alertBar(r && r.err === 'type' ? 'Ese tipo de archivo no se permite. Envía imágenes, PDF, Word, Excel o PowerPoint.' : r && r.err === 'size' ? 'El archivo es muy pesado.' : 'No se pudo enviar el archivo. Inténtalo de nuevo.'); }
     render(true);
   }
   async function send(text) {
     const room = W.room; const tmp = { id: 'tmp' + Date.now(), from: W.me, text, ts: Date.now(), pending: true }; W.msgs.push(tmp); render(true);
     const r = await W.o.call('chatSend', { room, text }).catch(() => null); if (!W || W.room !== room) return;
     const i = W.msgs.indexOf(tmp);
-    if (r && r.ok) { if (i >= 0) W.msgs[i] = r.msg; } else { if (i >= 0) W.msgs.splice(i, 1); const ta = W.el.querySelector('textarea'); if (ta) ta.value = text; if (r && r.err === 'closed') { W.chat = { open: false, msg: r.msg }; applyClosed(); } else alertBar('No se pudo enviar. Revisa tu conexión e inténtalo de nuevo.'); }
+    if (r && r.ok) { if (i >= 0) W.msgs[i] = r.msg; } else { if (i >= 0) W.msgs.splice(i, 1); const ta = W.el.querySelector('textarea'); if (ta) ta.value = text; if (r && r.err === 'paused') { if (ta && r.blocked) ta.value = ''; W.pause = r.pause; applyClosed(); loadMsgs(true); return; } if (r && r.err === 'closed') { W.chat = { open: false, msg: r.msg }; applyClosed(); } else alertBar('No se pudo enviar. Revisa tu conexión e inténtalo de nuevo.'); }
     render(true);
   }
+  /* 🛡️ v704 · imágenes: se revisan en el propio dispositivo antes de enviarlas (desnudos o contenido sexual → no se envían y la conversación se pausa) */
+  let NS = null;
+  function nsLoad() { if (NS) return NS; const add = (f) => new Promise((res, rej) => { const s = document.createElement('script'); s.src = 'nsfw/' + f; s.onload = res; s.onerror = rej; document.head.appendChild(s); });
+    NS = (async () => { if (!window.nsfwjs) { await add('nsfwjs.min.js'); await add('model.min.js'); await add('group1-shard1of1.min.js'); } return window.nsfwjs.load('MobileNetV2'); })(); NS.catch(() => { NS = null; }); return NS; }
+  async function imgBad(src) { try { const m = await nsLoad(); const img = new Image(); img.src = src; await img.decode(); const P = {}; (await m.classify(img)).forEach((x) => P[x.className] = x.probability); return (P.Porn || 0) + (P.Hentai || 0) >= 0.5 || (P.Sexy || 0) >= 0.8; } catch (e) { return false; } }
   function alertBar(t) { const box = W && W.el.querySelector('.wa-msgs'); if (box) box.insertAdjacentHTML('beforeend', `<div class="wa-day err"><span>${esc(t)}</span></div>`); }
   // estudiante: chat con su(s) profe(s)
   function openStudent(extra) {

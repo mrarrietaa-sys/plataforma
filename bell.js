@@ -31,6 +31,8 @@
       if (!x.read) { x.read = true; paint(); try { O.markRead && O.markRead([x.id], false); } catch (e) { } }
       if (x.type === 'tema' && window.MRAP && x.data && x.data.m) { const md = MRAP.mod(+x.data.m); if (md) { close(); location.href = md.url; return; } }
       if (x.type === 'backup' && x.data && /^https:\/\/drive\.google\.com\//.test(x.data.url || '')) { close(); window.open(x.data.url, '_blank', 'noopener'); return; } // v670: abre la carpeta de la copia de seguridad (solo administración)
+      if (x.type === 'opinion' && window.MROPINION) { close(); window.MROPINION(x); return; } /* v704 */
+      if (x.type === 'chatmod' && window.MRADMCHAT) { close(); window.MRADMCHAT(x.data && x.data.room); return; } /* v704 */
       if (x.type === 'chat') { const room = x.data && x.data.room; close(); if (window.MRCHATOPEN) window.MRCHATOPEN(room); else if (window.MRLIVE && MRLIVE.openStudent) MRLIVE.openStudent({ room }); return; }
       try { if (O && O.go) { close(); O.go(x); } } catch (e) { } }); // v580: al tocar la notificación, te lleva a donde está lo que dice
   }

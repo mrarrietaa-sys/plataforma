@@ -10425,3 +10425,20 @@ body.ag-kids .ms9-movie{--mv:#f59e0b;--mvs:#f6e3c2;--mvb:#f6e3c2;--mvn:#d97706;-
 .ms9-run .ms9-turn{gap:6px}
 /* v699 · la tira de miniaturas se desvanece en los bordes: ninguna miniatura queda cortada junto a las flechas */
 .lrc-th{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 12px,#000 calc(100% - 12px),transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 12px,#000 calc(100% - 12px),transparent 100%);padding-left:8px!important;padding-right:8px!important}
+/* v704 · chat de paz: conversación pausada y mensajes bloqueados */
+.wa-closed.wa-pause{background:#fff4f4!important;border:1.5px solid #fecaca!important;color:#7f1d1d!important;border-radius:14px;margin:10px;padding:12px;text-align:center;display:block}
+.wa-closed.wa-pause b{display:block;font:800 15px Poppins,system-ui,sans-serif;color:#b91c1c;margin-bottom:4px}.wa-closed.wa-pause span{font:500 13px/1.4 Inter,system-ui,sans-serif}
+.wa-b.wa-mod{background:#f1f5f9!important;color:#6b7280!important;font-style:italic;font-size:13px}
+.wa-modt{display:block;font:800 11px Inter,system-ui,sans-serif;color:#b91c1c;letter-spacing:.04em;text-transform:uppercase;margin-bottom:3px}.wa-b.wa-modadm{border:1.5px solid #fecaca}
+.wa-admp{margin:8px 10px;background:#fff4f4;border:1.5px solid #fecaca;border-radius:12px;padding:10px 12px;font:600 13px/1.4 Inter,system-ui,sans-serif;color:#7f1d1d;display:flex;flex-direction:column;gap:8px}
+.wa-admp div{display:flex;gap:8px;flex-wrap:wrap}.wa-admp button{flex:1;min-width:140px;border-radius:10px;padding:9px 10px;font:800 13px Poppins,system-ui,sans-serif;border:1.5px solid #0B2A5B;background:#fff;color:#0B2A5B;cursor:pointer}.wa-admp button[data-op=open]{background:#0B2A5B;color:#fff}
+/* v704 · ventana «Nueva opinión» del profe (centrada en PC y celular) */
+.op9-k{margin:0;font:800 11px Poppins,system-ui,sans-serif;letter-spacing:.1em;color:#E3242B}
+.op9-who{display:flex;gap:12px;align-items:center;margin-top:10px}.op9-av{width:50px;height:50px;border-radius:50%;background:#0B2A5B;color:#fff;font:800 17px Poppins,system-ui,sans-serif;display:grid;place-items:center;flex:none}
+.op9-who b{display:block;font:800 18px Poppins,system-ui,sans-serif;color:#0B2A5B}.op9-who small{font:500 13px Inter,system-ui,sans-serif;color:#64748b}
+.op9-st{color:#f5a524;font-size:21px;letter-spacing:2px;margin-top:10px}.op9-q{margin-top:8px;background:#f5f7fb;border-radius:14px;padding:12px 14px;font:600 15px/1.4 Inter,system-ui,sans-serif;color:#0B2A5B;overflow-wrap:anywhere}
+.op9-sep{height:1px;background:#e7ecf3;margin:14px 0 10px}.op9-lb{margin:0 0 8px;font:800 14px Poppins,system-ui,sans-serif;color:#0B2A5B}
+.op9-ch{display:flex;flex-direction:column;gap:6px}.op9-ch button{text-align:left;border:1.5px solid #dbe3ee;background:#fff;border-radius:12px;padding:8px 12px;font:600 13.5px/1.35 Inter,system-ui,sans-serif;color:#0B2A5B;cursor:pointer}.op9-ch button.on{border-color:#0B2A5B;background:#eef3fb}
+.op9-ta{width:100%;box-sizing:border-box;margin-top:8px;border:1.5px solid #0B2A5B;border-radius:12px;padding:10px 12px;font:500 14px/1.4 Inter,system-ui,sans-serif;color:#0B2A5B;resize:vertical}
+.op9-send{width:100%;margin-top:12px;border:0;border-radius:14px;padding:12px;background:#057a63;color:#fff;font:800 15px Poppins,system-ui,sans-serif;cursor:pointer}.op9-send:disabled{opacity:.7}
+.op9-ok{margin:12px 0 0;text-align:center;font:700 14px Inter,system-ui,sans-serif;color:#15803d}.op9-msg{margin:8px 0 0;text-align:center;font:600 13px/1.4 Inter,system-ui,sans-serif;color:#b45309}

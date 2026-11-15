@@ -11,8 +11,8 @@
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const J = (s, d) => { if (s && typeof s === 'object') return s; try { return s ? JSON.parse(s) : d; } catch (e) { return d; } };
   const key = () => { try { return sessionStorage.getItem(KK) || ''; } catch (e) { return ''; } };
-  const PLAN = { free: ['🎁', 'ACCESO GRATUITO'], membership: ['🖥️', 'PLATAFORMA'], premium: ['👑', 'PREMIUM · 4 CLASES'], premium8: ['💎', 'PREMIUM · 8 CLASES'], premium12: ['⭐', 'PREMIUM · 12 CLASES'], expired: ['⏰', 'Vencido'] };
-  for (let n = 4; n <= 20; n++) PLAN[n === 4 ? 'premium' : 'premium' + n] = ['👑', 'PREMIUM · ' + n + ' CLASES']; // 👑 v626: Premium de 4 a 20 clases
+  const PLAN = { free: ['🎁', 'ACCESO GRATUITO'], membership: ['🖥️', 'PLATAFORMA'], premium: ['👑', 'PREMIUM'], premium8: ['👑', 'PREMIUM'], premium12: ['👑', 'PREMIUM'], expired: ['⏰', 'Vencido'] };
+  for (let n = 4; n <= 20; n++) PLAN[n === 4 ? 'premium' : 'premium' + n] = ['👑', 'PREMIUM']; // 👑 v626: Premium de 4 a 20 clases
   const PREMK = (n) => (+n === 4 ? 'premium' : 'premium' + n);
   const MODN = { 1: 'A1', 2: 'A2', 3: 'B1', 4: 'B2' };
   const PRICE = { membership: 64900, premium: 349000 };
@@ -450,7 +450,7 @@
 
   /* ======================= INSCRIPCIONES ======================= */
   const ENR_ST = [['nuevo', '🆕 Nuevo'], ['pagada', '💳 Pagada'], ['contactado', '📞 Contactado'], ['inscrito', '✅ Inscrito'], ['descartado', '🗑 Descartado']];
-  const planName = (k) => (/^premium\d*$/.test(k || '') ? '👑 Premium · ' + (+(String(k).slice(7)) || 4) + ' clases' : { free: '🎁 Acceso gratuito', membership: '🖥️ Plataforma' }[k] || k || '—');
+  const planName = (k) => (/^premium\d*$/.test(k || '') ? '👑 Premium' : { free: '🎁 Acceso gratuito', membership: '🖥️ Plataforma' }[k] || k || '—');
   function enroll() {
     list('enroll', { title: '📝 Inscripciones', sub: `Solo aparecen las inscripciones con el pago aprobado · Formulario: ${BASE}inscripcion.html`,
       filters: [{ k: 'status', opts: [['', 'Todos los estados']].concat(ENR_ST) }],
@@ -999,6 +999,7 @@
     wireGA($('.ad-mini', view()), 'Interesados', () => leads(), { edit: leEdit });
   }
 
+  window.MRADMCHAT = (room) => window.MRLIVE && MRLIVE.open({ room, title: 'Chats (solo lectura)', roomsAction: 'aChats', getAction: 'aChatGet', readOnly: true, empty: 'Todavía no hay conversaciones.', call: (a, d) => api(a, d) }); /* v704 */
   function chats() {
     view().innerHTML = `<div class="ad-head"><h1>💬 Chats profe ↔ estudiante</h1></div><div class="card"><p class="muted">Aquí puedes leer todas las conversaciones entre profes y estudiantes (solo lectura). En el chat se les informa que administración puede revisar las conversaciones.</p><button class="btn k lg" id="ch-open">💬 Abrir conversaciones</button></div>`;
     const go = () => window.MRLIVE && MRLIVE.open({ title: 'Chats (solo lectura)', roomsAction: 'aChats', getAction: 'aChatGet', readOnly: true, empty: 'Todavía no hay conversaciones.', call: (a, d) => api(a, d) });

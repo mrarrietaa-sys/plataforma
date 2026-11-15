@@ -8,14 +8,14 @@
   const fmt = (n) => '$' + String(Math.round(+n || 0)).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
   const PL = {
     membership: { name: '🖥️ PLATAFORMA', price: '$64.900', per: 'COP/mes', n: 64900, classes: 0 },
-    premium: { name: '👑 PREMIUM · 4 CLASES', price: '$149.900', per: 'COP/mes', n: 149900, classes: 4 },
-    premium8: { name: '💎 PREMIUM · 8 CLASES', price: '$249.900', per: 'COP/mes', n: 249900, classes: 8 },
-    premium12: { name: '⭐ PREMIUM · 12 CLASES', price: '$349.900', per: 'COP/mes', n: 349900, classes: 12 },
+    premium: { name: '👑 PREMIUM', price: '$149.900', per: 'COP/mes', n: 149900, classes: 4 },
+    premium8: { name: '👑 PREMIUM', price: '$249.900', per: 'COP/mes', n: 249900, classes: 8 },
+    premium12: { name: '👑 PREMIUM', price: '$349.900', per: 'COP/mes', n: 349900, classes: 12 },
   };
   // 👑 v626 · «Crea tu plan»: Premium de 4 a 20 clases al mes · precio = base + valor por clase (lo define administración)
   const PREM = { min: 4, max: 20, base: 49900, per: 25000 };
   const pkey = (n) => n === 4 ? 'premium' : 'premium' + n, pnum = (k) => { const m = /^premium(\d*)$/.exec(String(k || '')); return m ? (m[1] ? +m[1] : 4) : 0; };
-  function premSync() { for (let n = PREM.min; n <= PREM.max; n++) { const k = pkey(n), v = PREM.base + PREM.per * n; PL[k] = { name: '👑 PREMIUM · ' + n + ' CLASES', price: fmt(v), per: 'COP/mes', n: v, classes: n }; } }
+  function premSync() { for (let n = PREM.min; n <= PREM.max; n++) { const k = pkey(n), v = PREM.base + PREM.per * n; PL[k] = { name: '👑 PREMIUM', price: fmt(v), per: 'COP/mes', n: v, classes: n }; } }
   premSync();
   const FREE = { name: '🎁 ACCESO GRATUITO', price: '$0', per: 'COP · prueba de 3 días' };
   let EXTRA = 32900;
@@ -63,7 +63,7 @@
       <p class="lp-hook">${d.out}</p><ul>${d.li.map(l => `<li>${CK()}<span>${esc(l)}</span></li>`).join('')}</ul><small class="lp-pn">${note}</small>${btn}`;
   }
   /* 🛍️ tarjetas de planes v2 (página de entrada, inscripción y perfil): resultado, precio por clase, condiciones aparte */
-  const NM = { free: 'Acceso gratuito', membership: 'Plataforma', premium: 'Premium · 4 clases', premium8: 'Premium · 8 clases', premium12: 'Premium · 12 clases' };
+  const NM = { free: 'Acceso gratuito', membership: 'Plataforma', premium: 'Premium', premium8: 'Premium', premium12: 'Premium' };
   const per = (k) => PL[k] && PL[k].classes ? Math.round(PL[k].n / PL[k].classes / 100) * 100 : 0;
   const best8 = () => per('premium8') && per('premium8') < per('premium');
   const V2 = () => ({
