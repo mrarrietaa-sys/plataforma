@@ -994,7 +994,7 @@
       const T = takes.filter(t => t && !t.fail), sr = T.length ? Math.round(T.reduce((a, t) => a + t.r, 0) / T.length) : 0, si = T.length ? Math.round(T.reduce((a, t) => a + t.it, 0) / T.length) : 0;
       /* v697 · «Misión cumplida» como una PELÍCULA con subtítulos: foto grande del lugar, solo la frase que suena (con su traducción), barra por frase y controles */
       { const h2 = stage.querySelector(':scope > h2'); if (h2) h2.textContent = '¡Misión cumplida!'; }
-      const bgImg = $e('.ms9-fl').style.backgroundImage || `url('${M.imgURL('u:photo-' + BG, 900, 420)}')`;
+      const bgImg = (() => { const f = $e('.ms9-fl'), im = f && f.querySelector('.fx9-sh'); if (im && im.src) return `url('${im.src}')`; const bi = f && f.style.backgroundImage; return bi && bi !== 'none' ? bi : `url('${M.imgURL('u:photo-' + BG, 900, 420)}')`; })(); /* v700: con las imágenes completas, la foto se toma de la imagen visible */
       const avHTML = $e('.ms9-ch:not(.me) .ms9-av').innerHTML;
       const LN = []; list.forEach((x, k) => { LN.push({ o: 1, en: x.q, es: x.es || '', au: x.qau }); LN.push({ o: 0, en: x.a, es: (window.MRKQES && MRKQES(x.q, x.a)) || '', k }); });
       const SVP = '<svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>', SVZ = '<svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>';

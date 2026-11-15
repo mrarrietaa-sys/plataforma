@@ -5,7 +5,7 @@
    M3: Adultos Clasificador · Teens Carrera · Kids Canasta
    M4: Adultos Rascacielos · Teens Penalti · Kids Ranita */
 (function () {
-  try { if (!document.querySelector('link[href^="retos.css"]')) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'retos.css?v=698'; document.head.appendChild(l); } } catch (e) { }
+  try { if (!document.querySelector('link[href^="retos.css"]')) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'retos.css?v=701'; document.head.appendChild(l); } } catch (e) { }
   const T = window.__rtT || 40, IMG = 'retos/';
   const M = () => window.M1, A = () => window.M1A;
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -48,7 +48,7 @@
       let others = cl ? cl.slice(0, need) : [];
       if (others.length < need) others = others.concat(shuf(V.filter(x => x !== v && !exact(x).test(s.en) && x.en.toLowerCase() !== ans.toLowerCase() && others.indexOf(x.en) < 0 && (cl || !FUNC.test(x.en)))).slice(0, need - others.length).map(x => x.en));
       if (others.length < need) return;
-      L.push({ mode: 'f', q: s.en.replace(m[0], '___'), ans, after: s.au, txt: s.en, opts: [ans, ...others] }); });
+      L.push({ mode: 'f', af: 1, q: s.en.replace(m[0], '___'), ans, after: s.au, txt: s.en, opts: [ans, ...others] }); });
     return L.length >= 3 ? L : [];
   }
   /* v698: si la respuesta es una palabra gramatical, los distractores son de su misma clase (y nunca otra respuesta válida) */
@@ -61,7 +61,10 @@
     const ok = k => k && k.q && k.a && k.qau && k.aau && !/_{2,}/.test(first(k.a)) && first(k.a).length <= 46;
     const K = (p.keyq || []).filter(ok), pool = topicParts(p).flatMap(x => (x.keyq || []).filter(ok)).concat(K);
     const ans = [...new Set(pool.map(k => first(k.a)))]; if (K.length < 2 || ans.length < 3) return [];
-    return K.map(k => { const a = first(k.a); return { mode: 'q', q: k.q, es: k.es || '', say: k.qau, after: k.aau, ans: a, txt: a, opts: [a, ...shuf(ans.filter(x => x !== a)).slice(0, 2)] }; });
+    /* v701: un distractor nunca puede ser también una respuesta válida a la pregunta */
+    const YN = /^(do|does|did|is|are|am|was|were|can|could|have|has|will|would|you)\b/i, w2 = t => String(t).toLowerCase().replace(/[^a-z' ]/g, '').split(/\s+/).slice(0, 2).join(' '), dem = t => (String(t).match(/^(this|that|these|those)\b/i) || [])[1];
+    const valid = (q, a, d) => { if (YN.test(q) && !/ or /i.test(q) && /^(yes|no)\b/i.test(d)) return true; if (/ or /i.test(q) && /^(yes|no)\b/i.test(a) === /^(yes|no)\b/i.test(d) && w2(a) === w2(d)) return true; if (!YN.test(q) && w2(a) === w2(d)) return true; if (dem(a) && dem(d)) return true; const st = t => (String(t).toLowerCase().match(/[a-z]{5,}/g) || []).filter(x => !/^(prefer|which|there|where|what|about|favorite|today|daily)$/.test(x)).map(x => x.slice(0, 6)); const qs = st(q); if (st(d).some(x => qs.indexOf(x) >= 0)) return true; return false; };
+    return K.map(k => { const a = first(k.a); const ds = shuf(ans.filter(x => x !== a && !valid(k.q, a, x))).slice(0, 2); if (ds.length < 2) return null; return { mode: 'q', q: k.q, es: k.es || '', say: k.qau, after: k.aau, ans: a, txt: a, opts: [a, ...ds] }; }).filter(Boolean);
   }
   // ⏰ La hora (Módulo 2 · Adultos): frases del tema «Telling the Time» con su audio
   const NUM = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12, twenty: 20, 'twenty-five': 25 };
@@ -102,7 +105,7 @@
   function pick(p) {
     const g = G[ag() + '-' + Math.min(4, Math.max(1, mod()))]; if (!g) return null;
     let items = g.src(p) || [];
-    if (ag() !== 'adult' && items.length && items[0].mode === 'f') { const af = ageFill(p, g.k === 'ranita' ? 2 : 3); const clean2 = items.filter(it => !WORK.test(it.q + ' ' + it.txt)); items = af.length >= 3 ? af : (clean2.length >= 3 ? clean2 : []); }
+    if (ag() !== 'adult' && items.length && items[0].mode === 'f') { const clean2 = items.filter(it => !WORK.test(it.q + ' ' + it.txt)); items = clean2.length >= 3 ? clean2 : []; } /* v701: solo frases de la lección revisadas (una sola respuesta correcta); ya no se generan distractores automáticos */
     if (items.length < 3) { items = vocabItems(p); if (g.k === 'ranita') items = items.map(it => Object.assign({}, it, { opts: it.opts.slice(0, 2) })); }
     if (items.length < 3) return null;
     return { g, items };
@@ -160,7 +163,7 @@
   }
   function timeout(B, S, it, ms, msg) { S.later(() => { if (S.cur !== it || S.done) return; S.done = true; const fb = B.querySelector('.rto-fb'); S.score(false, it); if (fb) fb.innerHTML = `<span class="no">${msg || '¡Se acabó el tiempo!'} <b>${esc(it.txt)}</b></span>`; stopA(); play(it.after); S.later(() => S.round(), 1900); }, ms); }
   const head = (B, it) => { const [s, h, au, es] = promptOf(it); return ASK(s, h, au, es); }; // v679: A1 · traducción al español
-  function setup(B, S, it, html) { S.cur = it; S.done = false; B.innerHTML = head(B, it) + html + FB; const [, , au] = promptOf(it); wireAu(B, au); if (au) setTimeout(() => { if (S.cur === it) play(au); }, 150); }
+  function setup(B, S, it, html) { S.cur = it; try { window.__rtoCur = it; } catch (e) { } S.done = false; B.innerHTML = head(B, it) + html + FB; const [, , au] = promptOf(it); wireAu(B, au); if (au) setTimeout(() => { if (S.cur === it) play(au); }, 150); }
 
   /* ---------- los 12 juegos ---------- */
   const GAMES = {
@@ -230,7 +233,7 @@
       timeout(B, S, it, 7500, '¡Las hojas se hundieron! Era:'); }; S.round(); },
     /* 🚇 v698 · Metro (Módulo 2 · Adultos): el tren llega, se detiene y se va. Toca el vagón con la respuesta correcta. */
     metro(B, S) { S.round = () => { const it = S.next(), op = shuf(it.opts).slice(0, 3), stopMs = Math.max(3400, 6000 - S.streak * 400);
-      setup(B, S, it, `<div class="rto-area rto-tun"><div class="rto-mt-sign"><span>LÍNEA 2</span><b class="rto-mt-cb"></b></div><div class="rto-mt-rail"></div><div class="rto-train">${op.map((o, k) => `<button type="button" class="rto-wag${k === 0 ? ' hd' : ''}"><span class="win"><i></i><i></i></span><span class="lb${sz(o)}">${esc(o)}</span><span class="dr"></span></button>`).join('')}</div><div class="rto-mt-pl"><i class="rto-mt-dep"></i></div></div>`);
+      setup(B, S, it, `<div class="rto-area rto-tun"><div class="rto-mt-sign"><span>LÍNEA 2</span><b class="rto-mt-cb"></b></div><div class="rto-mt-rail"></div><div class="rto-train">${op.map((o, k) => `<button type="button" class="rto-wag${k === 0 ? ' rto-head' : ''}"><span class="win"><i></i><i></i></span><span class="lb${sz(o)}">${esc(o)}</span><span class="dr"></span></button>`).join('')}</div><div class="rto-mt-pl"><i class="rto-mt-dep"></i></div></div>`);
       const ar = B.querySelector('.rto-area'), tr = ar.querySelector('.rto-train'), dep = ar.querySelector('.rto-mt-dep'), cb = ar.querySelector('.rto-mt-cb'), W = ar.clientWidth;
       if (S.streak >= 2) { cb.textContent = 'Combo x' + S.streak; cb.classList.add('on'); }
       tr.style.transform = `translateX(${W + 30}px)`; void tr.offsetWidth; tr.style.transition = 'transform 1.1s cubic-bezier(.2,.8,.25,1)'; tr.style.transform = 'translateX(0)';

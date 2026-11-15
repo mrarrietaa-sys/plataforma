@@ -7,7 +7,7 @@ window.AUD=window.AUD||{};Object.assign(window.AUD,{"ag933d59f17":"SUQzBAAAAAAAI
     let ag = 'adult'; try { ag = M.ageGroup(); } catch (e) { return false; } done = true; if (ag !== 'kids' && ag !== 'teens') return true;
     const byF = {}, byS = {}; MAP.forEach(x => { if (x[ag]) (x.type === 'sent' ? byS : byF)[x.s] = x[ag]; });
     D.topics.forEach(t => (t.parts || []).forEach(p => {
-      (p.fill || []).forEach(f => { const r = f && byF[f.s]; if (r) { f.s = r.s; f.full = r.full; f.au = r.au; } });
+      (p.fill || []).forEach(f => { const r = f && byF[f.s]; if (r) { f.s = r.s; f.full = r.full; f.au = r.au; if (r.a) f.a = r.a; if (r.o) f.o = r.o; } });
       (p.sentences || []).forEach(s => { const r = s && byS[s.en]; if (r) { s.en = r.en; s.es = r.es; s.au = r.au; if (r.img) s.img = r.img; } });
     }));
     return true; };
