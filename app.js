@@ -977,7 +977,7 @@
           turn.querySelector('.ms9-mo').onclick = () => { MRMEL.stop(); stop(); play(x.aau); };
           mic.onclick = async () => { if (mic.classList.contains('rec')) { MRMEL.stop(); return; } stop(); mic.classList.add('rec'); st.textContent = 'Te escucho…'; st2.textContent = 'Se detiene sola cuando terminas'; res.innerHTML = '';
             let r = null; try { r = await MRMEL.take(x.aau, v); } catch (e) { r = { err: 1 }; } mic.classList.remove('rec');
-            if (r.err) { if (r.err === 'mic') { st.textContent = 'Permite el micrófono'; st2.textContent = 'Actívalo en el candado de la barra de direcciones.'; } else { st.textContent = 'Intenta otra vez'; st2.textContent = 'No se pudo preparar el audio. Toca el micrófono de nuevo.'; } return; }
+            if (r.err) { if (r.err === 'mic') { st.textContent = 'Permite el micrófono'; st2.textContent = 'Actívalo en el candado de la barra de direcciones.'; } else { fails++; st.textContent = 'Intenta otra vez'; st2.textContent = 'No se pudo preparar el audio. Toca el micrófono de nuevo.'; if (fails >= 2) { res.innerHTML = `<div class="ms9-bt"><button type="button" class="btn w sm ms9-sk">Seguir →</button></div>`; res.querySelector('.ms9-sk').onclick = () => done(null); } } return; } /* v703: nunca se queda bloqueado */
             if (r.silent) { st.textContent = 'No te escuché'; st2.textContent = 'Acércate al micrófono y toca otra vez.'; return; }
             if (!r.ok) { fails++; sfx('bad'); st.textContent = 'Otra toma'; st2.textContent = 'Escucha el modelo y dila igual';
               res.innerHTML = MRMEL.resultHTML(r) + (fails >= 2 || r.unv ? `<div class="ms9-bt"><button type="button" class="btn w sm ms9-sk">Seguir sin estrellas →</button></div>` : '');

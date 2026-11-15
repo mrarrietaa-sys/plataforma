@@ -42,7 +42,7 @@
       const go = async (btn) => {
         if (busy) return; busy = true; stopA(); btn.classList.add('rec'); res.innerHTML = ''; say('Te escucho…', 'Se detiene sola cuando terminas');
         let r = null; try { r = await MRMEL.take(k.aau, v); } catch (e) { r = { err: 1 }; } btn.classList.remove('rec'); busy = false;
-        if (r.err) { if (r.err === 'mic') say('Permite el micrófono', 'Actívalo en el candado de la barra de direcciones.'); else say('Intenta otra vez', 'No se pudo preparar el audio. Toca el micrófono de nuevo.'); return; }
+        if (r.err) { if (r.err === 'mic') say('Permite el micrófono', 'Actívalo en el candado de la barra de direcciones.'); else { fails++; say('Intenta otra vez', 'No se pudo preparar el audio. Toca el micrófono de nuevo.'); if (fails >= 2) { res.insertAdjacentHTML('beforeend', '<div class="rp9"><button type="button" class="btn w sm m2v-sk">Seguir →</button></div>'); res.querySelector('.m2v-sk').onclick = () => { stopA(); done({ ok: false }); }; } } return; } /* v703: nunca se queda bloqueado */
         if (r.silent) { say('No te escuché', 'Acércate al micrófono e intenta otra vez.'); if (!st) res.innerHTML = '<p class="mel9-tip">No te escuché. Acércate al micrófono e intenta otra vez.</p>'; return; }
         res.innerHTML = MRMEL.resultHTML(r);
         if (!r.ok) { fails++; sfx('bad'); say('Otra vez', 'Escucha el modelo y dilo igual'); if (fails >= 2 || r.unv) { res.insertAdjacentHTML('beforeend', '<div class="rp9"><button type="button" class="btn w sm m2v-sk">Seguir →</button></div>'); res.querySelector('.m2v-sk').onclick = () => { stopA(); done({ ok: false }); }; } return; }
