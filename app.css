@@ -10423,3 +10423,5 @@ body.ag-kids .ms9-movie{--mv:#f59e0b;--mvs:#f6e3c2;--mvb:#f6e3c2;--mvn:#d97706;-
 .ms9-run:has(.ms9-line) .mvx-seg{margin-top:8px}
 .ms9-run:has(.ms9-line) .ms9-line{padding:8px 12px}
 .ms9-run .ms9-turn{gap:6px}
+/* v699 · la tira de miniaturas se desvanece en los bordes: ninguna miniatura queda cortada junto a las flechas */
+.lrc-th{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 12px,#000 calc(100% - 12px),transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 12px,#000 calc(100% - 12px),transparent 100%);padding-left:8px!important;padding-right:8px!important}

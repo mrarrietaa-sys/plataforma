@@ -492,7 +492,7 @@
   const preloadScenes = () => Object.keys(SCENES).forEach(k => { const i = new Image(); i.src = 'mra-x-' + k + '.webp?v=7'; });
   // v420: Mr. Arrieta dice algo acorde a cómo le fue en la sección (nunca "Great job!" si se equivocó)
   const ITL_FB = { hi: [['Great job!', 'a88a2d51d2', '¡Lo hiciste muy bien!'], ['Excellent!', '54f1859c38', '¡Excelente trabajo!'], ['Awesome!', '98561b5346', '¡Increíble!'], ['Well done!', 'b93b9f5f0f', '¡Muy bien hecho!']],
-    mid: [['Nice work!', 'aa2b15da71', 'Vas bien. Al final repasa lo que fallaste.']], lo: [['Not quite. You can do it!', '8b4c184411', 'No pasa nada: equivocarse es parte de aprender. ¡Sigue!']], go: [["Let's keep going!", 'kg5a7e3c01', '¡Sigamos!']] }; /* v698: «go» = la transición no juzga */
+    mid: [['Nice work!', 'aa2b15da71', 'Vas bien. Al final repasa lo que fallaste.']], lo: [['Not quite. You can do it!', '8b4c184411', 'No pasa nada: equivocarse es parte de aprender. ¡Sigue!']], go: [["Let's keep going!", 'kg5a7e3c01', '¡Sigamos!'], ["Let's move on!", 'mo5a7e3c02', '¡Avancemos!']] }; /* v698: «go» = la transición no juzga */
   let itlLast = '';
   function interlude(next, perf, info) { /* v482 · transición mejorada: resultado real, avance, mitad/última, sin tocar la cabeza ni las letras */
     return new Promise(res => {
@@ -505,7 +505,7 @@
       let nick = ''; try { const pp = window.MRAP && MRAP.get && MRAP.get(); nick = ((MRAP.look && MRAP.look().nick) || (pp && pp.first) || '').trim().split(/\s+/)[0]; } catch (e) { }
       const useName = nick && band === 'hi' && st && st % 3 === 0;
       const sayTxt = useName ? sc.say.replace(/!$/, ', ' + nick + '!') : sc.say;
-      const resTxt = band === 'go' ? '¡Sigamos!' : I9.t ? `${I9.c} de ${I9.t} en ${I9.sec}` : '';
+      const resTxt = band === 'go' ? (fbx && fbx[2] || '¡Sigamos!') : I9.t ? `${I9.c} de ${I9.t} en ${I9.sec}` : '';
       const special = tot >= 4 && st ? (st === tot ? '¡Última! Ya casi terminas' : st === Math.ceil(tot / 2) ? '¡Vas por la mitad!' : '') : '';
       const dots = tot ? `<span class="itl-dots">${Array.from({ length: tot }, (_, j) => `<i class="${j < st - 1 ? 'd' : j === st - 1 ? 'c' : ''}"></i>`).join('')}</span><span class="itl-pso">Paso ${st} de ${tot}</span>` : '';
       const ov = h(`<div class="itl itl9 itl-${sc.a}" role="status">${sc.a === 'stage' ? '<div class="itl-lights"></div>' : ''}
