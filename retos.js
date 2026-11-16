@@ -22,9 +22,17 @@
   const blank = s => esc(s).replace(/_{2,}/g, '<u class="rto-bl">&nbsp;?&nbsp;</u>');
 
   /* ---------- bancos de la lección ---------- */
+  /* v709 · banco extra de frases por tema y edad (rtox.js); su audio se carga solo cuando empieza el juego */
+  const RX = p => { try { const B = window.MRRTOX; return (B && p && B[mod() + '|' + ag() + '|' + p.topic]) || null; } catch (e) { return null; } };
+  const rxOK = k => !/^rx[qafv]/.test(String(k || '')) || !!(window.AUD && window.AUD[k]);
+  function rxLoad(p) { return new Promise(res => { const b = RX(p); if (!b || !b.f) return res();
+    const need = [].concat(...(b.qa || []).map(x => [x.qau, x.aau]), (b.fill || []).map(x => x.au), (b.vocab || []).map(x => x.au)); const have = () => need.every(k => window.AUD && window.AUD[k]); if (have()) return res();
+    const id = 'rtxa-' + b.f; if (!document.getElementById(id)) { const c = document.querySelector('script[src*="retos.js"]'), src = (c && c.getAttribute('src')) || '', base = src.replace(/retos\.js(\?.*)?$/, ''), q = (src.match(/\?.*$/) || [''])[0];
+      const sc = document.createElement('script'); sc.id = id; sc.src = base + b.f + '.js' + q; document.head.appendChild(sc); }
+    const t0 = Date.now(), iv = setInterval(() => { if (have() || Date.now() - t0 > 9000) { clearInterval(iv); res(); } }, 120); }); }
   function topicParts(p) { try { return M().allParts().filter(x => x.topic === p.topic); } catch (e) { return [p]; } }
   function vocabItems(p) {
-    const V = (p.vocab || []).filter(v => v && v.en && v.au && String(v.en).length <= 22 && !(ag() !== 'adult' && WORK.test(v.en)));
+    const V = [].concat(p.vocab || [], ...topicParts(p).filter(x => x !== p).map(x => x.vocab || []), (RX(p) || {}).vocab || []).filter(v => v && v.en && v.au && String(v.en).length <= 22 && !(ag() !== 'adult' && WORK.test(v.en))); /* v709: palabras de todo el tema, no solo de esta lección */
     let uniq = V.filter((v, i) => V.findIndex(x => x.en === v.en) === i); if (uniq.length < 3) return [];
     /* v698: primero las palabras propias de ESTE tema (las que se repiten en otros temas del módulo van al final) */
     try { const oth = new Set(M().allParts().filter(x => x.topic !== p.topic).flatMap(x => (x.vocab || []).map(v => String(v.en || '').toLowerCase()))); const own = uniq.filter(v => !oth.has(v.en.toLowerCase())); if (own.length >= 3) uniq = own; } catch (e) { }
@@ -32,7 +40,8 @@
   }
   function fillItems(p, n) {
     let F = (p.fill || []).filter(f => f && f.s && f.a && f.au && Array.isArray(f.o) && f.o.length && /_{2,}/.test(f.s) && f.o.indexOf(f.a) < 0);
-    if (F.length < 3) F = F.concat(topicParts(p).filter(x => x !== p).flatMap(x => (x.fill || []).filter(f => f && f.s && f.a && f.au && Array.isArray(f.o) && f.o.length && /_{2,}/.test(f.s) && f.o.indexOf(f.a) < 0)));
+    F = F.concat(topicParts(p).filter(x => x !== p).flatMap(x => (x.fill || []).filter(f => f && f.s && f.a && f.au && Array.isArray(f.o) && f.o.length && /_{2,}/.test(f.s) && f.o.indexOf(f.a) < 0)));
+    F = F.concat(((RX(p) || {}).fill || []).filter(f => f && f.s && f.a && f.au && Array.isArray(f.o) && f.o.length && /_{2,}/.test(f.s) && f.o.indexOf(f.a) < 0));
     F = F.filter((f, i) => F.findIndex(x => x.s === f.s) === i); if (F.length < 3) return [];
     return F.map(f => ({ mode: 'f', q: f.s, ans: f.a, after: f.au, txt: clean(f.full || f.s.replace(/_{2,}/, f.a)), opts: [f.a, ...f.o.filter(o => o !== f.a)].slice(0, n || 3) }));
   }
@@ -59,12 +68,13 @@
     return shuf(L.filter(w => words.indexOf(w) < 0)).map(w => cap ? w[0].toUpperCase() + w.slice(1) : w); }
   function qaItems(p) {
     const ok = k => k && k.q && k.a && k.qau && k.aau && !/_{2,}/.test(first(k.a)) && first(k.a).length <= 46;
-    const K = (p.keyq || []).filter(ok), pool = topicParts(p).flatMap(x => (x.keyq || []).filter(ok)).concat(K);
+    const K = (p.keyq || []).filter(ok), pool = topicParts(p).flatMap(x => (x.keyq || []).filter(ok)).concat(K, ((RX(p) || {}).qa || []).filter(ok));
     const ans = [...new Set(pool.map(k => first(k.a)))]; if (K.length < 2 || ans.length < 3) return [];
+    const Q = K.concat(pool).filter((k, i, A) => A.findIndex(x => x.q === k.q) === i); /* v709: preguntas de todo el tema (primero las de esta lección) */
     /* v701: un distractor nunca puede ser también una respuesta válida a la pregunta */
     const YN = /^(do|does|did|is|are|am|was|were|can|could|have|has|will|would|you)\b/i, w2 = t => String(t).toLowerCase().replace(/[^a-z' ]/g, '').split(/\s+/).slice(0, 2).join(' '), dem = t => (String(t).match(/^(this|that|these|those)\b/i) || [])[1];
     const valid = (q, a, d) => { if (YN.test(q) && !/ or /i.test(q) && /^(yes|no)\b/i.test(d)) return true; if (/ or /i.test(q) && /^(yes|no)\b/i.test(a) === /^(yes|no)\b/i.test(d) && w2(a) === w2(d)) return true; if (!YN.test(q) && w2(a) === w2(d)) return true; if (dem(a) && dem(d)) return true; const st = t => (String(t).toLowerCase().match(/[a-z]{5,}/g) || []).filter(x => !/^(prefer|which|there|where|what|about|favorite|today|daily)$/.test(x)).map(x => x.slice(0, 6)); const qs = st(q); if (st(d).some(x => qs.indexOf(x) >= 0)) return true; return false; };
-    return K.map(k => { const a = first(k.a); const ds = shuf(ans.filter(x => x !== a && !valid(k.q, a, x))).slice(0, 2); if (ds.length < 2) return null; return { mode: 'q', q: k.q, es: k.es || '', say: k.qau, after: k.aau, ans: a, txt: a, opts: [a, ...ds] }; }).filter(Boolean);
+    return Q.map(k => { const a = first(k.a); const ds = shuf(ans.filter(x => x !== a && !valid(k.q, a, x))).slice(0, 2); if (ds.length < 2) return null; return { mode: 'q', q: k.q, es: k.es || '', say: k.qau, after: k.aau, ans: a, txt: a, opts: [a, ...ds] }; }).filter(Boolean);
   }
   // ⏰ La hora (Módulo 2 · Adultos): frases del tema «Telling the Time» con su audio
   const NUM = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12, twenty: 20, 'twenty-five': 25 };
@@ -123,11 +133,17 @@
     fit(); addEventListener('resize', fit); setTimeout(fit, 300);
     const B = box.querySelector('.rto-body');
     return new Promise(done => {
-      const intro = () => { B.innerHTML = `<div class="rto-start"><img src="mra-point.webp" alt="Mr. Arrieta"><h3>Game</h3><p>${esc(g.ins)}</p><button type="button" class="rto-go">Empezar · ${T} s</button></div>`; B.querySelector('.rto-go').onclick = start; };
+      const intro = () => { B.innerHTML = `<div class="rto-start"><img src="mra-point.webp" alt="Mr. Arrieta"><h3>Game</h3><p>${esc(g.ins)}</p><button type="button" class="rto-go">Empezar · ${T} s</button></div>`; const go = B.querySelector('.rto-go'); rxLoad(p); go.onclick = () => { if (go.disabled) return; go.disabled = true; rxLoad(p).then(() => { if (!box.isConnected) return; const bad = items.filter(it => !rxOK(it.say) || !rxOK(it.after)); if (bad.length && items.length - bad.length >= 3) { bad.forEach(it => items.splice(items.indexOf(it), 1)); order = fresh(); oi = 0; } start(); }); }; };
       const S = { ok: 0, tot: 0, pts: 0, streak: 0, live: false, tm: [], raf: 0, missed: [] };
       S.later = (f, ms) => S.tm.push(setTimeout(() => { if (S.live && box.isConnected) f(); }, ms));
       S.score = (good, it) => { S.tot++; if (good) { S.ok++; S.streak++; S.pts += 10 + (S.streak >= 3 ? 5 : 0); vib(30); } else { S.streak = 0; vib([60, 40, 60]); if (it && S.missed.indexOf(it.ans) < 0) S.missed.push(it.ans); } box.querySelector('.rto-pts').textContent = S.pts + ' pts'; return good ? (S.streak >= 3 ? '¡Racha! +15' : '+10') : ''; };
-      let order = shuf(items), oi = 0; S.next = () => { if (oi >= order.length) { order = shuf(items); oi = 0; } return order[oi++]; };
+      /* v709 · frases distintas: en una partida no se repite ninguna hasta usar todas; y en la siguiente partida salen primero las que no ha visto */
+      const KEY = it => String(it.q || '') + '|' + String(it.ans || '') + '|' + String(it.say || ''), SK = 'mra_rto_seen_' + AGE + '_' + mod() + '_' + p.topic;
+      let seen = []; try { seen = JSON.parse(localStorage.getItem(SK) || '[]') || []; } catch (e) { }
+      const fresh = () => { const un = items.filter(it => seen.indexOf(KEY(it)) < 0), old = items.filter(it => seen.indexOf(KEY(it)) >= 0); old.sort((a, b) => seen.indexOf(KEY(a)) - seen.indexOf(KEY(b))); return shuf(un).concat(old); };
+      let order = fresh(), oi = 0, last = null;
+      S.next = () => { if (oi >= order.length) { order = shuf(items); if (order.length > 1 && order[0] === last) order.push(order.shift()); oi = 0; } const it = order[oi++]; last = it;
+        try { const k = KEY(it); seen = seen.filter(x => x !== k); seen.push(k); if (seen.length > 120) seen = seen.slice(-120); localStorage.setItem(SK, JSON.stringify(seen)); } catch (e) { } return it; };
       function start() {
         S.live = true; let t = T; const bar = box.querySelector('.rto-bar i'), sEl = box.querySelector('.rto-s');
         const id = setInterval(() => { if (!box.isConnected) { clearInterval(id); S.live = false; S.tm.forEach(clearTimeout); stopA(); return; } t--; bar.style.transform = `scaleX(${t / T})`; sEl.textContent = t + ' s'; if (t <= 0) { clearInterval(id); end(); } }, 1000);
