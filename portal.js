@@ -837,7 +837,7 @@
       const pr = P.progress(a.id), tot = trial ? 6 : a.classes; // 🎁 v603: 3 temas gratis
       main = `<div class="card pt-mymod db-hero ad-hero"><div class="db-hero-tx"><span class="ad-k">${pr.done ? 'Tu siguiente paso' : 'Empieza tu ruta'}</span>
         <h2>${esc(a.name)} · ${esc(a.lv || a.id)}</h2>
-        <p class="db-sub">${esc(String(a.es || '').replace(/\s*\([^)]*\)\s*$/, ''))} · ${pr.done} de ${trial ? ((P.trialFreeIn ? P.trialFreeIn(a.id) : 3) * 2) + ' lecciones gratis' : tot + ' lecciones'}${a.n > (p.module || 1) ? ' · ¡avanzaste de módulo!' : ''}</p>
+        <p class="db-sub">${esc(String(a.es || '').replace(/\s*\([^)]*\)\s*$/, ''))} · ${pr.done} de ${trial ? ((P.trialFreeIn ? P.trialFreeIn(a.id) : 3) * 2) + ' lecciones gratis' : tot + ' lecciones'}${a.n > (p.module || 1) ? '<span class="ad-sub2">¡Avanzaste de módulo!</span>' : ''}</p>
         <div class="db-bar"><i style="width:${pr.pct}%"></i></div><small class="ad-pct">${pr.pct} % de tu módulo</small>
         <div class="db-hero-b"><a class="btn db-wbtn" href="${a.url}">${pr.done ? 'Continuar mi ruta' : 'Empezar mi ruta'} →</a><button class="ad-lnk" id="pt3"${trial ? ' data-chlvl' : ''}>¿Cambiar de nivel?</button></div></div>
         <div class="ad-plane"><img src="mra-x-plane-red.webp" alt="Mr. Arrieta"><i></i></div></div>`; // v609: banner de adultos sobrio con la avioneta flotando

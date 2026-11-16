@@ -47,9 +47,9 @@
     const pts = st.map(s => s.x * 6 + ',' + s.y * 3).concat([fin.x * 6 + ',' + fin.y * 3]);
     const dn = st.filter(s => s.s === 'd').length;
     return `<div class="sect-title kd-st"><h2>${I('target')} Camino de aventura</h2><small>${esc(a.name)} · ${esc(a.lv || a.id)} · ${T.filter(t => t.done).length} de ${T.length} estaciones</small></div>
-      <div class="card kd-map"><svg viewBox="0 0 600 300" preserveAspectRatio="none" aria-hidden="true"><polyline points="${pts.join(' ')}" fill="none" stroke="#cbd5e1" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="2 18"/>${dn ? `<polyline points="${pts.slice(0, dn + (st[dn] && st[dn].s === 'c' ? 1 : 0)).join(' ')}" fill="none" stroke="#16a34a" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" opacity=".35"/>` : ''}</svg>
+      <div class="card kd-map"><div class="kd-mi"><svg viewBox="0 0 600 300" preserveAspectRatio="none" aria-hidden="true"><polyline points="${pts.join(' ')}" fill="none" stroke="#cbd5e1" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="2 18"/>${dn ? `<polyline points="${pts.slice(0, dn + (st[dn] && st[dn].s === 'c' ? 1 : 0)).join(' ')}" fill="none" stroke="#16a34a" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" opacity=".35"/>` : ''}</svg>
         ${st.map(s => `<a class="kd-stn ${s.s}" href="${s.s === 'l' ? '#' : a.url}" style="left:${s.x}%;top:${s.y}%"${s.s === 'l' ? ' data-locked' : ''}><i>${I(s.s === 'd' ? 'check' : s.s === 'c' ? 'star' : 'unlock')}</i><small>${esc(s.t.name)}</small></a>`).join('')}
-        <span class="kd-stn ${passed ? 'd' : 'l'} fin" style="left:${fin.x}%;top:${fin.y}%"><i>${I('award')}</i><small>Examen final</small></span></div>`;
+        <span class="kd-stn ${passed ? 'd' : 'l'} fin" style="left:${fin.x}%;top:${fin.y}%"><i>${I('award')}</i><small>Examen final</small></span></div></div>`;
   }
   function medals(a) { return ''; } // v437: sección «Mis medallas» quitada en Kids (pedido de John)
   function medals_old(a) {
