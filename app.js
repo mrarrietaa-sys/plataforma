@@ -585,7 +585,7 @@
     const vis = () => { if (document.hidden) hiddenAt = Date.now(); else if (hiddenAt && Date.now() - hiddenAt > 90 * 1000) { hiddenAt = 0; where(); lastAct = Date.now(); } };
     ['pointerdown', 'keydown'].forEach(ev => document.addEventListener(ev, act, true)); document.addEventListener('visibilitychange', vis);
     const cleanup = () => { ['pointerdown', 'keydown'].forEach(ev => document.removeEventListener(ev, act, true)); document.removeEventListener('visibilitychange', vis); };
-    preloadScenes(); let i = startAt; const snaps = {}; let revisit = false; curRun = run; snaps_ = snaps;
+    preloadScenes(); let i = startAt; const snaps = {}; let revisit = false; curRun = run; snaps_ = snaps; try { window.MRREPLOG && MRREPLOG.reset(); window.__repSteps = steps.map(x => x.sec); } catch (e) { } /* v708 · reportar un error */
     while (i < steps.length) {
       const s = steps[i];
       rec.step = i; rec.run = run; save();
@@ -593,7 +593,7 @@
       const old = $('.stage', player); const stage = document.createElement('div'); stage.className = 'stage'; old.replaceWith(stage);
       $('.prog i', app).style.width = (i / steps.length * 100) + '%';
       $('.back', app).disabled = i === 0;
-      run.max = Math.max(run.max || 0, i); curSec = s.sec; curI = i;
+      run.max = Math.max(run.max || 0, i); curSec = s.sec; curI = i; try { window.MRREPLOG && MRREPLOG.step(i, s.sec); } catch (e) { }
       $('.psec', app).textContent = '· ' + s.sec; { const ps = $('.pstep', app); if (ps) { $('b', ps).textContent = s.sec; $('small', ps).textContent = 'Paso ' + (i + 1) + ' de ' + steps.length; } }
       $('.resume', app).classList.toggle('hidden', i >= run.max);
       $$('.secbar span', app).forEach(e => { const k = secs.indexOf(e.dataset.s), ck = secs.indexOf(s.sec); e.className = k === ck ? 'on' : k < ck ? 'ok' : ''; const ln = e.previousElementSibling; if (ln && ln.classList.contains('rt-ln')) ln.classList.toggle('ok', k <= ck); if (k === ck) e.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' }); });
@@ -1256,6 +1256,7 @@
     },
   };
   window.M1STEP = STEP; // (pruebas)
+  window.M1RES = (p, run) => results(p, run); // (pruebas) v708
   // practice activities map
   ['learn', 'listenChoose', 'pickWord', 'typeWord', 'typeLetter', 'typeNumber', 'phone', 'spellName', 'typeSentence', 'fill', 'unscramble', 'memory', 'sort', 'crossword', 'speed', 'spell', 'plural', 'dialogue', 'speak', 'speakWords', 'wordSearch', 'hangman', 'bubblePop', 'matchLines', 'quizShow', 'oddOneOut', 'catchWord', 'spinWheel', 'raceGame', 'sayPop', 'clockGreet', 'chatReply', 'simonLetters', 'plateGame', 'passport', 'airport', 'bingo', 'colorMix', 'slotBe', 'whackAn', 'riddleJob', 'elevator', 'familyTree', 'animalSounds', 'restaurant', 'market', 'dayFlip', 'specialDates', 'weatherTV', 'suitcase', 'flashlight', 'housePlan', 'pluralMachine', 'magicMirror', 'nearFar', 'theseRush', 'countRoom', 'memoryRoom']
     .forEach(k => { STEP[k] = (stage, p) => A[k](stage, p); });
@@ -1648,6 +1649,7 @@
     const close = () => { o.classList.remove('on'); setTimeout(() => o.remove(), 250); }; $('.wd-b', o).onclick = close; o.onclick = (e) => { if (e.target === o) close(); };
   }
   function results(p, run) {
+    try { window.__repStep = { i: -1 }; } catch (e) { } /* v708: lo que suene en la pantalla final no se cuenta como audio de un paso */
     run.res = Object.values(run.res || {});
     const c = run.res.reduce((a, r) => a + r.c, 0), t = run.res.reduce((a, r) => a + r.t, 0);
     const pct = t ? Math.round(c / t * 100) : 100; const stars = pct >= 90 ? 3 : pct >= 70 ? 2 : 1;
@@ -1680,10 +1682,10 @@
       <div class="r9-sk">${SKILLS.map(([k, , nm]) => { const v = sk[k]; const pc = v && v[1] ? Math.round(v[0] / v[1] * 100) : null; return `<div>${I9(SKI[k])}<span>${nm}</span><i style="--w:${pc || 0}%"></i><em>${pc === null ? '—' : pc + '%'}</em></div>`; }).join('')}</div>
       ${extra}
       ${nx ? `<button class="r9-go" id="next">Siguiente lección →</button>` : `<button class="r9-go" id="fin">Examen final →</button>`}
-      <div class="r9-lk"><button type="button" id="again">Repetir</button>${window.MRAP && MRAP.get() ? '<a id="home" href="index.html">Mi perfil</a>' : '<button type="button" id="home">Inicio</button>'}</div>
+      <div class="r9-lk"><button type="button" id="again">Repetir</button>${window.MRAP && MRAP.get() ? '<a id="home" href="index.html">Mi perfil</a>' : '<button type="button" id="home">Inicio</button>'}</div>${window.MRREPORT ? `<div class="r9-rep"><button type="button" id="rep9">${MRREPORT.FLAG}Reportar un error</button></div>` : ''}
     </div></div>`;
     wellDone(AG, stars, run.xp + bonus); // v417: también adultos // 🎉 v415: "Well done!" con confeti al terminar (kids y teens)
-    $('#again').onclick = () => route('class', p.id); if ($('#home').tagName === 'BUTTON') $('#home').onclick = () => route('home');
+    $('#again').onclick = () => route('class', p.id); if ($('#rep9')) $('#rep9').onclick = () => MRREPORT.open({ steps: window.__repSteps || [], lesson: (p._t.title || '') + ' · ' + PL(p), mod: (M.MOD && M.MOD.n ? 'Módulo ' + M.MOD.n : '') }); /* v708 */ if ($('#home').tagName === 'BUTTON') $('#home').onclick = () => route('home');
     if ($('#next')) $('#next').onclick = () => M.isUnlocked(nx.topic) ? route('class', nx.id) : (route('home'), lockGate(nx.topic));
     if ($('#fin')) $('#fin').onclick = () => M.finalUnlocked() ? route('final') : (route('home'), finalLockedModal());
     if (!M.brand || !M.brand('fin')) sfx('win'); /* v456: sonido de marca al terminar la lección */

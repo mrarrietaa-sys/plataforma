@@ -1,5 +1,6 @@
 // 💬 Chat en vivo profe ↔ estudiante, con el estilo de WhatsApp. Los mensajes viven en la nube (hoja "Chat").
 (function () {
+  const agT = (x) => x && x.ag ? ` <span class="tp-ag ${x.ag === 'kids' || x.ag === 'teens' ? x.ag : 'adult'}">${{ kids: 'Niño', teens: 'Adolescente' }[x.ag] || 'Adulto'}${x.ag !== 'adult' && x.age ? ' · ' + x.age + ' años' : ''}</span>` : ''; /* v708 · edad del estudiante (solo lo ve el profe) */
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const fmt = (t) => esc(t).replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>').replace(/\n/g, '<br>');
   const hm = (ts) => new Date(ts).toLocaleTimeString('es-CO', { hour: 'numeric', minute: '2-digit' });
@@ -34,7 +35,7 @@
     const list = W.el.querySelector('.wa-list');
     if (!r || !r.ok) { if (first) list.innerHTML = '<p class="wa-note">No se pudo cargar el chat. Revisa tu conexión.</p>'; return; }
     W.me = r.me; W.rooms = r.rooms || []; W.contacts = r.contacts || null; W.chat = r.chat || null; applyClosed(); W.el.querySelector('.wa-tools').hidden = !W.contacts || !!W.o.readOnly;
-    list.innerHTML = W.rooms.length ? W.rooms.map((x) => `<button class="wa-room${W.room === x.room ? ' on' : ''}${x.locked ? ' locked' : ''}" data-room="${esc(x.room)}"${x.locked ? ' data-locked="1"' : ''}>${x.pic ? `<span class="wa-av has"><img src="${esc(x.pic)}" alt=""></span>` : `<span class="wa-av">${esc(ini(x.title))}</span>`}<span class="wa-rt"><b>${esc(x.title)}</b><small>${x.last ? (x.last.from === W.me ? '✓ ' : '') + esc(String(x.last.text).slice(0, 60)) : esc(x.sub || 'Toca para escribir')}</small></span><span class="wa-rm">${x.last ? `<small>${hm(x.last.ts)}</small>` : ''}${x.unread ? `<i>${x.unread}</i>` : ''}</span></button>`).join('')
+    list.innerHTML = W.rooms.length ? W.rooms.map((x) => `<button class="wa-room${W.room === x.room ? ' on' : ''}${x.locked ? ' locked' : ''}" data-room="${esc(x.room)}"${x.locked ? ' data-locked="1"' : ''}>${x.pic ? `<span class="wa-av has"><img src="${esc(x.pic)}" alt=""></span>` : `<span class="wa-av">${esc(ini(x.title))}</span>`}<span class="wa-rt"><b>${esc(x.title)}${agT(x)}</b><small>${x.last ? (x.last.from === W.me ? '✓ ' : '') + esc(String(x.last.text).slice(0, 60)) : esc(x.sub || 'Toca para escribir')}</small></span><span class="wa-rm">${x.last ? `<small>${hm(x.last.ts)}</small>` : ''}${x.unread ? `<i>${x.unread}</i>` : ''}</span></button>`).join('')
       : `<p class="wa-note">${W.contacts && W.contacts.length ? esc('Todavía no tienes conversaciones. Toca «' + (W.o.newLabel || 'Nuevo chat') + '» para escribir.') : esc(W.o.empty || 'Todavía no tienes conversaciones.')}</p>`;
     filterRooms();
     if (W.chat && W.chat.open === false) list.insertAdjacentHTML('afterbegin', `<div class="wa-closed">${esc(W.chat.msg)}</div>`);
