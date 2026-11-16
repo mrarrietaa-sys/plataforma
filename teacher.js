@@ -37,6 +37,10 @@
     if (!r.ok && r.err === 'auth') { logout(); toast(errText('auth'), true); }
     return r;
   }
+  /* v708 · etiqueta de edad del estudiante (el profe siempre sabe si es un niño, un adolescente o un adulto) */
+  const studAg = (code) => { const s = D && D.students[String(code || '').toUpperCase()]; return s ? { ag: s.ag || 'adult', age: s.age == null || s.age === '' ? null : +s.age } : null; };
+  const agTag = (code) => { const x = studAg(code); if (!x) return ''; const L = { kids: 'Niño', teens: 'Adolescente', adult: 'Adulto' }[x.ag] || 'Adulto'; return `<span class="tp-ag ${x.ag}">${L}${x.ag !== 'adult' && x.age ? ' · ' + x.age + ' años' : ''}</span>`; };
+  const agTip = (code) => { const x = studAg(code); if (!x || x.ag === 'adult') return ''; return `<small class="tp-agtip ${x.ag}">${x.ag === 'kids' ? '<b>Clase con un niño.</b> Frases cortas, mucho apoyo visual y felicítalo a menudo.' : '<b>Clase con un adolescente.</b> Usa temas de su interés y dale la palabra.'}</small>`; };
   const studentName = (code) => { const s = D && D.students[String(code).toUpperCase()]; return s ? s.name || s.code : code; };
   const groupOf = (id) => (D.groups || []).find((g) => g.id === id);
   const meetOf = () => ''; // 🎥 las clases son en la clase en vivo de la plataforma (sin enlaces externos)
@@ -313,7 +317,7 @@
     const r = rel(c.date), link = meetOf(c), canMark = c.status === 'scheduled' && c.date <= today();
     return `<li class="tp-cls${r === 'Hoy' ? ' today' : r === 'Mañana' ? ' tomorrow' : ''}">
       <div class="tp-cls-when"><b>${r || dLabel(c.date)}</b><span>${r ? dLabel(c.date) + ' · ' : ''}${h12(c.time)} – ${h12(endHM(c.time, c.duration))}</span></div>
-      <div class="tp-cls-what">${fcNote(c)}${typeBadge(c)} ${statusBadge(c)}<div class="tp-cls-who">${whoOf(c)}</div>${c.topic && c.type !== 'club' ? (/^El profe elige el tema/.test(c.topic) ? pkBlock(c.topic, c) : c.topt && REPICK.has(c.id) ? pkBlock(c.topt, c) : c.topt ? pkDone(c) : `<small class="muted">Tema: ${esc(c.topic)}</small>`) : ''}${(() => { const q = window.MRTH && c.type !== 'club' && !c.topt && c.topic && MRTH.parse(c.topic); if (!q) return ''; const st = (D && D.students[String(c.students[0] || '').toUpperCase()]) || {}; return MRTH.html(q.m, q.t, st.ag || 'adult', 't', { ex: 1, g: 1 }); })()}
+      <div class="tp-cls-what">${fcNote(c)}${typeBadge(c)} ${statusBadge(c)}<div class="tp-cls-who">${whoOf(c)}${c.type === 'vip' ? ' ' + agTag(c.students[0]) : ''}</div>${c.type === 'vip' ? agTip(c.students[0]) : ''}${c.topic && c.type !== 'club' ? (/^El profe elige el tema/.test(c.topic) ? pkBlock(c.topic, c) : c.topt && REPICK.has(c.id) ? pkBlock(c.topt, c) : c.topt ? pkDone(c) : `<small class="muted">Tema: ${esc(c.topic)}</small>`) : ''}${(() => { const q = window.MRTH && c.type !== 'club' && !c.topt && c.topic && MRTH.parse(c.topic); if (!q) return ''; const st = (D && D.students[String(c.students[0] || '').toUpperCase()]) || {}; return MRTH.html(q.m, q.t, st.ag || 'adult', 't', { ex: 1, g: 1 }); })()}
         ${c.status === 'done' ? `<small class="muted">Asistencia: ${c.students.filter((x) => (c.attendance || {})[String(x).toUpperCase()] === true || (c.attendance || {})[x] === true).length}/${c.students.length}</small>` : ''}
         ${(c.type === 'group' || c.type === 'club') && c.status === 'scheduled' ? `<small class="muted">✅ ${+c.confirmed || 0} confirmado(s)${c.flags === 'cutoff' ? '' : ' · se cierra 3 h antes'}</small>` : ''}${c.status === 'sin-asistentes' ? '<small class="tp-note">🙌 Nadie confirmó: no necesitas conectarte.</small>' : ''}
         ${c.notes && opt && opt.notes ? `<small class="tp-note">📝 ${esc(c.notes)}</small>` : ''}</div>
@@ -373,7 +377,7 @@
   async function boardDialog(id) {
     const c = D.classes.find((x) => x.id === id); if (!c) return; const code = String(c.students[0] || '').toUpperCase();
     const live = c.type === 'vip' && c.status === 'scheduled' && c.date === today();
-    const m = modal(`<button class="tp-x" data-x aria-label="Cerrar">✕</button><div class="fi2"><div class="fi2-ic">${NVI('user')}</div><h3>Ficha de ${esc(studentName(code))}</h3><p class="muted fi2-sub">Clase del ${dLabel(c.date, true)} · ${h12(c.time)}</p>${(() => { const st = D.students[code] || {}; const MID = { 1: 'A1', 2: 'A2', 3: 'B2', 4: 'B2+' }[st.module]; const pr = MID && (st.progress || {})[MID]; return `<div class="tb-info">🎓 <b>Nivel:</b> ${MID ? 'Módulo ' + st.module + ' · ' + (MID === 'B2' ? 'B1' : MID) + (pr ? ' · ' + pr.pct + '% (' + pr.done + '/' + pr.total + ' clases)' : '') : 'Sin prueba de clasificación'}${c.topic ? `<br>🎯 <b>Quiere reforzar:</b> ${esc(c.topic)}` : ''}${window.MRGOAL ? `<br>🧭 <b>Su objetivo:</b> ${MRGOAL.chip(st.goal)}` : ''}</div>${window.MRGOAL && st.goal ? `<h4 class="fi-h">💬 Preguntas sugeridas para su objetivo</h4><div class="gl-qs">${MRGOAL.questions(st.goal, String(c.id).length + (+String(c.date).slice(-2) || 0)).map((q, i) => `<div>${i + 1}. ${esc(q)}</div>`).join('')}</div>` : ''}`; })()}
+    const m = modal(`<button class="tp-x" data-x aria-label="Cerrar">✕</button><div class="fi2"><div class="fi2-ic">${NVI('user')}</div><h3>Ficha de ${esc(studentName(code))}</h3>${agTag(code) ? `<div style="margin:-2px 0 6px">${agTag(code)}</div>` : ''}<p class="muted fi2-sub">Clase del ${dLabel(c.date, true)} · ${h12(c.time)}</p>${(() => { const st = D.students[code] || {}; const MID = { 1: 'A1', 2: 'A2', 3: 'B2', 4: 'B2+' }[st.module]; const pr = MID && (st.progress || {})[MID]; return `<div class="tb-info">🎓 <b>Nivel:</b> ${MID ? 'Módulo ' + st.module + ' · ' + (MID === 'B2' ? 'B1' : MID) + (pr ? ' · ' + pr.pct + '% (' + pr.done + '/' + pr.total + ' clases)' : '') : 'Sin prueba de clasificación'}${c.topic ? `<br>🎯 <b>Quiere reforzar:</b> ${esc(c.topic)}` : ''}${window.MRGOAL ? `<br>🧭 <b>Su objetivo:</b> ${MRGOAL.chip(st.goal)}` : ''}</div>${window.MRGOAL && st.goal ? `<h4 class="fi-h">💬 Preguntas sugeridas para su objetivo</h4><div class="gl-qs">${MRGOAL.questions(st.goal, String(c.id).length + (+String(c.date).slice(-2) || 0)).map((q, i) => `<div>${i + 1}. ${esc(q)}</div>`).join('')}</div>` : ''}`; })()}
       <div id="fi-l"><p class="muted">Cargando…</p></div>
       ${live ? `<a class="btn k block fi-go" href="clase-en-vivo.html?c=${encodeURIComponent(c.id)}&rol=profe">🎥 Entrar a la clase</a>` : c.status === 'scheduled' ? `<div class="fi2-day">${NVI('calcheck')}Podrás entrar el día de la clase</div>` : ''}</div>`);
     const r = await api('tBoards', { code }); const L = ((r && r.ok && r.boards) || []).filter((b) => (b.text || (b.imgs || []).length) && b.classId !== id).reverse();
@@ -412,7 +416,7 @@
   function accRow(c) {
     const r = rel(c.date), on = r === 'Hoy', tp = /^El profe elige el tema/.test(String(c.topic || '')) ? 'Tú eliges el tema' : String(c.topic || '').replace(/\s*\([^)]*\)\s*$/, '').replace(/^Módulo (\d+) · /, 'M$1 · ');
     const chev = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
-    return `<li class="tp-acc${on ? ' open today' : ''}"><button type="button" class="tp-acc-h" aria-expanded="${on ? 'true' : 'false'}"><span class="tp-acc-d"><b>${r || dLabel(c.date)}</b><small>${h12(c.time)}</small></span><span class="tp-acc-w"><b>${whoOf(c)}</b>${fcIs(c) ? '<span class="tp-fc">CLASE GRATIS</span>' : ''}<small>${esc(tp || 'Tema por definir')}</small></span><span class="tp-acc-ch">${chev}</span></button><div class="tp-acc-b"${on ? '' : ' hidden'}><ul class="tp-list">${classRow(c)}</ul></div></li>`;
+    return `<li class="tp-acc${on ? ' open today' : ''}"><button type="button" class="tp-acc-h" aria-expanded="${on ? 'true' : 'false'}"><span class="tp-acc-d"><b>${r || dLabel(c.date)}</b><small>${h12(c.time)}</small></span><span class="tp-acc-w"><b>${whoOf(c)}</b>${c.type === 'vip' ? agTag(c.students[0]) : ''}${fcIs(c) ? '<span class="tp-fc">CLASE GRATIS</span>' : ''}<small>${esc(tp || 'Tema por definir')}</small></span><span class="tp-acc-ch">${chev}</span></button><div class="tp-acc-b"${on ? '' : ' hidden'}><ul class="tp-list">${classRow(c)}</ul></div></li>`;
   }
 
   /* ---------- 2. Mi disponibilidad ---------- */
@@ -487,7 +491,7 @@
   // 📚 acceso de profe a TODO el material de los módulos (modo profe en la plataforma de estudiantes)
   window.MRCHATOPEN = (room) => openChat(room);
   /* ⭐ v704 · al tocar «Nueva opinión»: ventana corta con la opinión y un agradecimiento que llega al chat de la escuela */
-  window.MROPINION = (x) => {
+  window.MRAGTAG = agTag; window.MROPINION = (x) => {
     const d = x.data || {}; const tt = String(x.title || ''); const nm = d.full || d.sname || (tt.match(/de (.+?) ·/) || [])[1] || 'tu estudiante'; const first = String(d.sname || nm).split(' ')[0];
     const n = +d.stars || (tt.match(/★/g) || []).length || 5; const txt = d.text || x.body || ''; const key = 'mra_opthx_' + x.id; let done = false; try { done = !!localStorage.getItem(key); } catch (e) { }
     const Q = [`Thank you so much, ${first}! See you in our next class.`, '¡Gracias por tu opinión! Me alegra que te haya gustado la clase.'];
@@ -577,7 +581,7 @@
         <p class="tp-group-when">🗓️ ${esc(g.days || 'Días por definir')} · ⏰ ${h12(g.time) || '—'} <small class="muted">hora Colombia</small></p>
         ${next ? `<p class="tp-small">Próxima sesión: <b>${rel(next.date) || dLabel(next.date)}</b> · ${h12(next.time)}</p>` : ''}
         <div class="tp-l">Estudiantes (${list.length})</div>
-        ${list.length ? `<ul class="tp-studs">${list.map((s) => `<li><span class="tp-av">${esc((s.name || '?')[0].toUpperCase())}</span><span>${esc(s.name || s.code)}<small>${esc(s.code)}${s.module ? ' · Módulo ' + esc(s.module) : ''}</small></span></li>`).join('')}</ul>` : '<p class="muted tp-small">Aún no hay estudiantes en este grupo.</p>'}
+        ${list.length ? `<ul class="tp-studs">${list.map((s) => `<li><span class="tp-av">${esc((s.name || '?')[0].toUpperCase())}</span><span>${esc(s.name || s.code)} ${agTag(s.code)}<small>${esc(s.code)}${s.module ? ' · Módulo ' + esc(s.module) : ''}</small></span></li>`).join('')}</ul>` : '<p class="muted tp-small">Aún no hay estudiantes en este grupo.</p>'}
 </article>`; }).join('')}</div>`
       : `<div class="card tp-card"><div class="tp-empty"><img src="mra-wink.webp" alt="" width="110" height="110"><p>Aún no tienes grupos asignados. La administración te asignará grupos según los niveles que dictas.</p></div></div>`;
   }

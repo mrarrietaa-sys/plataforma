@@ -999,6 +999,7 @@
     wireGA($('.ad-mini', view()), 'Interesados', () => leads(), { edit: leEdit });
   }
 
+  window.MRADMAPI = (a, d) => api(a, d); /* v708 · reportes de errores */
   window.MRADMCHAT = (room) => window.MRLIVE && MRLIVE.open({ room, title: 'Chats (solo lectura)', roomsAction: 'aChats', getAction: 'aChatGet', readOnly: true, empty: 'Todavía no hay conversaciones.', call: (a, d) => api(a, d) }); /* v704 */
   function chats() {
     view().innerHTML = `<div class="ad-head"><h1>💬 Chats profe ↔ estudiante</h1></div><div class="card"><p class="muted">Aquí puedes leer todas las conversaciones entre profes y estudiantes (solo lectura). En el chat se les informa que administración puede revisar las conversaciones.</p><button class="btn k lg" id="ch-open">💬 Abrir conversaciones</button></div>`;
