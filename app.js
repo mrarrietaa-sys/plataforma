@@ -875,11 +875,13 @@
       if (window.M2X && M2X.mod && M2X.mod() === 4) { const rr = await M2X.readParts(stage, p); if (rr) return rr; } /* v523: Módulo 4 · lectura por partes */
       let r = p.reading;
       const AG = M.ageGroup();
-      const body = A.head(stage, { lbl: 'Reading', title: AG === 'adult' ? `👀 ${r.title}` : r.title, ins: AG === 'teens' ? 'Lee el chat mientras lo escuchas. Luego responde <b>TRUE</b> o <b>FALSE</b>.' : AG === 'kids' ? 'Escucha el cuento y toca cada viñeta para oírla otra vez. Luego responde <b>YES</b> o <b>NO</b>.' : 'Escucha y lee al mismo tiempo. Luego responde <b>YES</b> o <b>NO</b>.' });
+      const body = A.head(stage, { lbl: 'Reading', title: AG === 'adult' ? `👀 ${r.title}` : r.title, ins: AG === 'teens' ? 'Escucha y lee al mismo tiempo. Luego responde <b>TRUE</b> o <b>FALSE</b>.' : 'Escucha y lee al mismo tiempo. Luego responde <b>YES</b> o <b>NO</b>.' });
       const sents = splitSents(r.text);
       const POD = window.M2X && M2X.on(); /* v519: lectura en formato podcast (Módulo 2) */
-      const box = POD ? h(M2X.podBox(r, sents, photo)) : h(`<div class="reading">${photo(r.img)}<div><div class="row" style="margin-bottom:10px"><button class="btn k sm" id="rp">▶ Escuchar lectura</button></div><div class="txt">${sents.map(s => `<span class="s">${s.split(/(\s+)/).map(w => /\S/.test(w) ? `<i class="rw">${esc(w)}</i>` : w).join('')}</span>`).join('')}</div><button class="rd-tr" id="rdtr" type="button" aria-expanded="false"><span>ES</span> Ver traducción al español</button><div class="rd-es" id="rdes" hidden></div></div></div>`);
-      body.appendChild(box); if (POD) M2X.podWatch(box); else if (AG !== 'adult') ageReading(box, r, sents, AG);
+      const PLY = '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>', STP = '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>';
+      /* v712 · lectura en orden (las 3 edades): foto completa → escuchar → texto → traducción → preguntas */
+      const box = POD ? h(M2X.podBox(r, sents, photo)) : h(`<div class="reading rd9 rd9-${AG}"><div class="rd9-ph">${photo(r.img)}</div><div><div class="rd9-au"><button class="rd9-pl" id="rp" type="button" aria-label="Escuchar la lectura">${PLY}<span class="rd9-sr">Escuchar</span></button><span class="rd9-lb"><b id="rplb">Escuchar la lectura</b><small>Las frases se resaltan mientras escuchas</small></span></div><div class="txt">${sents.map(s => `<span class="s">${s.split(/(\s+)/).map(w => /\S/.test(w) ? `<i class="rw">${esc(w)}</i>` : w).join('')}</span>`).join('')}</div><button class="rd-tr" id="rdtr" type="button" aria-expanded="false"><span>ES</span> Ver traducción al español</button><div class="rd-es" id="rdes" hidden></div></div></div>`);
+      body.appendChild(box); if (POD) M2X.podWatch(box); else if (AG === 'teens') { const stg = box.closest('.stage'); if (stg) stg.classList.add('dk'); }
       { const tb = $('#rdtr', box), pane = $('#rdes', box);
         const getES = () => window.MRRDES ? Promise.resolve() : new Promise(res => { const base = (document.querySelector('script[src*="core.js"]').getAttribute('src') || '').replace(/core\.js(\?.*)?$/, ''); const q = ((document.querySelector('script[src*="core.js"]').getAttribute('src') || '').match(/\?.*$/) || [''])[0]; const sc = document.createElement('script'); sc.src = base + 'rdes.js' + q; sc.onload = res; sc.onerror = res; document.head.appendChild(sc); });
         tb.onclick = async () => {
@@ -890,15 +892,16 @@
       }
       // approximate karaoke highlight by character proportion
       const rp = $('#rp', box);
+      const rpSet = (t, ic) => { const l = $('#rplb', box); if (l && !POD) { rp.innerHTML = ic + '<span class="rd9-sr">Escuchar</span>'; l.textContent = t; } else rp.innerHTML = (ic === STP ? '⏹ ' : '▶ ') + t.replace(' la lectura', ' lectura'); };
       // v495: la lectura baja sola siguiendo el audio (centra la frase activa dentro del cuadro)
       const follow = (sp) => { const tx = $('.txt', box); if (!tx || tx.scrollHeight <= tx.clientHeight + 4) return; const el = sp.closest('.rd-msg,.rd-pan') || sp; const tr = tx.getBoundingClientRect(), er = el.getBoundingClientRect();
         const y = tx.scrollTop + (er.top - tr.top) - (tx.clientHeight - Math.min(er.height, tx.clientHeight)) / 2; tx.scrollTo({ top: Math.max(0, y), behavior: 'smooth' }); };
       const karaoke = () => { stop(); const a = M.trackAudio(M.audioEl ? M.audioEl(r.au) : new Audio(M.audioSrc(r.au))); const spans = $$('.s', box); const lens = sents.map(s => s.length); const tot = lens.reduce((x, y) => x + y, 0);
         a.ontimeupdate = () => { if (!a.duration) return; const f = a.currentTime / a.duration * tot; let acc = 0; let cur = -1; spans.forEach((sp, i) => { const on = f >= acc && f < acc + lens[i]; sp.classList.toggle('on', on); if (on) cur = i; acc += lens[i]; }); if (cur >= 0 && cur !== a._cur) { a._cur = cur; follow(spans[cur]); } };
-        a.addEventListener('ended', () => { rp._t = 0; spans.forEach(sp => sp.classList.remove('on')); rp.innerHTML = '▶ Escuchar lectura'; rp.classList.remove('playing'); });
-        a.addEventListener('pause', () => { if (a.ended) return; rp._t = a.currentTime; rp.innerHTML = '▶ Continuar lectura'; rp.classList.remove('playing'); }); /* ▶️ retoma donde quedó */
+        a.addEventListener('ended', () => { rp._t = 0; spans.forEach(sp => sp.classList.remove('on')); rpSet('Escuchar la lectura', PLY); rp.classList.remove('playing'); });
+        a.addEventListener('pause', () => { if (a.ended) return; rp._t = a.currentTime; rpSet('Continuar la lectura', PLY); rp.classList.remove('playing'); }); /* ▶️ retoma donde quedó */
         if (rp._t) { const go = () => { try { a.currentTime = rp._t; } catch (e) { } }; if (a.readyState >= 1) go(); else a.addEventListener('loadedmetadata', go, { once: true }); }
-        a.play(); window.__ra = a; rp.innerHTML = '⏹ Detener lectura'; rp.classList.add('playing'); const hideF = M.floatStop(rp); a.addEventListener('ended', hideF); };
+        a.play(); window.__ra = a; rpSet('Detener la lectura', STP); rp.classList.add('playing'); const hideF = M.floatStop(rp); a.addEventListener('ended', hideF); };
       rp.onclick = () => { if (rp.classList.contains('playing')) stop(); else karaoke(); };
       body.appendChild(h(`<h3 style="margin-top:18px">${AG === 'teens' ? 'True or false?' : 'Answer YES or NO'}</h3>`));
       if (window.__V9 && r.q.length > 3) r = Object.assign({}, r, { q: r.q.slice(0, 3) });

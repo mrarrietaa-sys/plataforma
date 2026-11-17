@@ -10520,3 +10520,36 @@ body.ag-adult .ad-hero .ad-sub2{display:block;margin-top:2px}
 }
 /* v711 · misión: los botones (escuchar / tortuga) nunca tocan el borde de la foto */
 .ms9-run .mvx-film{padding-bottom:18px!important}
+/* v712 · LECTURA en orden (3 edades, PC y celular): foto completa 3:2 → escuchar → texto en una columna → traducción → preguntas */
+.player .reading.rd9{display:block!important;max-width:600px;margin:0 auto}
+.player .reading.rd9 .rd9-ph{max-width:560px;margin:0 auto}
+.player .reading.rd9 .rd9-ph .ph{width:100%!important;height:auto!important;aspect-ratio:3/2!important;border-radius:16px!important;margin:0!important;overflow:hidden}
+.player .reading.rd9 .rd9-ph .ph img{width:100%!important;height:100%!important;object-fit:cover!important}
+.player .reading.rd9 .rd9-au{display:flex;align-items:center;gap:12px;max-width:560px;margin:14px auto 0;background:#EEF3FB;border-radius:14px;padding:8px 12px}
+.player .reading.rd9 .rd9-pl{width:42px;height:42px;border-radius:50%;border:0;background:#0B2A5B;color:#fff;display:grid;place-items:center;flex:none;cursor:pointer;padding:0}
+.player .reading.rd9 .rd9-pl.playing{background:#E3242B}
+.player .reading.rd9 .rd9-au .slw-w{flex:none}
+.player .reading.rd9 .rd9-lb{flex:1;min-width:0;order:2}.player .reading.rd9 .rd9-au>.slw-w,.player .reading.rd9 .rd9-au>.rd9-pl{order:1}
+.player .reading.rd9 .rd9-lb b{display:block;font:700 14.5px Poppins,system-ui,sans-serif;color:#0B2A5B}
+.player .reading.rd9 .rd9-lb small{display:block;font:500 12.5px Inter,system-ui,sans-serif!important;color:#5B6B82}
+.player .stage .reading.rd9 .txt{max-width:560px;margin:14px auto 0;max-height:none!important;overflow:visible!important;background:transparent!important;border:0!important;padding:0!important;font:500 17.5px/1.75 Inter,system-ui,sans-serif!important;color:#0B2A5B}
+.player .stage .reading.rd9 .txt .s{font-size:inherit!important;line-height:inherit!important;border-radius:6px;padding:1px 2px}
+.player .stage .reading.rd9 .txt .s.on{background:#FFF1C9!important;color:inherit!important}
+.player .reading.rd9 .rd-tr{display:flex;max-width:560px;margin:10px auto 0}
+.player .reading.rd9 .rd-es{max-width:560px;margin:8px auto 0}
+.player .stage:has(.reading.rd9)>h3,.player .stage:has(.reading.rd9) .yn9-h,.player .stage:has(.reading.rd9) .yn,.player .stage:has(.reading.rd9) .actionbar{max-width:600px;margin-left:auto;margin-right:auto}
+.player .stage:has(.reading.rd9)>h3{border-top:1px solid #E3E9F3;padding-top:16px;margin-top:20px!important}
+/* adolescentes: oscuro con verde */
+.player .reading.rd9-teens .rd9-au{background:#12306b}
+.player .reading.rd9-teens .rd9-pl{background:#22e58a;color:#06210f}
+.player .reading.rd9-teens .rd9-lb b,.player .stage .reading.rd9-teens .txt{color:#fff!important}
+.player .reading.rd9-teens .rd9-lb small{color:#9fb6dd}
+.player .stage .reading.rd9-teens .txt .s.on{background:rgba(34,229,138,.18)!important}
+.player .stage.dk:has(.reading.rd9)>h3{border-top-color:#1f4584}
+/* niños: crema y naranja, letra un poco más grande */
+.player .reading.rd9-kids .rd9-au{background:#FFF3DE}
+.player .reading.rd9-kids .rd9-pl{background:#F29A0C}
+.player .stage .reading.rd9-kids .txt{font-size:18.5px!important}
+.player .stage .reading.rd9-kids .txt .s.on{background:#FFE2B0!important}
+@media(max-width:600px){.player .stage .reading.rd9 .txt{font-size:16.5px!important}.player .stage .reading.rd9-kids .txt{font-size:17.5px!important}}
+.rd9-sr{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;white-space:nowrap}

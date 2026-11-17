@@ -855,7 +855,7 @@
     try { window.MRAGEIMG_apply && MRAGEIMG_apply(); } catch (e) { }
     const kids = !staff && window.MRKIDS && MRKIDS.on(); document.body.classList.toggle('ag-kids', !!kids); // 🎈 perfil Kids (9 a 11 años)
     let kidsX = '';
-    if (kids && a && a.ready && !P.isExpired()) { main = MRKIDS.hero(p, a, P.look().nick || p.first || '') + MRKIDS.words(); kidsX = MRKIDS.map(a) + MRKIDS.medals(a); }
+    if (kids && a && a.ready && !P.isExpired()) { main = MRKIDS.hero(p, a, P.look().nick || p.first || '') + MRKIDS.words(); kidsX = MRKIDS.medals(a); } // v711: sin «Camino de aventura» (pedido de John)
     else if (kids && newbie) main = main.replace('mra-x-plane-red.webp', 'mra-x-balloon1.webp');
     const teens = !staff && !kids && window.MRTEENS && MRTEENS.on(); document.body.classList.toggle('ag-teens', !!teens); // 🚀 perfil Teens (12 a 17 años)
     const adult = !staff && !kids && !teens; document.body.classList.toggle('ag-adult', adult); // v609: perfil de adultos sobrio y premium
