@@ -1,4 +1,4 @@
-/* 🖼 v710 · Fotos premium en toda la plataforma (todas las edades y módulos).
+/* 🖼 v711 · Fotos premium en toda la plataforma (todas las edades y módulos).
    - Cada foto va en un marco horizontal 3:2 (el formato normal de una foto) y lo llena por completo: sin bordes difuminados.
    - El recorte lo hace Unsplash centrado en las caras / lo importante de la foto.
    - Dentro de la lección la foto no pasa de 440 px de ancho en PC (no se estira de lado a lado).
@@ -22,9 +22,12 @@ img.fx9-f{object-fit:contain!important;filter:drop-shadow(0 6px 12px rgba(0,0,0,
   const dpr = () => Math.min(2, window.devicePixelRatio || 1);
   const imp = (el, k, v) => el.style.setProperty(k, v, 'important');
   // decide la forma del marco: cuadrado pequeño se queda; todo lo demás pasa a 3:2
+  // v711: solo estos marcos pasan a 3:2 (revisados uno por uno). Los demás conservan EXACTAMENTE su tamaño de antes
+  // (la foto lo llena sin difuminado), para no mover nada de lo que ya funcionaba.
+  const WL = '.t2-pic, .t2-ci, .md3-pic, .md3-hi, .reading > .ph, .fc9-ph > .ph';
   function shape(fr) {
-    const w = fr.offsetWidth, h = fr.offsetHeight, r = w / h;
-    if (r >= 0.8 && r <= 1.25 && w <= 420) return { sq: true, W: w, H: h };
+    const w = fr.offsetWidth, h = fr.offsetHeight;
+    if (!fr.matches(WL)) return { sq: true, W: w, H: h };
     imp(fr, 'aspect-ratio', '3 / 2'); imp(fr, 'height', 'auto'); imp(fr, 'min-height', '0'); imp(fr, 'max-height', 'none');
     if (getComputedStyle(fr).flexGrow !== '0' && getComputedStyle(fr.parentElement || fr).flexDirection.indexOf('column') === 0) imp(fr, 'flex', 'none');
     const cap = fr.closest('.rd-chat') ? 280 : fr.closest('.player') ? 440 : 0; // en el chat de la lectura la foto va pequeña, como una foto enviada

@@ -10499,7 +10499,24 @@ body.ag-adult .ad-hero .ad-sub2{display:block;margin-top:2px}
 .db-side{max-height:none!important;overflow:visible!important}
 /* v710 · Camino de aventura: las estaciones de los extremos ya no se salen de la tarjeta */
 .kd-mi{position:absolute;inset:0 9%}
-@media(max-width:400px){.kd-mi{inset:0 13%}}
 /* v710 · barra superior en celulares muy angostos: los íconos no tocan el borde */
 @media(max-width:340px){.topbar{gap:4px!important;padding-left:10px!important;padding-right:10px!important}.topbar .brand img,.topbar .brand svg{max-width:54px!important;height:auto!important}.topbar .iconbtn,.topbar .mr-bell{width:30px!important;height:30px!important;min-width:30px!important}.topbar .tb-avbtn{width:32px!important;height:32px!important}}
 .kd-stn small{hyphens:manual!important;-webkit-hyphens:manual!important;overflow-wrap:normal!important;word-break:normal!important}
+/* v711 · Repaso rápido: la foto se ve completa (3:2) y debajo la frase, «¿Significa…?» y la respuesta */
+.fc9-ph{height:auto!important}
+.fc9-ph>.ph{aspect-ratio:3/2!important;height:auto!important;display:block}
+.fc9-ph>.ph img{width:100%!important;height:100%!important;object-fit:cover!important}
+.fc9 .fc9-bd{padding:14px 16px 20px!important}
+/* v711 · Camino de aventura en celular: lista vertical ordenada (nada se monta, sin importar el tamaño de la letra) */
+@media(max-width:700px){
+ .kd-map{height:auto!important;padding:16px 16px!important}
+ .kd-mi{position:relative!important;inset:auto!important;display:flex;flex-direction:column;gap:12px}
+ .kd-mi>svg{display:none!important}
+ .kd-mi:before{content:'';position:absolute;left:19px;top:22px;bottom:22px;width:3px;border-radius:3px;background:repeating-linear-gradient(180deg,#cbd5e1 0 7px,transparent 7px 13px)}
+ .kd-stn{position:relative!important;left:auto!important;top:auto!important;transform:none!important;flex-direction:row!important;align-items:center!important;gap:12px!important;max-width:none!important;z-index:1}
+ .kd-stn i,.kd-stn.c i{width:40px!important;height:40px!important;flex:none}
+ .kd-stn.c i{box-shadow:0 0 0 5px rgba(227,36,43,.18),0 4px 10px rgba(227,36,43,.25)!important;animation:none!important}
+ .kd-stn small{font-size:14px!important;max-width:none!important;padding:6px 12px!important;text-align:left!important;line-height:1.3!important}
+}
+/* v711 · misión: los botones (escuchar / tortuga) nunca tocan el borde de la foto */
+.ms9-run .mvx-film{padding-bottom:18px!important}

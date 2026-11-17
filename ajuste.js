@@ -29,12 +29,12 @@
     while ((e.scrollWidth > e.clientWidth + 1) && f > min) { f -= 0.5; e.style.setProperty('font-size', f + 'px', 'important'); }
     if (e.scrollWidth > e.clientWidth + 1) { e.style.removeProperty('font-size'); e.style.removeProperty('letter-spacing'); e.classList.remove('mr-fit1'); } // no cabe ni achicando: que baje de línea normal
   }
-  const SEL = 'h1,h2,h3,h4,[data-fit],.ad-k,.lbl,.kd-k,.tn-k,.btn,button,.chip';
+  const SEL = '[data-fit],.ad-hero h2,.ad-hero .ad-k'; /* v711: solo donde se revisó; los demás títulos quedan como estaban diseñados */
   let busy = false, tm = 0;
   function run() { if (busy) return; busy = true; try { glue(document.body); document.querySelectorAll(SEL).forEach(fitOne); } catch (e) { } busy = false; }
   const later = () => { clearTimeout(tm); tm = setTimeout(run, 120); };
   const st = document.createElement('style');
-  st.textContent = '.mr-fit1{white-space:nowrap!important;overflow:hidden;text-overflow:clip}h1,h2,h3{text-wrap:balance}';
+  st.textContent = '.mr-fit1{white-space:nowrap!important;overflow:hidden;text-overflow:clip;max-width:100%;min-width:0}';
   (document.head || document.documentElement).appendChild(st);
   function boot() {
     run(); try { document.fonts && document.fonts.ready.then(run); } catch (e) { }
