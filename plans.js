@@ -84,7 +84,7 @@
   function trust() { return `<div class="pv-tr"><span>${CK()} Sin permanencia: pagas mes a mes</span><span>${CK()} Tu progreso siempre se guarda</span><span>${CK()} Profes licenciados en inglés</span></div>`; }
   // tarjetas de planes (muestra los superiores al plan actual; al renovar, también el actual)
   function cards(current, renew) {
-    const pn = pnum(current), showM = !pn && (current === 'free' || current === 'legacy' || !current || (renew && current === 'membership'));
+    const pn = pnum(current), showM = (!pn && (current === 'free' || current === 'legacy' || !current || (renew && current === 'membership'))) || (renew && !!pn); /* v713: Premium vencido también puede elegir solo Plataforma */
     const memb = showM ? lpCard('membership', { current, renew }) : '', n = 1 + (showM ? 1 : 0);
     return `<div class="lp-pg pl-in n${n}">${memb}${pbCard({ n0: pn || 4, cur: pn, renew })}</div>${n > 1 ? '<p class="lp-swipe">Desliza para ver todos los planes →</p>' : ''}${trust()}<p class="pl-note">${window.MRI ? MRI('card') : ''} Paga con tarjeta débito o crédito, PSE, Nequi o Daviplata (Mercado Pago). Tu plan se activa solo. Todas las membresías se cobran mes a mes. <a href="politica.html" target="_blank" rel="noopener">Política de reservas y cancelaciones</a></p>`;
   }

@@ -1304,7 +1304,7 @@
       ${pl.premium && !pl.expired ? `<div class="card pl-xc"><div class="pl-xh"><span class="pl-xi">${MRI('plus')}</span><div><b>¿Quieres más clases este mes?</b><small>Clases individuales de 50 min · ${MRPLANS.fmt(MRPLANS.extra ? MRPLANS.extra() : 32900)} c/u${end ? ' · valen hasta el ' + fmtD(pl.end, { day: 'numeric', month: 'long' }) : ''}</small></div></div>
         <div class="pl-xr"><span class="pl-xs"><button type="button" data-xq="-1" aria-label="Quitar una clase" disabled>−</button><b id="pl-xn">1</b><button type="button" data-xq="1" aria-label="Agregar una clase">+</button></span><b id="pl-xt">${MRPLANS.fmt(MRPLANS.extra ? MRPLANS.extra() : 32900)}</b></div>
         <button class="btn k block" id="pl-xb" data-xend="${esc(pl.end)}">Comprar 1 clase extra</button><p class="pl-xp">Pagas con Mercado Pago y se suman solas a tu saldo</p></div>` : ''}
-      ${MRPLANS.cards(pl.expired ? pl.plan : (pl.eff === 'premium' ? pl.plan : pl.eff), renew)}`;
+      ${pl.premium && !pl.expired ? '' : MRPLANS.cards(pl.expired ? pl.plan : (pl.eff === 'premium' ? pl.plan : pl.eff), renew)}`; /* v713: con Premium activo solo se compran clases extra (no «Crea tu plan») */
   }
   // sección Premium: grupo, créditos VIP, próximas clases, club — se llena con datos de la nube
   function bookStart() { if (!P.plan().premium && P.plan().fc) { const mm = M.modal(`<h3>Antes de reservar tu clase gratis</h3><ul class="lv-rules">
