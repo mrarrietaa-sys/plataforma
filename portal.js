@@ -599,6 +599,7 @@
       <label class="tf-ok tf-req"><input type="checkbox" id="tf-c"> <span><span id="tf-ct">Autorizo el tratamiento de mis datos personales según la <a href="privacidad.html" target="_blank" rel="noopener">política de privacidad</a>.</span><em class="tf-em r">OBLIGATORIA</em></span></label>
       <label class="tf-ok"><input type="checkbox" id="tf-m"> <span><span id="tf-mt">Quiero recibir novedades y promociones por WhatsApp y correo. Puedo cancelarlas cuando quiera.</span><em class="tf-em">OPCIONAL</em></span></label>
       <button class="btn r block lg" id="tf-go">Crear mi acceso gratis →</button><p class="muted center" id="tf-msg" style="font-size:13.5px;margin:0"></p></div>`, { x: true });
+    tfFit(m);
     const msg = (t) => { $('#tf-msg', m).textContent = t; }; let kid = false;
     const ageOfB = (bv) => { if (!bv) return null; const t = new Date(), bd = new Date(bv + 'T12:00:00'); let a = t.getFullYear() - bd.getFullYear(); if (t.getMonth() < bd.getMonth() || (t.getMonth() === bd.getMonth() && t.getDate() < bd.getDate())) a--; return a; };
     const meMinor = () => { const a = ageOfB($('#tf-mb', m).value); return !kid && a !== null && a < 18; }; // v668: menor que se inscribe solo
@@ -775,6 +776,12 @@
       c.style.zoom = '0.85'; c.style.setProperty('max-height', 'none', 'important'); c.style.setProperty('overflow', 'visible', 'important'); // en PC la ventana va más pequeña y entera
       for (let i = 0; i < 3; i++) { const z = parseFloat(c.style.zoom) || 1, need = c.scrollHeight * z, av = innerHeight - 48; if (need <= av + 1) break; c.style.zoom = Math.max(0.55, z * av / need).toFixed(3); } };
     go(); setTimeout(go, 400); setTimeout(go, 1500); addEventListener('resize', go);
+  }
+  // v720 · celular: el formulario «Prueba gratis 3 días» cabe completo en pantallas pequeñas (se reduce un poco entero, nunca bajo la barra de abajo)
+  function tfFit(m) {
+    const go = () => { const c = m && m.querySelector('.card'); if (!c || !c.isConnected) { removeEventListener('resize', go); return; } c.style.zoom = ''; if (innerWidth >= 900) return;
+      for (let i = 0; i < 3; i++) { const z = parseFloat(c.style.zoom) || 1, need = c.offsetHeight * z, av = innerHeight - 32; if (need <= av + 1) break; c.style.zoom = Math.max(0.6, z * av / need).toFixed(3); } };
+    go(); setTimeout(go, 300); addEventListener('resize', go); if (m) m.addEventListener('click', () => setTimeout(go, 60));
   }
   function logout() {
     const m = M.modal(`<h3>¿Salir de tu perfil?</h3><p class="muted">Tu progreso queda guardado${window.MRAC && MRAC.code() ? ' en la nube: puedes continuar desde cualquier dispositivo' : ' en este dispositivo'}. Para volver a entrar necesitarás tu código.</p><div class="row"><button class="btn k" id="y">Sí, salir</button><button class="btn w" id="n">Cancelar</button></div>`, { x: true });
