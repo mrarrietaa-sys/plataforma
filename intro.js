@@ -5,7 +5,7 @@
   try {
     if (localStorage.getItem('mra_intro_v1')) return;
     if (localStorage.getItem('mra_profile_v1') || sessionStorage.getItem('mra_tp_session') || sessionStorage.getItem('mra_admin_key')) return;
-    if (/[?&](out|ingresar|pc|prueba|tab)=/.test(location.search)) return;
+    if (/[?&](out|ingresar|pc|prueba|tab|pagar|gratis|plan)=/.test(location.search)) return; /* v716: si la página abre con una ventana (planes, pago), no hay bienvenida */
     localStorage.setItem('mra_intro_v1', String(Date.now()));
   } catch (e) { return; }
   const lite = (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) || (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2) || (navigator.deviceMemory && navigator.deviceMemory <= 2);
@@ -44,6 +44,8 @@
   const kill = () => { const t = TG(); if (!t) return; t.classList.add('mk-hide'); t.getAnimations().forEach(a => { if (!(window.CSSAnimation && a instanceof CSSAnimation)) a.cancel(); }); };
   const finish = () => { if (done) return; done = true; clearInterval(kv); const t = TG(); if (t) t.classList.remove('mk-hide'); d.classList.add('go'); setTimeout(() => { d.remove(); r.remove(); st.remove(); }, 650); };
   d.addEventListener('pointerdown', finish); /* tocar la pantalla la salta */
+  /* v716 · si aparece cualquier ventana (p. ej. los planes), el cohete se va de inmediato: nunca queda encima de la información */
+  const mo = setInterval(() => { if (!document.body.contains(r)) { clearInterval(mo); return; } if (document.querySelector('.modal')) { clearInterval(mo); done = false; finish(); r.getAnimations().forEach(a => a.cancel()); r.remove(); } }, 80);
   const fail = setTimeout(finish, 3000); /* si el cohete no carga rápido, no se hace esperar a nadie */
   const trail = (ms) => { if (lite) return; const t0 = performance.now(); const iv = setInterval(() => { if (done || performance.now() - t0 > ms) { clearInterval(iv); return; } const b = r.getBoundingClientRect(); if (!b.width) return; const p = document.createElement('i'); const sz = 14 + Math.random() * 16; p.className = 'mkP'; p.style.cssText = `left:${b.left + b.width * .12 - sz / 2}px;top:${b.top + b.height * .78 - sz / 2}px;width:${sz}px;height:${sz}px`; document.body.appendChild(p); setTimeout(() => p.remove(), 1000); }, 45); };
   const burst = (x, y) => { if (lite) return; for (let i = 0; i < 14; i++) { const a = i / 14 * 6.283; const q = document.createElement('i'); q.className = 'mkS'; q.style.cssText = `left:${x}px;top:${y}px;--x:${Math.cos(a) * (50 + Math.random() * 30)}px;--y:${Math.sin(a) * (40 + Math.random() * 25)}px`; document.body.appendChild(q); setTimeout(() => q.remove(), 900); } };

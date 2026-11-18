@@ -762,7 +762,16 @@
     M.modal(`<div class="center"><div class="to-ic">${MRI('gift')}</div><h3>${generic ? 'Elige tu plan' : 'Tu acceso gratuito terminó'}</h3><p>${generic ? 'Paga con tarjeta, PSE, Nequi o Daviplata y tu plan se activa solo en tu perfil.' : 'Gracias por conocer <b>mrarrieta.com</b>. Tu progreso está guardado: <b>elige tu plan</b> y continúa justo donde lo dejaste.'}</p></div>
       ${PL ? PL.cards('free') : ''}
       ${PL && PL.payInfo ? PL.payInfo() : ''}`, { x: true });
+    toFit();
     if (code && window.MRAC) MRAC.call('myCoupon', { code }).then(r => { if (!r || !r.gift) return; const m = [...document.querySelectorAll('.modal')].pop(); const h3 = m && m.querySelector('h3'); if (h3) h3.insertAdjacentHTML('afterend', `<p class="to-offer">${MRI('gift')} <span><b>${esc(r.why || 'Tienes 1 clase de regalo')}</b>. Es una clase de 50 minutos con profe y se agrega sola al pagar.</span></p>`); }).catch(() => { }); // 🎁 v623: clase de regalo
+  }
+  // v716 · En PC la ventana de planes cabe completa en la pantalla (cualquier alto o zoom del navegador): si no cabe, se reduce un poco entera
+  function toFit() {
+    const go = () => { const c = [...document.querySelectorAll('.modal .card')].find(x => x.querySelector('.to-pay')); if (!c) { removeEventListener('resize', go); return; }
+      c.style.zoom = ''; c.style.removeProperty('max-height'); c.style.removeProperty('overflow'); if (innerWidth < 900) return;
+      c.style.zoom = '0.85'; c.style.setProperty('max-height', 'none', 'important'); c.style.setProperty('overflow', 'visible', 'important'); // en PC la ventana va más pequeña y entera
+      for (let i = 0; i < 3; i++) { const z = parseFloat(c.style.zoom) || 1, need = c.scrollHeight * z, av = innerHeight - 48; if (need <= av + 1) break; c.style.zoom = Math.max(0.55, z * av / need).toFixed(3); } };
+    go(); setTimeout(go, 400); setTimeout(go, 1500); addEventListener('resize', go);
   }
   function logout() {
     const m = M.modal(`<h3>¿Salir de tu perfil?</h3><p class="muted">Tu progreso queda guardado${window.MRAC && MRAC.code() ? ' en la nube: puedes continuar desde cualquier dispositivo' : ' en este dispositivo'}. Para volver a entrar necesitarás tu código.</p><div class="row"><button class="btn k" id="y">Sí, salir</button><button class="btn w" id="n">Cancelar</button></div>`, { x: true });

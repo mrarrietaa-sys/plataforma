@@ -10479,15 +10479,6 @@ body.ag-kids .ms9-movie{--mv:#f59e0b;--mvs:#f6e3c2;--mvb:#f6e3c2;--mvn:#d97706;-
 /* v710 · tarjeta «Tu siguiente paso» (adultos): el título nunca se parte y el avión no le quita espacio al texto en celular */
 body.ag-adult .ad-hero h2{white-space:nowrap}
 body.ag-adult .ad-hero .ad-sub2{display:block;margin-top:2px}
-@media(max-width:980px){
- body.ag-adult .ad-hero .ad-plane{width:88px!important;height:62px!important;right:10px!important;top:12px!important}
- body.ag-adult .ad-hero .ad-plane img{width:88px!important}
- body.ag-adult .ad-hero .ad-plane i{left:24px!important;width:42px!important}
- body.ag-adult .ad-hero .ad-k,body.ag-adult .ad-hero h2{margin-right:92px!important}
- body.ag-adult .ad-hero .db-sub,body.ag-adult .ad-hero .db-bar,body.ag-adult .ad-hero .ad-pct{margin-right:0!important}
- body.ag-adult .ad-hero .db-sub{margin-top:6px!important}
- body.ag-adult .ad-hero h2{font-size:clamp(19px,7vw,26px)!important}
-}
 /* v710 · fotos 3:2: la sombra de las tarjetas de temas solo abajo, donde va el título (la foto conserva sus colores) */
 .t2-pic:before{background:linear-gradient(180deg,rgba(11,42,91,0) 52%,rgba(11,42,91,.55) 76%,rgba(11,42,91,.86))!important}
 .t2-pic{padding-bottom:12px}
