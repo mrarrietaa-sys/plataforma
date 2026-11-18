@@ -5,7 +5,7 @@
    M3: Adultos Clasificador · Teens Carrera · Kids Canasta
    M4: Adultos Rascacielos · Teens Penalti · Kids Ranita */
 (function () {
-  try { if (!document.querySelector('link[href^="retos.css"]')) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'retos.css?v=721'; document.head.appendChild(l); } } catch (e) { }
+  try { if (!document.querySelector('link[href^="retos.css"]')) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'retos.css?v=722'; document.head.appendChild(l); } } catch (e) { }
   const T = window.__rtT || 40, IMG = 'retos/';
   const M = () => window.M1, A = () => window.M1A;
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -243,26 +243,26 @@
         setTimeout(() => { b.classList.add(good ? 'r' : 'w'); if (good) ar.insertAdjacentHTML('beforeend', '<div class="rto-gol">¡GOOOL!</div>'); else { ar.querySelectorAll('.rto-sh')[op.indexOf(it.ans)].classList.add('r'); bl.classList.add('saved'); } }, 430); after(B, S, it, good, op[k], 1300, 2100, '¡Atajada! Era'); });
       timeout(B, S, it, 8000); }; S.round(); },
     /* v721 · Vuelo de Mr. Arrieta (B1 adultos): tablero de salidas + pases de abordar; cada acierto lleva la avioneta a la siguiente ciudad */
-    vuelo(B, S) { const K = [['BOG', 'BOGOTÁ'], ['MIA', 'MIAMI'], ['NYC', 'NEW YORK'], ['CHI', 'CHICAGO'], ['LON', 'LONDON'], ['MAD', 'MADRID'], ['ROM', 'ROME'], ['PAR', 'PARIS'], ['TOR', 'TORONTO'], ['LAX', 'LOS ANGELES']];
-      let leg = 0, trip = 0, st = []; const AZ = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-      const cities = () => { const o = (trip * 5) % 5; return [K[0]].concat(trip % 2 ? K.slice(5, 10) : K.slice(1, 6)); };
+    vuelo(B, S) { const K = [['BOG', 'BOGOTÁ'], ['MIA', 'MIAMI'], ['NYC', 'NEW YORK'], ['CHI', 'CHICAGO'], ['LON', 'LONDON'], ['MAD', 'MADRID'], ['ROM', 'ROME'], ['PAR', 'PARIS'], ['BER', 'BERLIN'], ['DXB', 'DUBAI'], ['TYO', 'TOKYO'], ['SYD', 'SYDNEY'], ['LAX', 'LOS ANGELES'], ['TOR', 'TORONTO'], ['MEX', 'MEXICO CITY'], ['LIM', 'LIMA']];
+      let leg = 0, trip = 0, st = [], cont = false; const AZ = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      const cities = () => [0, 1, 2, 3, 4, 5].map(i => K[(trip * 5 + i) % K.length]); /* v722: el viaje sigue: la última ciudad es la primera del tramo siguiente */
       const flap = (el, txt) => { if (!el) return; let k = 0; const id = setInterval(() => { if (!el.isConnected || ++k > 5) { clearInterval(id); if (el.isConnected) el.textContent = txt; return; } el.textContent = [...txt].map(c => c === ' ' ? ' ' : AZ[Math.random() * 26 | 0]).join(''); }, 50); };
-      S.round = () => { if (leg >= 5) { leg = 0; trip++; st = []; } const it = S.next(), op = shuf(it.opts), C = cities(), ms = Math.max(5200, 8200 - S.streak * 300), gate = 2 + (trip * 5 + leg) % 9;
+      S.round = () => { if (leg >= 5) { leg = 0; trip++; st = []; cont = true; } const it = S.next(), op = shuf(it.opts), C = cities(), ms = Math.max(5200, 8200 - S.streak * 300), gate = 2 + (trip * 5 + leg) % 9;
         const sen = it.mode === 'f' ? blank(it.q) : promptOf(it)[1];
         S.cur = it; try { window.__rtoCur = it; } catch (e) { } S.done = false;
-        B.innerHTML = `<div class="vu-fly"><div class="vu-sky"><i class="c1"></i><i class="c2"></i><i class="c3"></i><div class="vu-rt"></div>${C.map((c, i) => `<span class="vu-cy${st[i - 1] ? ' ' + st[i - 1] : ''}" style="left:${8 + i * 16.8}%"><i></i>${c[0]}</span>`).join('')}<img class="vu-pln" src="mra-x-plane-red.webp" alt="" style="left:clamp(44px, ${8 + leg * 16.8}%, calc(100% - 44px))"></div>
+        B.innerHTML = `<div class="vu-fly"><div class="vu-sky"><i class="c1"></i><i class="c2"></i><i class="c3"></i><div class="vu-map${cont ? ' in' : ''}"><div class="vu-rt"></div>${C.map((c, i) => `<span class="vu-cy${st[i - 1] ? ' ' + st[i - 1] : ''}" style="left:${8 + i * 16.8}%"><i></i>${c[0]}</span>`).join('')}</div><img class="vu-pln${cont ? ' in' : ''}" src="mra-x-plane-red.webp" alt="" style="left:clamp(44px, ${8 + leg * 16.8}%, calc(100% - 44px))"></div>
           <div class="vu-dep"><div class="vu-dh"><span>DEPARTURES</span><span>GATE ${gate}</span></div><div class="vu-dr"><span class="vu-fn">MA ${201 + trip * 60 + leg * 12}</span><span class="vu-fn vu-ds">${C[leg + 1][1]}</span><span class="vu-st">BOARDING</span></div><div class="vu-sn">${sen}</div><div class="vu-gt"><i></i></div></div>
           <div class="vu-bps">${op.map(o => `<button type="button"><small>BOARDING</small><span class="${sz(o).trim()}">${esc(o)}</span></button>`).join('')}</div></div>` + FB;
-        const ar = B.querySelector('.vu-fly'), sn = ar.querySelector('.vu-sn'), stt = ar.querySelector('.vu-st'), pln = ar.querySelector('.vu-pln'), gb = ar.querySelector('.vu-gt i');
+        cont = false; const ar = B.querySelector('.vu-fly'), sn = ar.querySelector('.vu-sn'), stt = ar.querySelector('.vu-st'), pln = ar.querySelector('.vu-pln'), gb = ar.querySelector('.vu-gt i');
         flap(ar.querySelector('.vu-ds'), C[leg + 1][1]); try { fitIn(sn, 12); } catch (e) { }
         if (it.mode !== 'f') { const au = promptOf(it)[2]; if (au) setTimeout(() => { if (S.cur === it) play(au); }, 150); }
         requestAnimationFrame(() => { gb.style.transition = `transform ${ms}ms linear`; gb.style.transform = 'scaleX(0)'; });
         const fly = good => { const L = leg; st[L] = good ? 'ok' : 'no'; const cy = ar.querySelectorAll('.vu-cy')[L + 1]; leg++; gb.style.transition = 'none';
-          pln.style.left = `clamp(44px, ${8 + leg * 16.8}%, calc(100% - 44px))`; pln.classList.add('go'); setTimeout(() => { if (cy) cy.classList.add(good ? 'ok' : 'no'); }, 1100);
+          pln.classList.remove('in'); pln.style.left = `clamp(44px, ${8 + leg * 16.8}%, calc(100% - 44px))`; pln.classList.add('go'); if (leg >= 5) setTimeout(() => { if (pln.isConnected) { pln.classList.add('out'); pln.style.left = 'calc(100% + 70px)'; } }, 1700); /* llega a la última ciudad y sigue de largo */ setTimeout(() => { if (cy) cy.classList.add(good ? 'ok' : 'no'); }, 1100);
           stt.classList.add(good ? 'ok' : 'no'); flap(stt, good ? 'ON TIME' : 'DELAYED'); const bl = sn.querySelector('.rto-bl'); if (bl) { bl.textContent = it.ans; bl.classList.add('f'); }
           if (!good && it.h) sn.insertAdjacentHTML('beforeend', `<em class="vu-hn">Pista: ${esc(it.h)}</em>`); };
-        ar.querySelectorAll('.vu-bps button').forEach((b, k) => b.onclick = () => { if (S.done || !S.live) return; S.done = true; const good = op[k] === it.ans; b.classList.add(good ? 'r' : 'w'); if (!good) { const r = [...ar.querySelectorAll('.vu-bps button')][op.indexOf(it.ans)]; if (r) r.classList.add('r'); } fly(good); after(B, S, it, good, op[k], 1700, 2700); });
-        S.later(() => { if (S.cur !== it || S.done) return; S.done = true; const r = [...ar.querySelectorAll('.vu-bps button')][op.indexOf(it.ans)]; if (r) r.classList.add('r'); fly(false); const fb = B.querySelector('.rto-fb'); S.score(false, it); if (fb) fb.innerHTML = `<span class="no">Se cerró la puerta. Era: <b>${esc(it.txt)}</b></span>`; stopA(); play(it.after); S.later(() => S.round(), 2700); }, ms + 150); };
+        ar.querySelectorAll('.vu-bps button').forEach((b, k) => b.onclick = () => { if (S.done || !S.live) return; S.done = true; const good = op[k] === it.ans; b.classList.add(good ? 'r' : 'w'); if (!good) { const r = [...ar.querySelectorAll('.vu-bps button')][op.indexOf(it.ans)]; if (r) r.classList.add('r'); } const last = leg >= 4; fly(good); after(B, S, it, good, op[k], last ? 2700 : 1700, last ? 3000 : 2700); });
+        S.later(() => { if (S.cur !== it || S.done) return; S.done = true; const r = [...ar.querySelectorAll('.vu-bps button')][op.indexOf(it.ans)]; if (r) r.classList.add('r'); const last = leg >= 4; fly(false); const fb = B.querySelector('.rto-fb'); S.score(false, it); if (fb) fb.innerHTML = `<span class="no">Se cerró la puerta. Era: <b>${esc(it.txt)}</b></span>`; stopA(); play(it.after); S.later(() => S.round(), last ? 3000 : 2700); }, ms + 150); };
       S.round(); },
     ranita(B, S) { S.round = () => { const it = S.next(), op = shuf(it.opts.slice(0, 2)); setup(B, S, it, `<div class="rto-area rto-lake"><div class="rto-frog"><img src="${FROG}" alt=""></div></div>`);
       const ar = B.querySelector('.rto-area'), fr = ar.querySelector('.rto-frog');

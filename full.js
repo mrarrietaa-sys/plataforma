@@ -13,7 +13,7 @@
 img.fx9-f{object-fit:contain!important;filter:drop-shadow(0 6px 12px rgba(0,0,0,.22))}`;
   (document.head || document.documentElement).appendChild(css);
   // fotos verticales donde lo importante no está en el centro: punto de enfoque a mano
-  const FP = { 'photo-1543168256-4ae2229821f1': 0.36, 'photo-1638501478003-4e9761dcfe22': 0.78, 'photo-1780253460360-d85b2db8c078': 0.4, 'photo-1742407774908-c19795f6efbd': 0.42, 'photo-1617069897015-7d27a76232ed': 0.45 };
+  const FP = { 'photo-1642618332135-a74051fb94f6': 0.36, 'photo-1707649631080-6739828becfc': 0.78, 'photo-1545693315-85b6be26a3d6': 0.4, 'photo-1539327381140-bc020facf1e2': 0.42, 'photo-1786014894707-6fe6cab16a09': 0.45 };
   const isU = u => /images\.unsplash\.com/.test(u || '');
   const crop = (u, W, H) => { if (!isU(u)) return u; let b = u.replace(/([?&])(w|h|fit|crop|ar|dpr)=[^&]*/g, '$1').replace(/&{2,}/g, '&').replace(/\?&/, '?').replace(/[?&]$/, ''); const id = (b.match(/photo-[\w-]+/) || [''])[0], fy = FP[id]; return b + (b.indexOf('?') >= 0 ? '&' : '?') + `w=${W}&h=${H}&fit=crop&crop=` + (fy ? `focalpoint&fp-x=0.5&fp-y=${fy}` : 'faces,entropy'); };
   const done = u => /fit=crop&crop=/.test(u || '');

@@ -197,7 +197,9 @@ body.ag-teens .rto-ask .rto-es{color:#c3cfe6}
 /* v721 · Vuelo de Mr. Arrieta (B1 adultos) */
 .vu-fly{display:flex;flex-direction:column;gap:8px;flex:1;min-height:0;margin-top:2px}
 .vu-sky{position:relative;flex:1;min-height:84px;max-height:270px;border-radius:14px;overflow:hidden;background:linear-gradient(180deg,#8EC5FF 0%,#CFE6FF 70%,#EAF4FF 100%)}
-.vu-sky>i{position:absolute;background:#fff;border-radius:40px;opacity:.85;animation:vuCl 16s linear infinite}
+.vu-sky>i{position:absolute;background:#fff;border-radius:999px;opacity:.92;animation:vuCl 16s linear infinite}
+.vu-sky>i:before,.vu-sky>i:after{content:'';position:absolute;background:#fff;border-radius:50%}
+.vu-sky>i:before{width:46%;height:180%;left:14%;bottom:30%}.vu-sky>i:after{width:34%;height:140%;right:14%;bottom:34%}
 .vu-sky .c1{top:12%;width:80px;height:20px}.vu-sky .c2{top:34%;width:56px;height:14px;animation-delay:-6s}.vu-sky .c3{top:18%;width:110px;height:24px;animation-delay:-11s}
 @keyframes vuCl{from{left:105%}to{left:-35%}}
 .vu-rt{position:absolute;left:8%;right:8%;bottom:24px;border-top:2px dashed rgba(11,42,91,.35)}
@@ -230,3 +232,11 @@ body.ag-teens .rto-ask .rto-es{color:#c3cfe6}
 
 .rto .vu-bps button small{font-size:8.5px!important;letter-spacing:.1em!important;white-space:nowrap;line-height:1.2}
 .rto .vu-bps button span{font-size:16px!important;line-height:1.2}.rto .vu-bps button span.sm{font-size:14px!important}.rto .vu-bps button span.xs{font-size:12px!important}
+
+/* v722 · el viaje continúa: el mapa nuevo entra desde la derecha y la avioneta vuelve a entrar por la izquierda */
+.vu-map{position:absolute;inset:0}
+.vu-map.in{animation:vuMap .9s cubic-bezier(.3,.7,.3,1) both}
+@keyframes vuMap{from{transform:translateX(100%)}to{transform:none}}
+.vu-pln.in{animation:vuIn 1.1s cubic-bezier(.3,.7,.3,1) both, vuBob 2.4s ease-in-out 1.1s infinite}
+@keyframes vuIn{from{left:-90px}}
+.vu-pln.out{transition:left .9s ease-in!important}

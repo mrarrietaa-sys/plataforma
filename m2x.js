@@ -67,7 +67,7 @@
   async function call(stage, p) {
     const Q = KQ(p); if (!Q.length) return null; let c = 0;
     const body = frame(stage, 'Practice', 'Llamada telefónica', 'Emma te llama. Escucha cada pregunta y responde leyendo tu respuesta.');
-    body.insertAdjacentHTML('beforeend', `<div class="m2c"><div class="m2c-top"><span class="m2c-av" style="background-image:url('${M().imgURL('u:photo-1494790108377-be9c29b29330', 200, 200)}')"></span><b>Emma Wilson</b><small class="m2c-t">Llamando…</small></div><div class="m2c-q"></div><div class="m2c-turn"></div><div class="m2c-dots">${Q.map(() => '<i></i>').join('')}</div></div>`);
+    body.insertAdjacentHTML('beforeend', `<div class="m2c"><div class="m2c-top"><span class="m2c-av" style="background-image:url('${M().imgURL('u:photo-1598013924228-f336656b163c', 200, 200)}')"></span><b>Emma Wilson</b><small class="m2c-t">Llamando…</small></div><div class="m2c-q"></div><div class="m2c-turn"></div><div class="m2c-dots">${Q.map(() => '<i></i>').join('')}</div></div>`);
     const el = body.querySelector('.m2c'), qn = el.querySelector('.m2c-q'), turn = el.querySelector('.m2c-turn'), tl = el.querySelector('.m2c-t'); let t0 = 0;
     sfx('tap'); await sleep(900); if (!stage.isConnected) return null; t0 = Date.now(); el.classList.add('live');
     const tick = setInterval(() => { if (!stage.isConnected) return clearInterval(tick); const s = Math.floor((Date.now() - t0) / 1000); tl.textContent = 'Llamada en curso · ' + String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); }, 500);
@@ -313,7 +313,7 @@
 
   /* =================== v520 · MÓDULO 3 (B1) · experiencia propia =================== */
   const M3 = (function () {
-    const persona = { adult: ['Laura Kim', 'Recruiter', 'u:photo-1494790108377-be9c29b29330'] };
+    const persona = { adult: ['Laura Kim', 'Recruiter', 'u:photo-1598013924228-f336656b163c'] };
     /* ---------- 💼 Adultos · entrevista en video ---------- */
     async function interview(stage, p) {
       const Q = KQ(p); if (!Q.length) return null; let c = 0; const P = persona.adult;
@@ -335,7 +335,7 @@
     async function prompter(stage, p) {
       const Q = KQ(p); if (!Q.length) return null; let c = 0;
       const body = frame(stage, 'Practice', 'Graba tu video', 'Lee la respuesta del teleprompter como si grabaras un video para tu canal.');
-      body.insertAdjacentHTML('beforeend', `<div class="m3t"><div class="m3t-v" style="background-image:url('${M().imgURL('u:photo-1522202176988-66273c2fd55f', 700, 700)}')"><span class="m3i-rec"><i></i>REC</span><span class="m3t-n"></span><div class="m3t-tp"></div></div><div class="m3t-turn"></div></div>`);
+      body.insertAdjacentHTML('beforeend', `<div class="m3t"><div class="m3t-v" style="background-image:url('${M().imgURL('u:photo-1521737711867-e3b97375f902', 700, 700)}')"><span class="m3i-rec"><i></i>REC</span><span class="m3t-n"></span><div class="m3t-tp"></div></div><div class="m3t-turn"></div></div>`);
       const tp = body.querySelector('.m3t-tp'), turn = body.querySelector('.m3t-turn'), nn = body.querySelector('.m3t-n');
       for (let i = 0; i < Q.length; i++) {
         if (!stage.isConnected) break; const k = Q[i]; nn.textContent = `TOMA ${i + 1} / ${Q.length}`;
@@ -470,7 +470,7 @@
   const M4 = (function () {
     /* ---------- 🏛️ Adultos · presentación en la junta ---------- */
     async function board(stage, p) {
-      const Q = KQ(p); if (!Q.length) return null; let c = 0; const AV = ['u:photo-1494790108377-be9c29b29330', 'u:photo-1507003211169-0a1dd7228f2d', 'u:photo-1438761681033-6461ffad8d80'];
+      const Q = KQ(p); if (!Q.length) return null; let c = 0; const AV = ['u:photo-1598013924228-f336656b163c', 'u:photo-1507003211169-0a1dd7228f2d', 'u:photo-1438761681033-6461ffad8d80'];
       const body = frame(stage, 'Practice', 'Presentación en la junta', 'La junta directiva te hace preguntas. Escucha cada una y responde leyendo tu respuesta.');
       body.insertAdjacentHTML('beforeend', `<div class="m4b"><div class="m4b-room"><div class="m4b-sl"><small>BOARD MEETING · Q3</small><b></b></div><div class="m4b-aud">${AV.map((a, i) => `<span class="m4b-av" style="background-image:url('${M().imgURL(a, 160, 160)}')"></span>`).join('')}</div></div><div class="m4b-turn"></div><div class="m2c-dots">${Q.map(() => '<i></i>').join('')}</div></div>`);
       const el = body.querySelector('.m4b'), sl = el.querySelector('.m4b-sl b'), turn = el.querySelector('.m4b-turn'), avs = el.querySelectorAll('.m4b-av');

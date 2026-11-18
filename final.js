@@ -47,9 +47,9 @@
   const MA_GROUP = { A1: 'maA1', A2: 'maA2', B2: 'maB2', 'B2+': 'maB2p', FINAL: 'maF' }[EXAM_ID];
   const cloud = () => !!(window.MRAC && MRAC.code && MRAC.code());
   const COVERS = { // portada de cada examen (IDs de Unsplash verificados en build/imgmap*.json)
-    A1: ['photo-1758270704524-596810e891b5', 'First steps in English'], A2: ['photo-1758270704286-83476deb3bd1', 'Raise your hand and speak'],
-    B2: ['photo-1758270704787-615782711641', 'Discuss and share ideas'], 'B2+': ['photo-1525130413817-d45c1d127c42', 'Present like a pro'],
-    FINAL: ['photo-1658235081483-8f06aa0882cf', 'Graduation day'] };
+    A1: ['photo-1758270704522-f091f8064a81', 'First steps in English'], A2: ['photo-1597743622436-c6b5661731e0', 'Raise your hand and speak'],
+    B2: ['photo-1719498861257-44589f1d6b73', 'Discuss and share ideas'], 'B2+': ['photo-1579389083395-4507e98b5e67', 'Present like a pro'],
+    FINAL: ['photo-1498079022511-d15614cb1c02', 'Graduation day'] };
   let pollIv = null;
   const stopPoll = () => { if (pollIv) clearInterval(pollIv); pollIv = null; };
   window.addEventListener('mra-extra', (e) => {
