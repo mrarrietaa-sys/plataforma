@@ -10611,3 +10611,10 @@ body.ag-adult .ad-hero .ad-sub2{display:block;margin-top:2px}
 @media(max-width:899px){.modal .card:has(.to-pay) .pl-note{text-align:center}.modal .card:has(.to-pay) .lp-pl li{text-align:center}}
 /* v720 · celular: el formulario «Prueba gratis 3 días» queda por encima de la barra de abajo, sin tocar los bordes */
 @media(max-width:899px){.modal:has(#tf-go){z-index:2000!important;padding:16px!important}.modal .card:has(#tf-go){max-height:none!important;overflow:visible!important}}
+/* v723 · signos − y + centrados exactos en el círculo (dibujados con líneas) */
+.pb .pbx{font-size:0!important;position:relative}
+.pb .pbx:before,.pb .pbx[data-pbs="1"]:after{content:'';position:absolute;left:50%;top:50%;width:40%;height:2.5px;border-radius:2px;background:currentColor;transform:translate(-50%,-50%)}
+.pb .pbx[data-pbs="1"]:after{width:2.5px;height:40%}
+/* v723 · ventana «Nuestros planes»: en celular no toca los bordes; en PC la etiqueta «Crea tu plan» no se corta al pasar el cursor */
+@media(max-width:899px){.hpl-bg{padding:22px 20px!important}}
+@media(min-width:900px){.hpl .lp-panel{padding-top:12px!important}}
