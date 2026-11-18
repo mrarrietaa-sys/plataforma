@@ -194,3 +194,39 @@ body.ag-teens .rto-ask .rto-es{color:#c3cfe6}
 .rto-mt-pl:before{content:'SALIDA';position:absolute;left:0;top:-16px;font:800 10px Poppins,system-ui,sans-serif;letter-spacing:.12em;color:#0B2A5B}
 .rto-mt-pl{overflow:visible}.rto-mt-dep{border-radius:9px}
 .rto-pad{padding:12px clamp(16px,4.5vw,28px) 22px!important;text-align:center}
+/* v721 · Vuelo de Mr. Arrieta (B1 adultos) */
+.vu-fly{display:flex;flex-direction:column;gap:8px;flex:1;min-height:0;margin-top:2px}
+.vu-sky{position:relative;flex:1;min-height:84px;max-height:270px;border-radius:14px;overflow:hidden;background:linear-gradient(180deg,#8EC5FF 0%,#CFE6FF 70%,#EAF4FF 100%)}
+.vu-sky>i{position:absolute;background:#fff;border-radius:40px;opacity:.85;animation:vuCl 16s linear infinite}
+.vu-sky .c1{top:12%;width:80px;height:20px}.vu-sky .c2{top:34%;width:56px;height:14px;animation-delay:-6s}.vu-sky .c3{top:18%;width:110px;height:24px;animation-delay:-11s}
+@keyframes vuCl{from{left:105%}to{left:-35%}}
+.vu-rt{position:absolute;left:8%;right:8%;bottom:24px;border-top:2px dashed rgba(11,42,91,.35)}
+.vu-cy{position:absolute;bottom:6px;transform:translateX(-50%);font-size:10px;font-weight:800;color:#0B2A5B;text-align:center;line-height:1}
+.vu-cy i{display:block;width:11px;height:11px;border-radius:50%;background:#fff;border:3px solid #0B2A5B;margin:0 auto 3px}
+.vu-cy.ok i{background:#16a34a;border-color:#16a34a}.vu-cy.no i{background:#f59e0b;border-color:#f59e0b}
+.vu-pln{position:absolute;bottom:36px;width:min(84px,24%);height:auto;transform:translateX(-50%);transition:left 1.6s cubic-bezier(.45,.05,.3,1);filter:drop-shadow(0 6px 6px rgba(0,0,0,.25));animation:vuBob 2.4s ease-in-out infinite}
+@keyframes vuBob{50%{translate:0 -5px;rotate:-2deg}}
+.vu-dep{flex:none;background:#0F1A2B;border-radius:14px;padding:9px 10px 10px;color:#fff}
+.vu-dh{display:flex;justify-content:space-between;font-size:10px;letter-spacing:.12em;color:#8FA3BF;font-weight:700;margin-bottom:6px}
+.vu-dr{display:flex;gap:6px;align-items:center;margin-bottom:8px;min-width:0}
+.vu-fn{font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:800;font-size:13.5px;color:#FFC83D;background:#1B2940;border-radius:5px;padding:4px 6px;letter-spacing:.05em;white-space:nowrap}
+.vu-ds{min-width:0;overflow:hidden;text-overflow:clip}
+.vu-st{margin-left:auto;flex:none;font-size:11px;font-weight:800;border-radius:6px;padding:4px 7px;background:#1B2940;color:#FFC83D;letter-spacing:.08em;white-space:nowrap}
+.vu-st.ok{background:#16a34a;color:#fff}.vu-st.no{background:#f59e0b;color:#1a1a1a}
+.vu-sn{background:#16243A;border-radius:10px;padding:9px 11px;font-size:15px;line-height:1.4;color:#fff;font-weight:600;overflow:hidden}
+.vu-sn .rto-bl{text-decoration:none;display:inline-block;min-width:40px;border-bottom:2px solid #FFC83D;color:#FFC83D;text-align:center;font-weight:800}
+.vu-sn .rto-bl.f{border-color:#4ade80;color:#4ade80}
+.vu-hn{display:block;margin-top:5px;font-style:normal;font-size:12px;font-weight:600;color:#FDE68A}
+.vu-gt{margin-top:7px;height:4px;background:#1B2940;border-radius:3px;overflow:hidden}.vu-gt i{display:block;height:100%;background:#FFC83D;transform-origin:left}
+.vu-bps{flex:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:0 4px}
+.vu-bps button{position:relative;background:#fff;border:1.5px solid #e3e9f3;border-radius:12px;padding:8px 6px 9px;text-align:center;font:inherit;font-weight:800;font-size:15px;color:#0B2A5B;cursor:pointer;min-width:0;transition:transform .15s}
+.vu-bps button small{display:block;font-size:8.5px;letter-spacing:.12em;color:#94a3b8;font-weight:700;margin-bottom:2px}
+.vu-bps button span{display:block;overflow-wrap:anywhere}.vu-bps button span.sm{font-size:13px}.vu-bps button span.xs{font-size:11.5px}
+.vu-bps button:before,.vu-bps button:after{content:'';position:absolute;top:50%;width:10px;height:10px;border-radius:50%;background:#163e7a;transform:translateY(-50%)}.vu-bps button:before{left:-6px}.vu-bps button:after{right:-6px}
+.vu-bps button:active{transform:scale(.96)}
+.vu-bps button.r{background:#16a34a;border-color:#16a34a;color:#fff}.vu-bps button.r small{color:#dcfce7}
+.vu-bps button.w{background:#fee2e2;border-color:#fca5a5;color:#b91c1c}
+@media(max-height:640px){.vu-sky{min-height:70px}.vu-sn{font-size:14px;padding:7px 9px}.vu-dep{padding:7px 9px 8px}}
+
+.rto .vu-bps button small{font-size:8.5px!important;letter-spacing:.1em!important;white-space:nowrap;line-height:1.2}
+.rto .vu-bps button span{font-size:16px!important;line-height:1.2}.rto .vu-bps button span.sm{font-size:14px!important}.rto .vu-bps button span.xs{font-size:12px!important}
