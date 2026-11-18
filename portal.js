@@ -4,6 +4,7 @@
    ===================================================================== */
 (function () {
   const M = window.M1, P = window.MRAP, C = window.M1CONFIG;
+  window.MRWELCOME = true; /* v714: en el portal, la bienvenida en pasos decide primero (acuerdo, política, objetivo, papá o mamá) */
   const { $, $$, h, esc, sfx } = M;
   const app = $('#app');
   const WA = (t) => `https://wa.me/${C.WHATSAPP}?text=${encodeURIComponent((window.MRNE || String)(t))}`;
@@ -960,7 +961,7 @@
     $$('.pg-row').forEach(b => b.onclick = () => act(b.dataset.act));
     setPg(PG, true);
     $$('.pt-polb').forEach(x => x.onclick = () => window.MRPOLICY && MRPOLICY.show());
-    setTimeout(policyFirst, 400);
+    { const q0 = P.get(); if (q0 && q0.type !== 'staff' && !window.__mrWelDone) window.__mrWel = true; } setTimeout(welcomeFlow, 400); /* v714: bienvenida en pasos (antes: ventanas sueltas) */
     const npAsk = window.MRNP = (after) => { try { if (document.getElementById('np-m')) return; // v668: menor ya inscrito sin correo de los papás
       const m = M.modal(`<div class="center" id="np-m"><div class="to-ic">${MRI('users')}</div><h3>Un dato de tu papá o mamá</h3><p>Como eres menor de edad, necesitamos el correo de tu papá o mamá. Les avisaremos de tu avance y de tus pagos. Solo lo pedimos una vez.</p></div><div class="tf-pm np-f"><input class="inp" id="np-g" placeholder="Nombre y apellido (papá o mamá)" autocomplete="off"><input class="inp" id="np-e" type="email" placeholder="Correo de tu papá o mamá" autocomplete="off"></div><button class="btn k block lg" id="np-go">Guardar</button><p class="muted center" id="np-msg" style="font-size:13.5px;margin:6px 0 0"></p>`, { x: false });
       const msg = (t) => { m.querySelector('#np-msg').textContent = t; };
@@ -970,14 +971,14 @@
         if (!r || !r.ok) { b.disabled = false; b.textContent = 'Guardar'; return msg(r && r.err === 'parent' ? 'Revisa los datos: el correo debe ser de tu papá o mamá (diferente al tuyo).' : 'No se pudo guardar. Inténtalo de nuevo.'); }
         try { const pp = P.get(); pp.np = 0; P.save(pp); } catch (er) { } m.remove(); if (after) after(); else M.toast('¡Listo! Le escribimos a tu papá o mamá' + (r.to ? ' (' + r.to + ')' : '') + '.'); };
     } catch (e) { } };
-    const npWait = () => { try { const q = P.get(); if (!q || !q.np) return; if (document.querySelector('.modal')) return setTimeout(npWait, 1500); npAsk(); } catch (e) { } }; setTimeout(npWait, 1600); // espera a que no haya otra ventana abierta
+    const npWait = () => { try { const q = P.get(); if (!q || !q.np) return; if (window.__mrWel || document.querySelector('.modal')) return setTimeout(npWait, 1500); npAsk(); } catch (e) { } }; setTimeout(npWait, 1600); // espera a que no haya otra ventana abierta
     // bienvenida de regreso (una vez por sesión)
     try { if (P.isBirthday()) sessionStorage.setItem('mra_wb', '1'); // en su cumpleaños el saludo es la fiesta 🎂
-      if (back && !sessionStorage.getItem('mra_wb')) { sessionStorage.setItem('mra_wb', '1'); const pr = a && a.ready ? P.progress(a.id) : null;
+      if (back && !sessionStorage.getItem('mra_wb') && !window.__mrWel && !window.__mrWelShown) { /* v714: nunca encima de la bienvenida en pasos */ sessionStorage.setItem('mra_wb', '1'); const pr = a && a.ready ? P.progress(a.id) : null;
       const wm = M.modal(`<div class="center wb">${P.pic() ? P.avHTML('pt-av big') : M.mascot('mascot bounce', 'wink')}<h2>Welcome, ${esc(P.look().nick || p.first)}! 👋</h2><p style="font-size:17px">¡Qué bueno verte de nuevo! ${P.isExpired() ? '' : pr && pr.done ? `Llevas <b>${pr.done} lección(es)</b> en tu ruta. ¡Sigamos!` : 'Hoy es un gran día para avanzar en tu ruta de aprendizaje.'}</p>
         ${P.isExpired() ? `<p style="font-size:16px">⏰ Tu plan venció y tu contenido está bloqueado. Renuévalo para seguir justo donde ibas.</p><a class="btn block lg pt-wa" href="#" data-plans>Renovar mi plan</a>` : a && a.ready && !staff ? `<a class="btn k block lg" style="text-decoration:none" href="${a.url}">▶ Continuar mi ruta</a>` : ''}<button class="btn w block" id="wbx" style="margin-top:8px">Ir a mi perfil</button></div>`, { x: true });
       $('#wbx', wm).onclick = () => wm.remove(); M.confetti && M.confetti(900); } } catch (e) { }
-    if (!tourSeenK(tourKind())) setTimeout(portalTour, 900);
+    if (!tourSeenK(tourKind())) setTimeout(() => { if (!window.__mrWelShown) portalTour(); }, 900); /* v714: si hubo bienvenida en pasos, el tour no se abre solo (queda en el botón) */
     $('#me-av').onclick = () => route('me'); if ($('#me-go')) $('#me-go').onclick = () => route('me');
     const retake = () => { if (staff) return route('placement'); const m = M.modal(`<h3>¿No estás a gusto con tu nivel?</h3><p>Si gustas, puedes <b>volver a tomar la prueba de clasificación</b>. Tu ruta de aprendizaje se actualizará con el nuevo resultado.</p><p class="muted">Puedes repetirla de inmediato una vez; después hay 12 horas entre intentos. Tu módulo se basa en tu resultado más reciente.</p><div class="row"><button class="btn k" id="y">Sí, repetir</button><button class="btn w" id="n">Cancelar</button></div>`, { x: true }); $('#n', m).onclick = () => m.remove(); $('#y', m).onclick = () => { m.remove(); route('placement'); }; };
     ['#pt2', '#pt3'].forEach(id => { const b = $(id); if (b && !b.hasAttribute('data-chlvl')) b.onclick = !staff ? (e) => { e.preventDefault(); lvlChange(); } : retake; /* v657: con plan también se cambia de nivel aquí */ }); // v648: en la prueba gratis cambia de nivel con el contador de 3 temas
@@ -1065,6 +1066,71 @@
     if (!cloudReady()) return setTimeout(policyFirst, 900); if (!polPending() || $('.pol-modal')) return; if ($('.modal')) return setTimeout(policyFirst, 800);
     MRPOLICY.show({ first: true, onClose: () => { try { localStorage.setItem(polK(), String(Date.now())); } catch (e) { } const p = P.get(); if (p && !p.pol1) { p.pol1 = Date.now(); P.save(p); try { window.MRAC && MRAC.code() && MRAC.sync(true); } catch (e) { } } } });
   }
+  /* 👋 v714 · BIENVENIDA EN PASOS (3 edades): objetivo → reglas + acuerdo → (menores) papá o mamá. Una sola ventana, «paso X de N».
+     Usa los mismos registros de antes: objetivo (goalSet), acuerdo (myAgreeAccept + PDF + correo), política (pol1) y papá o mamá (parentSet). */
+  async function welcomeFlow() {
+    const done = () => { window.__mrWel = false; window.__mrWelDone = true; };
+    try {
+      const p = P.get(); if (!p || p.type === 'staff' || P.isExpired()) return done();
+      if (!cloudReady() && (welcomeFlow.n = (welcomeFlow.n || 0) + 1) < 6) return setTimeout(welcomeFlow, 900);
+      const ag = document.body.classList.contains('ag-kids') ? 'kids' : document.body.classList.contains('ag-teens') ? 'teens' : 'adult';
+      const needGoal = !!(window.MRGOAL && MRGOAL.must());
+      const agree = P.plan().paid && window.MRAGREE && MRAGREE.pending ? await MRAGREE.pending() : null;
+      const needPol = polPending(), needPar = !!(P.get() || {}).np && ag !== 'adult';
+      const steps = [needGoal && 'goal', (agree || needPol) && 'terms', needPar && 'parent'].filter(Boolean);
+      if (!steps.length) { done(); setTimeout(policyFirst, 400); return; }
+      if ($('.wel-modal')) return;
+      window.__mrWelShown = true; try { $$('.modal').forEach(x => { if ($('.wb', x)) x.remove(); }); } catch (e) { }
+      const m = document.createElement('div'); m.className = 'modal wel-modal wel-' + ag; m.setAttribute('role', 'dialog'); m.setAttribute('aria-modal', 'true');
+      m.innerHTML = '<div class="modal-card card wel-c"></div>'; document.body.appendChild(m); const c = m.querySelector('.wel-c');
+      const S = (d) => window.MRI ? MRI(d) : '';
+      let goalSet = false;
+      const head = (i) => `<div class="wel-st"><small>Bienvenido · paso ${i + 1} de ${steps.length}</small><span class="wel-dots">${steps.map((_, j) => `<i class="${j <= i ? 'on' : ''}"></i>`).join('')}</span></div>`;
+      const show = (i) => {
+        if (i >= steps.length) { m.remove(); done(); if (!agree && P.plan().paid && window.MRAGREE) MRAGREE.check(); if (goalSet) home(); return; }
+        const k = steps[i], last = i === steps.length - 1; c.scrollTop = 0;
+        if (k === 'goal') {
+          const G = MRGOAL.G, opts = Object.entries(G).filter(([, d]) => (d.age || 'adult') === ag); let sel = '';
+          c.innerHTML = head(i) + `<h3>${ag === 'kids' ? '¿Qué te gustaría hacer con el inglés?' : '¿Para qué quieres aprender inglés?'}</h3><p class="wel-s">Así adaptamos tus frases y misiones. Puedes cambiarlo cuando quieras.</p>
+            <div class="wel-ops">${opts.map(([key, d]) => `<button type="button" class="wel-op" data-k="${key}"><span class="gl-ic ${d.col}">${S(d.mi)}</span><span class="wel-ot"><b>${esc(d.name)}</b><small>${esc(d.desc)}</small></span></button>`).join('')}</div>
+            <button class="btn k block wel-go" disabled>Continuar</button>`;
+          const go = $('.wel-go', c);
+          $$('.wel-op', c).forEach(b => b.onclick = () => { sel = b.dataset.k; $$('.wel-op', c).forEach(x => x.classList.toggle('on', x === b)); go.disabled = false; });
+          go.onclick = () => { if (!sel) return; const prev = MRGOAL.get(); MRGOAL.save({ k: sel, months: prev ? prev.months : null, min: prev ? prev.min : 20, set: new Date().toISOString().slice(0, 10) }); goalSet = true; show(i + 1); };
+        } else if (k === 'terms') {
+          c.innerHTML = head(i) + `<h3>Antes de empezar, lo importante</h3><p class="wel-s">Las reglas de tus clases con profe, en 30 segundos.</p>
+            <ul class="wel-rl"><li><span>${S('calendar')}</span><div><b>Reservas</b> desde mañana y hasta 5 días adelante, solo en la plataforma.</div></li>
+            <li><span>${S('alert')}</span><div><b>Cancelas gratis</b> hasta 12 horas antes. Después, la clase se descuenta.</div></li>
+            <li><span>${S('clock')}</span><div><b>Puntualidad:</b> si no te conectas en 15 minutos, la clase se descuenta.</div></li>
+            <li><span>${S('repeat')}</span><div><b>Clases no acumulables:</b> úsalas dentro de tu mes.</div></li></ul>
+            <div class="wel-lk">${agree ? '<button type="button" id="wel-ag">Leer el acuerdo completo</button>' : ''}<button type="button" id="wel-pol">Ver la política completa</button></div>
+            ${agree ? '<div class="wel-doc ag-doc" hidden></div>' : ''}
+            <label class="wel-ck"><input type="checkbox" id="wel-cb"><span>Acepto ${agree ? 'el acuerdo de servicio y ' : ''}la política de reservas.${agree ? ' Te enviamos una copia en PDF a tu correo.' : ''}</span></label>
+            <p class="wel-msg" id="wel-msg"></p><button class="btn k block wel-go" disabled>${ag === 'adult' && last ? 'Acepto y empiezo' : 'Acepto y sigo'}</button>`;
+          const go = $('.wel-go', c), cb = $('#wel-cb', c);
+          cb.onchange = () => { go.disabled = !cb.checked; };
+          $('#wel-pol', c).onclick = () => window.MRPOLICY && MRPOLICY.show();
+          const ab = $('#wel-ag', c); if (ab) ab.onclick = () => { const d = $('.wel-doc', c); if (d.hidden) { d.innerHTML = MRAGREE.md ? MRAGREE.md(agree.text) : esc(agree.text); d.hidden = false; ab.textContent = 'Ocultar el acuerdo'; } else { d.hidden = true; ab.textContent = 'Leer el acuerdo completo'; } };
+          go.onclick = async () => {
+            if (!cb.checked) return; go.disabled = true; const t0 = go.textContent; go.textContent = 'Guardando…';
+            if (agree) { const x = await MRAGREE.accept(agree); if (!x || !x.ok) { go.disabled = false; go.textContent = t0; $('#wel-msg', c).textContent = x && x.err === 'version' ? 'El acuerdo se actualizó: recarga la página.' : 'No se pudo guardar. Revisa tu conexión e inténtalo de nuevo.'; return; } }
+            if (needPol) { try { localStorage.setItem(polK(), String(Date.now())); } catch (e) { } const q = P.get(); if (q && !q.pol1) { q.pol1 = Date.now(); P.save(q); try { window.MRAC && MRAC.code() && MRAC.sync(true); } catch (e) { } } }
+            show(i + 1); };
+        } else {
+          c.innerHTML = head(i) + `<h3>Un dato de tu papá o mamá</h3><p class="wel-s">Le avisaremos de tu avance y de tus pagos. Solo lo pedimos una vez.</p>
+            <input class="inp" id="wel-g" placeholder="Nombre y apellido (papá o mamá)" autocomplete="off"><input class="inp" id="wel-e" type="email" placeholder="Correo de tu papá o mamá" autocomplete="off">
+            <p class="wel-msg" id="wel-msg"></p><button class="btn k block wel-go">Listo, ¡a mi primera lección!</button>`;
+          const go = $('.wel-go', c), msg = (t) => { $('#wel-msg', c).textContent = t; };
+          go.onclick = async () => { const g = $('#wel-g', c).value.trim(), pe = $('#wel-e', c).value.trim();
+            if (g.split(/\s+/).length < 2) return msg('Escribe el nombre y apellido de tu papá o mamá.'); if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(pe)) return msg('Revisa el correo de tu papá o mamá.');
+            go.disabled = true; go.textContent = 'Guardando…'; const r = await MRAC.call('parentSet', { code: MRAC.code(), guardian: g, pemail: pe }).catch(() => null);
+            if (!r || !r.ok) { go.disabled = false; go.textContent = 'Listo, ¡a mi primera lección!'; return msg(r && r.err === 'parent' ? 'Revisa los datos: el correo debe ser de tu papá o mamá (diferente al tuyo).' : 'No se pudo guardar. Inténtalo de nuevo.'); }
+            try { const pp = P.get(); pp.np = 0; P.save(pp); } catch (er) { } show(i + 1); };
+        }
+      };
+      show(0);
+    } catch (e) { done(); }
+  }
   // ✉️ el estudiante corrige su correo (si rebotó o si se equivocó al escribirlo)
   // 🧾 v615: Mis pagos — comprobantes de pago para descargar en PDF
   async function payList() {
@@ -1097,7 +1163,8 @@
     if (document.querySelector(".ag-modal.need")) { setTimeout(() => portalTour(force), 1000); return; } // primero el acuerdo, después el tour
     const kind = tourKind();
     if ($('#tour')) return; const p = P.get(); if (!p || (tourSeenK(kind) && !force)) return;
-    if ($('.modal') || (!force && polPending())) return setTimeout(() => portalTour(force), 800); // espera a que cierre el saludo y la política
+    if (!force && window.__mrWelShown) return;
+    if ($('.modal') || window.__mrWel || (!force && polPending())) return setTimeout(() => portalTour(force), 800); // espera a que cierre el saludo y la política
     try { localStorage.setItem(TOURK() + '_' + kind, '1'); } catch (e) { } const fk = kind === 'start' ? 'tour1' : 'tour2';
     if (!p[fk]) { p[fk] = true; P.save(p); try { window.MRAC && MRAC.code() && MRAC.sync(true); } catch (e) { } } // marcado desde que empieza
     const fn = esc(P.look().nick || p.first || ''); const a = P.assigned(); const pl = P.plan();

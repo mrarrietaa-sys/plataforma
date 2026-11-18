@@ -10553,3 +10553,39 @@ body.ag-adult .ad-hero .ad-sub2{display:block;margin-top:2px}
 .player .stage .reading.rd9-kids .txt .s.on{background:#FFE2B0!important}
 @media(max-width:600px){.player .stage .reading.rd9 .txt{font-size:16.5px!important}.player .stage .reading.rd9-kids .txt{font-size:17.5px!important}}
 .rd9-sr{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;white-space:nowrap}
+/* v714 · BIENVENIDA EN PASOS (3 edades, celular y PC) */
+.wel-modal{z-index:60}
+.wel-modal .wel-c{width:100%;max-width:480px;padding:22px 20px 20px!important;border-radius:22px!important;text-align:left;max-height:calc(100dvh - 32px);overflow-y:auto}
+.wel-st{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.wel-st small{font:700 11px Inter,sans-serif;letter-spacing:.12em;color:#8a97ab;text-transform:uppercase;white-space:nowrap}
+.wel-dots{display:flex;gap:6px;flex:none}.wel-dots i{width:26px;height:5px;border-radius:5px;background:#E3E9F3}.wel-dots i.on{background:#E3242B}
+.wel-c h3{font:700 21px/1.25 Poppins,sans-serif;margin:0 0 6px;color:#0B2A5B}
+.wel-s{margin:0 0 16px;color:#5B6B82;font-size:14px;line-height:1.45}
+.wel-ops{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+.wel-op{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:1.5px solid #E3E9F3;background:#fff;border-radius:14px;padding:12px;cursor:pointer;font:inherit;color:#0B2A5B}
+.wel-op.on{border-color:#0B2A5B;background:#F3F7FD}.wel-op .gl-ic{flex:none}
+.wel-ot{min-width:0}.wel-ot b{display:block;font:600 15px Inter,sans-serif}.wel-ot small{display:block;color:#5B6B82;font-size:12.5px;margin-top:2px}
+.wel-rl{list-style:none;padding:0;margin:0 0 12px}.wel-rl li{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px solid #EEF2F8;font-size:14px;line-height:1.4;color:#0B2A5B}.wel-rl li:last-child{border:0}
+.wel-rl li>span{width:30px;height:30px;border-radius:9px;background:#EEF3FB;display:grid;place-items:center;flex:none}.wel-rl .mri{width:16px;height:16px}
+.wel-lk{display:flex;gap:16px;flex-wrap:wrap;margin:0 0 12px}.wel-lk button{background:none;border:0;padding:0;font:600 13px Inter,sans-serif;color:#0B2A5B;text-decoration:underline;cursor:pointer}
+.wel-doc{max-height:220px;overflow-y:auto;border:1px solid #E3E9F3;border-radius:12px;padding:10px 12px;margin:0 0 12px;font-size:13px}
+.wel-ck{display:flex;gap:10px;align-items:flex-start;background:#F6F8FC;border-radius:12px;padding:10px 12px;font-size:13px;line-height:1.4;margin:0 0 10px;cursor:pointer;color:#0B2A5B}
+.wel-ck input{width:20px;height:20px;flex:none;margin:0;accent-color:#0B2A5B}
+.wel-c .inp{width:100%;box-sizing:border-box;margin:0 0 10px}
+.wel-msg{margin:0 0 8px;font-size:13px;color:#E3242B;min-height:0}.wel-msg:empty{display:none}
+.wel-go{display:block!important;width:100%!important;border-radius:14px!important;padding:14px!important;font:700 16px Poppins,sans-serif!important}
+.wel-go:disabled{opacity:.45}
+/* niños */
+.wel-kids .wel-dots i.on{background:#F29A0C}.wel-kids .wel-op.on{border-color:#F29A0C;background:#FFF6E6}.wel-kids .wel-go{background:#F29A0C!important;border-color:#F29A0C!important;color:#fff!important}.wel-kids .wel-ck input{accent-color:#F29A0C}
+/* adolescentes */
+.wel-teens .wel-c{background:#0d2752!important;border:1px solid #1f4584!important;color:#fff}
+.wel-teens .wel-c h3,.wel-teens .wel-op,.wel-teens .wel-rl li,.wel-teens .wel-ck,.wel-teens .wel-lk button{color:#fff}
+.wel-teens .wel-s,.wel-teens .wel-ot small,.wel-teens .wel-st small{color:#9fb6dd}
+.wel-teens .wel-op{background:transparent;border-color:#1f4584}.wel-teens .wel-op.on{border-color:#22e58a;background:rgba(34,229,138,.1)}
+.wel-teens .wel-dots i{background:#1f4584}.wel-teens .wel-dots i.on{background:#22e58a}
+.wel-teens .wel-rl li{border-color:#1f4584}.wel-teens .wel-rl li>span{background:#12306b;color:#22e58a}
+.wel-teens .wel-ck{background:#12306b}.wel-teens .wel-ck input{accent-color:#22e58a}
+.wel-teens .wel-go{background:#22e58a!important;border-color:#22e58a!important;color:#06210f!important}
+.wel-teens .wel-doc{border-color:#1f4584;color:#dbe6f7}
+.wel-teens .inp{background:#0b1d42!important;border-color:#1f4584!important;color:#fff!important}
+@media(max-width:400px){.wel-modal .wel-c{padding:18px 16px 16px!important}.wel-c h3{font-size:19px}.wel-dots i{width:18px}}

@@ -43,7 +43,10 @@
   }
   // al entrar al perfil: si su plan pago no tiene el acuerdo aceptado, se muestra (bloquea hasta aceptar)
   const okK = () => 'mra_agok_' + String(MRAC.code() || '').toUpperCase();
-  async function check() { if (!window.MRAC || !MRAC.code()) return false; try { if (localStorage.getItem(okK())) return false; } catch (e) { } /* v685: aceptado una vez → no se vuelve a mostrar */ const r = await MRAC.call('myAgree', { code: MRAC.code() }).catch(() => null); if (!r || !r.ok || !r.kind) return false; A = r; if (!r.needs) { try { localStorage.setItem(okK(), String(Date.now())); } catch (e) { } } if (r.needs && !document.querySelector('.ag-modal')) { show(r); return true; } return false; }
+  async function check() { if (window.__mrWel || (window.MRWELCOME && !window.__mrWelDone)) return false; /* v714: la bienvenida en pasos se encarga */ if (!window.MRAC || !MRAC.code()) return false; try { if (localStorage.getItem(okK())) return false; } catch (e) { } /* v685: aceptado una vez → no se vuelve a mostrar */ const r = await MRAC.call('myAgree', { code: MRAC.code() }).catch(() => null); if (!r || !r.ok || !r.kind) return false; A = r; if (!r.needs) { try { localStorage.setItem(okK(), String(Date.now())); } catch (e) { } } if (r.needs && !document.querySelector('.ag-modal')) { show(r); return true; } return false; }
   async function open() { const r = A && !A.needs ? A : await MRAC.call('myAgree', { code: MRAC.code() }).catch(() => null); if (r && r.ok && r.kind) show(r); else toast('Tu acuerdo aparece cuando tienes un plan activo.'); }
-  window.MRAGREE = { check, open };
+  /* v714 · para la bienvenida en pasos: ¿falta aceptar? y aceptar (mismo registro, PDF y correo que antes) */
+  async function pending() { if (!window.MRAC || !MRAC.code()) return null; try { if (localStorage.getItem(okK())) return null; } catch (e) { } const r = await MRAC.call('myAgree', { code: MRAC.code() }).catch(() => null); if (!r || !r.ok || !r.kind) return null; A = r; if (!r.needs) { try { localStorage.setItem(okK(), String(Date.now())); } catch (e) { } return null; } return r; }
+  async function accept(c) { const x = await MRAC.call('myAgreeAccept', { code: MRAC.code(), version: c.version }).catch(() => null); if (x && x.ok) { try { localStorage.setItem(okK(), String(Date.now())); } catch (e) { } A = x; pdf(x); } return x; }
+  window.MRAGREE = { check, open, pending, accept, md };
 })();
