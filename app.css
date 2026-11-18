@@ -10605,3 +10605,7 @@ body.ag-adult .ad-hero .ad-sub2{display:block;margin-top:2px}
   .modal .card:has(.to-pay) .to-pay{display:none} /* repetía la línea «Paga con tarjeta…» */
   .modal .card:has(.to-pay) .to-pay+p{margin-top:6px!important;font-size:13px}
 }
+/* v718 · PC: la línea «Paga con tarjeta…» de la ventana de planes va centrada */
+@media(min-width:900px){.modal .card:has(.to-pay) .pl-note{text-align:center}}
+/* v719 · celular: en la ventana de planes todo va centrado (línea de pago y frases de cada plan) */
+@media(max-width:899px){.modal .card:has(.to-pay) .pl-note{text-align:center}.modal .card:has(.to-pay) .lp-pl li{text-align:center}}
