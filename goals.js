@@ -30,7 +30,7 @@
     tg: { mi: 'pad', col: 'b', name: 'Videojuegos y amigos', short: 'Gaming', desc: 'Jugar en línea y hablar con gente del mundo', meta: 'jugar y hablar en inglés en línea', ready: 'listo para jugar en inglés', age: 'teens',
       q: ['What games do you play online?', 'Have you talked to people from other countries?', 'What makes a good teammate?', 'Describe your favorite game to someone who never played it.', 'How many hours do you play per week?', 'Would you like to work in the gaming industry?'] },
     tx: { mi: 'plane', col: 'y', name: 'Viajar o estudiar afuera', short: 'Afuera', desc: 'Intercambios, viajes y becas', meta: 'prepararte para un intercambio o viaje', ready: 'listo para tu intercambio', age: 'teens',
-      q: ['Which country would you like to visit? Why?', 'Would you like to do an exchange program?', 'What would you miss about home?', 'How do you imagine a school abroad?', 'What would you pack for a year abroad?', 'What do you know about life in the USA?'] },
+      q: ['Which country would you like to visit? Why?', 'Would you like to do an exchange program?', 'What would you miss about home?', 'How do you imagine a school abroad?', 'What would you pack for a year abroad?', 'What do you know about life in the United States?'] },
   });
   const AG = () => { try { return window.M1 && M1.ageGroup ? M1.ageGroup() : 'adult'; } catch (e) { return 'adult'; } };
   const optsFor = () => { const a = AG(); return Object.entries(G).filter(([k, d]) => (d.age || 'adult') === a); };

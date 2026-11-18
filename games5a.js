@@ -67,7 +67,7 @@
     const D = G().ceo || { cal: [], req: [], slot: [] }; const idx = sample(D.req.map((_, i) => i), 6); let c = 0; const missed = [];
     for (let k = 0; k < idx.length && live(stage); k++) {
       const i = idx[k], r = D.req[i], [day, ev] = D.slot[i] || [0, 0];
-      const body = head(stage, { lbl: 'Game', title: '📅 La agenda del CEO', ins: 'Eres el asistente de la CEO. Revisa <b>la agenda</b> 📅 y elige la respuesta correcta: si ya está planeado → <b>presente continuo / going to</b>; si está libre y decides ahora → <b>will</b>.', count: `${k + 1} / ${idx.length}` });
+      const body = head(stage, { lbl: 'Game', title: '📅 La agenda del director', ins: 'Eres el asistente de la CEO. Revisa <b>la agenda</b> 📅 y elige la respuesta correcta: si ya está planeado → <b>presente continuo / going to</b>; si está libre y decides ahora → <b>will</b>.', count: `${k + 1} / ${idx.length}` });
       const cal = h(`<div class="g5a-cal">${D.cal.map((d, di) => `<div class="g5a-day ${di === day ? 'hl' : ''}"><b>${d.d}<small>${d.es}</small></b><div>${d.ev.map((e, ei) => `<span class="${di === day && ei === ev ? 'on' : ''}">${e[1]} <i>${esc(e[0])}</i> ${esc(e[2])}</span>`).join('')}${di === day && ev < 0 ? '<span class="free">🟢 <i>free</i> Libre</span>' : ''}</div></div>`).join('')}</div>`);
       body.appendChild(cal); $$('.g5a-day span', cal).forEach(s => { if (!s.classList.contains('on') && !s.classList.contains('free')) s.classList.add('dim'); });
       $$('.g5a-day span.on,.g5a-day span.free', cal).forEach(s => s.classList.add('blink'));
@@ -77,7 +77,7 @@
       if (ok) c++; else missed.push({ en: r.o[0], au: r.au });
       await say(body, ok, r.o[0], r.es, r.au);
     }
-    return finish(c, idx.length, 'listening', missed, '📅 Llamadas atendidas', '¡La CEO dice que eres el mejor asistente de Silicon Valley! 💼');
+    return finish(c, idx.length, 'listening', missed, '📅 Llamadas atendidas', '¡La directora dice que eres el mejor asistente de Silicon Valley! 💼');
   }
 
   /* ====== t2p1 — DETECTOR DE SPANGLISH ====== */
@@ -358,7 +358,7 @@
       if (ok) c++; else missed.push({ en: r.en, au: r.au });
       await say(body, ok, r.en, '', r.au);
     }
-    return finish(c, R.length, 'listening', missed, '🗺️ Lugares encontrados', '¡Ya te puedes mover por cualquier ciudad de EE. UU.! 🏙️');
+    return finish(c, R.length, 'listening', missed, '🗺️ Lugares encontrados', '¡Ya te puedes mover por cualquier ciudad de Estados Unidos! 🏙️');
   }
 
   Object.assign(window.M1A, { crystalBall, ceoPlanner, spanglishScan, apostropheLab, lostFound, gavelJudge, bucketList, resumeTimeline, tooLate, noirCase, timeZoom, podcastBleep, droneFlight, gridCity });

@@ -110,7 +110,7 @@ window.MRHW9 = {
 '4-t18p1': ['Da tu opinión sobre si vivimos en una sociedad justa en 2 frases.', 'To a certain extent, our society is fair. In many cases, it depends on where you are born.', []],
 '4-t19p1': ['Compara la educación tradicional y en línea en 2 frases.', 'Whereas classrooms offer contact, online courses are far more flexible. Online learning is not nearly as social.', []],
 '4-t20p1': ['Propón una idea para fortalecer la democracia en 2 frases.', 'Granted, democracy faces challenges. I believe schools should teach young people to vote.', []],
-'4-t21p1': ['Da tu opinión sobre la exploración espacial en 2 frases.', 'In my view, space exploration is real progress. Had we not invested in it, we would not have GPS.', []],
+'4-t21p1': ['Da tu opinión sobre la exploración espacial en 2 frases.', 'In my view, space exploration is real progress. Had we not invested in it, we would not have map apps.', []],
 };
 /* v438 · TRAZABILIDAD: lo que la lección enseña en la Explicación es lo único que se practica en sus juegos y lo que se repasa en la lección siguiente.
    Promedio ~8 tarjetas. Conjuntos completos que la lección promete (letras, días, meses) se enseñan enteros. */
