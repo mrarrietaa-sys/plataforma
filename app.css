@@ -10591,3 +10591,17 @@ body.ag-adult .ad-hero .ad-sub2{display:block;margin-top:2px}
   .modal .card:has(.to-pay) .to-pay{display:none} /* en PC esa misma información ya está en la línea «Paga con tarjeta…» de arriba */
   .modal .card:has(.to-pay) .to-pay+p{margin-top:6px!important}
 }
+/* v717 · celular: la ventana de planes (acceso terminado) se ve completa sin bajar y sin tocar los bordes de la pantalla. PC no cambia */
+@media(max-width:899px){
+  .modal:has(.card .to-pay){padding:20px 16px!important}
+  .modal .card:has(.to-pay){padding:14px 12px 12px!important;max-height:none!important;overflow:visible!important;width:100%!important}
+  .modal .card:has(.to-pay) .to-ic{width:40px;height:40px;border-radius:12px;margin-bottom:2px}.modal .card:has(.to-pay) .to-ic .mri{width:20px;height:20px}
+  .modal .card:has(.to-pay) h3{margin:2px 0 2px;font-size:18px}.modal .card:has(.to-pay) .center>p{margin:0;font-size:13px;line-height:1.35}
+  .modal .card:has(.to-pay) .lp-pg{padding-top:12px!important;padding-bottom:4px!important}
+  .modal .card:has(.to-pay) .lp-pl{min-height:0!important;padding:12px 12px!important}
+  .modal .card:has(.to-pay) .lp-swipe{margin:4px 0 6px;font-size:12px}
+  .modal .card:has(.to-pay) .pv-tr{padding:6px 8px;margin:4px 0 0;gap:2px;font-size:12px}
+  .modal .card:has(.to-pay) .pl-note{font-size:11.5px;line-height:1.35;margin:6px 0 0}
+  .modal .card:has(.to-pay) .to-pay{display:none} /* repetía la línea «Paga con tarjeta…» */
+  .modal .card:has(.to-pay) .to-pay+p{margin-top:6px!important;font-size:13px}
+}

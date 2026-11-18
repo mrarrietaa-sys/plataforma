@@ -768,7 +768,10 @@
   // v716 · En PC la ventana de planes cabe completa en la pantalla (cualquier alto o zoom del navegador): si no cabe, se reduce un poco entera
   function toFit() {
     const go = () => { const c = [...document.querySelectorAll('.modal .card')].find(x => x.querySelector('.to-pay')); if (!c) { removeEventListener('resize', go); return; }
-      c.style.zoom = ''; c.style.removeProperty('max-height'); c.style.removeProperty('overflow'); if (innerWidth < 900) return;
+      c.style.zoom = ''; c.style.removeProperty('max-height'); c.style.removeProperty('overflow');
+      if (innerWidth < 900) { // v717 · celular: si aún no cabe, se reduce un poco entera (sin tocar los bordes)
+        for (let i = 0; i < 3; i++) { const z = parseFloat(c.style.zoom) || 1, need = c.offsetHeight * z, av = innerHeight - 40; if (need <= av + 1) break; c.style.zoom = Math.max(0.6, z * av / need).toFixed(3); }
+        return; }
       c.style.zoom = '0.85'; c.style.setProperty('max-height', 'none', 'important'); c.style.setProperty('overflow', 'visible', 'important'); // en PC la ventana va más pequeña y entera
       for (let i = 0; i < 3; i++) { const z = parseFloat(c.style.zoom) || 1, need = c.scrollHeight * z, av = innerHeight - 48; if (need <= av + 1) break; c.style.zoom = Math.max(0.55, z * av / need).toFixed(3); } };
     go(); setTimeout(go, 400); setTimeout(go, 1500); addEventListener('resize', go);
