@@ -10589,3 +10589,14 @@ body.ag-adult .ad-hero .ad-sub2{display:block;margin-top:2px}
 .wel-teens .wel-doc{border-color:#1f4584;color:#dbe6f7}
 .wel-teens .inp{background:#0b1d42!important;border-color:#1f4584!important;color:#fff!important}
 @media(max-width:400px){.wel-modal .wel-c{padding:18px 16px 16px!important}.wel-c h3{font-size:19px}.wel-dots i{width:18px}}
+/* v715 · Ventana «Tu acceso gratuito terminó»: las frases de cada plan van juntas (como en Premium); en PC cabe sin desplazarse */
+.modal .card:has(.to-pay) .lp-pl ul{align-content:start;flex:0 0 auto}.modal .card:has(.to-pay) .lp-pl .lp-pn{margin-top:auto}
+@media(min-width:900px){
+  .modal .card:has(.to-pay){padding-top:18px!important;padding-bottom:16px!important}
+  .modal .card:has(.to-pay) .to-ic{width:44px;height:44px;border-radius:13px;margin-bottom:4px}.modal .card:has(.to-pay) .to-ic .mri{width:22px;height:22px}
+  .modal .card:has(.to-pay) h3{margin:2px 0 4px}.modal .card:has(.to-pay) .center>p{margin:0 0 2px}
+  .modal .card:has(.to-pay) .lp-pg{padding-top:8px!important}
+  .modal .card:has(.to-pay) .lp-pl{min-height:0!important;padding:13px 14px!important}
+  .modal .card:has(.to-pay) .to-pay{display:none} /* en PC esa misma información ya está en la línea «Paga con tarjeta…» de arriba */
+  .modal .card:has(.to-pay) .to-pay+p{margin-top:6px!important}
+}
