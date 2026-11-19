@@ -10709,3 +10709,9 @@ body.lp-app,body.home-app{background-image:none!important}
 @media(max-width:899px){body.home-app .pt-login .pt-or{display:none!important}}
 /* v747 · la foto de adultos siempre muestra la cara completa (encuadre fijo, nada lo cambia) */
 .to-ph.me{background-position:50% 12%!important}.to-ph.kid{background-position:50% 30%!important}
+/* v754 · la regla: línea «Ojo» · Repite las frases: las que no son principales llevan «opcional» */
+.ml10-oj{margin:8px 0 2px;padding:9px 12px;border-radius:12px;background:#FFF7E6;border:1px solid #FDE2B3;color:#7a4a00;font-weight:600;font-size:14px;line-height:1.35}
+.ml10-oj em{color:#E3242B;font-style:normal;font-weight:800}
+.lrc-t.lrc-opt{opacity:.45}
+.lrc-t.lrc-opt::before{content:'opcional';position:absolute;left:50%;bottom:-3px;transform:translateX(-50%);font:700 8px/1.4 Inter,system-ui,sans-serif;white-space:nowrap;color:#475569;background:#fff;border-radius:6px;padding:0 4px;box-shadow:0 1px 3px rgba(0,0,0,.15);pointer-events:none}
+.lrc-t.lrc-opt.lrc-on{opacity:1}
