@@ -132,6 +132,9 @@
     const fit = () => { if (!box.isConnected) return removeEventListener('resize', fit); const r = box.getBoundingClientRect(); const h = Math.max(320, Math.min(620, innerHeight - r.top - 34)); box.style.height = h + 'px'; };
     fit(); addEventListener('resize', fit); setTimeout(fit, 300);
     const B = box.querySelector('.rto-body');
+    /* v724 · palabras largas (p. ej. «stomachache») nunca se parten: la letra se achica hasta que la palabra cabe entera */
+    const wfit = () => { if (!box.isConnected) return; B.querySelectorAll('button, button *, [class*="bag"] *, [class*="gt"], [class*="fish"] *, [class*="leaf"] *, [class*="car"] *, [class*="bub"] *, [class*="blk"] *').forEach(el => { if (el.children.length || el.closest('.rto-ask,.rto-fb')) return; const t = (el.textContent || '').trim(); if (!t || t.length > 40 || !/[A-Za-z]{8,}/.test(t)) return; if (el.dataset.wf === t) return; el.dataset.wf = t; try { fitIn(el, 9); } catch (e) { } }); };
+    let wfT = 0; try { new MutationObserver(() => { clearTimeout(wfT); wfT = setTimeout(wfit, 30); }).observe(B, { childList: true, subtree: true }); } catch (e) { }
     return new Promise(done => {
       const intro = () => { B.innerHTML = `<div class="rto-start"><img src="mra-point.webp" alt="Mr. Arrieta"><h3>Game</h3><p>${esc(g.ins)}</p><button type="button" class="rto-go">Empezar · ${T} s</button></div>`; const go = B.querySelector('.rto-go'); rxLoad(p); go.onclick = () => { if (go.disabled) return; go.disabled = true; rxLoad(p).then(() => { if (!box.isConnected) return; const bad = items.filter(it => !rxOK(it.say) || !rxOK(it.after)); if (bad.length && items.length - bad.length >= 3) { bad.forEach(it => items.splice(items.indexOf(it), 1)); order = fresh(); oi = 0; } start(); }); }; };
       const S = { ok: 0, tot: 0, pts: 0, streak: 0, live: false, tm: [], raf: 0, missed: [] };

@@ -10618,3 +10618,22 @@ body.ag-adult .ad-hero .ad-sub2{display:block;margin-top:2px}
 /* v723 · ventana «Nuestros planes»: en celular no toca los bordes; en PC la etiqueta «Crea tu plan» no se corta al pasar el cursor */
 @media(max-width:899px){.hpl-bg{padding:22px 20px!important}}
 @media(min-width:900px){.hpl .lp-panel{padding-top:12px!important}}
+/* v724 · preguntas centradas (como la llamada telefónica) en entrevista, noticiero, pódcast, control de misión y teleprompter · 3 edades */
+.m3i-q,.m3n-q,.m4p-q,.m4k-q{flex-direction:column-reverse!important;align-items:center!important;text-align:center!important;gap:6px!important}
+.m3i-q>div,.m3n-q>div,.m4p-q>div,.m4k-q>div{text-align:center;width:100%}
+.m3t-q{justify-content:center;text-align:center}
+/* v724 · entrada (PC): menos llamados a la acción. La línea Google · estudiantes · planes pasa a una barra abajo. El celular no cambia */
+.ld-pcbar{display:none}
+@media(min-width:900px){
+  body .ld-hero .ld-trust2{display:none!important}
+  .ld-pcbar{display:flex;position:fixed;left:50%;bottom:14px;top:auto!important;right:auto!important;height:auto!important;max-height:96px!important;align-items:stretch;transform:translateX(-50%);width:min(900px,92vw);gap:6px;background:#fff;border:1px solid #e3e9f3;border-radius:22px;padding:6px;box-shadow:0 12px 30px -10px rgba(11,42,91,.35);z-index:40;box-sizing:border-box}
+  .ld-pcbar>*{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;padding:8px 6px;border-radius:16px;color:#334155;text-decoration:none;background:none;border:0;font:inherit;cursor:pointer;min-width:0;transition:background .15s}
+  .ld-pcbar>*:hover{background:#f1f5fb}
+  .ld-pcbar .mri,.ld-pcbar svg{width:22px;height:22px}
+  .ld-pcbar b{font:700 14px/1.15 var(--fh,Inter),sans-serif;margin-top:2px;white-space:nowrap}
+  .ld-pcbar small{font:600 12px/1.15 var(--fb,Inter),sans-serif;margin-top:1px;color:#64748b;white-space:nowrap}
+  .ld-pcbar .pl small{color:#E3242B}
+  .ld-pcbar .on{background:#0B2A5B;color:#fff}.ld-pcbar .on:hover{background:#0B2A5B}
+  .ld-pcbar .pc-wa{color:#16a34a}
+  body:has(.ld-pcbar) .ld{padding-bottom:96px}
+}
