@@ -10715,3 +10715,5 @@ body.lp-app,body.home-app{background-image:none!important}
 .lrc-t.lrc-opt{opacity:.45}
 .lrc-t.lrc-opt::before{content:'opcional';position:absolute;left:50%;bottom:-3px;transform:translateX(-50%);font:700 8px/1.4 Inter,system-ui,sans-serif;white-space:nowrap;color:#475569;background:#fff;border-radius:6px;padding:0 4px;box-shadow:0 1px 3px rgba(0,0,0,.15);pointer-events:none}
 .lrc-t.lrc-opt.lrc-on{opacity:1}
+/* v755 · celular: la ventana de ingreso ya no repite el saludo (Mr. Arrieta saluda con su burbuja) */
+@media(max-width:899px){body.home-app .ld-login .pt-hello{display:none!important}}

@@ -38,7 +38,7 @@
       const v = MRMEL.view(host.querySelector('.m2v-mel')); MRMEL.model(k.aau).then(m => v.setModel(m)).catch(() => { });
       const res = host.querySelector('.m2v-res'), st = host.querySelector('.m2v-st'); let fails = 0, busy = false;
       const say = (a, b) => { if (st) st.innerHTML = `<b>${a}</b><small>${b || ''}</small>`; else if (a) res.insertAdjacentHTML('afterbegin', `<p class="mel9-tip">${a}</p>`); };
-      host.querySelector('.m2v-mo').onclick = () => { stopA(); play(k.aau); };
+      host.querySelector('.m2v-mo').onclick = () => { stopA(); play(k.aau); }; setTimeout(() => { if (host.isConnected && !busy && !host.querySelector('.rec')) { stopA(); play(k.aau); } }, 400); /* v755: la respuesta suena sola (el mismo audio del botón «Modelo»); si toca el micrófono, el audio se detiene y graba solo su voz */
       const go = async (btn) => {
         if (busy) return; busy = true; stopA(); btn.classList.add('rec'); res.innerHTML = ''; say('Te escucho…', 'Se detiene sola cuando terminas');
         let r = null; try { r = await MRMEL.take(k.aau, v); } catch (e) { r = { err: 1 }; } btn.classList.remove('rec'); busy = false;
