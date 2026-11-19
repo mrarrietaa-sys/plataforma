@@ -5,7 +5,7 @@
    M3: Adultos Clasificador · Teens Carrera · Kids Canasta
    M4: Adultos Rascacielos · Teens Penalti · Kids Ranita */
 (function () {
-  try { if (!document.querySelector('link[href^="retos.css"]')) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'retos.css?v=722'; document.head.appendChild(l); } } catch (e) { }
+  try { if (!document.querySelector('link[href^="retos.css"]')) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'retos.css?v=725'; document.head.appendChild(l); } } catch (e) { }
   const T = window.__rtT || 40, IMG = 'retos/';
   const M = () => window.M1, A = () => window.M1A;
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -133,7 +133,10 @@
     fit(); addEventListener('resize', fit); setTimeout(fit, 300);
     const B = box.querySelector('.rto-body');
     /* v724 · palabras largas (p. ej. «stomachache») nunca se parten: la letra se achica hasta que la palabra cabe entera */
-    const wfit = () => { if (!box.isConnected) return; B.querySelectorAll('button, button *, [class*="bag"] *, [class*="gt"], [class*="fish"] *, [class*="leaf"] *, [class*="car"] *, [class*="bub"] *, [class*="blk"] *').forEach(el => { if (el.children.length || el.closest('.rto-ask,.rto-fb')) return; const t = (el.textContent || '').trim(); if (!t || t.length > 40 || !/[A-Za-z]{8,}/.test(t)) return; if (el.dataset.wf === t) return; el.dataset.wf = t; try { fitIn(el, 9); } catch (e) { } }); };
+    const wfit = () => { if (!box.isConnected) return; const leaves = []; B.querySelectorAll('button, button *, [class*="bag"] *, [class*="gt"], [class*="fish"] *, [class*="leaf"] *, [class*="car"] *, [class*="bub"] *, [class*="blk"] *').forEach(el => { if (el.children.length || el.closest('.rto-ask,.rto-fb,.rto-start,.rto-end') || el.matches('small')) return; const t = (el.textContent || '').trim(); if (!t || t.length > 40 || !/[A-Za-z]/.test(t)) return; if (leaves.indexOf(el) < 0) leaves.push(el); });
+      leaves.forEach(el => { const t = (el.textContent || '').trim(); if (el.dataset.wf === t) return; el.dataset.wf = t; el.style.removeProperty('font-size'); if (/[A-Za-z]{8,}/.test(t)) { try { fitIn(el, 9); } catch (e) { } } });
+      /* v725 · todas las opciones de la ronda con el MISMO tamaño de letra: el de la que necesita más pequeño (nunca una grande y otra pequeña) */
+      if (leaves.length > 1) { const m = Math.min(...leaves.map(el => parseFloat(getComputedStyle(el).fontSize) || 99)); leaves.forEach(el => { if (Math.abs((parseFloat(getComputedStyle(el).fontSize) || m) - m) > .2) el.style.setProperty('font-size', m + 'px', 'important'); }); } };
     let wfT = 0; try { new MutationObserver(() => { clearTimeout(wfT); wfT = setTimeout(wfit, 30); }).observe(B, { childList: true, subtree: true }); } catch (e) { }
     return new Promise(done => {
       const intro = () => { B.innerHTML = `<div class="rto-start"><img src="mra-point.webp" alt="Mr. Arrieta"><h3>Game</h3><p>${esc(g.ins)}</p><button type="button" class="rto-go">Empezar · ${T} s</button></div>`; const go = B.querySelector('.rto-go'); rxLoad(p); go.onclick = () => { if (go.disabled) return; go.disabled = true; rxLoad(p).then(() => { if (!box.isConnected) return; const bad = items.filter(it => !rxOK(it.say) || !rxOK(it.after)); if (bad.length && items.length - bad.length >= 3) { bad.forEach(it => items.splice(items.indexOf(it), 1)); order = fresh(); oi = 0; } start(); }); }; };

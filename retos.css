@@ -240,3 +240,5 @@ body.ag-teens .rto-ask .rto-es{color:#c3cfe6}
 .vu-pln.in{animation:vuIn 1.1s cubic-bezier(.3,.7,.3,1) both, vuBob 2.4s ease-in-out 1.1s infinite}
 @keyframes vuIn{from{left:-90px}}
 .vu-pln.out{transition:left .9s ease-in!important}
+/* v725 · vagones del metro: más espacio para el texto, así las palabras largas caben con letra más grande (todas iguales) */
+.rto .rto-wag{padding-left:4px!important;padding-right:4px!important}
