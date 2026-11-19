@@ -250,7 +250,8 @@
         const swap = (inv) => { const b = cur(); if (!b) return; if (inv === b.classList.contains('inv')) return; if (!inv) { } else greet = b.innerHTML; b.classList.add('sw'); setTimeout(() => { const c = cur(); if (!c) return; c.innerHTML = inv ? INV : greet; c.classList.toggle('inv', inv); if (inv) { c.setAttribute('data-hdemo', ''); c.setAttribute('role', 'button'); c.tabIndex = 0; } else { c.removeAttribute('data-hdemo'); c.removeAttribute('role'); c.removeAttribute('tabindex'); } c.classList.remove('sw'); }, 260); };
         const toInv = () => { clearTimeout(tm); tm = setTimeout(() => { if (innerWidth >= 900 && !document.querySelector('.modal,.hdm-bg,.hpl-bg')) swap(true); }, 2600); };
         const toGreet = () => { clearTimeout(tm); swap(false); };
-        const orig = m.animate.bind(m); m.animate = function (k, o) { toGreet(); const a = orig(k, o); if (k && k.length > 3) a.addEventListener('finish', toInv); return a; };
+        const fly = (on) => { const x = cur(); if (x) x.classList.toggle('fly', on); }; /* v741 · PC: mientras vuela, el globo se esconde; al aterrizar saluda y luego invita (como en el celular) */
+           const orig = m.animate.bind(m); m.animate = function (k, o) { toGreet(); const big = k && k.length > 3; if (big) fly(true); const a = orig(k, o); if (big) a.addEventListener('finish', () => { toGreet(); fly(false); toInv(); }); return a; };
         setTimeout(() => { if (!(m.getAnimations && m.getAnimations().some(a => a.playState === 'running'))) toInv(); }, 6500); };
       wire(); [400, 1200, 3000].forEach(t => setTimeout(wire, t)); }
     // 📱 celular: la entrada no se desplaza, todo queda a la vista
@@ -485,8 +486,8 @@
     // 🚀 celular: el cohete se acomoda al espacio libre y el globo aparece cuando aterriza
     const m = $('.ld-hero-mra'), bub = $('.ld-bub');
     const fit = () => { if (!m || !m.isConnected || !hero.isConnected || innerWidth > 899) return; const tr = $('.ld-virt') && $('.ld-virt').offsetParent ? $('.ld-virt') : $('.ld-trust2'); if (!tr) return; const hb = hero.getBoundingClientRect(); const nb = [...document.querySelectorAll('.ld-dock,.mb-nav,nav')].map(x => x.getBoundingClientRect()).filter(r => r.top > innerHeight * .6 && r.height > 20 && r.height < 120)[0];
-      const lim = Math.min(hb.bottom, nb ? nb.top : innerHeight) - 18, top = tr.getBoundingClientRect().bottom + 2; const w = Math.max(150, Math.min(240, (lim - top - 22) * 1.04, hb.width * .6)); m.style.setProperty('width', w + 'px', 'important'); m.style.setProperty('height', 'auto', 'important'); };
-    const place = () => { if (!bub || !m || !bub.isConnected || innerWidth > 899) return; const r = m.getBoundingClientRect(), op = bub.offsetParent; if (!op) return; const o = op.getBoundingClientRect(); const face = r.left + r.width * .34; bub.style.left = '0px'; bub.style.maxWidth = Math.max(118, face - o.left - 22) + 'px'; bub.style.top = (r.top - o.top + (r.width / 1.04) * .14) + 'px'; };
+      const lim = Math.min(hb.bottom, nb ? nb.top : innerHeight) - 18, top = tr.getBoundingClientRect().bottom + 2; const w = Math.max(150, Math.min(262, (lim - top - 22) * 1.04, hb.width * .64)); /* v740: personaje un poco más grande */ m.style.setProperty('width', w + 'px', 'important'); m.style.setProperty('height', 'auto', 'important'); };
+    const place = () => { if (!bub || !m || !bub.isConnected || innerWidth > 899) return; const r = m.getBoundingClientRect(), op = bub.offsetParent; if (!op) return; const o = op.getBoundingClientRect(); const face = r.left + r.width * .34; bub.style.left = '0px'; bub.style.maxWidth = Math.max(118, face - o.left - 22) + 'px'; bub.style.top = (r.top - o.top + (r.width / 1.04) * .14) + 'px'; { const bw = bub.offsetWidth; if (bw) bub.style.left = Math.max(0, face - o.left - bw - 30) + 'px'; } /* v740: el globo pegadito al personaje */ };
     const BINV = bub ? bub.innerHTML : ''; let btm = 0; /* v737 · celular: al aterrizar saluda (Good morning/afternoon/evening, sin nombre) y a los 2-3 s el mismo globo invita a hablar */
     const bset = (inv) => { if (!bub) return; bub.classList.toggle('greet', !inv); if (inv) { bub.innerHTML = BINV; bub.setAttribute('data-hdemo', ''); } else { bub.innerHTML = `<span class="bg-t">${hiGreet('')}</span>`; bub.removeAttribute('data-hdemo'); } place(); };
     const show = () => { if (!bub || innerWidth > 899 || document.querySelector('.modal')) return; clearTimeout(btm); bset(false); bub.hidden = false; place(); bub.classList.remove('hide'); void bub.offsetWidth; bub.classList.add('show');
@@ -614,10 +615,34 @@
         ${L.length ? `<h4 class="ld-pfrh">Opiniones de estudiantes</h4><div class="ld-revs">${L.slice(0, 40).map(x => `<div class="ld-rev">${starsHTML(x.stars)}${x.text ? `<p>“${esc(x.text)}”</p>` : ''}<small>${esc(x.student)} · ${esc(x.date)}</small></div>`).join('')}</div>` : ''}`, { x: true }); });
   }
   function trialClick(e) { const b = e.target.closest && e.target.closest('[data-trial]'); if (!b) return; e.preventDefault(); trialForm(b.hasAttribute('data-kid') || PAGE === 'ninos'); }
+  // 🔑 v743 · ¿Olvidaste tu código? → escribe su correo y el código le llega solo a ese correo (nunca se muestra aquí)
+  function forgotCode() {
+    const IC = (d) => `<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+    const m = M.modal(`<div class="fgm-c center"><div class="fgm-ic">${IC('<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>')}</div><h3>¿Olvidaste tu código?</h3><p class="fgm-p">Escribe el correo con el que te inscribiste y te lo enviamos al instante.</p>
+      <input class="inp" id="fg-e" type="email" placeholder="Tu correo" autocomplete="email" inputmode="email"><button class="btn k block lg" id="fg-go">Enviarme mi código →</button><p class="fgm-msg" id="fg-msg"></p></div>`, { x: true });
+    const e = $('#fg-e', m), b = $('#fg-go', m), msg = (t) => { $('#fg-msg', m).textContent = t; };
+    setTimeout(() => { try { e.focus(); } catch (x) { } }, 200);
+    const done = (em, lim) => { const c = $('.fgm-c', m); c.innerHTML = `<div class="fgm-ic ok">${IC('<circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.6 2.6L16 9.5"/>')}</div><h3>${lim ? 'Ya te enviamos tu código' : '¡Revisa tu correo!'}</h3>
+      <p class="fgm-p">${lim ? 'Revisa tu correo o vuelve a intentarlo en una hora.' : `Si <b>${esc(em)}</b> está registrado, te acabamos de enviar tu código de acceso.`}</p>
+      <div class="fgm-ok">Solo llega al correo con el que te inscribiste, así nadie más puede entrar a tu cuenta.<br>¿No lo ves? Revisa «Spam» o «Promociones».</div><button class="btn k block lg" id="fg-x">Entendido</button>`; $('#fg-x', m).onclick = () => m.remove(); };
+    const send = async () => {
+      const em = e.value.trim().toLowerCase(); if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)) { msg('Escribe un correo válido 🙂'); e.focus(); return; }
+      let L = []; try { L = JSON.parse(localStorage.getItem('mra_fg') || '[]').filter(t => Date.now() - t < 3600e3); } catch (x) { }
+      if (L.length >= 10) return done(em, true); // máximo 10 pedidos por hora desde este equipo
+      if (!(window.MRAC && MRAC.call)) { msg('No hay conexión con la nube. Inténtalo de nuevo.'); return; }
+      b.disabled = true; b.textContent = 'Enviando…'; msg('');
+      const r = await MRAC.call('forgotCode', { email: em }).catch(() => null); b.disabled = false; b.textContent = 'Enviarme mi código →';
+      if (!r) return msg('No hay conexión con la nube. Revisa tu internet e inténtalo de nuevo.');
+      if (r.err === 'email') { msg('Escribe un correo válido 🙂'); return; }
+      try { L.push(Date.now()); localStorage.setItem('mra_fg', JSON.stringify(L)); } catch (x) { }
+      done(em, !!r.limited);
+    };
+    b.onclick = send; e.onkeydown = (x) => { if (x.key === 'Enter') send(); };
+  }
   // 🎁 acceso gratuito automático: nombre, WhatsApp y correo → se crea el código y entra de una
   function trialForm(kidFirst) {
-    const TPH = { me: ['https://images.unsplash.com/photo-1752650733337-cb0189176fb9?w=900&q=80&auto=format', 'Tu clase en vivo con un profe real'], kid: ['https://images.unsplash.com/photo-1752652011800-0ad176c823ca?w=900&q=80&auto=format', 'Aprende jugando, con profes reales'] }; /* v738 · foto real en la prueba gratis (cambia con «Para mí» / «Para mi hijo(a)») */
-    const m = M.modal(`<div class="center to-new"><div class="to-ph" style="background-image:url('${TPH.me[0]}')"><span><i></i><b>${TPH.me[1]}</b></span></div><h3>Prueba gratis 3 días</h3><p class="to-off">Plataforma completa <b>+ 1 clase gratis con profe</b></p><div class="to-pills"><span>✓ <i class="to-tu">Tu</i> nivel en 10 min</span><span>✓ Te corrige</span><span class="g">✓ Clase 1 a 1</span></div><p class="to-sm2">Sin tarjeta · sin compromiso</p></div>
+    const TPH = { me: ['https://images.unsplash.com/photo-1752650733337-cb0189176fb9?w=900&q=80&auto=format', 'Tu clase en vivo con un profe real', 'center 12%'], kid: ['https://images.unsplash.com/photo-1752652011800-0ad176c823ca?w=900&q=80&auto=format', 'Aprende jugando, con profes reales', 'center 30%'] }; /* v738 · foto real en la prueba gratis (cambia con «Para mí» / «Para mi hijo(a)») */
+    const m = M.modal(`<div class="center to-new"><div class="to-ph" style="background-image:url('${TPH.me[0]}');background-position:${TPH.me[2]}"></div><h3>Prueba gratis 3 días</h3><p class="to-off">Plataforma completa <b>+ 1 clase gratis con profe</b></p><div class="to-pills"><span>✓ <i class="to-tu">Tu</i> nivel en 10 min</span><span>✓ Te corrige</span><span class="g">✓ Clase 1 a 1</span></div><p class="to-sm2">Sin tarjeta · sin compromiso</p></div>
       <div class="tf"><div class="tf-who" role="tablist"><button type="button" class="on" data-who="me">Para mí</button><button type="button" data-who="kid">Para mi hijo(a)</button></div>
       <b class="tf-h tf-k hidden">Datos de tu hijo(a)</b><input class="inp" id="tf-n" placeholder="Nombre y apellido" autocomplete="name"><label class="tf-bd tf-me"><span>Tu fecha de nacimiento</span><input class="inp" id="tf-mb" type="date" max="${new Date().toISOString().slice(0, 10)}"></label><div class="tf-pm hidden" id="tf-pm"><b>Eres menor de edad: necesitamos a tu papá o mamá</b><small>Le avisaremos de tu cuenta y de tus pagos. Tú puedes empezar ya.</small><input class="inp" id="tf-pg" placeholder="Nombre y apellido (papá o mamá)" autocomplete="off"><input class="inp" id="tf-pe" type="email" placeholder="Correo de tu papá o mamá" autocomplete="off"></div><label class="tf-bd tf-k hidden"><span class="tf-sm">Fecha de nacimiento de tu hijo(a)</span><input class="inp" id="tf-b" type="date" max="${new Date().toISOString().slice(0, 10)}"><small>Con su edad lo llevamos a su experiencia: <b>Kids</b> (9 a 11) o <b>Teens</b> (12 a 17).</small></label><b class="tf-h tf-k hidden">Datos del papá o la mamá</b><input class="inp tf-k hidden" id="tf-g" placeholder="Nombre y apellido" autocomplete="name"><input class="inp" id="tf-w" type="tel" placeholder="WhatsApp" autocomplete="tel"><input class="inp" id="tf-e" type="email" placeholder="Correo" autocomplete="email"><input class="inp tf-k hidden" id="tf-e2" type="email" placeholder="Correo del otro padre (opcional)">
       <label class="tf-ok tf-req"><input type="checkbox" id="tf-c"> <span><span id="tf-ct">Autorizo el tratamiento de mis datos personales según la <a href="privacidad.html" target="_blank" rel="noopener">política de privacidad</a>.</span><em class="tf-em r">OBLIGATORIA</em></span></label>
@@ -629,7 +654,7 @@
     const meMinor = () => { const a = ageOfB($('#tf-mb', m).value); return !kid && a !== null && a < 18; }; // v668: menor que se inscribe solo
     const pmSync = () => { const on = meMinor(); $('#tf-pm', m).classList.toggle('hidden', !on); m.querySelector('.card').classList.toggle('tf-minor', on); };
     $('#tf-mb', m).addEventListener('change', pmSync); $('#tf-mb', m).addEventListener('input', pmSync);
-    m.querySelectorAll('[data-who]').forEach(b => b.onclick = () => { kid = b.dataset.who === 'kid'; m.querySelectorAll('[data-who]').forEach(x => x.classList.toggle('on', x === b)); m.querySelectorAll('.tf-k').forEach(x => x.classList.toggle('hidden', !kid)); m.querySelectorAll('.tf-me').forEach(x => x.classList.toggle('hidden', kid)); pmSync(); msg(''); m.querySelector('.card').classList.toggle('tf-kidm', kid); { const ph = m.querySelector('.to-ph'); if (ph) { const t = TPH[kid ? 'kid' : 'me']; ph.style.backgroundImage = `url('${t[0]}')`; ph.querySelector('b').textContent = t[1]; } } const ld = m.querySelector('.to-lead'); if (ld) { ld._o = ld._o || ld.innerHTML; ld.innerHTML = kid ? 'Acceso completo a <b>la plataforma</b> por 3 días para tu hijo(a).' : ld._o; }
+    m.querySelectorAll('[data-who]').forEach(b => b.onclick = () => { kid = b.dataset.who === 'kid'; m.querySelectorAll('[data-who]').forEach(x => x.classList.toggle('on', x === b)); m.querySelectorAll('.tf-k').forEach(x => x.classList.toggle('hidden', !kid)); m.querySelectorAll('.tf-me').forEach(x => x.classList.toggle('hidden', kid)); pmSync(); msg(''); m.querySelector('.card').classList.toggle('tf-kidm', kid); { const ph = m.querySelector('.to-ph'); if (ph) { const t = TPH[kid ? 'kid' : 'me']; ph.style.backgroundImage = `url('${t[0]}')`; ph.style.backgroundPosition = t[2]; } } const ld = m.querySelector('.to-lead'); if (ld) { ld._o = ld._o || ld.innerHTML; ld.innerHTML = kid ? 'Acceso completo a <b>la plataforma</b> por 3 días para tu hijo(a).' : ld._o; }
       $('#tf-n', m).placeholder = 'Nombre y apellido'; $('#tf-w', m).placeholder = 'WhatsApp'; $('#tf-e', m).placeholder = 'Correo';
       const POL = '<a href="privacidad.html" target="_blank" rel="noopener">política de privacidad</a>'; $('#tf-ct', m).innerHTML = (kid ? 'Soy su <b>papá, mamá o acudiente</b> y autorizo el tratamiento de los datos de mi hijo(a) y los míos según la ' : 'Autorizo el tratamiento de mis datos personales según la ') + POL + '.'; $('#tf-mt', m).textContent = kid ? 'Quiero recibir novedades y promociones por WhatsApp y correo (solo a mí, nunca a mi hijo(a)).' : 'Quiero recibir novedades y promociones por WhatsApp y correo. Puedo cancelarlas cuando quiera.'; });
     if (kidFirst) { const kb = m.querySelector('[data-who="kid"]'); if (kb) kb.click(); }
@@ -700,7 +725,7 @@
         : `<div class="pt-hello"><img class="pt-mra pt-rkt" src="mra-x-rocket2.webp?v=2" alt="Mr. Arrieta" draggable="false"><div class="bubble">${hiGreet(vn)}</div></div>`; })()}
       <h1>Ingresa a tu <span class="mk-pill">perfil</span></h1><p class="muted">Escribe el código que te llegó a tu correo o WhatsApp.</p>
       <input class="inp" id="cd" type="password" placeholder="Ej: ABC-123" autocapitalize="characters" autocomplete="off">
-      <button class="btn k block lg" id="ok">Entrar →</button>
+      <button class="btn k block lg" id="ok">Entrar →</button><button type="button" class="pt-fg" id="pt-fg">¿Olvidaste tu código?</button>
       <div class="pt-or"><span>¿Aún no eres estudiante?</span></div>
       <div class="pt-free"><h2>🟢 EMPIEZA GRATIS</h2>
         <p><b>Crea tu acceso gratuito y descubre tu ruta de aprendizaje.</b></p>
@@ -740,7 +765,7 @@
       const old = P.get() || {};
       P.save(Object.assign({ created: Date.now() }, old, { type: r.type, demo: !!r.demo, codeHash: M.codeHash(i.value), module: r.module || old.module || null, assignedBy: r.module ? 'admin' : (old.assignedBy || null) }));
       sfx('win'); M.confetti(1500); greetVoice(); route('home'); };
-    { const go0 = go; const goX = () => { try { if (!window.__famIn) sessionStorage.removeItem('mra_obs'); } catch (e) { } return go0(); }; $('#ok').onclick = goX; i.onkeydown = e => { if (e.key === 'Enter') goX(); }; } // v675: si el estudiante entra con su código, no hay modo lectura
+    { const go0 = go; const goX = () => { try { if (!window.__famIn) sessionStorage.removeItem('mra_obs'); } catch (e) { } return go0(); }; $('#ok').onclick = goX; i.onkeydown = e => { if (e.key === 'Enter') goX(); }; } { const fg = $('#pt-fg'); if (fg) fg.onclick = forgotCode; } // v743 // v675: si el estudiante entra con su código, no hay modo lectura
   }
   function nameStep() {
     const s1 = (M.S && M.S.name) || ''; const p = P.get();
