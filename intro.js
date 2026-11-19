@@ -30,7 +30,8 @@
 @keyframes mkPf{from{transform:scale(.4);opacity:.95}to{transform:scale(1.8) translateY(14px);opacity:0}}
 .mkS{position:fixed;z-index:100000;width:7px;height:7px;border-radius:50%;background:#FFC83D;box-shadow:0 0 8px #FFC83D;pointer-events:none;animation:mkSp .8s ease-out forwards}
 @keyframes mkSp{from{transform:translate(0,0) scale(1);opacity:1}to{transform:translate(var(--x),var(--y)) scale(.3);opacity:0}}
-.mk-hide{opacity:0!important}`;
+.mk-hide{opacity:0!important}
+@media(min-width:900px){.pt-hello:has(.mk-hide) .bubble{opacity:0!important}}`;
   const st = document.createElement('style'); st.textContent = css; (document.head || document.documentElement).appendChild(st);
   const d = document.createElement('div'); d.id = 'mkI'; if (lite) d.className = 'lite';
   const cl = (L) => L.map(([l, t, w, h]) => `<i class="c" style="left:${l}%;top:${t}%;width:${w}px;height:${h}px"></i>`).join('');
@@ -41,31 +42,32 @@
   const r = document.createElement('img'); r.id = 'mkR'; r.alt = ''; r.src = 'mra-x-rocket2.webp?v=2'; document.body.appendChild(r);
   let done = false, kv = 0;
   const TG = () => [...document.querySelectorAll('.pt-rkt,.ld-hero-mra')].find(e => e.getBoundingClientRect().width > 0);
-  const kill = () => { const t = TG(); if (!t) return; t.classList.add('mk-hide'); t.getAnimations().forEach(a => { if (!(window.CSSAnimation && a instanceof CSSAnimation)) a.cancel(); }); };
-  const finish = () => { if (done) return; done = true; clearInterval(kv); const t = TG(); if (t) t.classList.remove('mk-hide'); d.classList.add('go'); setTimeout(() => { d.remove(); r.remove(); st.remove(); }, 650); };
+  const kill = () => { const t = TG(); if (!t) return; t.classList.add('mk-hide'); t.style.animationPlayState = 'paused'; /* v735: quieto mientras aterriza, así no «salta» */ t.getAnimations().forEach(a => { if (!(window.CSSAnimation && a instanceof CSSAnimation)) a.cancel(); }); };
+  const finish = () => { if (done) return; done = true; clearInterval(kv); const t = TG(); if (t) { t.classList.remove('mk-hide'); t.style.animationPlayState = ''; } d.classList.add('go'); setTimeout(() => { d.remove(); r.remove(); st.remove(); }, 650); };
   d.addEventListener('pointerdown', finish); /* tocar la pantalla la salta */
   /* v716 · si aparece cualquier ventana (p. ej. los planes), el cohete se va de inmediato: nunca queda encima de la información */
   const mo = setInterval(() => { if (!document.body.contains(r)) { clearInterval(mo); return; } if (document.querySelector('.modal')) { clearInterval(mo); done = false; finish(); r.getAnimations().forEach(a => a.cancel()); r.remove(); } }, 80);
   const fail = setTimeout(finish, 3000); /* si el cohete no carga rápido, no se hace esperar a nadie */
-  const trail = (ms) => { if (lite) return; const t0 = performance.now(); const iv = setInterval(() => { if (done || performance.now() - t0 > ms) { clearInterval(iv); return; } const b = r.getBoundingClientRect(); if (!b.width) return; const p = document.createElement('i'); const sz = 14 + Math.random() * 16; p.className = 'mkP'; p.style.cssText = `left:${b.left + b.width * .12 - sz / 2}px;top:${b.top + b.height * .78 - sz / 2}px;width:${sz}px;height:${sz}px`; document.body.appendChild(p); setTimeout(() => p.remove(), 1000); }, 45); };
-  const burst = (x, y) => { if (lite) return; for (let i = 0; i < 14; i++) { const a = i / 14 * 6.283; const q = document.createElement('i'); q.className = 'mkS'; q.style.cssText = `left:${x}px;top:${y}px;--x:${Math.cos(a) * (50 + Math.random() * 30)}px;--y:${Math.sin(a) * (40 + Math.random() * 25)}px`; document.body.appendChild(q); setTimeout(() => q.remove(), 900); } };
+  const trail = (ms) => { if (lite) return; const t0 = performance.now(); const iv = setInterval(() => { if (done || performance.now() - t0 > ms) { clearInterval(iv); return; } const b = r.getBoundingClientRect(); if (!b.width) return; const p = document.createElement('i'); const sz = 14 + Math.random() * 16; p.className = 'mkP'; const Z = parseFloat(getComputedStyle(document.documentElement).zoom) || 1; p.style.cssText = `left:${(b.left + b.width * .12 - sz / 2) / Z}px;top:${(b.top + b.height * .78 - sz / 2) / Z}px;width:${sz}px;height:${sz}px`; document.body.appendChild(p); setTimeout(() => p.remove(), 1000); }, 45); };
+  const burst = (x, y) => { if (lite) return; { const Z = parseFloat(getComputedStyle(document.documentElement).zoom) || 1; x /= Z; y /= Z; } for (let i = 0; i < 14; i++) { const a = i / 14 * 6.283; const q = document.createElement('i'); q.className = 'mkS'; q.style.cssText = `left:${x}px;top:${y}px;--x:${Math.cos(a) * (50 + Math.random() * 30)}px;--y:${Math.sin(a) * (40 + Math.random() * 25)}px`; document.body.appendChild(q); setTimeout(() => q.remove(), 900); } };
   r.onerror = finish;
   const waitT = (cb) => { const t0 = performance.now(); let lr = '', same = 0; const tk = () => { const t = TG(); const q = t ? t.getBoundingClientRect() : null; const k = q ? [q.left, q.top, q.width].map(Math.round).join() : ''; if (k && k === lr) same++; else same = 0; lr = k; if (same >= 3 || performance.now() - t0 > 1200) cb(); else setTimeout(tk, 80); }; tk(); }; /* espera a que la entrada termine de acomodarse */
   r.onload = () => waitT(start);
   const start = () => {
     if (done) return; clearTimeout(fail); kv = setInterval(kill, 100); kill();
-    const W = innerWidth, H = innerHeight, rb = r.getBoundingClientRect(), rw = rb.width, rh = rb.height; let cx = (W - rw) / 2, cy = H * .3 - rh * .1;
+    const Z = parseFloat(getComputedStyle(document.documentElement).zoom) || 1; /* v735: en pantallas grandes la página tiene zoom → el cohete aterriza justo en su lugar */ const W = innerWidth, H = innerHeight, rb = r.getBoundingClientRect(), rw = rb.width, rh = rb.height; let cx = (W - rw) / 2, cy = H * .3 - rh * .1;
     /* v694 · celular: el cohete se detiene justo encima de su lugar en la entrada, así al terminar solo «se acomoda» (sin caer) */
     d.querySelector('.wd').innerHTML = [...'Welcome!'].map((c, i) => `<span style="animation-delay:${(1 + i * .1).toFixed(2)}s">${c}</span>`).join(''); d.querySelectorAll('.wd span').forEach((x) => { x.style.animationName = 'none'; void x.offsetWidth; x.style.animationName = ''; });
-    const t0 = TG(); if (W < 900 && t0) { const q = t0.getBoundingClientRect(); if (q.width) { cx = Math.round((W - rw) / 2); cy = Math.round(Math.max(H * .12, Math.min(q.top + q.height / 2 - rh / 2, H - rh - 150))); const wd = d.querySelector('.wd'); if (wd) wd.style.top = (cy + rh + 6) + 'px'; } }
+    const t0 = TG(); if (W < 900 && t0) { const q = t0.getBoundingClientRect(); if (q.width) { cx = Math.round((W - rw) / 2); cy = Math.round(Math.max(H * .12, Math.min(q.top + q.height / 2 - rh / 2, H - rh - 100))); const wd = d.querySelector('.wd'); if (wd) wd.style.top = (cy + rh + 6) + 'px'; } }
     trail(1300);
-    r.animate([{ transform: `translate(${-rw * 1.6}px,${H + rh}px) rotate(-12deg)` }, { transform: `translate(${cx + 30}px,${cy - 30}px) rotate(4deg)`, offset: .75 }, { transform: `translate(${cx}px,${cy}px) rotate(0)` }], { duration: 1300, easing: 'cubic-bezier(.25,.8,.3,1)', fill: 'forwards' });
+    r.animate([{ transform: `translate(${-rw * 1.6 / Z}px,${(H + rh) / Z}px) rotate(-12deg)` }, { transform: `translate(${(cx + 30) / Z}px,${(cy - 30) / Z}px) rotate(4deg)`, offset: .75 }, { transform: `translate(${cx / Z}px,${cy / Z}px) rotate(0)` }], { duration: 1300, easing: 'cubic-bezier(.25,.8,.3,1)', fill: 'forwards' });
+    setTimeout(() => { const wd = d.querySelector('.wd'); if (wd) { wd.style.transition = 'opacity .35s'; wd.style.opacity = '0'; } }, 2100); /* v735: «Welcome!» se va antes de que aparezca la página */
     setTimeout(() => {
       if (done) return; kill(); d.classList.add('go'); trail(1000);
       const t = TG(); if (!t) return finish(); const tr = t.getBoundingClientRect(), sc = tr.height / rh;
       r.style.transformOrigin = '0 0';
-      r.animate([{ transform: `translate(${cx}px,${cy}px) rotate(0) scale(1)` }, { transform: `translate(${(cx + tr.left) / 2}px,${(cy + tr.top) / 2 - 40}px) rotate(-5deg) scale(${(1 + sc) / 2})`, offset: .5 }, { transform: `translate(${tr.left}px,${tr.top}px) rotate(0) scale(${sc})` }], { duration: 1100, easing: 'cubic-bezier(.5,0,.3,1)', fill: 'forwards' }).onfinish = () => {
-        clearInterval(kv); t.getAnimations().forEach(a => { if (!(window.CSSAnimation && a instanceof CSSAnimation)) a.cancel(); }); t.classList.remove('mk-hide'); burst(tr.left + tr.width * .5, tr.top + tr.height * .6); done = true;
+      r.animate([{ transform: `translate(${cx / Z}px,${cy / Z}px) rotate(0) scale(1)` }, { transform: `translate(${(cx + tr.left) / 2 / Z}px,${(Math.min(cy, tr.top) - (W < 900 ? 40 : 110)) / Z}px) rotate(-5deg) scale(${(1 + sc) / 2})`, offset: .5 }, { transform: `translate(${tr.left / Z}px,${tr.top / Z}px) rotate(0) scale(${sc})` }], { duration: 1100, easing: 'cubic-bezier(.5,0,.3,1)', fill: 'forwards' }).onfinish = () => {
+        clearInterval(kv); t.getAnimations().forEach(a => { if (!(window.CSSAnimation && a instanceof CSSAnimation)) a.cancel(); }); t.classList.remove('mk-hide'); t.style.animationPlayState = ''; burst(tr.left + tr.width * .5, tr.top + tr.height * .6); done = true;
         setTimeout(() => { r.remove(); d.remove(); setTimeout(() => st.remove(), 900); }, 60);
       };
     }, 2500);
