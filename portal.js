@@ -201,7 +201,7 @@
     const it = (ic, t) => `<li><i>${LI(LP[ic])}</i><span>${t}</span></li>`;
     const ct = (ic, t, d) => `<div><i>${LI(LP[ic])}</i><span><b>${t}</b><small>${d}</small></span></div>`;
     return `<section class="lp-papas pzs"><div class="pz"><div class="pz-h"><h2>Hecho para cada edad</h2><p>Mismos niveles A1 a B2, con temas de su mundo</p></div>
-      <div class="pz-g"><article class="pz-c k"><div class="im" style="background-image:url('https://images.unsplash.com/photo-1663637601319-ad8ec9d9d381?w=900&q=80&auto=format')"></div><span class="ag">9 a 11 años</span><div class="tx"><b class="n">Kids</b><ul>${it('medal', 'Aventuras y medallas')}${it('pad', 'Juegos con voces reales')}${it('star', 'Familia, mascotas, colegio')}</ul></div></article>
+      <div class="pz-g"><article class="pz-c k"><div class="im" style="background-image:url('https://images.unsplash.com/photo-1758612898788-38a249839c1d?w=900&q=80&auto=format')"></div><span class="ag">9 a 11 años</span><div class="tx"><b class="n">Kids</b><ul>${it('medal', 'Aventuras y medallas')}${it('pad', 'Juegos con voces reales')}${it('star', 'Familia, mascotas, colegio')}</ul></div></article>
         <article class="pz-c t"><div class="im" style="background-image:url('https://images.unsplash.com/photo-1758273239194-034091896501?w=900&q=80&auto=format')"></div><span class="ag">12 a 17 años</span><div class="tx"><b class="n">Teens</b><ul>${it('star', 'Chats, notas de voz y retos')}${it('pad', 'Series, juegos, deportes')}${it('cal', 'Reservan sus clases solos')}</ul></div></article></div>
       <div class="pz-k" id="lp-control"><div class="hd"><b>Tú tienes el control</b><small>Panel de papás incluido en todos los planes</small></div><div class="it">${ct('chart', 'Progreso en vivo', 'Temas, práctica y notas')}${ct('mail', 'Alerta de 7 días', 'Si no reserva o no practica')}${ct('check', 'Reservan solos', 'Kids y Teens')}${ct('shield', 'Seguro', 'Sin grabación')}</div></div></div></section>`;
   }
@@ -241,6 +241,18 @@
         + `<a href="adultos.html#opin">${sv('<rect x="3" y="6" width="13" height="12" rx="2"/><path d="m16 10 5-3v10l-5-3z"/>')}<span>Testimonios</span></a>`
         + `<a class="wa-l" target="_blank" rel="noopener" href="https://wa.me/${wa}?text=${encodeURIComponent('¡Hola! Quiero información sobre las clases de inglés de mrarrieta.com')}">${sv('<path d="M3 21l1.6-4.6A8.5 8.5 0 1 1 8 19.6z"/>')}<span>WhatsApp</span></a>`;
       hd.appendChild(tm); } }
+    /* v727 · PC: un solo globo de Mr. Arrieta. Al aterrizar saluda; a los 2-3 s el mismo globo invita a hablar («Dime “How are you?” y te corrijo»);
+       si vuelve a volar, regresa al saludo y al aterrizar vuelve a invitar. Al tocarlo abre el reto de voz. El celular no cambia */
+    { const INV = `<i>${MRI('mic')}</i><span>Dime <b>“How are you?”</b><br>y te corrijo</span>`;
+      const wire = () => { if (innerWidth < 900) return; const m = document.querySelector('.ld-login .pt-rkt'), bb = document.querySelector('.ld-login .pt-hello .bubble'); if (!m || !bb || m._sw) return; m._sw = 1;
+        let tm = 0, greet = bb.innerHTML;
+        const cur = () => document.querySelector('.ld-login .pt-hello .bubble');
+        const swap = (inv) => { const b = cur(); if (!b) return; if (inv === b.classList.contains('inv')) return; if (!inv) { } else greet = b.innerHTML; b.classList.add('sw'); setTimeout(() => { const c = cur(); if (!c) return; c.innerHTML = inv ? INV : greet; c.classList.toggle('inv', inv); if (inv) { c.setAttribute('data-hdemo', ''); c.setAttribute('role', 'button'); c.tabIndex = 0; } else { c.removeAttribute('data-hdemo'); c.removeAttribute('role'); c.removeAttribute('tabindex'); } c.classList.remove('sw'); }, 260); };
+        const toInv = () => { clearTimeout(tm); tm = setTimeout(() => { if (innerWidth >= 900 && !document.querySelector('.modal,.hdm-bg,.hpl-bg')) swap(true); }, 2600); };
+        const toGreet = () => { clearTimeout(tm); swap(false); };
+        const orig = m.animate.bind(m); m.animate = function (k, o) { toGreet(); const a = orig(k, o); if (k && k.length > 3) a.addEventListener('finish', toInv); return a; };
+        setTimeout(() => { if (!(m.getAnimations && m.getAnimations().some(a => a.playState === 'running'))) toInv(); }, 6500); };
+      wire(); [400, 1200, 3000].forEach(t => setTimeout(wire, t)); }
     // 📱 celular: la entrada no se desplaza, todo queda a la vista
     const lock = () => { const on = document.body.classList.contains('home-app'); const mob = innerWidth < 900; document.documentElement.classList.toggle('home-lock', on);
       const h = document.querySelector('.ld-hero'), tb = document.getElementById('topbar'); if (!h) return;
@@ -681,7 +693,7 @@
     app.innerHTML = `<div class="wrap pt-wrap"><div class="card pt-login">
       
       ${(() => { const lu = P.lastUser(); const vn = (lu && lu.first) || vName(); return lu && lu.first ? `<div class="pt-hello"><img class="pt-mra pt-rkt" src="mra-x-rocket2.webp?v=2" alt="Mr. Arrieta" draggable="false" data-noguide><div class="bubble">${hiGreet(vn)}</div></div>`
-        : `<div class="pt-hello"><img class="pt-mra pt-rkt" src="mra-x-rocket2.webp?v=2" alt="Mr. Arrieta" draggable="false"><div class="bubble">${hiGreet(vn)}</div></div><button type="button" class="pt-demo" data-hdemo><i>${MRI('mic')}</i><span>Dime <b>“How are you?”</b> y te corrijo</span></button>`; })()}
+        : `<div class="pt-hello"><img class="pt-mra pt-rkt" src="mra-x-rocket2.webp?v=2" alt="Mr. Arrieta" draggable="false"><div class="bubble">${hiGreet(vn)}</div></div>`; })()}
       <h1>Ingresa a tu <span class="mk-pill">perfil</span></h1><p class="muted">Escribe el código que te llegó a tu correo o WhatsApp.</p>
       <input class="inp" id="cd" type="password" placeholder="Ej: ABC-123" autocapitalize="characters" autocomplete="off">
       <button class="btn k block lg" id="ok">Entrar →</button>

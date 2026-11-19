@@ -10623,7 +10623,8 @@ body.ag-adult .ad-hero .ad-sub2{display:block;margin-top:2px}
 .m3i-q>div,.m3n-q>div,.m4p-q>div,.m4k-q>div{text-align:center;width:100%}
 .m3t-q{justify-content:center;text-align:center}
 /* v726 · entrada (PC): un solo llamado principal. Menú discreto arriba, sin barra abajo, sin «Pruébalo» (la prueba de voz queda en Mr. Arrieta). El celular no cambia */
-.ld-tmenu,.ld-login .pt-demo{display:none}
+.ld-tmenu{display:none}
+@keyframes ldMicP{0%,100%{box-shadow:0 0 0 0 rgba(22,163,74,.45)}50%{box-shadow:0 0 0 8px rgba(22,163,74,0)}}
 @media(min-width:900px){
   body .ld-hero .ld-trust2{display:none!important}
   body .ld-hero .ld-try{display:none!important}
@@ -10635,9 +10636,20 @@ body.ag-adult .ad-hero .ad-sub2{display:block;margin-top:2px}
   .ld-tmenu svg.st{color:#f5b301}
   .ld-tmenu b{color:#E3242B;font-weight:700}
   .ld-tmenu .wa-l{color:#16a34a;font-weight:700}
-  .ld-login .pt-demo{display:inline-flex;align-items:center;gap:8px;margin:2px auto 10px;background:#fff;border:1.5px solid #cdd6e4;border-radius:999px;padding:6px 14px 6px 6px;font:600 13.5px/1.2 var(--fb,Inter),sans-serif;color:#0B2A5B;cursor:pointer;box-shadow:0 6px 14px -8px rgba(11,42,91,.35);transition:transform .15s}
-  .ld-login .pt-demo:hover{transform:translateY(-1px)}
-  .ld-login .pt-demo i{flex:none;width:26px;height:26px;border-radius:50%;background:#16a34a;color:#fff;display:inline-flex;align-items:center;justify-content:center}
-  .ld-login .pt-demo i .mri{width:13px;height:13px}
-  .ld-login .pt-demo b{font-weight:800}
+  .ld-login .pt-hello .bubble:after,.ld-login .pt-hello .bubble:before{display:none!important}
+  .ld-login .pt-hello .bubble{transition:opacity .25s,transform .25s}
+  .ld-login .pt-hello .bubble.sw{opacity:0;transform:scale(.88)}
+  .ld-login .pt-hello .bubble.inv{cursor:pointer;display:flex;align-items:center;gap:10px;white-space:nowrap}
+  .ld-login .pt-hello .bubble.inv i{flex:none;width:34px;height:34px;border-radius:50%;background:#16a34a;color:#fff;display:inline-flex;align-items:center;justify-content:center;animation:ldMicP 1.4s ease-in-out infinite}
+  .ld-login .pt-hello .bubble.inv i .mri{width:16px;height:16px}
+  .ld-login .pt-hello .bubble.inv span{font-size:.6em;line-height:1.25;font-weight:600;text-align:left}.ld-login .pt-hello .bubble.inv b{font-weight:800}
+  .ld-login .pt-hello .bubble.inv:hover{transform:translateY(-1px)}
 }
+/* v728 · PC: separar la etiqueta de edad del título (Kids/Teens). El celular no cambia */
+@media(min-width:900px){
+.pz-c{display:flex;flex-direction:column;justify-content:space-between}
+.pz-c .ag{position:relative;top:auto;left:auto;align-self:flex-start;margin:16px 0 0 18px}
+.pz-c .tx{position:relative;padding-top:22px}
+.pz-c.k .im{background-position:center 12%}
+}
+@media(min-width:900px) and (max-height:640px){.pz-c b.n{margin-bottom:4px}.pz-c ul{gap:3px}.pz-c li i{width:22px;height:22px}.pz-c .tx{padding-top:16px;padding-bottom:10px}}
