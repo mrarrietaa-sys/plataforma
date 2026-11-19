@@ -667,7 +667,7 @@
     let K;
     if (true) { // 🎢 opción 2: rizo (loop) completo en el aire + regreso con onda de aterrizaje
       const Rx = mob ? Math.min(W * 0.3, 120) : Math.min(230, (r.left - 60) / 2), Ry = Math.max(40, Math.min(mob ? 120 : 140, r.top - 90)), cx0 = -Rx; K = [{ t: 'translate(0px,0px) rotate(0deg) scale(1)', o: 1, f: 0 }];
-      for (let k = 1; k <= 16; k++) { const th = k / 16 * 2 * Math.PI, x = mob ? W * 0.12 * Math.sin(th) : -Rx * (1 - Math.cos(th)) / 2 - .35 * Rx * Math.sin(th), y = mob ? -Ry * (1 - Math.cos(th)) : -1.2 * Ry * Math.sin(th / 2) - .3 * Ry * Math.sin(th); /* v735 · PC: el rizo va arriba a la izquierda, nunca pasa sobre el saludo ni el título */ K.push({ t: `translate(${x.toFixed(1)}px,${y.toFixed(1)}px) rotate(${(-k * 22.5).toFixed(1)}deg) scale(${(1 - (mob ? 0.45 : 0.25) * Math.sin(th / 2)).toFixed(2)})`, o: 1, f: +(.05 + k / 16 * .72).toFixed(3) }); }
+      for (let k = 1; k <= 16; k++) { const th = k / 16 * 2 * Math.PI, x = mob ? W * 0.12 * Math.sin(th) : cx0 + Rx * Math.cos(th), y = mob ? -Ry * (1 - Math.cos(th)) : -Ry * Math.sin(th) - 20 * Math.sin(th / 2); K.push({ t: `translate(${x.toFixed(1)}px,${y.toFixed(1)}px) rotate(${(-k * 22.5).toFixed(1)}deg) scale(${(1 - (mob ? 0.45 : 0.25) * Math.sin(th / 2)).toFixed(2)})`, o: 1, f: +(.05 + k / 16 * .72).toFixed(3) }); }
       K.push({ t: 'translate(0px,-14px) rotate(-366deg) scale(1.08)', o: 1, f: .84 }, { t: 'translate(0px,10px) rotate(-360deg) scale(.96)', o: 1, f: .91 }, { t: 'translate(0px,-5px) rotate(-360deg) scale(1.02)', o: 1, f: .96 }, { t: 'translate(0px,0px) rotate(-360deg) scale(1)', o: 1, f: 1 });
     } else {
     // 🌌 se aleja hacia el fondo (se hace pequeño), da la vuelta allá lejos y regresa hacia el frente hasta su lugar
