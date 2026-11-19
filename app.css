@@ -10705,3 +10705,7 @@ body.lp-app,body.home-app{background-image:none!important}
 .fgm-c .inp{width:100%;box-sizing:border-box;margin-bottom:12px;text-align:center}
 .fgm-msg{min-height:18px;margin:8px 0 0;color:#b91c1c;font-size:13.5px;text-align:center}
 .fgm-ok{background:#ecfdf5;color:#166534;border-radius:12px;padding:10px 12px;font-size:13.5px;line-height:1.45;margin:0 0 14px;text-align:center}
+/* v746 · celular: en la entrada a las clases no se repite «Prueba gratis 3 días» */
+@media(max-width:899px){body.home-app .pt-login .pt-or{display:none!important}}
+/* v747 · la foto de adultos siempre muestra la cara completa (encuadre fijo, nada lo cambia) */
+.to-ph.me{background-position:50% 12%!important}.to-ph.kid{background-position:50% 30%!important}
