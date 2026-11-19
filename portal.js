@@ -251,7 +251,7 @@
         const toInv = () => { clearTimeout(tm); tm = setTimeout(() => { if (innerWidth >= 900 && !document.querySelector('.modal,.hdm-bg,.hpl-bg')) swap(true); }, 2600); };
         const toGreet = () => { clearTimeout(tm); swap(false); };
         const fly = (on) => { const x = cur(); if (x) x.classList.toggle('fly', on); }; /* v741 · PC: mientras vuela, el globo se esconde; al aterrizar saluda y luego invita (como en el celular) */
-           const orig = m.animate.bind(m); m.animate = function (k, o) { toGreet(); const big = k && k.length > 3; if (big) fly(true); const a = orig(k, o); if (big) a.addEventListener('finish', () => { toGreet(); fly(false); toInv(); }); return a; };
+           const orig = m.animate.bind(m); m.animate = function (k, o) { toGreet(); const big = k && k.length > 3; if (big) fly(true); const a = orig(k, o); if (big) { const land = () => { const go = () => { toGreet(); fly(false); toInv(); }; if (m.classList.contains('mk-hide')) { clearTimeout(tm); const iv = setInterval(() => { if (!m.classList.contains('mk-hide')) { clearInterval(iv); go(); } }, 100); } else go(); }; a.addEventListener('finish', land); a.addEventListener('cancel', land); } return a; }; /* v751: si la bienvenida corta el vuelo, el globo también vuelve */
         setTimeout(() => { if (!(m.getAnimations && m.getAnimations().some(a => a.playState === 'running'))) toInv(); }, 6500); };
       wire(); [400, 1200, 3000].forEach(t => setTimeout(wire, t)); }
     // 📱 celular: la entrada no se desplaza, todo queda a la vista
