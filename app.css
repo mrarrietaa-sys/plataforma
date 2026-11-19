@@ -10636,6 +10636,7 @@ body.ag-adult .ad-hero .ad-sub2{display:block;margin-top:2px}
   .ld-tmenu svg.st{color:#f5b301}
   .ld-tmenu b{color:#E3242B;font-weight:700}
   .ld-tmenu .wa-l{color:#16a34a;font-weight:700}
+  .ld-tmenu .wa-l svg.wl{width:20px;height:20px}
   .ld-login .pt-hello .bubble:after,.ld-login .pt-hello .bubble:before{display:none!important}
   .ld-login .pt-hello .bubble{transition:opacity .25s,transform .25s}
   .ld-login .pt-hello .bubble.sw{opacity:0;transform:scale(.88)}

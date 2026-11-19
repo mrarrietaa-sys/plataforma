@@ -238,8 +238,8 @@
       const sv = d => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
       tm.innerHTML = `<button type="button" data-hplans>${sv('<path d="m2 7 4 10h12l4-10-5 3-5-6-5 6z"/>')}<span>Planes <b>desde <span data-minp>$64.900</span></b></span></button>`
         + `<a href="https://g.page/r/CSz_ib_w-ctREAE" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" class="st" aria-hidden="true"><path fill="currentColor" d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z"/></svg><span>4,9 en Google</span></a>`
-        + `<a href="adultos.html#opin">${sv('<rect x="3" y="6" width="13" height="12" rx="2"/><path d="m16 10 5-3v10l-5-3z"/>')}<span>Testimonios</span></a>`
-        + `<a class="wa-l" target="_blank" rel="noopener" href="https://wa.me/${wa}?text=${encodeURIComponent('¡Hola! Quiero información sobre las clases de inglés de mrarrieta.com')}">${sv('<path d="M3 21l1.6-4.6A8.5 8.5 0 1 1 8 19.6z"/>')}<span>WhatsApp</span></a>`;
+        + `<a href="adultos.html#opin">${sv('<rect x="3" y="6" width="13" height="12" rx="2"/><path d="m16 10 5-3v10l-5-3z"/>')}<span>Opiniones</span></a>`
+        + `<a class="wa-l" target="_blank" rel="noopener" href="https://wa.me/${wa}?text=${encodeURIComponent('¡Hola! Quiero información sobre las clases de inglés de mrarrieta.com')}"><svg viewBox="0 0 32 32" class="wl" aria-hidden="true"><path fill="currentColor" d="M16 3a13 13 0 0 0-11.2 19.6L3 29l6.6-1.7A13 13 0 1 0 16 3zm0 23.6c-2 0-4-.6-5.7-1.6l-.4-.2-3.9 1 1-3.8-.3-.4A10.6 10.6 0 1 1 16 26.6zm5.8-7.9c-.3-.2-1.9-.9-2.2-1-.3-.1-.5-.2-.7.2l-1 1.2c-.2.2-.4.2-.7.1a8.7 8.7 0 0 1-4.3-3.8c-.3-.6.3-.5.9-1.7.1-.2 0-.4 0-.6l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.2-1.2 2.9s1.2 3.4 1.4 3.6c.2.2 2.4 3.7 5.9 5.2 2.2.9 3 1 4.1.8.7-.1 1.9-.8 2.2-1.5.3-.8.3-1.4.2-1.5l-.6-.4z"/></svg><span>WhatsApp</span></a>`;
       hd.appendChild(tm); } }
     /* v727 · PC: un solo globo de Mr. Arrieta. Al aterrizar saluda; a los 2-3 s el mismo globo invita a hablar («Dime “How are you?” y te corrijo»);
        si vuelve a volar, regresa al saludo y al aterrizar vuelve a invitar. Al tocarlo abre el reto de voz. El celular no cambia */
@@ -293,7 +293,7 @@
     clearInterval(lpProfes.t); lpProfes.t = setInterval(() => { if (!hold && !document.hidden && panel.classList.contains('on')) go(1); }, 3800);
   }
   // 📱 todo en una sola pantalla: cada sección es una pestaña (sin bajar)
-  const LPT = { home: ['Inicio', '<path d="M3 10.5 12 3l9 7.5V21H3z"/>'], planes: ['Planes', '<path d="m2 7 4 10h12l4-10-5 3-5-6-5 6z"/>'], opin: ['Opiniones', '<path d="M11.53 2.3a.53.53 0 0 1 .95 0l2.31 4.68a2.12 2.12 0 0 0 1.6 1.16l5.16.76a.53.53 0 0 1 .3.9l-3.74 3.64a2.12 2.12 0 0 0-.61 1.88l.88 5.14a.53.53 0 0 1-.77.56l-4.62-2.43a2.12 2.12 0 0 0-1.97 0L6.4 21.01a.53.53 0 0 1-.77-.56l.88-5.14a2.12 2.12 0 0 0-.61-1.88L2.16 9.8a.53.53 0 0 1 .3-.91l5.16-.75a2.12 2.12 0 0 0 1.6-1.16z"/>'], profes: ['Profes', '<circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/>'], papas: ['Papás', '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>'] };
+  const LPT = { home: ['Inicio', '<path d="M3 10.5 12 3l9 7.5V21H3z"/>'], planes: ['Planes', '<path d="m2 7 4 10h12l4-10-5 3-5-6-5 6z"/>'], opin: ['Opiniones', '<rect x="3" y="6" width="13" height="12" rx="2"/><path d="m16 10 5-3v10l-5-3z"/>'], profes: ['Profes', '<circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/>'], papas: ['Papás', '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>'] };
   function lpPanels() {
     const wrap = $('.lp-page'); if (!wrap || wrap.dataset.pn) return; wrap.dataset.pn = '1';
     const map = PAGE === 'ninos' ? { home: ['.lp-hero'], papas: ['.lp-papas'], planes: ['.lp-plans'], profes: ['#ld-profes'] } : { home: ['.lp-hero'], planes: ['.lp-plans'], opin: ['#ld-testimonios'], profes: ['#ld-profes'] };
