@@ -10622,18 +10622,22 @@ body.ag-adult .ad-hero .ad-sub2{display:block;margin-top:2px}
 .m3i-q,.m3n-q,.m4p-q,.m4k-q{flex-direction:column-reverse!important;align-items:center!important;text-align:center!important;gap:6px!important}
 .m3i-q>div,.m3n-q>div,.m4p-q>div,.m4k-q>div{text-align:center;width:100%}
 .m3t-q{justify-content:center;text-align:center}
-/* v724 · entrada (PC): menos llamados a la acción. La línea Google · estudiantes · planes pasa a una barra abajo. El celular no cambia */
-.ld-pcbar{display:none}
+/* v726 · entrada (PC): un solo llamado principal. Menú discreto arriba, sin barra abajo, sin «Pruébalo» (la prueba de voz queda en Mr. Arrieta). El celular no cambia */
+.ld-tmenu,.ld-login .pt-demo{display:none}
 @media(min-width:900px){
   body .ld-hero .ld-trust2{display:none!important}
-  .ld-pcbar{display:flex;position:fixed;left:50%;bottom:14px;top:auto!important;right:auto!important;height:auto!important;max-height:96px!important;align-items:stretch;transform:translateX(-50%);width:min(900px,92vw);gap:6px;background:#fff;border:1px solid #e3e9f3;border-radius:22px;padding:6px;box-shadow:0 12px 30px -10px rgba(11,42,91,.35);z-index:40;box-sizing:border-box}
-  .ld-pcbar>*{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;padding:8px 6px;border-radius:16px;color:#334155;text-decoration:none;background:none;border:0;font:inherit;cursor:pointer;min-width:0;transition:background .15s}
-  .ld-pcbar>*:hover{background:#f1f5fb}
-  .ld-pcbar .mri,.ld-pcbar svg{width:22px;height:22px}
-  .ld-pcbar b{font:700 14px/1.15 var(--fh,Inter),sans-serif;margin-top:2px;white-space:nowrap}
-  .ld-pcbar small{font:600 12px/1.15 var(--fb,Inter),sans-serif;margin-top:1px;color:#64748b;white-space:nowrap}
-  .ld-pcbar .pl small{color:#E3242B}
-  .ld-pcbar .on{background:#0B2A5B;color:#fff}.ld-pcbar .on:hover{background:#0B2A5B}
-  .ld-pcbar .pc-wa{color:#16a34a}
-  body:has(.ld-pcbar) .ld{padding-bottom:96px}
+  body .ld-hero .ld-try{display:none!important}
+  header.topbar:has(.ld-tmenu){display:flex;align-items:center}
+  .ld-tmenu{display:flex;align-items:center;gap:clamp(18px,2.2vw,34px);margin-left:auto;padding-right:clamp(12px,2vw,28px)}
+  .ld-tmenu>*{display:inline-flex;align-items:center;gap:7px;background:none;border:0;padding:6px 2px;font:600 15.5px/1.2 var(--fb,Inter),sans-serif;color:#0B2A5B;text-decoration:none;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:border-color .15s,color .15s}
+  .ld-tmenu>*:hover{border-bottom-color:currentColor}
+  .ld-tmenu svg{width:17px;height:17px;flex:none}
+  .ld-tmenu svg.st{color:#f5b301}
+  .ld-tmenu b{color:#E3242B;font-weight:700}
+  .ld-tmenu .wa-l{color:#16a34a;font-weight:700}
+  .ld-login .pt-demo{display:inline-flex;align-items:center;gap:8px;margin:2px auto 10px;background:#fff;border:1.5px solid #cdd6e4;border-radius:999px;padding:6px 14px 6px 6px;font:600 13.5px/1.2 var(--fb,Inter),sans-serif;color:#0B2A5B;cursor:pointer;box-shadow:0 6px 14px -8px rgba(11,42,91,.35);transition:transform .15s}
+  .ld-login .pt-demo:hover{transform:translateY(-1px)}
+  .ld-login .pt-demo i{flex:none;width:26px;height:26px;border-radius:50%;background:#16a34a;color:#fff;display:inline-flex;align-items:center;justify-content:center}
+  .ld-login .pt-demo i .mri{width:13px;height:13px}
+  .ld-login .pt-demo b{font-weight:800}
 }

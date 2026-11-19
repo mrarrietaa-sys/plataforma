@@ -233,16 +233,14 @@
       <button type="button" class="on" data-goin>${ic('<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/>')}<span>Ingresar</span></button>
       <a class="lp-dwa" target="_blank" rel="noopener" href="https://wa.me/${wa}?text=${encodeURIComponent('¡Hola! Quiero información sobre las clases de inglés de mrarrieta.com')}"><svg viewBox="0 0 32 32" class="mri"><path fill="currentColor" d="M16 3a13 13 0 0 0-11.2 19.6L3 29l6.6-1.7A13 13 0 1 0 16 3zm0 23.6c-2 0-4-.6-5.7-1.6l-.4-.2-3.9 1 1-3.8-.3-.4A10.6 10.6 0 1 1 16 26.6zm5.8-7.9c-.3-.2-1.9-.9-2.2-1-.3-.1-.5-.2-.7.2l-1 1.2c-.2.2-.4.2-.7.1a8.7 8.7 0 0 1-4.3-3.8c-.3-.6.3-.5.9-1.7.1-.2 0-.4 0-.6l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.2-1.2 2.9s1.2 3.4 1.4 3.6c.2.2 2.4 3.7 5.9 5.2 2.2.9 3 1 4.1.8.7-.1 1.9-.8 2.2-1.5.3-.8.3-1.4.2-1.5l-.6-.4z"/></svg><span>WhatsApp</span></a>`;
     document.body.appendChild(d);
-    /* v724 · PC: barra inferior (Inicio · Planes · Opiniones · Testimonios · WhatsApp); en celular no se muestra */
-    { const pb = document.createElement('div'); pb.className = 'ld-pcbar'; pb.setAttribute('role', 'navigation'); pb.setAttribute('aria-label', 'Accesos');
-      const it = (tag, attrs, svg, t, s, cls) => `<${tag} ${attrs} class="${cls || ''}">${svg}<b>${t}</b>${s ? `<small>${s}</small>` : ''}</${tag}>`;
-      pb.innerHTML = it('button', 'type="button" data-pctop', ic('<path d="M3 10.5 12 3l9 7.5V21H3z"/>'), 'Inicio', '', 'on')
-        + it('button', 'type="button" data-hplans', ic('<path d="m2 7 4 10h12l4-10-5 3-5-6-5 6z"/>'), 'Planes', 'desde <span data-minp>$64.900</span>', 'pl')
-        + it('a', 'href="https://g.page/r/CSz_ib_w-ctREAE" target="_blank" rel="noopener"', ic('<path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z"/>'), 'Opiniones', '★ 4,9 en Google')
-        + it('a', 'href="adultos.html#opin"', ic('<rect x="3" y="6" width="13" height="12" rx="2"/><path d="m16 10 5-3v10l-5-3z"/>'), 'Testimonios', '+500 estudiantes')
-        + it('a', `target="_blank" rel="noopener" href="https://wa.me/${wa}?text=${encodeURIComponent('¡Hola! Quiero información sobre las clases de inglés de mrarrieta.com')}"`, ic('<path d="M3 21l1.6-4.6A8.5 8.5 0 1 1 8 19.6z"/>'), 'WhatsApp', '', 'pc-wa');
-      pb.querySelector('[data-pctop]').onclick = () => scrollTo({ top: 0, behavior: 'smooth' });
-      document.body.appendChild(pb); }
+    /* v726 · PC: menú discreto arriba, junto al logo (Planes · Google · Testimonios · WhatsApp) con íconos finos; en celular no se muestra */
+    { const hd = document.querySelector('header.topbar'); if (hd && !hd.querySelector('.ld-tmenu')) { const tm = document.createElement('nav'); tm.className = 'ld-tmenu'; tm.setAttribute('aria-label', 'Información');
+      const sv = d => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+      tm.innerHTML = `<button type="button" data-hplans>${sv('<path d="m2 7 4 10h12l4-10-5 3-5-6-5 6z"/>')}<span>Planes <b>desde <span data-minp>$64.900</span></b></span></button>`
+        + `<a href="https://g.page/r/CSz_ib_w-ctREAE" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" class="st" aria-hidden="true"><path fill="currentColor" d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z"/></svg><span>4,9 en Google</span></a>`
+        + `<a href="adultos.html#opin">${sv('<rect x="3" y="6" width="13" height="12" rx="2"/><path d="m16 10 5-3v10l-5-3z"/>')}<span>Testimonios</span></a>`
+        + `<a class="wa-l" target="_blank" rel="noopener" href="https://wa.me/${wa}?text=${encodeURIComponent('¡Hola! Quiero información sobre las clases de inglés de mrarrieta.com')}">${sv('<path d="M3 21l1.6-4.6A8.5 8.5 0 1 1 8 19.6z"/>')}<span>WhatsApp</span></a>`;
+      hd.appendChild(tm); } }
     // 📱 celular: la entrada no se desplaza, todo queda a la vista
     const lock = () => { const on = document.body.classList.contains('home-app'); const mob = innerWidth < 900; document.documentElement.classList.toggle('home-lock', on);
       const h = document.querySelector('.ld-hero'), tb = document.getElementById('topbar'); if (!h) return;
@@ -683,7 +681,7 @@
     app.innerHTML = `<div class="wrap pt-wrap"><div class="card pt-login">
       
       ${(() => { const lu = P.lastUser(); const vn = (lu && lu.first) || vName(); return lu && lu.first ? `<div class="pt-hello"><img class="pt-mra pt-rkt" src="mra-x-rocket2.webp?v=2" alt="Mr. Arrieta" draggable="false" data-noguide><div class="bubble">${hiGreet(vn)}</div></div>`
-        : `<div class="pt-hello"><img class="pt-mra pt-rkt" src="mra-x-rocket2.webp?v=2" alt="Mr. Arrieta" draggable="false"><div class="bubble">${hiGreet(vn)}</div></div>`; })()}
+        : `<div class="pt-hello"><img class="pt-mra pt-rkt" src="mra-x-rocket2.webp?v=2" alt="Mr. Arrieta" draggable="false"><div class="bubble">${hiGreet(vn)}</div></div><button type="button" class="pt-demo" data-hdemo><i>${MRI('mic')}</i><span>Dime <b>“How are you?”</b> y te corrijo</span></button>`; })()}
       <h1>Ingresa a tu <span class="mk-pill">perfil</span></h1><p class="muted">Escribe el código que te llegó a tu correo o WhatsApp.</p>
       <input class="inp" id="cd" type="password" placeholder="Ej: ABC-123" autocapitalize="characters" autocomplete="off">
       <button class="btn k block lg" id="ok">Entrar →</button>
