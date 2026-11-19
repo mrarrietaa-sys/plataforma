@@ -977,7 +977,7 @@
             <div class="ms9-act"><button type="button" class="ms9-mic" aria-label="Grabar">${I('mic')}</button><div class="ms9-stx"><b class="ms9-st">Toca el micrófono y dila</b><small class="ms9-st2">Imita el ritmo y la melodía del modelo</small></div><div class="ms9-mob"><button type="button" class="btn w sm ms9-mo">${I('vol')} Modelo</button></div></div>`;
           if (window.M2X) M2X.bindHint(turn, x.aau); const v = MRMEL.view(turn.querySelector('.ms9-mel')); MRMEL.model(x.aau).then(m => v.setModel(m)).catch(() => { });
           const mic = turn.querySelector('.ms9-mic'), st = turn.querySelector('.ms9-st'), st2 = turn.querySelector('.ms9-st2'), res = turn.querySelector('.ms9-res');
-          turn.querySelector('.ms9-mo').onclick = () => { MRMEL.stop(); stop(); play(x.aau); };
+          turn.querySelector('.ms9-mo').onclick = () => { MRMEL.stop(); stop(); play(x.aau); }; setTimeout(() => { if (turn.isConnected && !turn.querySelector('.ms9-mic.rec')) { stop(); play(x.aau); } }, 350); /* v753: apenas elige la respuesta, suena esa misma respuesta (el mismo audio del botón «Modelo») */
           mic.onclick = async () => { if (mic.classList.contains('rec')) { MRMEL.stop(); return; } stop(); mic.classList.add('rec'); st.textContent = 'Te escucho…'; st2.textContent = 'Se detiene sola cuando terminas'; res.innerHTML = '';
             let r = null; try { r = await MRMEL.take(x.aau, v); } catch (e) { r = { err: 1 }; } mic.classList.remove('rec');
             if (r.err) { if (r.err === 'mic') { st.textContent = 'Permite el micrófono'; st2.textContent = 'Actívalo en el candado de la barra de direcciones.'; } else { fails++; st.textContent = 'Intenta otra vez'; st2.textContent = 'No se pudo preparar el audio. Toca el micrófono de nuevo.'; if (fails >= 2) { res.innerHTML = `<div class="ms9-bt"><button type="button" class="btn w sm ms9-sk">Seguir →</button></div>`; res.querySelector('.ms9-sk').onclick = () => done(null); } } return; } /* v703: nunca se queda bloqueado */
@@ -1489,7 +1489,7 @@
   async function writing10(stage, p, it, AG) {
     const I = n => window.MRI ? MRI(n) : '';
     const dia = x => String(x || '').normalize('NFD').replace(/[\u0300-\u036f]/g, ''); /* v696: el teclado del celular pone tildes («vídeo»): no cuentan como error */
-    const nz = x => dia(x).toLowerCase().replace(/[’‘`´]/g, "'").replace(/[^a-z0-9' -]+/g, ' ').replace(/\s+/g, ' ').trim();
+    const nz = x => dia(x).toLowerCase().replace(/[’‘`´ʼʹʻʽ′＇]/g, "'").replace(/[^a-z0-9' -]+/g, ' ').replace(/\s+/g, ' ').trim();
     const cap = x => { x = String(x || '').trim().replace(/\s+/g, ' '); x = x.replace(/(^|\s)i(?=\s|'|’|$)/g, '$1I'); return x ? x[0].toUpperCase() + x.slice(1) : x; };
     const end = x => /[.!?]["”]?$/.test(x) ? x : x + '.';
     const esLike = x => (nz(x).match(/\b(el|la|los|las|que|con|para|una|por|pero|muy|tengo|soy|estoy|mi|y)\b/g) || []).length >= 2;
@@ -1543,7 +1543,7 @@
         if (!auto && M.words(txt).length < (it.f === 'f' ? 1 : 2)) { ta.focus(); M.toast(it.f === 'f' ? 'Escribe cómo termina la frase' : 'Escribe una frase completa'); return; }
         if (!auto && esLike(txt) && tries < 1) { tries++; ta.focus(); show('no', 'Escríbelo en inglés', 'Usa las palabras de la lección.', ''); sfx('bad'); return; }
         if (it.f === 'x') {
-          const n = nz(txt), oks = it.ok.map(nz), nc = x => dia(x).replace(/[’‘`´]/g, "'").replace(/[^A-Za-z0-9' -]+/g, ' ').replace(/\s+/g, ' ').trim(), caseIt = oks.includes(nz(it.bad));
+          const n = nz(txt), oks = it.ok.map(nz), nc = x => dia(x).replace(/[’‘`´ʼʹʻʽ′＇]/g, "'").replace(/[^A-Za-z0-9' -]+/g, ' ').replace(/\s+/g, ' ').trim(), caseIt = oks.includes(nz(it.bad));
           if (it.ok.map(nc).includes(nc(txt))) return verdict(2, txt, '¡Bien visto! +10', esc(it.why), '');
           if (oks.includes(n)) return caseIt ? (nc(txt) === nc(it.bad) ? verdict(0, txt, 'El error sigue ahí', esc(it.why), esc(it.ok[0])) : verdict(1, txt, '¡Casi! +5', 'Revisa las mayúsculas:', esc(it.ok[0]))) : verdict(2, txt, '¡Bien visto! +10', esc(it.why), ''); /* v696: si el error no era de mayúsculas, las mayúsculas del teclado no restan */
           const best = oks.reduce((b, o) => Math.min(b, M.lev(n, o)), 99), stillErr = nz(it.bad) === n ? !caseIt || nc(txt) === nc(it.bad) : caseIt ? new RegExp('(^|\\s)' + nc(it.err).replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(\\s|$)').test(nc(txt)) : new RegExp('(^|\\s)' + nz(it.err).replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(\\s|$)').test(n);

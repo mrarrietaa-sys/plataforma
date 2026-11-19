@@ -910,3 +910,5 @@ window.MRMOOD = function (c, t) { const r = t ? c / t : 1, pk = (a) => a[Math.fl
   function start() { scan(); new MutationObserver(() => { clearTimeout(start.t); start.t = setTimeout(scan, 60); }).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] }); addEventListener('resize', () => L.forEach(place)); setInterval(() => L.forEach(place), 700); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
 })();
+/* v753 · al escribir en inglés, cualquier apóstrofo del teclado del celular (’ ‘ ʼ ´ ′ ＇…) se convierte en ' para que «didn't» nunca cuente como error */
+document.addEventListener('input', (e) => { try { const t = e.target; if (!t || !('value' in t) || t.type === 'password' || t.type === 'email') return; const v = t.value; const n = v.replace(/[’‘`´ʼʹʻʽ′＇ʼ]/g, "'").replace(/​/g, '').replace(/ /g, ' '); if (n !== v) { const p = t.selectionStart; t.value = n; try { t.setSelectionRange(p, p); } catch (x) { } } } catch (x) { } }, true);
