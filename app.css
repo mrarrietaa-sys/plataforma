@@ -10742,3 +10742,6 @@ body:has(.r9p) #toast{top:auto!important;bottom:calc(18px + env(safe-area-inset-
 .itl-k-drums::after{left:50%!important;width:94%!important;bottom:-8px!important;height:26px!important;background:radial-gradient(closest-side,rgba(11,42,91,.42),rgba(11,42,91,.18) 55%,transparent)!important}
 /* v761 · plurales: aviso «Tú di solo el plural» */
 .pl9-say{display:flex;align-items:center;justify-content:center;gap:6px;width:max-content;max-width:100%;margin:6px auto 2px;padding:5px 12px;border-radius:999px;background:#fff4e5;border:1.5px solid #f5b301;color:#7a4a00;font-weight:800;font-size:14px;line-height:1.25;text-align:center}.pl9-say b{color:#0B2A5B}.pl9-say svg{width:16px;height:16px;flex:none}
+
+/* v762: iPad/tabletas — Diccionario como pestaña con la carita en el borde derecho (igual que en celular), sin tapar el contenido */
+@media (min-width:601px) and (max-width:1199px), (min-width:601px) and (hover:none) and (pointer:coarse){#dict-fab:not(.drag){left:auto!important;right:0!important;top:auto!important;bottom:120px!important;padding:2px 3px 2px 2px!important;border-radius:999px 0 0 999px!important;border-right:0!important}#dict-fab img{height:40px!important;width:34px!important}#dict-fab span{display:none!important}}

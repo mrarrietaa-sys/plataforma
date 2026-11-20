@@ -6,7 +6,7 @@
    M4: Adultos Rascacielos · Teens Penalti · Kids Ranita */
 (function () {
   try { if (!document.querySelector('link[href^="retos.css"]')) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'retos.css?v=725'; document.head.appendChild(l); } } catch (e) { }
-  const T = window.__rtT || 40, IMG = 'retos/';
+  const T = window.__rtT || 40, IMG = '';
   const M = () => window.M1, A = () => window.M1A;
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const shuf = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
