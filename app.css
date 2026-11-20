@@ -10734,3 +10734,9 @@ body.lp-app,body.home-app{background-image:none!important}
 .itl-k-guitar::after{left:46%!important;width:92%!important;bottom:-6px!important;height:26px!important;background:radial-gradient(closest-side,rgba(11,42,91,.42),rgba(11,42,91,.18) 55%,transparent)!important}
 /* v759 · en la pantalla final, el aviso de insignia va abajo para no tapar a Mr. Arrieta */
 body:has(.r9p) #toast{top:auto!important;bottom:calc(18px + env(safe-area-inset-bottom))!important}
+/* v760 · títulos de cada actividad y feedback corto centrados (todo se ve parejo) */
+.player .stage>h2{text-align:center}
+.mel9-tip{text-align:center}.mel9-res{justify-content:center}.mel9-res span{justify-content:center;text-align:center}
+/* v760 · Mr. Arrieta con batería: sombra pegada a las patas y sin halo */
+.itl-k-drums{height:auto!important}.itl-k-drums .itl-img{filter:none!important}
+.itl-k-drums::after{left:50%!important;width:94%!important;bottom:-8px!important;height:26px!important;background:radial-gradient(closest-side,rgba(11,42,91,.42),rgba(11,42,91,.18) 55%,transparent)!important}
