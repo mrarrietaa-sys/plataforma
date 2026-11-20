@@ -1644,6 +1644,10 @@
   }
   function wellDone(AG, stars, pts) {
     const I = n => window.MRI ? MRI(n) : '', nm = esc((S.name || '').split(' ')[0]);
+    if (window.MR_WD_ONE !== false) { /* v759: una sola pantalla al final: solo la celebración (confeti + voz), sin cuadro aparte */
+      M.confetti(3800, { flat: true, z: 10001, cols: AG === 'adult' ? ['#E3242B', '#0B2A5B', '#cbd5e1', '#1B4A9B'] : AG === 'kids' ? ['#E3242B', '#0B2A5B', '#f5b301', '#22c55e', '#3b82f6'] : ['#E3242B', '#ffffff', '#f5b301', '#60a5fa'] });
+      try { const id = 'b93b9f5f0f'; if (AG === 'adult') play(id); else M.fbf().then(() => play(window.AUD && window.AUD['fb_' + id] ? 'fb_' + id : id)); } catch (e) { }
+      return; }
     const o = h(`<div class="wd-ov ${AG}"><div class="wd-card"><b class="wd-l">${AG === 'kids' ? 'LECCIÓN COMPLETADA' : AG === 'adult' ? 'LECCIÓN COMPLETADA' : 'LESSON COMPLETE'}</b><h2>Well done!</h2><div class="wd-s">${AG === 'kids' ? '¡Lo lograste' + (nm ? ', ' + nm : '') + '!' : AG === 'adult' ? 'Excelente trabajo' + (nm ? ', ' + nm : '') + '.' : 'Great job' + (nm ? ', ' + nm : '')}</div>
       <img class="wd-m" src="mra-${AG === 'kids' ? 'celebrate' : AG === 'adult' ? 'present' : 'thumbs'}.webp" alt="Mr. Arrieta"><div class="wd-p"><span>${I('star')}${stars} estrella${stars === 1 ? '' : 's'}</span><span>+${pts} puntos</span></div><button type="button" class="wd-b">Ver mis resultados</button></div></div>`);
     document.body.appendChild(o); requestAnimationFrame(() => o.classList.add('on'));
@@ -1679,6 +1683,7 @@
       extra = `<div class="r9-ex ki"><span class="r9-ei">${I9('award')}</span><div><b>¡Sello del Tema ${p.topic}!</b><small>Mi álbum de sellos</small></div><span class="r9-al">${got}/${T.length}</span></div>`; }
     else { const tip = pct >= 90 || !weakest || weakest[1][0] / weakest[1][1] >= .9 ? '¡Excelente! Ya dominas este tema.' : TIP9[weakest[0]] || ''; if (tip) extra = `<div class="r9-ex ad"><span class="r9-ei">${I9('bulb')}</span><span>${tip}</span></div>`; }
     app.innerHTML = `<div class="player r9p"><div class="r9 ${AG}">
+      <img class="r9-mra" src="mra-${AG === 'kids' ? 'celebrate' : AG === 'adult' ? 'present' : 'thumbs'}.webp" alt="Mr. Arrieta">
       <div class="r9-st">${[1, 2, 3].map(i => STAR(i <= stars)).join('')}</div>
       <h2>${head}</h2><p class="r9-les">${esc(p._t.title)} · ${PL(p)}${revM ? ` · Repasando ${M.revCount()} de ${M.totalParts()}` : ''}</p>
       <div class="r9-stats"><div><b>${pct}%</b><small>Precisión</small></div><div><b>+${run.xp + bonus}</b><small>Puntos</small></div><div><b>${c}/${t}</b><small>Respuestas</small></div></div>

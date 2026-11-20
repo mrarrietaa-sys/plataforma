@@ -10726,3 +10726,11 @@ body.lp-app,body.home-app{background-image:none!important}
 .pod9-v2 .pod9-go{max-width:none!important;min-width:176px;white-space:nowrap;text-align:center}
 .pod9-v2 .pod9-prog{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
 @media(max-width:360px){.pod9-v2 .pod9-go{min-width:150px}}
+
+/* v759 · final de lección en una sola pantalla: Mr. Arrieta celebrando arriba de las estrellas */
+.r9-mra{display:block;height:96px;width:auto;margin:-6px auto 2px;animation:r9pop .6s cubic-bezier(.3,1.5,.5,1) both}@keyframes r9pop{0%{transform:scale(.3);opacity:0}100%{transform:scale(1);opacity:1}}@media(min-width:900px){.r9-mra{height:110px}}
+/* v759 · Mr. Arrieta con guitarra: sombra bajo los dos pies y sin halo */
+.itl-k-guitar .itl-img{filter:none!important}
+.itl-k-guitar::after{left:46%!important;width:92%!important;bottom:-6px!important;height:26px!important;background:radial-gradient(closest-side,rgba(11,42,91,.42),rgba(11,42,91,.18) 55%,transparent)!important}
+/* v759 · en la pantalla final, el aviso de insignia va abajo para no tapar a Mr. Arrieta */
+body:has(.r9p) #toast{top:auto!important;bottom:calc(18px + env(safe-area-inset-bottom))!important}
