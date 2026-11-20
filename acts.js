@@ -74,7 +74,7 @@
     const sayIt = async (i) => { const it = p.vocab[i]; heard.add(i); upd(); if (isPl) { await play(it.sgau); await sleep(200); } await play(it.au); };
     const show = (i, auto) => { stop(); cur = (i + n) % n; const it = p.vocab[cur]; const badge = it.x === 'near' ? '👉 cerca' : it.x === 'far' ? '👉 lejos' : '';
       ph.innerHTML = photo(/^\d+$/.test(String(it.en).trim()) ? '#' + String(it.en).trim() : it.img, { badge }) + `<span class="lrc-n">${REQ && cur >= REQ ? 'Opcional' : `${cur + 1} / ${REQ || n}`}</span>`;
-      enEl.innerHTML = isPl ? `${esc(it.sg)} → <u>${esc(it.en)}</u>` : esc(it.en); esEl.textContent = it.es || '';
+      enEl.innerHTML = isPl ? `${esc(it.sg)} → <u>${esc(it.en)}</u>` : esc(it.en); esEl.textContent = it.es || ''; if (isPl) { let c = $('.pl9-say', grid); if (!c) { c = h('<div class="pl9-say"></div>'); esEl.after(c); } c.innerHTML = `${window.MRI ? MRI('mic') : '🎙️'}<span>Tú di solo el plural: <b>${esc(it.en)}</b></span>`; } /* v761: queda claro que solo se dice el plural */
       const s0 = st[cur]; card.classList.remove('ce-st-ok', 'ce-st-mid', 'ce-st-bad'); res.innerHTML = s0 ? s0.html : ''; if (s0) card.classList.add(s0.cls); bindRes();
       if (mic) { mic.disabled = false; $('small', mic).textContent = said.has(cur) ? 'Otra vez' : 'Repetir'; }
       const th = $$('.lrc-t', grid)[cur]; if (th) th.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
@@ -89,7 +89,7 @@
       mic.classList.remove('rec'); mic.disabled = false; $('small', mic).textContent = 'Otra vez'; if (cur !== i) return;
       if (r.err) { res.innerHTML = ''; $('small', mic).textContent = 'Repetir'; M.toast('Permite el acceso al micrófono'); return; }
       if (r.silent) { v.el.insertAdjacentHTML('afterend', '<div class="lrc-fb"><b>No te escuché bien.</b> Acércate al micrófono y dilo un poco más fuerte.</div>'); $('small', mic).textContent = 'Repetir'; if (r.quiet) { tries++; upd(); } return; }
-      const cls = r.unv ? 'ce-st-mid' : !r.ok ? 'ce-st-bad' : r.r + r.it >= 5 ? 'ce-st-ok' : 'ce-st-mid'; card.classList.add(cls);
+      if (isPl && !r.ok && !r.unv) r.tip = `Di solo el plural: <b>${esc(it.en)}</b>`; /* v761 */ const cls = r.unv ? 'ce-st-mid' : !r.ok ? 'ce-st-bad' : r.r + r.it >= 5 ? 'ce-st-ok' : 'ce-st-mid'; card.classList.add(cls);
       v.el.insertAdjacentHTML('afterend', MRMEL.resultHTML(r) + '<div class="mel9-bt"><button type="button" class="btn w sm mel9-me">▶ Tu voz</button><button type="button" class="btn w sm ce-mo">▶ Modelo</button></div>');
       res.querySelector('.mel9-me').onclick = (ev) => { ev.stopPropagation(); stop(); MRMEL.play(r.buf); };
       res.querySelector('.ce-mo').onclick = (ev) => { ev.stopPropagation(); MRMEL.stop(); play(it.au); };

@@ -10740,3 +10740,5 @@ body:has(.r9p) #toast{top:auto!important;bottom:calc(18px + env(safe-area-inset-
 /* v760 · Mr. Arrieta con batería: sombra pegada a las patas y sin halo */
 .itl-k-drums{height:auto!important}.itl-k-drums .itl-img{filter:none!important}
 .itl-k-drums::after{left:50%!important;width:94%!important;bottom:-8px!important;height:26px!important;background:radial-gradient(closest-side,rgba(11,42,91,.42),rgba(11,42,91,.18) 55%,transparent)!important}
+/* v761 · plurales: aviso «Tú di solo el plural» */
+.pl9-say{display:flex;align-items:center;justify-content:center;gap:6px;width:max-content;max-width:100%;margin:6px auto 2px;padding:5px 12px;border-radius:999px;background:#fff4e5;border:1.5px solid #f5b301;color:#7a4a00;font-weight:800;font-size:14px;line-height:1.25;text-align:center}.pl9-say b{color:#0B2A5B}.pl9-say svg{width:16px;height:16px;flex:none}

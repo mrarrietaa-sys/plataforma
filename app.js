@@ -1528,7 +1528,7 @@
           fixed = true; best0 = c; done = false; tries = 1; ta.readOnly = false; ta.classList.remove('ro'); fbBox.classList.add('hidden'); const me = $('.wr-me', body); if (me) me.classList.add('hidden');
           if (it.f === 'f') { $('.wr-start', body).innerHTML = `${esc(it.s)} <em class="wr-blank">&nbsp;</em>`; const ch = $('.wr-chips', body); if (ch) ch.style.display = ''; }
           const tmb = $('.wr-timer', body); if (tmb) tmb.style.display = 'none';
-          bar.innerHTML = '<button class="btn k lg" id="wrgo">Enviar</button>'; $('#wrgo', bar).onclick = () => check(false); sfx('tap');
+          bar.innerHTML = '<button class="btn k lg" id="wrgo">Enviar</button>'; $('#wrgo', bar).onclick = () => { try { ta.blur(); } catch (e) { } setTimeout(() => check(false), 150); }; /* v761: en el celular el teclado termina de escribir la última palabra antes de revisar */ sfx('tap');
           setTimeout(() => { try { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); } catch (e) { } }, 50); };
       };
       const verdict = (c, txt, head, msg, ex) => { if (c === 2) { sfx('ok'); M.praise(); show('ok', head, msg, ex); } else { sfx('bad'); M.encourage(); show(c ? 'fix' : 'no', head, msg, ex); } finish(c, txt); };
@@ -1578,7 +1578,7 @@
         if (!gf) return verdict(2, txt, '¡Muy bien! +10', 'Tu frase está correcta y suena natural.', '');
         return verdict(1, txt, '¡Casi! +5', 'Mejor así:', esc(end(cap(gf))));
       };
-      go.onclick = () => check(false);
+      go.onclick = () => { try { ta.blur(); } catch (e) { } setTimeout(() => check(false), 150); }; /* v761 */
     });
   }
   // tareas con revisión del profe: solo estudiantes Premium con sesión en la nube
@@ -1683,7 +1683,7 @@
       extra = `<div class="r9-ex ki"><span class="r9-ei">${I9('award')}</span><div><b>¡Sello del Tema ${p.topic}!</b><small>Mi álbum de sellos</small></div><span class="r9-al">${got}/${T.length}</span></div>`; }
     else { const tip = pct >= 90 || !weakest || weakest[1][0] / weakest[1][1] >= .9 ? '¡Excelente! Ya dominas este tema.' : TIP9[weakest[0]] || ''; if (tip) extra = `<div class="r9-ex ad"><span class="r9-ei">${I9('bulb')}</span><span>${tip}</span></div>`; }
     app.innerHTML = `<div class="player r9p"><div class="r9 ${AG}">
-      <img class="r9-mra" src="mra-${AG === 'kids' ? 'celebrate' : AG === 'adult' ? 'present' : 'thumbs'}.webp" alt="Mr. Arrieta">
+      <img class="r9-mra" src="mra-${stars === 3 ? 'celebrate' : 'thumbs'}.webp" alt="Mr. Arrieta">
       <div class="r9-st">${[1, 2, 3].map(i => STAR(i <= stars)).join('')}</div>
       <h2>${head}</h2><p class="r9-les">${esc(p._t.title)} · ${PL(p)}${revM ? ` · Repasando ${M.revCount()} de ${M.totalParts()}` : ''}</p>
       <div class="r9-stats"><div><b>${pct}%</b><small>Precisión</small></div><div><b>+${run.xp + bonus}</b><small>Puntos</small></div><div><b>${c}/${t}</b><small>Respuestas</small></div></div>
