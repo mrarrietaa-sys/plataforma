@@ -60,10 +60,10 @@
     body.appendChild(tools);
     if (false) body.appendChild(h('<p class="ce-lnosr">🎧 Tu navegador no puede calificar la voz. Igual puedes <b>grabarte y escucharte</b> para compararte con el modelo. (En Chrome te califico automáticamente.)</p>'));
     // v500 · flashcards: una palabra a la vez con la foto grande + tira de miniaturas (cabe completo en celular y PC)
-    const grid = h(`<div class="lrc"><div class="lrc-card"><div class="lrc-ph"></div><div class="lrc-bd"><div class="lrc-w"><b class="lrc-en"></b><span class="lrc-es"></span><div class="lrc-res"></div></div>
-      <div class="lrc-ctr"><button type="button" class="lrc-au"><i>${window.MRI ? MRI('vol') : '🔊'}</i><small>Escuchar</small></button>${canRec ? `<button type="button" class="lrc-mic"><i>${window.MRI ? MRI('mic') : '🎙️'}</i><small>Repetir</small></button>` : ''}</div></div></div>
+    const grid = h(`<div class="lrc"><div class="lrc-card"><div class="lrc-ph"></div><div class="lrc-bd"><img class="lrc-mini" alt=""><div class="lrc-w"><b class="lrc-en"></b><span class="lrc-es"></span><div class="lrc-res"></div></div>
+      <div class="lrc-ctr"><button type="button" class="lrc-au"><i>${window.MRI ? MRI('vol') : '🔊'}</i><small>Escuchar</small></button>${canRec ? `<button type="button" class="lrc-mic"><i>${window.MRI ? MRI('mic') : '🎙️'}</i><small>Repetir</small></button>` : ''}</div><div class="lrc-fl"><button type="button" class="lrc-flip"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>Voltear y repetir</button><button type="button" class="lrc-back"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Ver la imagen otra vez</button></div></div></div>
       <div class="lrc-nav"><button type="button" class="lrc-ar lrc-pv" aria-label="Anterior">‹</button><div class="lrc-th"></div><button type="button" class="lrc-ar lrc-nx" aria-label="Siguiente">›</button></div><p class="lrc-need" hidden></p></div>`); body.appendChild(grid); tools.classList.add('lrc-tools');
-    const needN = canRec && !(window.MRTEACH && MRTEACH.on()) ? Math.min(5, p.vocab.length) : 0; // v754: 5 frases principales (2 intentos cada una); las demás son opcionales
+    const needN = canRec && !(window.MRTEACH && MRTEACH.on()) ? Math.min(4, p.vocab.length) : 0; // v763: 4 frases principales · v754: 5 frases principales (2 intentos cada una); las demás son opcionales
     let tries = 0; const triedNo = new Set(); const att = {}; const REQ = needN; const dn = (j) => said.has(j) || (att[j] || 0) >= 2; const reqDone = () => { let k = 0; for (let j = 0; j < REQ; j++) if (dn(j)) k++; return k; }; // v625: intentos reales con voz · frases que intentó y no logró
     const heard = new Set(), said = new Set(); const n = p.vocab.length; let cur = 0; const st = {};
     const upd = () => { $('#cnt', tools).textContent = `👂 ${heard.size} / ${n} escuchadas`; if (canRec) $('#cnt2', tools).textContent = REQ ? `🎙️ ${[...said].filter(j => j < REQ).length} / ${REQ} repetidas` : `🎙️ ${said.size} / ${n} repetidas`;
@@ -75,6 +75,9 @@
     const show = (i, auto) => { stop(); cur = (i + n) % n; const it = p.vocab[cur]; const badge = it.x === 'near' ? '👉 cerca' : it.x === 'far' ? '👉 lejos' : '';
       ph.innerHTML = photo(/^\d+$/.test(String(it.en).trim()) ? '#' + String(it.en).trim() : it.img, { badge }) + `<span class="lrc-n">${REQ && cur >= REQ ? 'Opcional' : `${cur + 1} / ${REQ || n}`}</span>`;
       enEl.innerHTML = isPl ? `${esc(it.sg)} → <u>${esc(it.en)}</u>` : esc(it.en); esEl.textContent = it.es || ''; if (isPl) { let c = $('.pl9-say', grid); if (!c) { c = h('<div class="pl9-say"></div>'); esEl.after(c); } c.innerHTML = `${window.MRI ? MRI('mic') : '🎙️'}<span>Tú di solo el plural: <b>${esc(it.en)}</b></span>`; } /* v761: queda claro que solo se dice el plural */
+      { /* v763 · tarjeta volteable: al frente la foto COMPLETA (sin recorte) con su nombre; atrás, escuchar y repetir */ card.classList.remove('lrc-bk', 'lrc-turn'); card.classList.add('lrc-fr'); ph.setAttribute('data-nofull', ''); const im = ph.querySelector('img'), src = String(it.img || '');
+        if (im && src.startsWith('u:')) { im.removeAttribute('srcset'); im.removeAttribute('sizes'); im.src = `https://images.unsplash.com/${src.slice(2)}?w=900&fit=max&q=82&auto=format`; }
+        const mini = $('.lrc-mini', grid); if (mini) { if (src.startsWith('u:')) { mini.src = M.imgURL(src, 160, 160); mini.hidden = false; } else mini.hidden = true; } }
       const s0 = st[cur]; card.classList.remove('ce-st-ok', 'ce-st-mid', 'ce-st-bad'); res.innerHTML = s0 ? s0.html : ''; if (s0) card.classList.add(s0.cls); bindRes();
       if (mic) { mic.disabled = false; $('small', mic).textContent = said.has(cur) ? 'Otra vez' : 'Repetir'; }
       const th = $$('.lrc-t', grid)[cur]; if (th) th.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
@@ -97,6 +100,9 @@
       st[i] = { html: MRMEL.resultHTML(r), cls }; if (r.unv) { markOk(i); return; } /* v520: si la revisión de palabras no está disponible, cuenta como practicada (sin marcarla correcta) para no bloquear */ if (!r.ok) { triedNo.add(i); upd(); sfx('bad'); if (att[i] >= 2) nextReq(i); return; } sfx(cls === 'ce-st-ok' ? 'ok' : 'tap'); triedNo.delete(i); markOk(i); nextReq(i);
     };
     if (mic) mic.onclick = (e) => { e.stopPropagation(); sfx('tap'); doRec(); };
+    const turn = (back) => { if (card.classList.contains('lrc-turn')) return; stop(); sfx('tap'); card.classList.add('lrc-turn'); setTimeout(() => { card.classList.toggle('lrc-bk', back); card.classList.toggle('lrc-fr', !back); card.classList.remove('lrc-turn'); }, 190); }; /* v763 */
+    $('.lrc-flip', grid).onclick = (e) => { e.stopPropagation(); turn(true); };
+    $('.lrc-back', grid).onclick = (e) => { e.stopPropagation(); turn(false); };
     $('.lrc-au', grid).onclick = () => { stop(); sayIt(cur); };
     ph.onclick = () => { stop(); sayIt(cur); };
     $('.lrc-pv', grid).onclick = () => { sfx('tap'); show(cur - 1); };

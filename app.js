@@ -999,7 +999,7 @@
       { const h2 = stage.querySelector(':scope > h2'); if (h2) h2.textContent = '¡Misión cumplida!'; }
       const bgImg = (() => { const f = $e('.ms9-fl'), im = f && f.querySelector('.fx9-sh'); if (im && im.src) return `url('${im.src}')`; const bi = f && f.style.backgroundImage; return bi && bi !== 'none' ? bi : `url('${M.imgURL('u:photo-' + BG, 900, 420)}')`; })(); /* v700: con las imágenes completas, la foto se toma de la imagen visible */
       const avHTML = $e('.ms9-ch:not(.me) .ms9-av').innerHTML;
-      const LN = []; list.forEach((x, k) => { LN.push({ o: 1, en: x.q, es: x.es || '', au: x.qau }); LN.push({ o: 0, en: x.a, es: (window.MRKQES && MRKQES(x.q, x.a)) || '', k }); });
+      const LN = []; list.forEach((x, k) => { LN.push({ o: 1, en: x.q, es: x.es || '', au: x.qau, qi: k }); LN.push({ o: 0, en: x.a, es: (window.MRKQES && MRKQES(x.q, x.a)) || '', k, qi: k }); }); const imgOf = k => (list[k] && list[k].img) ? `url('${M.imgURL('u:' + list[k].img, 900, 420)}')` : bgImg; /* v763: en la escena final, cada pregunta muestra su propia foto */
       const SVP = '<svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>', SVZ = '<svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>';
       const SVR = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>';
       const SVT = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 10 2 4v3a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-3a8 8 0 1 0-16 0v3a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-3l2-4h4Z"/><path d="M4.82 7.9 8 10"/><path d="M15.18 7.9 12 10"/><path d="M16.93 10H20a2 2 0 0 1 0 4H2"/></svg>';
@@ -1011,7 +1011,7 @@
       el.querySelector('.mvx-film').style.backgroundImage = bgImg;
       if (sr + si >= 5) { try { M.confetti(900); } catch (e) { } sfx('win'); }
       const sub = el.querySelector('.mvx-sub'), cnt = el.querySelector('.mvx-cnt'), pl = el.querySelector('.mvx-pl'), segs = [...el.querySelectorAll('.mvx-seg i')];
-      const show = (n, live) => { const L = LN[n]; cnt.textContent = 'Frase ' + (n + 1) + ' de ' + LN.length; segs.forEach((g, j) => g.className = j < n ? 'd' : j === n ? 'c' : '');
+      const show = (n, live) => { const L = LN[n]; { const fm = el.querySelector('.mvx-film'), bi = imgOf(L.qi); if (fm && fm.style.backgroundImage !== bi) { fm.classList.remove('mvx-fade'); void fm.offsetWidth; fm.style.backgroundImage = bi; fm.classList.add('mvx-fade'); } } cnt.textContent = 'Frase ' + (n + 1) + ' de ' + LN.length; segs.forEach((g, j) => g.className = j < n ? 'd' : j === n ? 'c' : '');
         sub.classList.remove('in'); void sub.offsetWidth;
         sub.innerHTML = `${L.o ? `<span class="mvx-av">${avHTML}</span>` : `<span class="mvx-me">${esc(INI)}</span>`}<div class="mvx-ln">${L.o ? '' : `<small${live ? ' class="on"' : ''}>TU VOZ <span class="mvx-eq"><i></i><i></i><i></i></span></small>`}<b>${esc(L.en)}</b>${L.es ? `<span>${esc(L.es)}</span>` : ''}</div>`; sub.classList.add('in'); sub.classList.toggle('talk', !!live); };
       let on = false, at = 0;
@@ -1493,22 +1493,35 @@
     const cap = x => { x = String(x || '').trim().replace(/\s+/g, ' '); x = x.replace(/(^|\s)i(?=\s|'|’|$)/g, '$1I'); return x ? x[0].toUpperCase() + x.slice(1) : x; };
     const end = x => /[.!?]["”]?$/.test(x) ? x : x + '.';
     const esLike = x => (nz(x).match(/\b(el|la|los|las|que|con|para|una|por|pero|muy|tengo|soy|estoy|mi|y)\b/g) || []).length >= 2;
-    const title = it.f === 'c' ? 'Responde a ' + esc(it.who) : it.f === 'x' ? 'Esta frase tiene 1 error. Escríbela bien.' : 'Completa con tus palabras';
+    const title = it.f === 'c' ? 'Responde a ' + esc(it.who) : it.f === 'x' ? 'Esta frase tiene 1 error. Arma la frase correcta.' : 'Completa la frase';
+    /* v763 · Writing «Arma la frase»: el estudiante toca las palabras en orden (sin teclado: lo correcto nunca sale como error) */
+    const tgt = String(it.f === 'x' ? it.ok[0] : it.m || '').trim().replace(/^\.\.\.\s*/, '');
+    const TK = tgt.split(/\s+/).filter(Boolean);
+    const MUT = { is: 'are', are: 'is', am: 'is', has: 'have', have: 'has', a: 'an', an: 'a', does: 'do', do: 'does', was: 'were', were: 'was', this: 'these', these: 'this' };
+    const DX = (() => { if (it.f === 'x') { const left = TK.map(w => w.toLowerCase()); const out = []; String(it.bad || '').trim().split(/\s+/).forEach(w => { const i = left.indexOf(w.toLowerCase()); if (i >= 0) left.splice(i, 1); else out.push(w); }); return out.slice(0, 2); }
+      for (const w of TK) { const m = w.match(/^([A-Za-z]+)([^A-Za-z]*)$/); if (!m) continue; const lo = m[1].toLowerCase(); if (MUT[lo]) { let r = MUT[lo]; if (m[1][0] === m[1][0].toUpperCase()) r = r[0].toUpperCase() + r.slice(1); return [r + m[2]]; } } return []; })();
+    const POOL = (() => { const a = TK.map((w, i) => ({ w, i })).concat(DX.map((w, j) => ({ w, i: 100 + j }))); let s = 0; for (const c of tgt) s = (s * 31 + c.charCodeAt(0)) >>> 0; const r = () => (s = (s * 1103515245 + 12345) >>> 0) / 4294967296;
+      for (let n = 0; n < 6; n++) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } if (a.map(x => x.w).join(' ') !== TK.join(' ')) break; } return a; })();
     const body = A.head(stage, { lbl: it.f === 'x' ? 'Writing · contra reloj' : 'Writing', title });
     stage.classList.add('wr10');
     let top = '';
     if (it.f === 'c') top = `<div class="wr-chat"><div class="wr-who"><span class="wr-av">${esc(String(it.who || 'F')[0])}</span>${esc(it.who)}</div><div class="wr-bub">${esc(it.q)}${it.es ? `<span class="wr-bes">${esc(it.es)}</span>` : ''}</div><div class="wr-me hidden"></div></div>`;
     else if (it.f === 'x') { const b = esc(it.bad), e = esc(it.err), i = b.indexOf(e); top = `<div class="wr-bad">${i >= 0 ? b.slice(0, i) + '<u>' + e + '</u>' + b.slice(i + e.length) : b}</div><div class="wr-timer"><div class="wr-tl"><i></i></div><b>0:00</b></div>`; }
-    else top = `<div class="wr-start">${esc(it.s)} <em class="wr-blank">&nbsp;</em></div><div class="wr-chips">${(it.ch || []).map(c => `<b>${esc(c)}</b>`).join('')}</div>`;
+    else top = `<div class="wr-start">${esc(it.s)} <em class="wr-blank">&nbsp;</em></div>`;
     if (it.es && it.f !== 'c') top += `<p class="wr-es">${esc(it.es)}</p>`; // v674: A1 · traducción al español debajo
     body.appendChild(h(`<div class="wr-top">${top}</div>`));
-    const ta = h(`<textarea class="wr-in" rows="2" lang="en" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="${it.f === 'c' ? 'Escribe tu respuesta en inglés…' : it.f === 'x' ? 'Escribe la frase correcta…' : 'Termina la frase en inglés…'}"></textarea>`);
+    const ta = h(`<textarea class="wr-in" rows="2" hidden tabindex="-1" aria-hidden="true"></textarea>`); /* v763: guarda la frase armada (sin teclado) */
     body.appendChild(ta);
+    const tw = h(`<div class="wt9"><div class="wt9-slot" aria-label="Tu frase"><span class="wt9-ph">Toca las palabras en orden</span></div><div class="wt9-pool"></div></div>`); body.appendChild(tw);
+    const slot = $('.wt9-slot', tw), pool = $('.wt9-pool', tw); let picked = [];
+    const paintT = () => { slot.innerHTML = picked.length ? '' : '<span class="wt9-ph">Toca las palabras en orden</span>'; picked.forEach((x, k) => { const b = h(`<button type="button" class="wt9-w in">${esc(x.w)}</button>`); b.onclick = () => { if (ta.readOnly) return; picked.splice(k, 1); sfx('tap'); paintT(); }; slot.appendChild(b); });
+      pool.innerHTML = ''; POOL.forEach(x => { const used = picked.includes(x); const b = h(`<button type="button" class="wt9-w${used ? ' used' : ''}"${used ? ' disabled' : ''}>${esc(x.w)}</button>`); b.onclick = () => { if (ta.readOnly || used) return; picked.push(x); sfx('tap'); paintT(); }; pool.appendChild(b); });
+      ta.value = picked.map(x => x.w).join(' '); slot.classList.toggle('full', picked.length >= TK.length); };
+    const resetT = () => { picked = []; slot.classList.remove('ok', 'no'); paintT(); }; paintT();
     ['paste', 'drop'].forEach(ev => ta.addEventListener(ev, e => { e.preventDefault(); M.toast('Escríbela tú mismo: así aprendes de verdad.'); }));
     const fbBox = h(`<div class="wr-fb hidden"></div>`); body.appendChild(fbBox);
-    const bar = h(`<div class="actionbar wr-bar"><button class="btn k lg" id="wrgo">Enviar</button></div>`); body.appendChild(bar);
+    const bar = h(`<div class="actionbar wr-bar"><button class="btn k lg" id="wrgo">Comprobar</button></div>`); body.appendChild(bar);
     const go = $('#wrgo', bar);
-    setTimeout(() => { try { ta.focus({ preventScroll: true }); } catch (e) { } }, 350);
     ta.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); const g = $('#wrgo', bar); if (g) g.click(); } });
     return await new Promise(res => {
       let done = false, tries = 0, tmr = null, fixed = false, best0 = 0;
@@ -1525,20 +1538,32 @@
         bar.innerHTML = (c < 2 && !fixed ? '<button class="btn w lg" id="wrfix">Corregir</button>' : '') + '<button class="btn k lg" id="wrnx">Continuar</button>';
         $('#wrnx', bar).onclick = () => { stop(); res(A.result(c, 2, 'writing')); };
         if ($('#wrfix', bar)) $('#wrfix', bar).onclick = () => { /* v491 · el estudiante puede corregir una vez si lo desea */
-          fixed = true; best0 = c; done = false; tries = 1; ta.readOnly = false; ta.classList.remove('ro'); fbBox.classList.add('hidden'); const me = $('.wr-me', body); if (me) me.classList.add('hidden');
-          if (it.f === 'f') { $('.wr-start', body).innerHTML = `${esc(it.s)} <em class="wr-blank">&nbsp;</em>`; const ch = $('.wr-chips', body); if (ch) ch.style.display = ''; }
+          fixed = true; best0 = c; done = false; tries = 1; ta.readOnly = false; resetT(); ta.classList.remove('ro'); fbBox.classList.add('hidden'); const me = $('.wr-me', body); if (me) me.classList.add('hidden');
+          if (it.f === 'f') { $('.wr-start', body).innerHTML = `${esc(it.s)} <em class="wr-blank">&nbsp;</em>`; }
           const tmb = $('.wr-timer', body); if (tmb) tmb.style.display = 'none';
-          bar.innerHTML = '<button class="btn k lg" id="wrgo">Enviar</button>'; $('#wrgo', bar).onclick = () => { try { ta.blur(); } catch (e) { } setTimeout(() => check(false), 150); }; /* v761: en el celular el teclado termina de escribir la última palabra antes de revisar */ sfx('tap');
-          setTimeout(() => { try { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); } catch (e) { } }, 50); };
+          bar.innerHTML = '<button class="btn k lg" id="wrgo">Comprobar</button>'; $('#wrgo', bar).onclick = () => { try { ta.blur(); } catch (e) { } setTimeout(() => check(false), 150); }; /* v761: en el celular el teclado termina de escribir la última palabra antes de revisar */ sfx('tap');
+        };
       };
       const verdict = (c, txt, head, msg, ex) => { if (c === 2) { sfx('ok'); M.praise(); show('ok', head, msg, ex); } else { sfx('bad'); M.encourage(); show(c ? 'fix' : 'no', head, msg, ex); } finish(c, txt); };
       if (it.f === 'x') {
         const T = AG === 'kids' ? 60 : AG === 'teens' ? 45 : 30; let left = T; const tl = $('.wr-tl i', body), tb = $('.wr-timer b', body);
         const paint = () => { tl.style.width = (left / T * 100) + '%'; tb.textContent = '0:' + String(left).padStart(2, '0'); $('.wr-timer', body).classList.toggle('low', left <= 8); };
-        paint(); tmr = setInterval(() => { if (done) return; left--; paint(); if (left <= 0) { clearInterval(tmr); const txt = ta.value.trim(); if (txt.length >= 3) check(true); else verdict(0, txt, 'Se acabó el tiempo', 'No pasa nada. Así se escribe:', esc(it.ok[0])); } }, 1000);
+        paint(); tmr = setInterval(() => { if (done) return; left--; paint(); if (left <= 0) { clearInterval(tmr); check(true); } }, 1000);
       }
       try { M.loadDict && M.loadDict(); } catch (e) { }
-      const check = (auto) => {
+      const check = (auto) => { /* v763 · revisión de la frase armada con fichas: compara palabra por palabra con la frase modelo */
+        if (done) return; const txt = picked.map(x => x.w).join(' ');
+        if (!auto && picked.length < TK.length) { M.toast(picked.length ? 'Termina de armar la frase' : 'Toca las palabras para armar la frase'); sfx('bad'); return; }
+        const okSeq = picked.length === TK.length && picked.every((x, k) => x.w === TK[k]), wrongW = picked.some(x => x.i >= 100);
+        slot.classList.add(okSeq ? 'ok' : 'no');
+        if (it.f === 'c') { const me = $('.wr-me', body); me.textContent = txt || tgt; me.classList.remove('hidden'); }
+        if (it.f === 'f') $('.wr-start', body).innerHTML = esc(String(it.s).trim() + ' ' + (okSeq ? tgt : txt));
+        if (okSeq) return verdict(2, txt, it.f === 'x' ? '¡Bien visto! +10' : '¡Perfecto! +10', it.f === 'x' ? esc(it.why) : 'Frase bien armada.', '');
+        if (!picked.length) return verdict(0, txt, 'Se acabó el tiempo', 'No pasa nada. Así se escribe:', esc(it.f === 'f' ? String(it.s).trim() + ' ' + tgt : tgt));
+        if (!wrongW && picked.length === TK.length) return verdict(1, txt, '¡Casi! +5', 'Usaste las palabras correctas. Revisa el orden:', esc(it.f === 'f' ? String(it.s).trim() + ' ' + tgt : tgt));
+        return verdict(0, txt, it.f === 'x' && wrongW ? 'El error sigue ahí' : 'Revisa la frase', it.f === 'x' ? esc(it.why) : 'Así se escribe:', esc(it.f === 'f' ? String(it.s).trim() + ' ' + tgt : tgt));
+      };
+      const checkOld = (auto) => {
         if (done) return; const txt = ta.value.trim();
         if (!auto && M.words(txt).length < (it.f === 'f' ? 1 : 2)) { ta.focus(); M.toast(it.f === 'f' ? 'Escribe cómo termina la frase' : 'Escribe una frase completa'); return; }
         if (!auto && esLike(txt) && tries < 1) { tries++; ta.focus(); show('no', 'Escríbelo en inglés', 'Usa las palabras de la lección.', ''); sfx('bad'); return; }

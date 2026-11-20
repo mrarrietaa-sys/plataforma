@@ -10745,3 +10745,63 @@ body:has(.r9p) #toast{top:auto!important;bottom:calc(18px + env(safe-area-inset-
 
 /* v762: iPad/tabletas — Diccionario como pestaña con la carita en el borde derecho (igual que en celular), sin tapar el contenido */
 @media (min-width:601px) and (max-width:1199px), (min-width:601px) and (hover:none) and (pointer:coarse){#dict-fab:not(.drag){left:auto!important;right:0!important;top:auto!important;bottom:120px!important;padding:2px 3px 2px 2px!important;border-radius:999px 0 0 999px!important;border-right:0!important}#dict-fab img{height:40px!important;width:34px!important}#dict-fab span{display:none!important}}
+
+/* v763 · Writing «Arma la frase» (fichas, sin teclado) · 3 edades */
+.wt9{margin:12px 0 4px}
+.wt9-slot{min-height:64px;border:2px dashed #c9d3e2;border-radius:16px;padding:10px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center;background:#f6f8fc;transition:border-color .2s,background .2s}
+.wt9-slot.ok{border:2px solid #1a9e55;background:#eefaf3}
+.wt9-slot.no{border:2px solid #e8a33d;background:#fff8ec}
+.wt9-ph{color:#8a97ab;font-size:14px;font-weight:600}
+.wt9-pool{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:16px 0 6px}
+.wt9-w{background:#fff;border:2px solid #d6deea;border-bottom-width:4px;border-radius:12px;padding:8px 14px;min-height:44px;font:700 17px/1.2 var(--fh,inherit);color:#0B2A5B;cursor:pointer;white-space:nowrap;max-width:100%;transition:transform .12s,opacity .2s}
+.wt9-w:active{transform:translateY(2px);border-bottom-width:2px}
+.wt9-w.used{opacity:.22;cursor:default}
+.wt9-slot .wt9-w{border-color:#9fb1cc}
+.wt9-slot.ok .wt9-w{border-color:#1a9e55;color:#127a42}
+.wt9-slot.no .wt9-w{border-color:#e8a33d}
+@media(max-width:380px){.wt9-w{font-size:16px;padding:7px 11px}}
+
+/* v763 · Listen and repeat: tarjeta volteable · al frente la foto completa (sin recorte ni bordes) con su nombre; atrás, escuchar y repetir · 3 edades */
+.lrc-card.lrc-fr,.lrc-card.lrc-bk{height:auto!important}
+.lrc-card{transition:transform .19s ease-in,border-color .2s,box-shadow .2s;transform-origin:50% 50%}
+.lrc-card.lrc-turn{transform:perspective(900px) rotateY(90deg)}
+.lrc-mini{display:none;width:72px;height:72px;border-radius:50%;object-fit:cover;flex:none;border:3px solid #fff;box-shadow:0 4px 12px rgba(11,42,91,.18)}
+.lrc-fl{display:flex;justify-content:center}
+.lrc-flip,.lrc-back{display:inline-flex;align-items:center;gap:8px;border:0;cursor:pointer;font:800 15px var(--fh,inherit);border-radius:999px}
+.lrc-flip{background:var(--k,#0B2A5B);color:#fff;padding:11px 22px;box-shadow:0 6px 16px rgba(11,42,91,.22)}
+.lrc-back{background:none;color:var(--mut,#5b6b82);font-weight:700;font-size:14px;text-decoration:underline;padding:6px 8px}
+.lrc-fr .lrc-ctr,.lrc-fr .lrc-res,.lrc-fr .lrc-back,.lrc-fr .lrc-mini{display:none!important}
+.lrc-bk .lrc-ph,.lrc-bk .lrc-flip{display:none!important}
+.lrc-bk .lrc-mini:not([hidden]){display:block}
+.player .stage .lrc-card.lrc-fr .lrc-ph:has(img),.lrc-fr .lrc-ph:has(img){height:auto!important;max-height:none!important;min-height:0!important;flex:none!important}
+.player .stage .lrc-card.lrc-fr .lrc-ph:has(img) .ph,.lrc-fr .lrc-ph:has(img) .ph{position:relative!important;inset:auto!important;height:auto!important}
+.player .stage .lrc-card.lrc-fr .lrc-ph .ph img,.lrc-fr .lrc-ph .ph img,.lrc-fr .lrc-ph .ph img.fx3-i{height:auto!important;width:100%!important;object-fit:fill!important}
+.lrc-fr .lrc-bd{flex-direction:column;align-items:center;text-align:center;gap:10px;padding:14px 14px 18px}
+.lrc-fr .lrc-w{text-align:center}
+.lrc-bk .lrc-bd{flex-direction:column;align-items:center;text-align:center;gap:12px;padding:20px 14px}
+.lrc-bk .lrc-w{text-align:center;flex:none;width:100%}
+.lrc-bk .lrc-ctr{justify-content:center}
+@media(min-width:900px){
+ .lrc-card.lrc-fr:has(.lrc-ph img){height:auto!important}
+ .lrc-fr .lrc-ph:has(img){flex:none;width:58%;align-self:center}
+ .lrc-bk .lrc-bd{flex:1;justify-content:center;min-height:280px}
+ .lrc-card.lrc-bk{height:auto!important}
+}
+.lrc-fr .lrc-bd>.lrc-w,.lrc-bk .lrc-bd>.lrc-w{order:1}.lrc-fr .lrc-bd>.lrc-ctr,.lrc-bk .lrc-bd>.lrc-ctr{order:2}.lrc-fr .lrc-bd>.lrc-fl,.lrc-bk .lrc-bd>.lrc-fl{order:3}.lrc-bd>.lrc-mini{order:0}
+@media(min-width:900px){.lrc-fr .lrc-bd{justify-content:center;align-self:stretch}}
+
+/* v763 · Reading centrado (título, foto, audio y preguntas) con el párrafo alineado a la izquierda · 3 edades, 4 módulos */
+.rd9-ph{display:flex;justify-content:center}.rd9-ph>.ph{margin-left:auto;margin-right:auto}
+.rd9-au{justify-content:center}
+.rd9 .rd-tr{display:flex;margin-left:auto;margin-right:auto}
+.rd9~h3{text-align:center}
+.yn9-h{flex-direction:column;align-items:center;text-align:center;gap:8px}.yn9-h small{flex:none}
+.yn:not(.yn9-off){flex-direction:column;align-items:center;text-align:center;gap:10px}.yn:not(.yn9-off)>p{text-align:center;margin:0}.yn .b{justify-content:center}
+/* v763 · Misiones: respuestas centradas · 3 edades */
+.ms9-o,.mv-o{text-align:center}.mv-o{justify-content:center}
+.mvx-film.mvx-fade{animation:mvxf .6s ease}@keyframes mvxf{from{filter:brightness(.55)}to{filter:none}}
+.reading~h3,.reading>.pod9-lb,.pod9-lb{text-align:center!important}
+.reading .rd-tr{display:flex;width:max-content;max-width:100%;margin-left:auto;margin-right:auto}
+.m4l-p>.slw-w{display:flex;justify-content:center;margin-left:auto;margin-right:auto}
+.m4l-q,.m4l-qq{text-align:center}
+.pod9-lb{justify-content:center}
