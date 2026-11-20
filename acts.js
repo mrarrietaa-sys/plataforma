@@ -111,8 +111,8 @@
     // v428: mini lección ARRIBA y dinámica (diapositivas con Mr. Arrieta), luego se practican las palabras
     const ml10el = !o.noTip ? ml10(p, () => { if (stage._lrtSet) { stage._lrtSet('p'); return; } const el = body.querySelector('.ml10'); if (el) { el.classList.add('ml10-min'); const hd = el.querySelector('.ml10-h'); if (hd && !hd._v) { hd._v = 1; hd.addEventListener('click', ev => { if (ev.target.closest('.ml10-au')) return; el.classList.toggle('ml10-min'); }); } } try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { } }) : null; // v484: al terminar la regla se pliega y las tarjetas quedan a la vista
     const lrTabs = (mlEl) => { /* v639: la regla y las frases en pestañas: todo cabe en pantalla sin bajar */ if (!mlEl || !grid) return; const tb = h(`<div class="lrt"><button type="button" data-t="r">1 · La regla</button><button type="button" data-t="p">2 · Repite las frases</button></div>`); body.insertBefore(tb, mlEl);
-      const set = (t) => { stage.classList.toggle('lrt-r', t === 'r'); stage.classList.toggle('lrt-p', t === 'p'); $$('button', tb).forEach(b => b.classList.toggle('on', b.dataset.t === t)); };
-      $$('button', tb).forEach(b => b.onclick = () => { sfx('tap'); set(b.dataset.t); }); set('r'); stage._lrtSet = set; };
+      const set = (t) => { const was = stage.classList.contains('lrt-p'); stage.classList.toggle('lrt-r', t === 'r'); if (t === 'p' && !was && tb._ok) setTimeout(() => { if (stage.isConnected && stage.classList.contains('lrt-p') && !(mic && mic.classList.contains('rec'))) { stop(); sayIt(cur); } }, 350); /* v757: la 1ª frase también suena sola */ stage.classList.toggle('lrt-p', t === 'p'); $$('button', tb).forEach(b => b.classList.toggle('on', b.dataset.t === t)); };
+      $$('button', tb).forEach(b => b.onclick = () => { sfx('tap'); set(b.dataset.t); }); set('r'); tb._ok = 1; stage._lrtSet = set; };
     if (ml10el) { body.insertBefore(ml10el, tools); lrTabs(ml10el);
     } else
     if (!o.noTip && (p.tip || (p.tips && p.tips.length))) {
@@ -127,6 +127,7 @@
       $('.ml9-x', ml).onclick = () => { sfx('tap'); if (si < SL.length - 1) { si++; draw(); } else { ml.classList.add('done'); if (stage._lrtSet) stage._lrtSet('p'); else tools.scrollIntoView({ behavior: 'smooth', block: 'start' }); } };
       body.insertBefore(ml, tools); draw(); lrTabs(ml);
     }
+    if (grid && !body.querySelector('.lrt')) setTimeout(() => { if (grid.isConnected && cur === 0 && !heard.has(0)) { stop(); sayIt(0); } }, 450); // v757: sin regla, la 1ª frase suena sola
     // 🎙️ v625: repetir con su voz UNA frase para continuar; si después de 3 intentos no lo logra, avanza igual (nunca es un bloqueo) y esas frases vuelven en el repaso
     const need = needN;
     const saveMiss = () => { try { const L = [...triedNo].filter(j => !said.has(j)).map(j => p.vocab[j] && p.vocab[j].au).filter(Boolean); if (!L.length) return; const k = 'mra_rev_miss_' + String((M.code && M.code()) || (window.MRAC && MRAC.code && MRAC.code()) || ''); const old = JSON.parse(localStorage.getItem(k) || '[]'); localStorage.setItem(k, JSON.stringify([...new Set(L.concat(old))].slice(0, 20))); } catch (e) { } };

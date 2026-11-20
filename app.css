@@ -10717,3 +10717,12 @@ body.lp-app,body.home-app{background-image:none!important}
 .lrc-t.lrc-opt.lrc-on{opacity:1}
 /* v755 · celular: la ventana de ingreso ya no repite el saludo (Mr. Arrieta saluda con su burbuja) */
 @media(max-width:899px){body.home-app .ld-login .pt-hello{display:none!important}}
+
+/* v757 · podcast en dos filas: el título nunca se aplasta al dar play (Módulos 2 y 4, 3 edades) */
+.pod9-pl.pod9-v2{flex-direction:column!important;align-items:stretch!important;gap:12px!important;padding:12px!important}
+.pod9-v2 .pod9-top{display:flex;align-items:center;gap:12px;min-width:0}.pod9-v2 .pod9-top .pod9-in{flex:1;min-width:0}
+.pod9-v2 .pod9-in small{white-space:normal;letter-spacing:.03em!important;line-height:1.25}.pod9-v2 .pod9-in b{white-space:normal!important;overflow:visible!important;font-size:18px!important;line-height:1.2!important}
+.pod9-v2 .pod9-ctl{display:flex;align-items:center;gap:10px;min-width:0}.pod9-v2 .pod9-ctl>.slw-w{flex:none!important;display:flex;align-items:center;gap:8px;max-width:none!important;width:auto!important}
+.pod9-v2 .pod9-go{max-width:none!important;min-width:176px;white-space:nowrap;text-align:center}
+.pod9-v2 .pod9-prog{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+@media(max-width:360px){.pod9-v2 .pod9-go{min-width:150px}}

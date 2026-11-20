@@ -1157,7 +1157,7 @@
         vc.classList.remove('ok', 'late', 'bad'); const img = $v('.vk-screen img'); img.src = PIC + '.webp?v=2'; img.classList.remove('talk'); void img.offsetWidth; img.classList.add('talk');
         await play(k.qau); if (!stage.isConnected) break; if (k.aau) { await sleep(250); await play(k.aau); if (!stage.isConnected) break; }
         const r = await new Promise((done) => {
-          let left = SECS, timer = null, busy = false, over = false, late = false, hinted = false;
+          let left = SECS, timer = null, busy = false, over = false, late = false, hinted = false; let fails = 0; const failNx = () => { if (++fails < 2) { $v('.vk-msg').textContent = 'Escucha cómo se dice y léela otra vez, despacio. Tienes otro intento.'; return; } $v('.vk-msg').textContent = 'Puedes intentarlo otra vez o seguir a la siguiente pregunta.'; const nx = $v('.vk-next'); nx.hidden = false; setTimeout(() => { try { nx.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } catch (e) { } }, 300); }; /* v757: 2 intentos y luego puede seguir */
           const showAns = (why) => { $v('.vk-ans').innerHTML = `<small>${why}</small><b>${esc(tgt).replace(/___/g, '<u>___</u>')}</b>${blank ? '<em>Completa el ___ con tu información</em>' : ''}`; $v('.vk-ans').hidden = false; };
           const tick = () => { if (busy || over) return; left -= 0.1; setT(left, left / SECS); if (left <= 0) { clearInterval(timer); late = true; vc.classList.add('late'); $v('.vk-msg').textContent = 'Take your time! Lee la respuesta en voz alta (sin puntos).'; $v('.vk-next').hidden = false; } };
           setT(left, 1); timer = setInterval(tick, 100); $v('.vk-msg').textContent = blank ? 'Toca el micrófono y léela con tu información' : 'Toca el micrófono y léela';
@@ -1182,7 +1182,7 @@
               if (mm.ok) { sfx('ok'); M.praise(); vc.classList.add('ok'); vc.classList.remove('bad'); $v('.vk-msg').textContent = (late ? '¡Bien dicho!' : '¡Excelente!') + ' Puedes repetirla o seguir.'; // v518: puede repetir su frase si quiere
                 fb.insertAdjacentHTML('beforeend', '<div class="rp9"><button type="button" class="btn w sm rp9-me">▶ Tu voz</button><button type="button" class="btn w sm rp9-ag">↻ Repetir</button><button type="button" class="btn k sm rp9-nx">Siguiente →</button></div>');
                 fb.querySelector('.rp9-me').onclick = () => { stop(); MRMEL.play(mm.buf); }; fb.querySelector('.rp9-ag').onclick = () => $v('.vk-mic').click(); fb.querySelector('.rp9-nx').onclick = () => finish(true); }
-              else { sfx('bad'); vc.classList.add('bad'); $v('.vk-msg').textContent = 'Escucha cómo se dice y léela otra vez, despacio.'; if (k.aau) setTimeout(() => play(k.aau), 900); $v('.vk-next').hidden = false; }
+              else { sfx('bad'); vc.classList.add('bad'); if (k.aau) setTimeout(() => play(k.aau), 900); failNx(); }
               return; }
             const rr = await M.listen(9000, { quick: true, target: tgt }); vc.classList.remove('rec'); busy = false; if (over) return;
             if (!rr.alts || !rr.alts.length) { $v('.vk-msg').textContent = rr.error === 'not-allowed' ? 'Permite el micrófono en tu navegador para responder' : 'No te escuché. Acércate un poco al micrófono e intenta otra vez.'; return; }
@@ -1191,7 +1191,7 @@
             { const im = $v('.vk-screen img'); im.src = (ok ? 'mra-thumbs' : 'mra-think') + '.webp?v=2'; } /* v456: Mr. Arrieta reacciona (un solo personaje en pantalla) */
             if (!ok) vc.classList.add('bad');
             if (ok) { sfx('ok'); M.praise(); vc.classList.add('ok'); $v('.vk-msg').textContent = late ? '¡Bien dicho!' : '¡Excelente!'; setTimeout(() => finish(true), fj.fix ? 3200 : 1500); }
-            else { sfx('bad'); setTimeout(M.encourage, 250); $v('.vk-msg').textContent = 'Escucha cómo se dice y léela otra vez, despacio.'; if (k.aau) setTimeout(() => play(k.aau), 900); $v('.vk-next').hidden = false; }
+            else { sfx('bad'); setTimeout(M.encourage, 250); if (k.aau) setTimeout(() => play(k.aau), 900); failNx(); }
           };
         });
         if (r.ok) { c++; if (!r.late) { streak++; pts += (r.hinted ? 50 : 100) * Math.min(3, streak); } else streak = 0; } else streak = 0;
