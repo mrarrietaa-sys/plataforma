@@ -673,8 +673,10 @@
     return ytP9; }
   async function song9(stage, sg, opt = {}) {
     const kids = M.ageGroup() === 'kids', n = Math.min(2, (sg.g || []).length); if (n < 2) return null; // v501: 2 pausas
-    const G = sg.g.slice(0, n), clip = window.MRCLIP ? MRCLIP(sg) : [30, 105], ids = [sg.yt, ...(sg.alt || [])];
-    const CP = G.map((_, i) => i === n - 1 ? clip[1] - .6 : clip[0] + (clip[1] - clip[0]) * (i + 1) / n);
+    if (!(Array.isArray(sg.gp) && Array.isArray(sg.gq))) return null; // v757: solo pausa si sabemos el segundo exacto en que se canta la palabra (si no, va la actividad de la canción sin pausas)
+    const GP = Array.isArray(sg.gp) && sg.gp.length >= n && Array.isArray(sg.gq) ? sg.gp : null; // v757: pausa justo después de que el cantante dice la palabra
+    const G = GP ? sg.gq.slice(0, n).map(k => sg.g[k]) : sg.g.slice(0, n), clip = GP ? [Math.floor(sg.gs != null ? +sg.gs : Math.max(0, GP[0] - 25)), Math.ceil(GP[n - 1] + 3)] : window.MRCLIP ? MRCLIP(sg) : [30, 105], ids = [sg.yt, ...(sg.alt || [])];
+    const CP = GP ? GP.slice(0, n) : G.map((_, i) => i === n - 1 ? clip[1] - .6 : clip[0] + (clip[1] - clip[0]) * (i + 1) / n);
     const body = head(stage, { lbl: opt.lbl || 'Music', title: 'Completa lo que falta', ins: `Dale play. La canción se detiene sola ${n} veces: elige la palabra que escuchaste.` });
     const w = h(`<div class="sg9"><div class="sg9-st"><span class="sg9-n">0 / ${n}</span><span class="sg9-bar"><i></i></span></div>
       <div class="sg9-vid"><div class="sg9-p"></div><span class="sg9-tag" hidden>Pausado</span></div>
