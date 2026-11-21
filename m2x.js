@@ -625,7 +625,7 @@
       const c = await new Promise(done => el.querySelectorAll('.m4o-b').forEach(b => b.onclick = () => { if (fb.dataset.done) return; const j = +b.dataset.j; const at = pick.indexOf(j);
         if (at >= 0) { pick.splice(at); } else pick.push(j); el.querySelectorAll('.m4o-b').forEach((x, jj) => { const k = pick.indexOf(jj); x.classList.toggle('on', k >= 0); x.querySelector('b').textContent = k >= 0 ? k + 1 : '?'; }); sfx('tap');
         if (pick.length === R.length) { fb.dataset.done = 1; let n = 0; pick.forEach((pj, k) => { const good = cards[pj].k === k; if (good) n++; el.querySelectorAll('.m4o-b')[pj].classList.add(good ? 'good' : 'bad'); });
-          sfx(n === R.length ? 'win' : 'bad'); fb.innerHTML = `<div class="as-fbk ${n === R.length ? 'ok' : 'no'}"><span>${n === R.length ? '¡Orden perfecto!' : `${n} de ${R.length} en su lugar. El orden era: ${R.map((x, k) => `${k + 1}. ${esc(x.full)}`).join(' · ')}`}</span></div><button type="button" class="btn k m4o-nx">Continuar</button>`; fb.querySelector('.m4o-nx').onclick = () => { stopA(); done(n); }; } }));
+          sfx(n === R.length ? 'win' : 'bad'); fb.innerHTML = `<div class="as-fbk ${n === R.length ? 'ok' : 'no'}"><span>${n === R.length ? '¡Orden perfecto!' : `<b class="m4o-fh">${n} de ${R.length} en su lugar</b>${R.map((x, k) => `<span class="m4o-fl">${k + 1}. ${esc(x.full)}</span>`).join('')}`}</span></div><button type="button" class="btn k m4o-nx">Continuar</button>`; fb.querySelector('.m4o-nx').onclick = () => { stopA(); done(n); }; } }));
       return { c, t: R.length };
     }
     return { board, podcast, control, blocks, duel, rocket, readParts, eco, bindEco, order };

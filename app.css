@@ -10826,3 +10826,15 @@ body:has(.r9p) #toast{top:auto!important;bottom:calc(18px + env(safe-area-inset-
 .sg9-op.bad .sg9-tr{text-decoration:none}
 /* v766 PC: cuadro más pequeño y centrado */
 @media(min-width:900px){.player .stage .lrc-card.lrc-fr{--ih:clamp(170px,min(calc(100vh - 400px),260px),260px)!important;max-width:680px!important;margin-left:auto!important;margin-right:auto!important}.player .stage .lrc-card.lrc-fr .lrc-bd{min-width:0!important;max-width:280px!important;padding:18px 22px!important}.player .stage .lrc-card.lrc-fr .lrc-en{font-size:24px!important}}
+/* v769 M4 «Ordena las frases»: todo centrado */
+.m4o .m4o-ag,.m4o>.slw-w{align-self:center!important}
+.m4o-b{justify-content:center!important;text-align:center!important}
+.m4o-b span{text-align:center}
+.m4o-fb{text-align:center!important}
+.m4o-b:not(.on):not(.good):not(.bad) b{color:#1b2a3a}
+.m4o-fb .m4o-fh{display:block;margin-bottom:6px}
+.m4o-fb .m4o-fl{display:block;margin:3px 0}
+/* v769: el número va pegado a la frase (como en kids), también cuando la frase ocupa 2 líneas */
+.m4o-b{display:block!important}
+.m4o-b b{display:inline-grid!important;vertical-align:middle;margin-right:8px}
+.m4o-b span{vertical-align:middle}
