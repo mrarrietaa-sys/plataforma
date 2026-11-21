@@ -10838,3 +10838,20 @@ body:has(.r9p) #toast{top:auto!important;bottom:calc(18px + env(safe-area-inset-
 .m4o-b{display:block!important}
 .m4o-b b{display:inline-grid!important;vertical-align:middle;margin-right:8px}
 .m4o-b span{vertical-align:middle}
+/* v770 Writing: pregunta y nombre centrados en el cuadro */
+.wr-who{justify-content:center!important}.wr-bub{margin-left:auto!important;margin-right:auto!important;border-radius:14px!important}.wr-start{text-align:center!important;justify-content:center!important}
+/* v770 pantalla final: el cuadro queda en la mitad de la pantalla */
+.r9p{min-height:calc(100svh / var(--z, 1))!important;min-height:calc(100dvh / var(--z, 1))!important;box-sizing:border-box;padding-top:16px;padding-bottom:16px}
+/* v770 celular: tarjeta «Continúa donde quedaste» compacta (foto completa que se desvanece hacia el texto); el PC queda igual */
+@media(max-width:899px){
+.md3-hero{flex-direction:row!important;align-items:stretch!important;min-height:0!important;padding:0!important;position:relative}
+.md3-hero .md3-hi{width:50%!important;flex:none!important;aspect-ratio:3/2;height:auto!important;min-height:0!important;background-size:cover!important;background-position:center!important;position:relative!important;-webkit-mask-image:linear-gradient(90deg,#000 45%,transparent 96%);mask-image:linear-gradient(90deg,#000 45%,transparent 96%)}
+.md3-hero .md3-hi::after{display:none!important}
+.md3-hero .md3-hx2{padding:12px 14px 12px 0!important;margin-left:-3%;flex:1 1 auto;min-width:0;gap:0!important;background:none!important;display:flex!important;flex-direction:column;justify-content:center;position:relative;z-index:1}
+.md3-hero .md3-k{font-size:10px!important;margin:0 0 2px!important;letter-spacing:.08em}
+.md3-hero .md3-ht{font-size:17px!important;margin:0!important;line-height:1.15!important;white-space:nowrap}
+.md3-hero .md3-hs{font-size:12px!important;margin:0!important}
+.md3-hero .md3-hb{margin:7px 0 3px!important}
+.md3-hero .md3-hm{font-size:11px!important;margin:0 0 8px!important}
+.md3-hero .md3-go{padding:7px 14px!important;font-size:14px!important;margin:0!important;align-self:flex-start}
+}
