@@ -10904,3 +10904,33 @@ body:not(.ag-teens) .t2c .t2-l{background:#f4f7fb!important;border:1px solid #e3
 body.ag-kids .t2c .t2-l{background:#fff8ec!important;border-color:#fde3b4!important}
 body:not(.ag-teens) .t2c .t2-l.now{border-color:#E3242B!important;background:#fff!important}
 body.ag-kids .t2c .t2-l.now{border-color:#f59e0b!important}
+/* v772 celular: etiquetas pequeñas sobre la foto · PC uniforme · panel lateral con barrita · tarjeta de repaso limpia */
+body button.md3-c{position:relative}
+body button.md3-c .md3-bd{padding-right:9px!important}
+body button.md3-c .md3-bd>span:first-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+body button.md3-c .md3-tag{position:absolute!important;right:8px;bottom:36px;z-index:2;box-shadow:0 2px 6px rgba(11,42,91,.25)}
+body .wrap.t2 .t2-cx .t2-go{white-space:nowrap!important;width:auto!important}
+@media(min-width:900px){
+body button.md3-hero{height:176px!important}
+body .wrap.t2 .t2-cont{height:176px!important;min-height:0!important;flex-direction:row!important}
+body .wrap.t2 .t2-ci{width:48%!important;height:100%!important}
+body .wrap.t2 .t2-cx{display:flex;flex-direction:column;justify-content:center;padding:0 28px!important}
+body .wrap.t2 .t2-cx .t2-k{font-size:11px!important;margin:0 0 4px!important}
+body .wrap.t2 .t2-cx h2{font-size:22px!important;margin:0!important;line-height:1.15!important}
+body .wrap.t2 .t2-cx p{font-size:13px!important;margin:2px 0 0!important}
+body .wrap.t2 .t2-cx .t2-cb{margin:10px 0 12px!important;max-width:300px}
+body .wrap.t2 .t2-cx .t2-go{padding:8px 18px!important;font-size:14px!important;align-self:flex-start;margin:0!important}
+body .wrap.t2 .t2-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:14px!important}
+body .wrap.t2 .t2c .t2-pt h3{font-size:15px!important}
+body .wrap.t2 .t2c .t2-pt small{font-size:11.5px!important}
+body .wrap.t2 .t2c .t2-can *{font-size:12.5px!important}
+body .wrap.t2 .t2c .t2-l{font-size:12.5px!important;padding:8px 9px!important}
+}
+body button.md3-c .md3-tag{font-size:8px!important;padding:2px 6px!important;letter-spacing:.03em!important;line-height:1.3!important;font-weight:700!important}
+@media(min-width:900px){body button.md3-c .md3-tag{font-size:8.5px!important}}
+@media(min-width:900px){body .db-side{position:sticky!important;top:84px!important;max-height:calc(100vh - 100px)!important;overflow-y:auto!important;scrollbar-width:thin;scrollbar-color:#b8c4d6 transparent}
+body .db-side::-webkit-scrollbar{width:6px}body .db-side::-webkit-scrollbar-thumb{background:#b8c4d6;border-radius:6px}}
+body .wrap.t2 .t2-cont.t2-end .t2-cx,body .wrap.t2 .t2-cont:not(:has(.t2-ci)) .t2-cx{margin-left:0!important;padding:14px 16px!important}
+@media(max-width:399px){body .wrap.t2 .t2-ci{width:42%!important}body .wrap.t2 .t2-cx .t2-go{font-size:13px!important;padding:7px 12px!important;gap:6px}}
+/* v772 Calentamiento: foto horizontal completa (3:2) */
+.wu-cimg{height:auto!important;aspect-ratio:3/2;background-size:cover!important;background-position:center!important}
