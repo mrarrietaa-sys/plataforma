@@ -10855,3 +10855,52 @@ body:has(.r9p) #toast{top:auto!important;bottom:calc(18px + env(safe-area-inset-
 .md3-hero .md3-hm{font-size:11px!important;margin:0 0 8px!important}
 .md3-hero .md3-go{padding:7px 14px!important;font-size:14px!important;margin:0!important;align-self:flex-start}
 }
+/* v771 Mis módulos: todo a la vista (celular y PC) */
+body button.md3-c .md3-pic{height:auto!important;aspect-ratio:16/9;padding:8px 10px!important}
+body button.md3-c .md3-pt b{font-size:14px!important}
+body button.md3-c .md3-pt small{font-size:11px!important;margin-top:0!important}
+body button.md3-c .md3-lv{top:7px!important;left:8px!important;font-size:11px!important;padding:1px 7px!important}
+body button.md3-c .md3-ring{top:6px!important;right:7px!important;width:32px!important;height:32px!important}
+body button.md3-c .md3-ring b{width:25px!important;height:25px!important;font-size:9px!important}
+body button.md3-c .md3-bd{flex-direction:row!important;flex-wrap:nowrap!important;align-items:center!important;justify-content:space-between!important;padding:7px 8px!important;font-size:10.5px!important;gap:4px}
+body button.md3-c .md3-bd>span:first-child{white-space:nowrap}
+body button.md3-c .md3-tag{font-size:9px!important;padding:2px 6px!important;letter-spacing:.02em!important}
+@media(min-width:900px){
+body button.md3-hero{height:190px!important;min-height:0!important}
+body button.md3-hero .md3-hx2{padding-top:0!important;padding-bottom:0!important;display:flex!important;flex-direction:column!important;justify-content:center!important;gap:0!important}
+body button.md3-hero .md3-k{margin:0 0 4px!important}
+body button.md3-hero .md3-ht{font-size:22px!important;margin:0!important;line-height:1.15!important}
+body button.md3-hero .md3-hs{margin:2px 0 0!important}
+body button.md3-hero .md3-hb{margin:10px 0 5px!important}
+body button.md3-hero .md3-hm{margin:0 0 10px!important}
+body button.md3-hero .md3-go{margin:0!important;align-self:flex-start}
+}
+/* v771 página del módulo: tarjeta compacta y temas compactos (celular) + lecciones en bloque (adultos y kids, como teens) */
+@media(max-width:899px){
+body .wrap.t2 .t2-cont{flex-direction:row!important;align-items:stretch!important;min-height:0!important}
+body .wrap.t2 .t2-ci{width:50%!important;flex:none!important;height:auto!important;aspect-ratio:12/7!important;-webkit-mask-image:linear-gradient(90deg,#000 45%,transparent 96%);mask-image:linear-gradient(90deg,#000 45%,transparent 96%)}
+body .wrap.t2 .t2-ci:after{display:none!important}
+body .wrap.t2 .t2-cx{padding:10px 12px 10px 0!important;margin-left:-3%;flex:1 1 auto;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:0!important;position:relative;z-index:1}
+body .wrap.t2 .t2-cx .t2-k{font-size:9.5px!important;margin:0 0 2px!important;letter-spacing:.06em}
+body .wrap.t2 .t2-cx h2{font-size:16px!important;line-height:1.15!important;margin:0!important}
+body .wrap.t2 .t2-cx p{font-size:11.5px!important;margin:2px 0 0!important;line-height:1.25!important}
+body .wrap.t2 .t2-cx .t2-cb{margin:6px 0 7px!important}
+body .wrap.t2 .t2-cx .t2-go{padding:7px 14px!important;font-size:14px!important;align-self:flex-start;margin:0!important}
+}
+@media(max-width:620px){
+body .t2c{display:grid!important;grid-template-columns:44% 1fr;column-gap:12px}
+body .t2c>.t2-pic{grid-column:1;grid-row:1;height:auto!important;min-height:0!important;padding:8px 9px!important;border-radius:0 0 12px 0}
+body .t2c>.t2-pic .t2-pt h3{font-size:13.5px!important;line-height:1.15!important;margin:0!important}
+body .t2c>.t2-pic .t2-pt small{font-size:10.5px!important}
+body .t2c>.t2-pic .t2-n{transform:scale(.8);transform-origin:top left}
+body .t2c>.t2-pic .t2-ring{transform:scale(.72);transform-origin:top right}
+body .t2c>.t2-can{grid-column:2;grid-row:1;align-self:center;padding:8px 10px 8px 0!important;background:none!important;border:0!important}
+body .t2c>.t2-can *{font-size:12px!important;line-height:1.25!important}
+body .t2c>.t2-can b,body .t2c>.t2-can strong,body .t2c>.t2-can h4{font-size:13.5px!important}
+body .t2c>.t2-ls{grid-column:1/-1;grid-row:2}
+}
+body:not(.ag-teens) .t2c .t2-ls{display:flex;flex-direction:column;gap:6px;padding:8px 10px 10px}
+body:not(.ag-teens) .t2c .t2-l{background:#f4f7fb!important;border:1px solid #e3e8f0!important;border-radius:10px!important;padding:10px 10px!important}
+body.ag-kids .t2c .t2-l{background:#fff8ec!important;border-color:#fde3b4!important}
+body:not(.ag-teens) .t2c .t2-l.now{border-color:#E3242B!important;background:#fff!important}
+body.ag-kids .t2c .t2-l.now{border-color:#f59e0b!important}
