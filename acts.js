@@ -50,6 +50,22 @@
   /* ================= 1. LEARN (Explanation) ================= */
   async function learn(stage, p, o = {}) {
     if (window.__V9 && p.vocab && p.vocab.length > 13) p = Object.assign({}, p, { vocab: p.vocab.slice(0, 13) }); // v438: las tarjetas ya vienen recortadas (hw9.js · trazabilidad) // o: { noTip, title, ins } (Kids/Teens ya vieron la regla en su cómic / historias)
+    try { /* v768: las 4 obligatorias = las palabras/frases que más se usan en el resto de la lección (Key questions, llamada, lectura, misión, writing, juegos) */
+      const V = p.vocab || [], isTiny = (v) => /^\s*(\S{1,2}|\d+)\s*$/.test(String(v.en || ''));
+      if (V.length > 4 && !V.some(isTiny)) {
+        const rest = (() => { const out = [], seen = new WeakSet(); const walk = (x, d) => { if (d > 8 || x == null) return; if (typeof x === 'string') { out.push(x); return; } if (typeof x !== 'object' || seen.has(x) || (window.Node && x instanceof Node)) return; seen.add(x); for (const k in x) { if ((k === 'vocab' && d === 0) || k[0] === '_') continue; try { walk(x[k], d + 1); } catch (e) { } } }; walk(p, 0); return out.join(' ').toLowerCase(); })();
+        const nrm = (x) => ' ' + String(x || '').toLowerCase().replace(/[’]/g, "'").replace(/[^a-z0-9' ]+/g, ' ').replace(/\s+/g, ' ').trim() + ' ';
+        const R = ' ' + rest.replace(/[^a-z0-9' ]+/g, ' ').replace(/\s+/g, ' ') + ' ';
+        const cnt = (t) => { if (t.trim().length < 2) return 0; let k = 0, q = 0; while ((q = R.indexOf(t, q)) >= 0) { k++; q += t.length - 1; } return k; };
+        const STOP = new Set(['the', 'and', 'you', 'your', 'are', 'for', 'with', 'this', 'that', 'have', 'has', 'was', 'were', 'what', 'how', 'its', "it's", 'not', 'can', 'will', 'from', 'they', 'she', 'his', 'her', 'our', 'their', 'there', 'some', 'very', 'been', 'into', 'about']);
+        const sc = V.map((v, i) => { const t = nrm(String(v.en || '').replace(/\.\.\.|…/g, ' ')); const ws = t.trim().split(' ').filter(w => w.length > 2 && !STOP.has(w)); const full = cnt(t); const part = ws.length ? ws.reduce((a, w) => a + cnt(' ' + w + ' '), 0) / ws.length : 0; return { i, s: full * 3 + part }; });
+        const fw = (k) => String(V[k].en || '').toLowerCase().trim().split(/\s+/)[0], div = (L) => new Set(L.map(fw)).size; /* solo se cambia una obligatoria si NO se usa en el resto de la lección y la nueva sí se usa (≥ 1 vez completa); se conserva la variedad (ej. a / an) */
+        let top = [0, 1, 2, 3]; const cand = sc.slice(4).filter(x => x.s >= 4).sort((a, b) => b.s - a.s || a.i - b.i);
+        for (const c of cand) { const out = top.map(k => sc[k]).filter(x => x.s <= 1 && c.s >= x.s + 4).sort((a, b) => b.i - a.i); for (const o of out) { const nt = top.map(k => k === o.i ? c.i : k); if (div(nt) >= Math.min(div(top), 4)) { top = nt; break; } } }
+        top = top.sort((a, b) => a - b);
+        if (sc.some(x => x.s > 0) && top.join() !== '0,1,2,3') p = Object.assign({}, p, { vocab: [...top.map(k => V[k]), ...V.filter((_, k) => !top.includes(k))] });
+      }
+    } catch (e) { }
     const isPl = !!p.plurals;
     // escuchar + grabar la voz del estudiante repitiendo + calificación con voz (o autoevaluación si el navegador no reconoce voz)
     const canRec = !!(window.MRMEL && MRMEL.can()); // v516: motor de melodía
@@ -679,11 +695,11 @@
     return ytP9; }
   async function song9(stage, sg, opt = {}) {
     const kids = M.ageGroup() === 'kids', n = Math.min(2, (sg.g || []).length); if (n < 2) return null; // v501: 2 pausas
-    if (!(Array.isArray(sg.gp) && Array.isArray(sg.gq))) return null; // v757: solo pausa si sabemos el segundo exacto en que se canta la palabra (si no, va la actividad de la canción sin pausas)
+    const noPause9 = !(Array.isArray(sg.gp) && Array.isArray(sg.gq)); /* v767: sin el segundo exacto ya NO sale el bingo: la canción suena completa y luego responde */ // v757: solo pausa si sabemos el segundo exacto en que se canta la palabra (si no, va la actividad de la canción sin pausas)
     const GP = Array.isArray(sg.gp) && sg.gp.length >= n && Array.isArray(sg.gq) ? sg.gp : null; // v757: pausa justo después de que el cantante dice la palabra
     const G = GP ? sg.gq.slice(0, n).map(k => sg.g[k]) : sg.g.slice(0, n), clip = GP ? [Math.floor(sg.gs != null ? +sg.gs : Math.max(0, GP[0] - 25)), Math.ceil(GP[n - 1] + 3)] : window.MRCLIP ? MRCLIP(sg) : [30, 105], ids = [sg.yt, ...(sg.alt || [])];
     const CP = GP ? GP.slice(0, n) : G.map((_, i) => i === n - 1 ? clip[1] - .6 : clip[0] + (clip[1] - clip[0]) * (i + 1) / n);
-    const body = head(stage, { lbl: opt.lbl || 'Music', title: 'Completa lo que falta', ins: `Dale play. La canción se detiene sola ${n} veces: elige la palabra que escuchaste.` });
+    const body = head(stage, { lbl: opt.lbl || 'Music', title: 'Completa lo que falta', ins: noPause9 ? 'Escucha la canción y luego elige las palabras que escuchaste.' : `Dale play. La canción se detiene sola ${n} veces: elige la palabra que escuchaste.` });
     const w = h(`<div class="sg9"><div class="sg9-st"><span class="sg9-n">0 / ${n}</span><span class="sg9-bar"><i></i></span></div>
       <div class="sg9-vid"><div class="sg9-p"></div><span class="sg9-tag" hidden>Pausado</span></div>
       <div class="sg9-q"><p class="sg9-h">Dale play. La canción se detiene sola ${n} veces: elige la palabra que escuchaste.</p><div class="sg9-line" hidden></div><div class="sg9-ops"></div><button type="button" class="sg9-rep" hidden>Escuchar otra vez</button></div></div>`);
@@ -694,7 +710,7 @@
     let finish; const done = new Promise(r => finish = r);
     const ask = () => { if (asking || i >= n) return; asking = true; try { player && player.pauseVideo(); } catch (e) { }
       const it = G[i], blank = '<span class="sg9-gap">&nbsp;</span>';
-      $('.sg9-tag', w).hidden = false; hint(kids ? '¿Qué palabra escuchaste?' : '¿Qué palabra escuchaste?');
+      $('.sg9-tag', w).hidden = noPause9; hint(kids ? '¿Qué palabra escuchaste?' : '¿Qué palabra escuchaste?');
       const ln = $('.sg9-line', w); ln.innerHTML = it[0] ? esc(it[0]).replace('___', blank) : blank; ln.hidden = false;
       const ops = shuffle([it[1], it[2], it[3]]), box = $('.sg9-ops', w);
       const TR = window.SGTR || {}, tr9 = (o) => TR[o] || TR[String(o).toLowerCase()] || '', early9 = /modulo-a[12](\.html)?$/.test(location.pathname); /* v765: M1-M2 traducción debajo de cada opción; M3-M4 al responder */
@@ -713,7 +729,7 @@
     const fallback = () => { clearInterval(poll); player = null;
       $('.sg9-vid', w).innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${esc(ids[0])}?rel=0&playsinline=1&start=${clip[0]}&end=${clip[1]}&cc_load_policy=0&iv_load_policy=3" allow="autoplay; encrypted-media" allowfullscreen></iframe><span class="sg9-tag" hidden>Pausado</span>`; /* v519: conserva la etiqueta (sin ella la actividad se rompía) */
       hint('Escucha la canción y luego responde.'); const go = h('<button type="button" class="sg9-rep">Ya la escuché</button>'); $('.sg9-q', w).appendChild(go); go.onclick = () => { go.hidden = true; ask(); }; }; /* v519: sin YouTube API el botón se reutiliza (antes se borraba y la actividad se rompía) */
-    const ok = await yt9(); if (!stage.isConnected) return null;
+    const ok = noPause9 ? false : await yt9(); if (!stage.isConnected) return null;
     if (!ok) fallback();
     else {
       player = new YT.Player($('.sg9-p', w), { videoId: ids[0], width: '100%', height: '100%', playerVars: { rel: 0, modestbranding: 1, playsinline: 1, hl: 'en', cc_load_policy: 0, iv_load_policy: 3, start: clip[0], end: clip[1] },
