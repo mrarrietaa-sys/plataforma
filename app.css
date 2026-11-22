@@ -10934,3 +10934,14 @@ body .wrap.t2 .t2-cont.t2-end .t2-cx,body .wrap.t2 .t2-cont:not(:has(.t2-ci)) .t
 @media(max-width:399px){body .wrap.t2 .t2-ci{width:42%!important}body .wrap.t2 .t2-cx .t2-go{font-size:13px!important;padding:7px 12px!important;gap:6px}}
 /* v772 Calentamiento: foto horizontal completa (3:2) */
 .wu-cimg{height:auto!important;aspect-ratio:3/2;background-size:cover!important;background-position:center!important}
+.nv-o em.nv-rep{background:#e7f6ee!important;color:#127a43!important}
+.ms9-o .ms9-tr{display:block;font-size:13px;font-weight:500;color:#6b7a90;margin-top:3px;line-height:1.25}
+.ms9-o.ok .ms9-tr,.ms9-o.bad .ms9-tr,.ms9-o:disabled .ms9-tr{color:inherit;opacity:.8}
+/* v774 Módulo 3 · ¿Qué frase escuchaste? */
+.m3c-h{text-align:center;font-weight:600;color:#33476a;margin:6px 0 10px;font-size:15px}
+.m3c-o{display:block;width:100%;text-align:center;border:1.5px solid #dfe4e1;background:#fff;border-radius:12px;padding:13px 12px;margin:0 0 9px;font:600 16px Inter,system-ui,sans-serif;color:#0B2A5B;cursor:pointer}
+.m3c-o b{color:#E3242B}
+.m3c-o.ok{border-color:#16a34a;background:#eaf6f0;color:#1F6B47}
+.m3c-o.bad{border-color:#E3242B;background:#fbecea;color:#8a2a20;text-decoration:line-through}
+body.ag-teens .m3c-o:not(.ok):not(.bad){background:#fff}
+.m3d-fb .m3d-ok{margin-top:10px;width:100%}

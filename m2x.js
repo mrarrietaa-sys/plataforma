@@ -448,17 +448,23 @@
       const R = L.slice(0, 2); let c = 0;
       for (let i = 0; i < R.length; i++) {
         if (!stage.isConnected) break; const x = R[i]; window.__m2t = { a: x.full };
-        const body = frame(stage, 'Music', 'Dictado musical', `Escucha la frase de la canción y escríbela completa. Frase ${i + 1} de ${R.length}.`);
-        body.insertAdjacentHTML('beforeend', `<div class="m3d"><div class="m2o-sc"><span class="m2o-eq">${'<i></i>'.repeat(14)}</span><small>${ag() === 'adult' ? esc(so.title || '') : 'Dictado'}</small></div><div class="m3d-row"><button type="button" class="btn w sm m3d-pl">${SV(IC.vol)} Escuchar otra vez</button><button type="button" class="btn w sm m3d-sl">Más despacio</button></div><textarea class="inp m3d-in" rows="2" autocomplete="off" autocapitalize="sentences" spellcheck="false" placeholder="Escribe lo que escuchas…"></textarea><div class="m3d-fb"></div><button type="button" class="btn k lg m3d-ok">Comprobar</button></div>`);
-        const el = body.querySelector('.m3d'), inp = el.querySelector('.m3d-in'), fb = el.querySelector('.m3d-fb'), okb = el.querySelector('.m3d-ok');
+        const W = x.full.split(' '), SW = { had: 'has', has: 'had', have: 'has', was: 'is', is: 'was', were: 'are', are: 'were', will: 'would', would: 'will', can: 'could', could: 'can', do: 'did', did: 'do', does: 'do', then: 'than', than: 'then', a: 'the', the: 'a', this: 'that', that: 'this', these: 'those', those: 'these', in: 'on', on: 'in', at: 'in', to: 'too', me: 'my', my: 'me', he: 'she', she: 'he', we: 'they', they: 'we', it: 'is', go: 'went', went: 'go', get: 'got', got: 'get', come: 'came', came: 'come' };
+        const core = (w) => w.toLowerCase().replace(/[^a-z']/g, ''), keepCase = (src, w) => src[0] === src[0].toUpperCase() && src[0] !== src[0].toLowerCase() ? w[0].toUpperCase() + w.slice(1) : w;
+        const mut = (w) => { const c0 = core(w); if (!c0) return null; let r = SW[c0]; if (!r && !/'/.test(c0)) { if (/ed$/.test(c0) && c0.length > 4) r = c0.replace(/ed$/, c0.endsWith('ied') ? 'y' : ''); else if (/ing$/.test(c0) && c0.length > 5) r = c0.replace(/ing$/, ''); else if (/s$/.test(c0) && !/ss$/.test(c0) && c0.length > 3) r = c0.slice(0, -1); else if (c0.length > 3 && !/s$/.test(c0)) r = c0 + 's'; } if (!r || r === c0) return null; return w.replace(new RegExp(c0.replace(/'/g, "\\'"), 'i'), keepCase(w.replace(/^[^A-Za-z']+/, ''), r)); };
+        const cand = W.map((w, k) => ({ k, m: mut(w), pri: SW[core(w)] ? 0 : 1 })).filter(o => o.m).sort((a, b) => a.pri - b.pri || (a.k % 3) - (b.k % 3)); const used = new Set(), V = [];
+        for (const o of cand) { if (V.length >= 2) break; if (used.has(o.k)) continue; used.add(o.k); V.push(W.map((w, k) => k === o.k ? `<b>${esc(o.m)}</b>` : esc(w)).join(' ')); }
+        /* v774 · Módulo 3 · «¿Qué frase escuchaste?»: el estudiante no escribe; toca la frase exacta entre 3 casi iguales (cambia 1 palabra) */
+        const hiOf = (k) => W.map((w, j) => j === k ? `<b>${esc(w)}</b>` : esc(w)).join(' '); const okHTML = cand.length ? hiOf(cand[0].k) : esc(x.full);
+        const opts = [{ h: okHTML, ok: true }, ...V.map(h => ({ h, ok: false }))].sort(() => Math.random() - .5);
+        const body = frame(stage, 'Music', '¿Qué frase escuchaste?', `Escucha la frase de la canción y toca la que canta. Frase ${i + 1} de ${R.length}.`);
+        body.insertAdjacentHTML('beforeend', `<div class="m3d"><div class="m2o-sc"><span class="m2o-eq">${'<i></i>'.repeat(14)}</span><small>${ag() === 'adult' ? esc(so.title || '') : 'Dictado'}</small></div><div class="m3d-row"><button type="button" class="btn w sm m3d-pl">${SV(IC.vol)} Escuchar otra vez</button><button type="button" class="btn w sm m3d-sl">Más despacio</button></div><p class="m3c-h">Escucha y toca la frase exacta que canta:</p><div class="m3c">${opts.map((o, j) => `<button type="button" class="m3c-o" data-j="${j}">${o.h}</button>`).join('')}</div><div class="m3d-fb"></div></div>`);
+        const el = body.querySelector('.m3d'), fb = el.querySelector('.m3d-fb');
         const say = async (slow) => { stopA(); el.classList.add('m2on'); try { await (slow ? M().play(x.au, { rate: .72 }) : play(x.au)); } catch (e) { } el.classList.remove('m2on'); };
-        el.querySelector('.m3d-pl').onclick = () => say(false); el.querySelector('.m3d-sl').onclick = () => say(true); await say(false); try { inp.focus(); } catch (e) { }
-        const ok = await new Promise(done => { let tries = 0; okb.onclick = () => { const v = norm(inp.value), t = norm(x.full); if (!v) { inp.focus(); return; } tries++;
-          const tw = t.split(' '), vw = v.split(' '); const good = v === t;
-          if (good) { sfx('ok'); inp.disabled = true; fb.innerHTML = `<div class="as-fbk ok"><span>Perfecto: <b>${esc(x.full)}</b></span></div>`; okb.textContent = i < R.length - 1 ? 'Siguiente frase' : 'Continuar'; okb.onclick = () => done(tries <= 2); return; }
-          const marked = vw.map((w, j) => tw[j] === w ? esc(w) : `<u>${esc(w)}</u>`).join(' ') + (vw.length < tw.length ? ' <u>…</u>' : '');
-          sfx('bad'); if (tries >= 2) { inp.disabled = true; fb.innerHTML = `<div class="as-fbk no"><span>Así es la frase: <b>${esc(x.full)}</b></span></div>`; okb.textContent = i < R.length - 1 ? 'Siguiente frase' : 'Continuar'; okb.onclick = () => done(false); play(x.au); return; }
-          fb.innerHTML = `<div class="as-fbk no"><span>Casi. Revisa lo subrayado y escucha otra vez: ${marked}${vw.length < tw.length ? ' (faltan palabras)' : ''}</span></div>`; }; });
+        el.querySelector('.m3d-pl').onclick = () => say(false); el.querySelector('.m3d-sl').onclick = () => say(true); await say(false);
+        const ok = await new Promise(done => { el.querySelectorAll('.m3c-o').forEach(b => b.onclick = () => { if (el.dataset.done) return; el.dataset.done = 1; const o = opts[+b.dataset.j];
+          el.querySelectorAll('.m3c-o').forEach((y, j) => { y.disabled = true; if (opts[j].ok) y.classList.add('ok'); }); if (!o.ok) b.classList.add('bad'); sfx(o.ok ? 'ok' : 'bad');
+          const hw = (okHTML.match(/<b>(.*?)<\/b>/) || [])[1]; fb.innerHTML = `<div class="as-fbk ${o.ok ? 'ok' : 'no'}"><span>${o.ok ? '¡Exacto!' : 'La frase era la verde.'}${hw ? ` Fíjate en <b>${hw}</b>.` : ''}</span></div><button type="button" class="btn k lg m3d-ok">${i < R.length - 1 ? 'Siguiente frase' : 'Continuar'}</button>`;
+          if (!o.ok) play(x.au); fb.querySelector('.m3d-ok').onclick = () => { stopA(); done(o.ok); }; }); });
         if (ok) c++;
       }
       return { c, t: R.length };

@@ -967,7 +967,7 @@
         const wrong = sample(pool.filter(a => { if (a === x.a || M.words(a)[0] === M.words(x.a)[0]) return false; try { return !M.freeJudge(x.q, x.a, [a]).ok; } catch (e) { return true; } }), 2); const opts = shuffle([x.a, ...wrong]);
         // 1) elige la respuesta (prueba que entendió)
         const first = await new Promise(done => { let miss = 0;
-          turn.innerHTML = `<p class="ms9-q">¿Qué le respondes?</p><div class="ms9-opts">${opts.map((o, i) => `<button type="button" class="ms9-o" data-i="${i}">${esc(o)}</button>`).join('')}</div>`;
+          turn.innerHTML = `<p class="ms9-q">¿Qué le respondes?</p><div class="ms9-opts">${opts.map((o, i) => `<button type="button" class="ms9-o" data-i="${i}">${esc(o)}${(+(M.MOD && M.MOD.n) || 1) <= 2 && window.MSTR && MSTR[o] ? `<small class="ms9-tr">${esc(MSTR[o])}</small>` : ''}</button>`).join('')}</div>`;
           turn.querySelectorAll('.ms9-o').forEach(b => b.onclick = () => { const o = opts[+b.dataset.i]; if (o !== x.a) { miss++; b.classList.add('bad'); sfx('bad'); setTimeout(() => b.classList.remove('bad'), 600); return; } sfx('ok'); done(miss === 0); }); });
         if (first) c++;
         // 2) dobla su línea con el motor de melodía
