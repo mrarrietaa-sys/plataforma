@@ -233,7 +233,7 @@
     let cont = '';
     const cp = rev ? revNext : (curP || nu);
     if (cp) { const t = cp._t, td = t.parts.filter(x => S.parts[x.id] && S.parts[x.id].done).length;
-      cont = `<section class="t2-cont"><div class="t2-ci" style="${bg(t, 720, 420)}"></div><div class="t2-cx"><span class="t2-k">${rev ? 'Modo repaso' : (S.parts[cp.id] && S.parts[cp.id].step) || doneN ? 'Continúa donde quedaste' : 'Empieza tu ruta'}</span><h2>${esc(t.title)}</h2><p>${PL(cp)} · ${esc(cp.title)}</p><div class="t2-cb"><i style="width:${rev ? Math.round(revN / totP * 100) : Math.round(td / t.parts.length * 100)}%"></i></div><button class="t2-go" id="${rev ? 'rev-go' : 'cont'}">${rev ? (revN ? 'Seguir repasando' : 'Empezar a repasar') : (S.parts[cp.id] && S.parts[cp.id].step) ? 'Continuar' : 'Empezar'}${arr}</button></div></section>`; }
+      cont = `<section class="t2-cont"><div class="t2-ci" style="${bg(t, 720, 420)}"></div><div class="t2-cx"><span class="t2-k">${rev ? 'Modo repaso' : (S.parts[cp.id] && S.parts[cp.id].step) || doneN ? 'Continúa donde quedaste' : 'Empieza tu ruta'}</span><h2>${esc(t.title)}</h2><p>${t.parts.length > 1 ? 'Lección ' + cp.part + ' de ' + t.parts.length : 'Lección'}</p><div class="t2-cb"><i style="width:${rev ? Math.round(revN / totP * 100) : Math.round(td / t.parts.length * 100)}%"></i></div><button class="t2-go" id="${rev ? 'rev-go' : 'cont'}">${rev ? (revN ? 'Seguir repasando' : 'Empezar a repasar') : (S.parts[cp.id] && S.parts[cp.id].step) ? 'Continuar' : 'Empezar'}${arr}</button></div></section>`; }
     else if (window.MRAP && MRAP.isTrial()) cont = `<section class="t2-cont t2-end"><div class="t2-cx"><span class="t2-k">Acceso gratuito</span><h2>Desbloquea toda tu ruta</h2><p>Sigue aprendiendo con todas las lecciones del ${esc(M.MOD.es)}.</p><button class="t2-go" id="buy3">${I('unlock')}Desbloquear${arr}</button></div></section>`;
     else cont = `<section class="t2-cont t2-end"><div class="t2-cx"><span class="t2-k">${totP} de ${totP} lecciones</span><h2>¡Terminaste las lecciones!</h2><p>${S.final && S.final.passed ? 'Ya aprobaste el Final Test.' : 'Ya puedes presentar el Final Test.'}</p><button class="t2-go" id="tofinal">${I('award')}Final Test${arr}</button></div></section>`;
     app.innerHTML = `<div class="wrap t2">
@@ -252,14 +252,21 @@
       const un = rev || M.isUnlocked(t.n); const dn = t.parts.filter(p => rev || (S.parts[p.id] && S.parts[p.id].done)).length, tp = Math.round(dn / t.parts.length * 100);
       const st8 = dn === t.parts.length ? 'done' : (dn || t.parts.some(p => p.id === curId)) && un ? 'cur' : 'new';
       const card = h(`<div class="t2c${un ? '' : ' lk'}" data-st="${st8}"><div class="t2-pic" style="${bg(t, 640, 300)}"><span class="t2-n">${t.n}</span>${un ? `<span class="t2-ring" style="--p:${tp}"><b>${tp}%</b></span>` : `<span class="t2-ring lk">${SVL}</span>`}<div class="t2-pt"><h3>${esc(t.title)}</h3><small>${esc(t.es)}</small></div></div>${(() => { try { const x = window.MRTH && MRTH.html(+M.MOD.n || 1, t.n, M.ageGroup && M.ageGroup(), 's', { ex: 1 }); return x ? `<div class="t2-can">${x}</div>` : ''; } catch (e) { return ''; } })()}<div class="t2-ls"></div></div>`); // v549: «Vas a poder…» + ejemplo
-      t.parts.forEach(p => {
-        const pd = S.parts[p.id], d = rev || (pd && pd.done), stars = M.partStars(p.id), c = !rev && p.id === curId && !d;
-        let right = '';
-        if (rev) { const rv = S.rev && S.rev[p.id]; right = rv && rv.d ? `<em class="t2-tag">Repasada</em>${ok}` : rv ? '<span class="t2-now">REPASANDO</span>' : pend; }
-        else right = c ? '<span class="t2-now">AHORA</span>' : d ? `${stars ? `<span class="t2-st">${[1, 2, 3].map(i => `<i class="${i <= stars ? 'on' : ''}">★</i>`).join('')}</span>` : ''}${ok}` : pend;
-        const b = h(`<button class="t2-l${c ? ' now' : ''}${d ? ' d' : ''}"><i class="t2-li">${p.part}</i><span class="t2-lt">${esc(p.title)}</span><span class="t2-r">${right}</span></button>`);
-        b.onclick = () => un ? route('class', p.id) : lockGate(t.n); $('.t2-ls', card).appendChild(b);
-      });
+      { /* v776: barra de progreso por tema (sin nombres técnicos de las lecciones) */
+        const N = t.parts.length, isD = p => rev ? !!(S.rev && S.rev[p.id] && S.rev[p.id].d) : !!(S.parts[p.id] && S.parts[p.id].done);
+        const nd = t.parts.filter(isD).length, all = nd === N;
+        const tgt = rev ? (t.parts.find(p => !isD(p)) || t.parts[0]) : (t.parts.find(p => p.id === curId) || t.parts.find(p => !isD(p)) || t.parts[0]);
+        const sts = t.parts.map(p => M.partStars(p.id) || 0).filter(x => x), stv = !rev && sts.length ? Math.round(sts.reduce((a, b) => a + b, 0) / sts.length) : 0;
+        const starH = stv ? `<span class="t2-st">${[1, 2, 3].map(i => `<i class="${i <= stv ? 'on' : ''}">★</i>`).join('')}</span>` : '';
+        const head = all ? `<span class="t2-pgd">${ok}<b>${rev ? 'Repasado' : 'Completado'}</b></span>${starH}` : `<span><b>${nd} de ${N}</b> ${N === 1 ? 'lección' : 'lecciones'}</span>${starH}`;
+        const segs = t.parts.map(p => `<i class="${isD(p) ? 'f' : ''}"></i>`).join('');
+        const started = nd > 0 || (!rev && S.parts[tgt.id] && S.parts[tgt.id].step);
+        const lbl = !un ? `${SVL}Bloqueado` : all ? (rev ? 'Repasar otra vez' : 'Repasar') : rev ? (nd ? 'Seguir repasando' : 'Repasar') : started ? (N > 1 ? `Continuar<em class="t2-gbn"> · Lección ${tgt.part}</em>` : 'Continuar') : 'Empezar';
+        const nxt = t.parts.some(p => p.id === curId), cls = !un ? 'lk' : all ? 'rv' : started ? 'go' : nxt ? 'nw' : 'sf'; /* rojo solo en el tema que sigue */
+        const b = h(`<button class="t2-gb ${cls}"><span>${lbl}</span>${un ? (all ? '<b>↻</b>' : arr) : ''}</button>`);
+        b.onclick = () => un ? route('class', tgt.id) : lockGate(t.n);
+        $('.t2-ls', card).innerHTML = `<div class="t2-pgh">${head}</div><div class="t2-bar">${segs}</div>`; $('.t2-ls', card).appendChild(b); $('.t2-ls', card).classList.add('t2-pg');
+      }
       if (!un) { $('.t2-pic', card).onclick = () => lockGate(t.n); card.setAttribute('role', 'button'); }
       g.appendChild(card);
     });
