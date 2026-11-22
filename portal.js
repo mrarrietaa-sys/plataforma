@@ -917,7 +917,7 @@
         <div class="db-bar"><i style="width:${pr.pct}%"></i></div><small class="ad-pct">${pr.pct} % de tu módulo</small>
         <div class="db-hero-b"><a class="btn db-wbtn" href="${a.url}">${pr.done ? 'Continuar mi ruta' : 'Empezar mi ruta'} →</a><button class="ad-lnk" id="pt3"${trial ? ' data-chlvl' : ''}>¿Cambiar de nivel?</button></div></div>
         <div class="ad-plane"><img src="mra-x-plane-red.webp" alt="Mr. Arrieta"><i></i></div></div>`; // v609: banner de adultos sobrio con la avioneta flotando
-      if (window.MRTEENS && MRTEENS.realLife) main += MRTEENS.realLife(); // v417: retos de la vida real para adultos
+      /* v775: sin «Inglés de la vida real» en Inicio (pedido de John) */
     } else if (a) {
       const ready = a && a.ready;
       main = `<div class="card pt-mymod">${a ? `<div class="pt-mymod-img" style="background-image:url('${U(a.img)}')"><span>${a.n}</span></div>` : ''}<div><span class="lbl">${staff ? 'Modo profe' : '🧭 Tu ruta de aprendizaje'}</span>
@@ -931,11 +931,11 @@
     try { window.MRAGEIMG_apply && MRAGEIMG_apply(); } catch (e) { }
     const kids = !staff && window.MRKIDS && MRKIDS.on(); document.body.classList.toggle('ag-kids', !!kids); // 🎈 perfil Kids (9 a 11 años)
     let kidsX = '';
-    if (kids && a && a.ready && !P.isExpired()) { main = MRKIDS.hero(p, a, P.look().nick || p.first || '') + MRKIDS.words(); kidsX = MRKIDS.medals(a); } // v711: sin «Camino de aventura» (pedido de John)
+    if (kids && a && a.ready && !P.isExpired()) { main = MRKIDS.hero(p, a, P.look().nick || p.first || ''); /* v775: sin «Mis 3 palabras de la semana» */ kidsX = MRKIDS.medals(a); } // v711: sin «Camino de aventura» (pedido de John)
     else if (kids && newbie) main = main.replace('mra-x-plane-red.webp', 'mra-x-balloon1.webp');
     const teens = !staff && !kids && window.MRTEENS && MRTEENS.on(); document.body.classList.toggle('ag-teens', !!teens); // 🚀 perfil Teens (12 a 17 años)
     const adult = !staff && !kids && !teens; document.body.classList.toggle('ag-adult', adult); // v609: perfil de adultos sobrio y premium
-    if (teens && a && a.ready && !P.isExpired()) { main = MRTEENS.hero(p, a, P.look().nick || p.first || '') + /* v665: sin «Meta de la semana» en Jóvenes */ (MRTEENS.realLife ? MRTEENS.realLife() : ''); }
+    if (teens && a && a.ready && !P.isExpired()) { main = MRTEENS.hero(p, a, P.look().nick || p.first || ''); /* v775: sin «Inglés de la vida real» */ }
     else if (teens && newbie) main = main.replace('mra-x-plane-red.webp', 'mra-x-rocket.webp');
     const g1ag = kids ? 'kids' : teens ? 'teens' : 'adult'; let g1on = false;
     if (!staff && !P.isExpired()) { const tdn = g1Total(); // 🧭 v383: guía del primer día

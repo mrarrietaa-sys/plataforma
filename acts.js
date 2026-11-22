@@ -718,14 +718,14 @@
       const rep = $('.sg9-rep', w); rep.hidden = !player; rep.disabled = false; rep.textContent = 'Escuchar otra vez';
       rep.onclick = () => { rep.disabled = true; rep.textContent = 'Escuchando…'; try { player.seekTo(Math.max(clip[0], CP[i] - 9), true); player.playVideo(); } catch (e) { } };
       $$('.sg9-op', box).forEach(b => b.onclick = () => { if (box.dataset.done) return; box.dataset.done = 1; rep.hidden = true; try { player && player.pauseVideo(); } catch (e) { }
-        const pick = ops[+b.dataset.j], ok = pick === it[1]; if (ok) c++; res.push({ it, pick, ok }); $$('.sg9-tr', box).forEach(t => t.hidden = !t.textContent);
+        const pick = ops[+b.dataset.j], ok = pick === it[1]; if (ok) c++; res.push({ it, pick, ok }); $$('.sg9-tr', box).forEach(t => t.hidden = !early9 || !t.textContent); /* v775: M3-M4 sin traducción */
         $$('.sg9-op', box).forEach(x => { x.disabled = true; if (x.dataset.w === it[1]) x.classList.add('ok'); }); if (!ok) b.classList.add('bad');
         $('.sg9-gap', ln).textContent = it[1]; $('.sg9-gap', ln).classList.add(ok ? 'ok' : 'bad'); sfx(ok ? 'ok' : 'bad');
         i++; prog();
         setTimeout(() => { delete box.dataset.done; box.innerHTML = ''; ln.hidden = true; $('.sg9-tag', w).hidden = true; asking = false;
           if (i >= n || !player) { if (i >= n) finish(); else ask(); return; }
           let ended = false; try { ended = player.getPlayerState() === 0; } catch (e) { } if (ended) { ask(); return; }
-          hint('Sigue escuchando…'); try { player.playVideo(); } catch (e) { } }, early9 ? 1800 : 2600); }); };
+          hint('Sigue escuchando…'); try { player.playVideo(); } catch (e) { } }, 1800); }); };
     const fallback = () => { clearInterval(poll); player = null;
       $('.sg9-vid', w).innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${esc(ids[0])}?rel=0&playsinline=1&start=${clip[0]}&end=${clip[1]}&cc_load_policy=0&iv_load_policy=3" allow="autoplay; encrypted-media" allowfullscreen></iframe><span class="sg9-tag" hidden>Pausado</span>`; /* v519: conserva la etiqueta (sin ella la actividad se rompía) */
       hint('Escucha la canción y luego responde.'); const go = h('<button type="button" class="sg9-rep">Ya la escuché</button>'); $('.sg9-q', w).appendChild(go); go.onclick = () => { go.hidden = true; ask(); }; }; /* v519: sin YouTube API el botón se reutiliza (antes se borraba y la actividad se rompía) */
