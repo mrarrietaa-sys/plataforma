@@ -11036,3 +11036,18 @@ body.lp-teen:has(.lp-hero.lp-k) .ld-nav .btn.k,body.lp-teen:has(.lp-hero.lp-k) .
 @keyframes lpRkInM{0%{transform:translate(-70vw,55vh) rotate(-18deg) scale(.6);opacity:0}15%{opacity:1}75%{transform:translate(6px,-14px) rotate(4deg) scale(1.05)}100%{transform:none}}
 @media (max-width:899px){.lp-hrow .lp-bal.lp-rk{width:158px!important;position:relative;z-index:5;animation:lpRkInM 2.4s cubic-bezier(.25,.8,.25,1) both,lpFl 6s ease-in-out 2.4s infinite!important}}
 @media (min-width:900px){.lp-hrow .lp-bal.lp-rk{z-index:5;animation:lpRkIn2 2.4s cubic-bezier(.25,.8,.25,1) both,lpFl2 6s ease-in-out 2.4s infinite!important}}
+/* v780 · PC: cohete y avioneta más pequeños en la entrada; despegue del cohete más visible */
+@keyframes lpRkInPc{0%{transform:translate(-38vw,calc(-50% + 55vh)) rotate(-20deg) scale(.55);opacity:0}12%{opacity:1}75%{transform:translate(8px,calc(-50% - 16px)) rotate(4deg) scale(1.04)}100%{transform:translateY(-50%)}}
+@media (min-width:900px){
+ .lp-hrow .lp-bal.lp-rk{width:min(24vw,300px)!important;animation:lpRkInPc 2.8s cubic-bezier(.25,.8,.25,1) both,lpFl2 6s ease-in-out 2.8s infinite!important}
+ .lp-hrow .lp-bal.lp-avn{width:min(27vw,350px)!important}
+}
+/* v780 · entradas en los perfiles (PC y celular): globo sube, cohete despega, avioneta entra volando */
+@keyframes pfBalIn{0%{transform:translateY(110%) rotate(6deg);opacity:0}70%{transform:translateY(-10px) rotate(-2deg);opacity:1}100%{transform:none}}
+@keyframes pfRkIn{0%{transform:translate(-60%,80%) rotate(-18deg) scale(.6);opacity:0}15%{opacity:1}75%{transform:translate(6px,-10px) rotate(3deg) scale(1.04)}100%{transform:none}}
+@keyframes pfPlIn{0%{transform:translateX(-140%) rotate(-8deg);opacity:0}70%{transform:translateX(8px) rotate(2deg);opacity:1}100%{transform:none}}
+.kd-mra{animation:pfBalIn 1.8s cubic-bezier(.2,.8,.2,1) both,mraFloat 3.4s ease-in-out 1.8s infinite!important}
+.tn-mra{animation:pfRkIn 2.2s cubic-bezier(.25,.8,.25,1) both,mraFloat 3.4s ease-in-out 2.2s infinite!important}
+body.ag-adult .ad-plane img{animation:pfPlIn 1.9s cubic-bezier(.2,.8,.2,1) both!important}
+@media (prefers-reduced-motion:reduce){.kd-mra,.tn-mra,body.ag-adult .ad-plane img{animation:none!important}}
+/* v780 · adultos: sin las manchas blancas de abajo */ .lp-a .lp-cloud{display:none!important}

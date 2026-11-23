@@ -28,7 +28,7 @@
     return `<div class="card kd-hero"><span class="kd-sun"></span><span class="kd-cl c1"></span><span class="kd-cl c2"></span>
       <div class="kd-htx"><span class="kd-eye">${I('star')} Kids · Aventura</span><h2>¡Hola, ${esc(nick)}!</h2>
         <p>${pr.done ? `Hoy sigues en la estación <b>${esc(cur.name)}</b>. ¡Vamos!` : `Tu aventura empieza en <b>${esc(cur.name)}</b>. ¡Vamos!`}</p>
-        <div class="kd-chips"><span class="o">${I('medal')} ${medals} ${medals === 1 ? 'medalla' : 'medallas'}</span><span class="b">${I('flame')} ${pr.done} de ${a.classes} lecciones</span></div>
+        <div class="kd-chips"><span class="b">${I('flame')} ${pr.done} de ${a.classes} lecciones</span></div>
         <div class="kd-hb"><a class="btn kd-go lg" href="${a.url}">${I('video')} ${pr.done ? 'Continuar mi aventura' : 'Empezar mi aventura'}</a><button class="btn db-gbtn sm" id="pt3">¿No estás a gusto con tu nivel?</button></div></div>
       <img class="kd-mra" src="mra-x-balloon1.webp" alt="Mr. Arrieta"></div>`;
   }
