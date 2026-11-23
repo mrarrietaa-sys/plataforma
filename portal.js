@@ -173,7 +173,7 @@
   function heroAdult() {
     return `<section class="lp-hero lp-a">${lpSky(40)}${lpClouds()}<span class="lp-badge b1"><i class="r">${LI(LP.user)}</i>Clases individuales</span><span class="lp-badge b2"><i class="g">${LI(LP.mic)}</i>Te corrige al hablar</span>
       <div class="lp-in"><div class="lp-copy"><span class="lp-ey"><i class="lp-eyi a">${LPI.adult}</i>ADULTOS · DESDE 18 AÑOS</span>
-      <div class="lp-hrow"><h1>Tu inglés, cada día <em>más alto</em></h1><img class="lp-bal" src="mra-x-balloon1.webp" alt="Mr. Arrieta" draggable="false"></div>
+      <div class="lp-hrow"><h1>Tu inglés, cada día <em>más alto</em></h1><img class="lp-bal lp-avn" src="mra-x-plane-red.webp" alt="Mr. Arrieta" draggable="false"></div>
       ${lpChallenge('adultos')}
       <div class="lp-cta"><button class="btn r lg" data-trial>${MRI('gift')} Prueba gratis 3 días</button><span class="lp-inc">+ 1 clase gratis con profe · sin tarjeta</span></div><div class="lp-trust"><a class="lp-g" href="https://g.page/r/CSz_ib_w-ctREAE" target="_blank" rel="noopener"><i>★</i>4,9 en Google</a><span class="lp-stu" data-tab="opin" role="button" tabindex="0" style="cursor:pointer"><i>${LI(LP.users)}</i>+500 estudiantes ›</span><span><i>${LI(LP.repeat)}</i>Mes a mes</span></div></div></div></section>`;
   }
@@ -192,7 +192,7 @@
     const K = { t: 'I love English', es: '¡Me encanta el inglés!', au: 'priloveeng' }, Tn = { t: 'See you tomorrow', es: '¡Nos vemos mañana!', au: 'prseeyou' };
     const set = (a, first) => { const teen = a === 't'; document.body.classList.toggle('lp-teen', teen); sw.querySelectorAll('button').forEach(b => { const on = b.dataset.ag === a; b.classList.toggle('on', on); b.setAttribute('aria-selected', on); });
       Object.assign(LP_PH.ninos, teen ? Tn : K); const d = $('#lp-demo'); if (d) { const bq = d.querySelector('.lp-demo-tx b'), es2 = d.querySelector('.lp-es'), rs = $('#lp-res'); if (bq) bq.textContent = '“' + LP_PH.ninos.t + '!”'; if (es2) es2.textContent = LP_PH.ninos.es; if (rs && !first) { rs.hidden = true; rs.innerHTML = ''; d.classList.remove('has-res'); } }
-      const b1 = $('.lp-b1t'); if (b1) b1.textContent = teen ? 'Retos y ranking' : 'Medallas y misiones'; const ct = $('.lp-hero .lp-ctxt'); if (ct) ct.textContent = teen ? 'Prueba gratis 3 días' : 'Prueba gratis para mi hijo(a)';
+      const b1 = $('.lp-b1t'); if (b1) b1.textContent = teen ? 'Retos y ranking' : 'Medallas y misiones'; const bal = $('.lp-hero.lp-k .lp-bal'); if (bal) { const src = teen ? 'mra-x-rocket.webp' : 'mra-x-balloon2.webp'; if (!bal.src.endsWith(src)) bal.src = src; bal.classList.toggle('lp-rk', teen); if (!first) { bal.style.animation = 'none'; void bal.offsetWidth; bal.style.animation = ''; } } /* v779: jóvenes con su cohete (el del perfil), niños con el globo */ const ct = $('.lp-hero .lp-ctxt'); if (ct) ct.textContent = teen ? 'Prueba gratis 3 días' : 'Prueba gratis para mi hijo(a)';
       try { localStorage.setItem('mra_lp_ag', a); } catch (e) { } };
     sw.addEventListener('click', e => { const b = e.target.closest('[data-ag]'); if (b) set(b.dataset.ag); });
     let a0 = 'k'; try { a0 = localStorage.getItem('mra_lp_ag') === 't' ? 't' : 'k'; } catch (e) { } set(a0, true);

@@ -1,4 +1,5 @@
 /* v777 · colores corporativos en toda la escuela (temas de niños/jóvenes sin colores propios) */
+/* v777 · colores corporativos en toda la escuela (temas de niños/jóvenes sin colores propios) */
 /* =========================================================
    mrarrieta.com · Módulo 1 (A1) — Rojo · Azul · Blanco (colores institucionales)
    ========================================================= */
@@ -6564,31 +6565,31 @@ body.ag-teens .stage.dk .vc-teens{}
 .g1-done{display:flex;align-items:center;gap:12px;background:#dcfce7;border:1px solid #86efac;color:#166534;border-radius:16px;padding:12px 14px;margin-bottom:12px}
 .g1-done>.g1-svg{width:26px;height:26px;background:#16a34a;color:#fff;border-radius:50%;padding:5px}.g1-done b{display:block;font:800 15px Poppins,sans-serif}.g1-done small{font-size:13px}
 /* teens */
-.g1-tn{background:#071a3a;border-color:#16376e;color:#e6eefc}
-.g1-tn .g1-hd img{height:92px}.g1-tn .g1-hd b{font:800 20px Poppins,sans-serif;color:#fff;display:block}.g1-tn .g1-hd span{font-size:13px;color:#8ea6cf}
+.g1-tn{}
+.g1-tn .g1-hd img{height:92px}.g1-tn .g1-hd b{font:800 20px Poppins,sans-serif;display:block}.g1-tn .g1-hd span{font-size:13px}
 .g1-chip{display:inline-block!important;font:800 10px Poppins,sans-serif!important;letter-spacing:.08em;color:#22e58a!important;border:1.5px solid #22e58a;border-radius:99px;padding:3px 9px;margin-bottom:4px}
-.g1-tn .g1-box{background:#0b2148;border:1px solid rgba(34,229,138,.45);border-radius:18px;padding:14px;box-shadow:0 0 20px rgba(34,229,138,.1)}
+.g1-tn .g1-box{border-radius:18px;padding:14px}
 .g1-lb{font:800 10.5px Poppins,sans-serif;letter-spacing:.1em;color:#22e58a}
 .g1-seg{display:flex;gap:5px;margin:8px 0 6px}.g1-seg i{flex:1;height:6px;border-radius:9px;background:#16376e}.g1-seg i.on{background:#22e58a;box-shadow:0 0 8px #22e58a}
-.g1-tn .g1-st{border-top-color:#16376e}.g1-tn .g1-n{border-radius:9px;background:transparent;border-color:#2b5294;color:#7f97c2}
-.g1-tn .g1-st.on .g1-n{background:#22e58a;color:#04122b;border-color:#22e58a;box-shadow:0 0 12px rgba(34,229,138,.5)}.g1-tn .g1-st.ok .g1-n{background:#16376e;color:#22e58a;border-color:#22e58a}.g1-tn .g1-st.alt .g1-n{border-color:#ffb547;color:#ffb547}
-.g1-tn .g1-st b{color:#fff}.g1-tn .g1-st small{color:#8ea6cf}.g1-tn .g1-st.off b{color:#7f97c2}
-.g1-tn .g1-tag{background:#16376e;color:#ffb547}
-.g1-tn .g1-go{background:#22e58a;color:#04122b}.g1-tn .g1-go2{background:transparent;color:#ffb547;border-color:#ffb547}
+.g1-tn .g1-st{}.g1-tn .g1-n{border-radius:9px;background:transparent}
+.g1-tn .g1-st.on .g1-n{}.g1-tn .g1-st.ok .g1-n{}.g1-tn .g1-st.alt .g1-n{}
+.g1-tn .g1-st b{}.g1-tn .g1-st small{}.g1-tn .g1-st.off b{}
+.g1-tn .g1-tag{}
+.g1-tn .g1-go{}.g1-tn .g1-go2{background:transparent}
 .g1-done-teens{color:#0b6b3f}
 body.ag-teens .g1-done-teens{}body.ag-teens .g1-done-teens small{}body.ag-teens .g1-done-teens>.g1-svg{}
 /* kids */
-.g1-kd{background:#fff8ec;border:2.5px solid #fde3b4}
+.g1-kd{}
 .g1-kd .g1-hd{align-items:flex-end}.g1-kd .g1-hd img{height:118px}
 .g1-bub{background:#fff;border:2px solid #fde3b4;border-radius:18px;padding:10px 12px;margin-bottom:14px}.g1-bub b{display:block;font:800 18px Poppins,sans-serif;color:#d97706}.g1-bub span{font-size:13.5px;color:#7c4a03;display:block}
 .g1-spk{display:inline-flex;align-items:center;gap:6px;margin-top:7px;background:#1d4a9a;color:#fff;border:0;font:800 12.5px Poppins,sans-serif;padding:6px 12px;border-radius:99px;cursor:pointer}.g1-spk .g1-svg{width:15px;height:15px}.g1-spk.playing{background:#1d4a9a}
-.g1-kd .g1-box{background:#fff;border:2.5px solid #fde3b4;border-radius:22px;padding:14px}
-.g1-kd .g1-lb{color:#d97706}
-.g1-kd .g1-st{border-top:0;padding:8px 0;align-items:center}.g1-kd .g1-n{width:46px;height:46px;font-size:18px;background:#fff;border:3px solid #fcd9a0;color:#e0b46a}
-.g1-kd .g1-st.on .g1-n{background:#f59e0b;border-color:#f59e0b;color:#fff;box-shadow:0 0 0 6px rgba(245,158,11,.2)}.g1-kd .g1-st.ok .g1-n{background:#16a34a;border-color:#16a34a;color:#fff}.g1-kd .g1-st.alt .g1-n{background:#fff;border-color:#0B2A5B;color:#0B2A5B}
-.g1-kd .g1-st b{font-size:17px;color:#7c4a03}.g1-kd .g1-st small{color:#9a6b2a}.g1-kd .g1-st.off b{color:#c9a46a}
+.g1-kd .g1-box{border-radius:22px;padding:14px}
+.g1-kd .g1-lb{}
+.g1-kd .g1-st{border-top:0;padding:8px 0;align-items:center}.g1-kd .g1-n{width:46px;height:46px;font-size:18px}
+.g1-kd .g1-st.on .g1-n{}.g1-kd .g1-st.ok .g1-n{background:#16a34a;border-color:#16a34a}.g1-kd .g1-st.alt .g1-n{}
+.g1-kd .g1-st b{font-size:17px}.g1-kd .g1-st small{}.g1-kd .g1-st.off b{}
 .g1-line{width:4px;height:14px;margin-left:21px;background:repeating-linear-gradient(180deg,#fcd9a0 0 4px,transparent 4px 7px)}.g1-line.ok{background:#16a34a}
-.g1-kd .g1-go{background:#f59e0b;font-size:16px;padding:11px 20px;border-radius:14px;box-shadow:0 5px 0 #c47f08}.g1-kd .g1-go2{background:#fff;color:#0B2A5B;border:2px solid #0B2A5B;box-shadow:none}
+.g1-kd .g1-go{font-size:16px;padding:11px 20px;border-radius:14px}.g1-kd .g1-go2{box-shadow:none}
 .g1-stars{display:flex;align-items:center;gap:8px;background:#fff;border:2px solid #fde3b4;border-radius:14px;padding:9px 12px;font:800 14px Poppins,sans-serif;color:#b45309}.g1-stars i{font-style:normal;color:#f59e0b;font-size:20px;letter-spacing:2px}
 .g1-done-kids{flex-wrap:wrap}.g1-done-kids>.g1-svg{}.g1-done-kids b{}
 @media(max-width:560px){.g1{padding:14px}.g1-hd img{height:78px}.g1-kd .g1-hd img{height:96px}.g1-hd h2{font-size:19px}}
@@ -6596,8 +6597,8 @@ body.ag-teens .g1-done-teens{}body.ag-teens .g1-done-teens small{}body.ag-teens 
 .g1-n{position:relative}
 .g1-st.on .g1-n::before,.g1-st.on .g1-n::after{content:"";position:absolute;inset:-2px;border-radius:inherit;border:2px solid #E3242B;opacity:0;animation:g1wave 2.2s cubic-bezier(.2,.6,.3,1) infinite;pointer-events:none}
 .g1-st.on .g1-n::after{animation-delay:1.1s}
-.g1-tn .g1-st.on .g1-n::before,.g1-tn .g1-st.on .g1-n::after{border-color:#22e58a}
-.g1-kd .g1-st.on .g1-n::before,.g1-kd .g1-st.on .g1-n::after{border-color:#f59e0b}
+.g1-tn .g1-st.on .g1-n::before,.g1-tn .g1-st.on .g1-n::after{}
+.g1-kd .g1-st.on .g1-n::before,.g1-kd .g1-st.on .g1-n::after{}
 .g1-st.on .g1-n{box-shadow:none!important}
 @keyframes g1wave{0%{transform:scale(1);opacity:.75}100%{transform:scale(1.85);opacity:0}}
 @media (prefers-reduced-motion:reduce){.g1-st.on .g1-n::before,.g1-st.on .g1-n::after{animation:none}}
@@ -9562,7 +9563,7 @@ body.ag-kids .md3-hs,body.ag-kids .md3-hm,body.ag-kids .wrap.t2 .t2-cx{opacity:1
 .lp-dock>.lp-dx span{white-space:normal!important;text-align:center;line-height:1.02;font-size:9.5px!important;letter-spacing:-.1px}
 .lp-dock>.lp-dx{gap:1px!important;justify-content:center}
 @media(min-width:600px){.lp-dock>.lp-dx br{display:none}.lp-dock>.lp-dx span{white-space:nowrap!important;font-size:10.5px!important}}
-.rl-mel .mel9-res span{background:rgba(255,255,255,.1) !important;color:#13294b !important}body .wrap .rl-mel .mel9-res b{color:#f59e0b!important}body.ag-teens .wrap.db .rl-mel .mel9-res b{}.rl-mel .mel9-res i{color:rgba(19,41,75,0.32) !important}
+.rl-mel .mel9-res span{background:rgba(255,255,255,.1) !important;color:#13294b !important}body .wrap .rl-mel .mel9-res b{color:#e3242b !important}body.ag-teens .wrap.db .rl-mel .mel9-res b{}.rl-mel .mel9-res i{color:rgba(19,41,75,0.32) !important}
 /* v631: la etiqueta de la estrella nunca se sale de la estrella */
 .g9-star span{max-width:100%!important;box-sizing:border-box}.g9-star span.sm{white-space:normal!important;text-align:center;line-height:1.15;padding:3px 6px;border-radius:12px;width:max-content}.g9-star span.xs{width:100%!important;padding:4px 5px}
 /* ===== v632 · Niños y jóvenes: selector de edad (Niños naranja / Jóvenes azul y verde) ===== */
@@ -10987,4 +10988,51 @@ body.ag-kids .t2-gb.go{}body.ag-kids .t2-bar i.f{}
 /* v777 nubes visibles sobre fondo claro */ .lp-cloud,[class*=lp-cloud],.kd-cl{filter:drop-shadow(0 6px 14px rgba(11,42,91,.18))}
 /* v777 · paleta corporativa en los módulos 2-4 (todas las edades) */
 [class*="m2x-"]{--m2a:#1D4A9A!important;--m2b:#E3242B!important;--m2i:#0B2A5B!important;--m2s:#F4F7FC!important}
+.fm-dav.k,.fm-dav.t{background:linear-gradient(135deg,#ffffff,#1D4A9A) !important;color:#13294b !important}
+/* v777 nubes visibles sobre fondo claro */ .lp-cloud,[class*=lp-cloud],.kd-cl{filter:drop-shadow(0 6px 14px rgba(11,42,91,.18))}
+/* v777 · paleta corporativa en los módulos 2-4 (todas las edades) */
+[class*="m2x-"]{--m2a:#1D4A9A!important;--m2b:#E3242B!important;--m2i:#0B2A5B!important;--m2s:#F4F7FC!important}
 .fm-dav.k,.fm-dav.t{background:linear-gradient(135deg,#0B2A5B,#1D4A9A)!important;color:#fff!important}
+/* v779 · Niños y jóvenes: nubes blancas visibles que se mueven, cuadro del reto, íconos blancos y botones corporativos */
+.lp-hero.lp-k .lp-cloud,.lp-hero.lp-k .lp-cloud:before,.lp-hero.lp-k .lp-cloud:after{background:#fff!important}
+.lp-hero.lp-k .lp-cloud{filter:drop-shadow(0 8px 16px rgba(11,42,91,.18))!important;opacity:1!important;animation:mraNube 24s ease-in-out infinite alternate;will-change:transform}
+.lp-hero.lp-k .lp-cloud:nth-of-type(2n){animation-duration:31s;animation-direction:alternate-reverse}
+.lp-hero.lp-k .lp-cloud:nth-of-type(3n){animation-duration:38s}
+@media (max-width:899px){.lp-hero.lp-k .lp-cloud.big{display:block!important}}
+.kd-hero{background:linear-gradient(165deg,#d9e6f8 0%,#eaf1fb 50%,#ffffff 100%)!important}
+.kd-cl,.kd-cl:before,.kd-cl:after{background:#fff!important}
+.kd-cl{opacity:1!important;filter:drop-shadow(0 6px 12px rgba(11,42,91,.16))!important;animation:mraNube 22s ease-in-out infinite alternate;will-change:transform}
+.kd-cl.c2{animation-duration:29s;animation-direction:alternate-reverse}
+@keyframes mraNube{from{transform:translateX(-60px)}to{transform:translateX(60px)}}
+@media (prefers-reduced-motion:reduce){.lp-hero.lp-k .lp-cloud,.kd-cl{animation:none}}
+.lp-hero.lp-k .lp-demo{background:#fff!important;border:1px solid #e3e9f3!important;box-shadow:0 14px 30px -16px rgba(11,42,91,.28)!important}
+.lp-hero.lp-k .lp-ex{background:#f1f4f9!important;color:#0B2A5B!important}
+.lp-hero .btn.k .mri,.lp-hero .btn.k svg,.lp-cta .btn.k .mri,.btn.k.lg .mri{color:#fff!important}
+.lp-dock button.on,body.lp-teen .lp-dock button.on{background:#0B2A5B!important;color:#fff!important;box-shadow:0 6px 14px -6px rgba(11,42,91,.7)!important}
+body.lp-teen:has(.lp-hero.lp-k) .ld-nav .btn.k,body.lp-teen:has(.lp-hero.lp-k) .lp-hero .lp-cta .btn.k{box-shadow:0 8px 18px rgba(11,42,91,.30)!important}
+.pz-c .ag{background:#E3242B!important;color:#fff!important}
+.pz-c.k::after{background:linear-gradient(180deg,rgba(0,0,0,0) 25%,rgba(11,42,91,.55) 60%,rgba(11,42,91,.92))!important}
+.pz-c.t::after{background:linear-gradient(180deg,rgba(0,0,0,0) 25%,rgba(11,42,91,.55) 60%,rgba(11,42,91,.92))!important}
+.nv.k .nv-o.on{border-color:#1D4A9A!important;box-shadow:0 0 0 3px rgba(29,74,154,.18)!important}
+.lp-hero.lp-k .lp-sun{display:none!important}
+@media (max-width:899px){body:not(.lp-teen) .lp-hero.lp-k .lp-cloud.big{left:56%!important;top:5%!important;width:110px!important;height:36px!important;z-index:1}}
+.kd-hero .kd-sun{display:none!important}
+/* v779 · jóvenes: cohete en la entrada (mismo del perfil) */
+.lp-hrow .lp-bal.lp-rk{width:min(34vw,420px)!important}
+@media (max-width:899px){.lp-hrow .lp-bal.lp-rk{width:124px!important}}
+.lp-hero.lp-k .lp-cloud{animation-duration:16s}
+.lp-hero.lp-k .lp-cloud:nth-of-type(2n){animation-duration:20s}
+.lp-hero.lp-k .lp-cloud:nth-of-type(3n){animation-duration:24s}
+.kd-cl{animation-duration:15s}.kd-cl.c2{animation-duration:19s}
+/* v779 · adultos con la avioneta (la del perfil) y entradas animadas: avioneta entra volando, cohete despega, globo sube */
+@keyframes lpPlIn{0%{transform:translateX(-120vw) translateY(40px) rotate(-8deg);opacity:0}70%{transform:translateX(14px) rotate(2deg);opacity:1}100%{transform:none}}
+@keyframes lpPlIn2{0%{transform:translateX(-120vw) translateY(calc(-50% + 40px)) rotate(-8deg);opacity:0}70%{transform:translateX(14px) translateY(-50%) rotate(2deg);opacity:1}100%{transform:translateY(-50%)}}
+@keyframes lpRkIn{0%{transform:translate(-55vw,70vh) rotate(-14deg) scale(.7);opacity:0}70%{transform:translate(10px,-12px) rotate(3deg) scale(1.03);opacity:1}100%{transform:none}}
+@keyframes lpRkIn2{0%{transform:translate(-55vw,calc(-50% + 70vh)) rotate(-14deg) scale(.7);opacity:0}70%{transform:translate(10px,calc(-50% - 12px)) rotate(3deg) scale(1.03);opacity:1}100%{transform:translateY(-50%)}}
+@media (max-width:899px){.lp-hrow .lp-bal.lp-avn{width:150px!important;animation:lpPlIn 1.9s cubic-bezier(.2,.8,.2,1) both,lpFl 6s ease-in-out 1.9s infinite!important}.lp-hrow .lp-bal.lp-rk{animation:lpRkIn 1.7s cubic-bezier(.2,.8,.2,1) both,lpFl 6s ease-in-out 1.7s infinite!important}}
+@media (min-width:900px){.lp-hrow .lp-bal.lp-avn{width:min(36vw,460px)!important;animation:lpPlIn2 1.9s cubic-bezier(.2,.8,.2,1) both,lpFl2 6s ease-in-out 1.9s infinite!important}.lp-hrow .lp-bal.lp-rk{animation:lpRkIn2 1.7s cubic-bezier(.2,.8,.2,1) both,lpFl2 6s ease-in-out 1.7s infinite!important}}
+@media (prefers-reduced-motion:reduce){.lp-hrow .lp-bal.lp-avn,.lp-hrow .lp-bal.lp-rk{animation:none!important}}
+/* v779b · cohete más grande en celular y despegue más visible */
+@keyframes lpRkInM{0%{transform:translate(-70vw,55vh) rotate(-18deg) scale(.6);opacity:0}15%{opacity:1}75%{transform:translate(6px,-14px) rotate(4deg) scale(1.05)}100%{transform:none}}
+@media (max-width:899px){.lp-hrow .lp-bal.lp-rk{width:158px!important;position:relative;z-index:5;animation:lpRkInM 2.4s cubic-bezier(.25,.8,.25,1) both,lpFl 6s ease-in-out 2.4s infinite!important}}
+@media (min-width:900px){.lp-hrow .lp-bal.lp-rk{z-index:5;animation:lpRkIn2 2.4s cubic-bezier(.25,.8,.25,1) both,lpFl2 6s ease-in-out 2.4s infinite!important}}
