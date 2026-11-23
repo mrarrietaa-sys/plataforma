@@ -145,3 +145,39 @@
   (document.head || document.documentElement).appendChild(st);
   window.MREMO = { walk };
 })();
+
+/* v778 · Cuadro rojo → letra blanca (en toda la escuela). Marca con .rtw el texto oscuro dentro de cajas rojas y lo quita si la caja deja de ser roja. */
+(function(){
+  if (window.__rtw) return; window.__rtw = 1;
+  var st = document.createElement('style'); st.textContent = '.rtw{color:#fff!important}.rtw svg{color:#fff}'; (document.head || document.documentElement).appendChild(st);
+  function P(s){ var m = String(s).match(/[\d.]+/g); return m ? m.map(Number) : null; }
+  function hsl(v){ var r=v[0]/255,g=v[1]/255,b=v[2]/255,mx=Math.max(r,g,b),mn=Math.min(r,g,b),l=(mx+mn)/2,h=0,s=0; if(mx!==mn){var d=mx-mn;s=l>.5?d/(2-mx-mn):d/(mx+mn);h=mx===r?(g-b)/d+(g<b?6:0):mx===g?(b-r)/d+2:(r-g)/d+4;h*=60;} return [h,s,l]; }
+  function red(c){ var v=P(c); if(!v||v.length<3||(v.length>3&&v[3]<.6)) return false; var x=hsl(v); return (x[0]<14||x[0]>340)&&x[1]>.55&&x[2]>.3&&x[2]<.62; }
+  function opaque(c){ var v=P(c); return v && v.length>=3 && (v.length===3 || v[3]>.5); }
+  function isRedBox(e,cs){ if(red(cs.backgroundColor)) return true; var bi=cs.backgroundImage; if(bi&&bi.indexOf('gradient')>=0&&bi.indexOf('url(')<0){ var m=bi.match(/rgba?\([^)]*\)/g)||[]; return m.length>0 && m.every(red); } return false; }
+  var marked = [];
+  function scan(){
+    var keep = [];
+    var els = document.body ? document.body.getElementsByTagName('*') : [];
+    for (var i=0;i<els.length;i++){
+      var e=els[i]; if(e.tagName==='SCRIPT'||e.tagName==='STYLE') continue;
+      var cs=getComputedStyle(e); if(cs.display==='none') continue;
+      if(!isRedBox(e,cs)) continue;
+      var list=[e].concat(Array.prototype.slice.call(e.getElementsByTagName('*')));
+      for(var k=0;k<list.length;k++){
+        var x=list[k]; var hasText=false; for(var n=0;n<x.childNodes.length;n++){ if(x.childNodes[n].nodeType===3 && x.childNodes[n].nodeValue.trim()){hasText=true;break;} }
+        if(!hasText && x.tagName!=='svg') continue;
+        var p=x, inside=true; while(p && p!==e){ var pc=getComputedStyle(p); if(opaque(pc.backgroundColor) && !red(pc.backgroundColor)){ inside=false; break; } p=p.parentElement; }
+        if(!inside) continue;
+        if(x.classList.contains('rtw')){ keep.push(x); continue; }
+        var c=P(getComputedStyle(x).color); if(!c) continue; var L=hsl(c)[2];
+        if(L<.62 || hsl(c)[1]>.5 && L<.75){ x.classList.add('rtw'); keep.push(x); }
+      }
+    }
+    for (var j=0;j<marked.length;j++){ if(keep.indexOf(marked[j])<0) marked[j].classList.remove('rtw'); }
+    marked = keep;
+  }
+  var t=null; function later(){ clearTimeout(t); t=setTimeout(function(){ try{ scan(); }catch(e){} }, 250); }
+  function start(){ later(); try{ new MutationObserver(later).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class']}); }catch(e){} }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start); else start();
+})();

@@ -1,15 +1,16 @@
+/* v777 · colores corporativos en toda la escuela (temas de niños/jóvenes sin colores propios) */
 /* v632 · Retos de 60 s (retos.js) */
 .rto{position:relative;display:flex;flex-direction:column;border-radius:20px;overflow:hidden;padding:10px 12px 12px;min-height:330px;box-sizing:border-box;width:100%;max-width:560px;margin:4px auto 0}
 .rto *{box-sizing:border-box}
 .rto-adult{background:linear-gradient(180deg,#0B2A5B,#163e7a);color:#fff}
-.rto-teens{background:radial-gradient(circle at 50% 0,#1d3d6e,#0a1528 70%);color:#e8eef7}
-.rto-kids{background:linear-gradient(180deg,#cfe8ff,#fff6e0);color:#0B2A5B}
+.rto-teens{}
+.rto-kids{}
 .rto-top{display:flex;align-items:center;gap:10px;margin-bottom:8px}
 .rto-pts{font-weight:800;font-size:13px;padding:4px 10px;border-radius:99px;white-space:nowrap;background:rgba(255,255,255,.16)}
-.rto-teens .rto-pts{background:#1f3b2e;color:#4ade80}.rto-kids .rto-pts{background:#fff;color:#d97706;box-shadow:0 2px 6px rgba(0,0,0,.08)}
-.rto-bar{flex:1;height:8px;border-radius:99px;overflow:hidden;background:rgba(255,255,255,.18)}.rto-kids .rto-bar{background:#fff}
+.rto-teens .rto-pts{}.rto-kids .rto-pts{}
+.rto-bar{flex:1;height:8px;border-radius:99px;overflow:hidden;background:rgba(255,255,255,.18)}.rto-kids .rto-bar{}
 .rto-bar i{display:block;height:100%;width:100%;transform-origin:left;transition:transform .9s linear;background:#e63946}
-.rto-teens .rto-bar i{background:#22c55e}.rto-kids .rto-bar i{background:#f59e0b}
+.rto-teens .rto-bar i{}.rto-kids .rto-bar i{}
 .rto-s{font-size:12px;font-weight:800;min-width:34px;text-align:right}
 .rto-body{position:relative;flex:1;min-height:0;display:flex;flex-direction:column}
 .rto-start,.rto-end{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:8px;padding:10px}
@@ -17,23 +18,23 @@
 .rto-start h3,.rto-end h3{margin:0;font-size:22px}
 .rto-start p,.rto-end p{margin:0;font-size:14px;line-height:1.4;max-width:300px}
 .rto-go{border:0;border-radius:14px;padding:12px 22px;font-weight:800;font-size:16px;cursor:pointer;color:#fff;background:#e63946;margin-top:6px}
-.rto-teens .rto-go{background:#22c55e;color:#06210f}.rto-kids .rto-go{background:#f59e0b}
+.rto-teens .rto-go{}.rto-kids .rto-go{}
 .rto-big{font-size:42px;font-weight:900;line-height:1}
 .rto-end small{font-size:13px;opacity:.85}
 .rto-ask{display:flex;align-items:center;gap:10px;border-radius:16px;padding:9px 12px;background:#fff;color:#0B2A5B;flex:none}
-.rto-teens .rto-ask{background:#13233f;border:1px solid #2f4a74;color:#e8eef7}
-.rto-kids .rto-ask{box-shadow:0 4px 12px -6px rgba(0,0,0,.2)}
+.rto-teens .rto-ask{}
+.rto-kids .rto-ask{}
 .rto-ask .q{flex:1;min-width:0}
 .rto-ask small{display:block;font-size:10.5px;font-weight:800;letter-spacing:.06em;margin-bottom:2px;color:#e63946}
-.rto-teens .rto-ask small{color:#4ade80}.rto-kids .rto-ask small{color:#d97706}
+.rto-teens .rto-ask small{}.rto-kids .rto-ask small{}
 .rto-ask b{display:block;font-size:15px;line-height:1.28;overflow-wrap:anywhere}
 .rto-bl{text-decoration:none;border-bottom:2px solid currentColor;padding:0 2px}
 .rto-au{border:0;width:38px;height:38px;border-radius:50%;cursor:pointer;flex:none;display:grid;place-items:center;background:#fde8ea;color:#e63946}
-.rto-teens .rto-au{background:#1c2c48;color:#4ade80}.rto-kids .rto-au{background:#f59e0b;color:#fff}
+.rto-teens .rto-au{}.rto-kids .rto-au{}
 .rto-au svg{width:18px;height:18px}
 .rto .slw-w{flex:none}
 .rto-fb{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;min-height:30px;font-size:13px;font-weight:700;text-align:center;margin-top:6px;line-height:1.25;flex:none;overflow-wrap:anywhere}
-.rto-fb .ok{color:#4ade80}.rto-kids .rto-fb .ok{color:#16a34a}.rto-fb .no{color:#fca5a5}.rto-kids .rto-fb .no{color:#dc2626}
+.rto-fb .ok{color:#4ade80}.rto-kids .rto-fb .ok{color:#16a34a}.rto-fb .no{color:#fca5a5}.rto-kids .rto-fb .no{}
 .rto-area{position:relative;flex:1;min-height:0;margin-top:8px;overflow:hidden;border-radius:16px}
 .rto .sm{font-size:12px!important}.rto .xs{font-size:10.5px!important;line-height:1.12!important}
 @keyframes rtR{from{transform:translateX(-140px)}to{transform:translateX(var(--w))}}
@@ -162,7 +163,7 @@
 @media(prefers-reduced-motion:reduce){.rto-start img,.rto-end img{animation:none}}
 /* v679: A1 · traducción al español debajo de la pregunta */
 .rto-ask .rto-es{display:block;margin-top:4px;font-size:14px;font-style:italic;font-weight:500;color:#5b6577;line-height:1.35}
-body.ag-teens .rto-ask .rto-es{color:#c3cfe6}
+body.ag-teens .rto-ask .rto-es{}
 /* 🚇 v698 · Metro (Módulo 2 · Adultos) */
 .rto-tun{background:radial-gradient(120% 70% at 50% 0,#1d3a6b 0,#0a1a36 60%,#06112a);display:flex;flex-direction:column;justify-content:center;padding:10px}
 .rto-mt-sign{position:absolute;top:10px;left:10px;right:10px;display:flex;align-items:center;justify-content:space-between;gap:8px;z-index:2}
@@ -185,20 +186,20 @@ body.ag-teens .rto-ask .rto-es{color:#c3cfe6}
 .rto-mt-dep{display:block;height:100%;width:100%;transform-origin:left;background:#FFC83D}
 @media(max-width:380px){.rto-wag{height:120px;padding:28px 7px 20px}.rto-wag .lb{font-size:14px}}
 .rto-tun{background:linear-gradient(180deg,transparent 0 68%,#d7dde8 68% 70%,#FFC83D 70% 71.5%,#aeb8c9 71.5% 100%),repeating-linear-gradient(90deg,rgba(255,255,255,.035) 0 38px,transparent 38px 40px),radial-gradient(120% 70% at 50% 0,#1d3a6b 0,#0a1a36 60%,#06112a);justify-content:flex-start;padding:44px 10px 10px}
-.rto-tun:before{content:'';position:absolute;left:8%;right:8%;top:40px;height:3px;border-radius:3px;background:repeating-linear-gradient(90deg,#fff7d6 0 26px,transparent 26px 70px);opacity:.45}
+.rto-tun:before{content:"";position:absolute;left:8%;right:8%;top:40px;height:3px;border-radius:3px;background:repeating-linear-gradient(90deg,#fff7d6 0 26px,transparent 26px 70px);opacity:.45}
 .rto-tun .rto-train{position:absolute;left:10px;right:10px;width:auto;bottom:calc(32% + 8px);gap:10px}
 .rto-tun .rto-mt-rail{bottom:calc(32% + 2px);height:5px;opacity:.85}
-.rto-wag:not(:last-child):after{content:'';position:absolute;right:-11px;top:56%;width:12px;height:8px;border-radius:2px;background:#5d6b85}
-.rto-wag.rto-head:before{content:'';position:absolute;left:8px;bottom:20px;width:10px;height:6px;border-radius:3px;background:#FFC83D;box-shadow:0 0 10px #FFC83D}
+.rto-wag:not(:last-child):after{content:"";position:absolute;right:-11px;top:56%;width:12px;height:8px;border-radius:2px;background:#5d6b85}
+.rto-wag.rto-head:before{content:"";position:absolute;left:8px;bottom:20px;width:10px;height:6px;border-radius:3px;background:#FFC83D;box-shadow:0 0 10px #FFC83D}
 .rto-mt-pl{bottom:12px;background:rgba(11,42,91,.25)}
-.rto-mt-pl:before{content:'SALIDA';position:absolute;left:0;top:-16px;font:800 10px Poppins,system-ui,sans-serif;letter-spacing:.12em;color:#0B2A5B}
+.rto-mt-pl:before{content:"SALIDA";position:absolute;left:0;top:-16px;font:800 10px Poppins,system-ui,sans-serif;letter-spacing:.12em;color:#0B2A5B}
 .rto-mt-pl{overflow:visible}.rto-mt-dep{border-radius:9px}
 .rto-pad{padding:12px clamp(16px,4.5vw,28px) 22px!important;text-align:center}
 /* v721 · Vuelo de Mr. Arrieta (B1 adultos) */
 .vu-fly{display:flex;flex-direction:column;gap:8px;flex:1;min-height:0;margin-top:2px}
 .vu-sky{position:relative;flex:1;min-height:84px;max-height:270px;border-radius:14px;overflow:hidden;background:linear-gradient(180deg,#8EC5FF 0%,#CFE6FF 70%,#EAF4FF 100%)}
 .vu-sky>i{position:absolute;background:#fff;border-radius:999px;opacity:.92;animation:vuCl 16s linear infinite}
-.vu-sky>i:before,.vu-sky>i:after{content:'';position:absolute;background:#fff;border-radius:50%}
+.vu-sky>i:before,.vu-sky>i:after{content:"";position:absolute;background:#fff;border-radius:50%}
 .vu-sky>i:before{width:46%;height:180%;left:14%;bottom:30%}.vu-sky>i:after{width:34%;height:140%;right:14%;bottom:34%}
 .vu-sky .c1{top:12%;width:80px;height:20px}.vu-sky .c2{top:34%;width:56px;height:14px;animation-delay:-6s}.vu-sky .c3{top:18%;width:110px;height:24px;animation-delay:-11s}
 @keyframes vuCl{from{left:105%}to{left:-35%}}
@@ -224,7 +225,7 @@ body.ag-teens .rto-ask .rto-es{color:#c3cfe6}
 .vu-bps button{position:relative;background:#fff;border:1.5px solid #e3e9f3;border-radius:12px;padding:8px 6px 9px;text-align:center;font:inherit;font-weight:800;font-size:15px;color:#0B2A5B;cursor:pointer;min-width:0;transition:transform .15s}
 .vu-bps button small{display:block;font-size:8.5px;letter-spacing:.12em;color:#94a3b8;font-weight:700;margin-bottom:2px}
 .vu-bps button span{display:block;overflow-wrap:anywhere}.vu-bps button span.sm{font-size:13px}.vu-bps button span.xs{font-size:11.5px}
-.vu-bps button:before,.vu-bps button:after{content:'';position:absolute;top:50%;width:10px;height:10px;border-radius:50%;background:#163e7a;transform:translateY(-50%)}.vu-bps button:before{left:-6px}.vu-bps button:after{right:-6px}
+.vu-bps button:before,.vu-bps button:after{content:"";position:absolute;top:50%;width:10px;height:10px;border-radius:50%;background:#163e7a;transform:translateY(-50%)}.vu-bps button:before{left:-6px}.vu-bps button:after{right:-6px}
 .vu-bps button:active{transform:scale(.96)}
 .vu-bps button.r{background:#16a34a;border-color:#16a34a;color:#fff}.vu-bps button.r small{color:#dcfce7}
 .vu-bps button.w{background:#fee2e2;border-color:#fca5a5;color:#b91c1c}
