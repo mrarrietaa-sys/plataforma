@@ -9870,7 +9870,7 @@ html body .slw-w:has(>.ml10-ok)>.slw-b{background:#fff!important;color:#0B2A5B!i
   body.home-app .ld-hero .ld-faces{margin-top:8px!important}
   body.home-app .ld-hero .ld-trust2{margin-top:6px!important}
   body.home-app .ld-hero .ld-virt{margin-top:3px!important}
-  body.home-app .ld-login .pt-login{padding-top:14px!important;padding-bottom:12px!important}
+  body.home-app .ld-login .pt-login{padding-top:26px!important;padding-bottom:12px!important} /* v786: el personaje ya no toca el borde de arriba */
   body.home-app .ld-login .pt-rkt{height:140px!important}
   body.home-app .ld-login .pt-login h1{margin-top:8px!important}
 }
@@ -11069,3 +11069,10 @@ body.ag-adult .ad-plane img{animation:pfPlIn 1.9s cubic-bezier(.2,.8,.2,1) both!
 .tb-plan,.ad-hi .ad-plan{display:none!important}
 /* v784 · perfil adultos: la avioneta entra y luego flota */
 body.ag-adult .ad-plane img{animation:pfPlIn 1.9s cubic-bezier(.2,.8,.2,1) both,adFly 3.2s ease-in-out 1.9s infinite!important}
+/* v786 · PC: globo y cohete de niños/jóvenes aterrizan por JS (sin rebote); aquí solo flotan + su sombra */
+@media (min-width:900px){.lp-hero.lp-k .lp-hrow .lp-bal,.lp-hero.lp-k .lp-hrow .lp-bal.lp-rk{animation:lpFl2 6s ease-in-out infinite!important}
+.lp-lsh{position:absolute;height:16px;border-radius:50%;background:radial-gradient(closest-side,rgba(11,42,91,.28),rgba(11,42,91,0));pointer-events:none;z-index:0;opacity:0;animation:lpShF 6s ease-in-out infinite}
+@keyframes lpShF{50%{transform:scaleX(.86)}}}
+@media (max-width:899px){.lp-lsh{display:none}}
+/* v786: en el cielo no hay sombras (globo, cohete y avioneta solo con destello) */ .lp-lsh{display:none!important}
+/* v786: Premium junto al saludo solo en celular */ @media (max-width:899px){.ad-hi .ad-plan{display:inline-flex!important}}
