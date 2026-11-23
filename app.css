@@ -11065,6 +11065,7 @@ body.ag-adult .ad-plane img{animation:pfPlIn 1.9s cubic-bezier(.2,.8,.2,1) both!
 @media (min-width:900px){body .db-side{overflow-y:scroll!important;scrollbar-width:auto!important;scrollbar-color:#9fb0c8 #eef2f7!important}body .db-side::-webkit-scrollbar{width:10px!important}body .db-side::-webkit-scrollbar-thumb{background:#9fb0c8!important;border-radius:8px}body .db-side::-webkit-scrollbar-track{background:#eef2f7!important;border-radius:8px}}
 /* v783 · entrada de niños PC: globo un poco más pequeño */
 @media (min-width:900px){.lp-hrow .lp-bal:not(.lp-rk):not(.lp-avn){width:min(22vw,clamp(200px,calc(39vh / var(--z, 1)),420px))!important}}
-@media (min-width:900px){.ld-login .pt-hello .bubble{margin-left:6px!important}}
 /* v783 · «Premium» solo debajo del nombre (sin repetirlo arriba ni junto al saludo) */
 .tb-plan,.ad-hi .ad-plan{display:none!important}
+/* v784 · perfil adultos: la avioneta entra y luego flota */
+body.ag-adult .ad-plane img{animation:pfPlIn 1.9s cubic-bezier(.2,.8,.2,1) both,adFly 3.2s ease-in-out 1.9s infinite!important}
