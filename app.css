@@ -11051,3 +11051,12 @@ body.lp-teen:has(.lp-hero.lp-k) .ld-nav .btn.k,body.lp-teen:has(.lp-hero.lp-k) .
 body.ag-adult .ad-plane img{animation:pfPlIn 1.9s cubic-bezier(.2,.8,.2,1) both!important}
 @media (prefers-reduced-motion:reduce){.kd-mra,.tn-mra,body.ag-adult .ad-plane img{animation:none!important}}
 /* v780 · adultos: sin las manchas blancas de abajo */ .lp-a .lp-cloud{display:none!important}
+/* v781 · página principal: el cohete entra por JS (emo.js); aquí solo flota */
+.ld-hero-mra{will-change:transform}
+/* v781 · celular: el aviso «Desliza…» separado de la línea de abajo */
+@media (max-width:899px){.lp-swipe{margin-bottom:14px!important;padding-bottom:2px}.lp-swipe .sw-t{display:block;line-height:1.35}}
+/* v781 · PC: la burbuja del saludo no empuja al cohete (cada uno con su espacio fijo) */
+@media (min-width:900px){
+ .ld-login .pt-hello{position:relative!important;justify-content:center!important;width:100%!important;padding-right:256px!important;box-sizing:border-box!important}
+ .ld-login .pt-hello .bubble{position:absolute!important;left:calc((100% - 256px) / 2 + 83px)!important;right:auto!important;top:0!important;bottom:0!important;margin:auto 0!important;height:fit-content!important;max-width:250px!important}
+}
