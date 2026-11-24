@@ -225,8 +225,9 @@
             <button class="tp-mi" id="tp-tour"><i class="ib5">${TI('compass')}</i><span><b>Ver el tour</b><small>Cómo funciona tu portal</small></span></button></div></div>
         </div>
       </div>
-      <div id="tp-ctbar"></div><div id="tp-ofr"></div><section id="tp-body"></section>`;
+      <div id="tp-ctbar"></div><div id="tp-off"></div><div id="tp-ofr"></div><section id="tp-body"></section>`;
     if (CT) setTimeout(ctBar, 0);
+    try { offBar(); } catch (e) { } // v789
     try { if (window.MROFR) setTimeout(() => MROFR.init({ kind: 'profe', mount: '#tp-ofr', name: (D.teacher.hello || D.teacher.name || ''), call: (a, d) => api(a, d) }), 1200); } catch (e) { } // v573: ofertas de video
     if ($('#tp-tour')) $('#tp-tour').onclick = () => tour();
     if ($('#tp-mat')) $('#tp-mat').onclick = material;
@@ -358,19 +359,52 @@
       onSave: async (d, pngs) => { const x = await MR.call('tPzSave', { tcode: S.tcode, pin: S.pin, classId: id, json: JSON.stringify(d), pngs }, { timeout: 120000 }); return !!(x && x.ok); } });
   }
   // 🔁 el profe cancela una clase individual: aviso antes de confirmar (opinión del estudiante + multa si es con menos de 12 h)
-  async function cancelDialog(id) {
+  async function cancelDialog(id) { /* v789 · una sola ventana: el profe elige el motivo; enfermedad, calamidad familiar o permiso o viaje = sin multa y puede bloquear sus días */
     const c = D.classes.find((x) => x.id === id); if (!c) return;
     const hu = (new Date(c.date + 'T' + c.time + ':00-05:00').getTime() - Date.now()) / 36e5; const late = hu < 12;
     let pen = 10000; try { const r = await api('tPay'); if (r && r.penalty) pen = r.penalty; } catch (e) { }
-    const m = modal(`<button class="tp-x" data-x aria-label="Cerrar">✕</button><h3>Cancelar clase</h3><p class="muted">${esc(studentName(c.students[0] || ''))} · ${dLabel(c.date, true)} · ${h12(c.time)}</p>
-      <div class="tp-cwarn"><b>Antes de cancelar, ten en cuenta:</b><ul><li>Tu estudiante organizó su tiempo para esta clase. Al cancelar, <b>puede dejarte una calificación u opinión negativa</b>, y eso se ve en tu perfil.</li>
-      <li>${late ? `Faltan <b>menos de 12 horas</b>: se descuentan <b>$${Number(pen).toLocaleString('es-CO')}</b> de tu pago del mes.` : 'Faltan más de 12 horas: no hay multa, pero esta clase no se paga.'}</li><li>La clase vuelve al saldo del estudiante y le enviamos horarios con otros profes. Administración recibe un aviso.</li></ul></div>
-      <label class="tp-lbl">Motivo de la cancelación <span style="color:#b91c1c">*</span> <small class="muted" style="font-weight:600">(obligatorio · lo revisa administración)</small><textarea class="inp" id="tc-why" rows="2" maxlength="200" placeholder="Ej: calamidad familiar, cita médica…"></textarea></label><small id="tc-err" style="color:#b91c1c;font-weight:700;display:none">Escribe el motivo (mínimo 10 caracteres).</small>
-      <div class="row" style="justify-content:flex-end;gap:8px;margin-top:10px"><button class="btn w" data-x>Mejor no cancelo</button><button class="btn r" id="tc-ok">Sí, cancelar clase</button></div>`);
-    $('#tc-ok', m).onclick = async () => { const why = $('#tc-why', m).value.trim(); if (why.length < 10) { $('#tc-err', m).style.display = 'block'; $('#tc-why', m).classList.add('wrong'); $('#tc-why', m).focus(); return; } const b = $('#tc-ok', m); b.disabled = true; b.textContent = 'Cancelando…';
-      const x = await api('tCancel', { classId: id, reason: why });
-      if (x && x.ok) { m.remove(); toast(x.late ? '⚠️ Clase cancelada · con multa por ser tarde' : '✅ Clase cancelada · el estudiante ya fue avisado'); c.status = x.late ? 'tlate' : 'cancelled'; try { shell(); } catch (e) { } }
-      else { b.disabled = false; b.textContent = 'Sí, cancelar clase'; toast(errText((x && x.err) || 'network'), true); } };
+    const SV = (d) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+    const IC = { enfermedad: SV('<path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"/>'), calamidad: SV('<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M12 17.5s-3-1.8-3-3.6a1.6 1.6 0 0 1 3-.8 1.6 1.6 0 0 1 3 .8c0 1.8-3 3.6-3 3.6Z"/>'), viaje: SV('<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>'), otro: SV('<circle cx="12" cy="12" r="9"/><path d="M8 12h.01M12 12h.01M16 12h.01"/>'), alert: SV('<circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/>'), ok: SV('<circle cx="12" cy="12" r="9"/><path d="m8.5 12 2.5 2.5 4.5-5"/>'), clock: SV('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>') };
+    const K = [['enfermedad', 'Enfermedad'], ['calamidad', 'Calamidad familiar'], ['viaje', 'Permiso o viaje'], ['otro', 'Otro motivo']];
+    const pad = (n) => String(n).padStart(2, '0'); const iso = (d) => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+    const now = new Date(); const t0 = iso(now); const addD = (n) => { const d = new Date(now); d.setDate(d.getDate() + n); return iso(d); };
+    let kind = '', days = 1;
+    const m = modal(`<button class="tp-x" data-x aria-label="Cerrar">✕</button><div class="tc2"><h3>Cancelar clase</h3><p class="muted">${esc(studentName(c.students[0] || ''))} · ${dLabel(c.date, true)} · ${h12(c.time)}</p>
+      <div class="tc2-l">¿Por qué cancelas? <span class="req">*</span></div><div class="tc2-ch">${K.map(([k, t]) => `<button type="button" class="tc2-c" data-k="${k}">${IC[k]}${t}</button>`).join('')}</div>
+      <div class="tc2-days" hidden><div class="tc2-l">¿Cuántos días no podrás dar clases?</div><div class="tc2-stp"><button type="button" class="tc2-b" data-d="-1" aria-label="Menos">−</button><span class="tc2-n"><b id="tc-dn">1</b> <small id="tc-dl">día</small></span><button type="button" class="tc2-b" data-d="1" aria-label="Más">+</button></div><div class="tc2-list" id="tc-list"></div></div>
+      <div class="tc2-l" id="tc-ml">Mensaje para tu estudiante <span class="req">*</span></div><textarea class="inp" id="tc-why" rows="3" maxlength="300" placeholder="Explícale a tu estudiante por qué cancelas la clase."></textarea><small id="tc-err" class="tc2-err" hidden></small>
+      <div class="tc2-res" id="tc-res" hidden></div>
+      <div class="tc2-bt"><button class="btn w" data-x>Mejor no cancelo</button><button class="btn r" id="tc-ok">Sí, cancelar clase</button></div></div>`);
+    const fmt = (d) => dLabel(d, true);
+    const paint = () => {
+      m.querySelectorAll('[data-k]').forEach((b) => b.classList.toggle('on', b.dataset.k === kind));
+      const just = kind && kind !== 'otro'; const dv = $('.tc2-days', m); dv.hidden = !just;
+      $('#tc-dn', m).textContent = days; $('#tc-dl', m).textContent = days === 1 ? 'día' : 'días';
+      const until = addD(days - 1), back = addD(days);
+      const fut = (x) => new Date(x.date + 'T' + x.time + ':00-05:00').getTime() > Date.now(); const L = D.classes.filter((x) => x.type === 'vip' && x.status === 'scheduled' && fut(x) && ((x.date >= t0 && x.date <= until) || x.id === c.id)).sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
+      if (just) $('#tc-list', m).innerHTML = `<b>${IC.clock}Los ${days === 1 ? '' : days + ' '}día${days === 1 ? ' empieza' : 's empiezan'} a contar desde ya mismo</b><span>${days === 1 ? 'Hoy ' + fmt(t0) : 'Desde hoy ' + fmt(t0) + ' hasta el ' + fmt(until)}.</span><span>Se cancelan y se bloquean de inmediato:</span>${L.map((x) => `<span>• ${fmt(x.date)} · ${h12(x.time)} · ${esc(studentName(x.students[0] || ''))}</span>`).join('')}<span>Tus horarios vuelven solos el <b>${fmt(back)}</b> y te avisamos a ti y a administración.</span>`;
+      $('#tc-ml', m).innerHTML = (just && L.length > 1 ? 'Mensaje para tus estudiantes' : 'Mensaje para tu estudiante') + ' <span class="req">*</span>';
+      const res = $('#tc-res', m); res.hidden = !kind;
+      if (kind === 'otro') { res.className = 'tc2-res bad'; res.innerHTML = late ? `${IC.alert}<b>Se aplica la multa de $${Number(pen).toLocaleString('es-CO')}</b> (faltan menos de 12 h).<br>La clase vuelve al saldo de tu estudiante y puede dejarte una opinión.` : `${IC.alert}<b>Sin multa</b> (faltan más de 12 h), pero esta clase no se paga.<br>La clase vuelve al saldo de tu estudiante y puede dejarte una opinión.`; }
+      else if (just) { res.className = 'tc2-res good'; res.innerHTML = `${IC.ok}<b>Sin multa</b> por ser un permiso especial. Administración lo revisa.<br>${L.length > 1 ? 'Las clases vuelven al saldo de cada estudiante.' : 'La clase vuelve al saldo de tu estudiante.'}`; }
+      $('#tc-ok', m).textContent = just ? 'Sí, cancelar' + (days > 1 || L.length > 1 ? ' y bloquear' : '') : 'Sí, cancelar clase';
+    };
+    m.querySelectorAll('[data-k]').forEach((b) => b.onclick = () => { kind = b.dataset.k; $('#tc-err', m).hidden = true; paint(); });
+    m.querySelectorAll('[data-d]').forEach((b) => b.onclick = () => { days = Math.max(1, Math.min(30, days + +b.dataset.d)); paint(); });
+    paint();
+    $('#tc-ok', m).onclick = async () => { const why = $('#tc-why', m).value.trim(); const err = $('#tc-err', m);
+      if (!kind) { err.textContent = 'Elige por qué cancelas.'; err.hidden = false; return; }
+      if (why.length < 10) { err.textContent = 'Escribe el mensaje para tu estudiante (mínimo 10 caracteres).'; err.hidden = false; $('#tc-why', m).classList.add('wrong'); $('#tc-why', m).focus(); return; }
+      const b = $('#tc-ok', m); b.disabled = true; b.textContent = 'Cancelando…'; const just = kind !== 'otro';
+      const x = await api('tCancel', Object.assign({ classId: id, reason: why }, just ? { kind, days } : {}));
+      if (x && x.ok) { m.remove(); if (just) { toast('✅ Listo · ' + (x.cancelled != null ? x.cancelled + ' clase(s) cancelada(s) · ' : '') + 'sin multa'); try { await reload(); } catch (e) { } return; } toast(x.late ? '⚠️ Clase cancelada · con multa por ser tarde' : '✅ Clase cancelada · el estudiante ya fue avisado'); c.status = x.late ? 'tlate' : 'cancelled'; try { shell(); } catch (e) { } }
+      else { b.disabled = false; paint(); toast(errText((x && x.err) || 'network'), true); } };
+  }
+  /* v789 · aviso arriba cuando el profe tiene su disponibilidad bloqueada por un permiso especial */
+  function offBar() { const el = $('#tp-off'); if (!el) return; const u = D && D.teacher && D.teacher.offUntil; if (!u) { el.innerHTML = ''; return; }
+    const nx = (() => { const d = new Date(u + 'T12:00:00'); d.setDate(d.getDate() + 1); return d.toISOString().slice(0, 10); })();
+    el.innerHTML = `<div class="tp-offb"><div><b>Tu disponibilidad está bloqueada hasta el ${dLabel(u, true)}</b><p>Nadie puede reservar contigo. El ${dLabel(nx, true)} tus horarios vuelven solos.</p></div><button class="btn w" id="tp-offx">Desbloquear antes</button></div>`;
+    $('#tp-offx').onclick = async () => { const b = $('#tp-offx'); b.disabled = true; b.textContent = 'Desbloqueando…'; const r = await api('tOffEnd'); if (r && r.ok) { toast('✅ Tu horario ya está disponible'); await reload(); } else { b.disabled = false; b.textContent = 'Desbloquear antes'; toast(errText((r && r.err) || 'network'), true); } };
   }
   // 📝 tablero de clase: el profe escribe lo que hizo en la clase; ve también los tableros anteriores del estudiante (de cualquier profe)
   // 👤 Ficha del estudiante (solo lectura): nivel, tema a reforzar y sus clases anteriores con cualquier profe (resumen + pizarra de la clase en vivo)

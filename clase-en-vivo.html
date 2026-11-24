@@ -2,11 +2,11 @@
 <html lang="es" translate="no"><head><meta name="google" content="notranslate"><link rel="icon" type="image/png" href="favicon.png"><script>/* v544 · la misma pantalla del portátil, escalada a pantallas grandes */(function(){var d=document.documentElement;function f(){var w=innerWidth,h=innerHeight,z=Math.min(w/1536,h/790);z=(w>=1600&&z>1.04)?Math.min(z,2.4):1;z=Math.round(z*100)/100;if(d.style.zoom!==String(z)){d.style.zoom=z===1?"":z;d.style.setProperty("--z",z);}}f();addEventListener("resize",function(){d.style.zoom="";f();});})();</script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>Clase en vivo · mrarrieta.com</title>
 <script src="https://unpkg.com/@daily-co/daily-js@0.92.2/dist/daily.js"></script>
-<script src="clase-topics.js?v=788"></script>
-<script src="config.js?v=788"></script><script src="emo2.js?v=788"></script><script src="emo.js?v=788"></script><script src="ajuste.js?v=788"></script>
-<script src="goals.js?v=788"></script>
-<script src="goalsdata.js?v=788"></script>
-<script src="missions.js?v=788"></script><script src="ageimg.js?v=788"></script>
+<script src="clase-topics.js?v=789"></script>
+<script src="config.js?v=789"></script><script src="emo2.js?v=789"></script><script src="emo.js?v=789"></script><script src="ajuste.js?v=789"></script>
+<script src="goals.js?v=789"></script>
+<script src="goalsdata.js?v=789"></script>
+<script src="missions.js?v=789"></script><script src="ageimg.js?v=789"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--n:#0B2A5B;--n2:#1e4a8f;--r:#E3242B;--y:#FFC21A;--g:#16a34a;--bd:#e3e9f3;--mu:#5b6577;--bg:#eef2f8}
@@ -233,7 +233,18 @@ body.only-t .clock{border-radius:16px}
  body.only-t #vl{width:28%;bottom:auto;top:12px;right:12px}
  body.only-t .vctl{bottom:12px;padding:6px;gap:8px}body.only-t .vctl button{width:42px;height:42px}
 }
-</style><link rel="stylesheet" href="marca.css?v=788">
+
+/* v789 · encabezado horizontal en celular y modo práctica centrado */
+@media(max-width:600px){header{flex-wrap:wrap;gap:6px 10px!important;padding:8px 12px!important}header img{height:38px!important}
+header>div[style]{order:3;flex:1 1 100%!important;text-align:center;border-top:1px solid #E2E8F0;padding-top:6px}
+header h1{display:inline!important;font-size:14px!important}header h1:after{content:' · ';color:#94a3b8}header small{display:inline!important;font-size:13px!important}
+.hend,.hback{margin-left:auto}.hend+.hback{margin-left:0}}
+@media(max-width:600px){header .hend,header .hback{font-size:12px!important;padding:6px 9px!important}header{column-gap:8px!important}header img{height:34px!important}}
+.top{justify-content:center!important;text-align:center!important;flex-wrap:wrap!important;gap:6px!important}.top h3{flex:1 1 100%!important;text-align:center!important;margin:0!important}
+.tools{justify-content:center!important}
+.vset{align-items:center!important;text-align:center!important}.vset .vt{justify-content:center}
+
+</style><link rel="stylesheet" href="marca.css?v=789">
 </head><body>
 <canvas id="cf"></canvas><div class="cheer" id="cheer"></div>
 <header><img src="mra-brand.png" alt="mrarrieta.com" onerror="this.style.display='none'"><div style="flex:1"><h1>Clase en vivo</h1><small id="hsub">mrarrieta.com</small></div><button id="hend" class="hend" hidden></button><a id="hback" class="hback" hidden>← Mi portal</a></header>
@@ -528,7 +539,7 @@ function saveBoard(){const s=summary(),l=L();const by=Object.keys(SKN).map(k=>s.
  SAVED=0;render();tcall('tLiveSave',{classId:CID,text:txt,png:pzPNG()}).then(r=>{SAVED=r&&r.ok?1:-1;render();});}
 // ---------- pantallas ----------
 let lastKey='';
-function ageTheme(){const g=AGE();document.body.classList.toggle('ag-kids',g==='kids');document.body.classList.toggle('ag-teens',g==='teens');const h=document.querySelector('header h1');if(h)h.textContent='Clase en vivo';}
+function ageTheme(){const g=AGE();document.body.classList.remove('ag-kids','ag-teens');/* v789: las 3 edades con los colores corporativos (el contenido de cada edad no cambia) */const h=document.querySelector('header h1');if(h)h.textContent='Clase en vivo';}
 function kPath(){const S=L().steps,secs=[];S.forEach((x,n)=>{let k=secs.find(z=>z.s===x.sec);if(!k){k={s:x.sec,a:n,b:n};secs.push(k);}k.b=n;});const cur=st.i,cs=(S[Math.min(cur,S.length-1)]||{}).sec;const done=secs.filter(k=>st.fin||(k.b<cur&&cs!==k.s)).length;
  return `<div class="kpath"><div class="kst">${secs.map((k,j)=>{const c=!st.fin&&cs===k.s,d=!c&&(st.fin||k.b<cur);return `${j?'<i class="kln"></i>':''}<div class="ks${d?' d':''}${c?' c':''}" title="${esc(k.s)}"><b>${d?'✓':j+1}</b></div>`;}).join('')}</div><div class="kstamp"><span class="know">${st.fin?'¡Misión cumplida!':'Ahora: '+esc(cs||'')}</span><span>${I('star')} ${done} de ${secs.length} sellos</span></div></div>`;}
 function tStreak(){let n=0;for(let j=Math.min(st.i,L().steps.length-1);j>=0;j--){if(st.res[j]===true)n++;else if(st.res[j]===false)break;}return n;}
@@ -637,4 +648,4 @@ if(PLATFORM||DEMO){const hb=$('#hback');hb.href=rol==='profe'?'profesores.html':
 window.__cev={ensureTopic,kOf,AGE};
 document.addEventListener('click',e=>{const a=e.target.closest('.agsel a');if(!a)return;e.preventDefault();const q=new URLSearchParams(location.search);if(a.dataset.ag==='adult')q.delete('ag');else q.set('ag',a.dataset.ag);location.search=q.toString();});
 })();
-</script><script src="full.js?v=788"></script></body></html>
+</script><script src="full.js?v=789"></script></body></html>

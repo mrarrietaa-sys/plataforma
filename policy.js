@@ -40,9 +40,10 @@
   <section><h3>3. Después de cada clase</h3><ul>
     <li>Marca la clase como <b>"Dictada"</b> o <b>"No asistió"</b> el mismo día.</li>
     <li>Escribe en el <b>tablero de la clase</b> lo que trabajaste (vocabulario, correcciones, tarea). El estudiante lo verá en su historial y el próximo profe sabrá qué se vio.</li></ul></section>
-  <section><h3>4. Si no te conectas</h3><ul>
+  <section><h3>4. Si no te conectas o cancelas</h3><ul>
     <li>El estudiante puede reportarlo con el botón <b>"Mi profe no se conectó"</b>. Si se confirma, la clase vuelve a su saldo y se te descuentan <b>{PEN}</b> de tu pago del mes por esa clase.</li>
-    <li>Si tienes un imprevisto, cancela desde <b>Mis clases → Cancelar clase</b>. Con <b>12 horas o más</b> de anticipación no hay multa (esa clase no se paga). Con <b>menos de 12 horas</b> se descuentan <b>{PEN}</b> de tu pago del mes. En ambos casos la clase vuelve al saldo del estudiante.</li></ul></section>
+    <li>Si tienes un imprevisto, cancela desde <b>Mis clases → Cancelar clase</b>. Con <b>12 horas o más</b> de anticipación no hay multa (esa clase no se paga). Con <b>menos de 12 horas</b> se descuentan <b>{PEN}</b> de tu pago del mes. En ambos casos la clase vuelve al saldo del estudiante.</li>
+    <li><b>Permisos especiales (sin multa):</b> si cancelas por <b>enfermedad</b>, <b>calamidad familiar</b> o <b>permiso o viaje</b>, elige ese motivo al cancelar. <b>No se descuentan los {PEN}</b>, aunque falten menos de 12 horas. Esas clases no se pagan y vuelven al saldo de cada estudiante. Puedes bloquear los días que no podrás dar clases y debes escribirles un mensaje a tus estudiantes explicando el motivo. Administración revisa cada caso: si el motivo no es verídico, se aplica la multa.</li></ul></section>
   <section><h3>5. Pagos</h3><ul>
     <li>Cada clase <b>dictada</b> (50 minutos) se paga a <b>{RATE}</b>.</li>
     <li>Si te conectas, esperas los 15 minutos y el estudiante no asiste, se pagan <b>{NOSHOW}</b>.</li>

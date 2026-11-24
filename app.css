@@ -11079,3 +11079,63 @@ body.ag-adult .ad-plane img{animation:pfPlIn 1.9s cubic-bezier(.2,.8,.2,1) both,
 /* v787 · PC: la avioneta llega a la misma velocidad que el globo y el cohete */ @media (min-width:900px){.lp-hrow .lp-bal.lp-avn{animation:lpPlIn2 2.7s cubic-bezier(.25,.6,.3,1) both,lpFl2 6s ease-in-out 2.7s infinite!important}}
 /* v787 · celular: globo y cohete llegan suave como en PC (la llegada la hace portal.js), avioneta a la misma velocidad */ @media (max-width:899px){.lp-hero.lp-k .lp-hrow .lp-bal,.lp-hero.lp-k .lp-hrow .lp-bal.lp-rk{animation:lpFl 6s ease-in-out infinite!important}.lp-hrow .lp-bal.lp-avn{animation:lpPlIn 2.7s cubic-bezier(.25,.6,.3,1) both,lpFl 6s ease-in-out 2.7s infinite!important}}
 /* v787 · perfiles: personajes llegan a la misma velocidad que en las portadas, suave y sin rebote; destello al llegar (portal.js) */ @keyframes pfBalIn3{0%{transform:translateY(110%) rotate(5deg) scale(.85);opacity:0}12%{opacity:1}60%{transform:translateY(14%) rotate(-3deg) scale(.97)}100%{transform:none;opacity:1}} @keyframes pfRkIn3{0%{transform:translate(-60%,80%) rotate(-22deg) scale(.55);opacity:0}10%{opacity:1}55%{transform:translate(-18%,18%) rotate(-8deg) scale(.85)}100%{transform:none;opacity:1}} .kd-mra{animation:pfBalIn3 2.8s cubic-bezier(.25,.6,.3,1) both,mraFloat 3.4s ease-in-out 2.8s infinite!important} .tn-mra{animation:pfRkIn3 2.6s cubic-bezier(.25,.6,.3,1) both,mraFloat 3.4s ease-in-out 2.6s infinite!important} body.ag-adult .ad-plane img{animation:pfPlIn 2.7s cubic-bezier(.25,.6,.3,1) both,adFly 3.2s ease-in-out 2.7s infinite!important}
+
+/* v789 · portal del profe con los colores corporativos (etiquetas, botón «Marcar como dictada», avisos) */
+
+.tp-ag.kids,.tp-ag.teens,.tp-ag.adult{background:#F4F7FC!important;color:#0B2A5B!important;border-color:#C7D3EA!important}
+.tp-agtip.kids,.tp-agtip.teens{border-left-color:#1D4A9A!important}
+.tp-st.pend{color:#E3242B!important;background:#FDECEC!important;border-color:#E3242B!important}
+.tp-st.sch{color:#0B2A5B!important;background:#F4F7FC!important;border-color:#0B2A5B!important}
+.tp-page .btn.ok{background:linear-gradient(135deg,#0B2A5B,#1D4A9A)!important;border-color:#0B2A5B!important;color:#fff!important}
+.tp-cls.tomorrow{background:#F4F7FC!important}
+.tp-wk-i,.tp-wk-i svg{color:#0B2A5B!important}
+.tp-page .wg3-note{background:#F4F7FC!important;color:#0B2A5B!important;border-left:4px solid #1D4A9A}
+.tp-paid.pend{background:#fff!important;color:#0B2A5B!important}.tp-paid.pend svg{color:#E3242B!important}
+
+/* v789 · chat con los colores corporativos (misma forma tipo WhatsApp) */
+.wa-wrap,.wa-wrap *{font-family:Inter,system-ui,sans-serif}
+.wa-h{background:linear-gradient(135deg,#0B2A5B,#1D4A9A)!important;border-bottom:4px solid #E3242B}
+.wa-h,.wa-h b,.wa-rt b,.wa-new,.wa-ncc h3{font-family:Poppins,system-ui,sans-serif!important}
+.wa-h .wa-av{color:#0B2A5B!important}.wa-h .wa-rt small{color:#C7D3EA!important}
+.wa-new{border-color:#0B2A5B!important;color:#0B2A5B!important}
+.wa-rm i{background:#E3242B!important}
+.wa-room.on{background:#F4F7FC!important}.wa-room:hover{background:#F4F7FC!important}
+.wa-av{background:#E8EEF9!important;color:#0B2A5B!important}
+.wa-rt b{color:#0B2A5B!important}
+.wa-main,.wa-msgs{background-color:#F4F7FC!important}
+.wa-m.me .wa-b{background:#DCE6F7!important}
+.wa-send{background:#E3242B!important}
+.wa-who{color:#1D4A9A!important}.wa-m.me .wa-who{color:#0B2A5B!important}
+.wa-blank{background:#F4F7FC!important;border-bottom-color:#E3242B!important}
+.wa-closed{background:#F4F7FC!important;color:#0B2A5B!important;border-top:1px solid #DCE4F0!important}
+.wa-tk.read{color:#1D4A9A!important}
+.wa-h .wa-rt b{color:#fff!important}
+/* PROPUESTA · portal del profe con colores corporativos */
+
+/* v789 · ventana única de cancelación del profe (motivo, contador de días, mensaje obligatorio) · todo centrado */
+.tc2{text-align:center}.tc2 h3{font:800 20px var(--fh,Poppins),sans-serif;color:#0B2A5B;margin:0 0 2px}.tc2 .muted{margin:0 0 12px}
+.tc2-l{font:700 13.5px var(--fh,Poppins),sans-serif;color:#0B2A5B;margin:14px 0 8px}.tc2 .req{color:#E3242B}
+.tc2-ch{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.tc2-c{display:inline-flex;align-items:center;gap:6px;padding:9px 13px;border-radius:999px;border:1px solid #E2E8F0;background:#fff;color:#0B2A5B;font:600 13px var(--fb,Inter),sans-serif;cursor:pointer}
+.tc2-c svg{width:16px;height:16px}.tc2-c.on{background:#0B2A5B;border-color:#0B2A5B;color:#fff}
+.tc2-stp{display:flex;align-items:center;justify-content:center;gap:16px;margin:2px 0 10px}
+.tc2-b{width:44px;height:44px;border-radius:12px;border:1px solid #E2E8F0;background:#fff;font:700 24px var(--fh,Poppins),sans-serif;color:#0B2A5B;cursor:pointer}
+.tc2-n b{font:800 28px var(--fh,Poppins),sans-serif;color:#0B2A5B}.tc2-n small{font:600 14px var(--fb,Inter),sans-serif;color:#64748B}
+.tc2-list{background:#F4F7FC;border-radius:12px;padding:10px 12px;font-size:13px;line-height:1.55;display:flex;flex-direction:column;align-items:center;gap:1px}
+.tc2-list b{color:#0B2A5B;display:inline-flex;align-items:center;gap:6px}.tc2-list svg{width:15px;height:15px}
+.tc2 textarea{width:100%;box-sizing:border-box;text-align:center}
+.tc2-err{display:block;color:#b91c1c;font-weight:700;margin-top:6px}
+.tc2-res{border-radius:12px;padding:10px 12px;font-size:13px;line-height:1.5;margin-top:12px;border-top:4px solid}.tc2-res svg{width:15px;height:15px;vertical-align:-3px;margin-right:5px}
+.tc2-res.bad{background:#FDECEC;border-color:#E3242B}.tc2-res.bad svg{color:#E3242B}.tc2-res.good{background:#E7F6EC;border-color:#16A34A}.tc2-res.good svg{color:#16A34A}
+.tc2-bt{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.tp-offb{max-width:748px;margin:12px auto 0;background:#FDECEC;border:1px solid #F8C4C6;border-radius:16px;padding:14px 16px;display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap;text-align:center}
+.tp-offb b{color:#E3242B;font-family:var(--fh,Poppins),sans-serif}.tp-offb p{margin:2px 0 0;font-size:13.5px;color:#7f1d1d}
+/* v789 · administración: bloquear la disponibilidad de un profe */
+.ad-chip.off{background:#FDECEC;color:#E3242B;border:1px solid #F8C4C6}
+.ad-offb{background:#fff!important;color:#E3242B!important;border:1.5px solid #E3242B!important}
+.ad-off{text-align:center}.ad-off h3{font:800 19px var(--fh,Poppins),sans-serif;color:#0B2A5B;margin:0}
+.ad-offl{font:700 13px var(--fh,Poppins),sans-serif;color:#0B2A5B;margin:14px 0 6px}
+.ad-offc{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}.ad-offc button{padding:8px 12px;border-radius:999px;border:1px solid #E2E8F0;background:#fff;color:#0B2A5B;font:600 13px var(--fb,Inter),sans-serif;cursor:pointer}.ad-offc button.on{background:#0B2A5B;color:#fff;border-color:#0B2A5B}
+.ad-offs{display:flex;align-items:center;justify-content:center;gap:16px}.ad-offs button{width:40px;height:40px;border-radius:12px;border:1px solid #E2E8F0;background:#fff;font:700 22px var(--fh,Poppins),sans-serif;color:#0B2A5B;cursor:pointer}.ad-offs b{font:800 22px var(--fh,Poppins),sans-serif;color:#0B2A5B;min-width:80px}
+.ad-off textarea{width:100%;box-sizing:border-box;border:1px solid #E2E8F0;border-radius:12px;padding:10px;font:500 14px var(--fb,Inter),sans-serif;text-align:center}
+.tc2 textarea{font:500 14px/1.45 var(--fb,Inter),sans-serif!important;color:#1e293b}
