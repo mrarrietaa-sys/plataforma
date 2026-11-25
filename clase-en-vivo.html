@@ -2,11 +2,11 @@
 <html lang="es" translate="no"><head><meta name="google" content="notranslate"><link rel="icon" type="image/png" href="favicon.png"><script>/* v544 · la misma pantalla del portátil, escalada a pantallas grandes */(function(){var d=document.documentElement;function f(){var w=innerWidth,h=innerHeight,z=Math.min(w/1536,h/790);z=(w>=1600&&z>1.04)?Math.min(z,2.4):1;z=Math.round(z*100)/100;if(d.style.zoom!==String(z)){d.style.zoom=z===1?"":z;d.style.setProperty("--z",z);}}f();addEventListener("resize",function(){d.style.zoom="";f();});})();</script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>Clase en vivo · mrarrieta.com</title>
 <script src="https://unpkg.com/@daily-co/daily-js@0.92.2/dist/daily.js"></script>
-<script src="clase-topics.js?v=792"></script>
-<script src="config.js?v=792"></script><script src="emo2.js?v=792"></script><script src="emo.js?v=792"></script><script src="ajuste.js?v=792"></script>
-<script src="goals.js?v=792"></script>
-<script src="goalsdata.js?v=792"></script>
-<script src="missions.js?v=792"></script><script src="ageimg.js?v=792"></script>
+<script src="clase-topics.js?v=794"></script>
+<script src="config.js?v=794"></script><script src="emo2.js?v=794"></script><script src="emo.js?v=794"></script><script src="ajuste.js?v=794"></script>
+<script src="goals.js?v=794"></script>
+<script src="goalsdata.js?v=794"></script>
+<script src="missions.js?v=794"></script><script src="ageimg.js?v=794"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--n:#0B2A5B;--n2:#1e4a8f;--r:#E3242B;--y:#FFC21A;--g:#16a34a;--bd:#e3e9f3;--mu:#5b6577;--bg:#eef2f8}
@@ -244,7 +244,29 @@ header h1{display:inline!important;font-size:14px!important}header h1:after{cont
 .tools{justify-content:center!important}
 .vset{align-items:center!important;text-align:center!important}.vset .vt{justify-content:center}
 
-</style><link rel="stylesheet" href="marca.css?v=792">
+</style><link rel="stylesheet" href="marca.css?v=794">
+<style>/* v794 · PC: la parte de arriba del panel del profe más compacta para ver mejor los contenidos (el video no cambia de tamaño) */
+.mkbar{display:contents}.pl-x{font-style:normal}
+@media (min-width:900px){
+#m-top{padding:10px 14px 8px!important}
+#m-top .top{flex-wrap:nowrap!important;gap:8px!important}
+#m-top .top h3{flex:0 1 auto!important;min-width:0!important}
+#m-top .top .chip{white-space:nowrap;flex:none}
+#m-top .tools{flex-wrap:nowrap!important;justify-content:center!important;gap:4px!important;margin-top:8px!important}
+#m-top .tools .tb{white-space:nowrap;padding-left:8px!important;padding-right:8px!important}
+.mkbar{display:flex;align-items:center;gap:8px;margin-top:8px}
+.mkbar .clock{margin:0!important;flex:none;display:grid!important;grid-template-columns:auto auto;align-items:center;justify-items:center;column-gap:6px;row-gap:3px;padding:6px 10px!important}
+.mkbar .clock b{font-size:18px!important;white-space:nowrap}.mkbar .clock b small{font-size:11px!important}
+.mkbar .clock .pill{grid-column:1/-1;margin:0!important;font-size:10px!important;padding:1px 7px!important;white-space:nowrap}
+.mkbar .clock .pl-x{display:none}
+.mkb-r{flex:1;min-width:0}
+.mkb-r .kpath{margin:0!important;padding:5px 8px!important}
+.mkb-r .ks b{width:20px!important;height:20px!important;font-size:10px!important;border-width:2px!important}
+.mkb-r .kstamp{margin-top:3px!important;font-size:11px!important}.mkb-r .kstamp>*{white-space:nowrap}
+.mkb-r .steps{margin:0!important}
+.mkb-r .tstreak{margin:0 0 4px!important;font-size:11px!important}.mkb-r .tstreak>*{white-space:nowrap}
+}
+</style>
 </head><body>
 <canvas id="cf"></canvas><div class="cheer" id="cheer"></div>
 <header><img src="mra-brand.png" alt="mrarrieta.com" onerror="this.style.display='none'"><div style="flex:1"><h1>Clase en vivo</h1><small id="hsub">mrarrieta.com</small></div><button id="hend" class="hend" hidden></button><a id="hback" class="hback" hidden>← Mi portal</a></header>
@@ -549,7 +571,7 @@ function bar(){if(AGE()==='kids')return kPath();const S=L().steps;return (AGE()=
 function animKey(k,html){const a=k!==lastKey;lastKey=k;return a?`<div class="enter">${html}</div>`:html;}
 let stepT0=Date.now(),stepI=-1;
 function clockHTML(){if(!st.started)return '';const el=(Date.now()-base())/1000,s=L().steps[st.i],a=startOf(st.i),b=a+s.min*60;let pill;
- if(st.fin)pill='<span class="pill ok">Clase terminada</span>';else if(el>CLASS_MIN*60)pill='<span class="pill late">Tiempo cumplido · cierra la clase</span>';else if(el>b+60)pill=`<span class="pill late">Vas ${Math.round((el-b)/60)} min atrasado · avanza un poco</span>`;else if(el<a-90)pill=`<span class="pill early">Vas ${Math.round((a-el)/60)} min adelantado · puedes profundizar</span>`;else pill='<span class="pill ok">Vas a tiempo</span>';
+ if(st.fin)pill='<span class="pill ok">Clase terminada</span>';else if(el>CLASS_MIN*60)pill='<span class="pill late">Tiempo cumplido<em class="pl-x"> · cierra la clase</em></span>';else if(el>b+60)pill=`<span class="pill late">Vas ${Math.round((el-b)/60)} min atrasado<em class="pl-x"> · avanza un poco</em></span>`;else if(el<a-90)pill=`<span class="pill early">Vas ${Math.round((a-el)/60)} min adelantado<em class="pl-x"> · puedes profundizar</em></span>`;else pill='<span class="pill ok">Vas a tiempo</span>';
  return `${I('clock')}<b>${mmss(el)} <small>/ ${CLASS_MIN}:00</small></b>${pill}`;}
 function stepClock(){const s=L().steps[st.i],e=(Date.now()-stepT0)/1000;return `<span class="stt${e>s.min*60?' over':''}">${I('clock')} ${mmss(e)} de ${mmss(s.min*60)}</span>`;}
 setInterval(()=>{if(rol!=='profe'||!L()||!st.started)return;const c=$('#clk');if(c)c.innerHTML=clockHTML();const s=$('#sclk');if(s)s.innerHTML=stepClock();},1000);
@@ -573,7 +595,7 @@ function renderT(){const l=L(),top=$('#m-top'),body=$('#m-body');
  const live=DEMO?'<span class="chip">Modo práctica</span>':st.ready?`<span class="chip">${esc(SNAME)} conectado</span>`:PLATFORM?`<span class="chip">Esperando a ${esc(SNAME)}</span>`:`<span class="chip">Código: ${room}</span>`;
  top.innerHTML=`<div class="top"><h3>${DEMO?'Práctica · Tema '+l.n:'Clase con '+esc(SNAME)}</h3>${DEMO?'':'<span class="chip r live">EN VIVO</span>'}${live}<span class="chip">${st.ok} ✔ · ${st.pts} pts</span></div>
   <div class="tools"><button class="tb${st.pzOn?' on':''}" id="t-pz">${I('pen')} Pizarra</button><button class="tb" id="t-cnt">${I('book')} Contenido del tema</button><button class="tb" id="t-top">${I('swap')} Cambiar tema</button>${st.started?`<button class="tb" id="t-rs">${I('repeat')} Empezar de nuevo</button>`:''}</div>
-  ${st.started?`<div class="clock" id="clk">${clockHTML()}</div>${bar()}`:''}`;
+  ${st.started?`<div class="mkbar"><div class="clock" id="clk">${clockHTML()}</div><div class="mkb-r">${bar()}</div></div>`:''}`;
  $('#t-pz').onclick=()=>send({pzOn:st.pzOn?0:1});$('#t-cnt').onclick=contentModal;$('#t-top').onclick=()=>topicModal();const rs=$('#t-rs');if(rs)rs.onclick=()=>{if(!confirm('¿Empezar la clase de nuevo desde el paso 1? Se borran los puntos de hoy.'))return;stopAudio(true);ended=false;send({over:0,started:Date.now()+3900,i:0,res:[],ok:0,rep:0,pts:0,fb:'',fin:null,hl:-1,sh:-1,cheer:st.cheer});countdown(3900);};
  if(!st.started){body.innerHTML=animKey('pre'+st.mod+st.topic,`<div class="pre"><div class="hero"><img src="${U(l.cover,1100,620)}" alt=""><div><small>Tema ${l.n} · ${modLabel(l)}</small><h2>${esc(l.title)}</h2><p>${esc(l.goal)}</p></div></div>
    <div class="sug">${DEMO?`<span>${I('book')} Modo práctica · sin estudiante</span><span class="agsel">Practicar como: ${[['adult','Adulto'],['kids','Kids'],['teens','Teens']].map(([k,t])=>`<a href="#" data-ag="${k}" class="${AGE()===k?'on':''}">${t}</a>`).join('')}</span>`:`<span>${I('check')} Elegido por ${esc(SNAME)}: <b>${esc(PLATFORM?(INFO.topic||'No eligió tema'):(topicsOf(CHOSEN_M)[CHOSEN-1]||[''])[0])}</b></span>`}${SUGGEST?`<span>${I('bulb')} Sugerido según sus errores: <b>${esc(TOPICS[SUGGEST.n-1][0])}</b> (${esc(SUGGEST.why)})</span>`:''}</div>${PLATFORM&&!INFO.topicN?`<div class="tip n" style="margin-bottom:8px"><b>${I('bulb')} ${esc(SNAME)} pidió un tema libre</b><small>Elige con «Cambiar tema» el tema de su módulo que más se acerque, o usa la Pizarra y el Contenido del tema para guiar la conversación.</small></div>`:''}
@@ -648,4 +670,4 @@ if(PLATFORM||DEMO){const hb=$('#hback');hb.href=rol==='profe'?'profesores.html':
 window.__cev={ensureTopic,kOf,AGE};
 document.addEventListener('click',e=>{const a=e.target.closest('.agsel a');if(!a)return;e.preventDefault();const q=new URLSearchParams(location.search);if(a.dataset.ag==='adult')q.delete('ag');else q.set('ag',a.dataset.ag);location.search=q.toString();});
 })();
-</script><script src="full.js?v=792"></script></body></html>
+</script><script src="full.js?v=794"></script></body></html>

@@ -90,7 +90,7 @@
       b.disabled = false; b.textContent = 'Entrar';
       if (!r.ok) { er.textContent = r.err === 'auth' ? 'Código o PIN incorrecto.' : errText(r.err); er.hidden = false; return; }
       try { localStorage.setItem('mra_last_role', JSON.stringify({ role: 'teacher', first: (r.teacher && (r.teacher.hello || String(r.teacher.name || '').split(' ')[0])) || '' })); } catch (e) { } // 🔑 la entrada le muestra "Entrar"
-      S = { tcode, pin }; ss.set(SKEY, S); D = r; tab = 'home'; ss.set(TABKEY, tab); shell(); try { window.MRANN && MRANN.sync(); } catch (e) { } contractCheck().then((blk) => { if (blk) { const iv = setInterval(() => { if (!document.querySelector('.tp-ct')) { clearInterval(iv); firstTour() ? tour() : welcome(); } }, 600); } else { firstTour() ? tour() : (welcome(), setTimeout(popNew, 1500)); } });
+      S = { tcode, pin }; ss.set(SKEY, S); ss.del('mra_tp_wel'); /* v794: al ingresar, el saludo de disponibilidad sale una vez */ D = r; tab = 'home'; ss.set(TABKEY, tab); shell(); try { window.MRANN && MRANN.sync(); } catch (e) { } contractCheck().then((blk) => { if (blk) { const iv = setInterval(() => { if (!document.querySelector('.tp-ct')) { clearInterval(iv); firstTour() ? tour() : welcome(); } }, 600); } else { firstTour() ? tour() : (welcome(), setTimeout(popNew, 1500)); } });
     };
   }
   // 🧭 tour de Mr. Arrieta: la primera vez que el profe entra (por código, en este dispositivo y en la nube)
@@ -150,7 +150,7 @@
       ['idea', 'Cómo funciona la escuela', 'Damos <b>clases 1 a 1 de 50 minutos</b> en nuestra <b>clase en vivo</b> (video integrado en la plataforma), con la metodología <b>RealTalk®</b>: el estudiante habla desde el primer minuto. Los estudiantes <b>no tienen profe fijo</b>: cualquier estudiante Premium puede reservar contigo.', 'home'],
       ['point', 'Horario de la escuela', '<b>Lunes a viernes:</b> 7:00 a. m. a 9:00 p. m.<br><b>Sábados:</b> 7:00 a. m. a 5:00 p. m.<br>Domingos y festivos de Colombia no hay clases. (Hora Colombia)', null],
       ['point', 'Resumen', 'Aquí ves tus <b>notificaciones</b> (clases reservadas y mensajes), tus próximas clases y tus estadísticas. Cada mañana también te llega un correo con tu resumen del día.', 'home'],
-      ['idea', 'Mi disponibilidad', 'Publica <b>solo</b> los horarios en los que realmente puedes dictar. Los estudiantes reservan desde <b>mañana</b> durante los <b>próximos 7 días de clase</b>, sin domingos ni festivos (nunca el mismo día). Cada <b>viernes</b> confírmala con un clic (plazo: <b>sábado 5:00 p. m.</b>); si no, tus horas de la semana siguiente se ocultan hasta que la confirmes.', 'avail'],
+      ['idea', 'Mi disponibilidad', 'Publica <b>solo</b> los horarios en los que realmente puedes dictar. Los estudiantes reservan desde <b>mañana</b> durante los <b>próximos 7 días de clase</b>, sin domingos ni festivos (nunca el mismo día). Las horas que publicas son tu <b>compromiso</b>. Si pasas <b>3 días hábiles</b> sin entrar a tu portal, tus horas libres se bloquean hasta que vuelvas.', 'avail'],
       ['present', 'Antes de cada clase', 'En <b>Mis clases</b> toca <b>👤 Ficha</b>: ves el nivel del estudiante, el tema que quiere reforzar y el resumen de sus clases anteriores con otros profes (resultado, qué reforzar y la pizarra). Prepara tu clase con eso.', 'classes'],
       ['watch', 'Puntualidad', 'Conéctate <b>a la hora exacta</b>. La clase dura 50 minutos desde la hora reservada: si el estudiante llega tarde, no se extiende (9:00 → termina 9:50). Si a los <b>15 minutos</b> no se ha conectado, puedes retirarte y marcas <b>No asistió</b>.', null],
       ['pointside', 'Durante la clase', 'Entra desde <b>Mis clases → Entrar a la clase</b> (se activa 5 minutos antes). La clase en vivo te guía paso a paso: qué hacer, audio, respuesta esperada, <b>pizarra</b> y reloj de 50 minutos. Practica antes en <b>Herramientas → Clases en vivo</b>. Haz que el estudiante hable la mayor parte del tiempo.', null],
@@ -181,11 +181,12 @@
   }
   // saludo al entrar: voz "Welcome back, Nombre!" + recordatorio de la disponibilidad
   function welcome() { /* v792 · cada vez que el profe entra: lo primero es su disponibilidad */
+    if (ss.get('mra_tp_wel')) { setTimeout(goClase, 50); return; } ss.set('mra_tp_wel', 1); /* v794: solo al ingresar (no al recargar ni al volver de otra pantalla) */
     const t = D.teacher || {}; const first = String(t.name || '').split(/\s+/)[0];
     const sl = first.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z]/g, '');
     document.querySelectorAll('.tp-av-m').forEach((x) => x.remove());
     const w = t.weekly || {}, N = { 1: 'Lunes', 2: 'Martes', 3: 'Miércoles', 4: 'Jueves', 5: 'Viernes', 6: 'Sábado' };
-    const rows = Object.keys(N).filter((d) => (w[d] || []).length).map((d) => `<div class="tp-av-r"><b>${N[d]}</b><span>${w[d].map(h12).join(' · ')}</span></div>`).join('');
+    const rows = Object.keys(N).filter((d) => (w[d] || []).length).map((d) => `<div class="tp-av-r"><b>${N[d]}</b><span class="tp-av-cs">${w[d].map((h) => '<i>' + h12(h) + '</i>').join('')}</span></div>`).join('');
     const idle = !!t.idleOff, has = !!rows;
     const CALI = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg>', LOCK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>';
     const m = modal(`<div class="tp-avl${idle ? ' bad' : ''}"><div class="tp-av-i">${idle ? LOCK : CALI}</div><h2>${idle ? 'Tu disponibilidad está bloqueada' : '¡Hola, ' + esc(t.hello || first) + '!'}</h2>
@@ -207,7 +208,7 @@
     try { history.replaceState(null, '', location.pathname); } catch (e) { }
     tab = 'classes'; ss.set(TABKEY, tab); shell();
     setTimeout(() => { const li = document.querySelector(`.tp-cls[data-cid="${CSS.escape(id)}"]`); if (li) { li.classList.add('tp-cls-hl'); li.scrollIntoView({ behavior: 'smooth', block: 'center' }); } }, 300); }
-  function logout() { ss.del(SKEY); ss.del(TABKEY); S = null; D = null; loginView(); try { window.MRANN && MRANN.sync(); } catch (e) { } }
+  function logout() { ss.del('mra_tp_wel'); ss.del(SKEY); ss.del(TABKEY); S = null; D = null; loginView(); try { window.MRANN && MRANN.sync(); } catch (e) { } }
   async function reload() { const r = await api('tLogin'); if (r.ok) { D = r; shell(); } else if (r.err !== 'auth') toast(errText(r.err), true); return r.ok; }
 
   /* ---------- estructura principal ---------- */
