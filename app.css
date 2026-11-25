@@ -11194,3 +11194,21 @@ body.ag-adult .ad-plane img{animation:pfPlIn 1.9s cubic-bezier(.2,.8,.2,1) both,
 @media(max-width:599px){body:has(.lp-hero.lp-a) .lp-dock{grid-auto-columns:auto!important}body:has(.lp-hero.lp-a) .lp-dock span{overflow:visible!important;text-overflow:clip!important;white-space:nowrap!important}body:has(.lp-hero.lp-a) .lp-dock>.lp-dx br{display:none!important}body:has(.lp-hero.lp-a) .lp-dock>.lp-dx span{white-space:nowrap!important;overflow:visible!important;text-overflow:clip!important}}
 .lp-trust.lp-pft[hidden]{display:none!important}
 .lp-pfx .fc img{transition:transform .3s ease,opacity .3s ease}.lp-pfx .fc img.out{transform:rotateY(90deg) scale(.7);opacity:0}.lp-pfx .fc img.in{animation:ldFcIn .5s cubic-bezier(.3,1.6,.5,1)}
+/* v795 · jóvenes: «Profes reales» igual que en niños (caras juntas, sin cápsulas) */
+html body.lp-teen .lp-hero.lp-k .lp-trust.lp-pft{justify-content:flex-start!important;gap:0!important}
+html body.lp-teen .lp-hero.lp-k .lp-trust.lp-pft span,html body.lp-teen .lp-hero.lp-k .lp-trust.lp-pft>*{padding:0!important;border-radius:0!important;background:none!important;box-shadow:none!important;border:0!important;font-size:inherit!important}
+html body.lp-teen .lp-hero.lp-k .lp-trust.lp-pft .lp-pfx{font-size:15px!important;gap:9px!important}
+@media(max-width:899px){html body.lp-teen .lp-hero.lp-k .lp-trust.lp-pft{justify-content:center!important}html body.lp-teen .lp-hero.lp-k .lp-trust.lp-pft .lp-pfx{font-size:14px!important}}
+/* v796 · portal del profe: «Tu código de ingreso» oculto con botón Ver/Ocultar */
+.tp-kc{white-space:nowrap;display:inline-flex;align-items:center;gap:4px}
+.tp-kv{letter-spacing:.5px}
+.tp-kb{display:inline-flex;align-items:center;gap:4px;border:0;background:rgba(255,255,255,.16);color:#fff;border-radius:8px;padding:3px 8px;margin-left:2px;cursor:pointer;font:700 12px Inter,system-ui,sans-serif;line-height:1.2}
+.tp-kb svg{width:15px;height:15px}
+.tp-kb:hover{background:rgba(255,255,255,.26)}
+/* v796 · chat «Escribir a un profe»: título centrado a la altura de la X y separado del buscador */
+.wa-ncc h3{margin:0 0 14px!important;padding:0 44px;text-align:center;line-height:34px;min-height:34px}
+.wa-ncx{display:grid!important;place-items:center}
+/* v797 · botón del chat (PC) en azul marino corporativo, en lugar de verde */
+.iconbtn.chat-ic.cb2,.iconbtn.chat-ic{background:#0B2A5B!important;border-color:#0B2A5B!important}
+.chat-ic svg.cbi circle{fill:#0B2A5B!important}
+.iconbtn.chat-ic.cb2:hover,.iconbtn.chat-ic:hover{background:#1D4A9A!important;border-color:#1D4A9A!important}

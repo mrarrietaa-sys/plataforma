@@ -208,6 +208,8 @@
     try { history.replaceState(null, '', location.pathname); } catch (e) { }
     tab = 'classes'; ss.set(TABKEY, tab); shell();
     setTimeout(() => { const li = document.querySelector(`.tp-cls[data-cid="${CSS.escape(id)}"]`); if (li) { li.classList.add('tp-cls-hl'); li.scrollIntoView({ behavior: 'smooth', block: 'center' }); } }, 300); }
+  /* v796 · encabezado: el código con el que el profe entra (su clave actual), oculto hasta tocar «Ver» */
+  document.addEventListener('click', (e) => { const b = e.target.closest && e.target.closest('#tp-kb'); if (!b) return; const v = b.parentElement.querySelector('.tp-kv'), on = b.dataset.on === '1'; v.textContent = on ? '••••••••' : String((S && S.pin) || ''); b.dataset.on = on ? '' : '1'; b.querySelector('span').textContent = on ? 'Ver' : 'Ocultar'; b.setAttribute('aria-label', on ? 'Ver tu código de ingreso' : 'Ocultar tu código de ingreso'); });
   function logout() { ss.del('mra_tp_wel'); ss.del(SKEY); ss.del(TABKEY); S = null; D = null; loginView(); try { window.MRANN && MRANN.sync(); } catch (e) { } }
   async function reload() { const r = await api('tLogin'); if (r.ok) { D = r; shell(); } else if (r.err !== 'auth') toast(errText(r.err), true); return r.ok; }
 
@@ -219,7 +221,7 @@
     outBtn.classList.remove('hidden'); outBtn.onclick = () => { if (confirm('¿Cerrar sesión?')) logout(); };
     const t = D.teacher;
     app.innerHTML = `<div class="tp-head">
-        <div class="tp-head-txt"><h1>¡Hola, <span class="mk-pill">${esc(t.hello || String(t.name || '').split(' ')[0])}!</span></h1><p class="muted">${dLabel(today(), true)} · <b>${h12(nowHM())}</b> hora Colombia · Código <b>${esc(t.code)}</b></p></div>
+        <div class="tp-head-txt"><h1>¡Hola, <span class="mk-pill">${esc(t.hello || String(t.name || '').split(' ')[0])}!</span></h1><p class="muted">${dLabel(today(), true)} · <b>${h12(nowHM())}</b> hora Colombia · <span class="tp-kc">Tu código de ingreso: <b class="tp-kv">••••••••</b> <button type="button" class="tp-kb" id="tp-kb" aria-label="Ver tu código de ingreso"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg> <span>Ver</span></button></span></p></div>
         <div class="tp-dds">
           <div class="tp-dd"><button class="tp-ddb" data-dd="tools">${TI('tools')} Herramientas <span class="car">▾</span></button><div class="tp-ddm">
             <button class="tp-mi" id="tp-live"><i class="ib2">${TI('video')}</i><span><b>Clases en vivo</b><small>Practica las clases de los 4 módulos</small></span></button>
@@ -273,7 +275,7 @@
         if (n !== n2) return msg.textContent = 'Las dos claves nuevas no coinciden.';
         const b = m.querySelector('#pc-go'); b.disabled = true; b.textContent = 'Guardando…';
         const r = await api('tPinChange', { newPin: n }).catch(() => null);
-        if (r && r.ok) { S.pin = n; ss.set(SKEY, S); m.querySelector('.card').innerHTML = '<div style="text-align:center"><h3>✅ ¡Listo! Tu clave cambió</h3><p>Desde ahora entra con tu nueva clave. Te enviamos una confirmación a tu correo.</p><button class="btn k block lg" id="pc-ok">Entendido</button></div>'; m.querySelector('#pc-ok').onclick = () => m.remove(); return; }
+        if (r && r.ok) { S.pin = n; ss.set(SKEY, S); try { const kb = document.getElementById('tp-kb'); if (kb && kb.dataset.on === '1') kb.parentElement.querySelector('.tp-kv').textContent = n; } catch (e) { } m.querySelector('.card').innerHTML = '<div style="text-align:center"><h3>✅ ¡Listo! Tu clave cambió</h3><p>Desde ahora entra con tu nueva clave. Te enviamos una confirmación a tu correo.</p><button class="btn k block lg" id="pc-ok">Entendido</button></div>'; m.querySelector('#pc-ok').onclick = () => m.remove(); return; }
         b.disabled = false; b.textContent = 'Guardar nueva clave'; msg.textContent = !r ? 'No hay conexión. Inténtalo de nuevo.' : r.err === 'same' ? 'La nueva clave es igual a la actual.' : r.err === 'taken' ? 'Esa clave no está disponible. Elige otra.' : 'No se pudo cambiar. Inténtalo de nuevo.'; }; };
     if ($('#tp-chat')) $('#tp-chat').onclick = () => openChat();
     if (/#chat\b/.test(location.hash)) { history.replaceState(null, '', location.pathname); setTimeout(() => openChat(), 300); }
