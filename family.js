@@ -35,7 +35,7 @@
       ? `<div class="fm-mini"><small>Próxima clase</small><b>${I('calendar')}${k.next ? esc(k.next.nice) : 'Sin reservar'}</b></div><div class="fm-mini"><small>Clases del mes</small><b>${k.credits ? k.credits.used + ' de ' + k.credits.total : '—'}</b></div>`
       : `<div class="fm-mini${k.idle >= 5 ? ' w' : ''}"><small>Última práctica</small><b>${I('clock')}${ago(k.idle)}</b></div><div class="fm-mini"><small>Su nivel</small><b>${k.module ? LV[k.module] : 'Por definir'}</b></div>`;
     return `<article class="card fm-kid ag-${g[0]}" data-i="${i}"><button class="fm-kh" data-tg="${i}"><span class="fm-kn"><b>${esc(k.first)} ${esc(k.lastName || '')}</b><span><i class="fm-tag ${g[0]}">${g[1]}${k.age != null ? ' · ' + k.age + ' AÑOS' : ''}</i>${esc(k.planName)}</span></span><span class="fm-go">${I('chev')}</span></button>
-      <div class="fm-row">${mini}</div>
+      <div class="fm-row">${mini}</div>${prem && !k.expired ? `<button type="button" class="fb-btn" data-book="${i}">${I('calendar')}Reservarle una clase</button>` : ''}
       <div class="fm-more" hidden><p>Código de ${esc(k.first)}: <b>${esc(k.code)}</b></p><button class="btn w sm" data-in="${esc(k.code)}"><span class="fm-inb"><b>Ver el perfil de ${esc(k.first)}</b><small>(modo lectura)</small></span></button></div></article>`;
   }
 
@@ -64,6 +64,7 @@
     else if (!LS.get('mra_fam_tour')) setTimeout(tour, 700);
     $('#cp').onclick = () => { try { navigator.clipboard.writeText(f.fcode); $('#cp').innerHTML = I('check') + ' Copiado'; } catch (e) { } };
     app.querySelectorAll('[data-tg]').forEach(b => b.onclick = () => detail(r, +b.dataset.tg));
+    app.querySelectorAll('[data-book]').forEach(b => b.onclick = () => { if (window.MRFAMBOOK) MRFAMBOOK.open(Object.assign({ fcode: LS.get('mra_fam') }, r), +b.dataset.book); }); // 👨‍👩‍👧 v792: el papá le reserva la clase a su hijo
     app.querySelectorAll('[data-in]').forEach(b => b.onclick = () => { try { sessionStorage.setItem('mra_autocode', b.dataset.in); sessionStorage.setItem('mra_from_fam', '1'); sessionStorage.setItem('mra_obs', '1'); } catch (e) { } location.href = 'index.html'; });
     const add = $('#add'); if (add) add.onclick = () => { LS.set('mra_fam_prefill', JSON.stringify({ guardian: f.guardian, email: f.email, email2: f.email2, whatsapp: f.whatsapp })); location.href = 'ninos.html?tab=planes&fam=1'; };
     $('#sw2').onclick = async () => { const b = $('#sw2'), on = !b.classList.contains('on'); b.classList.toggle('on', on); b.setAttribute('aria-checked', on); const x = await MRAC.call('famReports', { fcode: f.fcode, on }).catch(() => null); if (!x || !x.ok) b.classList.toggle('on', !on); };
@@ -173,5 +174,6 @@
     if (!r || !r.ok) { if (r && r.err === 'notfound') LS.set('mra_fam', null); return login(r && r.err === 'notfound' ? '' : 'No hay conexión con la nube. Inténtalo de nuevo.'); }
     render(r);
   }
+  window.__famReload = start; // v792: tras reservar, se actualiza la tarjeta del hijo
   start();
 })();

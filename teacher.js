@@ -150,7 +150,7 @@
       ['idea', 'Cómo funciona la escuela', 'Damos <b>clases 1 a 1 de 50 minutos</b> en nuestra <b>clase en vivo</b> (video integrado en la plataforma), con la metodología <b>RealTalk®</b>: el estudiante habla desde el primer minuto. Los estudiantes <b>no tienen profe fijo</b>: cualquier estudiante Premium puede reservar contigo.', 'home'],
       ['point', 'Horario de la escuela', '<b>Lunes a viernes:</b> 7:00 a. m. a 9:00 p. m.<br><b>Sábados:</b> 7:00 a. m. a 5:00 p. m.<br>Domingos y festivos de Colombia no hay clases. (Hora Colombia)', null],
       ['point', 'Resumen', 'Aquí ves tus <b>notificaciones</b> (clases reservadas y mensajes), tus próximas clases y tus estadísticas. Cada mañana también te llega un correo con tu resumen del día.', 'home'],
-      ['idea', 'Mi disponibilidad', 'Publica <b>solo</b> los horarios en los que realmente puedes dictar. Los estudiantes reservan desde <b>mañana</b> durante los <b>próximos 5 días de clase</b>, sin domingos ni festivos (nunca el mismo día). Cada <b>viernes</b> confírmala con un clic (plazo: <b>sábado 5:00 p. m.</b>); si no, tus horas de la semana siguiente se ocultan hasta que la confirmes.', 'avail'],
+      ['idea', 'Mi disponibilidad', 'Publica <b>solo</b> los horarios en los que realmente puedes dictar. Los estudiantes reservan desde <b>mañana</b> durante los <b>próximos 7 días de clase</b>, sin domingos ni festivos (nunca el mismo día). Cada <b>viernes</b> confírmala con un clic (plazo: <b>sábado 5:00 p. m.</b>); si no, tus horas de la semana siguiente se ocultan hasta que la confirmes.', 'avail'],
       ['present', 'Antes de cada clase', 'En <b>Mis clases</b> toca <b>👤 Ficha</b>: ves el nivel del estudiante, el tema que quiere reforzar y el resumen de sus clases anteriores con otros profes (resultado, qué reforzar y la pizarra). Prepara tu clase con eso.', 'classes'],
       ['watch', 'Puntualidad', 'Conéctate <b>a la hora exacta</b>. La clase dura 50 minutos desde la hora reservada: si el estudiante llega tarde, no se extiende (9:00 → termina 9:50). Si a los <b>15 minutos</b> no se ha conectado, puedes retirarte y marcas <b>No asistió</b>.', null],
       ['pointside', 'Durante la clase', 'Entra desde <b>Mis clases → Entrar a la clase</b> (se activa 5 minutos antes). La clase en vivo te guía paso a paso: qué hacer, audio, respuesta esperada, <b>pizarra</b> y reloj de 50 minutos. Practica antes en <b>Herramientas → Clases en vivo</b>. Haz que el estudiante hable la mayor parte del tiempo.', null],
@@ -180,23 +180,33 @@
     const sc = document.createElement('script'); sc.src = 'js/audio/wb_' + (sl[0] || 'x') + '.js'; sc.onload = say; sc.onerror = () => { const s2 = document.createElement('script'); s2.src = 'wb_' + (sl[0] || 'x') + '.js'; s2.onload = say; document.head.appendChild(s2); }; document.head.appendChild(sc);
   }
   // saludo al entrar: voz "Welcome back, Nombre!" + recordatorio de la disponibilidad
-  function welcome() {
+  function welcome() { /* v792 · cada vez que el profe entra: lo primero es su disponibilidad */
     const t = D.teacher || {}; const first = String(t.name || '').split(/\s+/)[0];
-    const sl = first.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z]/g, '');
-    const hasWeek = Object.keys(t.weekly || {}).length > 0;
-    const wd = (() => { const nm = t.weekNext, dow = new Date(today() + 'T12:00:00').getDay(); return hasWeek && nm && t.weekOk !== nm && (t.weekCut || dow === 5 || dow === 6 || dow === 0) ? dLabel(nm) + ' al ' + dLabel(addDays(nm, 5)) : ''; })();
-    if (wd) { const m = modal(`<div style="text-align:center"><div style="font-size:52px">📅</div><h2>¡Welcome, ${esc(first)}!</h2><p><b>Confirma tu disponibilidad de la próxima semana</b> (${wd}). Los estudiantes reservan con base en tus horas.</p><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px"><button class="btn k" id="wl-av">📅 Revisar y confirmar</button><button class="btn w" data-x>Más tarde</button></div></div>`);
-      $('#wl-av', m).onclick = () => { m.remove(); tab = 'avail'; ss.set(TABKEY, tab); shell(); }; return; }
-    const m = modal(`<div style="text-align:center"><div style="font-size:52px">👋</div><h2>¡Welcome, ${esc(first)}!</h2>
-      <p>${hasWeek ? 'Antes de empezar, revisa que tu <b>disponibilidad semanal</b> esté al día. Los estudiantes Premium solo pueden reservar clases individuales en los horarios que publiques.' : '<b>Aún no has escrito tu disponibilidad semanal.</b> Márcala ahora para que los estudiantes Premium puedan reservar tus clases individuales.'}</p>
-      <p class="muted">Lunes a sábado · domingos y festivos no hay clases.</p>
-      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px"><button class="btn k" id="wl-av">📅 ${hasWeek ? 'Revisar' : 'Escribir'} mi disponibilidad</button><button class="btn w" data-x>Más tarde</button></div></div>`);
-    $('#wl-av', m).onclick = () => { m.remove(); tab = 'avail'; ss.set(TABKEY, tab); shell(); };
+    const sl = first.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z]/g, '');
+    document.querySelectorAll('.tp-av-m').forEach((x) => x.remove());
+    const w = t.weekly || {}, N = { 1: 'Lunes', 2: 'Martes', 3: 'Miércoles', 4: 'Jueves', 5: 'Viernes', 6: 'Sábado' };
+    const rows = Object.keys(N).filter((d) => (w[d] || []).length).map((d) => `<div class="tp-av-r"><b>${N[d]}</b><span>${w[d].map(h12).join(' · ')}</span></div>`).join('');
+    const idle = !!t.idleOff, has = !!rows;
+    const CALI = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg>', LOCK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>';
+    const m = modal(`<div class="tp-avl${idle ? ' bad' : ''}"><div class="tp-av-i">${idle ? LOCK : CALI}</div><h2>${idle ? 'Tu disponibilidad está bloqueada' : '¡Hola, ' + esc(t.hello || first) + '!'}</h2>
+      <p>${idle ? 'Llevas <b>3 días hábiles</b> sin entrar a tu portal. Por ahora <b>ningún estudiante puede reservar contigo</b>. Tus clases ya reservadas siguen igual.' : has ? '¿Cómo está tu disponibilidad? Los estudiantes pueden reservar contigo en estas horas:' : '<b>Aún no has publicado tus horas.</b> Publícalas para que los estudiantes puedan reservar contigo.'}</p>
+      ${has ? `<div class="tp-av-h"><b>Tus horas publicadas</b>${rows}</div>` : ''}
+      ${has ? '<button class="btn k block tp-av-ok" id="av-ok">Sí, mi horario sigue igual</button>' : ''}<button class="btn w block tp-av-ch" id="av-ch">${has ? 'Cambiar mis horas' : 'Publicar mis horas'}</button>
+      <small class="tp-av-n">Las horas que publicas son tu compromiso. Lunes a sábado · domingos y festivos no hay clases.</small></div>`);
+    m.classList.add('tp-av-m'); const card = m.querySelector('.tp-modal-card'); if (card) card.classList.add('tp-av-card');
+    const ok = $('#av-ok', m); if (ok) ok.onclick = async () => { ok.disabled = true; ok.textContent = 'Guardando…'; const r = await api('tAvailOk'); if (r && r.ok) { D = r; m.remove(); shell(); toast(idle ? '¡Listo! Tus horas volvieron a aparecer para los estudiantes.' : '¡Gracias! Tu horario sigue publicado.'); goClase(); } else { ok.disabled = false; ok.textContent = 'Sí, mi horario sigue igual'; toast(errText((r && r.err) || 'network'), true); } };
+    $('#av-ch', m).onclick = () => { m.remove(); tab = 'avail'; ss.set(TABKEY, tab); shell(); };
+    m.addEventListener('click', (e) => { if (e.target === m || e.target.closest('[data-x]')) setTimeout(goClase, 50); });
     // voz pregrabada (misma de la plataforma)
     const say = () => { const A = window.AUD || {}; const k = A['wb_' + sl] ? 'wb_' + sl : (A['wb_'] ? 'wb_' : ''); if (!k) return; try { new Audio('data:audio/mpeg;base64,' + A[k]).play().catch(() => { }); } catch (e) { } };
     const tryLoad = (paths) => { if (!paths.length) return say(); const sc = document.createElement('script'); sc.src = paths[0]; sc.onload = say; sc.onerror = () => { sc.remove(); tryLoad(paths.slice(1)); }; document.head.appendChild(sc); };
     tryLoad(['js/audio/wb_' + (sl[0] || 'x') + '.js', 'wb_' + (sl[0] || 'x') + '.js']);
   }
+  /* v792 · el correo «Tu clase empieza…» trae al profe al portal: se abre «Mis clases» con esa clase resaltada */
+  function goClase() { let id = ''; try { id = new URLSearchParams(location.search).get('clase') || ''; } catch (e) { } if (!id || goClase.done) return; goClase.done = 1;
+    try { history.replaceState(null, '', location.pathname); } catch (e) { }
+    tab = 'classes'; ss.set(TABKEY, tab); shell();
+    setTimeout(() => { const li = document.querySelector(`.tp-cls[data-cid="${CSS.escape(id)}"]`); if (li) { li.classList.add('tp-cls-hl'); li.scrollIntoView({ behavior: 'smooth', block: 'center' }); } }, 300); }
   function logout() { ss.del(SKEY); ss.del(TABKEY); S = null; D = null; loginView(); try { window.MRANN && MRANN.sync(); } catch (e) { } }
   async function reload() { const r = await api('tLogin'); if (r.ok) { D = r; shell(); } else if (r.err !== 'auth') toast(errText(r.err), true); return r.ok; }
 
@@ -274,6 +284,7 @@
     if (!window.__tpdd) { window.__tpdd = 1; document.addEventListener('click', (e) => { if (!e.target.closest('.tp-dd')) $$('.tp-dd').forEach((d) => d.classList.remove('open')); }); document.addEventListener('keydown', (e) => { if (e.key === 'Escape') $$('.tp-dd').forEach((d) => d.classList.remove('open')); }); }
     ({ home, avail, classes, groups, pay }[tab] || home)($('#tp-body'));
     if (tab === 'home' || tab === 'avail') weekBanner($('#tp-body')); // v672: cada pestaña muestra solo lo suyo
+    if (tab === 'avail') try { blockCard($('#tp-body')); } catch (e) { } // v790: botón «Bloquear mi disponibilidad»
     if (tab === 'home') tprCard($('#tp-body'));
   }
   /* 🎓 v596 · Prueba del profe: 30 días para vivir las lecciones como un estudiante real (desaparece sola al terminar) */
@@ -304,11 +315,11 @@
     const rows = Object.keys(N).filter((d) => (w[d] || []).length).map((d) => `<li><b>${N[d]}</b><span>${w[d].map(h12).join(' · ')}</span></li>`).join('');
     const btns = (main) => `<div class="tp-wk-b">${has ? `<button class="btn ok" id="tp-wkok">✅ ${main}</button>` : ''}<button class="btn ${has ? 'w' : 'k'}" id="tp-wkch">✏️ ${has ? 'Cambiar mis horas' : 'Agregar mis horas'}</button></div>`;
     let html = '';
-    if (!done && !hidden && t.weekCut && !weekend) html = `<div class="tp-wk due"><div class="tp-wk-h"><span class="tp-wk-i">📅</span><div><h2>${has ? 'Confirma tu disponibilidad de esta semana' : 'Revisa tu disponibilidad de esta semana'}</h2><p>Semana del <b>${rng}</b>. ${has ? 'Confirma tus horas para que sigan visibles para los estudiantes.' : 'Agrega tus horas fijas de cada semana para que los estudiantes puedan reservar contigo.'}</p></div></div>${btns('Confirmar mis horas')}</div>`; // v536: «ocultas» solo cuando de verdad hay horas ocultas
-    else if (!done && hidden) html = `<div class="tp-wk bad"><div class="tp-wk-h"><span class="tp-wk-i">⚠️</span><div><h2>Tus horas de la semana del ${rng} están ocultas</h2><p>No confirmaste tu disponibilidad a tiempo, así que los estudiantes no pueden reservar contigo esa semana. Las clases ya reservadas siguen igual. Confírmala ahora y tus horas vuelven a aparecer al instante.</p></div></div>${has ? `<ul class="tp-wk-l">${rows}</ul>` : ''}${btns('Confirmar y volver a publicar')}</div>`;
+    if (false) html = `<div class="tp-wk due"><div class="tp-wk-h"><span class="tp-wk-i">📅</span><div><h2>${has ? 'Confirma tu disponibilidad de esta semana' : 'Revisa tu disponibilidad de esta semana'}</h2><p>Semana del <b>${rng}</b>. ${has ? 'Confirma tus horas para que sigan visibles para los estudiantes.' : 'Agrega tus horas fijas de cada semana para que los estudiantes puedan reservar contigo.'}</p></div></div>${btns('Confirmar mis horas')}</div>`; // v536: «ocultas» solo cuando de verdad hay horas ocultas
+    else if (false) html = `<div class="tp-wk bad"><div class="tp-wk-h"><span class="tp-wk-i">⚠️</span><div><h2>Tus horas de la semana del ${rng} están ocultas</h2><p>No confirmaste tu disponibilidad a tiempo, así que los estudiantes no pueden reservar contigo esa semana. Las clases ya reservadas siguen igual. Confírmala ahora y tus horas vuelven a aparecer al instante.</p></div></div>${has ? `<ul class="tp-wk-l">${rows}</ul>` : ''}${btns('Confirmar y volver a publicar')}</div>`;
     else if (!has) html = `<div class="tp-wk due"><div class="tp-wk-h"><span class="tp-wk-i">📅</span><div><h2>Publica tu disponibilidad</h2><p>Aún no tienes horas publicadas: los estudiantes no pueden reservar contigo.</p></div></div>${btns('')}</div>`;
-    else if (weekend && !done) html = `<div class="tp-wk due"><div class="tp-wk-h"><span class="tp-wk-i">📅</span><div><h2>${dow === 6 ? 'Último aviso: confirma tu disponibilidad antes de las 5:00 p. m.' : 'Confirma tu disponibilidad de la próxima semana'}</h2><p>Semana del <b>${rng}</b>. Revisa tus horas: los estudiantes reservan con base en ellas.</p></div></div><ul class="tp-wk-l">${rows}</ul>${btns('Sí, está al día')}<small>Plazo: <b>sábado 5:00 p. m.</b> Si no la confirmas, tus horas de esa semana se ocultan hasta que lo hagas. Si cambias tus horas y guardas, también queda confirmada.</small></div>`;
-    else if (tab === 'avail') html = `<div class="tp-wk okk">✅ Disponibilidad confirmada para la semana del <b>${rng}</b>. Cada viernes te pediremos confirmar la siguiente (plazo: sábado 5:00 p. m.).</div>`;
+    else if (false) html = `<div class="tp-wk due"><div class="tp-wk-h"><span class="tp-wk-i">📅</span><div><h2>${dow === 6 ? 'Último aviso: confirma tu disponibilidad antes de las 5:00 p. m.' : 'Confirma tu disponibilidad de la próxima semana'}</h2><p>Semana del <b>${rng}</b>. Revisa tus horas: los estudiantes reservan con base en ellas.</p></div></div><ul class="tp-wk-l">${rows}</ul>${btns('Sí, está al día')}<small>Plazo: <b>sábado 5:00 p. m.</b> Si no la confirmas, tus horas de esa semana se ocultan hasta que lo hagas. Si cambias tus horas y guardas, también queda confirmada.</small></div>`;
+    else if (false) html = `<div class="tp-wk okk">✅ Disponibilidad confirmada para la semana del <b>${rng}</b>. Cada viernes te pediremos confirmar la siguiente (plazo: sábado 5:00 p. m.).</div>`;
     if (!html) return; const box = document.createElement('div'); box.innerHTML = html; el.prepend(box.firstElementChild);
     const ok = $('#tp-wkok'); if (ok) ok.onclick = async () => { const lb = ok.textContent; ok.disabled = true; ok.textContent = 'Guardando…'; const r = await api('tWeekOk'); if (!r || !r.ok) { ok.disabled = false; ok.textContent = lb; if (!r || r.err !== 'auth') toast('No se pudo guardar. Inténtalo de nuevo.', true); return; } D = r; toast('✅ ¡Gracias! Disponibilidad confirmada para la semana del ' + rng + '.'); shell(); };
     const ch = $('#tp-wkch'); if (ch) ch.onclick = () => { tab = 'avail'; ss.set(TABKEY, tab); shell(); setTimeout(() => { const g = $('#tp-wg'); if (g) g.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100); };
@@ -316,7 +327,7 @@
   /* ---------- 1. Resumen ---------- */
   function classRow(c, opt) {
     const r = rel(c.date), link = meetOf(c), canMark = c.status === 'scheduled' && c.date <= today();
-    return `<li class="tp-cls${r === 'Hoy' ? ' today' : r === 'Mañana' ? ' tomorrow' : ''}">
+    return `<li class="tp-cls${r === 'Hoy' ? ' today' : r === 'Mañana' ? ' tomorrow' : ''}" data-cid="${esc(c.id)}">
       <div class="tp-cls-when"><b>${r || dLabel(c.date)}</b><span>${r ? dLabel(c.date) + ' · ' : ''}${h12(c.time)} – ${h12(endHM(c.time, c.duration))}</span></div>
       <div class="tp-cls-what">${fcNote(c)}${typeBadge(c)} ${statusBadge(c)}<div class="tp-cls-who">${whoOf(c)}${c.type === 'vip' ? ' ' + agTag(c.students[0]) : ''}</div>${c.type === 'vip' ? agTip(c.students[0]) : ''}${c.topic && c.type !== 'club' ? (/^El profe elige el tema/.test(c.topic) ? pkBlock(c.topic, c) : c.topt && REPICK.has(c.id) ? pkBlock(c.topt, c) : c.topt ? pkDone(c) : `<small class="muted">Tema: ${esc(c.topic)}</small>`) : ''}${(() => { const q = window.MRTH && c.type !== 'club' && !c.topt && c.topic && MRTH.parse(c.topic); if (!q) return ''; const st = (D && D.students[String(c.students[0] || '').toUpperCase()]) || {}; return MRTH.html(q.m, q.t, st.ag || 'adult', 't', { ex: 1, g: 1 }); })()}
         ${c.status === 'done' ? `<small class="muted">Asistencia: ${c.students.filter((x) => (c.attendance || {})[String(x).toUpperCase()] === true || (c.attendance || {})[x] === true).length}/${c.students.length}</small>` : ''}
@@ -359,18 +370,18 @@
       onSave: async (d, pngs) => { const x = await MR.call('tPzSave', { tcode: S.tcode, pin: S.pin, classId: id, json: JSON.stringify(d), pngs }, { timeout: 120000 }); return !!(x && x.ok); } });
   }
   // 🔁 el profe cancela una clase individual: aviso antes de confirmar (opinión del estudiante + multa si es con menos de 12 h)
-  async function cancelDialog(id) { /* v789 · una sola ventana: el profe elige el motivo; enfermedad, calamidad familiar o permiso o viaje = sin multa y puede bloquear sus días */
-    const c = D.classes.find((x) => x.id === id); if (!c) return;
-    const hu = (new Date(c.date + 'T' + c.time + ':00-05:00').getTime() - Date.now()) / 36e5; const late = hu < 12;
+  async function cancelDialog(id, blockOnly) { /* v790: blockOnly = «Bloquear mi disponibilidad» (sin clase y sin «Otro motivo») · v789 · una sola ventana: el profe elige el motivo; enfermedad, calamidad familiar o permiso o viaje = sin multa y puede bloquear sus días */
+    const c = blockOnly ? { id: '', date: '', time: '', students: [] } : D.classes.find((x) => x.id === id); if (!c) return;
+    const hu = blockOnly ? 99 : (new Date(c.date + 'T' + c.time + ':00-05:00').getTime() - Date.now()) / 36e5; const late = hu < 12;
     let pen = 10000; try { const r = await api('tPay'); if (r && r.penalty) pen = r.penalty; } catch (e) { }
     const SV = (d) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
     const IC = { enfermedad: SV('<path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"/>'), calamidad: SV('<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M12 17.5s-3-1.8-3-3.6a1.6 1.6 0 0 1 3-.8 1.6 1.6 0 0 1 3 .8c0 1.8-3 3.6-3 3.6Z"/>'), viaje: SV('<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>'), otro: SV('<circle cx="12" cy="12" r="9"/><path d="M8 12h.01M12 12h.01M16 12h.01"/>'), alert: SV('<circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/>'), ok: SV('<circle cx="12" cy="12" r="9"/><path d="m8.5 12 2.5 2.5 4.5-5"/>'), clock: SV('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>') };
-    const K = [['enfermedad', 'Enfermedad'], ['calamidad', 'Calamidad familiar'], ['viaje', 'Permiso o viaje'], ['otro', 'Otro motivo']];
+    const K = [['enfermedad', 'Enfermedad'], ['calamidad', 'Calamidad familiar'], ['viaje', 'Permiso o viaje']].concat(blockOnly ? [] : [['otro', 'Otro motivo']]);
     const pad = (n) => String(n).padStart(2, '0'); const iso = (d) => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
     const now = new Date(); const t0 = iso(now); const addD = (n) => { const d = new Date(now); d.setDate(d.getDate() + n); return iso(d); };
-    let kind = '', days = 1;
-    const m = modal(`<button class="tp-x" data-x aria-label="Cerrar">✕</button><div class="tc2"><h3>Cancelar clase</h3><p class="muted">${esc(studentName(c.students[0] || ''))} · ${dLabel(c.date, true)} · ${h12(c.time)}</p>
-      <div class="tc2-l">¿Por qué cancelas? <span class="req">*</span></div><div class="tc2-ch">${K.map(([k, t]) => `<button type="button" class="tc2-c" data-k="${k}">${IC[k]}${t}</button>`).join('')}</div>
+    let kind = blockOnly ? 'enfermedad' : '', days = 1;
+    const m = modal(`<button class="tp-x" data-x aria-label="Cerrar">✕</button><div class="tc2"><h3>${blockOnly ? 'Bloquear mi disponibilidad' : 'Cancelar clase'}</h3><p class="muted">${blockOnly ? 'Nadie podrá reservar contigo esos días' : esc(studentName(c.students[0] || '')) + ' · ' + dLabel(c.date, true) + ' · ' + h12(c.time)}</p>
+      <div class="tc2-l">${blockOnly ? '¿Por qué?' : '¿Por qué cancelas?'} <span class="req">*</span></div><div class="tc2-ch">${K.map(([k, t]) => `<button type="button" class="tc2-c" data-k="${k}">${IC[k]}${t}</button>`).join('')}</div>
       <div class="tc2-days" hidden><div class="tc2-l">¿Cuántos días no podrás dar clases?</div><div class="tc2-stp"><button type="button" class="tc2-b" data-d="-1" aria-label="Menos">−</button><span class="tc2-n"><b id="tc-dn">1</b> <small id="tc-dl">día</small></span><button type="button" class="tc2-b" data-d="1" aria-label="Más">+</button></div><div class="tc2-list" id="tc-list"></div></div>
       <div class="tc2-l" id="tc-ml">Mensaje para tu estudiante <span class="req">*</span></div><textarea class="inp" id="tc-why" rows="3" maxlength="300" placeholder="Explícale a tu estudiante por qué cancelas la clase."></textarea><small id="tc-err" class="tc2-err" hidden></small>
       <div class="tc2-res" id="tc-res" hidden></div>
@@ -382,24 +393,32 @@
       $('#tc-dn', m).textContent = days; $('#tc-dl', m).textContent = days === 1 ? 'día' : 'días';
       const until = addD(days - 1), back = addD(days);
       const fut = (x) => new Date(x.date + 'T' + x.time + ':00-05:00').getTime() > Date.now(); const L = D.classes.filter((x) => x.type === 'vip' && x.status === 'scheduled' && fut(x) && ((x.date >= t0 && x.date <= until) || x.id === c.id)).sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
-      if (just) $('#tc-list', m).innerHTML = `<b>${IC.clock}Los ${days === 1 ? '' : days + ' '}día${days === 1 ? ' empieza' : 's empiezan'} a contar desde ya mismo</b><span>${days === 1 ? 'Hoy ' + fmt(t0) : 'Desde hoy ' + fmt(t0) + ' hasta el ' + fmt(until)}.</span><span>Se cancelan y se bloquean de inmediato:</span>${L.map((x) => `<span>• ${fmt(x.date)} · ${h12(x.time)} · ${esc(studentName(x.students[0] || ''))}</span>`).join('')}<span>Tus horarios vuelven solos el <b>${fmt(back)}</b> y te avisamos a ti y a administración.</span>`;
+      if (just) $('#tc-list', m).innerHTML = `<b>${IC.clock}Los ${days === 1 ? '' : days + ' '}día${days === 1 ? ' empieza' : 's empiezan'} a contar desde ya mismo</b><span>${days === 1 ? 'Hoy ' + fmt(t0) : 'Desde hoy ' + fmt(t0) + ' hasta el ' + fmt(until)}.</span><span>Se cancelan y se bloquean de inmediato:</span>${L.length ? L.map((x) => `<span>• ${fmt(x.date)} · ${h12(x.time)} · ${esc(studentName(x.students[0] || ''))}</span>`).join('') : '<span>• No tienes clases reservadas en esos días.</span>'}<span>Tus horarios vuelven solos el <b>${fmt(back)}</b> y te avisamos a ti y a administración.</span>`;
+      const needMsg = !blockOnly || L.length > 0; m._need = needMsg; $('#tc-ml', m).hidden = $('#tc-why', m).hidden = !needMsg;
       $('#tc-ml', m).innerHTML = (just && L.length > 1 ? 'Mensaje para tus estudiantes' : 'Mensaje para tu estudiante') + ' <span class="req">*</span>';
       const res = $('#tc-res', m); res.hidden = !kind;
       if (kind === 'otro') { res.className = 'tc2-res bad'; res.innerHTML = late ? `${IC.alert}<b>Se aplica la multa de $${Number(pen).toLocaleString('es-CO')}</b> (faltan menos de 12 h).<br>La clase vuelve al saldo de tu estudiante y puede dejarte una opinión.` : `${IC.alert}<b>Sin multa</b> (faltan más de 12 h), pero esta clase no se paga.<br>La clase vuelve al saldo de tu estudiante y puede dejarte una opinión.`; }
       else if (just) { res.className = 'tc2-res good'; res.innerHTML = `${IC.ok}<b>Sin multa</b> por ser un permiso especial. Administración lo revisa.<br>${L.length > 1 ? 'Las clases vuelven al saldo de cada estudiante.' : 'La clase vuelve al saldo de tu estudiante.'}`; }
-      $('#tc-ok', m).textContent = just ? 'Sí, cancelar' + (days > 1 || L.length > 1 ? ' y bloquear' : '') : 'Sí, cancelar clase';
+      $('#tc-ok', m).textContent = blockOnly ? 'Sí, bloquear mi disponibilidad' : just ? 'Sí, cancelar' + (days > 1 || L.length > 1 ? ' y bloquear' : '') : 'Sí, cancelar clase';
+      if (blockOnly && !L.length) res.innerHTML = `${IC.ok}<b>Sin multa</b>. No tienes clases en esos días: solo se ocultan tus horarios.`;
     };
     m.querySelectorAll('[data-k]').forEach((b) => b.onclick = () => { kind = b.dataset.k; $('#tc-err', m).hidden = true; paint(); });
     m.querySelectorAll('[data-d]').forEach((b) => b.onclick = () => { days = Math.max(1, Math.min(30, days + +b.dataset.d)); paint(); });
     paint();
     $('#tc-ok', m).onclick = async () => { const why = $('#tc-why', m).value.trim(); const err = $('#tc-err', m);
       if (!kind) { err.textContent = 'Elige por qué cancelas.'; err.hidden = false; return; }
-      if (why.length < 10) { err.textContent = 'Escribe el mensaje para tu estudiante (mínimo 10 caracteres).'; err.hidden = false; $('#tc-why', m).classList.add('wrong'); $('#tc-why', m).focus(); return; }
+      if (m._need && why.length < 10) { err.textContent = 'Escribe el mensaje para tu estudiante (mínimo 10 caracteres).'; err.hidden = false; $('#tc-why', m).classList.add('wrong'); $('#tc-why', m).focus(); return; }
       const b = $('#tc-ok', m); b.disabled = true; b.textContent = 'Cancelando…'; const just = kind !== 'otro';
-      const x = await api('tCancel', Object.assign({ classId: id, reason: why }, just ? { kind, days } : {}));
+      const x = blockOnly ? await api('tOffSet', { kind, days, reason: why }) : await api('tCancel', Object.assign({ classId: id, reason: why }, just ? { kind, days } : {}));
       if (x && x.ok) { m.remove(); if (just) { toast('✅ Listo · ' + (x.cancelled != null ? x.cancelled + ' clase(s) cancelada(s) · ' : '') + 'sin multa'); try { await reload(); } catch (e) { } return; } toast(x.late ? '⚠️ Clase cancelada · con multa por ser tarde' : '✅ Clase cancelada · el estudiante ya fue avisado'); c.status = x.late ? 'tlate' : 'cancelled'; try { shell(); } catch (e) { } }
       else { b.disabled = false; paint(); toast(errText((x && x.err) || 'network'), true); } };
   }
+  /* v790 · tarjeta en «Mi disponibilidad» para bloquear los días sin tener que cancelar una clase */
+  function blockCard(el) { if (!el || (D && D.teacher && D.teacher.offUntil)) return;
+    const box = document.createElement('div'); box.className = 'card tpb-c';
+    box.innerHTML = `<div class="tpb-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div><h3>¿Te enfermaste, tienes una calamidad o un viaje?</h3><p>Bloquea tu disponibilidad por unos días y nadie podrá reservar contigo.</p><button class="btn tpb-b" type="button">Bloquear mi disponibilidad</button>`;
+    const wk = el.querySelector('.tp-wk'); if (wk) wk.after(box); else el.prepend(box);
+    box.querySelector('.tpb-b').onclick = () => cancelDialog('', true); }
   /* v789 · aviso arriba cuando el profe tiene su disponibilidad bloqueada por un permiso especial */
   function offBar() { const el = $('#tp-off'); if (!el) return; const u = D && D.teacher && D.teacher.offUntil; if (!u) { el.innerHTML = ''; return; }
     const nx = (() => { const d = new Date(u + 'T12:00:00'); d.setDate(d.getDate() + 1); return d.toISOString().slice(0, 10); })();
@@ -679,7 +698,7 @@
     app.innerHTML = '<div class="tp-loading">Cargando tu portal…</div>';
     let r = await MR.call('tLogin', { tcode: S.tcode, pin: S.pin }, { timeout: 45000 });
     if (!r.ok && r.err === 'network') { app.innerHTML = '<div class="tp-loading">Conectando con la escuela…</div>'; r = await MR.call('tLogin', { tcode: S.tcode, pin: S.pin }, { timeout: 60000 }); } // v600: la nube a veces tarda: se reintenta solo
-    if (r.ok) { D = r; shell(); contractCheck().then((blk) => { if (!blk) setTimeout(popNew, 600); }); return; }
+    if (r.ok) { D = r; shell(); contractCheck().then((blk) => { if (!blk) { welcome(); setTimeout(popNew, 1500); } else { const iv = setInterval(() => { if (!document.querySelector('.tp-ct')) { clearInterval(iv); welcome(); } }, 600); } }); return; } // v792: el saludo de disponibilidad sale cada vez que entra
     if (r.err === 'auth') { ss.del(SKEY); loginView(''); return; }
     retryView(errText(r.err)); // v600: nunca la pantalla vieja de código y PIN: un aviso con «Reintentar»
   }

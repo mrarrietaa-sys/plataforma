@@ -609,7 +609,7 @@
     if (pc || gr) history.replaceState(null, '', location.pathname);
     const pk = q.get('plan');
     if (pc && /^PG-/.test(pc) && !pk) offerPage(pc);
-    else if (pc) { if (window.MRAC && MRAC.code && MRAC.code() && MRAC.code().toUpperCase() === pc) { if (window.MRPLANS) MRPLANS.modal(M); } else { trialOver(pc, true); if (pk && window.MRBUY && /^(membership|premium\d*)$/.test(pk)) setTimeout(() => { document.querySelectorAll('.modal').forEach(m => m.remove()); MRBUY.plan(pk, { extra: +q.get('extra') || 0 }); }, 300); } }
+    else if (pc) { if (window.MRAC && MRAC.code && MRAC.code() && MRAC.code().toUpperCase() === pc) { if (window.MRPLANS) planCompact(MRPLANS.modal(M)); } else { trialOver(pc, true); if (pk && window.MRBUY && /^(membership|premium\d*)$/.test(pk)) setTimeout(() => { document.querySelectorAll('.modal').forEach(m => m.remove()); MRBUY.plan(pk, { extra: +q.get('extra') || 0 }); }, 300); } }
     else if (gr && $('.ld')) trialForm(); } catch (er) { } }, 1600);
   // ⭐ opiniones públicas de los profes en la página de entrada
   const nrm = (t) => String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/^(mr|mrs|ms|teacher)\.?\s+/, '').trim();
@@ -859,12 +859,18 @@
     const iv = setInterval(tick, 1000); tick();
     m.querySelectorAll('.of-r').forEach(b => b.onclick = () => { m.remove(); if (b.dataset.k === 'pb') { const mm = M.modal(`<h3 class="center">${MRI('crown')} Crea tu plan Premium</h3><div class="lp-pg pl-in n1">${MRPLANS.pbCard({ mode: 'buy', n0: 8 })}</div>`, { x: true }); return; } window.MRBUY && MRBUY.plan(b.dataset.k); }); // v626
   }
+  /* v791 · resumen corto debajo de los planes (ventana de renovar / acceso gratuito terminado y «Mi plan»). La de «Ver planes» de la página de entrada no cambia. */
+  function planCompact(m) { try { if (!m || m.querySelector('.pl-cmp')) return; const tr = m.querySelector('.pv-tr'); if (!tr) return;
+    const wa = [...m.querySelectorAll('a')].find((a) => /Dudas/.test(a.textContent)); const href = wa ? wa.getAttribute('href') : 'https://wa.me/573017810841';
+    tr.insertAdjacentHTML('beforebegin', `<div class="pl-cmp"><div class="pl-cmp-r"><span><i></i>Sin permanencia</span><span><i></i>Progreso guardado</span><span><i></i>Profes licenciados</span></div><p>Pagas con tarjeta, PSE, Nequi o Daviplata · se activa solo</p><p class="pl-cmp-l"><a href="politica.html" target="_blank" rel="noopener">Política de reservas</a> · <a class="pl-cmp-wa" href="${href}" target="_blank" rel="noopener">¿Dudas? WhatsApp</a></p></div>`);
+    m.querySelectorAll('.pv-tr,.pl-note').forEach((e) => e.remove()); if (wa) { const pp = wa.closest('p'); (pp && !pp.closest('.pl-cmp') ? pp : wa).remove(); } } catch (e) { } }
   function trialOver(code, generic) {
     window.__buyCode = code || ''; // permite pagar desde aquí aunque el acceso gratuito haya terminado
     const PL = window.MRPLANS;
     M.modal(`<div class="center"><div class="to-ic">${MRI('gift')}</div><h3>${generic ? 'Elige tu plan' : 'Tu acceso gratuito terminó'}</h3><p>${generic ? 'Paga con tarjeta, PSE, Nequi o Daviplata y tu plan se activa solo en tu perfil.' : 'Gracias por conocer <b>mrarrieta.com</b>. Tu progreso está guardado: <b>elige tu plan</b> y continúa justo donde lo dejaste.'}</p></div>
       ${PL ? PL.cards('free') : ''}
       ${PL && PL.payInfo ? PL.payInfo() : ''}`, { x: true });
+    planCompact([...document.querySelectorAll('.modal')].pop());
     toFit();
     if (code && window.MRAC) MRAC.call('myCoupon', { code }).then(r => { if (!r || !r.gift) return; const m = [...document.querySelectorAll('.modal')].pop(); const h3 = m && m.querySelector('h3'); if (h3) h3.insertAdjacentHTML('afterend', `<p class="to-offer">${MRI('gift')} <span><b>${esc(r.why || 'Tienes 1 clase de regalo')}</b>. Es una clase de 50 minutos con profe y se agrega sola al pagar.</span></p>`); }).catch(() => { }); // 🎁 v623: clase de regalo
   }
@@ -1052,7 +1058,7 @@
       const gw = () => $$('[data-goal]').forEach(b => b.onclick = () => MRGOAL.ask({ noSkip: true }).then(g => { if (g) home(); }));
       $$('.db-side .gl-card.gl-empty').forEach(x => { if ($('.g1')) x.remove(); }); gw(); if (MRGOAL.must()) setTimeout(() => MRGOAL.require().then(g => { if (g) home(); }), 600); /* v515: objetivo obligatorio */
     }
-    const plans = (e) => { if (e) e.preventDefault(); M.modal(`<div class="pt-plmodal">${planSection()}</div>`, { x: true }); };
+    const plans = (e) => { if (e) e.preventDefault(); planCompact(M.modal(`<div class="pt-plmodal">${planSection()}</div>`, { x: true })); };
     $$('.tb-up').forEach(x => x.onclick = plans); if ($('#pt-tour')) $('#pt-tour').onclick = () => { window.scrollTo(0, 0); portalTour(true); }; if ($('#pt-plans')) $('#pt-plans').onclick = plans;
     wireBirth(); live(); birthdayParty();
     const pgOf = (el) => { const sct = el && el.closest('[data-pgk]'); return sct ? sct.dataset.pgk : null; };
@@ -1220,7 +1226,7 @@
           go.onclick = () => { if (!sel) return; const prev = MRGOAL.get(); MRGOAL.save({ k: sel, months: prev ? prev.months : null, min: prev ? prev.min : 20, set: new Date().toISOString().slice(0, 10) }); goalSet = true; show(i + 1); };
         } else if (k === 'terms') {
           c.innerHTML = head(i) + `<h3>Antes de empezar, lo importante</h3><p class="wel-s">Las reglas de tus clases con profe, en 30 segundos.</p>
-            <ul class="wel-rl"><li><span>${S('calendar')}</span><div><b>Reservas</b> desde mañana y hasta 5 días adelante, solo en la plataforma.</div></li>
+            <ul class="wel-rl"><li><span>${S('calendar')}</span><div><b>Reservas</b> desde mañana y hasta 7 días adelante, solo en la plataforma.</div></li>
             <li><span>${S('alert')}</span><div><b>Cancelas gratis</b> hasta 12 horas antes. Después, la clase se descuenta.</div></li>
             <li><span>${S('clock')}</span><div><b>Puntualidad:</b> si no te conectas en 15 minutos, la clase se descuenta.</div></li>
             <li><span>${S('repeat')}</span><div><b>Clases no acumulables:</b> úsalas dentro de tu mes.</div></li></ul>
@@ -1300,7 +1306,7 @@
     ] : [
       { mood: 'welcome', t: `¡Muy bien, ${fn}! 🎉`, d: 'Ya tienes tu ruta de aprendizaje. Te muestro tu perfil en 1 minuto.' },
       { sel: '.pt-mymod, .g1', mood: 'pointside', t: '📍 Tu ruta', d: 'Aquí ves <b>en qué módulo estás</b>, tu avance y el botón para <b>continuar tu lección</b>.' },
-      { sel: '.lv-wrap', mood: 'present', t: '👩‍🏫 Clases con profes', d: 'Reserva tus <b>clases individuales</b> desde mañana y durante los próximos 5 días de clase, nunca para el mismo día. Cancela sin penalización hasta 12 horas antes.' },
+      { sel: '.lv-wrap', mood: 'present', t: '👩‍🏫 Clases con profes', d: 'Reserva tus <b>clases individuales</b> desde mañana y durante los próximos 7 días de clase, nunca para el mismo día. Cancela sin penalización hasta 12 horas antes.' },
       { sel: '.pt-routebar', mood: 'present', t: '🧭 Tu camino', d: 'Tu ruta va de A1 a B2. Cada módulo se abre cuando <b>apruebas el examen final</b> del anterior.' },
       { sel: '#pt-plans', mood: 'idea', t: '💳 Tu plan', d: pl.premium ? 'Tienes <b>Premium</b>: toda la plataforma + clases individuales con profes.' : pl.paid ? 'Tienes <b>Plataforma</b>: toda la plataforma. Si quieres clases con profes, pásate a Premium.' : 'Aquí ves los planes para <b>desbloquear toda tu ruta</b>.' },
       { sel: '#out', mood: 'watch', t: '⏻ Salir', d: 'Con este botón cierras tu sesión. Tu progreso queda guardado en la nube.' },
@@ -1501,7 +1507,7 @@
         <li><span>✅</span><div><b>¿Puedo cancelar?</b> Sí, gratis hasta <b>12 horas antes</b>. Así otro estudiante aprovecha el espacio.</div></li>
         <li><span>⏱️</span><div>Es <b>una sola clase</b> de <b>50 minutos</b> con un profe real.</div></li></ul><button class="btn k block lg" id="vb-go">Entendido, reservar →</button>`, { x: true }); $('#vb-go', mm).onclick = () => { mm.remove(); vipBooking(); }; return; } // 🎁 v603
     const mm = M.modal(`<h3>Antes de reservar tu clase individual</h3><ul class="lv-rules">
-        <li><span>📅</span><div><b>¿Cuándo puedes reservar?</b> Desde <b>mañana</b> y durante los <b>próximos 5 días de clase</b> (sin domingos ni festivos). Para hoy no se puede reservar.</div></li>
+        <li><span>📅</span><div><b>¿Cuándo puedes reservar?</b> Desde <b>mañana</b> y durante los <b>próximos 7 días de clase</b> (sin domingos ni festivos). Para hoy no se puede reservar.</div></li>
         <li><span>✅</span><div><b>¿Puedo cancelar?</b> Sí, gratis hasta <b>12 horas antes</b> de la clase. La clase vuelve a tu saldo.</div></li>
         <li><span>⚠️</span><div><b>Si cancelas con menos de 12 horas o no te conectas,</b> la clase se descuenta de tu plan.</div></li>
         <li><span>⏱️</span><div>Cada clase dura <b>50 minutos</b>.</div></li></ul><button class="btn k block lg" id="vb-go">Entendido, reservar →</button>`, { x: true }); $('#vb-go', mm).onclick = () => { mm.remove(); vipBooking(); }; } // v531: reservar funciona aunque la sección de clases no haya cargado
@@ -1831,14 +1837,14 @@
         const other = $('#vb-topic', b).value.trim(); const topic = TP === 'p' ? (() => { const W = WKF(MS), TT2 = TOPICS[MS] || tops; return `El profe elige el tema · Módulo ${MS} · ` + (W.length ? 'Por reforzar: ' + W.map(x => `Tema ${x.i + 1} ${TT2[x.i][0]} ${x.pc}%`).join('; ') : 'Estudiante nuevo: primeros temas del módulo'); })() : TP === 'o' ? (other ? 'Otro tema: ' + other : 'Otro tema') : TP != null ? `Módulo ${MS} · Tema ${TP + 1}: ${(TOPICS[MS] || tops)[TP][0]} (${(TOPICS[MS] || tops)[TP][1]})` : '';
         const res = await MRAC.call('vipBook', { code: MRAC.code(), slotId: S.id, topic }); if (res.ok || res.err === 'taken' || res.err === 'clash' || res.err === 'no_credits') cm.remove();
         if (res.ok) { m.remove(); sfx('win'); M.confetti(1800); M.modal(`<div class="center">${M.mascot('mascot bounce', 'celebrate')}<h3>${res.free ? '¡Tu clase gratis quedó reservada! 🎉' : '¡Clase reservada! 🎉'}</h3><p style="font-size:17px">${esc(T.name)} · <b>${fmtD(S.date, { weekday: 'long', day: 'numeric', month: 'long' })}</b> · ${fmtT(S.time)} (hora Colombia)</p><p class="muted">${res.free ? ((+String(S.time).slice(0, 2) < 11) ? 'Te enviamos los detalles a tu correo. La noche anterior te pediremos confirmarla con un toque.' : 'Te enviamos los detalles a tu correo. 4 horas antes te pediremos confirmarla con un toque.') : 'Te enviamos la confirmación a tu correo. El enlace de la clase aparece en “Mis próximas clases”.'}</p></div>`, { x: true }); await MRAC.me(true); live(); }
-        else { M.toast({ taken: 'Ese espacio acaba de ser reservado. Elige otro 🙏', clash: 'Ya tienes una clase a esa hora. Elige otro horario.', window: r.credits && r.credits.free ? 'Tu clase gratis debe quedar dentro de tu acceso gratis. Elige otro día.' : 'Las clases se reservan desde el día siguiente y durante los próximos 5 días de clase.', no_credits: r.credits && r.credits.free ? 'Ya reservaste tu clase gratis.' : 'Ya reservaste todas tus clases de este periodo.', fc_late: 'El tiempo para reservar tu clase gratis ya pasó.', fc_soon: 'Ese horario ya está muy cerca para una clase gratis. Elige uno más adelante.', holiday: 'Ese día es domingo o festivo en Colombia: no hay clases. Elige otro día 🙏', too_late: 'Ese espacio ya no se puede reservar (muy pronto).' }[res.err] || 'No se pudo reservar. Inténtalo de nuevo.');
+        else { M.toast({ taken: 'Ese espacio acaba de ser reservado. Elige otro 🙏', clash: 'Ya tienes una clase a esa hora. Elige otro horario.', window: r.credits && r.credits.free ? 'Tu clase gratis debe quedar dentro de tu acceso gratis. Elige otro día.' : 'Las clases se reservan desde el día siguiente y durante los próximos 7 días de clase.', no_credits: r.credits && r.credits.free ? 'Ya reservaste tu clase gratis.' : 'Ya reservaste todas tus clases de este periodo.', fc_late: 'El tiempo para reservar tu clase gratis ya pasó.', fc_soon: 'Ese horario ya está muy cerca para una clase gratis. Elige uno más adelante.', holiday: 'Ese día es domingo o festivo en Colombia: no hay clases. Elige otro día 🙏', too_late: 'Ese espacio ya no se puede reservar (muy pronto).' }[res.err] || 'No se pudo reservar. Inténtalo de nuevo.');
           if (res.err === 'taken') { const rr = await MRAC.call('vipOptions', { code: MRAC.code() }); if (rr.ok) { r.teachers = rr.teachers; T = r.teachers.find(t => t.id === T.id) || null; S = null; D = null; } step(); } else { ok.disabled = false; ok.textContent = 'Reintentar'; } } };
     };
     /* 🔎 buscador por hora: el estudiante dice cuándo y la plataforma busca con quién */
     function finder() {
       const all = []; r.teachers.forEach(t => t.slots.forEach(x => all.push(Object.assign({ t }, x))));
       const ISO = (d) => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-      const days = []; for (let k = 1; days.length < 5 && k <= 20; k++) { const d = new Date(); d.setDate(d.getDate() + k); const s = ISO(d); if (!(window.MRFEST ? MRFEST.isOff(s) : d.getDay() === 0) && !(r.credits && r.credits.free && s > String(r.credits.cycleEnd).slice(0, 10))) days.push(s); } // 🎁 v603: la clase gratis, dentro de su acceso · v590: 5 días de clase (sin domingos ni festivos)
+      const days = []; for (let k = 1; days.length < 7 && k <= 20; k++) { const d = new Date(); d.setDate(d.getDate() + k); const s = ISO(d); if (!(window.MRFEST ? MRFEST.isOff(s) : d.getDay() === 0) && !(r.credits && r.credits.free && s > String(r.credits.cycleEnd).slice(0, 10))) days.push(s); } // 🎁 v603: la clase gratis, dentro de su acceso · v590: 5 días de clase (sin domingos ni festivos)
       const dow = (s) => new Date(s + 'T12:00:00').getDay(), endH = (s) => s && dow(s) === 6 ? 16 : 20;
       const hrs = []; for (let hh = 7; hh <= 20; hh++) hrs.push(String(hh).padStart(2, '0') + ':00');
       const hOf = (t) => String(t).slice(0, 2), okH = (s, h) => !s || s === 'any' ? +h.slice(0, 2) <= 20 : +h.slice(0, 2) <= endH(s);
@@ -1858,7 +1864,7 @@
       if (LT && LS.length) favX = null;
       const rep = LT && LS.length ? `<div class="vf-rep"><span class="vf-rl">REPETIR CON MI PROFE</span><div class="vf-rt"><span class="vf-av">${pic(LT)}</span><div><b>${name(LT)}</b><small>Tu última clase${LT.stars ? ' · <span class="vf-st">★ ' + String(LT.stars).replace('.', ',') + '</span>' : ''} · ${r.last.n} ${r.last.n === 1 ? 'clase' : 'clases'} contigo</small></div></div><div class="vf-rs">${LS.map(x => `<button type="button" class="vf-rb" data-rs="${esc(x.id)}">${(s => s[0].toUpperCase() + s.slice(1))(fmtD(x.date, { weekday: 'short', day: 'numeric' }).replace('.', ''))} · ${fmtT(x.time)}</button>`).join('')}</div><p class="vf-ro">O elige otro profe abajo ↓</p></div>` : '';
       const left = `<div class="vf-left">${rep}${favX ? `<div class="vf-fav"><span class="vf-fi">${MRI('repeat')}</span><div><b>¿Tu horario de siempre?</b><small>${DN[r.fav.dow][0].toUpperCase() + DN[r.fav.dow].slice(1)} · ${fmtT(favX.time)} con ${name(favX.t)}</small></div><button type="button" class="vf-go" id="vf-fav">Reservar</button></div>` : ''}
-        <div class="vf-card"><span class="vf-lb">1. ELIGE EL DÍA</span><div class="vf-days">${days.map(d => `<button type="button" class="vf-chip vf-d${FD === d ? ' on' : ''}" data-d="${d}">${fmtD(d, { weekday: 'short' }).replace('.', '')}<small>${fmtD(d, { day: 'numeric', month: 'short' }).replace('.', '')}</small></button>`).join('')}</div>
+        <div class="vf-card"><span class="vf-lb">1. ELIGE EL DÍA</span><div class="vf-days">${days.map(d => `<button type="button" class="vf-chip vf-d${FD === d ? ' on' : ''}" data-d="${d}">${fmtD(d, { weekday: 'short' }).replace('.', '')}<small>${fmtD(d, { day: 'numeric', month: 'short' }).replace('.', '').replace(' de ', ' ')}</small></button>`).join('')}</div>
           <p class="vf-pol">${days.length ? `Puedes reservar hasta el <b>${fmtD(days[days.length - 1], { weekday: 'long', day: 'numeric', month: 'short' }).replace('.', '').replace(',', '')}</b> · ${r.credits && r.credits.free ? 'dentro de tu acceso gratis' : 'sin domingos ni festivos'}` : 'Sin domingos ni festivos'}</p></div>
         <div class="vf-card"><span class="vf-lb">2. ¿A QUÉ HORA QUIERES TU CLASE?</span><div class="vf-tp"><div class="vf-sel vf-hhw"><button type="button" class="vf-hhb" id="vf-hh" aria-label="Hora">${TK.h}</button><small>HORA</small><div class="vf-hpop" id="vf-hpop" hidden>${[1,2,3,4,5,6,7,8,9,10,11,12].map(n => `<button type="button" data-hv="${n}" class="${TK.h === n ? 'on' : ''}">${n}</button>`).join('')}</div></div><span class="vf-col">:</span><label class="vf-sel"><input id="vf-mm" inputmode="numeric" maxlength="2" autocomplete="off" aria-label="Minutos" value="${String(TK.m).padStart(2, '0')}"><small>MINUTOS</small></label><div class="vf-ap"><button type="button" class="${TK.p === 'a' ? 'on' : ''}" data-ap="a">a. m.</button><button type="button" class="${TK.p === 'p' ? 'on' : ''}" data-ap="p">p. m.</button></div></div>
           <div class="vf-gow"><button type="button" class="vf-go2" id="vf-go2">Buscar profes a esa hora</button></div></div>
