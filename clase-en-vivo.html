@@ -2,11 +2,11 @@
 <html lang="es" translate="no"><head><meta name="google" content="notranslate"><link rel="icon" type="image/png" href="favicon.png"><script>/* v544 · la misma pantalla del portátil, escalada a pantallas grandes */(function(){var d=document.documentElement;function f(){var w=innerWidth,h=innerHeight,z=Math.min(w/1536,h/790);z=(w>=1600&&z>1.04)?Math.min(z,2.4):1;z=Math.round(z*100)/100;if(d.style.zoom!==String(z)){d.style.zoom=z===1?"":z;d.style.setProperty("--z",z);}}f();addEventListener("resize",function(){d.style.zoom="";f();});})();</script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>Clase en vivo · mrarrieta.com</title>
 <script src="https://unpkg.com/@daily-co/daily-js@0.92.2/dist/daily.js"></script>
-<script src="clase-topics.js?v=794"></script>
-<script src="config.js?v=794"></script><script src="emo2.js?v=794"></script><script src="emo.js?v=794"></script><script src="ajuste.js?v=794"></script>
-<script src="goals.js?v=794"></script>
-<script src="goalsdata.js?v=794"></script>
-<script src="missions.js?v=794"></script><script src="ageimg.js?v=794"></script>
+<script src="clase-topics.js?v=797"></script>
+<script src="config.js?v=797"></script><script src="emo2.js?v=797"></script><script src="emo.js?v=797"></script><script src="ajuste.js?v=797"></script>
+<script src="goals.js?v=797"></script>
+<script src="goalsdata.js?v=797"></script>
+<script src="missions.js?v=797"></script><script src="ageimg.js?v=797"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--n:#0B2A5B;--n2:#1e4a8f;--r:#E3242B;--y:#FFC21A;--g:#16a34a;--bd:#e3e9f3;--mu:#5b6577;--bg:#eef2f8}
@@ -244,7 +244,7 @@ header h1{display:inline!important;font-size:14px!important}header h1:after{cont
 .tools{justify-content:center!important}
 .vset{align-items:center!important;text-align:center!important}.vset .vt{justify-content:center}
 
-</style><link rel="stylesheet" href="marca.css?v=794">
+</style><link rel="stylesheet" href="marca.css?v=797">
 <style>/* v794 · PC: la parte de arriba del panel del profe más compacta para ver mejor los contenidos (el video no cambia de tamaño) */
 .mkbar{display:contents}.pl-x{font-style:normal}
 @media (min-width:900px){
@@ -266,6 +266,15 @@ header h1{display:inline!important;font-size:14px!important}header h1:after{cont
 .mkb-r .steps{margin:0!important}
 .mkb-r .tstreak{margin:0 0 4px!important;font-size:11px!important}.mkb-r .tstreak>*{white-space:nowrap}
 }
+</style>
+<style>/* v796 · botones Atrás y Siguiente más pequeños (PC y celular) y los botones de arriba siempre caben en una fila */
+.nav{padding:7px 10px!important;gap:8px!important;margin-top:10px!important}
+.nav .btn{padding:8px 8px!important;font-size:15px!important;border-radius:12px!important;min-height:0!important}
+.nav .btn.prev{font-size:13px!important}
+.nav .btn svg{width:17px!important;height:17px!important}
+.tools.tight .tb{font-size:11.5px!important;padding-left:6px!important;padding-right:6px!important;gap:4px!important}
+.tools.tight .tb svg{width:13px!important;height:13px!important}
+.tools.tighter .tb svg{display:none!important}
 </style>
 </head><body>
 <canvas id="cf"></canvas><div class="cheer" id="cheer"></div>
@@ -590,12 +599,15 @@ function endAsk(){if(document.querySelector('.endm'))return;const d=document.cre
 function endClass(){if(ended)return;ended=true;document.querySelectorAll('.sbar,.endm').forEach(x=>x.closest('.mod')?x.closest('.mod').remove():x.remove());try{if(CO){CO.leave();COOK=false;}}catch(e){}stopAudio(true);const v=$('#vlab');if(v)v.textContent='La clase terminó.';
  const back=rol==='profe'?'profesores.html':'index.html',d=document.createElement('div');d.className='mod';d.innerHTML=`<div class="endm"><div class="ic" style="background:#e7f7ee;color:#15803d">${I('flag')}</div><h3>${rol==='profe'?'Clase terminada':'See you next class!'}</h3><p>${rol==='profe'?(PLATFORM?'Cerraste la clase. El resumen quedó en la ficha de '+esc(SNAME)+'.':'Cerraste la clase.'):'Tu profe terminó la clase. ¡Gracias por participar!'}</p><div class="r">${rol==='profe'?'<button class="b" id="e-ver">Ver resumen</button>':''}${PLATFORM||DEMO?`<button class="a" id="e-go">${rol==='profe'?'Ir a mi portal':'Volver a mi perfil'}</button>`:''}</div></div>`;document.body.appendChild(d);
  const vb=d.querySelector('#e-ver');if(vb)vb.onclick=()=>d.remove();const gb=d.querySelector('#e-go');if(gb)gb.onclick=()=>location.href=back;}
+function toolsFit(){try{const t=document.querySelector('#m-top .tools');if(!t)return;t.classList.remove('tight','tighter');if(innerWidth<900)return;if(t.scrollWidth>t.clientWidth+1)t.classList.add('tight');if(t.scrollWidth>t.clientWidth+1)t.classList.add('tighter');}catch(e){}}
+addEventListener('resize',toolsFit);
 function renderT(){const l=L(),top=$('#m-top'),body=$('#m-body');
  if(st.i!==stepI){stepI=st.i;stepT0=Date.now();}
  const live=DEMO?'<span class="chip">Modo práctica</span>':st.ready?`<span class="chip">${esc(SNAME)} conectado</span>`:PLATFORM?`<span class="chip">Esperando a ${esc(SNAME)}</span>`:`<span class="chip">Código: ${room}</span>`;
  top.innerHTML=`<div class="top"><h3>${DEMO?'Práctica · Tema '+l.n:'Clase con '+esc(SNAME)}</h3>${DEMO?'':'<span class="chip r live">EN VIVO</span>'}${live}<span class="chip">${st.ok} ✔ · ${st.pts} pts</span></div>
   <div class="tools"><button class="tb${st.pzOn?' on':''}" id="t-pz">${I('pen')} Pizarra</button><button class="tb" id="t-cnt">${I('book')} Contenido del tema</button><button class="tb" id="t-top">${I('swap')} Cambiar tema</button>${st.started?`<button class="tb" id="t-rs">${I('repeat')} Empezar de nuevo</button>`:''}</div>
   ${st.started?`<div class="mkbar"><div class="clock" id="clk">${clockHTML()}</div><div class="mkb-r">${bar()}</div></div>`:''}`;
+ toolsFit();
  $('#t-pz').onclick=()=>send({pzOn:st.pzOn?0:1});$('#t-cnt').onclick=contentModal;$('#t-top').onclick=()=>topicModal();const rs=$('#t-rs');if(rs)rs.onclick=()=>{if(!confirm('¿Empezar la clase de nuevo desde el paso 1? Se borran los puntos de hoy.'))return;stopAudio(true);ended=false;send({over:0,started:Date.now()+3900,i:0,res:[],ok:0,rep:0,pts:0,fb:'',fin:null,hl:-1,sh:-1,cheer:st.cheer});countdown(3900);};
  if(!st.started){body.innerHTML=animKey('pre'+st.mod+st.topic,`<div class="pre"><div class="hero"><img src="${U(l.cover,1100,620)}" alt=""><div><small>Tema ${l.n} · ${modLabel(l)}</small><h2>${esc(l.title)}</h2><p>${esc(l.goal)}</p></div></div>
    <div class="sug">${DEMO?`<span>${I('book')} Modo práctica · sin estudiante</span><span class="agsel">Practicar como: ${[['adult','Adulto'],['kids','Kids'],['teens','Teens']].map(([k,t])=>`<a href="#" data-ag="${k}" class="${AGE()===k?'on':''}">${t}</a>`).join('')}</span>`:`<span>${I('check')} Elegido por ${esc(SNAME)}: <b>${esc(PLATFORM?(INFO.topic||'No eligió tema'):(topicsOf(CHOSEN_M)[CHOSEN-1]||[''])[0])}</b></span>`}${SUGGEST?`<span>${I('bulb')} Sugerido según sus errores: <b>${esc(TOPICS[SUGGEST.n-1][0])}</b> (${esc(SUGGEST.why)})</span>`:''}</div>${PLATFORM&&!INFO.topicN?`<div class="tip n" style="margin-bottom:8px"><b>${I('bulb')} ${esc(SNAME)} pidió un tema libre</b><small>Elige con «Cambiar tema» el tema de su módulo que más se acerque, o usa la Pizarra y el Contenido del tema para guiar la conversación.</small></div>`:''}
@@ -670,4 +682,4 @@ if(PLATFORM||DEMO){const hb=$('#hback');hb.href=rol==='profe'?'profesores.html':
 window.__cev={ensureTopic,kOf,AGE};
 document.addEventListener('click',e=>{const a=e.target.closest('.agsel a');if(!a)return;e.preventDefault();const q=new URLSearchParams(location.search);if(a.dataset.ag==='adult')q.delete('ag');else q.set('ag',a.dataset.ag);location.search=q.toString();});
 })();
-</script><script src="full.js?v=794"></script></body></html>
+</script><script src="full.js?v=797"></script></body></html>
