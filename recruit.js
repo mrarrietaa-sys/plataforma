@@ -80,23 +80,23 @@
 
   // ---------- 1) bienvenida ----------
   function welcome() {
-    shell(0, `<div class="card rc-hero">
-      <div class="rc-hero-top">${M.mascot('rc-mascot', 'welcome')}<div><span class="lbl">Trabaja con nosotros</span>
-        <h1 class="rc-h1">Proceso de selección de profesores</h1>
-        <p class="muted rc-lead">¡Gracias por tu interés en enseñar con nosotros! Buscamos <b>profesionales bilingües</b> capaces de enseñar de una forma distinta, cercana y dinámica, que ayuden a niños, jóvenes y adultos hispanohablantes a <b>aprender inglés HABLANDO</b>.</p></div></div>
+    shell(0, `<div class="card rc-hero rc-hero2">
+      <span class="lbl">Trabaja con nosotros</span>
+      <h1 class="rc-h1">Enseña inglés con nosotros</h1>
+      <p class="muted rc-lead">Buscamos <b>profes bilingües</b> que enseñen a <b>hablar inglés</b> a niños, jóvenes y adultos.</p>
       <div class="rc-grid3">
-        <div class="rc-box"><span>1</span><b>Tus datos y hoja de vida</b><small>≈ 5 minutos</small></div>
-        <div class="rc-box"><span>2</span><b>Prueba de inglés</b><small>${N} preguntas · Listening, Reading, Writing y Speaking · 60 minutos</small></div>
-        <div class="rc-box"><span>3</span><b>Resultados al instante</b><small>Si apruebas, te escribimos por WhatsApp para la entrevista</small></div>
+        <div class="rc-box"><span>1</span><b>Tus datos y hoja de vida</b><small>5 minutos</small></div>
+        <div class="rc-box"><span>2</span><b>Prueba de inglés</b><small>4 habilidades · 60 minutos</small></div>
+        <div class="rc-box"><span>3</span><b>Resultados al instante</b><small>Si apruebas, te llamamos</small></div>
       </div>
-      <h3 class="rc-h3">Antes de empezar, ten listo:</h3>
-      <ul class="rc-need">
-        <li>🎤 <b>Micrófono</b> (la sección de Speaking se graba) y, si puedes, audífonos.</li>
-        <li>📄 Tu <b>hoja de vida</b> en PDF, DOC o DOCX (máximo 5 MB).</li>
-        <li>⏱ Unos <b>60 minutos</b> sin interrupciones, en un lugar tranquilo y con buena conexión.</li>
-        <li>🔁 Tienes <b>un solo intento</b>. Si se recarga la página, tu avance se guarda y puedes continuar.</li>
+      <h3 class="rc-h3">Ten listo</h3>
+      <ul class="rc-need rc-need2">
+        <li>🎤 Micrófono</li>
+        <li>📄 Hoja de vida (PDF o Word)</li>
+        <li>⏱ 60 min sin interrupciones</li>
+        <li>🔁 Un solo intento</li>
       </ul>
-      <div class="actionbar"><button class="btn k lg" id="go">Empezar →</button></div></div>`);
+      <div class="actionbar"><button class="btn k lg" id="go">Empezar →</button></div></div>`); /* v799 · sin personaje, centrado y resumido */
     $('#go').onclick = () => { ST.stage = 'form'; persist(); form(); };
   }
 
