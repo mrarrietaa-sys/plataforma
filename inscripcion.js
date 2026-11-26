@@ -112,7 +112,6 @@ if (!window.M1) window.M1 = {
         <div class="in-summary" id="in-summary"></div>
         <button class="btn k lg block" id="in-send" type="submit">Enviar mi inscripción</button>
         <p class="muted center in-small" id="in-paynote" hidden>Al continuar pagas con tarjeta, PSE, Nequi o Daviplata (Mercado Pago). Apenas se confirme tu pago te llegan tus datos de acceso al correo.</p>
-        <p class="muted center in-small">¿Prefieres hablar con alguien? <a href="https://wa.me/${WA}?text=${encodeURIComponent((window.MRNE || String)('¡Hola! Quiero información sobre los planes de mrarrieta.com'))}" target="_blank" rel="noopener">Escríbenos por WhatsApp</a></p>
       </div>
     </form>`;
     bind(); syncPlan();
