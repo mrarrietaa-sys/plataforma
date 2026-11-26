@@ -3769,7 +3769,7 @@ a.btn,a.btn:hover{text-decoration:none}
    🎨 DISEÑO 2026 · Propuesta A "Vibrante" (solo estilos: rojo + azul + blanco)
    ===================================================================== */
 :root{--bd:#DCE4F0;--r:22px;--r2:14px;--sh:0 6px 16px rgba(11,42,91,.10);--sh2:0 10px 28px rgba(11,42,91,.10);--paper:#F4F7FC}
-body{background:linear-gradient(100deg,#E3242B 0 32%,#0B2A5B 32%) bottom/100% 10px no-repeat,#F4F7FC;padding-bottom:10px}
+body{background:#F4F7FC}/* v806: sin la franja roja/azul de abajo en toda la plataforma */
 h1,h2{font-weight:800;letter-spacing:-.01em}
 /* barra superior */
 .topbar{background:#fff!important;color:var(--k);border-bottom:4px solid var(--y)!important;box-shadow:0 4px 18px rgba(11,42,91,.08)}
