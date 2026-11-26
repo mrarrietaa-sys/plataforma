@@ -11257,3 +11257,19 @@ html body .modal .card:has(.to-new):not(.tf-kidm) .to-new.center,html body .moda
 .op9-c{position:relative;width:100%;max-width:1300px;max-height:calc(100vh - 60px);overflow:auto;border-radius:28px;background:#fff;box-shadow:0 30px 60px -20px rgba(0,0,0,.5)}
 .op9-c #ld-testimonios{margin:0!important;box-shadow:none!important}
 .op9-x{position:absolute;right:18px;top:18px;z-index:2;width:40px;height:40px;border-radius:50%;border:1.5px solid #E3E9F3;background:#fff;font:700 18px Inter,sans-serif;color:#0B2A5B;cursor:pointer}
+/* v801 · Inscripción: pasos «Tus datos» y «Un poco más de ti» centrados (el texto que se escribe en Comentarios sigue a la izquierda) */
+.in-wiz .in-wtop .in-wt{justify-content:center!important;text-align:center!important}
+.in-direct{flex-direction:column!important;align-items:center!important;text-align:center!important;gap:8px}
+.in-direct .grow{text-align:center!important;display:flex;flex-direction:column;align-items:center}
+.in-direct .lbl{margin-left:auto;margin-right:auto}
+.in-wiz .p-datos .in-f,.in-wiz .p-mas .in-f{text-align:center}
+.in-wiz .p-datos .in-f>label,.in-wiz .p-mas .in-f>label,.in-wiz .p-mas .in-f>b,.in-wiz .p-mas .in-lab{display:block;text-align:center!important}
+.in-wiz .p-datos .in-f .inp{text-align:center!important}
+.in-wiz .p-datos .in-f small,.in-wiz .p-mas .in-f small,.in-wiz .p-mas small,.in-wiz .p-mas .in-err,.in-wiz .p-datos .in-err{display:block;text-align:center!important}
+.in-wiz .p-mas .in-chips{justify-content:center!important}
+.in-wiz .p-mas textarea{text-align:left!important}
+.in-wiz .p-mas .in-consent{justify-content:center!important;text-align:center!important}
+.in-wiz .in-nav{justify-content:center!important;gap:12px!important}
+.in-wiz .in-nav>.btn{margin:0!important;flex:0 0 auto!important}
+.in-wiz .p-mas .in-fs{text-align:center}.in-wiz .p-mas .in-fs>legend{text-align:center!important;margin-left:auto!important;margin-right:auto!important;width:100%}
+.in-wiz .p-mas .in-f>label small{display:inline!important}
