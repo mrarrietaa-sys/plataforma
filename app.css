@@ -11370,3 +11370,8 @@ html body .modal .card:has(.to-new):not(.tf-kidm) .to-new.center,html body .moda
 .fm-lmin{display:flex;justify-content:center;text-align:center;padding:22px!important}.fm-lmin>div{display:flex;flex-direction:column;align-items:center;gap:10px}
 /* v809 · celular: «Así aprenden inglés con nosotros» en una sola línea (la letra se ajusta al ancho) */
 @media(max-width:899px){.lp-papas .pz-h h2{white-space:nowrap!important;font-size:clamp(17px,calc((100vw - 40px) / 15),26.24px)!important}}
+/* v810 · Planes y pagos: + y − exactos en el centro del círculo · aviso de cuándo se puede renovar */
+.fm-cnt button svg{display:block;width:18px;height:18px;margin:0}
+.fm-lock{display:flex;align-items:flex-start;gap:8px;margin:10px 0 0;padding:9px 12px;background:#FFF8E6;border:1px solid #F6DFA4;border-radius:12px;font-size:12.5px;line-height:1.45;color:#5b4500;text-align:left}.fm-lock .mri{width:16px;height:16px;flex:none;margin-top:1px;color:#b45309}.fm-lock b{color:#0B2A5B}
+/* v810 · Agregar estudiante: los dos cuadros de planes centrados dentro de la ventana */
+@media(min-width:700px){.fm-add2 .fa-pls{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:16px!important;justify-content:center!important;width:100%!important;max-width:640px!important;margin:0 auto!important;padding:4px 0 0!important;overflow:visible!important;transform:none!important;left:auto!important}.fm-add2 .fa-pls>*{width:auto!important;min-width:0!important;max-width:none!important;margin:0!important}}
