@@ -128,7 +128,7 @@ if (!window.M1) window.M1 = {
     if (!DIRECT) { const p1 = mk('p-plan'); const blk = $('.in-step', form).parentElement; p1.appendChild(blk); panes.push({ el: p1, t: 'Elige tu plan' }); }
     const p2 = mk('p-datos'); if ($('.in-direct')) p2.appendChild($('.in-direct')); p2.appendChild(grid); panes.push({ el: p2, t: 'Tus datos' });
     const p3 = mk('p-mas'); if (more) p3.appendChild(more); $$('.in-consent', card).forEach((x) => p3.appendChild(x)); p3.appendChild($('#err-ok')); panes.push({ el: p3, t: 'Un poco más de ti' });
-    { const cm = $('#in-comments', p3); const f = cm && cm.closest('.in-f'); if (f) { f.classList.add('in-cm'); const lb = $('label', f); if (lb) lb.addEventListener('click', (e) => { if (innerWidth < 900 && !f.classList.contains('op')) { e.preventDefault(); f.classList.add('op'); setTimeout(() => cm.focus(), 50); } }); } }
+    { const cm = $('#in-comments', p3); const f = cm && cm.closest('.in-f'); if (f) { f.classList.add('in-cm'); const lb = $('label', f); if (lb) lb.addEventListener('click', (e) => { if (!f.classList.contains('op')) { e.preventDefault(); f.classList.add('op'); setTimeout(() => cm.focus(), 50); } }); } }
     const p4 = mk('p-ok'); p4.innerHTML = '<div class="in-rev" id="in-rev"></div>'; [$('#in-summary'), $('#in-send'), $('#in-paynote')].forEach((x) => x && p4.appendChild(x)); const wa = [...card.querySelectorAll('p.in-small')].pop(); if (wa) p4.appendChild(wa); panes.push({ el: p4, t: 'Revisa y confirma' });
     panes.forEach((p) => $$('.in-step', p.el).forEach((h) => h.remove())); $$('.in-step', form).forEach((h) => h.remove());
     const N = panes.length; const top = document.createElement('div'); top.className = 'in-wtop';
