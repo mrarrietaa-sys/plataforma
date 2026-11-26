@@ -94,7 +94,7 @@
     const kid = !!o.kid;
     return `<div class="lp-pl c-y hot pb${o.cls ? ' ' + o.cls : ''}" data-pb="${n}" data-pbm="${mode}"${o.cur ? ` data-pbc="${o.cur}"` : ''}${o.renew ? ' data-pbr="1"' : ''}><span class="lp-tag">Crea tu plan</span>
       <div class="lp-plh"><span class="ic">${ico('premium')}</span><b>Premium</b></div>
-      <p class="pbk">${kid ? 'Tú decides cuántas clases con profe quiere tu hijo(a) al mes.' : 'Tú decides cuántas clases con profe quieres al mes.'}</p><p class="pbq">De ${PREM.min} a ${PREM.max} clases</p>
+      <p class="pbk">${kid ? 'Tú decides cuántas clases con profe quiere al mes.' : 'Tú decides cuántas clases con profe quieres al mes.'}</p><p class="pbq">De ${PREM.min} a ${PREM.max} clases</p>
       <div class="pbn"><button type="button" class="pbx" data-pbs="-1" aria-label="Una clase menos">−</button><b class="pbN"></b><button type="button" class="pbx" data-pbs="1" aria-label="Una clase más">+</button></div>
       <div class="pbs"><div class="pr"><strong class="pbP"></strong><small>COP/mes</small></div><span class="pc pbC"></span></div>
       <ul><li>${CK()}<span class="pbL"></span></li><li>${CK()}<span>Eliges profe, día y hora</span></li><li>${CK()}<span>Incluye toda la Plataforma</span></li></ul>

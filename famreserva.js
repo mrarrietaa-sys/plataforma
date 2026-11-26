@@ -219,7 +219,7 @@
     $('#vb-go', mm).onclick = () => { mm.remove(); vipBooking(); };
   }
   function pick(kids, after) { if (kids.length < 2) return after(kids[0]);
-    const m = M.modal(`<div class="fb-pick"><h3>¿Para quién es la clase?</h3><p class="muted">Elige a cuál de tus hijos le vas a reservar.</p>${kids.map((k, i) => `<button type="button" class="fb-k" data-k="${i}"><i>${esc((k.first || '?').charAt(0))}</i><span><b>${esc(k.first)}</b><small>${esc(k.planName || '')}${k.credits ? ' · ' + (k.credits.total - k.credits.used) + ' por reservar' : ''}</small></span><em>›</em></button>`).join('')}</div>`, { x: true });
+    const m = M.modal(`<div class="fb-pick"><h3>¿Para quién es la clase?</h3><p class="muted">Elige a quién le vas a reservar.</p>${kids.map((k, i) => `<button type="button" class="fb-k" data-k="${i}"><i>${esc((k.first || '?').charAt(0))}</i><span><b>${esc(k.first)} ${esc(k.lastName || '')}</b><small>${k.ag === 'kids' || k.ag === 'teens' ? `<span class="fb-tg">${k.ag === 'kids' ? 'KIDS' : 'TEENS'}${k.age != null ? ' · ' + k.age + ' AÑOS' : ''}</span>` : ''}${esc(k.planName || '')}${k.credits ? ' · ' + (k.credits.total - k.credits.used) + ' por reservar' : ''}</small></span><em>›</em></button>`).join('')}</div>`, { x: true });
     $$('[data-k]', m).forEach(b => b.onclick = () => { m.remove(); after(kids[+b.dataset.k]); }); }
   window.MRFAMBOOK = { open(r, i) { const kids = (r.kids || []).filter(k => /^premium/.test(k.plan) && !k.expired); const first = r.kids[i]; const L = first ? [first].concat(kids.filter(k => k !== first)) : kids;
       pick(L, (k) => { FK = { code: k.code, ag: k.ag, name: k.first || 'tu hijo(a)', fcode: r.fcode || (r.family && r.family.fcode) || '', module: +k.module || 1, done: (res, T, S) => {
