@@ -49,7 +49,7 @@ if (!window.M1) window.M1 = {
     const KEEP = {}; $$('#in-form input, #in-form textarea').forEach((el) => { KEEP[el.id] = el.type === 'checkbox' ? el.checked : el.value; });
     const DIRECT = !!st.plan && st.plan !== 'free' && !st.pickAll; const SP = planOf(st.plan) || {};
     app.innerHTML = `
-    ${DIRECT ? `<section class="card in-direct"><span class="in-plan-ic" aria-hidden="true">${window.MRI ? MRI(/^premium/.test(SP.id || "") ? "crown" : ({ free: "gift", membership: "monitor" }[SP.id] || "gift")) : SP.icon}</span><div class="grow"><span class="lbl">Tu plan</span><h1>${esc(SP.name)}</h1><p><b>${esc(SP.price)}</b> ${esc(SP.per || '')} · ${esc(SP.tag || '')}</p></div><button type="button" class="btn w sm" id="in-chg">Cambiar plan</button></section>` : ''}
+    ${DIRECT ? `<section class="card in-direct"><span class="in-plan-ic" aria-hidden="true">${window.MRI ? MRI(/^premium/.test(SP.id || "") ? "crown" : ({ free: "gift", membership: "monitor" }[SP.id] || "gift")) : SP.icon}</span><div class="grow"><span class="lbl">Tu plan</span><h1>${esc(SP.name)}</h1><p><b>${esc(SP.price)}</b> ${esc(SP.per || '')}${/^premium/.test(SP.id || '') ? ` <span class="in-inc">Incluye ${esc(String(SP.tag || '').replace(/[^0-9]/g, ''))} clases con profe</span>` : ` · ${esc(SP.tag || '')}`}</p></div><button type="button" class="btn w sm" id="in-chg">Cambiar plan</button></section>` : ''}
     <section class="in-hero"${DIRECT ? ' hidden' : ''}>
       <div class="in-hero-txt">
         
