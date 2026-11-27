@@ -38,7 +38,7 @@
       ? `<div class="fm-mini"><small>Próxima clase</small><b>${I('calendar')}${k.next ? esc(k.next.nice) : 'Sin reservar'}</b></div><div class="fm-mini"><small>Clases del mes</small><b>${k.credits ? k.credits.used + ' de ' + k.credits.total : '—'}</b></div>`
       : `<div class="fm-mini${k.idle >= 5 ? ' w' : ''}"><small>Última práctica</small><b>${I('clock')}${ago(k.idle)}</b></div><div class="fm-mini"><small>Su nivel</small><b>${k.module ? LV[k.module] : 'Por definir'}</b></div>`;
     return `<article class="card fm-kid ag-${g[0]}" data-i="${i}"><button class="fm-kh" data-tg="${i}"><span class="fm-kn"><b>${esc(k.first)} ${esc(k.lastName || '')}</b><span><i class="fm-tag ${g[0]}">${g[1]}${k.age != null ? ' · ' + k.age + ' AÑOS' : ''}</i>${esc(k.planName)}${REL[k.rel] ? ` · <em class="fm-rel">${REL[k.rel]}</em>` : ''}</span></span><span class="fm-go">${I('chev')}</span></button>
-      <div class="fm-row">${mini}</div>${prem && !k.expired ? `<button type="button" class="fb-btn" data-book="${i}">${I('calendar')}Reservarle una clase</button>` : ''}
+      <div class="fm-row">${mini}</div>${k.grace ? `<div class="fm-grace"><b>DÍAS DE GRACIA · ${k.graceDay} DE 3</b><span>Su plan venció el ${fD(k.planEnd)}. ${k.graceLeft === 1 ? 'Hoy es su último día para seguir practicando.' : 'Sigue practicando hasta el <b>' + fD(k.graceEnd) + '</b>.'}</span></div><button type="button" class="fb-btn fm-grb" data-grpay>Renovar su plan</button>` : ''}${prem && !k.expired ? `<button type="button" class="fb-btn" data-book="${i}">${I('calendar')}Reservarle una clase</button>` : ''}
       <div class="fm-more" hidden><p>Código de ${esc(k.first)}: <b>${esc(k.code)}</b></p><button class="btn w sm" data-in="${esc(k.code)}"><span class="fm-inb"><b>Ver el perfil de ${esc(k.first)}</b><small>(modo lectura)</small></span></button></div></article>`;
   }
 
@@ -81,7 +81,7 @@
     app.querySelectorAll('[data-in]').forEach(b => b.onclick = () => { try { sessionStorage.setItem('mra_autocode', b.dataset.in); sessionStorage.setItem('mra_from_fam', '1'); sessionStorage.setItem('mra_obs', '1'); } catch (e) { } location.href = 'index.html'; });
     const add = $('#add'); if (add) add.onclick = () => addKid(r); // v808: sin salir del portal
     $('#sw2').onclick = async () => { const b = $('#sw2'), on = !b.classList.contains('on'); b.classList.toggle('on', on); b.setAttribute('aria-checked', on); const x = await MRAC.call('famReports', { fcode: f.fcode, on }).catch(() => null); if (!x || !x.ok) b.classList.toggle('on', !on); };
-    $('#payb').onclick = () => pay(r);
+    $('#payb').onclick = () => pay(r); app.querySelectorAll('[data-grpay]').forEach(b => b.onclick = (e) => { e.stopPropagation(); pay(r); }); // ⏳ v815: días de gracia
     if (/[?&]compra=/.test(location.search)) { try { history.replaceState(null, '', location.pathname); } catch (e) { } toastF('Recibimos tu pago. Los planes se activan en unos minutos.'); }
     $('#sw').onclick = async () => { const on = !$('#sw').classList.contains('on'); $('#sw').classList.toggle('on', on); $('#sw').setAttribute('aria-checked', on);
       const x = await MRAC.call('famAlerts', { fcode: f.fcode, on }).catch(() => null); if (!x || !x.ok) { $('#sw').classList.toggle('on', !on); } };
@@ -193,7 +193,7 @@
       const sc = (m.querySelector('.fm-pay2') || {}).scrollTop || 0; if (m.firstChild) m.classList.add('drawn');
       m.innerHTML = `<div class="card fm-pay2"><button class="fm-px" aria-label="Cerrar">×</button><h3>Planes y pagos</h3><p class="muted fm-psub">Elige a cuál de tus estudiantes le quieres pagar.</p>
         <div class="fm-pl">${st.map((x, i) => { const k = x.k, g = AG[k.ag] || AG.adult, isP = /^premium/.test(x.plan), n = isP ? pn(x.plan) : 8;
-          const now = k.planEnd ? (k.expired ? `<em class="w">Venció el ${fD(k.planEnd)}</em>` : `${esc(k.planName)} · hasta el ${fD(k.planEnd)}${k.credits ? ' · ' + (k.credits.total - k.credits.used) + ' clases por reservar' : ''}`) : esc(k.planName || 'Acceso gratuito');
+          const now = k.planEnd ? (k.grace ? `<em class="w">Días de gracia · venció el ${fD(k.planEnd)}</em>` : k.expired ? `<em class="w">Venció el ${fD(k.planEnd)}</em>` : `${esc(k.planName)} · hasta el ${fD(k.planEnd)}${k.credits ? ' · ' + (k.credits.total - k.credits.used) + ' clases por reservar' : ''}`) : esc(k.planName || 'Acceso gratuito');
           const op = (v, t, sm, pr, s) => `<button type="button" class="fm-op${s ? ' s' : ''}" data-o="${i}" data-v="${v}"><span class="fm-r"></span><span class="fm-ot"><b>${t}</b><small>${sm}</small></span><span class="fm-opr">${pr}</span></button>`;
           const same = (p) => act(k) && k.planKey === p;
           let body = '';

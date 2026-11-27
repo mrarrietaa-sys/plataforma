@@ -32,10 +32,10 @@
   const code = () => { if (window.MRTEACH && MRTEACH.on()) return ''; const p = prof(); return p && p.cloud && p.code ? p.code : ''; };
 
   // ---------- perfil local a partir de los datos de la nube ----------
-  function typeFor(st, state) { const eff = state ? state.eff : (st.plan || 'free'); return eff === 'membership' || /^premium\d*$/.test(eff) ? 'student' : 'trial'; }
+  function typeFor(st, state) { const eff = state ? (state.grace ? st.plan || 'free' : state.eff) : (st.plan || 'free'); /* ⏳ v815: días de gracia */ return eff === 'membership' || /^premium\d*$/.test(eff) ? 'student' : 'trial'; }
   function applyStudent(st, state, base) {
     const p = Object.assign({ created: Date.now() }, base || prof() || {});
-    Object.assign(p, { cloud: true, code: st.code, plan: st.plan || 'free', planStart: st.planStart || '', planEnd: st.planEnd || '', paceStart: st.paceStart || '', paceMod: +st.paceMod || 0, type: typeFor(st, state), expired: !!(state && state.expired), groupId: st.groupId || '' });
+    Object.assign(p, { cloud: true, code: st.code, plan: st.plan || 'free', planStart: st.planStart || '', planEnd: st.planEnd || '', paceStart: st.paceStart || '', paceMod: +st.paceMod || 0, type: typeFor(st, state), expired: !!(state && state.expired && !state.grace), groupId: st.groupId || '' });
     ['first', 'last', 'email', 'whatsapp', 'birth'].forEach(k => { if (st[k] && !p[k]) p[k] = st[k]; });
     p.tpr = st.tpr ? 1 : 0; // 🎓 v596: prueba del profe
     p.gc = st.gc ? 1 : 0; // 🎁 v623: Plataforma con clase de regalo

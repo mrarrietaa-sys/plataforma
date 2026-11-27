@@ -122,7 +122,7 @@
   // aviso cuando el contenido está bloqueado (fin del acceso gratuito o plan vencido)
   function modal(M, why) {
     const pl = window.MRAP && MRAP.plan ? MRAP.plan() : {};
-    const exp = pl.expired;
+    const exp = pl.expired || pl.grace; // ⏳ v815
     const m = M.modal(`<div class="center">${M.mascot('mascot', 'present')}</div>
       <h3 class="center pl-mh">${window.MRI ? MRI(exp ? 'clock' : 'unlock') : ''} ${exp ? 'Tu plan venció' : 'Desbloquea toda tu ruta'}</h3>
       <p class="center" style="font-size:16.5px">${exp ? `Tu plan <b>${esc(PL[pl.plan] ? PL[pl.plan].name : '')}</b> venció${pl.end ? ' el ' + new Date(pl.end + 'T12:00:00').toLocaleDateString('es-CO', { day: 'numeric', month: 'long' }) : ''}. <b>Tu progreso sigue guardado</b>: renueva y continúa justo donde ibas.` : (why || 'Tu acceso gratuito incluye los <b>3 primeros temas</b> de tu ruta. Elige tu plan y sigue aprendiendo con todos los temas, exámenes y certificados 🎓')}</p>
@@ -131,7 +131,7 @@
     return m;
   }
   function payInfo() { return `<div class="to-pay"><b>Formas de pago</b><div><span>${window.MRI ? MRI('card') : ''} Tarjeta débito o crédito, PSE, Nequi o Daviplata (Mercado Pago)</span><span>${window.MRI ? MRI('check') : ''} Tu plan se activa solo, apenas se apruebe el pago</span></div></div><p class="center" style="margin:10px 0 0;font-size:14px"><a target="_blank" rel="noopener" style="color:#16A34A;font-weight:800" href="${WA('¡Hola! ' + (who() ? 'Soy ' + who() + '. ' : '') + 'Tengo una pregunta sobre los planes de mrarrieta.com')}">¿Dudas? Escríbenos por WhatsApp</a></p>`; }
-  function badge() { const pl = window.MRAP && MRAP.plan ? MRAP.plan() : {}; if (pl.eff === 'staff') return '👨‍🏫 Profe'; if (pl.expired) return '⏰ Plan vencido'; if (pl.eff === 'premium' && pnum(pl.plan)) return '👑 Premium'; return { membership: '🖥️ Plataforma', free: '🎁 Acceso gratuito', legacy: '🎓 Estudiante' }[pl.eff] || '🎁 Acceso gratuito'; }
+  function badge() { const pl = window.MRAP && MRAP.plan ? MRAP.plan() : {}; if (pl.eff === 'staff') return '👨‍🏫 Profe'; if (pl.expired) return '⏰ Plan vencido'; if (pl.grace) return '⏳ Días de gracia'; if (pl.eff === 'premium' && pnum(pl.plan)) return '👑 Premium'; return { membership: '🖥️ Plataforma', free: '🎁 Acceso gratuito', legacy: '🎓 Estudiante' }[pl.eff] || '🎁 Acceso gratuito'; }
   // ➕ clases extra dentro de las tarjetas Premium: el estudiante suma clases y ve al instante el precio de su paquete
   function xbox(k) { if (!/^premium/.test(k)) return ''; return `<span class="ipx" data-xk="${k}" data-n="0"><span class="ipx-row"><span class="ipx-t"><b>Suma clases extra</b><small>${fmt(EXTRA)} c/u</small></span><span class="ipx-b" role="button" aria-label="Menos" data-xb="-1">−</span><b class="ipx-n">0</b><span class="ipx-b" role="button" aria-label="Más" data-xb="1">+</span></span><span class="ipx-tot">Total primer mes: <b class="ipx-c">${PL[k].classes} clases</b> por <b class="ipx-p">${fmt(PL[k].n)} COP</b></span></span>`; }
   if (!window.__ipxWired) { window.__ipxWired = 1; document.addEventListener('click', (e) => { const b = e.target.closest && e.target.closest('[data-xb]'); if (!b) return; e.preventDefault(); e.stopPropagation();

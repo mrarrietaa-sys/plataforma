@@ -41,10 +41,11 @@
     const p = get() || {}; if (p.type === 'staff') return { plan: 'staff', eff: 'staff', paid: true };
     if (!p.cloud) return { plan: p.type === 'trial' ? 'free' : 'legacy', eff: p.type === 'trial' ? 'free' : 'legacy', paid: p.type !== 'trial', legacy: true };
     const pl = p.plan || 'free', paidPlan = pl === 'membership' || /^premium\d*$/.test(pl);
-    const expired = paidPlan && !!p.planEnd && p.planEnd < todayISO();
-    const eff = paidPlan && !expired ? (/^premium/.test(pl) ? 'premium' : pl) : 'free';
     const daysLeft = paidPlan && p.planEnd ? Math.round((new Date(p.planEnd + 'T00:00:00') - new Date(todayISO() + 'T00:00:00')) / 864e5) : null;
-    return { plan: pl, eff, paid: eff !== 'free', expired, end: p.planEnd || '', daysLeft, premium: eff === 'premium', fc: eff === 'free' && !!p.fc, gift: eff === 'membership' && !!p.gc, cls: eff === 'premium' || (eff === 'free' && !!p.fc) || (eff === 'membership' && !!p.gc) }; // 🎁 v623: gift = Plataforma con clase de regalo // 🎁 v603: cls = ve «Clases» (Premium o clase gratis)
+    const gd = daysLeft !== null && daysLeft < 0 ? -daysLeft : 0, grace = paidPlan && !p.demo && gd >= 1 && gd <= 3; // ⏳ v815: 3 días de gracia: practica como siempre; las clases con profe se habilitan al renovar
+    const expired = paidPlan && !!p.planEnd && p.planEnd < todayISO() && !grace;
+    const eff = paidPlan && !expired ? (grace ? 'membership' : /^premium/.test(pl) ? 'premium' : pl) : 'free';
+    return { grace, graceDay: grace ? gd : 0, graceLeft: grace ? 4 - gd : 0, graceEnd: grace ? (d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'))(new Date(new Date(p.planEnd + 'T00:00:00').getTime() + 3 * 864e5 + 36e5)) : '', plan: pl, eff, paid: eff !== 'free', expired, end: p.planEnd || '', daysLeft, premium: eff === 'premium', fc: eff === 'free' && !!p.fc, gift: eff === 'membership' && !!p.gc, cls: eff === 'premium' || (eff === 'free' && !!p.fc) || (eff === 'membership' && !!p.gc) }; // 🎁 v623: gift = Plataforma con clase de regalo // 🎁 v603: cls = ve «Clases» (Premium o clase gratis)
   }
   const isTrial = () => { const p = get(); if (!p) return false; if (p.type === 'trial') return true; return !!(p.cloud && plan().eff === 'free' && !plan().expired); };
   // ⏰ plan vencido: puede entrar a su perfil, pero TODO queda bloqueado hasta que administración registre la renovación
