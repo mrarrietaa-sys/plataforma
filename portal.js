@@ -978,10 +978,12 @@
         <p class="muted">⏱ Unos 10 minutos · puedes repetirla de inmediato una vez; después, cada 12 horas${pst.inProgress ? ' · <b>Tienes una prueba en progreso</b>' : ''}</p>
         <button class="btn k lg" id="pt">📝 ${pst.inProgress ? 'Continuar' : 'Tomar'} mi prueba de clasificación</button></div><img class="pt-step-plane" src="mra-x-plane-red.webp" alt="Mr. Arrieta"></div>`;
     } else if (a && P.isExpired()) {
-      main = `<div class="card pt-mymod"><div class="pt-mymod-img" style="background-image:url('${U(a.img)}')"><span>🔒</span></div><div><span class="lbl">⏰ Plan vencido</span>
+      const minorX = () => { try { const q = P.get() || {}; return q.age != null && q.age < 18; } catch (e) { return false; } };
+      main = `<div class="card pt-mymod pt-exp"><div class="pt-mymod-img" style="background-image:url('${U(a.img)}')"><span>🔒</span></div><div><span class="lbl">⏰ Plan vencido</span>
         <h2>Tu contenido está bloqueado</h2><p>Tu plan venció el <b>${esc(new Date(P.plan().end + 'T00:00:00').toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' }))}</b>. Tus módulos, juegos y lecciones quedan bloqueados hasta que renueves.</p>
-        <p class="muted">Tranquilo: tu progreso está guardado. Paga con <b>tarjeta, PSE, Nequi o Daviplata</b> y se desbloquea al instante. Sigues justo donde ibas.</p>
-        <a class="btn block pt-wa" href="#" data-plans>Renovar mi plan</a></div></div>`;
+        ${minorX() ? `<p class="muted">Tranquilo: tu progreso está guardado. Pídele a tu acudiente que renueve tu plan: le llega un correo y lo paga desde su <b>Portal familiar</b>. Sigues justo donde ibas.</p>
+        <a class="btn k block pt-exb" href="#" data-plans>Pedirle a mi acudiente que renueve</a>` : `<p class="muted">Tranquilo: tu progreso está guardado. Paga con <b>tarjeta, PSE, Nequi o Daviplata</b> y se desbloquea al instante. Sigues justo donde ibas.</p>
+        <a class="btn k block pt-exb" href="#" data-plans>Renovar mi plan</a>`}</div></div>`; /* v811: botón con los colores de la escuela · menores: se lo piden a su acudiente */
     } else if (a && a.ready && !staff) {
       const pr = P.progress(a.id), tot = trial ? 6 : a.classes; // 🎁 v603: 3 temas gratis
       main = `<div class="card pt-mymod db-hero ad-hero"><div class="db-hero-tx"><span class="ad-k">${pr.done ? 'Tu siguiente paso' : 'Empieza tu ruta'}</span>
@@ -1045,7 +1047,7 @@
       ${birthdayBanner()}
       ${adult && !newbie ? `<div class="ad-hi"><div><small>${(s0 => s0[0].toUpperCase() + s0.slice(1))(new Date().toLocaleDateString('es-CO', { weekday: 'long', day: 'numeric', month: 'long' }))}</small><h1>${esc(greet)}, <span class="mk-pill">${esc(P.look().nick || p.first || '')}</span></h1></div><span class="ad-plan">${MRI(plIc)} ${esc(plName.replace(' clases', ''))}</span></div>` : ''}
       <div id="pt-ann"></div><div id="pt-ofr"></div>
-      ${P.isExpired() || (trial && !(window.MRAC && MRAC.code())) ? `<div class="pt-trialbar">${P.isExpired() ? `⏰ <div><b>Tu plan venció.</b> Todo tu contenido está bloqueado, pero tu progreso sigue guardado. Apenas renueves, se desbloquea todo. <a href="#" class="tb-up">Ver planes →</a></div>` : `🟢 <div><b>Acceso gratuito:</b> la prueba de clasificación y los <b>3 primeros temas</b> de tu módulo. <a href="#" class="tb-up">Ver planes →</a></div>`}</div>` : ''}
+      ${(P.isExpired() && !(a && main && /pt-exp/.test(main))) || (trial && !(window.MRAC && MRAC.code())) ? `<div class="pt-trialbar">${P.isExpired() ? `⏰ <div><b>Tu plan venció.</b> Todo tu contenido está bloqueado, pero tu progreso sigue guardado. Apenas renueves, se desbloquea todo. <a href="#" class="tb-up">Ver planes →</a></div>` : `🟢 <div><b>Acceso gratuito:</b> la prueba de clasificación y los <b>3 primeros temas</b> de tu módulo. <a href="#" class="tb-up">Ver planes →</a></div>`}</div>` : ''}
       ${main}
       ${newbie ? '' : routeBar()}
       ${g1on || !curMod || staff || !window.MRGOAL ? '' : `<div class="pg-mob">${MRGOAL.cardHTML(pct)}</div>`}
@@ -1312,6 +1314,7 @@
     const kind = tourKind();
     if ($('#tour')) return; const p = P.get(); if (!p || (tourSeenK(kind) && !force)) return;
     if (!force && window.__mrWelShown) return;
+    if (!force && P.isExpired()) return; // v811: con el plan vencido no sale el recorrido (solo ve su perfil y renueva)
     if ($('.modal') || window.__mrWel || (!force && polPending())) return setTimeout(() => portalTour(force), 800); // espera a que cierre el saludo y la política
     try { localStorage.setItem(TOURK() + '_' + kind, '1'); } catch (e) { } const fk = kind === 'start' ? 'tour1' : 'tour2';
     if (!p[fk]) { p[fk] = true; P.save(p); try { window.MRAC && MRAC.code() && MRAC.sync(true); } catch (e) { } } // marcado desde que empieza

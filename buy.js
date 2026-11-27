@@ -42,11 +42,11 @@
   }
   /* v668: un menor de edad no paga desde su perfil: la propuesta le llega al correo de su papá o mamá */
   const minorNow = () => { try { const q = (window.MRAP && MRAP.get()) || {}; return q.type !== 'staff' && q.age != null && q.age < 18 && !/inscripcion/.test(location.pathname); } catch (e) { return false; } };
-  async function askParent(k) {
-    const kid = (M.ageGroup && M.ageGroup()) === 'kids'; const w = M.modal(`<div class="center by-ask"><div class="center">${M.mascot('mascot', 'thumbs')}</div><h3>Un momento…</h3><p>Estamos enviando la propuesta a tu papá o mamá.</p></div>`, { x: true });
-    const r = await MRAC.call('parentAsk', { code: CODE(), plan: k }).catch(() => null); if (r && r.err === 'noparent' && window.MRNP) { w.remove(); return MRNP(() => askParent(k)); } const c = w.querySelector('.card') || w;
-    if (r && r.ok) c.innerHTML = `<div class="center by-ask">${M.mascot('mascot bounce', 'thumbs')}<h3>¡Listo!</h3><p class="by-a1">Le enviamos la propuesta a <b>tu papá o mamá</b>${r.to ? ' a su correo <b>' + esc(r.to) + '</b>' : ''}.</p><p class="muted">${kid ? 'Cuando la acepten, tendrás clases con un profe. ¡Mientras tanto, sigue practicando!' : 'Cuando la aprueben, se activan tus clases con profe. Mientras tanto, sigue con tu ruta.'}</p><button class="btn k block" id="by-ok">Entendido</button></div>`;
-    else c.innerHTML = `<div class="center by-ask"><h3>No pudimos enviarla</h3><p>${r && r.err === 'noparent' ? 'Aún no tenemos el correo de tu papá o mamá.' : 'Inténtalo de nuevo en un momento.'}</p><button class="btn k block" id="by-ok">Entendido</button></div>`;
+  async function askParent(k, nx) {
+    const kid = (M.ageGroup && M.ageGroup()) === 'kids'; const w = M.modal(`<div class="center by-ask"><div class="center">${M.mascot('mascot', 'thumbs')}</div><h3>Un momento…</h3><p>Estamos enviándole tu solicitud a tu acudiente.</p></div>`, { x: true });
+    const r = await MRAC.call('parentAsk', { code: CODE(), plan: k, extra: nx || 0 }).catch(() => null); if (r && r.err === 'noparent' && window.MRNP) { w.remove(); return MRNP(() => askParent(k, nx)); } const c = w.querySelector('.card') || w;
+    if (r && r.ok) c.innerHTML = `<div class="center by-ask">${M.mascot('mascot bounce', 'thumbs')}<h3>¡Listo!</h3><p class="by-a1">Le enviamos tu solicitud a <b>tu acudiente</b>${r.to ? ' a su correo <b>' + esc(r.to) + '</b>' : ''}.</p><p class="muted">${k === 'extra' ? 'Cuando tu acudiente las pague, aparecen en «Mis clases» para que las reserves.' : kid ? 'Cuando la acepten, tendrás clases con un profe. ¡Mientras tanto, sigue practicando!' : 'Cuando la aprueben, se activan tus clases con profe. Mientras tanto, sigue con tu ruta.'}</p><button class="btn k block" id="by-ok">Entendido</button></div>`;
+    else c.innerHTML = `<div class="center by-ask"><h3>No pudimos enviarla</h3><p>${r && r.err === 'noparent' ? 'Aún no tenemos el correo de tu acudiente.' : 'Inténtalo de nuevo en un momento.'}</p><button class="btn k block" id="by-ok">Entendido</button></div>`;
     const b = c.querySelector('#by-ok'); if (b) b.onclick = () => w.remove();
   }
   async function plan(k, opt) {
@@ -75,6 +75,7 @@
   function firstBuy() { const q = (window.MRAP && MRAP.get()) || {}; return !q.planStart; }
   function refSaved() { try { return localStorage.getItem('mra_ref') || ''; } catch (e) { return ''; } }
   async function extra(cycleEnd, n0) {
+    if (minorNow()) return askParent('extra', Math.max(1, +n0 || 1)); // v811: un menor no compra clases: se las pide a su acudiente
     await cat(); const unit = PLS().extra ? PLS().extra() : 32900;
     const m = M.modal(`<h3 class="by-h">${MRI('plus')} Clases individuales adicionales</h3>
       <p class="muted">Cada clase dura 50 minutos y se reserva igual que las de tu plan.</p>

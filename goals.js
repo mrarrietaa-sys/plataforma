@@ -80,7 +80,7 @@
     });
   }
   // ¿mostrar la pregunta? solo estudiantes, sin objetivo y sin haber dicho "Ahora no" hace poco
-  function shouldAsk() { const p = P() && P().get(); return !!p && p.type !== 'staff' && !get(); } // v515: el objetivo es obligatorio para estudiantes
+  function shouldAsk() { const p = P() && P().get(); let ex = false; try { ex = !!(P().isExpired && P().isExpired()); } catch (e) { } return !!p && p.type !== 'staff' && !ex && !get(); } // v811: con el plan vencido no se pregunta el objetivo // v515: el objetivo es obligatorio para estudiantes
   function must() { return shouldAsk(); }
   // v515: muestra la ventana (sin «Ahora no») cuando no haya otra ventana abierta; se resuelve con el objetivo elegido
   let mP = null;

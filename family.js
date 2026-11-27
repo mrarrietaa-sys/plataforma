@@ -141,6 +141,7 @@
         <label class="fa-ok"><input type="checkbox" id="fa-c" ${S.ok ? 'checked' : ''}> Acepto las <a href="politica.html" target="_blank">condiciones del plan</a></label>
         <div class="fa-nav"><button class="btn w" id="fa-b">← Atrás</button><button class="btn r" id="fa-n" ${S.ok ? '' : 'disabled'}>${S.plan === 'free' ? 'Activar acceso gratuito' : 'Pagar con Mercado Pago →'}</button></div><p class="fm-err" id="fa-er"></p>
         <p class="fa-back">${I('check')} Al terminar vuelves aquí y ves a ${esc(S.first)} en tu familia.</p>`;
+      const fit = () => { const c = m.querySelector('.fa-card'); if (!c) return; c.style.zoom = ''; const av = innerHeight - 24, h = c.scrollHeight; if (h > av) c.style.zoom = Math.max(.62, av / h).toFixed(3); }; m._fit = fit; /* v811: todo a la vista, sin barra: si no cabe, la ventana se achica un poco */
       if (m.firstChild) m.classList.add('drawn');
       m.innerHTML = `<div class="card fa-card"><button class="fm-px" aria-label="Cerrar">×</button>${dots()}${body}</div>`;
       m.querySelector('.fm-px').onclick = () => m.remove(); m.onclick = (e) => { if (e.target === m) m.remove(); };
@@ -159,7 +160,9 @@
         const x = await MRAC.call('famAddKid', { fcode: f.fcode, first: S.first, last: S.last, birth: S.birth, rel: S.rel, auth: S.auth ? 1 : 0, plan: S.plan === 'premium' ? pk(S.n) : S.plan }).catch(() => null);
         if (!x || !x.ok) { b.disabled = false; b.textContent = S.plan === 'free' ? 'Activar acceso gratuito' : 'Pagar con Mercado Pago →'; return (er.textContent = x && x.err === 'max' ? 'No se pudo agregar.' : x && x.err === 'age' ? 'Este portal es para estudiantes de 9 a 17 años.' : x && (x.err === 'mp_off' || x.err === 'mp_error') ? 'El pago en línea no está disponible en este momento. Escríbenos por WhatsApp al 301 781 0841.' : 'No se pudo procesar. Inténtalo de nuevo o escríbenos por WhatsApp al 301 781 0841.'); }
         if (x.url) { location.href = x.url; return; } m.remove(); start(); toastF('¡Listo! ' + S.first + ' ya está en tu familia.'); };
+      requestAnimationFrame(fit); setTimeout(fit, 250);
     };
+    addEventListener('resize', () => { if (m.isConnected && m._fit) m._fit(); });
     draw();
   }
   // 💳 pago familiar: varios planes en un solo pago
