@@ -101,7 +101,7 @@
       show();
     });
     body.innerHTML = `<div class="as-sbar">${items.map(() => '<i class="on"></i>').join('')}</div><div class="as-kpi"><div><b>${c}/${items.length}</b><small>correctas</small></div><div><b>x${best}</b><small>mejor racha</small></div><div><b>${c === items.length ? '100%' : Math.round(c / items.length * 100) + '%'}</b><small>acierto</small></div></div>
-      ${missed.length ? `<div class="as-rdes"><span class="as-cl">REPASA ESTAS</span>${missed.map(m => `<div class="as-rr"><i class="no">${SV(I.x)}</i><span><b>${esc(m.en)}</b> = ${esc(m.es)}</span><button type="button" class="as-pl sm" data-au="${esc(m.au)}">${SV(I.vol)}</button></div>`).join('')}</div>` : `<div class="as-res"><div class="as-rr"><i class="ok">${SV(I.ck)}</i><span>¡Perfecto! Recordaste todo lo de la lección pasada.</span></div></div>`}`;
+      ${missed.length ? `<div class="as-rdes"><span class="as-cl">REPASA ESTAS</span>${missed.map(m => `<div class="as-rr"><div class="as-rw"><i class="no">${SV(I.x)}</i><span><b>${esc(m.en)}</b> = ${esc(m.es)}</span></div><button type="button" class="as-pl sm" data-au="${esc(m.au)}">${SV(I.vol)}</button></div>`).join('')}</div>` : `<div class="as-res"><div class="as-rr"><span>¡Perfecto! Recordaste todo lo de la lección pasada.</span></div></div>`}`;
     body.querySelectorAll('[data-au]').forEach(b => b.onclick = () => play(b.dataset.au)); sfx(c >= items.length / 2 ? 'win' : 'ok');
     await A().waitNext(stage, 'Continuar');
     return A().result(c, items.length, 'listening', missed);

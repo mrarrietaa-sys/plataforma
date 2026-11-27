@@ -11447,3 +11447,15 @@ html body .modal .card:has(.to-new):not(.tf-kidm) .to-new.center,html body .moda
 @media(min-width:900px){.gr-ban{padding:14px 20px}.gr-ban p{margin-bottom:10px}}
 .fm-grace{margin:10px 0 0;background:#FDECEC;border:1.5px solid #F5B5B8;border-radius:12px;padding:9px 12px;text-align:center}.fm-grace>b{display:block;font:800 11.5px Poppins,sans-serif;letter-spacing:.06em;color:#E3242B}.fm-grace span{display:block;font:400 13px Inter,sans-serif;color:#0B2A5B;margin-top:2px;line-height:1.4}
 .fb-btn.fm-grb{justify-content:center;background:#0B2A5B!important;color:#fff!important}
+/* v816 · repaso rápido y «Así respondiste esta parte» centrados (todas las edades y módulos) */
+.snap-bar{flex-direction:column;justify-content:center;text-align:center;gap:4px}
+.snap>h2,.snap>p.ins{text-align:center}
+.snap-miss h3{text-align:center}.snap-miss .row{justify-content:center}
+.as-res .as-rr{justify-content:center;text-align:center}
+.as-kpi~.as-rdes{text-align:center}
+.as-kpi~.as-rdes .as-cl{display:block;text-align:center;font:800 12px Poppins,sans-serif;letter-spacing:.1em;color:#E3242B;margin:14px 0 4px}
+.as-kpi~.as-rdes .as-rr{flex-wrap:wrap;justify-content:center;gap:8px 10px;padding:10px 0}
+.as-kpi~.as-rdes .as-rw{flex:0 0 100%;display:block;text-align:center;line-height:1.45}.as-kpi~.as-rdes .as-rw i.no{display:inline-flex;vertical-align:-3px;margin-right:6px}
+.as-kpi~.as-rdes .as-rr,.as-kpi~.as-rdes .as-rr b{color:#0B2A5B}
+.as-kpi~.as-rdes .as-rr .slw-w{margin:0 auto!important}.as-kpi~.as-rdes .as-pl.sm{margin:0;background:#eef3fb;border-color:#dbe4f1;color:#0B2A5B}
+.snap .as-kpi~.as-rdes .as-rr,.snap .as-kpi~.as-rdes .as-rr b{color:#0B2A5B}
