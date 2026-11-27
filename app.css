@@ -11380,3 +11380,4 @@ html body .modal .card:has(.to-new):not(.tf-kidm) .to-new.center,html body .moda
 /* v811 · plan vencido: tarjeta y botón con los colores de la escuela */
 .pt-mymod.pt-exp{border-color:#E3242B!important;background:linear-gradient(135deg,#fff,#fff6f6)!important}
 .pt-exp .pt-exb{background:#0B2A5B!important;border-color:#0B2A5B!important;color:#fff!important;max-width:360px;margin:6px auto 0}
+/* v812 · transición: el nombre de lo que viene en una sola línea */ .itl9 .itl-next b{white-space:nowrap}

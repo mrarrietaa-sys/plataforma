@@ -16,7 +16,7 @@
     if (el.closest('.slw-b')) return false;
     if (el.closest('.wu-opts, .rto-opts, .opts, [data-noslw]')) return false; /* v665: nunca en las opciones de respuesta (p. ej. «play») */
     if (el.closest('.stage') && el.closest('.stage').querySelector('iframe, video')) return false; // la canción (video) no se puede poner más lenta
-    try { const ps = document.querySelector('.pstep b'); if (ps && /^music$/i.test(ps.textContent.trim()) && !el.closest('.m2v-mob') && !el.classList.contains('m4o-ag')) return false; /* v769: en Music la canción no se pone lenta, pero el «Modelo» del karaoke sí */ } catch (e) { }
+    try { const ps = document.querySelector('.pstep'); if (ps && /^music$/i.test(((ps.dataset && ps.dataset.sec) || (ps.querySelector('b') || {}).textContent || '').trim()) && !el.closest('.m2v-mob') && !el.classList.contains('m4o-ag')) return false; /* v769: en Music la canción no se pone lenta, pero el «Modelo» del karaoke sí */ } catch (e) { }
     const t = label(el); if (NOT.test(t) || /^(me|rv-me)$/.test(el.id)) return false;
     const hasSpk = [...el.querySelectorAll('svg path')].some((p) => SPK.test(p.getAttribute('d') || '')) || /🔊/.test(el.textContent || '') || [...el.querySelectorAll('svg desc')].some((d) => /🔊/.test(d.textContent || ''));
     if (hasSpk) return t.length <= 40 || TXT.test(t); // nunca en tarjetas de respuesta con frases largas
