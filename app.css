@@ -11527,3 +11527,15 @@ body button.md3-c .md3-tag.ok{background:#fff!important;color:#0B2A5B!important}
 @media(max-width:760px){.wrap.t2:has(.t2-tab){padding-bottom:92px}}
 html body .wrap.t2 #tgrid.t2-grid{grid-template-columns:1fr!important;gap:10px!important}
 @media(min-width:900px){html body .wrap.t2 #tgrid.t2-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+/* v819 · botones de tema centrados con su nombre debajo + anillo % delgado */
+html body .wrap.t2 .t2r-go.t2r-go{width:58px!important;height:auto!important;background:transparent!important;border-radius:0!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:5px!important;color:#0B2A5B!important;padding:0!important}
+html body .wrap.t2 .t2r-go.t2r-go>svg,html body .wrap.t2 .t2r-go.t2r-go>b{box-sizing:border-box;width:38px!important;height:38px!important;border-radius:50%;display:grid;place-items:center;margin:0!important;flex:none;background:#0B2A5B;color:#fff}
+html body .wrap.t2 .t2r-go.t2r-go>svg{padding:10px}
+html body .wrap.t2 .t2r-go.t2r-go.rv>*,html body .wrap.t2 .t2r-go.t2r-go.lk>*{background:#EEF3FB;color:#0B2A5B}
+html body .wrap.t2 .t2r-go.t2r-go.go>*,html body .wrap.t2 .t2r-go.t2r-go.nw>*{background:#E3242B;color:#fff}
+html body .wrap.t2 .t2r-go.t2r-go::after{content:'Empezar';font-size:10.5px;font-weight:700;line-height:1;white-space:nowrap;color:#0B2A5B}
+html body .wrap.t2 .t2r-go.rv::after{content:'Repasar'}
+html body .wrap.t2 .t2r-go.lk::after{content:'Bloqueado'}
+html body .wrap.t2 .t2r-go.go::after{content:'Continuar';color:#E3242B}
+html body .wrap.t2 .t2r-go.nw::after{color:#E3242B}
+body button.md3-c .md3-ring:not(.ok):not(.lk) b{width:calc(100% - 4px)!important;height:calc(100% - 4px)!important}
