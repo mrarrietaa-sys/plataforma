@@ -45,7 +45,7 @@
     const m = M.modal(`<h3>¿Salir de tu perfil?</h3><p class="muted">Tu progreso queda guardado${window.MRAC && MRAC.code && MRAC.code() ? ' en la nube: puedes continuar desde cualquier dispositivo' : ' en este dispositivo'}. Para volver a entrar necesitarás tu código.</p><div class="row"><button class="btn k" id="y">Sí, salir</button><button class="btn w" id="n">Cancelar</button></div>`, { x: true });
     $('#n', m).onclick = () => m.remove();
     $('#y', m).onclick = async () => { const y = $('#y', m); if (window.MRAC && MRAC.code && MRAC.code()) { y.disabled = true; y.textContent = 'Guardando…'; let ok = false; try { ok = await (MRAC.signOut ? MRAC.signOut() : MRAC.sync(true)); } catch (e) { ok = false; } if (!ok) { y.disabled = false; y.textContent = 'Sí, salir'; M.toast('No se pudo guardar en la nube. Revisa tu internet e inténtalo de nuevo.'); return; } }
-      m.remove(); const cur = MRAP.get(); if (cur && cur.first) MRAP.save(cur); MRAP.clear(); try { sessionStorage.removeItem('mra_me_cache'); } catch (e) { } location.replace('index.html?out=' + Date.now()); };
+      m.remove(); const cur = MRAP.get(); if (cur && cur.first) MRAP.save(cur); MRAP.clear(); try { sessionStorage.removeItem('mra_me_cache'); sessionStorage.removeItem('mra_pg'); sessionStorage.removeItem('mra_rank_open'); } catch (e) { } location.replace('index.html?out=' + Date.now()); };
   }
   function topbar() {
     const tb = $('#topbar'); tb.classList.remove('tb-age', 'tb-std'); if (STD_ON()) return stdTopbar(tb); if (AGE_ON() && window.MRI) return ageTopbar(tb);
@@ -245,7 +245,7 @@
     const I = n => window.MRI ? MRI(n) : '';
     const curId = (M.allParts().find(x => M.isUnlocked(x.topic) && S.parts[x.id] && !S.parts[x.id].done && S.parts[x.id].step) || nu || {}).id;
     const curP = curId ? M.partById(curId) : null;
-    const G = ['#1D4A9A,#2f5d99', '#F3A8AB,#E3242B', '#C4D0E3,#4f9152', '#F1A0A2,#E3242B', '#CDDBEF,#1D4A9A', '#f2c4cf,#bb5571'];
+    const G = ['#7fa6d6,#2f5d99', '#F3A8AB,#E3242B', '#C4D0E3,#4f9152', '#F1A0A2,#E3242B', '#CDDBEF,#1D4A9A', '#f2c4cf,#bb5571'];
     try { window.MRAGEIMG_apply && MRAGEIMG_apply(); } catch (e) { }
     const bg = (t, w, hh) => `background-image:${t.cover ? `url('${M.imgURL(t.cover, w, hh)}'),` : ''}linear-gradient(135deg,${G[(t.n - 1) % G.length]})`;
     const chip = window.MRAP && MRAP.get() ? (MRAP.isTrial() ? `<span class="t2-chip tr">${MRAP.plan && MRAP.plan().expired ? 'Plan vencido' : 'Acceso gratuito'}</span>` : MRAP.role(C.MODULE_ID || 'A1') === 'review' && !MRAP.isStaff() ? '<span class="t2-chip">Modo repaso</span>' : MRAP.isStaff() ? '<span class="t2-chip">Profe</span>' : '') : '';

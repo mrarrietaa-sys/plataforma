@@ -74,7 +74,7 @@
   /* ====== t1p2 — MESA DE NEGOCIACIÓN (as long as / provided that / in case / unless) ====== */
   function gauge(v) {
     const a = Math.PI * (1 - v / 100), x = 100 + 72 * Math.cos(a), y = 100 - 72 * Math.sin(a);
-    return `<svg viewBox="0 0 200 112" class="g6a-ng-gauge"><path d="M18 100 A82 82 0 0 1 182 100" fill="none" stroke="#E3E8F0" stroke-width="18" stroke-linecap="round"/>
+    return `<svg viewBox="0 0 200 112" class="g6a-ng-gauge"><path d="M18 100 A82 82 0 0 1 182 100" fill="none" stroke="#e3e8f0" stroke-width="18" stroke-linecap="round"/>
       <path d="M18 100 A82 82 0 0 1 182 100" fill="none" stroke="url(#g6ag)" stroke-width="18" stroke-linecap="round" pathLength="100" stroke-dasharray="${v} 100"/>
       <defs><linearGradient id="g6ag"><stop offset="0" stop-color="#E3242B"/><stop offset=".55" stop-color="#E3242B"/><stop offset="1" stop-color="#0B2A5B"/></linearGradient></defs>
       <line x1="100" y1="100" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="#0B2A5B" stroke-width="5" stroke-linecap="round"/><circle cx="100" cy="100" r="8" fill="#0B2A5B"/>
