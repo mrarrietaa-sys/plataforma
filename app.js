@@ -27,8 +27,28 @@
       <div class="tba-r"><a class="tba-b" href="index.html" aria-label="Volver a mi perfil">${SVB}</a><button class="tba-pts" id="pts-b" title="${esc(M.PTS_TIP)}">${MRI('star')}<b>${S.xp}</b></button><button class="iconbtn chat-ic cb2 tba-chat" id="chat-tb" title="Chat con mi profe" aria-label="Chat con mi profe"><svg class="cbi" viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path fill="#fff" d="M12 3.2c-5 0-9 3.5-9 7.9 0 2.3 1.1 4.4 2.9 5.8l-.7 3.4c-.1.5.4.8.8.6l3.6-1.9c.8.2 1.6.3 2.4.3 5 0 9-3.5 9-8.2S17 3.2 12 3.2z"/><circle cx="8" cy="11.3" r="1.35" fill="#16a34a"/><circle cx="12" cy="11.3" r="1.35" fill="#16a34a"/><circle cx="16" cy="11.3" r="1.35" fill="#16a34a"/></svg><i class="fbadge hidden" id="chat-n"></i></button><a class="tba-av" href="index.html" aria-label="Mi perfil">${esc(ini)}</a><button class="tba-b" id="menu-b" aria-label="Menú">${SVM}</button></div>`;
     $('#go-home', tb).onclick = () => { stop(); route('home'); }; $('#menu-b', tb).onclick = menu; $('#chat-tb', tb).onclick = openChat; $('#pts-b', tb).onclick = () => M.toast(M.PTS_TIP); chatFab(); hwBadge();
   }
+  /* v818 · estudiantes (las 3 edades): el mismo encabezado del perfil — campana · foto · sonido · salir (sin puntos, racha ni chat arriba) */
+  const STD_ON = () => !!(window.MRAP && MRAP.get && MRAP.get()) && !(MRAP.isStaff && MRAP.isStaff()) && !!window.MRI;
+  function stdTopbar(tb) {
+    const VOFF = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M22 9l-6 6M16 9l6 6"/></svg>';
+    const PW = '<svg class="pw-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 3v8"/><path d="M6.3 6.8a8 8 0 1 0 11.4 0"/></svg>';
+    const hw = pendingHW().length;
+    tb.classList.add('tb-std'); tb.classList.remove('tb-age');
+    tb.innerHTML = `<div class="brand" id="go-home"><span class="logo-pill"><img class="logo" src="mra-brand.png" alt="mrarrieta.com"></span></div><div class="sp"></div>${hw ? `<button class="iconbtn" id="menu-b" title="Mis tareas pendientes" aria-label="Menú">${SVM}</button>` : ''}<a class="tb-avbtn" href="index.html" title="Mi perfil">${MRAP.avHTML ? MRAP.avHTML('tb-av') : ''}</a><button class="iconbtn" id="snd-m" title="${S.sound ? 'Quitar los sonidos' : 'Activar los sonidos'}" aria-label="Sonidos">${S.sound ? MRI('vol') : VOFF}</button><button class="iconbtn" id="out-m" title="Salir" aria-label="Salir">${PW}</button>`;
+    $('#go-home', tb).onclick = () => { stop(); route('home'); };
+    const mb = $('#menu-b', tb); if (mb) mb.onclick = menu;
+    $('#snd-m', tb).onclick = () => { S.sound = !S.sound; save(); M.toast(S.sound ? 'Sonidos activados' : 'Sonidos desactivados'); topbar(); };
+    $('#out-m', tb).onclick = outModal;
+    hwBadge();
+  }
+  function outModal() {
+    const m = M.modal(`<h3>¿Salir de tu perfil?</h3><p class="muted">Tu progreso queda guardado${window.MRAC && MRAC.code && MRAC.code() ? ' en la nube: puedes continuar desde cualquier dispositivo' : ' en este dispositivo'}. Para volver a entrar necesitarás tu código.</p><div class="row"><button class="btn k" id="y">Sí, salir</button><button class="btn w" id="n">Cancelar</button></div>`, { x: true });
+    $('#n', m).onclick = () => m.remove();
+    $('#y', m).onclick = async () => { const y = $('#y', m); if (window.MRAC && MRAC.code && MRAC.code()) { y.disabled = true; y.textContent = 'Guardando…'; let ok = false; try { ok = await (MRAC.signOut ? MRAC.signOut() : MRAC.sync(true)); } catch (e) { ok = false; } if (!ok) { y.disabled = false; y.textContent = 'Sí, salir'; M.toast('No se pudo guardar en la nube. Revisa tu internet e inténtalo de nuevo.'); return; } }
+      m.remove(); const cur = MRAP.get(); if (cur && cur.first) MRAP.save(cur); MRAP.clear(); try { sessionStorage.removeItem('mra_me_cache'); } catch (e) { } location.replace('index.html?out=' + Date.now()); };
+  }
   function topbar() {
-    const tb = $('#topbar'); tb.classList.remove('tb-age'); if (AGE_ON() && window.MRI) return ageTopbar(tb);
+    const tb = $('#topbar'); tb.classList.remove('tb-age', 'tb-std'); if (STD_ON()) return stdTopbar(tb); if (AGE_ON() && window.MRI) return ageTopbar(tb);
     tb.innerHTML = `<div class="brand" id="go-home"><span class="logo-pill"><img class="logo" src="mra-brand.png" alt="mrarrieta.com"></span></div><div class="sp"></div><span class="tb-tag">${M.MOD.es.toUpperCase()} · ${M.MOD.id === 'B2' ? 'B1' : M.MOD.id}</span>
       <button class="pill y ce-pts" id="pts-b" title="${esc(M.PTS_TIP)}" aria-label="${S.xp} puntos. ${esc(M.PTS_TIP)}">⚡ ${S.xp} <span class="ce-ptw">puntos</span></button>
       <span class="pill hide-s" title="Días seguidos estudiando">🔥 ${S.streak.n || 0}</span>
@@ -233,16 +253,17 @@
     let cont = '';
     const cp = rev ? revNext : (curP || nu);
     if (cp) { const t = cp._t, td = t.parts.filter(x => S.parts[x.id] && S.parts[x.id].done).length;
-      cont = `<section class="t2-cont"><div class="t2-ci" style="${bg(t, 720, 420)}"></div><div class="t2-cx"><span class="t2-k">${rev ? 'Modo repaso' : (S.parts[cp.id] && S.parts[cp.id].step) || doneN ? 'Continúa donde quedaste' : 'Empieza tu ruta'}</span><h2>${esc(t.title)}</h2><p>${t.parts.length > 1 ? 'Lección ' + cp.part + ' de ' + t.parts.length : 'Lección'}</p><div class="t2-cb"><i style="width:${rev ? Math.round(revN / totP * 100) : Math.round(td / t.parts.length * 100)}%"></i></div><button class="t2-go" id="${rev ? 'rev-go' : 'cont'}">${rev ? (revN ? 'Seguir repasando' : 'Empezar a repasar') : (S.parts[cp.id] && S.parts[cp.id].step) ? 'Continuar' : 'Empezar'}${arr}</button></div></section>`; }
+      cont = `<section class="t2-cont"><div class="t2-ci" style="${bg(t, 720, 420)}"></div><div class="t2-cx"><span class="t2-k">${rev ? 'Modo repaso' : (S.parts[cp.id] && S.parts[cp.id].step) || doneN ? 'Continúa donde quedaste' : 'Empieza tu ruta'}</span><h2>${esc(t.title)}</h2><p>${t.parts.length > 1 ? 'Lección ' + cp.part + ' de ' + t.parts.length : 'Lección'}</p><div class="t2-cb"><i style="width:${rev ? Math.round(revN / totP * 100) : Math.round(td / t.parts.length * 100)}%"></i></div><button class="t2-go" id="${rev ? 'rev-go' : 'cont'}">${rev ? (revN ? 'Seguir repasando' : 'Empezar a repasar') : (S.parts[cp.id] && S.parts[cp.id].step) || td > 0 ? 'Continuar' : 'Empezar'}${arr}</button></div></section>`; } /* v818: si el tema ya va empezado, «Continuar» */
     else if (window.MRAP && MRAP.isTrial()) cont = `<section class="t2-cont t2-end"><div class="t2-cx"><span class="t2-k">Acceso gratuito</span><h2>Desbloquea toda tu ruta</h2><p>Sigue aprendiendo con todas las lecciones del ${esc(M.MOD.es)}.</p><button class="t2-go" id="buy3">${I('unlock')}Desbloquear${arr}</button></div></section>`;
     else cont = `<section class="t2-cont t2-end"><div class="t2-cx"><span class="t2-k">${totP} de ${totP} lecciones</span><h2>¡Terminaste las lecciones!</h2><p>${S.final && S.final.passed ? 'Ya aprobaste el Final Test.' : 'Ya puedes presentar el Final Test.'}</p><button class="t2-go" id="tofinal">${I('award')}Final Test${arr}</button></div></section>`;
     app.innerHTML = `<div class="wrap t2">
-      <div class="t2-head">${window.MRAP && MRAP.get() ? `<a class="t2-back" href="index.html">${SVB}Mi perfil</a>` : ''}<div class="t2-hx"><div><span class="t2-k">${esc(M.MOD.es)} · ${esc(M.MOD.levelEs || M.MOD.id)}</span>${chip}<h1>${greeting()}, <span class="mk-pill">${esc(first)}</span></h1></div>
-        <div class="t2-stats ringbox"><div><b>${rev ? 100 : pct}%</b><span>avance</span></div><div><b>${rev ? totP : doneN}/${totP}</b><span>lecciones</span></div><div><b>${S.streak.n || 0}</b><span>días seguidos</span></div></div></div></div>
+      <div class="t2-head">${window.MRAP && MRAP.get() ? `<a class="t2-back" href="index.html">${SVB}Mi perfil</a>` : ''}<div class="t2-hx"><div><span class="t2-k">${esc(M.MOD.es)} · ${esc(M.MOD.levelEs || M.MOD.id)}</span>${chip}${STD_ON() ? `<p class="t2-sum">${rev ? totP : doneN} de ${totP} lecciones · ${rev ? 100 : pct} %</p><div class="t2-chips"><span class="t2-chp" title="${esc(M.PTS_TIP)}">${MRI('star')}${S.xp} puntos</span><span class="t2-chp" title="Días seguidos estudiando">${MRI('flame')}${S.streak.n || 0} ${(S.streak.n || 0) === 1 ? 'día seguido' : 'días seguidos'}</span></div>` : `<h1>${greeting()}, <span class="mk-pill">${esc(first)}</span></h1>`}</div>
+        ${STD_ON() ? '' : `<div class="t2-stats ringbox"><div><b>${rev ? 100 : pct}%</b><span>avance</span></div><div><b>${rev ? totP : doneN}/${totP}</b><span>lecciones</span></div><div><b>${S.streak.n || 0}</b><span>días seguidos</span></div></div>`}</div></div>
       ${cont}
       <div id="hwfb"></div>
-      <div class="t2-sec"><h2>Temas del ${esc(M.MOD.es)}</h2><div class="t2-tabs" role="tablist"><button class="on" data-f="all">Todos</button><button data-f="cur">En curso</button><button data-f="done">Completados</button></div><div class="t2-acts"><button class="t2-pr" id="prog">${I('target')}Mi progreso</button>${M.hasProfile() ? '' : `<button class="t2-pr" id="code">${I('unlock')}Código de acceso</button>`}</div></div>
+      <div class="t2-sec"><h2>Temas del ${esc(M.MOD.es)}</h2><div class="t2-tabs" role="tablist"><button class="on" data-f="all">Todos</button><button data-f="cur">En curso</button><button data-f="done">Completados</button></div><div class="t2-acts">${STD_ON() ? '' : `<button class="t2-pr" id="prog">${I('target')}Mi progreso</button>`}${M.hasProfile() ? '' : `<button class="t2-pr" id="code">${I('unlock')}Código de acceso</button>`}</div></div>
       <div class="t2-grid" id="tgrid"></div><p class="t2-empty hidden"></p>
+      ${STD_ON() ? `<nav class="db-tabbar sd-tab t2-tab"><button data-pgo2="top">${MRI('compass')}<span>Inicio</span></button><button class="on" data-pgo2="learn">${MRI('book')}<span>Módulos</span></button>${MRAP.plan && MRAP.plan().cls ? `<button data-pgo2="cls">${MRI('video')}<span>Clases</span></button>` : ''}<button data-pgo2="me">${MRI('user')}<span>Cuenta</span></button><button data-pgo2="rank">${MRI('trophy')}<span>Ranking</span></button></nav>` : ''}
       <div class="t2-ft"><span class="t2-fti">${I('award')}</span><div class="t2-ftx"><b>Final Test</b><small>${S.final && S.final.passed ? 'Aprobado · ' + (S.final.best / 10).toFixed(1) + ' / 10' : M.finalUnlocked() ? `${M.MOD.course ? '16 preguntas · 20 minutos' : '12 preguntas · 15 minutos'} · intentos ilimitados · apruebas con ${(C.PASS_SCORE / 10).toFixed(1)}` : `Se abre al terminar las ${totP} lecciones`}</small></div>${S.final && S.final.passed ? `<button class="t2-ftb w" id="cert-b">${I('grad')}Certificado</button>` : ''}<button class="t2-ftb" id="final-b">${M.finalUnlocked() ? 'Presentar' : SVL + ' ' + M.doneCount() + '/' + totP}</button></div>
       <p class="center fx-foot" style="margin-top:22px;font-size:13.5px;grid-column:1/-1;font-weight:600">¡Aprende inglés HABLANDO!<br><a class="foot-wa" href="https://wa.me/${esc(C.WHATSAPP)}?text=${encodeURIComponent((window.MRNE || String)('¡Hola, mrarrieta.com! Soy ' + (S.name || 'estudiante') + '. Tengo una pregunta.'))}" target="_blank" rel="noopener">WhatsApp ${esc(C.WHATSAPP.replace(/^57/, '').replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3'))}</a></p>
     </div>`;
@@ -251,7 +272,9 @@
     D.topics.forEach(t => {
       const un = rev || M.isUnlocked(t.n); const dn = t.parts.filter(p => rev || (S.parts[p.id] && S.parts[p.id].done)).length, tp = Math.round(dn / t.parts.length * 100);
       const st8 = dn === t.parts.length ? 'done' : (dn || t.parts.some(p => p.id === curId)) && un ? 'cur' : 'new';
-      const card = h(`<div class="t2c${un ? '' : ' lk'}" data-st="${st8}"><div class="t2-pic" style="${bg(t, 640, 300)}"><span class="t2-n">${t.n}</span>${un ? `<span class="t2-ring" style="--p:${tp}"><b>${tp}%</b></span>` : `<span class="t2-ring lk">${SVL}</span>`}<div class="t2-pt"><h3>${esc(t.title)}</h3><small>${esc(t.es)}</small></div></div>${(() => { try { const x = window.MRTH && MRTH.html(+M.MOD.n || 1, t.n, M.ageGroup && M.ageGroup(), 's', { ex: 1 }); return x ? `<div class="t2-can">${x}</div>` : ''; } catch (e) { return ''; } })()}<div class="t2-ls"></div></div>`); // v549: «Vas a poder…» + ejemplo
+      /* v818 · tema compacto: foto pequeña + nombre + «Vas a poder…» + estado y barra + botón redondo (caben 3–4 por pantalla) */
+      const can = (() => { try { const x = window.MRTH && MRTH.get && MRTH.get(+M.MOD.n || 1, t.n, M.ageGroup && M.ageGroup()); return x && x.s ? 'Vas a poder: ' + x.s.charAt(0).toLowerCase() + x.s.slice(1) : esc(t.es); } catch (e) { return esc(t.es); } })();
+      const card = h(`<div class="t2c t2r${un ? '' : ' lk'}" data-st="${st8}"><span class="t2r-ph" style="${bg(t, 240, 240)}"><b>${t.n}</b></span><span class="t2r-tx"><h3>${esc(t.title)}</h3><p>${esc(can)}</p><span class="t2-ls"></span></span></div>`);
       { /* v776: barra de progreso por tema (sin nombres técnicos de las lecciones) */
         const N = t.parts.length, isD = p => rev ? !!(S.rev && S.rev[p.id] && S.rev[p.id].d) : !!(S.parts[p.id] && S.parts[p.id].done);
         const nd = t.parts.filter(isD).length, all = nd === N;
@@ -263,11 +286,12 @@
         const started = nd > 0 || (!rev && S.parts[tgt.id] && S.parts[tgt.id].step);
         const lbl = !un ? `${SVL}Bloqueado` : all ? (rev ? 'Repasar otra vez' : 'Repasar') : rev ? (nd ? 'Seguir repasando' : 'Repasar') : started ? (N > 1 ? `Continuar<em class="t2-gbn"> · Lección ${tgt.part}</em>` : 'Continuar') : 'Empezar';
         const nxt = t.parts.some(p => p.id === curId), cls = !un ? 'lk' : all ? 'rv' : started ? 'go' : nxt ? 'nw' : 'sf'; /* rojo solo en el tema que sigue */
-        const b = h(`<button class="t2-gb ${cls}"><span>${lbl}</span>${un ? (all ? '<b>↻</b>' : arr) : ''}</button>`);
-        b.onclick = () => un ? route('class', tgt.id) : lockGate(t.n);
-        $('.t2-ls', card).innerHTML = `<div class="t2-pgh">${head}</div><div class="t2-bar">${segs}</div>`; $('.t2-ls', card).appendChild(b); $('.t2-ls', card).classList.add('t2-pg');
+        const b = h(`<button class="t2-gb t2r-go ${cls}" title="${esc(lbl.replace(/<[^>]+>/g, ''))}" aria-label="${esc(lbl.replace(/<[^>]+>/g, ''))}">${!un ? SVL : all ? '<b>↻</b>' : arr}</button>`);
+        b.onclick = (e) => { e.stopPropagation(); un ? route('class', tgt.id) : lockGate(t.n); };
+        const stH = stv ? `<span class="t2r-stars">${[1, 2, 3].map(i => `<i class="${i <= stv ? 'on' : ''}">★</i>`).join('')}</span>` : '';
+        $('.t2-ls', card).innerHTML = `<span class="t2r-st">${all ? `${ok}<b>${rev ? 'Repasado' : 'Completado'}</b>` : !un ? `${SVL}<b>Bloqueado</b>` : `<b>${nd} de ${N}</b>&nbsp;${N === 1 ? 'lección' : 'lecciones'}`}</span><span class="t2-bar">${segs}</span>${stH}`;
+        card.appendChild(b); card.onclick = () => b.click(); card.setAttribute('role', 'button');
       }
-      if (!un) { $('.t2-pic', card).onclick = () => lockGate(t.n); card.setAttribute('role', 'button'); }
       g.appendChild(card);
     });
     const emp = $('.t2-empty', app);
@@ -277,7 +301,8 @@
     hwFbBlock();
     if ($('#tofinal')) $('#tofinal').onclick = () => route('final');
     if ($('#buy2')) $('#buy2').onclick = unlockModal; if ($('#buy3')) $('#buy3').onclick = trialModal;
-    $('#prog').onclick = () => route('progress'); if ($('#code')) $('#code').onclick = unlockModal;
+    $$('[data-pgo2]', app).forEach(a => a.onclick = () => { const k = a.dataset.pgo2; try { if (k === 'rank') { sessionStorage.setItem('mra_pg', 'top'); sessionStorage.setItem('mra_rank_open', '1'); } else sessionStorage.setItem('mra_pg', k); } catch (e) { } location.href = 'index.html'; }); /* v818: barra de abajo igual a la del perfil */
+    if ($('#prog')) $('#prog').onclick = () => route('progress'); if ($('#code')) $('#code').onclick = unlockModal;
     $('#final-b').onclick = () => M.finalUnlocked() ? route('final') : finalLockedModal();
     if ($('#cert-b')) $('#cert-b').onclick = () => route('cert');
     $$('[data-hw]', app).forEach(b => b.onclick = () => route('hw', b.dataset.hw));

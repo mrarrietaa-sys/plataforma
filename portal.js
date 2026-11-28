@@ -1120,6 +1120,7 @@
     if (!window.__sddd) { window.__sddd = 1; document.addEventListener('click', (e) => { if (!e.target.closest('.sd-dd')) $$('.sd-dd').forEach(d => d.classList.remove('open')); }); }
     $$('.sd-tab button').forEach(b => b.onclick = () => { closeAll(); setPg(b.dataset.st); });
     $$('[data-rank]').forEach(b => b.onclick = (e) => { e.preventDefault(); closeAll(); rankModal(); }); // 🏆 v538
+    try { if (sessionStorage.getItem('mra_rank_open')) { sessionStorage.removeItem('mra_rank_open'); setTimeout(() => { try { rankModal(); } catch (e) { } }, 700); } } catch (e) { } // v818: «Ranking» desde la barra de abajo del módulo
     $$('.db-pgnav button:not([data-rank])').forEach(b => b.onclick = () => setPg(b.dataset.pg));
     $$('.pg-row').forEach(b => b.onclick = () => act(b.dataset.act));
     setPg(PG, true);
