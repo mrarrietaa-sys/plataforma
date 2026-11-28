@@ -11459,3 +11459,39 @@ html body .modal .card:has(.to-new):not(.tf-kidm) .to-new.center,html body .moda
 .as-kpi~.as-rdes .as-rr,.as-kpi~.as-rdes .as-rr b{color:#0B2A5B}
 .as-kpi~.as-rdes .as-rr .slw-w{margin:0 auto!important}.as-kpi~.as-rdes .as-pl.sm{margin:0;background:#eef3fb;border-color:#dbe4f1;color:#0B2A5B}
 .snap .as-kpi~.as-rdes .as-rr,.snap .as-kpi~.as-rdes .as-rr b{color:#0B2A5B}
+/* v817 · Writing M3-M4: al armar bien la frase se muestra su traducción (no se repite la frase en inglés) */
+.wr-me.es{background:#EEF3FB;color:#0B2A5B;border:1px solid #DCE4F0;font-size:15.5px}
+/* v817 · «Así respondiste esta parte» del repaso: cada frase con lo que escogió */
+.as-snaplist[hidden]{display:none}
+.snap.snap-sl{border:0;padding:0}
+.snap.snap-sl>.hd,.snap.snap-sl>h2,.snap.snap-sl>p.ins,.snap.snap-sl .body>*:not(.as-snaplist){display:none!important}
+.snap.snap-sl .as-snaplist{display:block!important}
+.as-sl{background:#fff;border:1px solid #E3E9F3;border-radius:14px;padding:10px 12px;margin-bottom:8px;text-align:center}
+.as-slw{font-size:16px;color:#0B2A5B;line-height:1.35}.as-slw b{font-weight:700;color:#0B2A5B}
+.as-slc{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin-top:6px}
+.as-pill{display:inline-flex;align-items:center;gap:4px;border-radius:99px;padding:4px 10px;font:700 12.5px Inter,sans-serif}.as-pill svg{width:13px;height:13px}
+.as-pill.gr{background:#F1F5F9;color:#475569}.as-pill.ok{background:#E8F7EE;color:#157A3C}.as-pill.no{background:#FDECEC;color:#B91C1C}
+.as-slt{display:block;margin-top:6px;font-size:13px;color:#64748B}
+/* v817 · La regla más clara: ¿para qué sirve? + significado + traducción de cada ejemplo (colores corporativos, todas las edades) */
+.ml10,body.ag-teens .ml10,body.ag-kids .ml10{--ac:#E3242B;--acs:#FDECEC}
+.ml10-h{justify-content:center}
+.ml10-sp{background:#EEF3FB;border-radius:12px;padding:7px 10px;margin:0 0 8px;text-align:center}
+.ml10-sp small{display:block;font:800 10.5px Poppins,sans-serif;letter-spacing:.1em;color:#E3242B;margin-bottom:1px}
+.ml10-sp span{font:500 13.5px Inter,sans-serif;color:#0B2A5B;line-height:1.35}
+.ml10-r{text-align:center;font-size:16.5px;line-height:1.4;margin-bottom:8px}
+.ml10-r .ml10-m{font:500 13px Inter,sans-serif;font-style:normal;color:#64748B}
+.ml10-c{gap:6px}
+.ml10-no{flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:1px;background:#FDECEC;padding:7px 10px}
+.ml10-no s{color:#B91C1C;font-weight:600;font-size:14.5px;text-decoration-thickness:1.5px}
+.ml10-no small{font:500 12px Inter,sans-serif;color:#B91C1C}
+.ml10-ok{background:#F4F7FC;border:1px solid #E3E9F3;color:#0B2A5B;padding:7px 9px}
+.ml10-ok span.ml10-ck{flex:none;display:grid;place-items:center;color:#0B2A5B}
+.ml10-ok span.ml10-t{flex:1;display:flex;flex-direction:column;text-align:left;min-width:0}
+.ml10-t b{font:600 14.5px Inter,sans-serif;color:#0B2A5B;line-height:1.3}.ml10-t b em{font-style:normal;color:#E3242B;font-weight:800}
+.ml10-t small{font:400 12.5px Inter,sans-serif;color:#64748B;margin-top:1px;line-height:1.3}
+.ml10-ok i{border:1px solid #DCE4F0;color:#0B2A5B}
+.slw-w:has(>.ml10-ok){background:#F4F7FC!important;border:1px solid #E3E9F3;border-radius:12px}
+.slw-w:has(>.ml10-ok)>.ml10-ok{border:0!important}
+.slw-w:has(>.ml10-ok)>.slw-b{border-color:#DCE4F0!important}
+.ml10-n{display:flex;align-items:center;justify-content:center;gap:6px;background:#EEF3FB;border-radius:10px;padding:6px 10px;color:#0B2A5B;text-align:center;margin-top:6px}
+.ml10-n .mri{width:15px;height:15px;color:#E3242B;flex:none}

@@ -30,9 +30,13 @@
     const id = 'rtxa-' + b.f; if (!document.getElementById(id)) { const c = document.querySelector('script[src*="retos.js"]'), src = (c && c.getAttribute('src')) || '', base = src.replace(/retos\.js(\?.*)?$/, ''), q = (src.match(/\?.*$/) || [''])[0];
       const sc = document.createElement('script'); sc.id = id; sc.src = base + b.f + '.js' + q; document.head.appendChild(sc); }
     const t0 = Date.now(), iv = setInterval(() => { if (have() || Date.now() - t0 > 9000) { clearInterval(iv); res(); } }, 120); }); }
+  /* v817 · el juego usa solo lo que explicó la regla de ESTA lección: de la otra lección del tema y del banco extra solo entran frases con las palabras clave de esta regla */
+  function lessonKW(p) { const S = new Set(); try { const v = (window.MRML10 || {})[mod() + '-' + p.id]; if (!v) return S; Object.keys(v).forEach(a => (v[a] || []).forEach(x => String((x.r || '') + ' ' + (x.n || '')).replace(/\*([^*]+)\*/g, (m, g) => { g.split(/\s*(?:,|\/|;| y | o | or )\s*/).forEach(t => { t = t.toLowerCase().replace(/[^a-z' -]/g, '').trim(); if (t && t.length > 1) S.add(t); t.split(/\s+/).forEach(w => { if (w.length > 2 && !/^(the|and|with|para|con|verb|verbo|ing)$/.test(w)) S.add(w.replace(/^-/, '')); }); }); return m; }))); } catch (e) { } return S; }
+  function relF(K, f) { const a = String(f.a || '').toLowerCase(); if (K.has(a)) return true; const h = String(f.h || '').toLowerCase(); for (const k of K) if (k.length > 2 && h.indexOf(k) >= 0) return true; return false; }
+  function relT(K, t) { t = ' ' + String(t || '').toLowerCase().replace(/[^a-z' ]/g, ' ') + ' '; for (const k of K) if (k.length > 2 && t.indexOf(' ' + k + ' ') >= 0) return true; return false; }
   function topicParts(p) { try { return M().allParts().filter(x => x.topic === p.topic); } catch (e) { return [p]; } }
   function vocabItems(p) {
-    const V = [].concat(p.vocab || [], ...topicParts(p).filter(x => x !== p).map(x => x.vocab || []), (RX(p) || {}).vocab || []).filter(v => v && v.en && v.au && String(v.en).length <= 22 && !(ag() !== 'adult' && WORK.test(v.en))); /* v709: palabras de todo el tema, no solo de esta lección */
+    const V = [].concat(p.vocab || [], ...((p.vocab || []).filter(v => v && v.en && v.au).length >= 3 ? [] : topicParts(p).filter(x => x !== p).map(x => x.vocab || [])), (p.vocab || []).filter(v => v && v.en && v.au).length >= 3 ? [] : (RX(p) || {}).vocab || []) /* v817: palabras de esta lección (las del resto del tema solo si faltan) */.filter(v => v && v.en && v.au && String(v.en).length <= 22 && !(ag() !== 'adult' && WORK.test(v.en))); /* v709: palabras de todo el tema, no solo de esta lección */
     let uniq = V.filter((v, i) => V.findIndex(x => x.en === v.en) === i); if (uniq.length < 3) return [];
     /* v698: primero las palabras propias de ESTE tema (las que se repiten en otros temas del módulo van al final) */
     try { const oth = new Set(M().allParts().filter(x => x.topic !== p.topic).flatMap(x => (x.vocab || []).map(v => String(v.en || '').toLowerCase()))); const own = uniq.filter(v => !oth.has(v.en.toLowerCase())); if (own.length >= 3) uniq = own; } catch (e) { }
@@ -40,8 +44,9 @@
   }
   function fillItems(p, n) {
     let F = (p.fill || []).filter(f => f && f.s && f.a && f.au && Array.isArray(f.o) && f.o.length && /_{2,}/.test(f.s) && f.o.indexOf(f.a) < 0);
-    F = F.concat(topicParts(p).filter(x => x !== p).flatMap(x => (x.fill || []).filter(f => f && f.s && f.a && f.au && Array.isArray(f.o) && f.o.length && /_{2,}/.test(f.s) && f.o.indexOf(f.a) < 0)));
-    F = F.concat(((RX(p) || {}).fill || []).filter(f => f && f.s && f.a && f.au && Array.isArray(f.o) && f.o.length && /_{2,}/.test(f.s) && f.o.indexOf(f.a) < 0));
+    const KW = lessonKW(p); /* v817: solo la lección actual (y frases extra con sus palabras clave) */
+    F = F.concat(topicParts(p).filter(x => x !== p).flatMap(x => (x.fill || []).filter(f => f && f.s && f.a && f.au && Array.isArray(f.o) && f.o.length && /_{2,}/.test(f.s) && f.o.indexOf(f.a) < 0)).filter(f => KW.size && relF(KW, f)));
+    F = F.concat(((RX(p) || {}).fill || []).filter(f => f && f.s && f.a && f.au && Array.isArray(f.o) && f.o.length && /_{2,}/.test(f.s) && f.o.indexOf(f.a) < 0).filter(f => KW.size && relF(KW, f)));
     F = F.filter((f, i) => F.findIndex(x => x.s === f.s) === i); if (F.length < 3) return [];
     return F.map(f => ({ mode: 'f', q: f.s, ans: f.a, h: f.h || '', after: f.au, txt: clean(f.full || f.s.replace(/_{2,}/, f.a)), opts: [f.a, ...f.o.filter(o => o !== f.a)].slice(0, n || 3) }));
   }
@@ -68,7 +73,7 @@
     return shuf(L.filter(w => words.indexOf(w) < 0)).map(w => cap ? w[0].toUpperCase() + w.slice(1) : w); }
   function qaItems(p) {
     const ok = k => k && k.q && k.a && k.qau && k.aau && !/_{2,}/.test(first(k.a)) && first(k.a).length <= 46;
-    const K = (p.keyq || []).filter(ok), pool = topicParts(p).flatMap(x => (x.keyq || []).filter(ok)).concat(K, ((RX(p) || {}).qa || []).filter(ok));
+    const KW = lessonKW(p), K = (p.keyq || []).filter(ok), pool = topicParts(p).filter(x => x !== p).flatMap(x => (x.keyq || []).filter(ok)).concat(((RX(p) || {}).qa || []).filter(ok)).filter(k => KW.size && relT(KW, k.q + ' ' + first(k.a))).concat(K); /* v817: solo la lección actual */
     const ans = [...new Set(pool.map(k => first(k.a)))]; if (K.length < 2 || ans.length < 3) return [];
     const Q = K.concat(pool).filter((k, i, A) => A.findIndex(x => x.q === k.q) === i); /* v709: preguntas de todo el tema (primero las de esta lección) */
     /* v701: un distractor nunca puede ser también una respuesta válida a la pregunta */

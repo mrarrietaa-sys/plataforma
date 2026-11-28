@@ -13,10 +13,16 @@
       const XI = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></svg>', OKI = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg>';
       M.loadAudio(['ml' + (+M.MOD.n || 1) + '_' + p.topic]).catch(() => { });
       let si = 0; const N = ML10S.length;
-      const ml = h(`<div class="ml10"><div class="ml10-h"><span class="ml10-ic">${I('bulb')}</span><b>La regla</b><button type="button" class="ml10-au">${I('vol')}Escuchar</button></div><div class="ml10-s"></div>
+      const ml = h(`<div class="ml10"><div class="ml10-h"><button type="button" class="ml10-au">${I('vol')}Escuchar</button></div><div class="ml10-s"></div>
         <div class="ml10-f"><span class="ml10-d">${ML10S.map(() => '<i></i>').join('')}</span><button type="button" class="ml10-p">Atrás</button><button type="button" class="ml10-x">Siguiente</button></div></div>`);
       const draw = () => { const x = ML10S[si]; const box = $('.ml10-s', ml);
-        box.innerHTML = `<div class="ml10-r">${em(x.r)}</div>${x.oj ? `<div class="ml10-oj">${em(x.oj)}</div>` : ''}<div class="ml10-c">${x.no ? `<div class="ml10-no">${XI}<span>${esc(x.no)}</span></div>` : ''}${x.ok.map((y, j) => `<button type="button" class="ml10-ok" data-j="${j}">${OKI}<span>${esc(y[0])}</span><i>${I('vol')}</i></button>`).join('')}</div>${x.n ? `<div class="ml10-n">${em(x.n)}</div>` : ''}`;
+        /* v817 · regla más clara: ¿para qué sirve? + palabra clave con su significado + cada ejemplo con su traducción + por qué está mal el error */
+        const KW = []; String(x.r || '').replace(/\*([^*]+)\*/g, (m0, g) => { g.split(/\s*(?:\/|,)\s*/).forEach(t => { t = t.trim().replace(/[.?!…]+$/, '').replace(/\.\.\.$/, ''); if (t.length > 1 && /^[A-Za-z']/.test(t)) KW.push(t); }); return m0; });
+        KW.sort((a, b) => b.length - a.length);
+        const RXK = KW.length ? new RegExp('(^|[^A-Za-z\'])(' + KW.map(k => esc(k).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')(?![A-Za-z])', 'gi') : null;
+        const hl = (t) => RXK ? esc(t).replace(RXK, (m1, a1, b1) => a1 + '<em>' + b1 + '</em>') : esc(t);
+        const rr = (t) => em(t).replace(/\(([^)]+)\)/g, '<i class="ml10-m">($1)</i>');
+        box.innerHTML = `${x.p ? `<div class="ml10-sp"><small>¿PARA QUÉ SIRVE?</small><span>${esc(x.p)}</span></div>` : ''}<div class="ml10-r">${rr(x.r2 || x.r)}</div>${x.oj ? `<div class="ml10-oj">${em(x.oj)}</div>` : ''}<div class="ml10-c">${x.no ? `<div class="ml10-no"><s>${esc(x.no)}</s>${x.nw ? `<small>${esc(x.nw)}</small>` : ''}</div>` : ''}${x.ok.map((y, j) => `<button type="button" class="ml10-ok" data-j="${j}"><span class="ml10-ck">${OKI}</span><span class="ml10-t"><b>${hl(y[0])}</b>${y[2] ? `<small>${esc(y[2])}</small>` : ''}</span><i>${I('vol')}</i></button>`).join('')}</div>${x.n ? `<div class="ml10-n">${I('bulb')}<span>${em(x.n)}</span></div>` : ''}`;
         box.classList.remove('in'); void box.offsetWidth; box.classList.add('in');
         $$('.ml10-ok', box).forEach(b => b.onclick = () => { stop(); const y = x.ok[+b.dataset.j]; if (y && y[1]) play(y[1], { btn: b }); });
         $$('.ml10-d i', ml).forEach((d, j) => d.className = j < si ? 'ok' : j === si ? 'on' : ''); $('.ml10-p', ml).disabled = !si; $('.ml10-x', ml).textContent = si < N - 1 ? 'Siguiente' : 'A practicar'; $('.ml10-x', ml).style.display = opt && opt.noFinal && si >= N - 1 ? 'none' : ''; }; /* v474: en Kids/Teens el último paso lo cierra «¡Ya entendí!» */
@@ -713,7 +719,7 @@
       $('.sg9-tag', w).hidden = noPause9; hint(kids ? '¿Qué palabra escuchaste?' : '¿Qué palabra escuchaste?');
       const ln = $('.sg9-line', w); ln.innerHTML = it[0] ? esc(it[0]).replace('___', blank) : blank; ln.hidden = false;
       const ops = shuffle([it[1], it[2], it[3]]), box = $('.sg9-ops', w);
-      const TR = window.SGTR || {}, tr9 = (o) => TR[o] || TR[String(o).toLowerCase()] || '', early9 = /modulo-a[12](\.html)?$/.test(location.pathname); /* v765: M1-M2 traducción debajo de cada opción; M3-M4 al responder */
+      const TR = window.SGTR || {}, tr9 = (o) => TR[o] || TR[String(o).toLowerCase()] || '', early9 = true; /* v817: traducción debajo de cada opción en los 4 módulos */ /* v765: M1-M2 traducción debajo de cada opción; M3-M4 al responder */
       box.innerHTML = ops.map((o, j) => `<button type="button" class="sg9-op" data-j="${j}" data-w="${esc(o)}">${esc(o)}<small class="sg9-tr"${early9 ? '' : ' hidden'}>${esc(tr9(o))}</small></button>`).join('');
       const rep = $('.sg9-rep', w); rep.hidden = !player; rep.disabled = false; rep.textContent = 'Escuchar otra vez';
       rep.onclick = () => { rep.disabled = true; rep.textContent = 'Escuchando…'; try { player.seekTo(Math.max(clip[0], CP[i] - 9), true); player.playVideo(); } catch (e) { } };

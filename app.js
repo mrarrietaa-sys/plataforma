@@ -545,9 +545,10 @@
   function showSnap(stage, i, s) {
     return new Promise(res => {
       const R = curRun && curRun.res && curRun.res[i];
-      stage.innerHTML = `<div class="snap-bar">👀 <div><b>Así respondiste esta parte</b><small>${esc(s.sec)}${R && R.t ? ` · ${R.c} de ${R.t} correctas` : ''}</small></div></div>
-        <div class="snap">${snaps_[i] || ''}</div>
-        ${R && R.missed && R.missed.length ? `<div class="lesson snap-miss"><h3>🔁 Para repasar</h3>${R.missed.slice(0, 8).map(m => `<div class="row" style="gap:8px;align-items:center;margin:4px 0">${m.au ? `<button class="btn w sm" data-au="${esc(m.au)}">🔊</button>` : ''}<span>${esc(m.en || '')}</span></div>`).join('')}</div>` : ''}
+      const SL = /as-snaplist/.test(snaps_[i] || ''), secN = SL ? ((String(snaps_[i]).match(/<h2>([^<]*)<\/h2>/) || [])[1] || s.sec) : s.sec; /* v817: repaso → cada frase con lo que escogió */
+      stage.innerHTML = `<div class="snap-bar">👀 <div><b>Así respondiste esta parte</b><small>${secN}${R && R.t ? ` · ${R.c} de ${R.t} correctas` : ''}</small></div></div>
+        <div class="snap${SL ? ' snap-sl' : ''}">${snaps_[i] || ''}</div>
+        ${!SL && R && R.missed && R.missed.length ? `<div class="lesson snap-miss"><h3>🔁 Para repasar</h3>${R.missed.slice(0, 8).map(m => `<div class="row" style="gap:8px;align-items:center;margin:4px 0">${m.au ? `<button class="btn w sm" data-au="${esc(m.au)}">🔊</button>` : ''}<span>${esc(m.en || '')}</span></div>`).join('')}</div>` : ''}
         <div class="actionbar"><button class="btn w" id="sn-redo">✏️ Corregir (hacerlo de nuevo)</button><button class="btn k lg" id="sn-next">Continuar →</button></div>`;
       stage.querySelectorAll('[data-au]').forEach(b => b.onclick = () => play(b.dataset.au));
       $('#sn-redo', stage).onclick = () => res('redo'); $('#sn-next', stage).onclick = () => res('next');
@@ -1547,7 +1548,7 @@
         bar.innerHTML = (c < 2 && !fixed ? '<button class="btn w lg" id="wrfix">Corregir</button>' : '') + '<button class="btn k lg" id="wrnx">Continuar</button>';
         $('#wrnx', bar).onclick = () => { stop(); res(A.result(c, 2, 'writing')); };
         if ($('#wrfix', bar)) $('#wrfix', bar).onclick = () => { /* v491 · el estudiante puede corregir una vez si lo desea */
-          fixed = true; best0 = c; done = false; tries = 1; ta.readOnly = false; resetT(); ta.classList.remove('ro'); fbBox.classList.add('hidden'); const me = $('.wr-me', body); if (me) me.classList.add('hidden');
+          fixed = true; best0 = c; done = false; tries = 1; ta.readOnly = false; resetT(); ta.classList.remove('ro'); fbBox.classList.add('hidden'); const me = $('.wr-me', body); if (me) me.classList.add('hidden'), me.classList.remove('es');
           if (it.f === 'f') { $('.wr-start', body).innerHTML = `${esc(it.s)} <em class="wr-blank">&nbsp;</em>`; }
           const tmb = $('.wr-timer', body); if (tmb) tmb.style.display = 'none';
           bar.innerHTML = '<button class="btn k lg" id="wrgo">Comprobar</button>'; $('#wrgo', bar).onclick = () => { try { ta.blur(); } catch (e) { } setTimeout(() => check(false), 150); }; /* v761: en el celular el teclado termina de escribir la última palabra antes de revisar */ sfx('tap');
@@ -1565,7 +1566,7 @@
         if (!auto && picked.length < TK.length) { M.toast(picked.length ? 'Termina de armar la frase' : 'Toca las palabras para armar la frase'); sfx('bad'); return; }
         const okSeq = picked.length === TK.length && picked.every((x, k) => x.w === TK[k]), wrongW = picked.some(x => x.i >= 100);
         slot.classList.add(okSeq ? 'ok' : 'no');
-        if (it.f === 'c') { const me = $('.wr-me', body); me.textContent = txt || tgt; me.classList.remove('hidden'); }
+        if (it.f === 'c') { const me = $('.wr-me', body); if (okSeq && it.mes) { me.textContent = it.mes; me.classList.add('es'); } else { me.textContent = txt || tgt; me.classList.remove('es'); } me.classList.remove('hidden'); } /* v817: M3-M4 · si la armó bien, en vez de repetir la frase se muestra su traducción */
         if (it.f === 'f') $('.wr-start', body).innerHTML = esc(String(it.s).trim() + ' ' + (okSeq ? tgt : txt));
         if (okSeq) return verdict(2, txt, it.f === 'x' ? '¡Bien visto! +10' : '¡Perfecto! +10', it.f === 'x' ? esc(it.why) : 'Frase bien armada.', '');
         if (!picked.length) return verdict(0, txt, 'Se acabó el tiempo', 'No pasa nada. Así se escribe:', esc(it.f === 'f' ? String(it.s).trim() + ' ' + tgt : tgt));

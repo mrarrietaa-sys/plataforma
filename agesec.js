@@ -66,9 +66,12 @@
       };
       body.querySelectorAll('.as-ch').forEach(b => b.onclick = () => { const i = +b.dataset.i; if (i === cur && !b.classList.contains('opening')) open(i); });
     });
+    try { body.insertAdjacentHTML('beforeend', snapList(items.map((it, k) => ({ en: it.en, shown: it.es || '', ok: !!res[k], truth: true })))); } catch (e) { } /* v817 */
     await A().waitNext(stage, 'Continuar');
     return A().result(c, items.length, 'listening', missed);
   }
+  /* v817 · al volver atrás («Así respondiste esta parte») se ve cada frase del repaso: qué escogió y si estuvo bien */
+  function snapList(L) { return `<div class="as-snaplist" hidden>${L.map(x => `<div class="as-sl"><div class="as-slw"><b>${esc(x.en)}</b>${x.shown ? ' = ' + esc(x.shown) : ''}</div><div class="as-slc">${x.you ? `<span class="as-pill gr">Tú: ${x.you}</span>` : ''}${x.ok ? `<span class="as-pill ok">${SV(I.ck)}Correcto</span>` : `<span class="as-pill no">${SV(I.x)}${x.you ? 'Era: ' + (x.truth ? 'Sí' : 'No') : 'Para repasar'}</span>`}</div>${x.truth === false && x.es ? `<small class="as-slt">La traducción correcta: ${esc(x.es)}</small>` : ''}</div>`).join('')}</div>`; }
   // 🧑‍🎤 Swipe
   async function swipe(stage, pv, pool) {
     const items = pick(pool, Math.min(window.__V9 ? 3 : 6, pool.length)).map(it => { const tr = Math.random() < .5; const o = tr ? it : shuffle(pool.filter(x => x.en !== it.en && x.es && x.es !== it.es))[0] || it; return { it, shown: o.es, truth: tr || o === it }; });
@@ -85,7 +88,7 @@
         card = deck.querySelector('.as-top'); /* v711: foto completa y debajo la frase; el mazo crece a la altura real de la tarjeta (nada se monta) */ const fitDeck = () => { if (!card.isConnected || !card.classList.contains('fc9')) return; card.style.removeProperty('height'); card.style.setProperty('height', 'auto', 'important'); const hh = Math.ceil(card.scrollHeight); deck.querySelectorAll('.as-card').forEach(c => c.style.setProperty('height', hh + 'px', 'important')); deck.style.setProperty('height', (hh + 22) + 'px', 'important'); }; fitDeck(); card.querySelectorAll('img').forEach(im => im.addEventListener('load', fitDeck)); setTimeout(fitDeck, 120); setTimeout(fitDeck, 600); card.querySelector('.as-pl').onclick = (e) => { e.stopPropagation(); play(q.it.au); }; setTimeout(() => play(q.it.au), 250); drag(card);
       };
       const answer = async (yes) => {
-        if (busy || !card) return; busy = true; const q = items[i]; const ok = yes === q.truth;
+        if (busy || !card) return; busy = true; const q = items[i]; const ok = yes === q.truth; q.yes = yes; q.ok = ok;
         if (ok) { c++; streak++; best = Math.max(best, streak); sfx('ok'); } else { streak = 0; missed.push(q.it); sfx('bad'); }
         weak(q.it, ok);
         const st = card.querySelector('.as-stamp'); st.className = 'as-stamp ' + (ok ? 'ok' : 'no'); st.textContent = ok ? '¡BIEN!' : (q.truth ? 'SÍ ERA' : 'NO ERA');
@@ -101,7 +104,7 @@
       show();
     });
     body.innerHTML = `<div class="as-sbar">${items.map(() => '<i class="on"></i>').join('')}</div><div class="as-kpi"><div><b>${c}/${items.length}</b><small>correctas</small></div><div><b>x${best}</b><small>mejor racha</small></div><div><b>${c === items.length ? '100%' : Math.round(c / items.length * 100) + '%'}</b><small>acierto</small></div></div>
-      ${missed.length ? `<div class="as-rdes"><span class="as-cl">REPASA ESTAS</span>${missed.map(m => `<div class="as-rr"><div class="as-rw"><i class="no">${SV(I.x)}</i><span><b>${esc(m.en)}</b> = ${esc(m.es)}</span></div><button type="button" class="as-pl sm" data-au="${esc(m.au)}">${SV(I.vol)}</button></div>`).join('')}</div>` : `<div class="as-res"><div class="as-rr"><span>¡Perfecto! Recordaste todo lo de la lección pasada.</span></div></div>`}`;
+      ${missed.length ? `<div class="as-rdes"><span class="as-cl">REPASA ESTAS</span>${missed.map(m => `<div class="as-rr"><div class="as-rw"><i class="no">${SV(I.x)}</i><span><b>${esc(m.en)}</b> = ${esc(m.es)}</span></div><button type="button" class="as-pl sm" data-au="${esc(m.au)}">${SV(I.vol)}</button></div>`).join('')}</div>` : `<div class="as-res"><div class="as-rr"><span>¡Perfecto! Recordaste todo lo de la lección pasada.</span></div></div>`}${snapList(items.map(q => ({ en: q.it.en, shown: q.shown, es: q.it.es, you: q.yes ? 'Sí' : 'No', ok: q.ok, truth: q.truth })))}`;
     body.querySelectorAll('[data-au]').forEach(b => b.onclick = () => play(b.dataset.au)); sfx(c >= items.length / 2 ? 'win' : 'ok');
     await A().waitNext(stage, 'Continuar');
     return A().result(c, items.length, 'listening', missed);
