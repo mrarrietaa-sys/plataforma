@@ -162,7 +162,7 @@
      ===================================================================== */
   function gauge(ext) {
     const ang = -90 + 180 * ext;
-    return `<svg viewBox="0 0 200 110" class="g6c-gauge"><defs><linearGradient id="g6cgr" x1="0" x2="1"><stop offset="0" stop-color="#16A34A"/><stop offset=".5" stop-color="#1D5FD1"/><stop offset="1" stop-color="#E3242B"/></linearGradient></defs>
+    return `<svg viewBox="0 0 200 110" class="g6c-gauge"><defs><linearGradient id="g6cgr" x1="0" x2="1"><stop offset="0" stop-color="#0B2A5B"/><stop offset=".5" stop-color="#1D5FD1"/><stop offset="1" stop-color="#E3242B"/></linearGradient></defs>
       <path d="M20 100 A80 80 0 0 1 180 100" fill="none" stroke="url(#g6cgr)" stroke-width="18" stroke-linecap="round"/>
       <g style="transform:rotate(${ang}deg);transform-origin:100px 100px;transition:transform .5s cubic-bezier(.3,1.6,.5,1)"><line x1="100" y1="100" x2="100" y2="34" stroke="#0B2A5B" stroke-width="5" stroke-linecap="round"/></g>
       <circle cx="100" cy="100" r="9" fill="#0B2A5B" stroke="#fff" stroke-width="3"/></svg>`;
@@ -260,7 +260,7 @@
      ===================================================================== */
   const ROCKET = `<svg viewBox="0 0 80 150" class="g6c-rocket" aria-hidden="true"><path d="M40 4 C58 22 62 52 60 96 L20 96 C18 52 22 22 40 4Z" fill="#fff" stroke="#0B2A5B" stroke-width="4"/>
     <circle cx="40" cy="48" r="10" fill="#1D5FD1" stroke="#0B2A5B" stroke-width="4"/><path d="M20 70 L4 104 L20 98Z M60 70 L76 104 L60 98Z" fill="#E3242B" stroke="#0B2A5B" stroke-width="3"/>
-    <rect x="28" y="96" width="24" height="10" fill="#0B2A5B"/><path class="flame" d="M30 108 Q40 146 50 108Z" fill="#FFB020"/><path class="flame2" d="M34 108 Q40 132 46 108Z" fill="#E3242B"/></svg>`;
+    <rect x="28" y="96" width="24" height="10" fill="#0B2A5B"/><path class="flame" d="M30 108 Q40 146 50 108Z" fill="#E3242B"/><path class="flame2" d="M34 108 Q40 132 46 108Z" fill="#E3242B"/></svg>`;
   async function spaceCountdown(stage, p) {
     const R = sample(G().launch || [], 6); let c = 0; const missed = []; const N = R.length;
     for (let k = 0; k < R.length && live(stage); k++) {

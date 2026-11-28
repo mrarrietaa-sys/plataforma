@@ -108,7 +108,7 @@
       const body = head(stage, { lbl: 'Game', title: '🧪 Laboratorio del apóstrofo', ins: 'Lee la frase en español y elige el <b>tubo de ensayo</b> correcto: ¿<b>\'s</b>, <b>s\'</b>, <b>of</b> o <b>whose</b>? Si aciertas, la fórmula se pone verde 🟢.', count: `${k + 1} / ${R.length}` });
       const lab = h(`<div class="g5a-lab"><div class="g5a-ctxes"><span>${r.e}</span><i>“${esc(r.es)}”</i></div>
         <div class="g5a-beaker"><div class="g5a-liq"></div><b>${blank(r.s, '???')}</b></div></div>`); body.appendChild(lab);
-      const o = shuffle(r.o.slice()); const rack = h(`<div class="g5a-rack">${o.map((x, i) => `<button class="g5a-tube" style="--c:${['#1D5FD1', '#E3242B', '#7C3AED'][i]}"><i></i><span>${esc(x)}</span></button>`).join('')}</div>`); body.appendChild(rack);
+      const o = shuffle(r.o.slice()); const rack = h(`<div class="g5a-rack">${o.map((x, i) => `<button class="g5a-tube" style="--c:${['#1D5FD1', '#E3242B', '#1D4A9A'][i]}"><i></i><span>${esc(x)}</span></button>`).join('')}</div>`); body.appendChild(rack);
       const btns = $$('button', rack);
       const i = await new Promise(res => btns.forEach((b, j) => b.onclick = () => res(j)));
       btns.forEach(b => b.disabled = true); const ok = o[i] === r.o[0];
@@ -194,7 +194,7 @@
       const y = 8 + i * rowH, open = b.b == null, x1 = X(b.a), x2 = X(open ? y1 : b.b);
       const col = open ? '#E3242B' : '#0B2A5B', hl = i === hi;
       s += `<g class="${hl ? 'hl' : ''}"><text x="${Math.min(x1, 200)}" y="${y + 8}" font-size="10.5" font-weight="800" fill="#0B2A5B">${b.e} ${esc(b.en)}</text>
-        <rect x="${x1}" y="${y + 12}" width="${x2 - x1}" height="9" rx="4.5" fill="${col}" opacity="${hi == null || hl ? 1 : .35}" ${hl ? 'stroke="#FACC15" stroke-width="3"' : ''}/>
+        <rect x="${x1}" y="${y + 12}" width="${x2 - x1}" height="9" rx="4.5" fill="${col}" opacity="${hi == null || hl ? 1 : .35}" ${hl ? 'stroke="#E3242B" stroke-width="3"' : ''}/>
         ${open ? `<path d="M${x2} ${y + 10} l7 6.5 l-7 6.5z" fill="${col}"/>` : ''}<text x="${x1}" y="${y + 30}" font-size="8.5" fill="#64748B">${b.a}${open ? ' → now' : '–' + b.b}</text></g>`;
     });
     return s + '</svg>';
@@ -306,10 +306,10 @@
 
   /* ====== t7p1 — PILOTO DE DRON ====== */
   const MAP_SVG = `<svg viewBox="0 0 320 220" class="g5a-map" preserveAspectRatio="none">
-    <rect width="320" height="220" fill="#BBF7D0"/>
-    <path d="M0 96 Q80 88 160 98 T320 94 L320 126 Q240 132 160 124 T0 128Z" fill="#60A5FA"/>
-    <rect x="236" y="88" width="28" height="42" fill="#A16207" rx="3"/><line x1="240" y1="92" x2="240" y2="126" stroke="#FDE68A" stroke-width="2"/><line x1="260" y1="92" x2="260" y2="126" stroke="#FDE68A" stroke-width="2"/>
-    <rect x="28" y="176" width="126" height="32" rx="14" fill="#15803D"/>
+    <rect width="320" height="220" fill="#C2D4F0"/>
+    <path d="M0 96 Q80 88 160 98 T320 94 L320 126 Q240 132 160 124 T0 128Z" fill="#1D4A9A"/>
+    <rect x="236" y="88" width="28" height="42" fill="#E3242B" rx="3"/><line x1="240" y1="92" x2="240" y2="126" stroke="#E3242B" stroke-width="2"/><line x1="260" y1="92" x2="260" y2="126" stroke="#E3242B" stroke-width="2"/>
+    <rect x="28" y="176" width="126" height="32" rx="14" fill="#0B2A5B"/>
     <polygon points="262,52 284,18 306,52" fill="#78716C"/><polygon points="246,52 262,30 278,52" fill="#A8A29E"/><polygon points="280,18 284,12 288,18" fill="#fff"/>
     <text x="72" y="104" font-size="9" font-weight="800" fill="#1E3A8A">RIVER</text>
   </svg>`;

@@ -130,15 +130,15 @@
   /* ====== t3p1 — SIMÓN DICE (cuerpo) ====== */
   const BODY_SVG = `<svg viewBox="0 0 200 330" class="g4-bodysvg">
     <rect x="70" y="118" width="60" height="96" rx="18" fill="#1D5FD1"/>
-    <rect x="44" y="122" width="22" height="78" rx="11" fill="#F2C29B"/><rect x="134" y="122" width="22" height="78" rx="11" fill="#F2C29B"/>
-    <circle cx="55" cy="208" r="13" fill="#F2C29B"/><circle cx="145" cy="208" r="13" fill="#F2C29B"/>
+    <rect x="44" y="122" width="22" height="78" rx="11" fill="#E3242B"/><rect x="134" y="122" width="22" height="78" rx="11" fill="#E3242B"/>
+    <circle cx="55" cy="208" r="13" fill="#E3242B"/><circle cx="145" cy="208" r="13" fill="#E3242B"/>
     <rect x="74" y="212" width="22" height="88" rx="10" fill="#0B2A5B"/><rect x="104" y="212" width="22" height="88" rx="10" fill="#0B2A5B"/>
     <ellipse cx="80" cy="306" rx="20" ry="10" fill="#E3242B"/><ellipse cx="120" cy="306" rx="20" ry="10" fill="#E3242B"/>
-    <rect x="90" y="96" width="20" height="26" fill="#F2C29B"/>
-    <circle cx="100" cy="60" r="40" fill="#F2C29B"/><path d="M60 58 Q62 16 100 18 Q140 16 140 58 Q132 34 100 32 Q70 34 60 58Z" fill="#2B1B12"/>
-    <ellipse cx="58" cy="64" rx="7" ry="11" fill="#E9B48A"/><ellipse cx="142" cy="64" rx="7" ry="11" fill="#E9B48A"/>
-    <circle cx="85" cy="58" r="5" fill="#2B1B12"/><circle cx="115" cy="58" r="5" fill="#2B1B12"/>
-    <path d="M100 62 L95 74 L104 74" fill="none" stroke="#B9835F" stroke-width="3" stroke-linecap="round"/>
+    <rect x="90" y="96" width="20" height="26" fill="#E3242B"/>
+    <circle cx="100" cy="60" r="40" fill="#E3242B"/><path d="M60 58 Q62 16 100 18 Q140 16 140 58 Q132 34 100 32 Q70 34 60 58Z" fill="#0B2A5B"/>
+    <ellipse cx="58" cy="64" rx="7" ry="11" fill="#E3242B"/><ellipse cx="142" cy="64" rx="7" ry="11" fill="#E3242B"/>
+    <circle cx="85" cy="58" r="5" fill="#0B2A5B"/><circle cx="115" cy="58" r="5" fill="#0B2A5B"/>
+    <path d="M100 62 L95 74 L104 74" fill="none" stroke="#E3242B" stroke-width="3" stroke-linecap="round"/>
     <path d="M88 84 Q100 94 112 84" fill="none" stroke="#B5462A" stroke-width="4" stroke-linecap="round"/>
     <g class="g4-hot" fill="transparent">
       <rect data-p="shoulders" x="62" y="112" width="76" height="20"/><rect data-p="arm" x="40" y="130" width="30" height="66"/><rect data-p="arm" x="130" y="130" width="30" height="66"/>
@@ -184,17 +184,17 @@
   }
 
   /* ---------- avatar (cara) ---------- */
-  const HC = { blond: '#E8C15A', dark: '#2B1B12', red: '#B5462A', gray: '#A8A8A8' }, EC = { blue: '#2F6FE0', brown: '#6B3E1E', green: '#1E9E4A' };
+  const HC = { blond: '#E3242B', dark: '#0B2A5B', red: '#B5462A', gray: '#A8A8A8' }, EC = { blue: '#2F6FE0', brown: '#0B2A5B', green: '#0B2A5B' };
   function avatar(o, w = 140) {
-    const hc = HC[o.color] || '#2B1B12'; let back = '', front = '';
+    const hc = HC[o.color] || '#0B2A5B'; let back = '', front = '';
     if (o.len === 'long') back = o.style === 'curly' ? Array.from({ length: 9 }, (_, i) => `<circle cx="${i % 2 ? 36 : 164}" cy="${70 + Math.floor(i / 2) * 18}" r="16" fill="${hc}"/>`).join('') : `<rect x="30" y="50" width="140" height="110" rx="30" fill="${hc}"/>`;
     if (o.len !== 'bald') front = o.style === 'curly' ? Array.from({ length: 9 }, (_, i) => `<circle cx="${52 + i * 12}" cy="${42 - Math.sin(i / 8 * Math.PI) * 14}" r="14" fill="${hc}"/>`).join('') : `<path d="M48 76 Q46 22 100 22 Q154 22 152 76 Q140 46 100 44 Q62 46 48 76Z" fill="${hc}"/>`;
     else front = `<path d="M50 70 Q52 60 58 58 L58 80Z M150 70 Q148 60 142 58 L142 80Z" fill="${hc}"/>`;
-    const eyes = [76, 124].map(x => `<circle cx="${x}" cy="82" r="10" fill="#fff"/><circle cx="${x}" cy="83" r="6" fill="${EC[o.eyes] || '#6B3E1E'}"/><circle cx="${x}" cy="83" r="2.5" fill="#111"/>`).join('');
+    const eyes = [76, 124].map(x => `<circle cx="${x}" cy="82" r="10" fill="#fff"/><circle cx="${x}" cy="83" r="6" fill="${EC[o.eyes] || '#0B2A5B'}"/><circle cx="${x}" cy="83" r="2.5" fill="#111"/>`).join('');
     const gl = o.glasses ? `<g fill="none" stroke="#111" stroke-width="4"><circle cx="76" cy="82" r="16"/><circle cx="124" cy="82" r="16"/><path d="M92 82 L108 82"/></g>` : '';
-    const beard = o.beard ? `<path d="M56 100 Q60 150 100 156 Q140 150 144 100 Q132 126 100 126 Q68 126 56 100Z" fill="${o.color === 'blond' ? '#C9A040' : hc}"/>` : '';
-    const lips = o.sex === 'f' ? '#C2410C' : '#9A5B40';
-    return `<svg viewBox="0 0 200 175" width="${w}" class="g4-av">${back}<circle cx="100" cy="88" r="56" fill="#F2C29B"/>${front}${eyes}${gl}<path d="M100 92 L95 106 L104 106" fill="none" stroke="#B9835F" stroke-width="3" stroke-linecap="round"/>${beard}<path d="M86 120 Q100 130 114 120" fill="none" stroke="${lips}" stroke-width="4" stroke-linecap="round"/></svg>`;
+    const beard = o.beard ? `<path d="M56 100 Q60 150 100 156 Q140 150 144 100 Q132 126 100 126 Q68 126 56 100Z" fill="${o.color === 'blond' ? '#E3242B' : hc}"/>` : '';
+    const lips = o.sex === 'f' ? '#E3242B' : '#E3242B';
+    return `<svg viewBox="0 0 200 175" width="${w}" class="g4-av">${back}<circle cx="100" cy="88" r="56" fill="#E3242B"/>${front}${eyes}${gl}<path d="M100 92 L95 106 L104 106" fill="none" stroke="#E3242B" stroke-width="3" stroke-linecap="round"/>${beard}<path d="M86 120 Q100 130 114 120" fill="none" stroke="${lips}" stroke-width="4" stroke-linecap="round"/></svg>`;
   }
 
   /* ====== t4p1 — CREA EL PERSONAJE ====== */

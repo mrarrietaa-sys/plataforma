@@ -9,9 +9,9 @@
     localStorage.setItem('mra_intro_v1', String(Date.now()));
   } catch (e) { return; }
   const lite = (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) || (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2) || (navigator.deviceMemory && navigator.deviceMemory <= 2);
-  const css = `#mkI{position:fixed;inset:0;z-index:99998;background:linear-gradient(180deg,#fff 0%,#F2F7FF 55%,#DDEBFF 100%);overflow:hidden;transition:opacity .6s ease;cursor:pointer}
+  const css = `#mkI{position:fixed;inset:0;z-index:99998;background:linear-gradient(180deg,#fff 0%,#F2F7FF 55%,#E4ECF8 100%);overflow:hidden;transition:opacity .6s ease;cursor:pointer}
 #mkI.go{opacity:0;pointer-events:none}
-#mkI .c{position:absolute;background:#fff;border-radius:999px;box-shadow:0 10px 30px rgba(11,42,91,.10),inset 0 -6px 12px rgba(160,190,230,.25);animation:mkCm 9s linear infinite}
+#mkI .c{position:absolute;background:#fff;border-radius:999px;box-shadow:0 10px 30px rgba(11,42,91,.10),inset 0 -6px 12px rgba(29,74,154,.25);animation:mkCm 9s linear infinite}
 #mkI .c::before,#mkI .c::after{content:'';position:absolute;background:inherit;border-radius:50%;box-shadow:inherit}#mkI .c::before{width:55%;height:150%;left:14%;bottom:30%}#mkI .c::after{width:40%;height:120%;right:12%;bottom:35%}
 @keyframes mkCm{to{transform:translateX(-160px)}}
 #mkI .far{position:absolute;inset:0;filter:blur(3px);opacity:.7}#mkI .far .c{animation-duration:16s}
@@ -26,7 +26,7 @@
 #mkI.go .wd{transition:opacity .3s;opacity:0}
 #mkI.lite .ray,#mkI.lite .far{display:none}#mkI.lite .c{animation:none}
 #mkR{position:fixed;z-index:99999;left:0;top:0;transform:translate(-200vw,0);height:min(30vh,250px);will-change:transform;pointer-events:none;filter:drop-shadow(0 18px 22px rgba(11,42,91,.22))}
-.mkP{position:fixed;z-index:99998;border-radius:50%;pointer-events:none;background:radial-gradient(circle,#fff 30%,rgba(210,225,250,.6) 60%,transparent 70%);animation:mkPf 1s ease-out forwards}
+.mkP{position:fixed;z-index:99998;border-radius:50%;pointer-events:none;background:radial-gradient(circle,#fff 30%,rgba(215,227,245,.6) 60%,transparent 70%);animation:mkPf 1s ease-out forwards}
 @keyframes mkPf{from{transform:scale(.4);opacity:.95}to{transform:scale(1.8) translateY(14px);opacity:0}}
 .mkS{position:fixed;z-index:100000;width:7px;height:7px;border-radius:50%;background:#FFC83D;box-shadow:0 0 8px #FFC83D;pointer-events:none;animation:mkSp .8s ease-out forwards}
 @keyframes mkSp{from{transform:translate(0,0) scale(1);opacity:1}to{transform:translate(var(--x),var(--y)) scale(.3);opacity:0}}

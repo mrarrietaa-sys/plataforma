@@ -74,9 +74,9 @@
   /* ====== t1p2 — MESA DE NEGOCIACIÓN (as long as / provided that / in case / unless) ====== */
   function gauge(v) {
     const a = Math.PI * (1 - v / 100), x = 100 + 72 * Math.cos(a), y = 100 - 72 * Math.sin(a);
-    return `<svg viewBox="0 0 200 112" class="g6a-ng-gauge"><path d="M18 100 A82 82 0 0 1 182 100" fill="none" stroke="#e3e8f0" stroke-width="18" stroke-linecap="round"/>
+    return `<svg viewBox="0 0 200 112" class="g6a-ng-gauge"><path d="M18 100 A82 82 0 0 1 182 100" fill="none" stroke="#E3E8F0" stroke-width="18" stroke-linecap="round"/>
       <path d="M18 100 A82 82 0 0 1 182 100" fill="none" stroke="url(#g6ag)" stroke-width="18" stroke-linecap="round" pathLength="100" stroke-dasharray="${v} 100"/>
-      <defs><linearGradient id="g6ag"><stop offset="0" stop-color="#E3242B"/><stop offset=".55" stop-color="#FFD43B"/><stop offset="1" stop-color="#2E9E5B"/></linearGradient></defs>
+      <defs><linearGradient id="g6ag"><stop offset="0" stop-color="#E3242B"/><stop offset=".55" stop-color="#E3242B"/><stop offset="1" stop-color="#0B2A5B"/></linearGradient></defs>
       <line x1="100" y1="100" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="#0B2A5B" stroke-width="5" stroke-linecap="round"/><circle cx="100" cy="100" r="8" fill="#0B2A5B"/>
 </svg><b class="g6a-ng-pct">${v}%</b>`;
   }
@@ -183,7 +183,7 @@
   /* ====== t3p2 — POST-MORTEM DE LA STARTUP (should have / mixed) ====== */
   async function tc2StartupPostmortem(stage, p) {
     const N = sample(G().pm || [], 6); let c = 0; const done = new Array(N.length).fill(null); const missed = [];
-    const cols = ['#FFD43B', '#FF8FA3', '#8FD3FF', '#A7F3A0', '#FFC078', '#D0BFFF'];
+    const cols = ['#E3242B', '#FF8FA3', '#A5C0E9', '#A9C3EA', '#E3242B', '#CCDBF2'];
     const body = head(stage, { lbl: 'Game', title: '🧠 Post-mortem de la startup', ins: '<b>FoodDrone Inc.</b> (Austin, TX) cerró. Toca cada nota adhesiva para ver un error y escribe la <b>lección</b> con <i>should have</i> o un <b>condicional mixto</b>.' });
     const hud = h(`<div class="g6a-pm-hud">📋 Notas analizadas: <b>0</b> / ${N.length}</div>`); body.appendChild(hud);
     const board = h(`<div class="g6a-pm-board"><div class="g6a-pm-title">🚁 FoodDrone · What went wrong?</div>${N.map((n, i) => `<button class="g6a-pm-note" data-i="${i}" style="--c:${cols[i % 6]};--r:${(i % 3 - 1) * 2.5}deg"><span>${n.e}</span><small>#${i + 1}</small></button>`).join('')}</div>`); body.appendChild(board);
@@ -356,7 +356,7 @@
   async function ppcMarathonApp(stage, p) {
     const R = sample(G().mar || [], 7); let c = 0, prog = 0; const missed = [];
     const body = head(stage, { lbl: 'Game', title: '🏃 RunTrack: la maratón', ins: 'Corres la maratón de Chicago. En cada punto de control elige el <b>tiempo verbal</b> correcto para avanzar. ¡Un error = calambre! 🐢' });
-    const app = h(`<div class="g6a-mr"><div class="g6a-mr-top"><b>RunTrack</b><span>🔴 LIVE · Chicago</span></div><div class="g6a-mr-stats"><div><b id="g6a-mi">0.0</b><small>miles</small></div><div><b id="g6a-tm">0:00</b><small>time</small></div><div><b id="g6a-hr">92</b><small>❤️ bpm</small></div></div><svg viewBox="0 0 320 190" class="g6a-mr-map"><path d="${ROUTE}" fill="none" stroke="#24406e" stroke-width="10" stroke-linecap="round"/><path class="pr" d="${ROUTE}" fill="none" stroke="#FFD43B" stroke-width="6" stroke-linecap="round" pathLength="100" stroke-dasharray="0 100"/><text x="300" y="44" text-anchor="middle" font-size="18">🏁</text><text class="rn" x="20" y="150" text-anchor="middle" font-size="22">🏃</text></svg></div>`); body.appendChild(app);
+    const app = h(`<div class="g6a-mr"><div class="g6a-mr-top"><b>RunTrack</b><span>🔴 LIVE · Chicago</span></div><div class="g6a-mr-stats"><div><b id="g6a-mi">0.0</b><small>miles</small></div><div><b id="g6a-tm">0:00</b><small>time</small></div><div><b id="g6a-hr">92</b><small>❤️ bpm</small></div></div><svg viewBox="0 0 320 190" class="g6a-mr-map"><path d="${ROUTE}" fill="none" stroke="#24406e" stroke-width="10" stroke-linecap="round"/><path class="pr" d="${ROUTE}" fill="none" stroke="#E3242B" stroke-width="6" stroke-linecap="round" pathLength="100" stroke-dasharray="0 100"/><text x="300" y="44" text-anchor="middle" font-size="18">🏁</text><text class="rn" x="20" y="150" text-anchor="middle" font-size="22">🏃</text></svg></div>`); body.appendChild(app);
     const panel = h(`<div class="g6a-mr-q"></div>`); body.appendChild(panel);
     const path = $('path', app), pr = $('.pr', app), rn = $('.rn', app); let L = 0; try { L = path.getTotalLength(); } catch (e) { L = 0; }
     const move = () => { pr.setAttribute('stroke-dasharray', `${prog} 100`); if (L) { const pt = path.getPointAtLength(L * prog / 100); rn.setAttribute('x', pt.x.toFixed(1)); rn.setAttribute('y', (pt.y + 6).toFixed(1)); }

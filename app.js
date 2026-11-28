@@ -24,7 +24,7 @@
     const pf = MRAP.get() || {}, ini = ((pf.first || 'E')[0] + ((pf.last || '')[0] || '')).toUpperCase();
     tb.classList.add('tb-age');
     tb.innerHTML = `<div class="brand" id="go-home"><span class="logo-pill"><img class="logo" src="mra-brand.png" alt="mrarrieta.com"></span></div><div class="sp"></div>
-      <div class="tba-r"><a class="tba-b" href="index.html" aria-label="Volver a mi perfil">${SVB}</a><button class="tba-pts" id="pts-b" title="${esc(M.PTS_TIP)}">${MRI('star')}<b>${S.xp}</b></button><button class="iconbtn chat-ic cb2 tba-chat" id="chat-tb" title="Chat con mi profe" aria-label="Chat con mi profe"><svg class="cbi" viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path fill="#fff" d="M12 3.2c-5 0-9 3.5-9 7.9 0 2.3 1.1 4.4 2.9 5.8l-.7 3.4c-.1.5.4.8.8.6l3.6-1.9c.8.2 1.6.3 2.4.3 5 0 9-3.5 9-8.2S17 3.2 12 3.2z"/><circle cx="8" cy="11.3" r="1.35" fill="#16a34a"/><circle cx="12" cy="11.3" r="1.35" fill="#16a34a"/><circle cx="16" cy="11.3" r="1.35" fill="#16a34a"/></svg><i class="fbadge hidden" id="chat-n"></i></button><a class="tba-av" href="index.html" aria-label="Mi perfil">${esc(ini)}</a><button class="tba-b" id="menu-b" aria-label="Menú">${SVM}</button></div>`;
+      <div class="tba-r"><a class="tba-b" href="index.html" aria-label="Volver a mi perfil">${SVB}</a><button class="tba-pts" id="pts-b" title="${esc(M.PTS_TIP)}">${MRI('star')}<b>${S.xp}</b></button><button class="iconbtn chat-ic cb2 tba-chat" id="chat-tb" title="Chat con mi profe" aria-label="Chat con mi profe"><svg class="cbi" viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path fill="#fff" d="M12 3.2c-5 0-9 3.5-9 7.9 0 2.3 1.1 4.4 2.9 5.8l-.7 3.4c-.1.5.4.8.8.6l3.6-1.9c.8.2 1.6.3 2.4.3 5 0 9-3.5 9-8.2S17 3.2 12 3.2z"/><circle cx="8" cy="11.3" r="1.35" fill="#0B2A5B"/><circle cx="12" cy="11.3" r="1.35" fill="#0B2A5B"/><circle cx="16" cy="11.3" r="1.35" fill="#0B2A5B"/></svg><i class="fbadge hidden" id="chat-n"></i></button><a class="tba-av" href="index.html" aria-label="Mi perfil">${esc(ini)}</a><button class="tba-b" id="menu-b" aria-label="Menú">${SVM}</button></div>`;
     $('#go-home', tb).onclick = () => { stop(); route('home'); }; $('#menu-b', tb).onclick = menu; $('#chat-tb', tb).onclick = openChat; $('#pts-b', tb).onclick = () => M.toast(M.PTS_TIP); chatFab(); hwBadge();
   }
   /* v818 · estudiantes (las 3 edades): el mismo encabezado del perfil — campana · foto · sonido · salir (sin puntos, racha ni chat arriba) */
@@ -52,7 +52,7 @@
     tb.innerHTML = `<div class="brand" id="go-home"><span class="logo-pill"><img class="logo" src="mra-brand.png" alt="mrarrieta.com"></span></div><div class="sp"></div><span class="tb-tag">${M.MOD.es.toUpperCase()} · ${M.MOD.id === 'B2' ? 'B1' : M.MOD.id}</span>
       <button class="pill y ce-pts" id="pts-b" title="${esc(M.PTS_TIP)}" aria-label="${S.xp} puntos. ${esc(M.PTS_TIP)}">⚡ ${S.xp} <span class="ce-ptw">puntos</span></button>
       <span class="pill hide-s" title="Días seguidos estudiando">🔥 ${S.streak.n || 0}</span>
-      <button class="iconbtn chat-ic cb2" id="chat-tb" title="Chat con mi profe" aria-label="Chat con mi profe"><svg class="cbi" viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path fill="#fff" d="M12 3.2c-5 0-9 3.5-9 7.9 0 2.3 1.1 4.4 2.9 5.8l-.7 3.4c-.1.5.4.8.8.6l3.6-1.9c.8.2 1.6.3 2.4.3 5 0 9-3.5 9-8.2S17 3.2 12 3.2z"/><circle cx="8" cy="11.3" r="1.35" fill="#16a34a"/><circle cx="12" cy="11.3" r="1.35" fill="#16a34a"/><circle cx="16" cy="11.3" r="1.35" fill="#16a34a"/></svg><i class="fbadge hidden" id="chat-n"></i></button>${S.dictHidden ? '<button class="iconbtn dict-ic" id="dict-b" title="Diccionario" aria-label="Diccionario"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.8-4.8"/></svg></button>' : ''}${window.MRAP && MRAP.get() ? (MRAP.pic() ? `<a class="tb-avbtn" id="prof-b" href="index.html" title="Mi perfil">${MRAP.avHTML('tb-av')}</a>` : '<a class="iconbtn" id="prof-b" href="index.html" title="Mi perfil">👤</a>') : ''}<button class="iconbtn" id="menu-b" title="Menú">☰</button>`;
+      <button class="iconbtn chat-ic cb2" id="chat-tb" title="Chat con mi profe" aria-label="Chat con mi profe"><svg class="cbi" viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path fill="#fff" d="M12 3.2c-5 0-9 3.5-9 7.9 0 2.3 1.1 4.4 2.9 5.8l-.7 3.4c-.1.5.4.8.8.6l3.6-1.9c.8.2 1.6.3 2.4.3 5 0 9-3.5 9-8.2S17 3.2 12 3.2z"/><circle cx="8" cy="11.3" r="1.35" fill="#0B2A5B"/><circle cx="12" cy="11.3" r="1.35" fill="#0B2A5B"/><circle cx="16" cy="11.3" r="1.35" fill="#0B2A5B"/></svg><i class="fbadge hidden" id="chat-n"></i></button>${S.dictHidden ? '<button class="iconbtn dict-ic" id="dict-b" title="Diccionario" aria-label="Diccionario"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.8-4.8"/></svg></button>' : ''}${window.MRAP && MRAP.get() ? (MRAP.pic() ? `<a class="tb-avbtn" id="prof-b" href="index.html" title="Mi perfil">${MRAP.avHTML('tb-av')}</a>` : '<a class="iconbtn" id="prof-b" href="index.html" title="Mi perfil">👤</a>') : ''}<button class="iconbtn" id="menu-b" title="Menú">☰</button>`;
     $('#go-home', tb).onclick = () => { stop(); route('home'); };
     $('#menu-b', tb).onclick = menu; hwBadge();
     const db = $('#dict-b', tb); if (db) db.onclick = () => window.M1DICT && M1DICT.open();
@@ -208,7 +208,7 @@
     const doneN = M.allParts().filter(p => S.parts[p.id] && S.parts[p.id].done).length, nu = nextUp();
     const curId = (M.allParts().find(x => M.isUnlocked(x.topic) && S.parts[x.id] && !S.parts[x.id].done && S.parts[x.id].step) || nu || {}).id;
     const SK = [['listening', 'headphones', 'LISTEN'], ['reading', 'book', 'READ'], ['speaking', 'mic', 'SPEAK'], ['writing', 'pen', 'WRITE']];
-    const G = kids ? ['#f59e0b,#ef4444', '#3b82f6,#6366f1', '#10b981,#0ea5e9', '#ec4899,#f97316', '#8b5cf6,#3b82f6', '#14b8a6,#22c55e', '#f43f5e,#f59e0b'] : ['#0B2A5B,#E3242B', '#1e3a8a,#0ea5e9', '#312e81,#7c3aed', '#0f766e,#0B2A5B', '#9f1239,#0B2A5B', '#1d4ed8,#0B2A5B', '#334155,#E3242B'];
+    const G = kids ? ['#E3242B,#ef4444', '#3b82f6,#1D4A9A', '#0B2A5B,#1D4A9A', '#1D4A9A,#E3242B', '#1D4A9A,#3b82f6', '#0B2A5B,#1D4A9A', '#f43f5e,#E3242B'] : ['#0B2A5B,#E3242B', '#1e3a8a,#1D4A9A', '#0B2A5B,#1D4A9A', '#0B2A5B,#0B2A5B', '#9f1239,#0B2A5B', '#1d4ed8,#0B2A5B', '#334155,#E3242B'];
     const cur = nu ? nu._t : D.topics[0];
     const tp = D.topics.map((t, i) => { const un = rev || M.isUnlocked(t.n); const dn = t.parts.filter(p => rev || (S.parts[p.id] && S.parts[p.id].done)).length;
       const th = `<div class="agr-th"><div class="agr-tn" style="--g:linear-gradient(135deg,${G[i % G.length]})${t.cover ? `;--img:url('${M.imgURL(t.cover, 160, 160)}')` : ''}"><span>${t.n}</span></div><div class="agr-tt"><b>${esc(t.title)}</b><small>${esc(t.es)}</small></div>${!un ? `<span class="agr-ok lk">${SVL}</span>` : dn ? `<span class="agr-ok">${MRI('check')}${dn}/${t.parts.length}</span>` : ''}</div>`;
@@ -245,7 +245,7 @@
     const I = n => window.MRI ? MRI(n) : '';
     const curId = (M.allParts().find(x => M.isUnlocked(x.topic) && S.parts[x.id] && !S.parts[x.id].done && S.parts[x.id].step) || nu || {}).id;
     const curP = curId ? M.partById(curId) : null;
-    const G = ['#7fa6d6,#2f5d99', '#f3c9a8,#c9714f', '#c9e3c4,#4f9152', '#f6dc9b,#cf9226', '#d9cdef,#7a5fb8', '#f2c4cf,#bb5571'];
+    const G = ['#1D4A9A,#2f5d99', '#F3A8AB,#E3242B', '#C4D0E3,#4f9152', '#F1A0A2,#E3242B', '#CDDBEF,#1D4A9A', '#f2c4cf,#bb5571'];
     try { window.MRAGEIMG_apply && MRAGEIMG_apply(); } catch (e) { }
     const bg = (t, w, hh) => `background-image:${t.cover ? `url('${M.imgURL(t.cover, w, hh)}'),` : ''}linear-gradient(135deg,${G[(t.n - 1) % G.length]})`;
     const chip = window.MRAP && MRAP.get() ? (MRAP.isTrial() ? `<span class="t2-chip tr">${MRAP.plan && MRAP.plan().expired ? 'Plan vencido' : 'Acceso gratuito'}</span>` : MRAP.role(C.MODULE_ID || 'A1') === 'review' && !MRAP.isStaff() ? '<span class="t2-chip">Modo repaso</span>' : MRAP.isStaff() ? '<span class="t2-chip">Profe</span>' : '') : '';
@@ -391,7 +391,7 @@
       <input class="inp" id="cd" placeholder="Ej: ABC-123" autocapitalize="characters" style="margin:8px 0 12px">
       <button class="btn k block lg" id="ok">Desbloquear</button>
       <p class="center" style="margin:16px 0 6px;font-weight:700">¿Aún no tienes código?</p>
-      <a class="btn block" style="text-decoration:none;background:#25D366;color:#fff" target="_blank" rel="noopener" href="${wa}">💬 Comprar acceso por WhatsApp</a>`, { x: true });
+      <a class="btn block" style="text-decoration:none;background:#1D4A9A;color:#fff" target="_blank" rel="noopener" href="${wa}">💬 Comprar acceso por WhatsApp</a>`, { x: true });
     const i = $('#cd', m); i.focus();
     const go = () => { const r = M.redeem(i.value); if (!r) { i.classList.add('wrong'); sfx('bad'); setTimeout(() => i.classList.remove('wrong'), 500); M.toast('Código no válido 😕'); return; }
       m.remove(); sfx('win'); M.confetti(); M.toast(r.review ? '👨‍🏫 Modo revisión activado en este dispositivo' : r.topics === 'all' ? '¡Módulo activado! Los temas se abren a medida que avanzas 🎉' : '¡Temas desbloqueados! 🎉'); route('home'); };
@@ -431,7 +431,7 @@
     if (window.MRPLANS) return MRPLANS.modal(M);
     const m = M.modal(`<div class="center">${M.mascot('mascot', 'present')}</div><h3 class="center">🟢 Fin de tu acceso gratuito</h3>
       <p class="center" style="font-size:17px">Tu acceso gratuito incluye <b>3 temas</b> en total${window.MRAP && MRAP.trialLeft && MRAP.trialLeft() === 0 ? ' y ya los usaste' : ''}. ¿Te gustó la experiencia? <b>Inscríbete</b> y sigue aprendiendo con todos los temas, el examen final y tu certificado 🎓</p>
-      <a class="btn block" style="text-decoration:none;background:#25D366;color:#fff" target="_blank" rel="noopener" href="https://wa.me/${C.WHATSAPP}?text=${encodeURIComponent((window.MRNE || String)(`¡Hola! Soy ${S.name}. Empecé gratis en la plataforma y quiero inscribirme 🚀`))}">💬 Quiero inscribirme</a>
+      <a class="btn block" style="text-decoration:none;background:#1D4A9A;color:#fff" target="_blank" rel="noopener" href="https://wa.me/${C.WHATSAPP}?text=${encodeURIComponent((window.MRNE || String)(`¡Hola! Soy ${S.name}. Empecé gratis en la plataforma y quiero inscribirme 🚀`))}">💬 Quiero inscribirme</a>
       <button class="btn w block" style="margin-top:8px" id="cl">Seguir explorando</button>`, { x: true });
     $('#cl', m).onclick = () => m.remove();
   }
@@ -738,7 +738,7 @@
     }
     // kids: viñetas con audio propio (se reproduce el tramo de la lectura que corresponde)
     const n = Math.min(4, spans.length), per = Math.ceil(spans.length / n), lens = sents.map(s => s.length), tot = lens.reduce((x, y) => x + y, 0);
-    const COL = ['#f59e0b', '#38bdf8', '#fb7185', '#4ade80'];
+    const COL = ['#E3242B', '#1D4A9A', '#fb7185', '#1D4A9A'];
     const grid = h(`<div class="rd-comic"></div>`); let acc = 0;
     for (let k = 0; k < n; k++) {
       const grp = spans.slice(k * per, (k + 1) * per); if (!grp.length) break;
@@ -1705,13 +1705,13 @@
   function wellDone(AG, stars, pts) {
     const I = n => window.MRI ? MRI(n) : '', nm = esc((S.name || '').split(' ')[0]);
     if (window.MR_WD_ONE !== false) { /* v759: una sola pantalla al final: solo la celebración (confeti + voz), sin cuadro aparte */
-      M.confetti(3800, { flat: true, z: 10001, cols: AG === 'adult' ? ['#E3242B', '#0B2A5B', '#cbd5e1', '#1B4A9B'] : AG === 'kids' ? ['#E3242B', '#0B2A5B', '#f5b301', '#22c55e', '#3b82f6'] : ['#E3242B', '#ffffff', '#f5b301', '#60a5fa'] });
+      M.confetti(3800, { flat: true, z: 10001, cols: AG === 'adult' ? ['#E3242B', '#0B2A5B', '#cbd5e1', '#1B4A9B'] : AG === 'kids' ? ['#E3242B', '#0B2A5B', '#E3242B', '#1D4A9A', '#3b82f6'] : ['#E3242B', '#ffffff', '#E3242B', '#1D4A9A'] });
       try { const id = 'b93b9f5f0f'; if (AG === 'adult') play(id); else M.fbf().then(() => play(window.AUD && window.AUD['fb_' + id] ? 'fb_' + id : id)); } catch (e) { }
       return; }
     const o = h(`<div class="wd-ov ${AG}"><div class="wd-card"><b class="wd-l">${AG === 'kids' ? 'LECCIÓN COMPLETADA' : AG === 'adult' ? 'LECCIÓN COMPLETADA' : 'LESSON COMPLETE'}</b><h2>Well done!</h2><div class="wd-s">${AG === 'kids' ? '¡Lo lograste' + (nm ? ', ' + nm : '') + '!' : AG === 'adult' ? 'Excelente trabajo' + (nm ? ', ' + nm : '') + '.' : 'Great job' + (nm ? ', ' + nm : '')}</div>
       <img class="wd-m" src="mra-${AG === 'kids' ? 'celebrate' : AG === 'adult' ? 'present' : 'thumbs'}.webp" alt="Mr. Arrieta"><div class="wd-p"><span>${I('star')}${stars} estrella${stars === 1 ? '' : 's'}</span><span>+${pts} puntos</span></div><button type="button" class="wd-b">Ver mis resultados</button></div></div>`);
     document.body.appendChild(o); requestAnimationFrame(() => o.classList.add('on'));
-    M.confetti(3800, { flat: true, z: 10001, cols: AG === 'adult' ? ['#E3242B', '#0B2A5B', '#cbd5e1', '#1B4A9B'] : AG === 'kids' ? ['#E3242B', '#0B2A5B', '#f5b301', '#22c55e', '#3b82f6'] : ['#E3242B', '#ffffff', '#f5b301', '#60a5fa'] });
+    M.confetti(3800, { flat: true, z: 10001, cols: AG === 'adult' ? ['#E3242B', '#0B2A5B', '#cbd5e1', '#1B4A9B'] : AG === 'kids' ? ['#E3242B', '#0B2A5B', '#E3242B', '#1D4A9A', '#3b82f6'] : ['#E3242B', '#ffffff', '#E3242B', '#1D4A9A'] });
     try { const id = 'b93b9f5f0f'; if (AG === 'adult') play(id); else M.fbf().then(() => play(window.AUD && window.AUD['fb_' + id] ? 'fb_' + id : id)); } catch (e) { }
     const close = () => { o.classList.remove('on'); setTimeout(() => o.remove(), 250); }; $('.wd-b', o).onclick = close; o.onclick = (e) => { if (e.target === o) close(); };
   }

@@ -141,7 +141,7 @@
   function start() { walk(document.body); new MutationObserver(ms => { for (const m of ms) { if (m.type === 'characterData') fix(m.target); else m.addedNodes.forEach(walk); } }).observe(document.body, { childList: true, subtree: true, characterData: true });
     if (RT.test(document.title)) { document.title = document.title.replace(RX, ''); } }
   if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
-  const st = document.createElement('style'); st.textContent = '.mri.emo{width:1.1em;height:1.1em;vertical-align:-.17em;flex:none;display:inline-block}.mri.emo-g{color:#16A34A}.mri.emo-r{color:#E3242B}.mri.emo-a{color:#D97706}.mri.emo-y{color:#F5B301;fill:#F5B301}';
+  const st = document.createElement('style'); st.textContent = '.mri.emo{width:1.1em;height:1.1em;vertical-align:-.17em;flex:none;display:inline-block}.mri.emo-g{color:#0B2A5B}.mri.emo-r{color:#E3242B}.mri.emo-a{color:#E3242B}.mri.emo-y{color:#E3242B;fill:#E3242B}';
   (document.head || document.documentElement).appendChild(st);
   window.MREMO = { walk };
 })();

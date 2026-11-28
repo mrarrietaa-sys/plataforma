@@ -79,7 +79,7 @@
     app.querySelectorAll('[data-tg]').forEach(b => b.onclick = () => detail(r, +b.dataset.tg));
     app.querySelectorAll('[data-book]').forEach(b => b.onclick = () => { if (window.MRFAMBOOK) MRFAMBOOK.open(Object.assign({ fcode: LS.get('mra_fam') }, r), +b.dataset.book); }); // 👨‍👩‍👧 v792: el papá le reserva la clase a su hijo
     app.querySelectorAll('[data-in]').forEach(b => b.onclick = () => { try { sessionStorage.setItem('mra_autocode', b.dataset.in); sessionStorage.setItem('mra_from_fam', '1'); sessionStorage.setItem('mra_obs', '1'); } catch (e) { } location.href = 'index.html'; });
-    const add = $('#add'); if (add) add.onclick = () => addKid(r); // v808: sin salir del portal
+    const add = $('#1D4A9A'); if (add) add.onclick = () => addKid(r); // v808: sin salir del portal
     $('#sw2').onclick = async () => { const b = $('#sw2'), on = !b.classList.contains('on'); b.classList.toggle('on', on); b.setAttribute('aria-checked', on); const x = await MRAC.call('famReports', { fcode: f.fcode, on }).catch(() => null); if (!x || !x.ok) b.classList.toggle('on', !on); };
     $('#payb').onclick = () => pay(r); app.querySelectorAll('[data-grpay]').forEach(b => b.onclick = (e) => { e.stopPropagation(); pay(r); }); // ⏳ v815: días de gracia
     if (/[?&]compra=/.test(location.search)) { try { history.replaceState(null, '', location.pathname); } catch (e) { } toastF('Recibimos tu pago. Los planes se activan en unos minutos.'); }
@@ -230,7 +230,7 @@
   function confetti(ms) {
     const cv = document.createElement('canvas'); cv.className = 'fm-conf'; document.body.appendChild(cv); const x = cv.getContext('2d'), dpr = devicePixelRatio || 1;
     const W = innerWidth, H = innerHeight; cv.width = W * dpr; cv.height = H * dpr; x.scale(dpr, dpr);
-    const C = ['#E3242B', '#0B2A5B', '#FFC21A', '#1B4A9B', '#ffffff', '#ff8a8f'];
+    const C = ['#E3242B', '#0B2A5B', '#E3242B', '#1B4A9B', '#ffffff', '#ff8a8f'];
     const P = Array.from({ length: innerWidth < 600 ? 90 : 160 }, () => ({ x: Math.random() * W, y: -20 - Math.random() * H * .5, w: 6 + Math.random() * 7, h: 9 + Math.random() * 9, vy: 2 + Math.random() * 3, vx: (Math.random() - .5) * 2, r: Math.random() * 6.3, vr: (Math.random() - .5) * .25, c: C[Math.floor(Math.random() * C.length)] }));
     const t0 = performance.now();
     const loop = (t) => { const e = t - t0; x.clearRect(0, 0, W, H); const fade = e > ms - 600 ? Math.max(0, (ms - e) / 600) : 1;

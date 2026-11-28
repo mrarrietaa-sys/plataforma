@@ -4,7 +4,7 @@
    si la grabación viene de un botón pequeño sin tarjeta, muestra una tira compacta de ondas junto al botón. */
 (function () {
   const ag = () => { try { return (window.M1 && M1.ageGroup && M1.ageGroup()) || 'adult'; } catch (e) { return 'adult'; } };
-  const KC = ['#f59e0b', '#fb7185', '#38bdf8', '#4ade80', '#a78bfa'];
+  const KC = ['#E3242B', '#fb7185', '#1D4A9A', '#1D4A9A', '#1D4A9A'];
   const IDLE = [8, 14, 20, 12, 18, 10, 16, 22, 12, 8, 15, 19, 11, 7, 13, 18, 9, 15, 21, 12, 8, 14, 19, 10, 16, 12, 8, 15, 20, 11];
   const SVG_MIC = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M19 10v1a7 7 0 0 1-14 0v-1M12 18v4"/></svg>';
   const SVG_VOL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>';

@@ -205,7 +205,7 @@
 
   /* ====== t4p2 — MEZCLA DE COLORES ====== */
   async function colorMix(stage, p) {
-    const CSS = { red: '#E3242B', blue: '#1D5FD1', yellow: '#FACC15', green: '#16A34A', orange: '#F97316', purple: '#7C3AED', pink: '#F472B6', brown: '#8B5A2B', black: '#111', white: '#fff', gray: '#9CA3AF' };
+    const CSS = { red: '#E3242B', blue: '#1D5FD1', yellow: '#E3242B', green: '#0B2A5B', orange: '#E3242B', purple: '#1D4A9A', pink: '#1D4A9A', brown: '#E3242B', black: '#111', white: '#fff', gray: '#9CA3AF' };
     const MIX = [['red', 'yellow', 'orange'], ['blue', 'yellow', 'green'], ['red', 'blue', 'purple'], ['red', 'white', 'pink'], ['black', 'white', 'gray'], ['orange', 'black', 'brown']].filter(m => m.every(x => V(p, x)));
     const R = shuffle(MIX).slice(0, 5); let c = 0; const missed = [];
     const dot = (n) => `<i class="g3-dot" style="background:${CSS[n]}"></i>`;

@@ -113,7 +113,7 @@
   /* ====== t9p2 — CHOQUE CULTURAL ====== */
   function gaugeSVG(lv) {
     const ang = [-62, 0, 62][lv];
-    return `<svg viewBox="0 0 200 118" class="g5b-gsvg"><path d="M20 105 A80 80 0 0 1 60 36" stroke="#E3242B" stroke-width="18" fill="none"/><path d="M64 33 A80 80 0 0 1 136 33" stroke="#F5B700" stroke-width="18" fill="none"/><path d="M140 36 A80 80 0 0 1 180 105" stroke="#16A34A" stroke-width="18" fill="none"/>
+    return `<svg viewBox="0 0 200 118" class="g5b-gsvg"><path d="M20 105 A80 80 0 0 1 60 36" stroke="#E3242B" stroke-width="18" fill="none"/><path d="M64 33 A80 80 0 0 1 136 33" stroke="#E3242B" stroke-width="18" fill="none"/><path d="M140 36 A80 80 0 0 1 180 105" stroke="#0B2A5B" stroke-width="18" fill="none"/>
       <g class="ndl" style="transform:rotate(${ang}deg)"><line x1="100" y1="105" x2="100" y2="38" stroke="#0B2A5B" stroke-width="6" stroke-linecap="round"/></g><circle cx="100" cy="105" r="10" fill="#0B2A5B"/>
       <text x="16" y="116" font-size="16">😰</text><text x="91" y="18" font-size="16">😐</text><text x="168" y="116" font-size="16">😎</text></svg>`;
   }
@@ -232,7 +232,7 @@
   function glassSVG(pct) {
     const y = 150 - pct * 1.25;
     return `<svg viewBox="0 0 100 160" class="g5b-glass"><defs><clipPath id="g5bcl"><path d="M14 12 L86 12 L76 150 L24 150 Z"/></clipPath></defs>
-      <rect x="0" y="${y.toFixed(1)}" width="100" height="160" fill="#7CC4FA" clip-path="url(#g5bcl)" class="wtr"/><path d="M14 12 L86 12 L76 150 L24 150 Z" fill="none" stroke="#0B2A5B" stroke-width="5" stroke-linejoin="round"/></svg>`;
+      <rect x="0" y="${y.toFixed(1)}" width="100" height="160" fill="#1D4A9A" clip-path="url(#g5bcl)" class="wtr"/><path d="M14 12 L86 12 L76 150 L24 150 Z" fill="none" stroke="#0B2A5B" stroke-width="5" stroke-linejoin="round"/></svg>`;
   }
   async function halfFull(stage, p) {
     const R = shuffle(G().half || []).slice(0, 7); let c = 0; const missed = []; const W = ['a few', 'few', 'a little', 'little'];

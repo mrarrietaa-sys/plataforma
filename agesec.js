@@ -276,7 +276,7 @@
   const burst = (b) => { try { const r = b.getBoundingClientRect(), c = getComputedStyle(b).getPropertyValue('--c'); for (let k = 0; k < 14; k++) { const e = document.createElement('i'); e.className = 'as-bp'; const a = k / 14 * Math.PI * 2, d = 40 + Math.random() * 40; e.style.cssText = `left:${r.left + r.width / 2}px;top:${r.top + r.height * .35}px;background:${c};--tx:${Math.cos(a) * d}px;--ty:${Math.sin(a) * d}px;--rt:${Math.random() * 360}deg`; document.body.appendChild(e); setTimeout(() => e.remove(), 650); } } catch (e) { } };
   // 👧 Revienta el globo
   async function kgPop(stage, p) {
-    const V = vocab(p), R = shuffle(V).slice(0, Math.min(6, V.length)); let c = 0; const missed = []; const COL = ['#E3242B', '#1d4ed8', '#f59e0b', '#16a34a', '#7c3aed'];
+    const V = vocab(p), R = shuffle(V).slice(0, Math.min(6, V.length)); let c = 0; const missed = []; const COL = ['#E3242B', '#1d4ed8', '#E3242B', '#0B2A5B', '#1D4A9A'];
     for (let i = 0; i < R.length; i++) {
       if (!stage.isConnected) break; const it = R[i]; const opts = shuffle([it].concat(shuffle(V.filter(x => x.en !== it.en)).slice(0, 3)));
       const body = frame(stage, 'Practice', 'Revienta el globo', 'Escucha la palabra y revienta el globo correcto.');
@@ -419,7 +419,7 @@
     if (window.__V9 && sg.g && sg.g.length >= 2) { frame(stage, 'Music', '', ''); const r9 = await A().song9(stage, sg); if (r9) { try { const K = 'mra_mstamp_v1', o = JSON.parse(localStorage.getItem(K) || '{}'); o[p.id] = 1; localStorage.setItem(K, JSON.stringify(o)); } catch (e) { } return A().result(r9.c, r9.t, 'listening', r9.missed); } } // v475: Completa lo que falta
     const body = frame(stage, 'Music', teens ? 'Catch the phrase' : 'Atrapa la palabra', teens ? 'Dale play: es solo un minuto de la canción. Cuando escuches una frase, tócala. Cada acierto sube tu combo.' : 'Dale play: es solo un minuto de la canción. Cuando escuches una palabra, ¡tócala!');
     const tiles = shuffle((sg.w || []).map(t => ({ t, ok: true })).concat((sg.d || []).map(t => ({ t, ok: false }))));
-    const COL = ['#f59e0b', '#38bdf8', '#fb7185', '#4ade80', '#a78bfa', '#f97316'];
+    const COL = ['#E3242B', '#1D4A9A', '#fb7185', '#1D4A9A', '#1D4A9A', '#E3242B'];
     body.innerHTML = `<div class="as-vid"><iframe src="https://www.youtube-nocookie.com/embed/${esc(sg.yt)}?rel=0&playsinline=1&modestbranding=1&start=${clip9(sg)[0]}&end=${clip9(sg)[1]}" title="${esc(sg.title)}" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div><div class="as-vcap">${esc(sg.title)} · ${esc(sg.ch)}</div>
       ${teens ? '<div class="as-qh"><span>COMBO <b id="as-cb">x0</b></span><span>MEJOR COMBO <b id="as-bc">x0</b></span></div>' : ''}<div class="as-mcnt">${teens ? 'Atrapadas' : 'Palabras atrapadas'} <b id="as-mg">0 de ${(sg.w || []).length}</b></div><div class="as-tiles as-tu ${teens ? 'tn' : 'kd'}">${tiles.map((x, k) => `<button type="button" class="as-tile" data-k="${k}"><span>${esc(x.t)}</span></button>`).join('')}</div><div class="as-mfb" id="as-mf">${teens ? 'Toca una frase cuando la escuches.' : 'Toca una palabra cuando la escuches.'}</div>`;
     let got = 0, combo = 0, best = 0; const need = tiles.filter(x => x.ok).length;
@@ -513,7 +513,7 @@
     return g9End(stage, c, P.length, 'reading', [...missed].map(k => P[k]), `¡${found} de ${P.length} parejas! Continuar`);
   };
 
-  const STAR9 = '<svg class="g9-ss" viewBox="0 0 100 96" aria-hidden="true"><defs><linearGradient id="g9sg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe680"/><stop offset=".55" stop-color="#fbbf24"/><stop offset="1" stop-color="#f59e0b"/></linearGradient></defs><path d="M50 3l13.6 28.6 31.4 4-23 21.8 5.9 31.1L50 73.3 22.1 88.5 28 57.4 5 35.6l31.4-4z" fill="url(#g9sg)" stroke="#e08a00" stroke-width="3" stroke-linejoin="round"/><path d="M36 30l6-12" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".7"/></svg>';
+  const STAR9 = '<svg class="g9-ss" viewBox="0 0 100 96" aria-hidden="true"><defs><linearGradient id="g9sg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E3242B"/><stop offset=".55" stop-color="#E3242B"/><stop offset="1" stop-color="#E3242B"/></linearGradient></defs><path d="M50 3l13.6 28.6 31.4 4-23 21.8 5.9 31.1L50 73.3 22.1 88.5 28 57.4 5 35.6l31.4-4z" fill="url(#g9sg)" stroke="#E3242B" stroke-width="3" stroke-linejoin="round"/><path d="M36 30l6-12" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".7"/></svg>';
   // ⭐ Kids · Estrellas que caen: escucha y atrapa la estrella correcta
   G9.g9Stars = async function (stage, p) {
     const V = vocab(p); if (V.length < 3) return null; const R = shuffle(V).slice(0, 4); let c = 0, combo = 0; const missed = [];
@@ -771,7 +771,7 @@
   G9.g9Climb = async function (stage, p) {
     const V = vocab(p).filter(v => okS9(v) && v.es.length < 40); if (V.length < 4) return null; const R = shuffle(V).slice(0, 5); let c = 0; const missed = [];
     const body = frame(stage, 'Practice', 'Sube la montaña', 'Escucha a Mr. Arrieta y elige lo que significa. Cada acierto te sube un paso.');
-    body.innerHTML = `<div class="g9 g9-k">${g9Top('Sube la montaña', `<span id="g9n">0 / ${R.length}</span>`)}<div class="g9-mt"><svg viewBox="0 0 300 120" aria-hidden="true"><path d="M0 120 L120 20 L170 60 L210 30 L300 120Z" fill="#c7e6c1"/><path d="M120 20 L105 33 L135 33Z M210 30 L200 40 L220 40Z" fill="#fff"/></svg><i class="g9-fl"></i><b class="g9-me" id="g9me"></b></div><button type="button" class="g9-au" id="g9a">${SV(I.vol)}Escuchar otra vez</button><div id="g9q"></div><div class="g9-fb" id="g9f"></div></div>`;
+    body.innerHTML = `<div class="g9 g9-k">${g9Top('Sube la montaña', `<span id="g9n">0 / ${R.length}</span>`)}<div class="g9-mt"><svg viewBox="0 0 300 120" aria-hidden="true"><path d="M0 120 L120 20 L170 60 L210 30 L300 120Z" fill="#C1D0E6"/><path d="M120 20 L105 33 L135 33Z M210 30 L200 40 L220 40Z" fill="#fff"/></svg><i class="g9-fl"></i><b class="g9-me" id="g9me"></b></div><button type="button" class="g9-au" id="g9a">${SV(I.vol)}Escuchar otra vez</button><div id="g9q"></div><div class="g9-fb" id="g9f"></div></div>`;
     body.querySelector('.g9-tm').style.visibility = 'hidden'; const q = body.querySelector('#g9q'), fb = body.querySelector('#g9f'), me = body.querySelector('#g9me'); let cur = null; body.querySelector('#g9a').onclick = () => cur && play(cur.au);
     const pos = n => { const t = n / R.length; me.style.left = (8 + t * 34) + '%'; me.style.bottom = (6 + t * 66) + '%'; }; pos(0);
     for (let i = 0; i < R.length; i++) { if (!stage.isConnected) break; const it = R[i]; cur = it; const { o, a } = pickOpts(it, V, 'es', 3);
@@ -848,7 +848,7 @@
   };
   // 🎡 Kids M4 · Ruleta: gira la ruleta, escucha la palabra y elige su significado
   G9.g9Wheel = async function (stage, p) {
-    const V = shuffle(vocab(p).filter(v => okS9(v) && v.es.length < 40)).slice(0, 6); if (V.length < 4) return null; const N = 4; let c = 0, rot = 0; const missed = [], col = ['#E3242B', '#f59e0b', '#22c55e', '#38a5f0', '#a855f7', '#0B2A5B'];
+    const V = shuffle(vocab(p).filter(v => okS9(v) && v.es.length < 40)).slice(0, 6); if (V.length < 4) return null; const N = 4; let c = 0, rot = 0; const missed = [], col = ['#E3242B', '#E3242B', '#1D4A9A', '#38a5f0', '#1D4A9A', '#0B2A5B'];
     const seg = 360 / V.length, grad = V.map((v, k) => `${col[k % 6]} ${k * seg}deg ${(k + 1) * seg}deg`).join(',');
     const body = frame(stage, 'Practice', 'La ruleta', 'Gira la ruleta, escucha la palabra y elige lo que significa.');
     body.innerHTML = `<div class="g9 g9-k">${g9Top('La ruleta', `<span id="g9n">0 / ${N}</span>`)}<div class="g9-wh"><i class="g9-ptr"></i><div class="g9-wd" id="g9w" style="background:conic-gradient(${grad})">${V.map((v, k) => `<span style="transform:rotate(${k * seg + seg / 2}deg)"><b>${k + 1}</b></span>`).join('')}</div><button type="button" class="g9-spin" id="g9s">¡Girar!</button></div><div id="g9q"></div><div class="g9-fb" id="g9f"></div></div>`;
